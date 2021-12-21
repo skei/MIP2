@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="MIP2" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="exe release">
+				<Option output="../bin/mip_release" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fno-pie" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-no-pie" />
+				</Linker>
+			</Target>
+			<Target title="exe debug">
+				<Option output="../bin/mip_debug" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fno-pie" />
+					<Add option="-rdynamic" />
+					<Add option="-Wl,-Bsymbolic" />
+				</Compiler>
+				<Linker>
+					<Add option="-no-pie" />
+				</Linker>
+			</Target>
+			<Target title="exe sanitize">
+				<Option output="../bin/mip_sanitize" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fno-pie" />
+					<Add option="-rdynamic" />
+					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-fsanitize=address" />
+				</Compiler>
+				<Linker>
+					<Add option="-no-pie" />
+					<Add library="asan" />
+				</Linker>
+			</Target>
+			<Target title="plugin release">
+				<Option output="../bin/mip_release" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="1" />
+				<Option object_output="obj/release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-fPIE" />
+				</Linker>
+			</Target>
+			<Target title="plugin debug">
+				<Option output="../bin/mip_debug" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="1" />
+				<Option object_output="obj/debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-fPIC" />
+					<Add option="-g" />
+					<Add option="-rdynamic" />
+					<Add option="-Wl,-Bsymbolic" />
+				</Compiler>
+				<Linker>
+					<Add option="-fPIE" />
+				</Linker>
+			</Target>
+			<Target title="plugin sanitize">
+				<Option output="../bin/mip_sanitize" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="1" />
+				<Option object_output="obj/debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-fPIC" />
+					<Add option="-g" />
+					<Add option="-rdynamic" />
+					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-fsanitize=address" />
+				</Compiler>
+				<Linker>
+					<Add option="-fPIE" />
+					<Add library="asan" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-Wall" />
+			<Add option="-std=c++14" />
+			<Add directory="../src" />
+		</Compiler>
+		<Linker>
+			<Add library="pthread" />
+			<Add library="dl" />
+			<Add library="rt" />
+			<Add library="xcb" />
+			<Add library="xcb-util" />
+			<Add library="xcb-image" />
+			<Add library="xcb-cursor" />
+			<Add library="xcb-keysyms" />
+			<Add library="cairo" />
+			<Add library="sndfile" />
+		</Linker>
+		<Unit filename="../apps/clap_host.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../experiments/clap/CLAP_plugin.h" />
+		<Unit filename="../experiments/clap/CLAP_plugin_entry.h" />
+		<Unit filename="../experiments/clap/claphost/claphost.h" />
+		<Unit filename="../experiments/clap/claphost/claphost/claphost_process.h" />
+		<Unit filename="../experiments/clap/claphost/claphost/mip_clap_host.h" />
+		<Unit filename="../experiments/clap/claphost/claphost/mip_clap_plugin.h" />
+		<Unit filename="../experiments/clap/claphost/claphost/mip_clap_plugin_entry.h" />
+		<Unit filename="../experiments/clap/editor.h" />
+		<Unit filename="../experiments/clap/host.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../experiments/clap/plugin.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../experiments/clap/simple/simple.h" />
+		<Unit filename="../experiments/clap/simple/simple_synth.h" />
+		<Unit filename="../experiments/clap/synth.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../experiments/clap/voices.h" />
+		<Unit filename="../plugins/sa_botage.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../plugins/simple_synth.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../src/audio/mip_audio_file.h" />
+		<Unit filename="../src/audio/mip_audio_math.h" />
+		<Unit filename="../src/audio/mip_audio_utils.h" />
+		<Unit filename="../src/base/debug/mip_debug.h" />
+		<Unit filename="../src/base/debug/mip_debug_assert.h" />
+		<Unit filename="../src/base/debug/mip_debug_callstack.h" />
+		<Unit filename="../src/base/debug/mip_debug_crash_handler.h" />
+		<Unit filename="../src/base/debug/mip_debug_print.h" />
+		<Unit filename="../src/base/mip_attributes.h" />
+		<Unit filename="../src/base/mip_config.h" />
+		<Unit filename="../src/base/mip_const.h" />
+		<Unit filename="../src/base/mip_defines.h" />
+		<Unit filename="../src/base/mip_enums.h" />
+		<Unit filename="../src/base/system/mip_atomic.h" />
+		<Unit filename="../src/base/system/mip_cpu.h" />
+		<Unit filename="../src/base/system/mip_file.h" />
+		<Unit filename="../src/base/system/mip_library.h" />
+		<Unit filename="../src/base/system/mip_lock.h" />
+		<Unit filename="../src/base/system/mip_memory.h" />
+		<Unit filename="../src/base/system/mip_paths.h" />
+		<Unit filename="../src/base/system/mip_shm.h" />
+		<Unit filename="../src/base/system/mip_simd.h" />
+		<Unit filename="../src/base/system/mip_system.h" />
+		<Unit filename="../src/base/system/mip_thread.h" />
+		<Unit filename="../src/base/system/mip_time.h" />
+		<Unit filename="../src/base/types/mip_array.h" />
+		<Unit filename="../src/base/types/mip_assoc_array.h" />
+		<Unit filename="../src/base/types/mip_buffer.h" />
+		<Unit filename="../src/base/types/mip_color.h" />
+		<Unit filename="../src/base/types/mip_complex.h" />
+		<Unit filename="../src/base/types/mip_list.h" />
+		<Unit filename="../src/base/types/mip_matrix.h" />
+		<Unit filename="../src/base/types/mip_point.h" />
+		<Unit filename="../src/base/types/mip_quaternion.h" />
+		<Unit filename="../src/base/types/mip_queue.h" />
+		<Unit filename="../src/base/types/mip_rect.h" />
+		<Unit filename="../src/base/types/mip_stack.h" />
+		<Unit filename="../src/base/types/mip_string.h" />
+		<Unit filename="../src/base/types/mip_tree.h" />
+		<Unit filename="../src/base/types/mip_types.h" />
+		<Unit filename="../src/base/types/mip_vector.h" />
+		<Unit filename="../src/base/utils/mip_arguments.h" />
+		<Unit filename="../src/base/utils/mip_bgra.h" />
+		<Unit filename="../src/base/utils/mip_convert.h" />
+		<Unit filename="../src/base/utils/mip_dmc.h" />
+		<Unit filename="../src/base/utils/mip_easing.h" />
+		<Unit filename="../src/base/utils/mip_fast_math.h" />
+		<Unit filename="../src/base/utils/mip_inifile.h" />
+		<Unit filename="../src/base/utils/mip_integer_math.h" />
+		<Unit filename="../src/base/utils/mip_interpolation.h" />
+		<Unit filename="../src/base/utils/mip_isaac.h" />
+		<Unit filename="../src/base/utils/mip_math.h" />
+		<Unit filename="../src/base/utils/mip_modular.h" />
+		<Unit filename="../src/base/utils/mip_neural.h" />
+		<Unit filename="../src/base/utils/mip_parser.h" />
+		<Unit filename="../src/base/utils/mip_pattern.h" />
+		<Unit filename="../src/base/utils/mip_random.h" />
+		<Unit filename="../src/base/utils/mip_sort.h" />
+		<Unit filename="../src/base/utils/mip_strutils.h" />
+		<Unit filename="../src/base/utils/mip_tcc.h" />
+		<Unit filename="../src/base/utils/mip_utils.h" />
+		<Unit filename="../src/base/utils/mip_utils_1.h" />
+		<Unit filename="../src/base/utils/mip_vm.h" />
+		<Unit filename="../src/base/utils/mip_windowing.h" />
+		<Unit filename="../src/extern/clap/all.h" />
+		<Unit filename="../src/extern/clap/audio-buffer.h" />
+		<Unit filename="../src/extern/clap/chmap.h" />
+		<Unit filename="../src/extern/clap/clap.h" />
+		<Unit filename="../src/extern/clap/color.h" />
+		<Unit filename="../src/extern/clap/events.h" />
+		<Unit filename="../src/extern/clap/ext/audio-ports-config.h" />
+		<Unit filename="../src/extern/clap/ext/audio-ports.h" />
+		<Unit filename="../src/extern/clap/ext/draft/check-for-update.h" />
+		<Unit filename="../src/extern/clap/ext/draft/file-reference.h" />
+		<Unit filename="../src/extern/clap/ext/draft/midi-mappings.h" />
+		<Unit filename="../src/extern/clap/ext/draft/preset-load.h" />
+		<Unit filename="../src/extern/clap/ext/draft/quick-controls.h" />
+		<Unit filename="../src/extern/clap/ext/draft/thread-pool.h" />
+		<Unit filename="../src/extern/clap/ext/draft/track-info.h" />
+		<Unit filename="../src/extern/clap/ext/draft/tuning.h" />
+		<Unit filename="../src/extern/clap/ext/draft/vst2-convert.h" />
+		<Unit filename="../src/extern/clap/ext/draft/vst3-convert.h" />
+		<Unit filename="../src/extern/clap/ext/event-filter.h" />
+		<Unit filename="../src/extern/clap/ext/fd-support.h" />
+		<Unit filename="../src/extern/clap/ext/gui-cocoa.h" />
+		<Unit filename="../src/extern/clap/ext/gui-free-standing.h" />
+		<Unit filename="../src/extern/clap/ext/gui-win32.h" />
+		<Unit filename="../src/extern/clap/ext/gui-x11.h" />
+		<Unit filename="../src/extern/clap/ext/gui.h" />
+		<Unit filename="../src/extern/clap/ext/latency.h" />
+		<Unit filename="../src/extern/clap/ext/log.h" />
+		<Unit filename="../src/extern/clap/ext/note-name.h" />
+		<Unit filename="../src/extern/clap/ext/note-ports.h" />
+		<Unit filename="../src/extern/clap/ext/params.h" />
+		<Unit filename="../src/extern/clap/ext/render.h" />
+		<Unit filename="../src/extern/clap/ext/state.h" />
+		<Unit filename="../src/extern/clap/ext/thread-check.h" />
+		<Unit filename="../src/extern/clap/ext/timer-support.h" />
+		<Unit filename="../src/extern/clap/fixedpoint.h" />
+		<Unit filename="../src/extern/clap/hash.h" />
+		<Unit filename="../src/extern/clap/host.h" />
+		<Unit filename="../src/extern/clap/id.h" />
+		<Unit filename="../src/extern/clap/macros.h" />
+		<Unit filename="../src/extern/clap/plugin.h" />
+		<Unit filename="../src/extern/clap/process.h" />
+		<Unit filename="../src/extern/clap/stream.h" />
+		<Unit filename="../src/extern/clap/string-sizes.h" />
+		<Unit filename="../src/extern/clap/version.h" />
+		<Unit filename="../src/gui/base/mip_base_painter.h" />
+		<Unit filename="../src/gui/base/mip_base_surface.h" />
+		<Unit filename="../src/gui/base/mip_base_window.h" />
+		<Unit filename="../src/gui/cairo/mip_cairo.h" />
+		<Unit filename="../src/gui/cairo/mip_cairo_painter.h" />
+		<Unit filename="../src/gui/cairo/mip_cairo_utils.h" />
+		<Unit filename="../src/gui/gdi/mip_gdi.h" />
+		<Unit filename="../src/gui/gdi/mip_gdi_painter.h" />
+		<Unit filename="../src/gui/mip_bitmap.h" />
+		<Unit filename="../src/gui/mip_drawable.h" />
+		<Unit filename="../src/gui/mip_painter.h" />
+		<Unit filename="../src/gui/mip_surface.h" />
+		<Unit filename="../src/gui/mip_widget.h" />
+		<Unit filename="../src/gui/mip_window.h" />
+		<Unit filename="../src/gui/nogui/mip_nogui.h" />
+		<Unit filename="../src/gui/nogui/mip_nogui_painter.h" />
+		<Unit filename="../src/gui/nogui/mip_nogui_surface.h" />
+		<Unit filename="../src/gui/nogui/mip_nogui_window.h" />
+		<Unit filename="../src/gui/win32/mip_win32.h" />
+		<Unit filename="../src/gui/win32/mip_win32_surface.h" />
+		<Unit filename="../src/gui/win32/mip_win32_window.h" />
+		<Unit filename="../src/gui/xcb/mip_xcb.h" />
+		<Unit filename="../src/gui/xcb/mip_xcb_painter.h" />
+		<Unit filename="../src/gui/xcb/mip_xcb_surface.h" />
+		<Unit filename="../src/gui/xcb/mip_xcb_utils.h" />
+		<Unit filename="../src/gui/xcb/mip_xcb_window.h" />
+		<Unit filename="../src/midi/mip_midi_file.h" />
+		<Unit filename="../src/midi/mip_midi_player.h" />
+		<Unit filename="../src/mip.h" />
+		<Unit filename="../src/plugin/clap/backup/mip_clap.h" />
+		<Unit filename="../src/plugin/clap/backup/mip_clap_descriptor.h" />
+		<Unit filename="../src/plugin/clap/backup/mip_clap_host.h" />
+		<Unit filename="../src/plugin/clap/backup/mip_clap_host_proxy.h" />
+		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin.h" />
+		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_entry.h" />
+		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_entry16.h" />
+		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_factory.h" />
+		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_proxy.h" />
+		<Unit filename="../src/plugin/clap/mip_clap.h" />
+		<Unit filename="../src/plugin/clap/mip_clap_plugin.h" />
+		<Unit filename="../src/plugin/clap/mip_clap_plugin_descriptor.h" />
+		<Unit filename="../src/plugin/clap/mip_clap_plugin_entry.h" />
+		<Unit filename="../src/plugin/clap/mip_clap_plugin_entry16.h" />
+		<Unit filename="../src/plugin/clap/mip_clap_plugin_factory.h" />
+		<Unit filename="../src/plugin/clap/mip_clap_plugin_list.h" />
+		<Unit filename="../src/plugin/clap/mip_clap_plugin_simple_factory.h" />
+		<Unit filename="../src/plugin/mip_editor.h" />
+		<Unit filename="../src/plugin/mip_host.h" />
+		<Unit filename="../src/plugin/mip_host_proxy.h" />
+		<Unit filename="../src/plugin/mip_parameter.h" />
+		<Unit filename="../src/plugin/mip_plugin.h" />
+		<Unit filename="../src/plugin/mip_plugin_entry.h" />
+		<Unit filename="../src/plugin/mip_plugin_proxy.h" />
+		<Unit filename="build.cpp" />
+		<Unit filename="test/test.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="test/test.h" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

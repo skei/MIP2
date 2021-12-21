@@ -1,0 +1,25 @@
+MIP 2
+"multum in parvo"
+(much in little)
+
+----------
+
+work in progress!
+
+this will be the culmination/combination of the previous prototype/proof-of-concept frameworks kode3 and mip.. at the moment it's very much in a "state of flux", but things are moving fast!
+
+in the meanwhile, have a look at some of the previous code:
+
+claphost:
+https://github.com/skei/MIP/tree/master/apps
+
+simple mpe synth:
+https://github.com/skei/MIP/tree/master/plugins/templates
+
+kode3:
+https://github.com/skei/kode3
+
+mip:
+https://github.com/skei/MIP
+
+
