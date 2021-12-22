@@ -7,7 +7,7 @@
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_plugin_list.h"
 
-MIP_ClapPlugin* MIP_CreatePlugin(uint32_t index, const clap_plugin_descriptor* desc);
+MIP_ClapPlugin* MIP_CreatePlugin(uint32_t index, const clap_plugin_descriptor* desc, const clap_host_t *host);
 
 //----------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ const clap_plugin_t* clap_plugin_factory_create_plugin_callback(const struct cla
   MIP_ClapPluginInfo* info = GLOBAL_CLAP_PLUGIN_LIST.findPluginById(plugin_id);
   const clap_plugin_descriptor* desc = info->desc->getClapDescriptor();
   if (desc && (strcmp(plugin_id,desc->id) == 0)) {
-    MIP_ClapPlugin* plugin = MIP_CreatePlugin(info->index,desc);
+    MIP_ClapPlugin* plugin = MIP_CreatePlugin(info->index,desc,host);
     if (plugin) {
       return plugin->getClapPlugin();
     }

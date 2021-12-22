@@ -43,8 +43,8 @@ class myPlugin : public MIP_ClapPlugin {
 public:
 //------------------------------
 
-  myPlugin(const clap_plugin_descriptor* desc)
-  : MIP_ClapPlugin(desc) {
+  myPlugin(const clap_plugin_descriptor* desc, const clap_host* host)
+  : MIP_ClapPlugin(desc,host) {
     MIP_PRINT;
   }
 
@@ -90,14 +90,14 @@ public:
     return CLAP_PROCESS_CONTINUE;
   }
 
-  const void* get_extension(const char* id) final {
-    MIP_PRINT;
-    return nullptr;
-  }
+  //const void* get_extension(const char* id) final {
+  //  MIP_PRINT;
+  //  return nullptr;
+  //}
 
-  void on_main_thread() final {
-    MIP_PRINT;
-  }
+  //void on_main_thread() final {
+  //  MIP_PRINT;
+  //}
 
 
 };
@@ -115,7 +115,7 @@ void MIP_RegisterPlugins() {
 
 //----------
 
-MIP_ClapPlugin* MIP_CreatePlugin(uint32_t index, const clap_plugin_descriptor* desc) {
-  if (index == 0) return new myPlugin(desc);
+MIP_ClapPlugin* MIP_CreatePlugin(uint32_t index, const clap_plugin_descriptor* desc, const clap_host_t *host) {
+  if (index == 0) return new myPlugin(desc,host);
   return nullptr;
 }
