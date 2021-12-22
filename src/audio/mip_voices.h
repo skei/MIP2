@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "audio/mip_audio_utils.h"
 #include "plugin/clap/mip_clap.h"
 
 //#define MIP_MASTER_BEND_RANGE  2.0f
@@ -11,9 +12,11 @@
 //----------------------------------------------------------------------
 
 struct MIP_VoiceContext {
-//float                 samplerate  = 0.0;
   const clap_process_t* process     = nullptr;
-};
+  float                 samplerate  = 0.0;
+  float**               buffers     = nullptr;
+  uint32_t              length      = 0;
+ };
 
 //----------------------------------------------------------------------
 
@@ -53,19 +56,28 @@ public:
 //------------------------------
 
   void prepare(float ASampleRate/*, uint32_t ABlockSize*/) {
+    MVoiceContext.samplerate = ASampleRate;
     for (uint32_t i=0; i<NUM; i++) {
-      MVoices[i].prepare(&MVoiceContext,ASampleRate/*,ABlockSize*/);
+      MVoices[i].prepare(&MVoiceContext);
     }
   }
 
   //----------
 
   void process(const clap_process_t *process) {
+    preProcess();
+    MVoiceContext.process = process;
+    float** outputs = process->audio_outputs->data32;
+    uint32_t length = process->frames_count;
+    MVoiceContext.buffers = outputs;
+    MVoiceContext.length = length;
+    MIP_ClearStereoBuffer(outputs,length);
+    processPlayingVoices();
+    processReleasedVoices();
+    postProcess();
   }
 
-//------------------------------
-public:
-//------------------------------
+  //----------
 
   /*
     Note on, off, end and choke events.

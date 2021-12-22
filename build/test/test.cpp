@@ -39,7 +39,7 @@ public:
 class myVoice {
 public:
 
-  bool prepare(MIP_VoiceContext* AContext, float ASamplerate) {
+  bool prepare(MIP_VoiceContext* AContext) {
     return true;
   }
 
@@ -47,15 +47,33 @@ public:
     return state;
   }
 
-  uint32_t  strike(uint32_t n, float v) { return MIP_VOICE_PLAYING; }
-  uint32_t  lift(float v) { return MIP_VOICE_FINISHED; }
-  void      bend(float b) {}
-  void      press(float v) {}
-  void      slide(float s) {}
-  void      ctrl(uint32_t i, float v) {}
-  void      master_press(float mp) {}
-  void      master_bend(float mb) {}
-  void      master_ctrl(uint32_t i, float v) {}
+  uint32_t strike(uint32_t n, float v) {
+    return MIP_VOICE_PLAYING;
+  }
+  uint32_t lift(float v) {
+    return MIP_VOICE_FINISHED;
+  }
+
+  void bend(float b) {
+  }
+
+  void press(float v) {
+  }
+
+  void slide(float s) {
+  }
+
+  void ctrl(uint32_t i, float v) {
+  }
+
+  void master_press(float mp) {
+  }
+
+  void master_bend(float mb) {
+  }
+
+  void master_ctrl(uint32_t i, float v) {
+  }
 
 };
 

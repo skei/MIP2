@@ -88,7 +88,7 @@ public:
     //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MExtThreadPool;
     //if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MExtTimerSupport;
     // draft
-    //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MExtCheckForUpdate;
+    ////if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MExtCheckForUpdate;
     //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MExtFileReference;
     //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MExtMidiMappings;
     //if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MExtPresetLoad;

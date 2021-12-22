@@ -1,6 +1,6 @@
 
 
-#include "test/test.cpp"
+//#include "test/test.cpp"
 
 //----------------------------------------------------------------------
 // experiments
@@ -21,4 +21,4 @@
 //----------------------------------------------------------------------
 
 //#include "../plugins/sa_botage.cpp"
-//#include "../plugins/simple_synth.cpp"
+#include "../plugins/simple_synth.cpp"
