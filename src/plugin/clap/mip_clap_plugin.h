@@ -5,7 +5,7 @@
 class MIP_ClapPlugin {
 
 //------------------------------
-private:
+protected:
 //------------------------------
 
   struct host {
@@ -35,8 +35,6 @@ private:
     clap_host_tuning*             tuning              = nullptr;
   };
 
-  clap_plugin* get_clap_plugin() { return &MClapPlugin; }
-
 //------------------------------
 public:
 //------------------------------
@@ -45,8 +43,12 @@ public:
     MClapPlugin.desc = clapdesc;
   }
 
+  //----------
+
   virtual ~MIP_ClapPlugin() {
   }
+
+  //----------
 
   const clap_plugin_t* getClapPlugin() {
     return &MClapPlugin;
@@ -62,7 +64,7 @@ public:
   virtual void deactivate() {}
   virtual bool start_processing() { return true; }
   virtual void stop_processing() {}
-  virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_CONTINUE; }
+  virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_SLEEP; }
   virtual const void* get_extension(const char *id) { return nullptr; }
   virtual void on_main_thread() {}
 
