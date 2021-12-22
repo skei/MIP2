@@ -20,7 +20,7 @@ private:
 public:
 //------------------------------
 
-  Editor() {
+  MIP_Editor() {
   }
 
   virtual ~MIP_Editor() {
@@ -44,24 +44,30 @@ public:
     MWindow->close();
   }
 
-  void set_width(uint32_t w) {
+  void setWidth(uint32_t w) {
     MWidth = w;
     MWindow->setSize(MWidth,MHeight);
   }
 
-  void set_height(uint32_t h) {
+  void setHeight(uint32_t h) {
     MHeight = h;
     MWindow->setSize(MWidth,MHeight);
   }
 
-  void set_scale(double scale) {
+  void setSize(uint32_t w, uint32_t h) {
+    MWidth = w;
+    MHeight = h;
+    MWindow->setSize(MWidth,MHeight);
   }
 
-  uint32_t get_width() {
+  void setScale(double scale) {
+  }
+
+  uint32_t getWidth() {
     return MWidth;
   }
 
-  uint32_t get_height() {
+  uint32_t getHeight() {
     return MHeight;
   }
 

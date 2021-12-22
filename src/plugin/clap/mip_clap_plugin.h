@@ -2,6 +2,10 @@
 #define mip_clap_plugin_included
 //----------------------------------------------------------------------
 
+#include "mip.h"
+#include "plugin/clap/mip_clap.h"
+
+
 class MIP_ClapPlugin {
 
 //------------------------------
@@ -35,8 +39,6 @@ protected:
   clap_host_track_info*         MHostTrackInfo        = nullptr;
   clap_host_tuning*             MHostTuning           = nullptr;
 
-
-
 //------------------------------
 public:
 //------------------------------
@@ -62,49 +64,54 @@ public:
 public:
 //------------------------------
 
-  virtual bool                init() { return true; }
-  virtual void                destroy() {}
-  virtual bool                activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) { return true; }
-  virtual void                deactivate() {}
-  virtual bool                start_processing() { return true; }
-  virtual void                stop_processing() {}
-
+  virtual bool init() { return true; }
+  virtual void destroy() {}
+  virtual bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) { return true; }
+  virtual void deactivate() {}
+  virtual bool start_processing() { return true; }
+  virtual void stop_processing() {}
   virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_SLEEP; }
+  virtual void on_main_thread() {}
 
-  const void* get_extension(const char *id) {
+  virtual const void* get_extension(const char *id) {
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MExtAudioPorts;
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MExtAudioPortsConfig;
+    //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MExtAudioPortsConfig;
     if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MExtEventFilter;
-    if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          return &MExtFdSupport;
+    //if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          return &MExtFdSupport;
     if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MExtGui;
     if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MExtGuiX11;
-    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MExtLatency;
-    if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MExtNoteName;
-    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MExtNotePorts;
+    //if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MExtLatency;
+    //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MExtNoteName;
+    //if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MExtNotePorts;
     if (strcmp(id,CLAP_EXT_PARAMS) == 0)              return &MExtParams;
     if (strcmp(id,CLAP_EXT_STATE) == 0)               return &MExtState;
-    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MExtThreadPool;
-    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MExtTimerSupport;
+    //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MExtThreadPool;
+    //if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MExtTimerSupport;
     // draft
-  //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MExtCheckForUpdate;
-    if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MExtFileReference;
-    if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MExtMidiMappings;
-    if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MExtPresetLoad;
-    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MExtQuickControls;
-    if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MExtSurround;
-    if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MExtTrackInfo;
+    //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MExtCheckForUpdate;
+    //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MExtFileReference;
+    //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MExtMidiMappings;
+    //if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MExtPresetLoad;
+    //if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MExtQuickControls;
+    //if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MExtSurround;
+    //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MExtTrackInfo;
+
     return nullptr;
   }
 
-  virtual void on_main_thread() {}
+  // extensions
 
   virtual uint32_t  audio_ports_count(bool is_input) { return 0; }
   virtual bool      audio_ports_get(uint32_t index, bool is_input, clap_audio_port_info_t* info) { return false; }
+
   virtual uint32_t  audio_ports_config_count() { return 0; }
   virtual bool      audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) { return false; }
   virtual bool      audio_ports_config_select(clap_id config_id) { return false; }
+
   virtual bool      event_filter_accepts(clap_event_type event_type) { return false; }
+
   virtual void      fd_support_on_fd(clap_fd fd, clap_fd_flags flags) {}
+
   virtual bool      gui_create() { return false; }
   virtual void      gui_destroy() {}
   virtual void      gui_set_scale(double scale) {}
@@ -114,23 +121,35 @@ public:
   virtual bool      gui_set_size(uint32_t width, uint32_t height) { return false; }
   virtual void      gui_show() {}
   virtual void      gui_hide() {}
+
   virtual bool      gui_x11_attach(const char *display_name, unsigned long window) { return false; }
+
   virtual uint32_t  latency_get() { return 0; }
+
   virtual uint32_t  note_name_count() { return 0; }
   virtual bool      note_name_get(uint32_t index, clap_note_name_t *note_name) { return false; }
+
   virtual uint32_t  note_ports_count(bool is_input) { return 0; }
   virtual bool      note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t *info) { return false; }
+
   virtual uint32_t  params_count() { return 0; }
   virtual bool      params_get_info(int32_t param_index, clap_param_info_t* param_info) { return false; }
   virtual bool      params_get_value(clap_id param_id, double *value) { return false; }
   virtual bool      params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) { return false; }
   virtual bool      params_text_to_value(clap_id param_id, const char *display, double *value) { return false; }
   virtual void      params_flush(const clap_event_list_t *input_parameter_changes, const clap_event_list_t *output_parameter_changes) {}
+
   virtual void      render_set(clap_plugin_render_mode mode) {}
+
   virtual bool      state_save(clap_ostream_t *stream) { return false; }
   virtual bool      state_load(clap_istream_t *stream) { return false; }
+
   virtual void      thread_pool_exec(uint32_t task_index) {}
+
   virtual void      timer_support_on_timer(clap_id timer_id) {}
+
+  // drafts
+
   virtual void      check_for_update_check(const clap_host_t *host, bool include_beta) {}
   virtual uint32_t  file_reference_count() { return 0; }
   virtual bool      file_reference_get(uint32_t index, clap_file_reference_t *file_reference) { return false; }
@@ -178,7 +197,7 @@ private:
   }
 
 //------------------------------
-private:
+private: // callbacks
 //------------------------------
 
   static bool clap_plugin_init_callback(const struct clap_plugin *plugin) {
