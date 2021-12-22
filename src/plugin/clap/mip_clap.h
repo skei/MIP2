@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "extern/clap/clap.h"
+#include "extern/clap/ext/draft/check-for-update.h"
 
 #ifndef MIP_NO_PLUGIN
   #include "plugin/clap/mip_clap_plugin_list.h"
