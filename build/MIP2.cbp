@@ -127,10 +127,14 @@
 			<Add library="cairo" />
 			<Add library="sndfile" />
 		</Linker>
-		<Unit filename="../apps/clap_host.cpp">
+		<Unit filename="../apps/claphost.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../apps/claphost/claphost_process.h" />
+		<Unit filename="../apps/claphost/mip_clap_host.h" />
+		<Unit filename="../apps/claphost/mip_clap_plugin.h" />
+		<Unit filename="../apps/claphost/mip_clap_plugin_entry.h" />
 		<Unit filename="../experiments/clap/CLAP_plugin.h" />
 		<Unit filename="../experiments/clap/CLAP_plugin_entry.h" />
 		<Unit filename="../experiments/clap/claphost/claphost.h" />
@@ -305,12 +309,6 @@
 		<Unit filename="../src/midi/mip_midi_file.h" />
 		<Unit filename="../src/midi/mip_midi_player.h" />
 		<Unit filename="../src/mip.h" />
-		<Unit filename="../src/plugin/clap/backup/mip_clap_descriptor.h" />
-		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin.h" />
-		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_entry.h" />
-		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_entry16.h" />
-		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_factory.h" />
-		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_proxy.h" />
 		<Unit filename="../src/plugin/clap/mip_clap.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_descriptor.h" />
