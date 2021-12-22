@@ -40,7 +40,11 @@ class myVoice {
 
 private:
 
-  MIP_VoiceContext* MContext = nullptr;
+  MIP_VoiceContext* MContext      = nullptr;
+  float             MNote         = 0.0f;
+  float             MBend         = 0.0f;
+  float             MMasterBend   = 0.0f;
+  float             MMasterPress  = 0.0f;
 
   float samplerate  = 0.0;
   float ph          = 0.0;
@@ -73,23 +77,30 @@ public:
 
   //----------
 
-  uint32_t strike(uint32_t n, float v) {
-    ph = 0.0;
-    phadd = MIP_NoteToHz(n) / samplerate;
+  uint32_t strike(uint32_t note, float velocity) {
+    //ph = 0.0;
+    //phadd = MIP_NoteToHz(n) / samplerate;
+    //return MIP_VOICE_PLAYING;
+    MNote = note;
+    MBend = 0.0f;
+    float hz = MIP_NoteToHz(MNote + (MMasterBend * 2.0f) + (MBend*48.0f));
+    ph = 0.0f;
+    phadd = hz / samplerate;
     return MIP_VOICE_PLAYING;
   }
 
   //----------
 
   uint32_t lift(float v) {
-    ph = 0.0;
-    phadd = 0.0;
     return MIP_VOICE_FINISHED;
   }
 
   //----------
 
   void bend(float b) {
+    MBend = b;
+    float hz = MIP_NoteToHz(MNote + (MMasterBend * 2.0f) + (MBend*48.0f));
+    phadd = hz / samplerate;
   }
 
   //----------
@@ -115,6 +126,9 @@ public:
   //----------
 
   void master_bend(float mb) {
+    MMasterBend = mb;
+    float hz = MIP_NoteToHz(MNote + (MMasterBend * 2.0f) + (MBend*48.0f));
+    phadd = hz / samplerate;
   }
 
   //----------
