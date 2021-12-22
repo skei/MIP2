@@ -5,6 +5,39 @@
 class MIP_ClapPlugin {
 
 //------------------------------
+private:
+//------------------------------
+
+  struct host {
+    clap_host_audio_ports*        audio_ports         = nullptr;
+    clap_host_audio_ports_config* audio_ports_config  = nullptr;
+    clap_host_event_filter*       event_filter        = nullptr;
+    clap_host_fd_support*         fd_support          = nullptr;
+    clap_host_gui*                gui                 = nullptr;
+    clap_host_latency*            latency             = nullptr;
+    clap_host_log*                log                 = nullptr;
+    clap_host_note_name*          note_name           = nullptr;
+    clap_host_note_ports*         note_ports          = nullptr;
+    clap_host_params*             params              = nullptr;
+    clap_host_state*              state               = nullptr;
+    clap_host_thread_check*       thread_check        = nullptr;
+    clap_host_thread_pool*        thread_pool         = nullptr;
+    clap_host_timer_support*      timer_support       = nullptr;
+  };
+
+  struct host_draft {
+    clap_host_check_for_update*   check_for_update    = nullptr;
+    clap_host_file_reference*     file_reference      = nullptr;
+    clap_host_midi_mappings*      midi_mappings       = nullptr;
+    clap_host_quick_controls*     quick_controls      = nullptr;
+    clap_host_surround*           surround            = nullptr;
+    clap_host_track_info*         track_info          = nullptr;
+    clap_host_tuning*             tuning              = nullptr;
+  };
+
+  clap_plugin* get_clap_plugin() { return &MClapPlugin; }
+
+//------------------------------
 public:
 //------------------------------
 
