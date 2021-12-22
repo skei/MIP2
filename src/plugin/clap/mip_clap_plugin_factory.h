@@ -4,41 +4,46 @@
 
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
-//#include "plugin/clap/mip_clap_plugin.h"
-//#include "plugin/clap/mip_clap_plugin_list.h"
+#include "plugin/clap/mip_clap_plugin.h"
+#include "plugin/clap/mip_clap_plugin_list.h"
+
+MIP_ClapPlugin* MIP_CreatePlugin(uint32_t index, const clap_plugin_descriptor* desc);
 
 //----------------------------------------------------------------------
 
-template <class FACTORY>
-class MIP_ClapPluginFactory {
+uint32_t clap_plugin_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
+  MIP_PRINT;
+  return GLOBAL_CLAP_PLUGIN_LIST.getNumPlugins();
+}
 
-private:
+//----------
 
-  static constexpr FACTORY MPluginFactory = {};
+const clap_plugin_descriptor_t* clap_plugin_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
+  MIP_PRINT;
+  return GLOBAL_CLAP_PLUGIN_LIST.getPluginDescriptor(index);
+}
 
-public:
+//----------
 
-  static uint32_t clap_plugin_factory_get_plugin_count_callback(void) {
-    return MPluginFactory.get_plugin_count();
+const clap_plugin_t* clap_plugin_factory_create_plugin_callback(const struct clap_plugin_factory *factory,const clap_host_t *host,const char *plugin_id) {
+  MIP_PRINT;
+  MIP_ClapPluginInfo* info = GLOBAL_CLAP_PLUGIN_LIST.findPluginById(plugin_id);
+  const clap_plugin_descriptor* desc = info->desc->getClapDescriptor();
+  if (desc && (strcmp(plugin_id,desc->id) == 0)) {
+    MIP_ClapPlugin* plugin = MIP_CreatePlugin(info->index,desc);
+    if (plugin) {
+      return plugin->getClapPlugin();
+    }
   }
+  return nullptr;
+}
 
-  static const clap_plugin_descriptor* clap_plugin_factory_get_plugin_descriptor_callback(uint32_t index) {
-    return MPluginFactory.get_plugin_descriptor(index);
-  }
+//----------------------------------------------------------------------
 
-  static const clap_plugin* clap_plugin_factory_create_plugin_callback(const clap_host *host, const char *plugin_id) {
-    return MPluginFactory.create_plugin(host,plugin_id);
-  }
-
-public:
-
-  __MIP_EXPORT
-  static constexpr struct clap_plugin_factory16 MClapPluginFactory asm("clap_plugin_factory") = {
-    clap_plugin_factory_get_plugin_count_callback,
-    clap_plugin_factory_get_plugin_descriptor_callback,
-    clap_plugin_factory_create_plugin_callback
-  };
-
+const clap_plugin_factory GLOBAL_CLAP_PLUGIN_FACTORY = {
+  clap_plugin_factory_get_plugin_count_callback,
+  clap_plugin_factory_get_plugin_descriptor_callback,
+  clap_plugin_factory_create_plugin_callback
 };
 
 //----------------------------------------------------------------------

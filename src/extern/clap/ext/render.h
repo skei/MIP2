@@ -1,12 +1,14 @@
 #pragma once
 
-#include "../clap.h"
+#include "../plugin.h"
 
 static CLAP_CONSTEXPR const char CLAP_EXT_RENDER[] = "clap.render";
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#pragma pack(push, CLAP_ALIGN)
 
 enum {
    // Default setting, used to play "realtime"
@@ -24,8 +26,10 @@ typedef int32_t clap_plugin_render_mode;
 // implement this extension.
 typedef struct clap_plugin_render {
    // [main-thread]
-   void (*set)(const clap_plugin *plugin, clap_plugin_render_mode mode);
-} clap_plugin_render;
+   void (*set)(const clap_plugin_t *plugin, clap_plugin_render_mode mode);
+} clap_plugin_render_t;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 }

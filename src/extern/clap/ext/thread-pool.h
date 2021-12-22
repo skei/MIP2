@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../clap.h"
+#include "../plugin.h"
 
 /// @page
 ///
@@ -38,16 +38,18 @@
 /// If the host knows that it is running under hard real-time pressure it may decide to not
 /// provide this interface.
 
-static CLAP_CONSTEXPR const char CLAP_EXT_THREAD_POOL[] = "clap.thread-pool.draft/0";
+static CLAP_CONSTEXPR const char CLAP_EXT_THREAD_POOL[] = "clap.thread-pool";
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#pragma pack(push, CLAP_ALIGN)
+
 typedef struct clap_plugin_thread_pool {
    // Called by the thread pool
-   void (*exec)(const clap_plugin *plugin, uint32_t task_index);
-} clap_plugin_thread_pool;
+   void (*exec)(const clap_plugin_t *plugin, uint32_t task_index);
+} clap_plugin_thread_pool_t;
 
 typedef struct clap_host_thread_pool {
    // Schedule num_tasks jobs in the host thread pool.
@@ -58,8 +60,10 @@ typedef struct clap_host_thread_pool {
    // The host should check that the plugin is within the process call, and if not, reject the exec
    // request.
    // [audio-thread]
-   bool (*request_exec)(const clap_host *host, uint32_t num_tasks);
-} clap_host_thread_pool;
+   bool (*request_exec)(const clap_host_t *host, uint32_t num_tasks);
+} clap_host_thread_pool_t;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 }

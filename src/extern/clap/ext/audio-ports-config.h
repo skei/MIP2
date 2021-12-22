@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../clap.h"
 #include "../chmap.h"
 #include "../string-sizes.h"
+#include "../plugin.h"
 
 /// @page Audio Ports Config
 ///
@@ -28,41 +28,45 @@ static CLAP_CONSTEXPR const char CLAP_EXT_AUDIO_PORTS_CONFIG[] = "clap.audio-por
 extern "C" {
 #endif
 
+#pragma pack(push, CLAP_ALIGN)
+
 // Minimalistic description of ports configuration
 typedef struct clap_audio_ports_config {
-   clap_id id;
-   char    name[CLAP_NAME_SIZE];
+   alignas(4) clap_id id;
+   alignas(1) char name[CLAP_NAME_SIZE];
 
    // main input info
-   uint32_t   input_channel_count;
-   clap_chmap input_channel_map;
+   alignas(4) uint32_t input_channel_count;
+   alignas(4) clap_chmap input_channel_map;
 
    // main output info
-   uint32_t   output_channel_count;
-   clap_chmap output_channel_map;
-} clap_audio_ports_config;
+   alignas(4) uint32_t output_channel_count;
+   alignas(4) clap_chmap output_channel_map;
+} clap_audio_ports_config_t;
 
 // The audio ports config scan has to be done while the plugin is deactivated.
 typedef struct clap_plugin_audio_ports_config {
    // gets the number of available configurations
    // [main-thread]
-   uint32_t (*count)(const clap_plugin *plugin);
+   uint32_t (*count)(const clap_plugin_t *plugin);
 
    // gets information about a configuration
    // [main-thread]
-   bool (*get)(const clap_plugin *plugin, uint32_t index, clap_audio_ports_config *config);
+   bool (*get)(const clap_plugin_t *plugin, uint32_t index, clap_audio_ports_config_t *config);
 
    // selects the configuration designated by id
    // returns true if the configuration could be applied
    // [main-thread,plugin-deactivated]
-   bool (*select)(const clap_plugin *plugin, clap_id config_id);
-} clap_plugin_audio_ports_config;
+   bool (*select)(const clap_plugin_t *plugin, clap_id config_id);
+} clap_plugin_audio_ports_config_t;
 
 typedef struct clap_host_audio_ports_config {
    // Rescan the full list of configs.
    // [main-thread]
-   void (*rescan)(const clap_host *host);
-} clap_host_audio_ports_config;
+   void (*rescan)(const clap_host_t *host);
+} clap_host_audio_ports_config_t;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 }

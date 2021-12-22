@@ -2,109 +2,104 @@
 
 // nc -U -l -k /tmp/mip.socket
 #define MIP_DEBUG
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT
+#define MIP_DEBUG_PRINT_SOCKET
 
 #include "mip.h"
-#include "plugin/clap/mip_clap_plugin_entry.h"
-#include "plugin/clap/mip_clap_plugin_entry16.h"
-#include "plugin/clap/mip_clap_plugin_factory.h"
-#include "plugin/clap/mip_clap_plugin_descriptor.h"
-#include "plugin/clap/mip_clap_plugin.h"
-
-//class myClapPluginEntry;
-//class myClapPluginEntry16;
-//class myClapPluginFactory;
-
-//class MIP_ClapPluginEntry<myClapPluginEntry>;
-//class MIP_ClapPluginEntry16<myClapPluginEntry16>;
-//class MIP_ClapPluginFactory<myClapPluginFactory>;
-
-//----------------------------------------------------------------------
-
-class myClapDescriptor : public MIP_ClapPluginDescriptor {
-};
-
-//----------------------------------------------------------------------
-
-class myClapPlugin : public MIP_ClapPlugin {
-};
+#include "plugin/clap/mip_clap.h"
 
 //----------------------------------------------------------------------
 //
-//
+// descriptor
 //
 //----------------------------------------------------------------------
 
-class myClapPluginEntry {
+class myDescriptor
+: public MIP_ClapPluginDescriptor {
 
+//------------------------------
 public:
+//------------------------------
 
-  static bool init(const char *plugin_path) { return false; }
-  static void deinit(void) {}
-  static uint32_t get_plugin_count(void) { return 0; }
-  static const clap_plugin_descriptor* get_plugin_descriptor(uint32_t index) { return nullptr; }
-  static const clap_plugin* create_plugin(const clap_host *host, const char *plugin_id) { return nullptr; }
-  static uint32_t get_invalidation_source_count(void) { return 0; }
-  static const clap_plugin_invalidation_source* get_invalidation_source(uint32_t index) { return nullptr; }
-  static void refresh(void) {}
-
-};
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-class myClapPluginFactory {
-
-public:
-
-  static uint32_t get_plugin_count() {
-    MIP_PRINT;
-    return 0;
-  }
-
-  static const clap_plugin_descriptor* get_plugin_descriptor(uint32_t index) {
-    MIP_PRINT;
-    return nullptr;
-  }
-
-  static const clap_plugin* create_plugin(const clap_host *host, const char *plugin_id) {
-    MIP_PRINT;
-    return nullptr;
+  myDescriptor() {
+    setName("myPlugin");
+    setVendor("Tor-Helge Skei");
+    setUrl("https://torhelgeskei.com");
+    setVersion("0.0.0");
+    setType(CLAP_PLUGIN_AUDIO_EFFECT);
   }
 
 };
 
 //----------------------------------------------------------------------
 //
-//
+// plugin
 //
 //----------------------------------------------------------------------
 
-class myClapPluginEntry16 {
+class myPlugin : public MIP_ClapPlugin {
 
-private:
-
-  static constexpr myClapPluginFactory MFactory = {};
-
-
+//------------------------------
 public:
+//------------------------------
 
-  static bool init(const char *plugin_path) {
+  myPlugin(const clap_plugin_descriptor* desc)
+  : MIP_ClapPlugin(desc) {
+    MIP_PRINT;
+  }
+
+  //----------
+
+  virtual ~myPlugin() {
+    MIP_PRINT;
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  bool init() final {
     MIP_PRINT;
     return true;
   }
 
-  static void deinit() {
+  void destroy() final {
     MIP_PRINT;
   }
 
-  static const void* get_factory(const char* factory_id) {
+  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
     MIP_PRINT;
-    return &MFactory;
+    return true;
   }
+
+  void deactivate() final {
+    MIP_PRINT;
+  }
+
+  bool start_processing() final {
+    MIP_PRINT;
+    return true;
+  }
+
+  void stop_processing() final {
+    MIP_PRINT;
+  }
+
+  clap_process_status process(const clap_process_t* process) final {
+    //MIP_PRINT;
+    return CLAP_PROCESS_CONTINUE;
+  }
+
+  const void* get_extension(const char* id) final {
+    MIP_PRINT;
+    return nullptr;
+  }
+
+  void on_main_thread() final {
+    MIP_PRINT;
+  }
+
+
 };
 
 //----------------------------------------------------------------------
@@ -113,17 +108,14 @@ public:
 //
 //----------------------------------------------------------------------
 
-//MIP_ClapPluginEntry<myClapPluginEntry> ENTRY;
-MIP_ClapPluginEntry16<myClapPluginEntry16> ENTRY16;
+void MIP_RegisterPlugins() {
+  MIP_ClapPluginDescriptor* desc = new myDescriptor();
+  registerPlugin(desc);
+}
 
-//----------------------------------------------------------------------
+//----------
 
-int main() {
-  MIP_PRINT;
-
-  ENTRY16.init("./");
-  ENTRY16.deinit();
-  const clap_plugin_factory16* factory = (const clap_plugin_factory16*)ENTRY16.get_factory(CLAP_PLUGIN_FACTORY_ID);
-
-  return 0;
+MIP_ClapPlugin* MIP_CreatePlugin(uint32_t index, const clap_plugin_descriptor* desc) {
+  if (index == 0) return new myPlugin(desc);
+  return nullptr;
 }

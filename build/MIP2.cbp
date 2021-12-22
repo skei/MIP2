@@ -30,6 +30,7 @@
 					<Add option="-fno-pie" />
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-DKODE_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-no-pie" />
@@ -47,6 +48,7 @@
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-fsanitize=address" />
+					<Add option="-DKODE_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-no-pie" />
@@ -81,6 +83,7 @@
 					<Add option="-g" />
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-DKODE_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-fPIE" />
@@ -100,6 +103,7 @@
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-fsanitize=address" />
+					<Add option="-DKODE_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-fPIE" />
@@ -109,14 +113,12 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-Wall" />
 			<Add option="-std=c++14" />
 			<Add directory="../src" />
 		</Compiler>
 		<Linker>
 			<Add library="pthread" />
 			<Add library="dl" />
-			<Add library="rt" />
 			<Add library="xcb" />
 			<Add library="xcb-util" />
 			<Add library="xcb-image" />
@@ -224,11 +226,14 @@
 		<Unit filename="../src/base/utils/mip_utils_1.h" />
 		<Unit filename="../src/base/utils/mip_vm.h" />
 		<Unit filename="../src/base/utils/mip_windowing.h" />
-		<Unit filename="../src/extern/clap/all.h" />
 		<Unit filename="../src/extern/clap/audio-buffer.h" />
 		<Unit filename="../src/extern/clap/chmap.h" />
 		<Unit filename="../src/extern/clap/clap.h" />
 		<Unit filename="../src/extern/clap/color.h" />
+		<Unit filename="../src/extern/clap/converters/clap-converter.h" />
+		<Unit filename="../src/extern/clap/converters/vst2-converter.h" />
+		<Unit filename="../src/extern/clap/converters/vst3-converter.h" />
+		<Unit filename="../src/extern/clap/entry.h" />
 		<Unit filename="../src/extern/clap/events.h" />
 		<Unit filename="../src/extern/clap/ext/audio-ports-config.h" />
 		<Unit filename="../src/extern/clap/ext/audio-ports.h" />
@@ -237,11 +242,9 @@
 		<Unit filename="../src/extern/clap/ext/draft/midi-mappings.h" />
 		<Unit filename="../src/extern/clap/ext/draft/preset-load.h" />
 		<Unit filename="../src/extern/clap/ext/draft/quick-controls.h" />
-		<Unit filename="../src/extern/clap/ext/draft/thread-pool.h" />
+		<Unit filename="../src/extern/clap/ext/draft/surround.h" />
 		<Unit filename="../src/extern/clap/ext/draft/track-info.h" />
 		<Unit filename="../src/extern/clap/ext/draft/tuning.h" />
-		<Unit filename="../src/extern/clap/ext/draft/vst2-convert.h" />
-		<Unit filename="../src/extern/clap/ext/draft/vst3-convert.h" />
 		<Unit filename="../src/extern/clap/ext/event-filter.h" />
 		<Unit filename="../src/extern/clap/ext/fd-support.h" />
 		<Unit filename="../src/extern/clap/ext/gui-cocoa.h" />
@@ -257,13 +260,18 @@
 		<Unit filename="../src/extern/clap/ext/render.h" />
 		<Unit filename="../src/extern/clap/ext/state.h" />
 		<Unit filename="../src/extern/clap/ext/thread-check.h" />
+		<Unit filename="../src/extern/clap/ext/thread-pool.h" />
 		<Unit filename="../src/extern/clap/ext/timer-support.h" />
 		<Unit filename="../src/extern/clap/fixedpoint.h" />
 		<Unit filename="../src/extern/clap/hash.h" />
 		<Unit filename="../src/extern/clap/host.h" />
 		<Unit filename="../src/extern/clap/id.h" />
-		<Unit filename="../src/extern/clap/macros.h" />
+		<Unit filename="../src/extern/clap/plugin-factory.h" />
+		<Unit filename="../src/extern/clap/plugin-invalidation.h" />
 		<Unit filename="../src/extern/clap/plugin.h" />
+		<Unit filename="../src/extern/clap/private/align.h" />
+		<Unit filename="../src/extern/clap/private/macros.h" />
+		<Unit filename="../src/extern/clap/private/std.h" />
 		<Unit filename="../src/extern/clap/process.h" />
 		<Unit filename="../src/extern/clap/stream.h" />
 		<Unit filename="../src/extern/clap/string-sizes.h" />
@@ -297,10 +305,7 @@
 		<Unit filename="../src/midi/mip_midi_file.h" />
 		<Unit filename="../src/midi/mip_midi_player.h" />
 		<Unit filename="../src/mip.h" />
-		<Unit filename="../src/plugin/clap/backup/mip_clap.h" />
 		<Unit filename="../src/plugin/clap/backup/mip_clap_descriptor.h" />
-		<Unit filename="../src/plugin/clap/backup/mip_clap_host.h" />
-		<Unit filename="../src/plugin/clap/backup/mip_clap_host_proxy.h" />
 		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin.h" />
 		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_entry.h" />
 		<Unit filename="../src/plugin/clap/backup/mip_clap_plugin_entry16.h" />
@@ -310,7 +315,6 @@
 		<Unit filename="../src/plugin/clap/mip_clap_plugin.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_descriptor.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_entry.h" />
-		<Unit filename="../src/plugin/clap/mip_clap_plugin_entry16.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_factory.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_list.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_simple_factory.h" />

@@ -1,13 +1,16 @@
 #pragma once
 
 #include "version.h"
+#include "private/align.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#pragma pack(push, CLAP_ALIGN)
+
 typedef struct clap_host {
-   clap_version clap_version; // initialized to CLAP_VERSION
+   clap_version_t clap_version; // initialized to CLAP_VERSION
 
    void *host_data; // reserved pointer for the host
 
@@ -34,7 +37,9 @@ typedef struct clap_host {
    // Request the host to schedule a call to plugin->on_main_thread(plugin) on the main thread.
    // [thread-safe]
    void (*request_callback)(const struct clap_host *host);
-} clap_host;
+} clap_host_t;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 }

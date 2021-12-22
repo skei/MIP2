@@ -1,8 +1,7 @@
 #pragma once
 
-#include <stdint.h>
-
-#include "macros.h"
+#include "private/std.h"
+#include "private/macros.h"
 
 /// We use fixed point representation of beat time and seconds time
 /// Usage:

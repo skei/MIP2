@@ -1,12 +1,14 @@
 #pragma once
 
-#include "../clap.h"
+#include "../plugin.h"
 
 static CLAP_CONSTEXPR const char CLAP_EXT_LOG[] = "clap.log";
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#pragma pack(push, CLAP_ALIGN)
 
 enum {
    CLAP_LOG_DEBUG = 0,
@@ -25,8 +27,10 @@ typedef int32_t clap_log_severity;
 typedef struct clap_host_log {
    // Log a message through the host.
    // [thread-safe]
-   void (*log)(const clap_host *host, clap_log_severity severity, const char *msg);
-} clap_host_log;
+   void (*log)(const clap_host_t *host, clap_log_severity severity, const char *msg);
+} clap_host_log_t;
+
+#pragma pack(pop)
 
 #ifdef __cplusplus
 }

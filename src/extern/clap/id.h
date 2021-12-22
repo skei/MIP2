@@ -1,8 +1,7 @@
 #pragma once
 
-#include <stdint.h>
-
-#include "macros.h"
+#include "private/std.h"
+#include "private/macros.h"
 
 typedef uint32_t clap_id;
 
