@@ -2,6 +2,15 @@
 #define mip_clap_voices_included
 //----------------------------------------------------------------------
 
+/*
+  TODO:
+  - sample accurate events
+  - send event_mod events
+  - handle note_choke
+  - rename slide -> timbre
+  - handle volume expression
+*/
+
 #include "mip.h"
 #include "audio/mip_audio_utils.h"
 #include "plugin/clap/mip_clap.h"
@@ -132,6 +141,7 @@ public:
   void note_expression(const clap_event_note_expression_t* event) {
     switch(event->expression_id) {
       case CLAP_NOTE_EXPRESSION_VOLUME:
+        MIP_Print("volume.. port %i chan %i key %i value %f\n",event->port_index,event->channel,event->key,event->value);
         // // x >= 0, use 20 * log(4 * x)
         break;
       case CLAP_NOTE_EXPRESSION_PAN:

@@ -1,9 +1,10 @@
 
-//#define MIP_DEBUG
-//#define MIP_DEBUG_PRINT
+#define MIP_DEBUG
+#define MIP_DEBUG_PRINT
 
 // nc -U -l -k /tmp/mip.socket
 #define MIP_DEBUG_PRINT_SOCKET
+
 #define MIP_USE_XCB
 
 #include "mip.h"
