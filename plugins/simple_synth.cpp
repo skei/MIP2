@@ -112,7 +112,7 @@ public:
 
   //----------
 
-  void slide(float s) {
+  void timbre(float s) {
   }
 
   //----------

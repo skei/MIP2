@@ -7,7 +7,6 @@
   - sample accurate events
   - send event_mod events
   - handle note_choke
-  - rename slide -> timbre
   - handle volume expression
 */
 
@@ -134,6 +133,7 @@ public:
 
   void note_choke(const clap_event_note_t* event) {
     MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
+    //handle_voice_choke
   }
 
   //----------
@@ -161,7 +161,7 @@ public:
         handle_voice_press(event->channel,event->value);
         break;
       case CLAP_NOTE_EXPRESSION_TIMBRE:
-        handle_voice_slide(event->channel,event->value);
+        handle_voice_timbre(event->channel,event->value);
         break;
     }
   }
@@ -193,7 +193,7 @@ public:
       case MIP_MIDI_CONTROL_CHANGE:
         if (ch == 0) handle_master_ctrl(v1,v2);
         else {
-          if (v1 == 74) handle_voice_slide(ch,v2);
+          if (v1 == 74) handle_voice_timbre(ch,v2);
           else handle_voice_ctrl(ch,v1,v2);
         }
         break;
@@ -271,11 +271,11 @@ private:
 
   //----------
 
-  void handle_voice_slide(int32_t AChannel, uint32_t ASlide) {
-    float s = (float)ASlide * MIP_INV127F;
+  void handle_voice_timbre(int32_t AChannel, uint32_t ATimbre) {
+    float s = (float)ATimbre * MIP_INV127F;
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceChannel[i] == AChannel) {
-        MVoices[i].slide(s);
+        MVoices[i].timbre(s);
       }
     }
   }
@@ -374,6 +374,10 @@ private:
     if (ATryReleased) {
       for (uint32_t i=0; i<NUM; i++) {
         if (MVoiceState[i] == MIP_VOICE_RELEASED) {
+          /*
+            consider:
+            note_off for note we have 'stolen'..
+          */
           return i;
         }
       }
