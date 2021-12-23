@@ -169,6 +169,7 @@
 		<Unit filename="../src/audio/mip_audio_file.h" />
 		<Unit filename="../src/audio/mip_audio_math.h" />
 		<Unit filename="../src/audio/mip_audio_utils.h" />
+		<Unit filename="../src/audio/mip_voices.h" />
 		<Unit filename="../src/base/debug/mip_debug.h" />
 		<Unit filename="../src/base/debug/mip_debug_assert.h" />
 		<Unit filename="../src/base/debug/mip_debug_callstack.h" />
@@ -313,9 +314,9 @@
 		<Unit filename="../src/plugin/clap/mip_clap_plugin.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_descriptor.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_entry.h" />
+		<Unit filename="../src/plugin/clap/mip_clap_plugin_ext.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_factory.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_list.h" />
-		<Unit filename="../src/plugin/clap/mip_clap_plugin_simple_factory.h" />
 		<Unit filename="../src/plugin/mip_editor.h" />
 		<Unit filename="../src/plugin/mip_host.h" />
 		<Unit filename="../src/plugin/mip_host_proxy.h" />

@@ -8,10 +8,11 @@
 
 #include "mip.h"
 #include "audio/mip_audio_math.h"
-#include "audio/mip_voices.h"
+//#include "audio/mip_voices.h"
 #include "base/utils/mip_convert.h"
-#include "plugin/clap/mip_clap.h"
 #include "plugin/mip_editor.h"
+#include "plugin/clap/mip_clap.h"
+#include "plugin/clap/mip_clap_voices.h"
 
 //----------------------------------------------------------------------
 //
@@ -40,11 +41,11 @@ class myVoice {
 
 private:
 
-  MIP_VoiceContext* MContext      = nullptr;
-  float             MNote         = 0.0f;
-  float             MBend         = 0.0f;
-  float             MMasterBend   = 0.0f;
-  float             MMasterPress  = 0.0f;
+  MIP_ClapVoiceContext* MContext      = nullptr;
+  float                 MNote         = 0.0f;
+  float                 MBend         = 0.0f;
+  float                 MMasterBend   = 0.0f;
+  float                 MMasterPress  = 0.0f;
 
   float samplerate  = 0.0;
   float ph          = 0.0;
@@ -52,7 +53,7 @@ private:
 
 public:
 
-  bool prepare(MIP_VoiceContext* AContext) {
+  bool prepare(MIP_ClapVoiceContext* AContext) {
     MContext = AContext;
     samplerate = AContext->samplerate;
     return true;
@@ -150,11 +151,10 @@ class myPlugin : public MIP_ClapPlugin {
 public:
 //------------------------------
 
-  MIP_Editor*             MEditor = nullptr;
-  MIP_Voices<myVoice,16>  MVoices = {};
-
-  float       MParamValue = 0.0;
-  float       MParamMod   = 0.0;
+  MIP_Editor*                 MEditor     = nullptr;
+  MIP_ClapVoices<myVoice,16>  MVoices     = {};
+  float                       MParamValue = 0.0;
+  float                       MParamMod   = 0.0;
 
 //------------------------------
 public:

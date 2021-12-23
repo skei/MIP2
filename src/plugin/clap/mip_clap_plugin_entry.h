@@ -31,12 +31,18 @@ const void* clap_plugin_entry_get_factory_callback(const char *factory_id) {
 
 //----------------------------------------------------------------------
 
+// get rid of "warning: ‘visibility’ attribute ignored [-Wattributes]"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+
 CLAP_EXPORT const clap_plugin_entry clap_entry = {
   CLAP_VERSION,
   clap_plugin_entry_init_callback,
   clap_plugin_entry_deinit_callback,
   clap_plugin_entry_get_factory_callback
 };
+
+#pragma GCC diagnostic pop
 
 //----------------------------------------------------------------------
 #endif

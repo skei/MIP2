@@ -1,5 +1,5 @@
-#ifndef mip_voices_included
-#define mip_voices_included
+#ifndef mip_clap_voices_included
+#define mip_clap_voices_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
@@ -14,7 +14,7 @@
 
 //----------------------------------------------------------------------
 
-struct MIP_VoiceContext {
+struct MIP_ClapVoiceContext {
   const clap_process_t* process     = nullptr;
   float                 samplerate  = 0.0;
   float**               buffers     = nullptr;
@@ -24,24 +24,24 @@ struct MIP_VoiceContext {
 //----------------------------------------------------------------------
 
 template <class VOICE, int NUM>
-class MIP_Voices {
+class MIP_ClapVoices {
 
 //------------------------------
 private:
 //------------------------------
 
-  MIP_VoiceContext  MVoiceContext         = {0};
-  VOICE             MVoices[NUM]          = {};
-  uint32_t          MVoiceState[NUM]      = {0};
-  int32_t           MVoiceNote[NUM]       = {0};
-  int32_t           MVoiceChannel[NUM]    = {0};
-  int32_t           MNoteToVoice[16*128]  = {0};
+  MIP_ClapVoiceContext  MVoiceContext         = {0};
+  VOICE                 MVoices[NUM]          = {};
+  uint32_t              MVoiceState[NUM]      = {0};
+  int32_t               MVoiceNote[NUM]       = {0};
+  int32_t               MVoiceChannel[NUM]    = {0};
+  int32_t               MNoteToVoice[16*128]  = {0};
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Voices() {
+  MIP_ClapVoices() {
     for (uint32_t i=0; i<(16*128); i++) MNoteToVoice[i] = -1;
     for (uint32_t i=0; i<NUM; i++) {
       MVoiceState[i]    = MIP_VOICE_OFF;
@@ -118,6 +118,11 @@ public:
 
   //----------
 
+  /*
+    NOTE_CHOKE is meant to choke the voice, like in a drum machine when a closed hihat chokes an open hihat
+    (note_end) You may get both events, but if you receive a NOTE_CHOKE it terminates the voice(s) anyway
+  */
+
   void note_choke(const clap_event_note_t* event) {
     MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
   }
@@ -133,11 +138,9 @@ public:
         // pan, 0 left, 0.5 center, 1 right
         break;
       case CLAP_NOTE_EXPRESSION_TUNING:
-
         // relative tuning in semitone, from -120 to +120
         handle_voice_bend(event->channel,event->value * MIP_INV_VOICE_BEND_RANGE); // qwe
         break;
-
       case CLAP_NOTE_EXPRESSION_VIBRATO:
         break;
       case CLAP_NOTE_EXPRESSION_BRIGHTNESS:
@@ -316,14 +319,18 @@ private:
 
   void postProcess() {
     for (uint32_t i=0; i<NUM; i++) {
+
       if (MVoiceState[i] == MIP_VOICE_FINISHED) {
         uint32_t time = MVoiceContext.length - 1;; // shound be sample-time at event...
         int32_t  port = 0;
         int32_t  note = MVoiceNote[i];
         int32_t  chan = MVoiceChannel[i];
-        end_voice(MVoiceContext.process,time,port,note,chan);
+        send_note_end_event(MVoiceContext.process,time,port,note,chan);
         clear_voice(i);
       }
+
+      //TODO: send PARAM_MOD events
+
     }
   }
 
@@ -380,7 +387,7 @@ private:
 
   //----------
 
-  void end_voice(const clap_process* process, uint32_t time, uint32_t port, uint32_t key, uint32_t chan) {
+  void send_note_end_event(const clap_process* process, uint32_t time, int32_t port, int32_t key, int32_t chan) {
     MIP_PRINT;
     clap_event event;
     event.type            = CLAP_EVENT_NOTE_END;
@@ -392,6 +399,23 @@ private:
     process->out_events->push_back(process->out_events,&event);
   }
 
+  /*
+    PARAM_MOD, yes send it out :-) Once per block and for the latest sample of the block
+  */
+
+  void send_param_mod_event(const clap_process* process, uint32_t time, clap_id param_id, double amount, int32_t port, int32_t key, int32_t chan) {
+    MIP_PRINT;
+    clap_event event;
+    event.type                  = CLAP_EVENT_PARAM_MOD;
+    event.time                  = time;
+    event.param_mod.cookie      = nullptr;
+    event.param_mod.param_id    = param_id;
+    event.param_mod.port_index  = port;       // -1 for global
+    event.param_mod.key         = key;        // -1 for global
+    event.param_mod.channel     = chan;       // -1 for global
+    event.param_mod.amount      = amount;
+    process->out_events->push_back(process->out_events,&event);
+  }
 
 };
 
