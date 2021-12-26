@@ -5,7 +5,6 @@
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host_proxy.h"
-#include "plugin/clap/mip_clap_plugin_ext.h"
 
 
 class MIP_ClapPlugin {

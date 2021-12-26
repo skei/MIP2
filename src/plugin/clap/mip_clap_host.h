@@ -40,9 +40,13 @@ public:
 public:
 //------------------------------
 
-  const clap_host* getClapHost() {
-    return &MClapHost;
-  }
+  const clap_host* getClapHost() { return &MClapHost; }
+
+  void setHostData(void* data)          { MClapHost.host_data = data; }
+  void setHostName(const char* txt)     { MClapHost.name      = txt; }
+  void setHostVendor(const char* txt)   { MClapHost.vendor    = txt; }
+  void setHostUrl(const char* txt)      { MClapHost.url       = txt; }
+  void setHostVersion(const char* txt)  { MClapHost.version   = txt; }
 
   //----------
 
@@ -155,13 +159,11 @@ private:
     return NULL;
   }
 
-
-
 //------------------------------
 public:
 //------------------------------
 
-  const void* get_extension(const char *extension_id) {
+  virtual const void* get_extension(const char *extension_id) {
     MIP_Print("extension id: %s\n",extension_id);
     if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS         ) == 0) return &MClapHostAudioPorts;
     if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) return &MClapHostAudioPortsConfig;
@@ -188,19 +190,19 @@ public:
 
   //----------
 
-  void request_restart() {
+  virtual void request_restart() {
     MIP_PRINT;
   }
 
   //----------
 
-  void request_process() {
+  virtual void request_process() {
     MIP_PRINT;
   }
 
   //----------
 
-  void request_callback() {
+  virtual void request_callback() {
     MIP_PRINT;
   }
 
@@ -212,14 +214,14 @@ public: // extensions
   // audio-ports
   //------------------------------
 
-  uint32_t audio_ports_get_preferred_sample_size() {
+  virtual uint32_t audio_ports_get_preferred_sample_size() {
     MIP_PRINT;
     return 32;
   }
 
   //----------
 
-  void audio_ports_rescan(uint32_t flags) {
+  virtual void audio_ports_rescan(uint32_t flags) {
     MIP_Print("flags: %i\n",flags);
   }
 
@@ -227,7 +229,7 @@ public: // extensions
   // audio-ports-config
   //------------------------------
 
-  void audio_ports_config_rescan() {
+  virtual void audio_ports_config_rescan() {
     MIP_PRINT;
   }
 
@@ -235,7 +237,7 @@ public: // extensions
   // check-for-update.draft/0
   //------------------------------
 
-  void check_for_update_on_new_version(const clap_check_for_update_info *update_info) {
+  virtual void check_for_update_on_new_version(const clap_check_for_update_info *update_info) {
     MIP_PRINT;
   }
 
@@ -243,7 +245,7 @@ public: // extensions
   // event-filter
   //------------------------------
 
-  void event_filter_changed() {
+  virtual void event_filter_changed() {
     MIP_PRINT;
   }
 
@@ -251,21 +253,21 @@ public: // extensions
   // fd-support
   //------------------------------
 
-  bool fd_support_register_fd(clap_fd fd, clap_fd_flags flags) {
+  virtual bool fd_support_register_fd(clap_fd fd, clap_fd_flags flags) {
     MIP_PRINT;
     return false;
   }
 
   //----------
 
-  bool fd_support_modify_fd(clap_fd fd, clap_fd_flags flags) {
+  virtual bool fd_support_modify_fd(clap_fd fd, clap_fd_flags flags) {
     MIP_PRINT;
     return false;
   }
 
   //----------
 
-  bool fd_support_unregister_fd(clap_fd fd) {
+  virtual bool fd_support_unregister_fd(clap_fd fd) {
     MIP_PRINT;
     return false;
   }
@@ -274,13 +276,13 @@ public: // extensions
   // file-reference.draft/0
   //------------------------------
 
-  void file_reference_changed() {
+  virtual void file_reference_changed() {
     MIP_PRINT;
   }
 
   //----------
 
-  void file_reference_set_dirty(clap_id resource_id) {
+  virtual void file_reference_set_dirty(clap_id resource_id) {
     MIP_PRINT;
   }
 
@@ -288,7 +290,7 @@ public: // extensions
   // gui
   //------------------------------
 
-  bool gui_resize(uint32_t width, uint32_t height) {
+  virtual bool gui_resize(uint32_t width, uint32_t height) {
     MIP_PRINT;
     return false;
   }
@@ -297,7 +299,7 @@ public: // extensions
   // latency
   //------------------------------
 
-  void latency_changed() {
+  virtual void latency_changed() {
     MIP_PRINT;
   }
 
@@ -305,7 +307,7 @@ public: // extensions
   // log
   //------------------------------
 
-  void log_log(clap_log_severity severity, const char *msg) {
+  virtual void log_log(clap_log_severity severity, const char *msg) {
     MIP_PRINT;
   }
 
@@ -313,7 +315,7 @@ public: // extensions
   // midi-mappings.draft/0
   //------------------------------
 
-  void midi_mappings_changed() {
+  virtual void midi_mappings_changed() {
     MIP_PRINT;
   }
 
@@ -321,7 +323,7 @@ public: // extensions
   // note-name
   //------------------------------
 
-  void note_name_changed() {
+  virtual void note_name_changed() {
     MIP_PRINT;
   }
 
@@ -329,7 +331,7 @@ public: // extensions
   // note-ports
   //------------------------------
 
-  void note_ports_rescan(uint32_t flags) {
+  virtual void note_ports_rescan(uint32_t flags) {
     MIP_PRINT;
   }
 
@@ -337,19 +339,19 @@ public: // extensions
   // params
   //------------------------------
 
-  void params_rescan(clap_param_rescan_flags flags) {
+  virtual void params_rescan(clap_param_rescan_flags flags) {
     MIP_PRINT;
   }
 
   //----------
 
-  void params_clear(clap_id param_id, clap_param_clear_flags flags) {
+  virtual void params_clear(clap_id param_id, clap_param_clear_flags flags) {
     MIP_PRINT;
   }
 
   //----------
 
-  void params_request_flush() {
+  virtual void params_request_flush() {
     MIP_PRINT;
   }
 
@@ -357,7 +359,7 @@ public: // extensions
   // quick-controls.draft/0
   //------------------------------
 
-  void quick_controls_changed(clap_quick_controls_changed_flags flags) {
+  virtual void quick_controls_changed(clap_quick_controls_changed_flags flags) {
     MIP_PRINT;
   }
 
@@ -365,7 +367,7 @@ public: // extensions
   // state
   //------------------------------
 
-  void state_mark_dirty() {
+  virtual void state_mark_dirty() {
     MIP_PRINT;
   }
 
@@ -373,14 +375,14 @@ public: // extensions
   // thread-check
   //------------------------------
 
-  bool thread_check_is_main_thread() {
+  virtual bool thread_check_is_main_thread() {
     MIP_PRINT;
     return false;
   }
 
   //----------
 
-  bool thread_check_is_audio_thread() {
+  virtual bool thread_check_is_audio_thread() {
     MIP_PRINT;
     return false;
   }
@@ -389,7 +391,7 @@ public: // extensions
   // thread-pool.draft/0
   //------------------------------
 
-  bool thread_pool_request_exec(uint32_t num_tasks) {
+  virtual bool thread_pool_request_exec(uint32_t num_tasks) {
     MIP_PRINT;
     return false;
   }
@@ -398,14 +400,14 @@ public: // extensions
   // timer-support
   //------------------------------
 
-  bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) {
+  virtual bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) {
     MIP_PRINT;
     return false;
   }
 
   //----------
 
-  bool timer_support_unregister_timer(clap_id timer_id) {
+  virtual bool timer_support_unregister_timer(clap_id timer_id) {
     MIP_PRINT;
     return false;
   }
@@ -414,7 +416,7 @@ public: // extensions
   // track-info.draft/0
   //------------------------------
 
-  bool track_info_get(clap_track_info *info) {
+  virtual bool track_info_get(clap_track_info *info) {
     MIP_PRINT;
     return false;
   }
@@ -423,7 +425,7 @@ public: // extensions
   // tuning.draft/0
   //------------------------------
 
-  double tuning_get(int32_t key, int32_t channel) {
+  virtual double tuning_get(int32_t key, int32_t channel) {
     MIP_PRINT;
     return 0.0;
   }
@@ -452,7 +454,8 @@ private:
     host_->request_callback();
   }
 
-  const clap_host MClapHost = {
+  //const
+  clap_host MClapHost = {
     CLAP_VERSION,
     this,
     "MIP_ClapHost",
