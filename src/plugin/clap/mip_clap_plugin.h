@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
+#include "plugin/clap/mip_clap_host_proxy.h"
 #include "plugin/clap/mip_clap_plugin_ext.h"
 
 
@@ -13,34 +14,7 @@ class MIP_ClapPlugin {
 protected:
 //------------------------------
 
-  const clap_host*              MClapHost             = nullptr;
-
-  // extensions
-  clap_host_audio_ports*        MHostAudioPorts       = nullptr;
-  clap_host_audio_ports_config* MHostAudioPortsConfig = nullptr;
-  clap_host_event_filter*       MHostEventFilter      = nullptr;
-  clap_host_fd_support*         MHostFdSupport        = nullptr;
-  clap_host_gui*                MHostGui              = nullptr;
-  clap_host_latency*            MHostLatency          = nullptr;
-  clap_host_log*                MHostLog              = nullptr;
-  clap_host_note_name*          MHostNoteName         = nullptr;
-  clap_host_note_ports*         MHostNotePorts        = nullptr;
-  clap_host_params*             MHostParams           = nullptr;
-  clap_host_state*              MHostState            = nullptr;
-  clap_host_thread_check*       MHostThreadCheck      = nullptr;
-  clap_host_thread_pool*        MHostThreadPool       = nullptr;
-  clap_host_timer_support*      MHostTimerSupport     = nullptr;
-
-  // draft
-  clap_host_check_for_update*   MHostCheckForUpdate   = nullptr;
-  clap_host_file_reference*     MHostFileReference    = nullptr;
-  clap_host_midi_mappings*      MHostMidiMappings     = nullptr;
-  clap_host_quick_controls*     MHostQuickControls    = nullptr;
-  clap_host_surround*           MHostSurround         = nullptr;
-  clap_host_track_info*         MHostTrackInfo        = nullptr;
-  clap_host_tuning*             MHostTuning           = nullptr;
-
-  //MIP_ClapPluginHostExt         MHostExt = {0};
+  MIP_ClapHostProxy*  MHost = nullptr;
 
 //------------------------------
 public:
@@ -48,14 +22,13 @@ public:
 
   MIP_ClapPlugin(const clap_plugin_descriptor* desc, const clap_host_t* host) {
     MClapPlugin.desc = desc;
-    MClapHost = host;
-    init_host_extensions();
-    //init_host_extensions(host, &MHostExt);
+    MHost = new MIP_ClapHostProxy(host);
   }
 
   //----------
 
   virtual ~MIP_ClapPlugin() {
+    delete MHost;
   }
 
   //----------
@@ -156,36 +129,6 @@ public:
   virtual clap_id   quick_controls_get_selected() { return 0; }
   virtual uint32_t  surround_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index) { return 0; }
   virtual void      track_info_changed() {}
-
-//------------------------------
-private:
-//------------------------------
-
-  void init_host_extensions() {
-    MIP_PRINT;
-    MHostAudioPorts       = (clap_host_audio_ports*)        MClapHost->get_extension(MClapHost,CLAP_EXT_AUDIO_PORTS);
-    MHostAudioPortsConfig = (clap_host_audio_ports_config*) MClapHost->get_extension(MClapHost,CLAP_EXT_AUDIO_PORTS_CONFIG);
-    MHostEventFilter      = (clap_host_event_filter*)       MClapHost->get_extension(MClapHost,CLAP_EXT_EVENT_FILTER);
-    MHostFdSupport        = (clap_host_fd_support*)         MClapHost->get_extension(MClapHost,CLAP_EXT_FD_SUPPORT);
-    MHostGui              = (clap_host_gui*)                MClapHost->get_extension(MClapHost,CLAP_EXT_GUI);
-    MHostLatency          = (clap_host_latency*)            MClapHost->get_extension(MClapHost,CLAP_EXT_LATENCY);
-    MHostLog              = (clap_host_log*)                MClapHost->get_extension(MClapHost,CLAP_EXT_LOG);
-    MHostNoteName         = (clap_host_note_name*)          MClapHost->get_extension(MClapHost,CLAP_EXT_NOTE_NAME);
-    MHostNotePorts        = (clap_host_note_ports*)         MClapHost->get_extension(MClapHost,CLAP_EXT_NOTE_PORTS);
-    MHostParams           = (clap_host_params*)             MClapHost->get_extension(MClapHost,CLAP_EXT_PARAMS);
-    MHostState            = (clap_host_state*)              MClapHost->get_extension(MClapHost,CLAP_EXT_STATE);
-    MHostThreadCheck      = (clap_host_thread_check*)       MClapHost->get_extension(MClapHost,CLAP_EXT_THREAD_CHECK);
-    MHostThreadPool       = (clap_host_thread_pool*)        MClapHost->get_extension(MClapHost,CLAP_EXT_THREAD_POOL);
-    MHostTimerSupport     = (clap_host_timer_support*)      MClapHost->get_extension(MClapHost,CLAP_EXT_TIMER_SUPPORT);
-    // draft
-    MHostCheckForUpdate   = (clap_host_check_for_update*)   MClapHost->get_extension(MClapHost,CLAP_EXT_CHECK_FOR_UPDATE);
-    MHostFileReference    = (clap_host_file_reference*)     MClapHost->get_extension(MClapHost,CLAP_EXT_FILE_REFERENCE);
-    MHostMidiMappings     = (clap_host_midi_mappings*)      MClapHost->get_extension(MClapHost,CLAP_EXT_MIDI_MAPPINGS);
-    MHostQuickControls    = (clap_host_quick_controls*)     MClapHost->get_extension(MClapHost,CLAP_EXT_QUICK_CONTROLS);
-    MHostSurround         = (clap_host_surround*)           MClapHost->get_extension(MClapHost,CLAP_EXT_SURROUND);
-    MHostTrackInfo        = (clap_host_track_info*)         MClapHost->get_extension(MClapHost,CLAP_EXT_TRACK_INFO);
-    MHostTuning           = (clap_host_tuning*)             MClapHost->get_extension(MClapHost,CLAP_EXT_TUNING);
-  }
 
 //------------------------------
 private: // callbacks

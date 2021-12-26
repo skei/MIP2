@@ -14,6 +14,7 @@
 #include "plugin/mip_editor.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_voices.h"
+#include "plugin/clap/mip_clap_host.h"
 
 //----------------------------------------------------------------------
 //
