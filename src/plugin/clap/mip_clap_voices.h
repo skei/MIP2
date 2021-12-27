@@ -266,7 +266,7 @@ private:
   //----------
 
   void send_note_end_event(const clap_process* process, uint32_t time, int32_t port, int32_t key, int32_t chan) {
-    MIP_PRINT;
+    //MIP_PRINT;
     clap_event event;
     event.type            = CLAP_EVENT_NOTE_END;
     event.time            = time;
