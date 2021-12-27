@@ -75,37 +75,6 @@ public:
 
   //----------
 
-  void process(const clap_process_t *process) {
-    preProcess();
-    MVoiceContext.process = process;
-    float** outputs = process->audio_outputs->data32;
-    uint32_t length = process->frames_count;
-    MVoiceContext.buffers = outputs;
-    MVoiceContext.length = length;
-    MIP_ClearStereoBuffer(outputs,length);
-    processPlayingVoices();
-    processReleasedVoices();
-    postProcess();
-  }
-
-  //----------
-
-  /*
-    Note on, off, end and choke events.
-    In the case of note choke or end events:
-    - the velocity is ignored.
-    - key and channel are used to match active notes, a value of -1 matches all.
-
-    typedef struct clap_event_note {
-      int32_t port_index;
-      int32_t key;        // 0..127
-      int32_t channel;    // 0..15
-      double  velocity;   // 0..1
-    } clap_event_note_t;
-  */
-
-  //------------------------------
-
   void note_on(const clap_event_note_t* event) {
     //MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
     handle_voice_strike(event->port_index,event->channel,event->key,event->velocity);
@@ -208,8 +177,7 @@ public:
       case MIP_MIDI_POLY_AFTERTOUCH:
         handle_voice_press(ch,v1);
         break;
-    } // switch
-    //MIP_PRINT;
+    }
   }
 
   //----------
@@ -240,6 +208,91 @@ public:
     else {
       handle_master_mod(index,amount);
     }
+  }
+
+  //----------
+
+  void process(const clap_process_t *process) {
+    preProcess();
+    MVoiceContext.process = process;
+    float** outputs = process->audio_outputs->data32;
+    uint32_t length = process->frames_count;
+    MVoiceContext.buffers = outputs;
+    MVoiceContext.length = length;
+    MIP_ClearStereoBuffer(outputs,length);
+    processPlayingVoices();
+    processReleasedVoices();
+    postProcess();
+  }
+
+//------------------------------
+private:
+//------------------------------
+
+  int32_t find_voice(bool ATryReleased=true) {
+    for (uint32_t i=0; i<NUM; i++) {
+      if (MVoiceState[i] == MIP_VOICE_OFF) return i;
+      if (MVoiceState[i] == MIP_VOICE_FINISHED) return i;
+    }
+    if (ATryReleased) {
+      for (uint32_t i=0; i<NUM; i++) {
+        if (MVoiceState[i] == MIP_VOICE_RELEASED) {
+          return i;
+        }
+      }
+    }
+    return -1;
+  }
+
+  //----------
+
+  /*
+    should we tell the voice that we kill it?
+  */
+
+  void clear_voice(uint32_t voice) {
+    int32_t n  = MVoiceNote[voice];
+    int32_t ch = MVoiceChannel[voice];
+    if ((n>=0) && (ch>=0)) {
+      //uint32_t note = (MVoiceChannel[voice] * 128) + MVoiceNote[voice];
+      uint32_t note = (ch * 128) + n;
+      MNoteToVoice[note]    = -1;
+      MVoiceNote[voice]     = -1;
+      MVoiceChannel[voice]  = -1;
+      MVoiceState[voice]    = MIP_VOICE_OFF;
+    }
+  }
+
+  //----------
+
+  void send_note_end_event(const clap_process* process, uint32_t time, int32_t port, int32_t key, int32_t chan) {
+    MIP_PRINT;
+    clap_event event;
+    event.type            = CLAP_EVENT_NOTE_END;
+    event.time            = time;
+    event.note.port_index = port;
+    event.note.key        = key;
+    event.note.channel    = chan;
+    event.note.velocity   = 0.0;
+    process->out_events->push_back(process->out_events,&event);
+  }
+
+  /*
+    PARAM_MOD, yes send it out :-) Once per block and for the latest sample of the block
+  */
+
+  void send_param_mod_event(const clap_process* process, uint32_t time, clap_id param_id, double amount, int32_t port, int32_t key, int32_t chan) {
+    MIP_PRINT;
+    clap_event event;
+    event.type                  = CLAP_EVENT_PARAM_MOD;
+    event.time                  = time;
+    event.param_mod.cookie      = nullptr;
+    event.param_mod.param_id    = param_id;
+    event.param_mod.port_index  = port;       // -1 for global
+    event.param_mod.key         = key;        // -1 for global
+    event.param_mod.channel     = chan;       // -1 for global
+    event.param_mod.amount      = amount;
+    process->out_events->push_back(process->out_events,&event);
   }
 
 //------------------------------
@@ -437,73 +490,6 @@ private:
         MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED);
       }
     }
-  }
-
-  //----------
-
-  int32_t find_voice(bool ATryReleased=true) {
-    for (uint32_t i=0; i<NUM; i++) {
-      if (MVoiceState[i] == MIP_VOICE_OFF) return i;
-      if (MVoiceState[i] == MIP_VOICE_FINISHED) return i;
-    }
-    if (ATryReleased) {
-      for (uint32_t i=0; i<NUM; i++) {
-        if (MVoiceState[i] == MIP_VOICE_RELEASED) {
-          /*
-            consider:
-            note_off for note we have 'stolen'..
-          */
-          return i;
-        }
-      }
-    }
-    return -1;
-  }
-
-  //----------
-
-  void clear_voice(uint32_t voice) {
-    int32_t n  = MVoiceNote[voice];
-    int32_t ch = MVoiceChannel[voice];
-    if ((n>=0) && (ch>=0)) {
-      uint32_t note = (MVoiceChannel[voice] * 128) + MVoiceNote[voice];
-      MNoteToVoice[note] = -1;
-    }
-    MVoiceNote[voice]    = -1;
-    MVoiceChannel[voice] = -1;
-    MVoiceState[voice]   = MIP_VOICE_OFF;
-  }
-
-  //----------
-
-  void send_note_end_event(const clap_process* process, uint32_t time, int32_t port, int32_t key, int32_t chan) {
-    MIP_PRINT;
-    clap_event event;
-    event.type            = CLAP_EVENT_NOTE_END;
-    event.time            = time;
-    event.note.port_index = port;
-    event.note.key        = key;
-    event.note.channel    = chan;
-    event.note.velocity   = 0.0;
-    process->out_events->push_back(process->out_events,&event);
-  }
-
-  /*
-    PARAM_MOD, yes send it out :-) Once per block and for the latest sample of the block
-  */
-
-  void send_param_mod_event(const clap_process* process, uint32_t time, clap_id param_id, double amount, int32_t port, int32_t key, int32_t chan) {
-    MIP_PRINT;
-    clap_event event;
-    event.type                  = CLAP_EVENT_PARAM_MOD;
-    event.time                  = time;
-    event.param_mod.cookie      = nullptr;
-    event.param_mod.param_id    = param_id;
-    event.param_mod.port_index  = port;       // -1 for global
-    event.param_mod.key         = key;        // -1 for global
-    event.param_mod.channel     = chan;       // -1 for global
-    event.param_mod.amount      = amount;
-    process->out_events->push_back(process->out_events,&event);
   }
 
 };
