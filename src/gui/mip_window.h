@@ -37,7 +37,8 @@ public:
 //----------------------------------------------------------------------
 
 class MIP_Window
-: public MIP_ImplementedWindow {
+: public MIP_ImplementedWindow
+, public MIP_Widget {
 
 //------------------------------
 private:
@@ -60,13 +61,12 @@ public:
 //------------------------------
 
   MIP_Window(int32_t AWidth, int32_t AHeight, const char* ATitle="", void* AParentPtr=nullptr)
-  : MIP_ImplementedWindow(AWidth,AHeight,ATitle,AParentPtr) {
+  : MIP_ImplementedWindow(AWidth,AHeight,ATitle,AParentPtr)
+  , MIP_Widget(MIP_FRect(AWidth,AHeight)) {
     MName = "MIP_Window";
-    //MIP_PRINT;
     MWindowPainter = new MIP_Painter(this);
-
-    MBufferSurface = new MIP_Surface(this,256,256,32);
-    MBufferPainter = new MIP_Painter(MBufferSurface);
+    //MBufferSurface = new MIP_Surface(this,256,256,32);
+    //MBufferPainter = new MIP_Painter(MBufferSurface);
   }
 
   //----------
@@ -74,6 +74,8 @@ public:
   virtual ~MIP_Window() {
     //MIP_PRINT;
     delete MWindowPainter;
+    //delete MBufferPainter;
+    //delete MBufferSurface;
   }
 
 //------------------------------

@@ -10,7 +10,7 @@
 //----------------------------------------------------------------------
 
 class MIP_BaseWindow
-: public MIP_Widget {
+/*: public MIP_Widget*/ {
 
 //------------------------------
 protected:
@@ -26,8 +26,8 @@ public:
 //------------------------------
 
   MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, void* AParentPtr)
-  : MIP_Widget(MIP_FRect(AWidth,AHeight)) {
-    MName = "MIP_BaseWindow";
+  /*: MIP_Widget(MIP_FRect(AWidth,AHeight))*/ {
+    //MName = "MIP_BaseWindow";
     //MParentPtr = AParentPtr;
   }
 
@@ -95,20 +95,20 @@ public:
   virtual void on_window_clientMessage(uint32_t AData, void* APtr) {}
   virtual void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
 
-//------------------------------
-public: // MIP_Widget
-//------------------------------
-
-  void do_widget_update(MIP_Widget* AWidget) override {
-    MIP_PRINT;
-  }
-
-  //----------
-
-  void do_widget_redraw(MIP_Widget* AWidget) override {
-    MIP_PRINT;
-    //TODO: widget->on_paint_..
-  }
+////------------------------------
+//public: // MIP_Widget
+////------------------------------
+//
+//  void do_widget_update(MIP_Widget* AWidget) override {
+//    MIP_PRINT;
+//  }
+//
+//  //----------
+//
+//  void do_widget_redraw(MIP_Widget* AWidget) override {
+//    MIP_PRINT;
+//    //TODO: widget->on_paint_..
+//  }
 
 };
 
