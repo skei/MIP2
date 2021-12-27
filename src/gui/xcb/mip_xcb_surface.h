@@ -1,25 +1,29 @@
 #ifndef mip_xcb_surface_included
-#define mip_base_surface_included
+#define mip_xcb_surface_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "gui/base/mip_base_surface.h"
 #include "gui/mip_drawable.h"
 
 //----------------------------------------------------------------------
 
-class MIP_XcbSurface {
+class MIP_XcbSurface
+: public MIP_BaseSurface {
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_XcbSurface(MIP_Drawable* ATarget) {
+  MIP_XcbSurface(MIP_Drawable* ATarget)
+  : MIP_BaseSurface(ATarget) {
     // window
   }
 
   //----------
 
-  MIP_XcbSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=32) {
+  MIP_XcbSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=32)
+  : MIP_BaseSurface(ATarget,AWidth,AHeight,ADepth) {
     // pixmap
   }
 

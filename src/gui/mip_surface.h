@@ -28,9 +28,22 @@ class MIP_Surface
 public:
 //------------------------------
 
-  MIP_Surface()
-  : MIP_ImplementedSurface() {
+//  MIP_BaseSurface(MIP_Drawable* ATarget) {
+//    // window
+//  }
+//
+//  //----------
+//
+//  MIP_BaseSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=32) {
+
+
+  MIP_Surface(MIP_Drawable* ATarget)
+  : MIP_ImplementedSurface(ATarget) {
     MIP_PRINT;
+  }
+
+  MIP_Surface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=32)
+  : MIP_ImplementedSurface(ATarget,AWidth,AHeight,ADepth) {
   }
 
   //----------

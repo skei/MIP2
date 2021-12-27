@@ -3,62 +3,27 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "base/types/mip_color.h"
+#include "gui/xcb/mip_xcb.h"
+#include "gui/xcb/mip_xcb_utils.h"
+#include "gui/mip_drawable.h"
+#include "gui/base/mip_base_painter.h"
+
+#ifdef MIP_USE_CAIRO
+  #include "gui/cairo/mip_cairo.h"
+#endif
 
 //----------------------------------------------------------------------
 
-class MIP_XcbPainter {
-
-//------------------------------
-public:
-//------------------------------
-
-  MIP_XcbPainter(MIP_Surface* ATarget) {
-  }
-
-  //----------
-
-  virtual ~MIP_XcbPainter() {
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-};
-
-//----------------------------------------------------------------------
-#endif
-
-
-
-
-
-
-
-
-#if 0
-
-
-//#include "gui/kode_gui_base.h"
-//#include "gui/base/kode_base_image.h"
-//#include "gui/base/kode_base_surface.h"
-#include "gui/base/kode_base_painter.h"
-//include "gui/base/kode_base_window.h"
-#include "gui/xcb/kode_xcb_utils.h"
-
-#ifdef KODE_USE_CAIRO
-  #include "gui/cairo/kode_cairo.h"
-#endif
-
-class KODE_XcbPainter
-: public KODE_BasePainter {
+class MIP_XcbPainter
+: public MIP_BasePainter {
 
 //------------------------------
 private:
 //------------------------------
 
-  KODE_Drawable*    MTarget       = KODE_NULL;
-  xcb_connection_t* MConnection   = KODE_NULL;
+  MIP_Drawable*     MTarget       = nullptr;
+  xcb_connection_t* MConnection   = nullptr;
   xcb_visualid_t    MVisual       = XCB_NONE;
   xcb_drawable_t    MDrawable     = XCB_NONE;
   uint32_t          MWidth        = 0;
@@ -77,12 +42,13 @@ private:
 
   xcb_font_t        MFont         = XCB_NONE;
 
+
 //------------------------------
 public:
 //------------------------------
 
-  KODE_XcbPainter(KODE_Drawable* ATarget)
-  : KODE_BasePainter(ATarget) {
+  MIP_XcbPainter(MIP_Drawable* ATarget)
+  : MIP_BasePainter(ATarget) {
     if (ATarget->isDrawable()) {
       MTarget     = ATarget;
       MConnection = ATarget->getXcbConnection();
@@ -125,10 +91,14 @@ public:
 
   //----------
 
-  virtual ~KODE_XcbPainter() {
+  virtual ~MIP_XcbPainter() {
     //xcb_flush(MConnection);
     xcb_free_gc(MConnection,MGC);
   }
+
+//------------------------------
+public:
+//------------------------------
 
 //------------------------------
 public:
@@ -139,7 +109,7 @@ public:
 //    cairo_surface_t* surface = cairo_xcb_surface_create(
 //      MConnection,
 //      MDrawable,
-//      kode_xcb_find_visual(MConnection,MVisual),
+//      mip_xcb_find_visual(MConnection,MVisual),
 //      MWidth,
 //      MHeight
 //    );
@@ -151,7 +121,7 @@ public:
 private:
 //------------------------------
 
-  void set_color(KODE_Color AColor) {
+  void set_color(MIP_Color AColor) {
     uint8_t r = AColor.r * 255.0f;
     uint8_t g = AColor.g * 255.0f;
     uint8_t b = AColor.b * 255.0f;
@@ -163,7 +133,7 @@ private:
     xcb_change_gc(MConnection, MGC, mask, values);
   }
 
-  void set_background_color(KODE_Color AColor) {
+  void set_background_color(MIP_Color AColor) {
     uint8_t r = AColor.r * 255.0f;
     uint8_t g = AColor.g * 255.0f;
     uint8_t b = AColor.b * 255.0f;
@@ -240,7 +210,7 @@ private:
 public:
 //------------------------------
 
-  KODE_Drawable* getTarget() override {
+  MIP_Drawable* getTarget() override {
     return MTarget;
   }
 
@@ -268,7 +238,7 @@ public:
     XSetClipMask().
   */
 
-  void setClip(KODE_FRect ARect) override {
+  void setClip(MIP_FRect ARect) override {
     //resetClip();
     xcb_rectangle_t rectangles[] = {{
       (int16_t)ARect.x,
@@ -318,7 +288,7 @@ public:
 public:
 //------------------------------
 
-  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, uint32_t AWidth=1) override {
     set_color(AColor);
     set_line_width(AWidth);
     xcb_point_t polyline[] =  {
@@ -330,7 +300,7 @@ public:
 
   //----------
 
-  void drawRectangle(KODE_FRect ARect, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawRectangle(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
     set_color(AColor);
     set_line_width(AWidth);
     xcb_rectangle_t rectangles[] = {{
@@ -346,7 +316,7 @@ public:
 
   // todo: no color/size per call
 
-  void drawRoundedRectangle(KODE_FRect ARect, float ARadius, uint32_t ACorners, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor, uint32_t AWidth=1) override {
     //set_color(AColor);
     //set_line_width(AWidth);
     float r  = ARadius;// - 1;
@@ -355,10 +325,10 @@ public:
     float AY1 = ARect.y;
     float AX2 = ARect.x2();
     float AY2 = ARect.y2();
-    drawArc(  KODE_FRect(AX1,      AY1,      AX1+r2-2, AY1+r2-3), 0.75, 0.25, AColor, AWidth ); // upper left
-    drawArc(  KODE_FRect(AX2-r2+1, AY1,      AX2-1,    AY1+r2-2), 0.00, 0.25, AColor, AWidth ); // upper right
-    drawArc(  KODE_FRect(AX1,      AY2-r2+1, AX1+r2-2, AY2-1),    0.50, 0.25, AColor, AWidth ); // lower left
-    drawArc(  KODE_FRect(AX2-r2+1, AY2-r2+2, AX2-1,    AY2-1),    0.25, 0.25, AColor, AWidth ); // lower right
+    drawArc(  MIP_FRect(AX1,      AY1,      AX1+r2-2, AY1+r2-3), 0.75, 0.25, AColor, AWidth ); // upper left
+    drawArc(  MIP_FRect(AX2-r2+1, AY1,      AX2-1,    AY1+r2-2), 0.00, 0.25, AColor, AWidth ); // upper right
+    drawArc(  MIP_FRect(AX1,      AY2-r2+1, AX1+r2-2, AY2-1),    0.50, 0.25, AColor, AWidth ); // lower left
+    drawArc(  MIP_FRect(AX2-r2+1, AY2-r2+2, AX2-1,    AY2-1),    0.25, 0.25, AColor, AWidth ); // lower right
     drawLine( AX1+r,    AY1,      AX2-r,    AY1,   AColor, AWidth );  // top
     drawLine( AX1+r,    AY2,      AX2-r,    AY2,   AColor, AWidth );  // bottom
     drawLine( AX1,      AY1+r,    AX1,      AY2-r, AColor, AWidth );  // left
@@ -372,7 +342,7 @@ public:
     angle 2 = 'distance' 0..1, counter-clockwise
   */
 
-  void drawArc(KODE_FRect ARect, float AAngle1, float AAngle2, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor, uint32_t AWidth=1) override {
     set_color(AColor);
     set_line_width(AWidth);
     // start angle = 12 o'clock
@@ -393,7 +363,7 @@ public:
 
   //----------
 
-  void drawEllipse(KODE_FRect ARect, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawEllipse(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
     set_color(AColor);
     set_line_width(AWidth);
     xcb_arc_t arcs[] = {
@@ -409,7 +379,7 @@ public:
 
   //----------
 
-  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor, uint32_t AWidth=1) override {
     xcb_point_t polyline[] =  {
       (int16_t)AX1, (int16_t)AY1, (int16_t)AX2, (int16_t)AY2,
       (int16_t)AX2, (int16_t)AY2, (int16_t)AX3, (int16_t)AY3,
@@ -422,7 +392,7 @@ public:
 public:
 //------------------------------
 
-  void fillRectangle(KODE_FRect ARect, KODE_Color AColor) override {
+  void fillRectangle(MIP_FRect ARect, MIP_Color AColor) override {
     if ((ARect.w <= 0) || (ARect.h <= 0)) return;
     set_color(AColor);
     xcb_rectangle_t rectangles[] = {{
@@ -438,7 +408,7 @@ public:
 
   // todo: no color/size per call
 
-  void fillRoundedRectangle(KODE_FRect ARect, float ARadius, uint32_t ACorners, KODE_Color AColor) override {
+  void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor) override {
     //set_color(AColor);
     //set_line_width(AWidth);
     float r  = ARadius;// - 1;
@@ -447,13 +417,13 @@ public:
     float AY1 = ARect.y;
     float AX2 = ARect.x2();
     float AY2 = ARect.y2();
-    fillArc(       KODE_FRect(AX1-1,  AY1-1,   AX1+r2,   AY1+r2),   0.75, 0.25, AColor ); // upper left
-    fillArc(       KODE_FRect(AX2-r2, AY1-1,   AX2,      AY1+r2-1), 0.00, 0.25, AColor ); // upper right
-    fillArc(       KODE_FRect(AX1-1,  AY2-r2,  AX1+r2-1, AY2),      0.50, 0.25, AColor ); // lower left
-    fillArc(       KODE_FRect(AX2-r2, AY2-r2,  AX2,      AY2),      0.25, 0.25, AColor ); // lower right
-    fillRectangle( KODE_FRect(AX1+r,  AY1,     AX2-r,    AY1+r-1), AColor );  // top
-    fillRectangle( KODE_FRect(AX1,    AY1+r,   AX2,      AY2-r),   AColor );  // mid
-    fillRectangle( KODE_FRect(AX1+r,  AY2-r+1, AX2-r,    AY2),     AColor );  // bot
+    fillArc(       MIP_FRect(AX1-1,  AY1-1,   AX1+r2,   AY1+r2),   0.75, 0.25, AColor ); // upper left
+    fillArc(       MIP_FRect(AX2-r2, AY1-1,   AX2,      AY1+r2-1), 0.00, 0.25, AColor ); // upper right
+    fillArc(       MIP_FRect(AX1-1,  AY2-r2,  AX1+r2-1, AY2),      0.50, 0.25, AColor ); // lower left
+    fillArc(       MIP_FRect(AX2-r2, AY2-r2,  AX2,      AY2),      0.25, 0.25, AColor ); // lower right
+    fillRectangle( MIP_FRect(AX1+r,  AY1,     AX2-r,    AY1+r-1), AColor );  // top
+    fillRectangle( MIP_FRect(AX1,    AY1+r,   AX2,      AY2-r),   AColor );  // mid
+    fillRectangle( MIP_FRect(AX1+r,  AY2-r+1, AX2-r,    AY2),     AColor );  // bot
   }
 
   //----------
@@ -461,7 +431,7 @@ public:
   // angle 1 = start angle, relative to 3 o'clock
   // angle 2 = 'distance' 0..1, counter-clockwise
 
-  void fillArc(KODE_FRect ARect, float AAngle1, float AAngle2, KODE_Color AColor) override {
+  void fillArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor) override {
     set_color(AColor);
     //if (abs(AAngle2) >= 0.01) EPSILON
     // start angle = 12 o'clock
@@ -481,7 +451,7 @@ public:
 
   //----------
 
-  void fillEllipse(KODE_FRect ARect, KODE_Color AColor) override {
+  void fillEllipse(MIP_FRect ARect, MIP_Color AColor) override {
     set_color(AColor);
     xcb_arc_t arcs[] = {
       (int16_t)ARect.x,
@@ -496,7 +466,7 @@ public:
 
   //----------
 
-  void fillTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, KODE_Color AColor) override {
+  void fillTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor) override {
     set_color(AColor);
     xcb_point_t polyline[] =  {
       (int16_t)AX1, (int16_t)AY1, (int16_t)AX2, (int16_t)AY2,
@@ -510,27 +480,27 @@ public:
 public:
 //------------------------------
 
-  void drawText(float AXpos, float AYpos, const char* AText, KODE_Color AColor) override {
+  void drawText(float AXpos, float AYpos, const char* AText, MIP_Color AColor) override {
     set_color(AColor);
     uint8_t buffer[512];
-    KODE_XcbPolyText8 pt;
+    MIP_XcbPolyText8 pt;
     pt.data = buffer;
     pt.used = 0;
-    kode_xcb_add_string_text8(&pt,AText);
+    mip_xcb_add_string_text8(&pt,AText);
     xcb_poly_text_8(MConnection,MDrawable,MGC,AXpos,AYpos,pt.used,pt.data);
   }
 
   //----------
 
-  void drawText(KODE_FRect ARect, const char* AText, uint32_t AAlignment, KODE_Color AColor) override {
+  void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {
     measure_string(AText);
     float x,y,w;
-    if (AAlignment & KODE_TEXT_ALIGN_TOP) y = ARect.y    + MFontAscent;
-    else if (AAlignment & KODE_TEXT_ALIGN_BOTTOM) y = ARect.y2() - MFontDescent;
+    if (AAlignment & MIP_TEXT_ALIGN_TOP) y = ARect.y    + MFontAscent;
+    else if (AAlignment & MIP_TEXT_ALIGN_BOTTOM) y = ARect.y2() - MFontDescent;
     else y = ARect.y + (MFontAscent * 0.5f) + (ARect.h * 0.5f);
     w = MFontWidth;
-    if (AAlignment & KODE_TEXT_ALIGN_LEFT) x = ARect.x;
-    else if (AAlignment & KODE_TEXT_ALIGN_RIGHT) x = ARect.x2() - w;
+    if (AAlignment & MIP_TEXT_ALIGN_LEFT) x = ARect.x;
+    else if (AAlignment & MIP_TEXT_ALIGN_RIGHT) x = ARect.x2() - w;
     else x = ARect.x + (ARect.w * 0.5f) - (w * 0.5f);
     drawText(x,y,AText,AColor);
   }
@@ -539,7 +509,7 @@ public:
 public:
 //------------------------------
 
-  void uploadBitmap(float AXpos, float AYpos, KODE_Bitmap* ABitmap) override {
+  void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
     uint32_t width      = ABitmap->getWidth();
     uint32_t height     = ABitmap->getHeight();
     uint32_t buffersize = ABitmap->getBufferSize();
@@ -572,7 +542,7 @@ public:
       0                       // uint8_t            left_pad
     );
     //xcb_flush(MConnection);
-    image->base = KODE_NULL;
+    image->base = nullptr;
     xcb_image_destroy(image);
     xcb_flush(MConnection);
   }
@@ -581,7 +551,7 @@ public:
 public:
 //------------------------------
 
-  void drawBitmap(float AXpos, float AYpos, KODE_Drawable* ASource) override {
+  void drawBitmap(float AXpos, float AYpos, MIP_Drawable* ASource) override {
     if (ASource->isImage()) {
       xcb_image_put(
         MConnection,            // xcb_connection_t*  conn,
@@ -595,7 +565,7 @@ public:
       xcb_flush(MConnection);
     }
     else if (ASource->isSurface()) {
-      //#ifdef KODE_USE_CAIRO
+      //#ifdef MIP_USE_CAIRO
       //cairo_surface_flush(MCairoSurface);
       //#endif
       xcb_copy_area(
@@ -611,21 +581,21 @@ public:
         ASource->getHeight()        // Height of the region we want to copy
       );
       xcb_flush(MConnection);
-      //#ifdef KODE_USE_CAIRO
+      //#ifdef MIP_USE_CAIRO
       //cairo_surface_mark_dirty_rectangle(MCairoSurface,src_x,src_y,src_w,src_h);
       //#endif
     }
     //else {
-    //  KODE_Trace("unknown ADrawable for blit()\n");
+    //  MIP_Print("unknown ADrawable for blit()\n");
     //}
   }
 
   //----------
 
-  void drawBitmap(float AXpos, float AYpos, KODE_Drawable* ASource, KODE_FRect ASrc) override {
+  void drawBitmap(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) override {
     if (ASource->isImage()) {
-      KODE_Bitmap* bitmap = ASource->getBitmap();
-      kode_xcb_put_image(
+      MIP_Bitmap* bitmap = ASource->getBitmap();
+      mip_xcb_put_image(
         MConnection,
         MDrawable,
         MGC,
@@ -638,12 +608,12 @@ public:
         bitmap->getPixelPtr(ASrc.x,ASrc.y)  //getBuffer()
       );
       xcb_flush(MConnection);
-      //#ifdef KODE_USE_CAIRO
+      //#ifdef MIP_USE_CAIRO
       //cairo_surface_mark_dirty_rectangle(MCairoSurface,src_x,src_y,src_w,src_h);
       //#endif
     }
     else if (ASource->isSurface()) {
-      //#ifdef KODE_USE_CAIRO
+      //#ifdef MIP_USE_CAIRO
       //cairo_surface_flush(MCairoSurface);
       //#endif
       xcb_copy_area(
@@ -659,22 +629,23 @@ public:
         ASrc.h                       // Height of the region we want to copy
       );
       xcb_flush(MConnection);
-      //#ifdef KODE_USE_CAIRO
+      //#ifdef MIP_USE_CAIRO
       //cairo_surface_mark_dirty_rectangle(MCairoSurface,src_x,src_y,src_w,src_h);
       //#endif
     }
     //else {
-    //  KODE_Trace("unknown ADrawable for blit()\n");
+    //  MIP_Print("unknown ADrawable for blit()\n");
     //}
   }
 
   //----------
 
-  void drawBitmap(KODE_FRect ADst, KODE_Drawable* ASource, KODE_FRect ASrc) override {
+  void drawBitmap(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) override {
   }
 
   //----------
 
 };
 
-#endif // 0
+//----------------------------------------------------------------------
+#endif

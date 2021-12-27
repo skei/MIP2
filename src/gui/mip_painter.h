@@ -5,6 +5,7 @@
 #include "mip.h"
 //#include "base/types/mip_rect.h"
 //#include "gui/mip_widget.h"
+#include "gui/mip_drawable.h"
 #include "gui/base/mip_base_painter.h"
 
 //----------------------------------------------------------------------
@@ -28,8 +29,8 @@ class MIP_Painter
 public:
 //------------------------------
 
-  MIP_Painter()
-  : MIP_ImplementedPainter() {
+  MIP_Painter(MIP_Drawable* ATarget)
+  : MIP_ImplementedPainter(ATarget) {
     MIP_PRINT;
   }
 
