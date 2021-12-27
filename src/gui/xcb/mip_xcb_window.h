@@ -121,6 +121,7 @@ public:
 
   MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", void* AParent=nullptr)
   : MIP_BaseWindow(AWidth,AHeight,ATitle,AParent) {
+    MName = "MIP_XcbWindow";
     MUseEventThread = AParent ? true : false;
     connect();
     initGC();
@@ -710,7 +711,7 @@ private:
         int32_t   y = enter_notify->event_y;
         uint32_t ts = enter_notify->time;
       //#endif
-        on_window_enter(x,y,ts);
+        on_window_mouseEnter(x,y,ts);
         break;
       }
 
@@ -724,7 +725,7 @@ private:
         int32_t   y = leave_notify->event_y;
         uint32_t ts = leave_notify->time;
         //#endif
-        on_window_leave(x,y,ts);
+        on_window_mouseLeave(x,y,ts);
         break;
       }
 

@@ -27,6 +27,7 @@ public:
 
   MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, void* AParentPtr)
   : MIP_Widget(MIP_FRect(AWidth,AHeight)) {
+    MName = "MIP_BaseWindow";
     //MParentPtr = AParentPtr;
   }
 
@@ -78,17 +79,17 @@ public:
 public:
 //------------------------------
 
+  //virtual void on_window_open() {}
+  //virtual void on_window_close() {}
   virtual void on_window_move(int32_t AXpos, int32_t AYpos) {}
   virtual void on_window_resize(int32_t AWidth, int32_t AHeight) {}
-  virtual void on_window_open() {}
-  virtual void on_window_close() {}
   virtual void on_window_keyPress(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp) {}
   virtual void on_window_keyRelease(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp) {}
   virtual void on_window_mouseClick(int32_t AXpos, int32_t AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) {}
   virtual void on_window_mouseRelease(int32_t AXpos, int32_t AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) {}
   virtual void on_window_mouseMove(int32_t AXpos, int32_t AYpos, uint32_t AState, uint32_t ATimeStamp) {}
-  virtual void on_window_enter(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) {}
-  virtual void on_window_leave(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) {}
+  virtual void on_window_mouseEnter(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) {}
+  virtual void on_window_mouseLeave(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) {}
   virtual void on_window_timer() {}
   virtual void on_window_idle() {}
   virtual void on_window_clientMessage(uint32_t AData, void* APtr) {}

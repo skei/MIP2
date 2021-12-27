@@ -171,7 +171,8 @@ public:
 //
 //----------------------------------------------------------------------
 
-class myPlugin : public MIP_ClapPlugin {
+class myPlugin
+: public MIP_ClapPlugin {
 
 //------------------------------
 public:
@@ -436,9 +437,11 @@ public: // gui x11
 
   bool gui_x11_attach(const char *display_name, unsigned long window) final {
     if (MEditor->attach(display_name,window)) {
-      MIP_Window* win = MEditor->getWindow();
-      MIP_Widget* wdg = new MIP_Widget( MIP_FRect(10,10,100,100) );
-      win->appendWidget(wdg);
+
+MIP_Window* win = MEditor->getWindow();
+MIP_Widget* wdg = new MIP_Widget( MIP_FRect(10,10,100,100) );
+win->appendWidget(wdg);
+
     }
 
 
