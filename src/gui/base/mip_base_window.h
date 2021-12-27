@@ -9,39 +9,19 @@
 
 //----------------------------------------------------------------------
 
-class MIP_BaseWindow
-/*: public MIP_Widget*/ {
-
-//------------------------------
-protected:
-//------------------------------
-
-  //void* MParentPtr = nullptr;
-
-  bool      MFillBackground   = true;
-  MIP_Color MBackgroundColor  = MIP_Color(0.5);
+class MIP_BaseWindow {
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, void* AParentPtr)
-  /*: MIP_Widget(MIP_FRect(AWidth,AHeight))*/ {
-    //MName = "MIP_BaseWindow";
-    //MParentPtr = AParentPtr;
+  MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, void* AParentPtr) {
   }
 
   //----------
 
   virtual ~MIP_BaseWindow() {
   }
-
-//------------------------------
-public:
-//------------------------------
-
-  void setFillBackground(bool AState=true)  { MFillBackground = true; }
-  void setBackgroundColor(MIP_Color AColor) { MBackgroundColor = AColor; }
 
 //------------------------------
 public:
@@ -94,21 +74,6 @@ public:
   virtual void on_window_idle() {}
   virtual void on_window_clientMessage(uint32_t AData, void* APtr) {}
   virtual void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
-
-////------------------------------
-//public: // MIP_Widget
-////------------------------------
-//
-//  void do_widget_update(MIP_Widget* AWidget) override {
-//    MIP_PRINT;
-//  }
-//
-//  //----------
-//
-//  void do_widget_redraw(MIP_Widget* AWidget) override {
-//    MIP_PRINT;
-//    //TODO: widget->on_paint_..
-//  }
 
 };
 
