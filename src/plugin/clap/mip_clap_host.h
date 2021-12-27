@@ -19,10 +19,10 @@ class MIP_ClapHost {
 private:
 //------------------------------
 
-  const char*               MPluginPath       = "";
-  char                      MPathOnly[512]    = {0};
-  void*                     MLibHandle        = nullptr;
-  const clap_plugin_entry*  MClapEntry        = nullptr;
+  const char*               MPluginPath     = "";
+  char                      MPathOnly[512]  = {0};
+  void*                     MLibHandle      = nullptr;
+  const clap_plugin_entry*  MClapEntry      = nullptr;
 
 //------------------------------
 public:
