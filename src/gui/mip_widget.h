@@ -3,13 +3,15 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "base/types/mip_array.h"
 #include "base/types/mip_rect.h"
 
 //----------------------------------------------------------------------
 
 //#include <vector>
 class MIP_Widget;
-typedef std::vector<MIP_Widget*> MIP_Widgets;
+//typedef std::vector<MIP_Widget*> MIP_Widgets;
+typedef MIP_Array<MIP_Widget*> MIP_Widgets;
 
 //----------------------------------------------------------------------
 
@@ -23,6 +25,7 @@ protected:
   MIP_Widgets MChildren       = {};
 
   MIP_FRect   MRect           = {};
+  int32_t     MWidgetIndex    = -1;
   int32_t     MParameterIndex = -1;
   float       MValue          = 0.0;
 
@@ -37,25 +40,54 @@ public:
   //----------
 
   virtual ~MIP_Widget() {
+    #ifndef MIP_NO_AUTODELETE
+    deleteWidgets();
+    #endif
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  float   getValue()                        { return 0.0; }
-  void    setValue()                        { MValue = 0.0; }
+  float   getValue()                    { return MValue; }
+  int32_t getParameterIndex()           { return MParameterIndex; }
+  int32_t getWidgetIndex()              { return MWidgetIndex; }
 
-  int32_t getParameterIndex()               { return -1; }
-  void    setParameterIndex(int32_t AIndex) { MParameterIndex = AIndex; }
-
+  void    setValue(float v)             { MValue = v; }
+  void    setParameterIndex(int32_t i)  { MParameterIndex = i; }
+  void    setWidgetIndex(int32_t i)     { MWidgetIndex = i; }
 
 //------------------------------
 public:
 //------------------------------
 
-  virtual void updateValue(float AValue) {}
-  virtual void redraw() {}
+  virtual uint32_t appendWidget(MIP_Widget* AWidget) {
+    if (AWidget) {
+      uint32_t index = MChildren.size();
+      AWidget->setWidgetIndex(index);
+      MChildren.append(AWidget);
+      return index;
+    }
+    return -1;
+  }
+
+  virtual void deleteWidgets() {
+    for (uint32_t i=0; i<MChildren.size(); i++) {
+      delete MChildren[i];
+      MChildren[i] = nullptr;
+    }
+    MChildren.clear();
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  virtual void updateValue(float AValue) {
+  }
+
+  virtual void redraw() {
+  }
 
 //------------------------------
 public:

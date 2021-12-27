@@ -40,6 +40,71 @@ public:
   }
 
 //------------------------------
+public: // MIP_BaseWindow
+//------------------------------
+
+  void on_window_move(int32_t AXpos, int32_t AYpos) override {
+    MIP_Print("x %i y %i\n",AXpos,AYpos);
+  }
+
+  void on_window_resize(int32_t AWidth, int32_t AHeight) override {
+    MIP_Print("w %i h %i\n",AWidth,AHeight);
+  }
+
+  void on_window_open() override {
+    MIP_Print("\n");
+  }
+
+  void on_window_close() override {
+    MIP_Print("\n");
+  }
+
+  void on_window_keyPress(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp) override {
+    MIP_Print("k %i s %i ts %i\n",AKey,AState,ATimeStamp);
+  }
+
+  void on_window_keyRelease(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp) override {
+    MIP_Print("k %i s %i ts %i\n",AKey,AState,ATimeStamp);
+  }
+
+  void on_window_mouseClick(int32_t AXpos, int32_t AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
+    MIP_Print("x %i y %i b %i s %i ts %i\n",AXpos,AYpos,AButton,AState,ATimeStamp);
+  }
+
+  void on_window_mouseRelease(int32_t AXpos, int32_t AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
+    MIP_Print("x %i y %i b %i s %i ts %i\n",AXpos,AYpos,AButton,AState,ATimeStamp);
+  }
+
+  void on_window_mouseMove(int32_t AXpos, int32_t AYpos, uint32_t AState, uint32_t ATimeStamp) override {
+    MIP_Print("x %i y %i s %i ts %i\n",AXpos,AYpos,AState,ATimeStamp);
+  }
+
+  void on_window_enter(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) override {
+    MIP_Print("x %i y %i ts %i\n",AXpos,AYpos,ATimeStamp);
+  }
+
+  void on_window_leave(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) override {
+    MIP_Print("x %i y %i ts %i\n",AXpos,AYpos,ATimeStamp);
+  }
+
+  void on_window_timer() override {
+    MIP_Print("\n");
+  }
+
+  void on_window_idle() override {
+    MIP_Print("\n");
+  }
+
+  void on_window_clientMessage(uint32_t AData, void* APtr) override {
+    MIP_Print("data %i ptr %p\n",AData,APtr);
+  }
+
+  void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
+  }
+
+
+//------------------------------
 public: // MIP_Widget
 //------------------------------
 

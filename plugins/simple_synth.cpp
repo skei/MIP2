@@ -5,6 +5,7 @@
 // nc -U -l -k /tmp/mip.socket
 #define MIP_DEBUG_PRINT_SOCKET
 
+#define MIP_GUI_XCB
 #define MIP_USE_XCB
 
 #include "mip.h"
@@ -372,6 +373,8 @@ public: // event filter
 public: // gui
 //------------------------------
 
+  // we don't have a window yet!
+
   bool gui_create() final {
     MEditor = new MIP_Editor();
     return true;
@@ -432,7 +435,13 @@ public: // gui x11
 //------------------------------
 
   bool gui_x11_attach(const char *display_name, unsigned long window) final {
-    MEditor->attach(display_name,window);
+    if (MEditor->attach(display_name,window)) {
+      MIP_Window* win = MEditor->getWindow();
+      MIP_Widget* wdg = new MIP_Widget( MIP_FRect(10,10,100,100) );
+      win->appendWidget(wdg);
+    }
+
+
     return true;
   }
 
