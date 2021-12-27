@@ -104,7 +104,7 @@ public:
 public:
 //------------------------------
 
-//  #ifdef KODE_USE_CAIRO
+//  #ifdef MIP_USE_CAIRO
 //  cairo_surface_t* createCairoSurface() {
 //    cairo_surface_t* surface = cairo_xcb_surface_create(
 //      MConnection,

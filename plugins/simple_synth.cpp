@@ -438,13 +438,19 @@ public: // gui x11
   bool gui_x11_attach(const char *display_name, unsigned long window) final {
     if (MEditor->attach(display_name,window)) {
 
+//----- test -----
+
 MIP_Window* win = MEditor->getWindow();
-MIP_Widget* wdg = new MIP_Widget( MIP_FRect(10,10,100,100) );
-win->appendWidget(wdg);
+MIP_Widget* wdg1 = new MIP_Widget( MIP_FRect(10,10,100,20) );
+MIP_Widget* wdg2 = new MIP_Widget( MIP_FRect(10,40,100,20) );
+wdg1->setName("wdg1");
+wdg2->setName("wdg2");
+win->appendWidget(wdg1);
+win->appendWidget(wdg2);
+
+//----- test -----
 
     }
-
-
     return true;
   }
 

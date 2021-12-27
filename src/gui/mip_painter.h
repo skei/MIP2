@@ -31,13 +31,13 @@ public:
 
   MIP_Painter(MIP_Drawable* ATarget)
   : MIP_ImplementedPainter(ATarget) {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //----------
 
   virtual ~MIP_Painter() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
 

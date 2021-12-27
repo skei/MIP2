@@ -33,7 +33,6 @@ protected:
 
   bool        MIsActive       = true;
   bool        MIsVisible      = true;
-  bool        MIsInteracting  = true;
 
 //------------------------------
 public:
@@ -62,10 +61,19 @@ public:
   int32_t     getWidgetIndex()    { return MWidgetIndex; }
   MIP_FRect   getRect()           { return MRect; }
 
+  bool        isActive()          { return MIsActive; }
+  bool        isVisible()         { return MIsVisible; }
+
+  //----------
+
+  void  setName(const char* s)        { MName = s; }
   void  setValue(float v)             { MValue = v; }
   void  setModValue(float v)          { MModValue = v; }
   void  setParameterIndex(int32_t i)  { MParameterIndex = i; }
   void  setWidgetIndex(int32_t i)     { MWidgetIndex = i; }
+
+  void  setActive(bool s=true)  { MIsActive = s; }
+  void  setVisible(bool s=true) { MIsVisible = s; }
 
 //------------------------------
 public:
@@ -139,60 +147,60 @@ public:
 //------------------------------
 
   virtual void on_widget_move(float AXpos, float AYpos) {
-    MIP_Print("%s : x %.2f y %.2f\n",MName,AXpos,AYpos);
+    //MIP_Print("%s : x %.2f y %.2f\n",MName,AXpos,AYpos);
   }
 
   virtual void on_widget_resize(float AWidth, float AHeight) {
-    MIP_Print("%s : w %.2f h %.2f\n",MName,AWidth,AHeight);
+    //MIP_Print("%s : w %.2f h %.2f\n",MName,AWidth,AHeight);
   }
 
   virtual void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect) {
-    MIP_Print("%s : x %.2f y %.2f w %.2f h %.2f\n",MName,ARect.x,ARect.y,ARect.w,ARect.h);
+    //MIP_Print("%s : x %.2f y %.2f w %.2f h %.2f\n",MName,ARect.x,ARect.y,ARect.w,ARect.h);
     APainter->fillRectangle(MRect,MIP_COLOR_RED);
   }
 
   virtual void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) {
-    MIP_Print("%s : x %.2f y %.2f b %i s %i\n",MName,AXpos,AYpos,AButton,AState);
+    //MIP_Print("%s : x %.2f y %.2f b %i s %i\n",MName,AXpos,AYpos,AButton,AState);
   }
 
   virtual void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp) {
-    MIP_Print("%s : x %.2f y %.2f s %i\n",MName,AXpos,AYpos,AState);
+    //MIP_Print("%s : x %.2f y %.2f s %i\n",MName,AXpos,AYpos,AState);
   }
 
   virtual void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) {
-    MIP_Print("%s : x %.2f y %.2f b %i s %i\n",MName,AXpos,AYpos,AButton,AState);
+    //MIP_Print("%s : x %.2f y %.2f b %i s %i\n",MName,AXpos,AYpos,AButton,AState);
   }
 
   virtual void on_widget_mouseEnter(float AXpos, float AYpos, MIP_Widget* AFrom) {
-    MIP_Print("%s : x %.2f y %.2f from %s\n",MName,AXpos,AYpos,(AFrom)?AFrom->getName():"?");
+    //MIP_Print("%s : x %.2f y %.2f from %s\n",MName,AXpos,AYpos,(AFrom)?AFrom->getName():"?");
   }
 
   virtual void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo) {
-    MIP_Print("%s : x %.2f y %.2f to %s\n",MName,AXpos,AYpos,(ATo)?ATo->getName():"?");
+    //MIP_Print("%s : x %.2f y %.2f to %s\n",MName,AXpos,AYpos,(ATo)?ATo->getName():"?");
   }
 
   virtual void on_widget_mouseDragEnter(float AXpos, float AYpos, MIP_Widget* AFrom) {
-    MIP_Print("%s : x %.2f y %.2f from %s\n",MName,AXpos,AYpos,(AFrom)?AFrom->getName():"?");
+    //MIP_Print("%s : x %.2f y %.2f from %s\n",MName,AXpos,AYpos,(AFrom)?AFrom->getName():"?");
   }
 
   virtual void on_widget_mouseDragLeave(float AXpos, float AYpos, MIP_Widget* ATo) {
-    MIP_Print("%s : x %.2f y %.2f to %s\n",MName,AXpos,AYpos,(ATo)?ATo->getName():"?");
+    //MIP_Print("%s : x %.2f y %.2f to %s\n",MName,AXpos,AYpos,(ATo)?ATo->getName():"?");
   }
 
   virtual void on_widget_keyPress(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp) {
-    MIP_Print("%s : k %i s %i\n",MName,AKey,AState);
+    //MIP_Print("%s : k %i s %i\n",MName,AKey,AState);
   }
 
   virtual void on_widget_keyRelease(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp) {
-    MIP_Print("%s : k %i s %i\n",MName,AKey,AState);
+    //MIP_Print("%s : k %i s %i\n",MName,AKey,AState);
   }
 
   virtual void on_widget_connect(int32_t AParameterIndex) {
-    MIP_Print("%s : i %i\n",MName,AParameterIndex);
+    //MIP_Print("%s : i %i\n",MName,AParameterIndex);
   }
 
   virtual void on_widget_timer() {
-    MIP_Print("%s\n",MName);
+    //MIP_Print("%s\n",MName);
   }
 
 

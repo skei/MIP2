@@ -5,6 +5,7 @@
 #include "mip.h"
 #include "base/types/mip_rect.h"
 #include "gui/mip_painter.h"
+#include "gui/mip_surface.h"
 #include "gui/mip_widget.h"
 #include "gui/base/mip_base_window.h"
 
@@ -51,6 +52,8 @@ private:
   //MIP_Widget*         MModalWidget    = nullptr;
 
   MIP_Painter*        MWindowPainter = nullptr;
+  MIP_Painter*        MBufferPainter = nullptr;
+  MIP_Surface*        MBufferSurface = nullptr;
 
 //------------------------------
 public:
@@ -61,6 +64,9 @@ public:
     MName = "MIP_Window";
     //MIP_PRINT;
     MWindowPainter = new MIP_Painter(this);
+
+    MBufferSurface = new MIP_Surface(this,256,256,32);
+    MBufferPainter = new MIP_Painter(MBufferSurface);
   }
 
   //----------
@@ -115,9 +121,11 @@ public:
     if (MChildren.size() > 0) {
       for (int32_t i = MChildren.size()-1; i >= 0; i--) {
         MIP_Widget* child = MChildren[i];
-        MIP_FRect rect = child->getRect();
-        if (rect.touches(ARect)) {
-          child->on_widget_paint(MWindowPainter,ARect);
+        if (child->isVisible()) {
+          MIP_FRect rect = child->getRect();
+          if (rect.touches(ARect)) {
+            child->on_widget_paint(MWindowPainter,ARect);
+          }
         }
       }
     }
