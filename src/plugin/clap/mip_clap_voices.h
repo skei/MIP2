@@ -107,21 +107,21 @@ public:
   //------------------------------
 
   void note_on(const clap_event_note_t* event) {
-    MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
+    //MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
     handle_voice_strike(event->port_index,event->channel,event->key,event->velocity);
   }
 
   //----------
 
   void note_off(const clap_event_note_t* event) {
-    MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
+    //MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
     handle_voice_lift(event->port_index,event->channel,event->key,event->velocity);
   }
 
   //----------
 
   void note_end(const clap_event_note_t* event) {
-    MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
+    //MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
   }
 
   //----------
@@ -132,7 +132,7 @@ public:
   */
 
   void note_choke(const clap_event_note_t* event) {
-    MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
+    //MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
     //handle_voice_choke
   }
 
@@ -141,7 +141,7 @@ public:
   void note_expression(const clap_event_note_expression_t* event) {
     switch(event->expression_id) {
       case CLAP_NOTE_EXPRESSION_VOLUME:
-        MIP_Print("volume.. port %i chan %i key %i value %f\n",event->port_index,event->channel,event->key,event->value);
+        //MIP_Print("volume.. port %i chan %i key %i value %f\n",event->port_index,event->channel,event->key,event->value);
         // // x >= 0, use 20 * log(4 * x)
         break;
       case CLAP_NOTE_EXPRESSION_PAN:
@@ -209,7 +209,37 @@ public:
         handle_voice_press(ch,v1);
         break;
     } // switch
-    MIP_PRINT;
+    //MIP_PRINT;
+  }
+
+  //----------
+
+  void parameter(const clap_event_param_value_t* event) {
+    uint32_t index = event->param_id;
+    float value = event->value;
+    int32_t channel = event->channel;
+    int32_t key = event->key;
+    if ((channel >= 0) && (key >= 0)) {
+      handle_voice_param(channel,key,index,value);
+    }
+    else {
+      handle_master_param(index,value);
+    }
+  }
+
+  //----------
+
+  void modulation(const clap_event_param_mod_t* event) {
+    uint32_t index = event->param_id;
+    float amount = event->amount;
+    int32_t channel = event->channel;
+    int32_t key = event->key;
+    if ((channel >= 0) && (key >= 0)) {
+      handle_voice_mod(channel,key,index,amount);
+    }
+    else {
+      handle_master_mod(index,amount);
+    }
   }
 
 //------------------------------
@@ -293,10 +323,50 @@ private:
 
   //----------
 
+  void handle_voice_param(int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
+    //MIP_Print("%i:%i = %.2f\n",AIndex,AValue);
+    int32_t v = MNoteToVoice[(AChannel * 128) + AKey];
+    MIP_Print("v = %i\n",v);
+    //if (v >= 0) {
+    //  MVoices[v].parameter(AIndex,AValue);
+    //}
+  }
+
+  //----------
+
+  void handle_voice_mod(int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
+    //MIP_Print("ch %i k %i i %i v %.2f\n",AChannel,AKey,AIndex,AValue);
+    int32_t v = MNoteToVoice[(AChannel * 128) + AKey];
+    MIP_Print("v = %i\n",v);
+    //if (v >= 0) {
+    //  MVoices[v].modulation(AIndex,AValue);
+    //}
+  }
+
+  //----------
+
   void handle_master_ctrl(uint32_t AIndex, uint32_t AValue) {
     //float mc = (float)AValue * MIP_INV127F;
     for (uint32_t i=0; i<NUM; i++) {
       MVoices[i].master_ctrl(AIndex,AValue);
+    }
+  }
+
+  //----------
+
+  void handle_master_param(uint32_t AIndex, float AValue) {
+    //MIP_Print("i %i v %.2f\n",AIndex,AValue);
+    for (uint32_t i=0; i<NUM; i++) {
+      MVoices[i].parameter(AIndex,AValue);
+    }
+  }
+
+  //----------
+
+  void handle_master_mod(uint32_t AIndex, float AValue) {
+    //MIP_Print("i %i v %.2f\n",AIndex,AValue);
+    for (uint32_t i=0; i<NUM; i++) {
+      MVoices[i].modulation(AIndex,AValue);
     }
   }
 
@@ -317,6 +387,11 @@ private:
       MVoices[i].master_press(mp);
     }
   }
+
+  //----------
+
+  //void handle_parameter(uint32_t AIndex) {
+  //}
 
 //------------------------------
 private:

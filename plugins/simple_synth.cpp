@@ -14,7 +14,6 @@
 #include "plugin/mip_editor.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_voices.h"
-#include "plugin/clap/mip_clap_host.h"
 
 //----------------------------------------------------------------------
 //
@@ -44,26 +43,33 @@ class myVoice {
 private:
 
   MIP_ClapVoiceContext* MContext      = nullptr;
-  float                 MNote         = 0.0f;
-  float                 MBend         = 0.0f;
-  float                 MMasterBend   = 0.0f;
-  float                 MMasterPress  = 0.0f;
 
-  float samplerate  = 0.0;
-  float ph          = 0.0;
-  float phadd       = 0.0;
+  float MNote         = 0.0f;
+  float MBend         = 0.0f;
+  float MMasterBend   = 0.0f;
+  float MMasterPress  = 0.0f;
+
+  float MSampleRate   = 0.0;
+
+  // osc
+  float ph    = 0.0;
+  float phadd = 0.0;
+  // filter
+  float z0    = 0.0;
+  float w     = 0.0;
+  float wm    = 0.0;
 
 public:
 
   bool prepare(MIP_ClapVoiceContext* AContext) {
     MContext = AContext;
-    samplerate = AContext->samplerate;
+    MSampleRate = AContext->samplerate;
     return true;
   }
 
   //----------
 
-  // eaqch voice are added to the buffer!
+  // each voice are added to the buffer!
 
   uint32_t process(uint32_t state) {
     float* out0 = MContext->buffers[0];
@@ -72,6 +78,10 @@ public:
       float out = (ph * 0.1);
       ph += phadd;
       ph = MIP_Fract(ph);
+      float ww = MIP_Clamp((w + wm),0,1);
+      z0 += ((out - z0) * ww);
+      out = z0; // lp
+      //out -= z0; // hp
       *out0++ += out;
       *out1++ += out;
     }
@@ -81,14 +91,12 @@ public:
   //----------
 
   uint32_t strike(uint32_t note, float velocity) {
-    //ph = 0.0;
-    //phadd = MIP_NoteToHz(n) / samplerate;
-    //return MIP_VOICE_PLAYING;
     MNote = note;
     MBend = 0.0f;
     float hz = MIP_NoteToHz(MNote + (MMasterBend * 2.0f) + (MBend*48.0f));
     ph = 0.0f;
-    phadd = hz / samplerate;
+    phadd = hz / MSampleRate;
+    z0 = 0;
     return MIP_VOICE_PLAYING;
   }
 
@@ -103,7 +111,7 @@ public:
   void bend(float b) {
     MBend = b;
     float hz = MIP_NoteToHz(MNote + (MMasterBend * 2.0f) + (MBend*48.0f));
-    phadd = hz / samplerate;
+    phadd = hz / MSampleRate;
   }
 
   //----------
@@ -123,6 +131,21 @@ public:
 
   //----------
 
+  void parameter(uint32_t i, float v) {
+    //MIP_Print("%i = %.2f\n",i,v);
+    if (i == 1) w = (v*v);
+  }
+
+  //----------
+
+  void modulation(uint32_t i, float v) {
+    //MIP_Print("%i = %.2f\n",i,v);
+    if (i == 1) wm = v;
+  }
+
+  //----------
+  //----------
+
   void master_press(float mp) {
   }
 
@@ -131,7 +154,7 @@ public:
   void master_bend(float mb) {
     MMasterBend = mb;
     float hz = MIP_NoteToHz(MNote + (MMasterBend * 2.0f) + (MBend*48.0f));
-    phadd = hz / samplerate;
+    phadd = hz / MSampleRate;
   }
 
   //----------
@@ -155,8 +178,11 @@ public:
 
   MIP_Editor*                 MEditor     = nullptr;
   MIP_ClapVoices<myVoice,16>  MVoices     = {};
-  float                       MParamValue = 0.0;
-  float                       MParamMod   = 0.0;
+
+  float MGain       = 0.0;
+  float MGainMod    = 0.0;
+  float MFilter     = 0.0;
+  float MFilterMod  = 0.0;
 
 //------------------------------
 public:
@@ -194,13 +220,27 @@ public:
           MVoices.note_mask(&event->note_mask);
           break;
         case CLAP_EVENT_PARAM_VALUE:
-          if (event->param_value.param_id == 0) {
-            MParamValue = event->param_value.value;
+          switch (event->param_value.param_id) {
+            case 0:
+              MGain = event->param_value.value;
+              break;
+            //default
+            case 1:
+              MFilter = event->param_value.value;
+              MVoices.parameter(&event->param_value);
+              break;
           }
           break;
         case CLAP_EVENT_PARAM_MOD:
-          if (event->param_mod.param_id == 0) {
-            MParamMod = event->param_mod.amount;
+          switch (event->param_mod.param_id) {
+            case 0:
+              MGainMod = event->param_mod.amount;
+              break;
+            //default:
+            case 1:
+              MFilterMod = event->param_mod.amount;
+              MVoices.modulation(&event->param_mod);
+              break;
           }
           break;
         case CLAP_EVENT_TRANSPORT:
@@ -217,6 +257,7 @@ public:
   //----------
 
   void process_output_events(const clap_event_list_t* events) {
+    // send param_mod : gain + mod
   }
 
 //------------------------------
@@ -258,20 +299,9 @@ public:
   //----------
 
   clap_process_status process(const clap_process_t* process) final {
-
     process_input_events(process->in_events);
     MVoices.process(process);
-
-    //uint32_t num_samples = process->frames_count;
-    //float* in0 = process->audio_inputs[0].data32[0];
-    //float* in1 = process->audio_inputs[0].data32[1];
-    //float* out0 = process->audio_outputs[0].data32[0];
-    //float* out1 = process->audio_outputs[0].data32[1];
-    //for (uint32_t i=0; i<num_samples; i++) {
-    //  *out0++ = *in0++ * (MParamValue + MParamMod);
-    //  *out1++ = *in1++ * (MParamValue + MParamMod);
-    //}
-
+    MIP_ScaleStereoBuffer(process->audio_outputs->data32,MGain,MGain,process->frames_count);
     process_output_events(process->out_events);
     return CLAP_PROCESS_CONTINUE;
   }
@@ -411,22 +441,34 @@ public: // params
 //------------------------------
 
   uint32_t params_count() final {
-    return 1;
+    return 2;
   }
 
   //----------
 
   bool params_get_info(int32_t param_index, clap_param_info_t* param_info) final {
-    if (param_index == 0) {
-      strncpy(param_info->name,"param",CLAP_NAME_SIZE-1);
-      strncpy(param_info->module,"module",CLAP_MODULE_SIZE-1);
-      param_info->id            = 0;
-      param_info->flags         = CLAP_PARAM_IS_MODULATABLE;
-      param_info->cookie        = nullptr;
-      param_info->min_value     = 0.0;
-      param_info->max_value     = 1.0;
-      param_info->default_value = 0.5;
-      return true;
+    switch (param_index) {
+      case 0:
+        strncpy(param_info->name,   "gain",CLAP_NAME_SIZE-1);
+        strncpy(param_info->module, "master",CLAP_MODULE_SIZE-1);
+        param_info->id            = 0;
+        param_info->flags         = CLAP_PARAM_IS_MODULATABLE;
+        param_info->cookie        = nullptr;
+        param_info->min_value     = 0.0;
+        param_info->max_value     = 1.0;
+        param_info->default_value = 0.5;
+        return true;
+      case 1:
+        strncpy(param_info->name,   "filter",CLAP_NAME_SIZE-1);
+        strncpy(param_info->module, "per voice",CLAP_MODULE_SIZE-1);
+        param_info->id            = 1;
+        param_info->flags         = CLAP_PARAM_IS_MODULATABLE
+                                  | CLAP_PARAM_IS_PER_NOTE;
+        param_info->cookie        = nullptr;
+        param_info->min_value     = 0.0;
+        param_info->max_value     = 1.0;
+        param_info->default_value = 0.5;
+        return true;
     }
     return false;
   }
@@ -435,9 +477,9 @@ public: // params
   //----------
 
   bool params_get_value(clap_id param_id, double *value) final {
-    if (param_id == 0) {
-      *value = MParamValue;
-      return true;
+    switch (param_id) {
+      case 0: *value = MGain;   return true;
+      case 1: *value = MFilter; return true;
     }
     return false;
   }
@@ -468,14 +510,16 @@ public: // state
 //------------------------------
 
   bool state_save(clap_ostream_t *stream) final {
-    stream->write(stream,&MParamValue,sizeof(float));
+    stream->write(stream,&MGain,sizeof(float));
+    stream->write(stream,&MFilter,sizeof(float));
     return true;
   }
 
   //----------
 
   bool state_load(clap_istream_t *stream) final {
-    stream->read(stream,&MParamValue,sizeof(float));
+    stream->read(stream,&MGain,sizeof(float));
+    stream->read(stream,&MFilter,sizeof(float));
     return true;
   }
 
