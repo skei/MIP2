@@ -239,6 +239,7 @@ public:
   MIP_ParamQueue  MHostParamQueue   = {};
   float*          MHostParamValues  = nullptr;
   bool            MIsProcessing     = false;
+  bool            MIsActivated      = false;
   float           MGain             = 0.0;
   float           MGainMod          = 0.0;
   float           MFilter           = 0.0;
@@ -268,6 +269,7 @@ public:
 //------------------------------
 
   bool isProcessing() { return MIsProcessing; }
+  bool isActivated() { return MIsActivated; }
 
 //------------------------------
 public:
@@ -423,6 +425,7 @@ public:
   */
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
+    MIsActivated = true;
     MVoices.prepare(sample_rate);
     return true;
   }
@@ -430,6 +433,7 @@ public:
   //----------
 
   void deactivate() final {
+    MIsActivated = false;
   }
 
   //----------
