@@ -8,7 +8,6 @@
 //----------------------------------------------------------------------
 
 struct MIP_ClapPluginHostExt {
-  // extensions
   clap_host_audio_ports*        audio_ports         = nullptr;
   clap_host_audio_ports_config* audio_ports_config  = nullptr;
   clap_host_event_filter*       event_filter        = nullptr;
@@ -76,33 +75,33 @@ public:
 public:
 //------------------------------
 
-  const char* getName()     { return MName; }
-  const char* getVendor()   { return MVendor; }
-  const char* getUrl()      { return MUrl; }
-  const char* getVersion()  { return MVersion; }
+  const char* getName()             { return MName; }
+  const char* getVendor()           { return MVendor; }
+  const char* getUrl()              { return MUrl; }
+  const char* getVersion()          { return MVersion; }
 
-  bool has_audio_ports()        { return (MHostExt.audio_ports != nullptr); }
-  bool has_audio_ports_config() { return (MHostExt.audio_ports_config != nullptr); }
-  bool has_event_filter()       { return (MHostExt.event_filter != nullptr); }
-  bool has_fd_support()         { return (MHostExt.fd_support != nullptr); }
-  bool has_gui()                { return (MHostExt.gui != nullptr); }
-  bool has_latency()            { return (MHostExt.latency != nullptr); }
-  bool has_log()                { return (MHostExt.log != nullptr); }
-  bool has_note_name()          { return (MHostExt.note_name != nullptr); }
-  bool has_note_ports()         { return (MHostExt.note_ports != nullptr); }
-  bool has_params()             { return (MHostExt.params != nullptr); }
-  bool has_state()              { return (MHostExt.state != nullptr); }
-  bool has_thread_check()       { return (MHostExt.thread_check != nullptr); }
-  bool has_thread_pool()        { return (MHostExt.thread_pool != nullptr); }
-  bool has_timer_support()      { return (MHostExt.timer_support != nullptr); }
+  bool has_ext_audio_ports()        { return (MHostExt.audio_ports != nullptr); }
+  bool has_ext_audio_ports_config() { return (MHostExt.audio_ports_config != nullptr); }
+  bool has_ext_event_filter()       { return (MHostExt.event_filter != nullptr); }
+  bool has_ext_fd_support()         { return (MHostExt.fd_support != nullptr); }
+  bool has_ext_gui()                { return (MHostExt.gui != nullptr); }
+  bool has_ext_latency()            { return (MHostExt.latency != nullptr); }
+  bool has_ext_log()                { return (MHostExt.log != nullptr); }
+  bool has_ext_note_name()          { return (MHostExt.note_name != nullptr); }
+  bool has_ext_note_ports()         { return (MHostExt.note_ports != nullptr); }
+  bool has_ext_params()             { return (MHostExt.params != nullptr); }
+  bool has_ext_state()              { return (MHostExt.state != nullptr); }
+  bool has_ext_thread_check()       { return (MHostExt.thread_check != nullptr); }
+  bool has_ext_thread_pool()        { return (MHostExt.thread_pool != nullptr); }
+  bool has_ext_timer_support()      { return (MHostExt.timer_support != nullptr); }
   // draft
-  bool has_check_for_update()   { return (MHostExt.check_for_update != nullptr); }
-  bool has_file_reference()     { return (MHostExt.file_reference != nullptr); }
-  bool has_midi_mappings()      { return (MHostExt.midi_mappings != nullptr); }
-  bool has_quick_controls()     { return (MHostExt.quick_controls != nullptr); }
-  bool has_surround()           { return (MHostExt.surround != nullptr); }
-  bool has_track_info()         { return (MHostExt.track_info != nullptr); }
-  bool has_tuning()             { return (MHostExt.tuning != nullptr); }
+  bool has_ext_check_for_update()   { return (MHostExt.check_for_update != nullptr); }
+  bool has_ext_file_reference()     { return (MHostExt.file_reference != nullptr); }
+  bool has_ext_midi_mappings()      { return (MHostExt.midi_mappings != nullptr); }
+  bool has_ext_quick_controls()     { return (MHostExt.quick_controls != nullptr); }
+  bool has_ext_surround()           { return (MHostExt.surround != nullptr); }
+  bool has_ext_track_info()         { return (MHostExt.track_info != nullptr); }
+  bool has_ext_tuning()             { return (MHostExt.tuning != nullptr); }
 
   //----------
 

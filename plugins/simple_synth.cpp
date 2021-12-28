@@ -1,9 +1,6 @@
 
 
 // nc -U -l -k /tmp/mip.socket
-
-#define MIP_DEBUG
-#define MIP_DEBUG_PRINT
 #define MIP_DEBUG_PRINT_SOCKET
 #define MIP_DEBUG_PRINT_THREAD
 #define MIP_DEBUG_PRINT_TIME
@@ -22,7 +19,6 @@
 #include "gui//mip_widget.h"
 #include "gui//mip_test_widget.h"
 
-//typedef MIP_Queue<uint32_t,1024> MIP_IntQueue;
 typedef MIP_Queue<int32_t,1024> MIP_ParamQueue;
 
 //----------------------------------------------------------------------
@@ -31,8 +27,13 @@ typedef MIP_Queue<int32_t,1024> MIP_ParamQueue;
 //
 //----------------------------------------------------------------------
 
-class myDescriptor : public MIP_ClapPluginDescriptor {
+class myDescriptor
+: public MIP_ClapPluginDescriptor {
+
+//------------------------------
 public:
+//------------------------------
+
   myDescriptor() {
     setName("myPlugin");
     setVendor("Tor-Helge Skei");
@@ -40,6 +41,7 @@ public:
     setVersion("0.0.0");
     setType(CLAP_PLUGIN_INSTRUMENT);
   }
+
 };
 
 //----------------------------------------------------------------------
@@ -51,19 +53,24 @@ public:
 class myEditor
 : public MIP_Editor {
 
+//------------------------------
 public:
+//------------------------------
 
   myEditor(uint32_t num_params)
   : MIP_Editor(num_params) {
   }
 
+  //----------
+
   virtual ~myEditor() {
   };
 
+//------------------------------
 public:
+//------------------------------
 
   void show() final {
-    //MIP_Window* win = getWindow();
     MIP_Widget* wdg1 = new MIP_TestWidget( MIP_FRect(10,10,100,20), "wdg1", 0.5 );
     MIP_Widget* wdg2 = new MIP_TestWidget( MIP_FRect(10,40,100,20), "wdg2", 0.2 );
     wdg1->setModValue(0.7);
@@ -75,8 +82,6 @@ public:
     MIP_Editor::show();
   }
 
-
-
 };
 
 //----------------------------------------------------------------------
@@ -87,7 +92,9 @@ public:
 
 class myVoice {
 
+//------------------------------
 private:
+//------------------------------
 
   MIP_ClapVoiceContext* MContext      = nullptr;
   float                 MNote         = 0.0f;
@@ -104,7 +111,9 @@ private:
   float w     = 0.0;
   float wm    = 0.0;
 
+//------------------------------
 public:
+//------------------------------
 
   bool prepare(MIP_ClapVoiceContext* AContext) {
     MContext = AContext;
@@ -177,14 +186,12 @@ public:
   //----------
 
   void parameter(uint32_t i, float v) {
-    //MIP_Print("%i = %.2f\n",i,v);
     if (i == 1) w = (v*v);
   }
 
   //----------
 
   void modulation(uint32_t i, float v) {
-    //MIP_Print("%i = %.2f\n",i,v);
     if (i == 1) wm = v;
   }
 
@@ -209,6 +216,8 @@ public:
 
 };
 
+//------------------------------
+
 typedef MIP_ClapVoices<myVoice,16> myVoices;
 
 //----------------------------------------------------------------------
@@ -225,7 +234,6 @@ class myPlugin
 public:
 //------------------------------
 
-//MIP_Editor*     MEditor           = nullptr;
   myEditor*       MEditor           = nullptr;
   myVoices        MVoices           = {};
   MIP_ParamQueue  MHostParamQueue   = {};
@@ -248,6 +256,8 @@ public:
     MHostParamValues = (float*)malloc(num_params * sizeof(uint32_t));
   }
 
+  //----------
+
   virtual ~myPlugin() {
     free(MHostParamValues);
   }
@@ -265,7 +275,6 @@ public:
 
   void queueHostParam(int32_t AIndex, float AValue) {
     if (AIndex >= 0) {
-      //MIP_Print("index %i value %.3f\n",AIndex,AValue);
       MHostParamValues[AIndex] = AValue;
       MHostParamQueue.write(AIndex);
     }
@@ -278,7 +287,6 @@ public:
     while (MHostParamQueue.read(&index)) {
       if (index >= 0) {
         float value = MHostParamValues[index];
-        //MIP_Print("index %i value %.3f\n",index,value);
         clap_event event;
         event.type                    = CLAP_EVENT_PARAM_VALUE;
         event.time                    = 0;
@@ -327,7 +335,6 @@ public:
             case 0:
               MGain = event->param_value.value;
               break;
-            //default
             case 1:
               MFilter = event->param_value.value;
               MVoices.parameter(&event->param_value);
@@ -339,7 +346,6 @@ public:
             case 0:
               MGainMod = event->param_mod.amount;
               break;
-            //default:
             case 1:
               MFilterMod = event->param_mod.amount;
               MVoices.modulation(&event->param_mod);
@@ -369,13 +375,11 @@ public:
 public:
 //------------------------------
 
-  /*
-    gui thread
-  */
+  // gui thread
 
   void do_editor_updateParameter(uint32_t AIndex, float AValue) final {
-    //MIP_Print("index %i value %.3f\n",AIndex,AValue);
     queueHostParam(AIndex,AValue);
+    if (!MIsProcessing) MHost->params_request_flush();
     switch (AIndex) {
       case 0: MGain = AValue; break;
       case 1: MFilter = AIndex; MVoices.handle_master_param(1,AValue); break;
@@ -613,7 +617,6 @@ public: // gui
   // we don't have a window yet!
 
   bool gui_create() final {
-    //MEditor = new MIP_Editor( params_count() );
     MEditor = new myEditor( params_count() );
     MEditor->setListener(this);
     return true;
@@ -725,24 +728,9 @@ public: // gui x11
 
   bool gui_x11_attach(const char *display_name, unsigned long window) final {
     if (MEditor->attach(display_name,window)) {
-
-//----- test -----
-
-//MIP_Window* win = MEditor->getWindow();
-//MIP_Widget* wdg1 = new MIP_TestWidget( MIP_FRect(10,10,100,20), "wdg1", 0.5 );
-//MIP_Widget* wdg2 = new MIP_TestWidget( MIP_FRect(10,40,100,20), "wdg2", 0.2 );
-//wdg1->setModValue(0.7);
-//wdg2->setModValue(0.4);
-//win->appendWidget(wdg1);
-//win->appendWidget(wdg2);
-//
-//MEditor->connectParameter(wdg1,0);
-//MEditor->connectParameter(wdg2,1);
-
-//----- test -----
-
+      return true;
     }
-    return true;
+    return false;
   }
 
 //------------------------------
@@ -920,6 +908,7 @@ public: // params
   */
 
   void params_flush(const clap_event_list_t *input_parameter_changes, const clap_event_list_t *output_parameter_changes) final {
+    MIP_PRINT;
     process_input_events(input_parameter_changes);
     process_output_events(output_parameter_changes);
   }
@@ -959,7 +948,6 @@ public: // timner support
 //------------------------------
 
   void timer_support_on_timer(clap_id timer_id) final {
-    //MIP_PRINT;
     if (MEditor) MEditor->flushEditorParams();
   }
 

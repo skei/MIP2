@@ -9,6 +9,10 @@ typedef MIP_Array<MIP_Widget*>      MIP_WidgetArray;
 typedef MIP_Queue<MIP_Widget*,1024> MIP_WidgetQueue;
 
 //----------------------------------------------------------------------
+//
+// editor listener
+//
+//----------------------------------------------------------------------
 
 class MIP_EditorListener {
 public:
@@ -17,7 +21,7 @@ public:
 
 //----------------------------------------------------------------------
 //
-//
+// editor
 //
 //----------------------------------------------------------------------
 
@@ -134,7 +138,6 @@ public:
   //----------
 
   virtual void show() {
-    //MIP_PRINT;
     MIsEditorOpen = true;
     MWindow->open();
   }
@@ -142,7 +145,6 @@ public:
   //----------
 
   virtual void hide() {
-    //MIP_PRINT;
     MIsEditorOpen = false;
     MWindow->close();
   }
@@ -190,14 +192,9 @@ public:
 public: // window listener
 //------------------------------
 
-  /*
-    deliver this to the plugin
-  */
-
   void do_window_updateWidget(MIP_Widget* AWidget) override {
     int32_t param_index = AWidget->getParameterIndex();
     float   param_value = AWidget->getValue();
-    //MIP_Print("widget: %s param %i value %.3f\n",AWidget->getName(),param_index,param_value);
     if (param_index >= 0) {
       if (MListener) MListener->do_editor_updateParameter(param_index,param_value);
     }
