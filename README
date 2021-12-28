@@ -6,20 +6,17 @@ MIP 2
 
 work in progress!
 
-this will be the culmination/combination of the previous prototype/proof-of-concept frameworks kode3 and mip.. at the moment it's very much in a "state of flux", but things are moving fast!
+* linux
+* gcc
+* xcb
+* clap
 
-in the meanwhile, have a look at some of the previous code:
+----------
 
-claphost:
-https://github.com/skei/MIP/tree/master/apps
+see also:
+(most of this is already ported over to MIP2, or will soon be)
 
-simple mpe synth:
-https://github.com/skei/MIP/tree/master/plugins/templates
-
-kode3:
-https://github.com/skei/kode3
-
-mip:
-https://github.com/skei/MIP
-
-
+claphost: https://github.com/skei/MIP/tree/master/apps
+simple mpe synth: https://github.com/skei/MIP/tree/master/plugins/templates
+kode3: https://github.com/skei/kode3
+mip: https://github.com/skei/MIP
