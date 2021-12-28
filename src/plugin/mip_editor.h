@@ -2,11 +2,10 @@
 #define mip_editor_incuded
 //----------------------------------------------------------------------
 
-#define MIP_EDITOR_MAX_PARAMS 1024
-
 #include "base/types/mip_queue.h"
 #include "gui/mip_window.h"
 
+typedef MIP_Array<MIP_Widget*>      MIP_WidgetArray;
 typedef MIP_Queue<MIP_Widget*,1024> MIP_WidgetQueue;
 
 //----------------------------------------------------------------------
@@ -29,26 +28,33 @@ class MIP_Editor
 private:
 //------------------------------
 
-  MIP_Window*         MWindow                   = nullptr;
-  MIP_EditorListener* MListener                 = nullptr;
-  double              MScale                    = 1.0;
-  uint32_t            MWidth                    = 400;
-  uint32_t            MHeight                   = 400;
+  MIP_EditorListener* MListener           = nullptr;
+  float*              MEditorParamValues  = nullptr;
+  MIP_WidgetQueue     MEditorParamQueue   = {};
+  MIP_WidgetArray     MParameterToWidget  = {};
 
-  MIP_WidgetQueue     MHostToEditor             = {};
+//------------------------------
+protected:
+//------------------------------
 
-  MIP_Widget* MParameterToWidget[MIP_EDITOR_MAX_PARAMS] = {0};
+  bool                MIsEditorOpen       = false;
+  MIP_Window*         MWindow             = nullptr;
+  uint32_t            MWidth              = 400;
+  uint32_t            MHeight             = 400;
+  double              MScale              = 1.0;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Editor() {
+  MIP_Editor(uint32_t num_params) {
+    MEditorParamValues = (float*)malloc(num_params * sizeof(float));
   }
 
   //----------
 
   virtual ~MIP_Editor() {
+    free(MEditorParamValues);
     if (MWindow) delete MWindow;
   }
 
@@ -56,11 +62,61 @@ public:
 public:
 //------------------------------
 
-  void setListener(MIP_EditorListener* l) { MListener = l; }
+  void setListener(MIP_EditorListener* l) {
+    MListener = l;
+  }
 
   //----------
 
-  MIP_Window* getWindow() { return MWindow; }
+  MIP_Window* getWindow() {
+    return MWindow;
+  }
+
+  //
+
+  void connectParameter(MIP_Widget* AWidget, uint32_t AParamIndex) {
+    if (AParamIndex >= MParameterToWidget.size()) {
+      MParameterToWidget.resize(AParamIndex+1);
+    }
+    MParameterToWidget[AParamIndex] = AWidget;
+    AWidget->setParameterIndex(AParamIndex);
+    AWidget->on_widget_connect(AParamIndex);
+  }
+
+  //
+
+//------------------------------
+public:
+//------------------------------
+
+  // audio thread
+
+  void queueEditorParam(int32_t AIndex, float AValue) {
+    MIP_Widget* widget = MParameterToWidget[AIndex];
+    //MIP_Print("index %i value %.3f widget %p\n",AIndex,AValue,widget);
+    if (widget) {
+      MEditorParamValues[AIndex] = AValue;
+      MEditorParamQueue.write(widget);
+    }
+  }
+
+  //----------
+
+  // timer
+
+  void flushEditorParams() {
+    if (MWindow && MIsEditorOpen) {
+      MIP_Widget* widget;
+      while (MEditorParamQueue.read(&widget)) {
+        int32_t index = widget->getParameterIndex();
+        if (index >= 0) {
+          float value = MEditorParamValues[index];
+          widget->setValue(value);
+          MWindow->paintWidget(widget);
+        }
+      }
+    }
+  }
 
 //------------------------------
 public:
@@ -78,12 +134,16 @@ public:
   //----------
 
   virtual void show() {
+    //MIP_PRINT;
+    MIsEditorOpen = true;
     MWindow->open();
   }
 
   //----------
 
   virtual void hide() {
+    //MIP_PRINT;
+    MIsEditorOpen = false;
     MWindow->close();
   }
 
@@ -137,7 +197,7 @@ public: // window listener
   void do_window_updateWidget(MIP_Widget* AWidget) override {
     int32_t param_index = AWidget->getParameterIndex();
     float   param_value = AWidget->getValue();
-    MIP_Print("widget: %s param %i value %.3f\n",AWidget->getName(),param_index,param_value);
+    //MIP_Print("widget: %s param %i value %.3f\n",AWidget->getName(),param_index,param_value);
     if (param_index >= 0) {
       if (MListener) MListener->do_editor_updateParameter(param_index,param_value);
     }
@@ -147,22 +207,6 @@ public: // window listener
 
   void do_window_redrawWidget(MIP_Widget* AWidget) override {
     MWindow->paintWidget(AWidget);
-  }
-
-//------------------------------
-public: // instance
-//------------------------------
-
-  /*
-    audio thread
-  */
-
-  void updateParameter(uint32_t AIndex, float AValue) {
-    MIP_Widget* widget = MParameterToWidget[AIndex];
-    MIP_Print("index %i value %.3f widget %p\n",AIndex,AValue,widget);
-    if (widget) {
-      //MHostToEditor.write(widget);
-    }
   }
 
 };

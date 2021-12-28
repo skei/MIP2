@@ -296,7 +296,8 @@ private:
   }
 
 //------------------------------
-private:
+//private:
+public:
 //------------------------------
 
   void handle_voice_strike(int32_t APort, int32_t AChannel, uint32_t ANote, uint32_t AVelocity) {

@@ -287,6 +287,7 @@
 		<Unit filename="../src/gui/mip_drawable.h" />
 		<Unit filename="../src/gui/mip_painter.h" />
 		<Unit filename="../src/gui/mip_surface.h" />
+		<Unit filename="../src/gui/mip_test_widget.h" />
 		<Unit filename="../src/gui/mip_widget.h" />
 		<Unit filename="../src/gui/mip_window.h" />
 		<Unit filename="../src/gui/nogui/mip_nogui.h" />

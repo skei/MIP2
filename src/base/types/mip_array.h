@@ -55,6 +55,8 @@ public:
   _T&       item(const uint32_t AIndex)   { return MBuffer[AIndex]; }
   uint32_t  bufferSize(void)              { return MBufferSize; }
 
+  void      resize(const uint32_t ASize)  { resizeBuffer(ASize); }
+
 //------------------------------
 public:
 //------------------------------

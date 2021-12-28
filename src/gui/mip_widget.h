@@ -136,15 +136,15 @@ public:
 public:
 //------------------------------
 
-  virtual void updateValue(float AValue) {
-    MIP_PRINT;
-  }
+  //virtual void updateValue(float AValue) {
+  //  MIP_PRINT;
+  //}
 
   //----------
 
-  virtual void redraw() {
-    MIP_PRINT;
-  }
+  //virtual void redraw() {
+  //  MIP_PRINT;
+  //}
 
 //------------------------------
 public:

@@ -83,7 +83,7 @@ public:
   void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp) override {
     //MIP_Print("%s : x %.2f y %.2f s %i\n",MName,AXpos,AYpos,AState);
     if (MIsDragging) {
-      float deltax = MClickedX - AXpos;
+      //float deltax = MClickedX - AXpos;
       float deltay = MClickedY - AYpos;
       float value = MClickedValue + (deltay * MSensitivity);
       value = MIP_Clamp(value,0,1);
