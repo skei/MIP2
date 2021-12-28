@@ -29,6 +29,10 @@ protected:
   int32_t     MWidgetIndex    = -1;
   int32_t     MParameterIndex = -1;
   float       MValue          = 0.0;
+  float       MMinValue       = 0.0;
+  float       MMaxValue       = 1.0;
+  float       MDefValue       = 0.0;
+  uint32_t    MNumSteps       = 0.0;
   float       MModValue       = 0.0;
 
   bool        MIsActive       = true;
@@ -156,7 +160,6 @@ public:
 
   virtual void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect) {
     //MIP_Print("%s : x %.2f y %.2f w %.2f h %.2f\n",MName,ARect.x,ARect.y,ARect.w,ARect.h);
-    APainter->fillRectangle(MRect,MIP_COLOR_RED);
   }
 
   virtual void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) {

@@ -170,10 +170,8 @@ public: // buffer
   #endif
 
 //------------------------------
-public: // MIP_BaseWindow
+public: // window
 //------------------------------
-
-  //----------
 
   void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect) {
     if (MChildren.size() > 0) {
@@ -188,6 +186,18 @@ public: // MIP_BaseWindow
       }
     }
   }
+
+  //----------
+
+  void paintWidget(MIP_Widget* AWidget) {
+    MIP_FRect rect = AWidget->getRect();
+    #ifdef MIP_NO_WINDOW_BUFFERING
+    paintWindow(rect);
+    #else
+    paintBuffer(rect);
+    #endif
+
+  };
 
 //------------------------------
 public: // MIP_BaseWindow
@@ -319,7 +329,7 @@ public: // MIP_Widget
 //------------------------------
 
   void do_widget_update(MIP_Widget* AWidget) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (MListener) MListener->do_window_updateWidget(AWidget);
   }
 
@@ -329,7 +339,7 @@ public: // MIP_Widget
   // timer, idle..
 
   void do_widget_redraw(MIP_Widget* AWidget) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (MListener) MListener->do_window_redrawWidget(AWidget);
   }
 

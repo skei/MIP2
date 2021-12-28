@@ -16,6 +16,8 @@
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_voices.h"
 
+#include "gui//mip_test_widget.h"
+
 //----------------------------------------------------------------------
 //
 // descriptor
@@ -172,7 +174,8 @@ public:
 //----------------------------------------------------------------------
 
 class myPlugin
-: public MIP_ClapPlugin {
+: public MIP_ClapPlugin
+, public MIP_EditorListener {
 
 //------------------------------
 public:
@@ -222,6 +225,9 @@ public:
           MVoices.note_mask(&event->note_mask);
           break;
         case CLAP_EVENT_PARAM_VALUE:
+
+          if (MEditor) MEditor->updateParameter(event->param_value.param_id,event->param_value.value);
+
           switch (event->param_value.param_id) {
             case 0:
               MGain = event->param_value.value;
@@ -260,6 +266,21 @@ public:
 
   void process_output_events(const clap_event_list_t* events) {
     // send param_mod : gain + mod
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  /*
+    gui thread
+  */
+
+  void do_editor_updateParameter(uint32_t AIndex, float AValue) final {
+    MIP_Print("index %i value %.3f\n",AIndex,AValue);
+    //MParameterValues[AIndex] = AValue;
+    //MEditorToPlugin.write(AIndex);
+
   }
 
 //------------------------------
@@ -378,6 +399,7 @@ public: // gui
 
   bool gui_create() final {
     MEditor = new MIP_Editor();
+    MEditor->setListener(this);
     return true;
   }
 
@@ -441,10 +463,10 @@ public: // gui x11
 //----- test -----
 
 MIP_Window* win = MEditor->getWindow();
-MIP_Widget* wdg1 = new MIP_Widget( MIP_FRect(10,10,100,20) );
-MIP_Widget* wdg2 = new MIP_Widget( MIP_FRect(10,40,100,20) );
-wdg1->setName("wdg1");
-wdg2->setName("wdg2");
+MIP_Widget* wdg1 = new MIP_TestWidget( MIP_FRect(10,10,100,20), "wdg1", 0.5 );
+MIP_Widget* wdg2 = new MIP_TestWidget( MIP_FRect(10,40,100,20), "wdg2", 0.2 );
+wdg1->setModValue(0.7);
+wdg2->setModValue(0.4);
 win->appendWidget(wdg1);
 win->appendWidget(wdg2);
 
