@@ -4,19 +4,29 @@ MIP 2
 
 ----------
 
-work in progress!
+plugin wrappers, abstractions, simplifications, helpers, ..
+in progress, prototype, proof of concept, pre-, ..
 
-* linux
-* gcc
-* xcb
-* clap
+* os: linux (windows considered)
+* gui: xcb (cairo incoming)
+* plugin: clap (exe, vst2, vst3, maybe lv2 coming)
+* host: clap (other formats considered)
+
+* headers-only
+* un-modern, un-cool c++
+* no (minimal) dependencies
+* ...
+
+* make it work
+* make it right
+* make it fast, small, stable, bugfree, pretty, etc..
 
 ----------
 
 see also:
 (most of this is already ported over to MIP2, or will be soon)
 
-claphost: https://github.com/skei/MIP/tree/master/apps
+mip:              https://github.com/skei/MIP
+claphost:         https://github.com/skei/MIP/tree/master/apps
 simple mpe synth: https://github.com/skei/MIP/tree/master/plugins/templates
-kode3: https://github.com/skei/kode3
-mip: https://github.com/skei/MIP
+kode3:            https://github.com/skei/kode3
