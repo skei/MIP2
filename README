@@ -30,3 +30,8 @@ mip:              https://github.com/skei/MIP
 claphost:         https://github.com/skei/MIP/tree/master/apps
 simple mpe synth: https://github.com/skei/MIP/tree/master/plugins/templates
 kode3:            https://github.com/skei/kode3
+
+----------
+
+g++ -Wall -std=c++14 -fPIC -g -rdynamic -Wl,-Bsymbolic -DMIP_DEBUG -I../src -c build.cpp -o build.o
+g++ -shared build.o -o mip_debug.so -fPIE -lpthread -ldl -lxcb -lxcb-util -lxcb-image -lxcb-cursor -lxcb-keysyms -lcairo -lsndfile
