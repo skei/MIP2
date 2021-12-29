@@ -4,11 +4,14 @@
 
 /*
   TODO:
-  - sample accurate events
+  - redo this completely
+  - sample accurate events (in & out)
   - send event_mod events
   - handle note_choke
   - handle volume expression
 */
+
+//----------------------------------------------------------------------
 
 #include "mip.h"
 #include "audio/mip_audio_utils.h"
@@ -66,7 +69,7 @@ public:
 public:
 //------------------------------
 
-  void prepare(float ASampleRate/*, uint32_t ABlockSize*/) {
+  void prepare(float ASampleRate) {
     MVoiceContext.samplerate = ASampleRate;
     for (uint32_t i=0; i<NUM; i++) {
       MVoices[i].prepare(&MVoiceContext);
@@ -76,21 +79,18 @@ public:
   //----------
 
   void note_on(const clap_event_note_t* event) {
-    //MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
     handle_voice_strike(event->port_index,event->channel,event->key,event->velocity);
   }
 
   //----------
 
   void note_off(const clap_event_note_t* event) {
-    //MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
     handle_voice_lift(event->port_index,event->channel,event->key,event->velocity);
   }
 
   //----------
 
   void note_end(const clap_event_note_t* event) {
-    //MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
   }
 
   //----------
@@ -101,8 +101,6 @@ public:
   */
 
   void note_choke(const clap_event_note_t* event) {
-    //MIP_Print("port %i chan %i key %i vel %.2f\n",event->port_index,event->channel,event->key,event->velocity);
-    //handle_voice_choke
   }
 
   //----------
@@ -110,7 +108,6 @@ public:
   void note_expression(const clap_event_note_expression_t* event) {
     switch(event->expression_id) {
       case CLAP_NOTE_EXPRESSION_VOLUME:
-        //MIP_Print("volume.. port %i chan %i key %i value %f\n",event->port_index,event->channel,event->key,event->value);
         // // x >= 0, use 20 * log(4 * x)
         break;
       case CLAP_NOTE_EXPRESSION_PAN:
@@ -118,7 +115,7 @@ public:
         break;
       case CLAP_NOTE_EXPRESSION_TUNING:
         // relative tuning in semitone, from -120 to +120
-        handle_voice_bend(event->channel,event->value * MIP_INV_VOICE_BEND_RANGE); // qwe
+        handle_voice_bend(event->channel,event->value * MIP_INV_VOICE_BEND_RANGE);
         break;
       case CLAP_NOTE_EXPRESSION_VIBRATO:
         break;
@@ -254,7 +251,6 @@ private:
     int32_t n  = MVoiceNote[voice];
     int32_t ch = MVoiceChannel[voice];
     if ((n>=0) && (ch>=0)) {
-      //uint32_t note = (MVoiceChannel[voice] * 128) + MVoiceNote[voice];
       uint32_t note = (ch * 128) + n;
       MNoteToVoice[note]    = -1;
       MVoiceNote[voice]     = -1;
@@ -266,7 +262,6 @@ private:
   //----------
 
   void send_note_end_event(const clap_process* process, uint32_t time, int32_t port, int32_t key, int32_t chan) {
-    //MIP_PRINT;
     clap_event event;
     event.type            = CLAP_EVENT_NOTE_END;
     event.time            = time;
@@ -331,7 +326,6 @@ public:
 
   //void handle_voice_bend(int32_t AChannel, uint32_t ABend) {
   //  float v = (ABend * MIP_INV8192F) - 1.0f;
-
   // ABend = -1 .. 1
 
   void handle_voice_bend(int32_t AChannel, float ABend) {
@@ -378,9 +372,7 @@ public:
   //----------
 
   void handle_voice_param(int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
-    //MIP_Print("%i:%i = %.2f\n",AIndex,AValue);
-    int32_t v = MNoteToVoice[(AChannel * 128) + AKey];
-    MIP_Print("v = %i\n",v);
+    //int32_t v = MNoteToVoice[(AChannel * 128) + AKey];
     //if (v >= 0) {
     //  MVoices[v].parameter(AIndex,AValue);
     //}
@@ -389,9 +381,7 @@ public:
   //----------
 
   void handle_voice_mod(int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
-    //MIP_Print("ch %i k %i i %i v %.2f\n",AChannel,AKey,AIndex,AValue);
-    int32_t v = MNoteToVoice[(AChannel * 128) + AKey];
-    MIP_Print("v = %i\n",v);
+    //int32_t v = MNoteToVoice[(AChannel * 128) + AKey];
     //if (v >= 0) {
     //  MVoices[v].modulation(AIndex,AValue);
     //}
@@ -409,7 +399,6 @@ public:
   //----------
 
   void handle_master_param(uint32_t AIndex, float AValue) {
-    //MIP_Print("i %i v %.2f\n",AIndex,AValue);
     for (uint32_t i=0; i<NUM; i++) {
       MVoices[i].parameter(AIndex,AValue);
     }
@@ -418,7 +407,6 @@ public:
   //----------
 
   void handle_master_mod(uint32_t AIndex, float AValue) {
-    //MIP_Print("i %i v %.2f\n",AIndex,AValue);
     for (uint32_t i=0; i<NUM; i++) {
       MVoices[i].modulation(AIndex,AValue);
     }
@@ -460,7 +448,8 @@ private:
     for (uint32_t i=0; i<NUM; i++) {
 
       if (MVoiceState[i] == MIP_VOICE_FINISHED) {
-        uint32_t time = MVoiceContext.length - 1;; // shound be sample-time at event...
+        // shound be sample-time at event...
+        uint32_t time = MVoiceContext.length - 1;;
         int32_t  port = 0;
         int32_t  note = MVoiceNote[i];
         int32_t  chan = MVoiceChannel[i];

@@ -383,13 +383,18 @@ public:
     queueHostParam(AIndex,AValue);
     if (!MIsProcessing) MHost->params_request_flush();
     switch (AIndex) {
-      case 0: MGain = AValue; break;
-      case 1: MFilter = AIndex; MVoices.handle_master_param(1,AValue); break;
+      case 0:
+        MGain = AValue;
+        break;
+      case 1:
+        MFilter = AIndex;
+        MVoices.handle_master_param(1,AValue);
+        break;
     }
   }
 
 //------------------------------
-public:
+public: // clap plugin
 //------------------------------
 
   /*
@@ -490,10 +495,8 @@ public:
     [main-thread]
   */
 
-  // see MIP_ClapPlugin
-
-   //void on_main_thread(const struct clap_plugin *plugin) final {
-   //}
+   void on_main_thread() final {
+   }
 
 //------------------------------
 public: // audio ports
@@ -554,6 +557,32 @@ public: // audio ports
     }
     return false;
   }
+
+//------------------------------
+public: // audio ports config
+//------------------------------
+
+  //uint32_t audio_ports_config_count() final {
+  //  return 0;
+  //}
+
+  //----------
+
+  //bool audio_ports_config_get(uint32_t index, clap_audio_ports_config_t* config) final {
+  //  config->id
+  //  config->name
+  //  config->input_channel_count
+  //  config->input_channel_map
+  //  config->output_channel_count
+  //  config->output_channel_map
+  //  return false;
+  //}
+
+  //----------
+
+  //bool audio_ports_config_select(clap_id config_id) final {
+  //  return false;
+  //}
 
 //------------------------------
 public: // event filter
@@ -738,6 +767,56 @@ public: // gui x11
   }
 
 //------------------------------
+public: // latency
+//------------------------------
+
+  //uint32_t latency_get() final {
+  //  return 0;
+  //}
+
+//------------------------------
+public: // note name
+//------------------------------
+
+  //uint32_t note_name_count() final {
+  //  return 0;
+  //}
+
+  //----------
+
+  //bool note_name_get(uint32_t index, clap_note_name_t* note_name) final {
+  //  return false;
+  //}
+
+//------------------------------
+public: // midi mappings
+//------------------------------
+
+  //uint32_t midi_mappings_count() final {
+  //  return 0;
+  //}
+
+  //----------
+
+  //bool midi_mappings_get(uint32_t index, clap_midi_mapping_t* mapping) final {
+  //  return false;
+  //}
+
+//------------------------------
+public: // note ports
+//------------------------------
+
+  //uint32_t note_ports_count(bool is_input) final {
+  //  return 0;
+  //}
+
+  //----------
+
+  //bool note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t* info) final {
+  //  return false;
+  //}
+
+//------------------------------
 public: // params
 //------------------------------
 
@@ -869,8 +948,12 @@ public: // params
 
   bool params_get_value(clap_id param_id, double *value) final {
     switch (param_id) {
-      case 0: *value = MGain;   return true;
-      case 1: *value = MFilter; return true;
+      case 0:
+        *value = MGain;
+        return true;
+      case 1:
+        *value = MFilter;
+        return true;
     }
     return false;
   }
@@ -954,6 +1037,13 @@ public: // timner support
   void timer_support_on_timer(clap_id timer_id) final {
     if (MEditor) MEditor->flushEditorParams();
   }
+
+//------------------------------
+public: // track info
+//------------------------------
+
+  //void track_info_changed() {
+  //}
 
 };
 
