@@ -231,21 +231,25 @@ class myPlugin
 , public MIP_EditorListener {
 
 //------------------------------
-public:
+private:
 //------------------------------
 
-  myEditor*       MEditor           = nullptr;
-  myVoices        MVoices           = {};
-  MIP_ParamQueue  MHostParamQueue   = {};
-  float*          MHostParamValues  = nullptr;
-  bool            MIsProcessing     = false;
-  bool            MIsActivated      = false;
-  float           MGain             = 0.0;
-  float           MGainMod          = 0.0;
-  float           MFilter           = 0.0;
-  float           MFilterMod        = 0.0;
-  bool            MIsEditorOpen     = false;
-  uint32_t        MTimerId          = 0;
+  MIP_ParamQueue  MHostParamQueue           = {};
+  float*          MHostParamValues          = nullptr;
+
+  myEditor*       MEditor                   = nullptr;
+  bool            MIsEditorOpen             = false;
+  bool            MIsProcessing             = false;
+  bool            MIsActivated              = false;
+  uint32_t        MSelectedAudioPortsConfig = 0;
+  uint32_t        MSelectedQuickControls    = 0;
+  uint32_t        MTimerId                  = 0;
+
+  myVoices        MVoices                   = {};
+  float           MGain                     = 0.0;
+  float           MGainMod                  = 0.0;
+  float           MFilter                   = 0.0;
+  float           MFilterMod                = 0.0;
 
 //------------------------------
 public:
@@ -263,13 +267,13 @@ public:
     free(MHostParamValues);
   }
 
-
 //------------------------------
 public:
 //------------------------------
 
+  bool isActivated()  { return MIsActivated; }
+  bool isEditorOpen() { return MIsEditorOpen; }
   bool isProcessing() { return MIsProcessing; }
-  bool isActivated() { return MIsActivated; }
 
 //------------------------------
 public:
@@ -470,7 +474,8 @@ public: // clap plugin
   clap_process_status process(const clap_process_t* process) final {
     process_input_events(process->in_events);
     MVoices.process(process);
-    MIP_ScaleStereoBuffer(process->audio_outputs->data32,MGain,MGain,process->frames_count);
+    float gain = MGain + MGainMod;
+    MIP_ScaleStereoBuffer(process->audio_outputs->data32,gain,gain,process->frames_count);
     process_output_events(process->out_events);
     return CLAP_PROCESS_CONTINUE;
   }
@@ -484,11 +489,12 @@ public: // clap plugin
 
   // see MIP_ClapPlugin
 
-  //const void* get_extension(const struct clap_plugin *plugin, const char *id) final {
-  //  return nullptr;
+  //const void* get_extension(const char *id) final {
+  //  return MIP_ClapPlugin::get_extension(id);
   //}
 
   //----------
+
   /*
     Called by the host on the main thread in response to a previous call to:
     host->request_callback(host);
@@ -562,26 +568,38 @@ public: // audio ports
 public: // audio ports config
 //------------------------------
 
-  //uint32_t audio_ports_config_count() final {
-  //  return 0;
-  //}
+  uint32_t audio_ports_config_count() final {
+    return 0;
+  }
 
   //----------
 
-  //bool audio_ports_config_get(uint32_t index, clap_audio_ports_config_t* config) final {
-  //  config->id
-  //  config->name
-  //  config->input_channel_count
-  //  config->input_channel_map
-  //  config->output_channel_count
-  //  config->output_channel_map
-  //  return false;
-  //}
+  bool audio_ports_config_get(uint32_t index, clap_audio_ports_config_t* config) final {
+    switch (index) {
+      case 0:
+        config->id                    = 0;
+        strncpy(config->name,"config 1",CLAP_NAME_SIZE-1);
+        config->input_channel_count   = 2;
+        config->input_channel_map     = CLAP_CHMAP_STEREO;
+        config->output_channel_count  = 2;
+        config->output_channel_map    = CLAP_CHMAP_STEREO;
+        return true;
+    }
+    return false;
+  }
 
   //----------
 
-  //bool audio_ports_config_select(clap_id config_id) final {
-  //  return false;
+  bool audio_ports_config_select(clap_id config_id) final {
+    MSelectedAudioPortsConfig = config_id;
+    return true;
+  }
+
+//------------------------------
+public: // check for update
+//------------------------------
+
+  //void check_for_update_check(bool include_beta) final {
   //}
 
 //------------------------------
@@ -601,7 +619,7 @@ public: // event filter
     [main-thread]
   */
 
-  bool event_filter_accepts(clap_event_type event_type) override {
+  bool event_filter_accepts(clap_event_type event_type) final {
     switch (event_type) {
       case CLAP_EVENT_NOTE_ON:          return true;
       case CLAP_EVENT_NOTE_OFF:         return true;
@@ -615,6 +633,52 @@ public: // event filter
       case CLAP_EVENT_MIDI:             return true;
       case CLAP_EVENT_MIDI_SYSEX:       return true;
     }
+    return false;
+  }
+
+//------------------------------
+public: // fd support
+//------------------------------
+
+  void fd_support_on_fd(clap_fd fd, clap_fd_flags flags) final {
+  }
+
+//------------------------------
+public: // file reference
+//------------------------------
+
+  uint32_t file_reference_count() final {
+    return 0;
+  }
+
+  //----------
+
+  bool file_reference_get(uint32_t index, clap_file_reference_t *file_reference) final {
+    switch (index) {
+      default:
+        file_reference->resource_id = 0;
+        strncpy(file_reference->path,"./file.txt",CLAP_PATH_SIZE-1);
+        file_reference->belongs_to_plugin_collection = false;
+        return true;
+    }
+    return false;
+  }
+
+  //----------
+
+  bool file_reference_get_hash(clap_id resource_id, clap_hash hash, uint8_t *digest, uint32_t digest_size) final {
+    return false;
+  }
+
+  //----------
+
+  bool file_reference_update_path(clap_id resource_id, const char *path) final {
+    return false;
+  }
+
+  //----------
+
+  bool file_reference_save_resources() final {
     return false;
   }
 
@@ -770,51 +834,81 @@ public: // gui x11
 public: // latency
 //------------------------------
 
-  //uint32_t latency_get() final {
-  //  return 0;
-  //}
-
-//------------------------------
-public: // note name
-//------------------------------
-
-  //uint32_t note_name_count() final {
-  //  return 0;
-  //}
-
-  //----------
-
-  //bool note_name_get(uint32_t index, clap_note_name_t* note_name) final {
-  //  return false;
-  //}
+  uint32_t latency_get() final {
+    return 0;
+  }
 
 //------------------------------
 public: // midi mappings
 //------------------------------
 
-  //uint32_t midi_mappings_count() final {
-  //  return 0;
-  //}
+  uint32_t midi_mappings_count() final {
+    return 0;
+  }
 
   //----------
 
-  //bool midi_mappings_get(uint32_t index, clap_midi_mapping_t* mapping) final {
-  //  return false;
-  //}
+  bool midi_mappings_get(uint32_t index, clap_midi_mapping_t* mapping) final {
+    switch (index) {
+      default:
+        mapping->channel  = 0;
+        mapping->number   = 0;
+        mapping->param_id = 0;
+    }
+    return false;
+  }
 
 //------------------------------
-public: // note ports
+public: // note name
 //------------------------------
 
-  //uint32_t note_ports_count(bool is_input) final {
-  //  return 0;
-  //}
+  uint32_t note_name_count() final {
+    return 0;
+  }
 
   //----------
 
-  //bool note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t* info) final {
-  //  return false;
-  //}
+  bool note_name_get(uint32_t index, clap_note_name_t* note_name) final {
+    switch (index) {
+      default:
+        strncpy(note_name->name,"note_name",CLAP_NAME_SIZE-1);
+        note_name->port     = 0;
+        note_name->key      = 0;
+        note_name->channel  = -1; // -1 for every channels
+        return true;
+    }
+    return false;
+  }
+
+//------------------------------
+// note ports
+//------------------------------
+
+  uint32_t note_ports_count(bool is_input) final {
+    return 0;
+  }
+
+  //----------
+
+  bool note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t* info) final {
+    if (is_input) {
+      switch (index) {
+        default:
+          info->id = 0;
+          strncpy(info->name,"name",CLAP_NAME_SIZE-1);
+          return true;
+      }
+    }
+    else {
+      switch (index) {
+        default:
+          info->id = 0;
+          strncpy(info->name,"name",CLAP_NAME_SIZE-1);
+          return true;
+      }
+    }
+    return false;
+  }
 
 //------------------------------
 public: // params
@@ -1001,6 +1095,51 @@ public: // params
   }
 
 //------------------------------
+public: // preset load
+//------------------------------
+
+  bool preset_load_from_file(const char *path) final {
+    return false;
+  }
+
+//------------------------------
+public: // quick controls
+//------------------------------
+
+  uint32_t quick_controls_count() final {
+    return 0;
+  }
+
+  //----------
+
+  bool quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) final {
+    switch (page_index) {
+      default:
+        page->id = 0;
+        strncpy(page->name, "name",CLAP_NAME_SIZE-1);
+        strncpy(page->keywords, "",CLAP_KEYWORDS_SIZE-1);
+        for (uint32_t i=0; i<CLAP_QUICK_CONTROLS_COUNT; i++) {
+          page->param_ids[i] = 0;
+        }
+        return true;
+    }
+    return false;
+  }
+
+  //----------
+
+  void quick_controls_select(clap_id page_id) final {
+    MSelectedQuickControls = page_id;
+  }
+
+  //----------
+
+  clap_id quick_controls_get_selected() final {
+    return MSelectedQuickControls;
+  }
+
+
+//------------------------------
 public: // state
 //------------------------------
 
@@ -1031,6 +1170,23 @@ public: // state
   }
 
 //------------------------------
+public: // surround
+//------------------------------
+
+  uint32_t surround_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index) final {
+    if (is_input) {}
+    else {}
+    return 0;
+  }
+
+//------------------------------
+public: // thread pool
+//------------------------------
+
+  void thread_pool_exec(uint32_t task_index) final {
+  }
+
+//------------------------------
 public: // timner support
 //------------------------------
 
@@ -1042,11 +1198,13 @@ public: // timner support
 public: // track info
 //------------------------------
 
-  //void track_info_changed() {
-  //}
+  void track_info_changed() final {
+  }
+
+//------------------------------
+//------------------------------
 
 };
-
 
 //----------------------------------------------------------------------
 //

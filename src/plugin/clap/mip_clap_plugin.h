@@ -51,26 +51,26 @@ public:
 
   virtual const void* get_extension(const char *id) {
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MExtAudioPorts;
-  //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MExtAudioPortsConfig;
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MExtAudioPortsConfig;
     if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MExtEventFilter;
-  //if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          return &MExtFdSupport;
+    if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          return &MExtFdSupport;
     if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MExtGui;
     if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MExtGuiX11;
     if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MExtLatency;
-  //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MExtNoteName;
-  //if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MExtNotePorts;
+    if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MExtNoteName;
+    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MExtNotePorts;
     if (strcmp(id,CLAP_EXT_PARAMS) == 0)              return &MExtParams;
     if (strcmp(id,CLAP_EXT_STATE) == 0)               return &MExtState;
-  //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MExtThreadPool;
+    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MExtThreadPool;
     if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MExtTimerSupport;
     // draft
   //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MExtCheckForUpdate;
-  //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MExtFileReference;
-  //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MExtMidiMappings;
-  //if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MExtPresetLoad;
-  //if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MExtQuickControls;
-  //if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MExtSurround;
-  //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MExtTrackInfo;
+    if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MExtFileReference;
+    if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MExtMidiMappings;
+    if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MExtPresetLoad;
+    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MExtQuickControls;
+    if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MExtSurround;
+    if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MExtTrackInfo;
     return nullptr;
   }
 

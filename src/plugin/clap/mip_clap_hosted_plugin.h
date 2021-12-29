@@ -13,14 +13,21 @@ class MIP_ClapHostedPlugin {
 private:
 //------------------------------
 
-  const clap_plugin_entry*  MPluginEntry = nullptr;
+  //const clap_plugin_entry*  MPluginEntry = nullptr;
+  const clap_plugin*  MPlugin= nullptr;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_ClapHostedPlugin(const clap_plugin_entry* plugin_entry) {
-    MPluginEntry = plugin_entry;
+  //MIP_ClapHostedPlugin(const clap_plugin_entry* plugin_entry) {
+  //  MPluginEntry = plugin_entry;
+  //}
+
+  //----------
+
+  MIP_ClapHostedPlugin(const clap_plugin* plugin) {
+    MPlugin = plugin;
   }
 
   //----------
