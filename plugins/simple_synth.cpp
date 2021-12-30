@@ -260,6 +260,8 @@ class myPlugin
 private:
 //------------------------------
 
+  MIP_Descriptor* MDescriptor = nullptr;
+
   MIP_ParamQueue  MHostParamQueue           = {};
   float*          MHostParamValues          = nullptr;
 
@@ -1239,19 +1241,20 @@ public: // track info
 //
 //----------------------------------------------------------------------
 
-void MIP_RegisterPlugins() {
-  registerPlugin( new myDescriptor() );
-}
-
-//----------
-
-MIP_ClapPlugin* MIP_CreatePlugin(uint32_t index, const clap_plugin_descriptor* desc, const clap_host_t *host) {
-  if (index == 0) return new myPlugin(desc,host);
-  return nullptr;
-}
+//void MIP_RegisterPlugins() {
+//  registerPlugin( new myDescriptor() );
+//}
+//
+////----------
+//
+//MIP_ClapPlugin* MIP_CreatePlugin(uint32_t index, const clap_plugin_descriptor* desc, const clap_host_t *host) {
+//  if (index == 0) return new myPlugin(desc,host);
+//  return nullptr;
+//}
 
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
+

@@ -9,8 +9,11 @@
 #include "plugin/exe/mip_exe.h"
 
 //----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
-template <class DESC, class PLUG>
 class MIP_ExePluginEntry {
 
 //------------------------------
@@ -18,9 +21,24 @@ public:
 //------------------------------
 
   MIP_ExePluginEntry() {
-    //MIP_PRINT;
-    MIP_Descriptor* descriptor = new DESC();
-    MIP_Plugin* plugin = new PLUG(descriptor);
+    MIP_RegisterPlugins(&MIP_GLOBAL_PLUGIN_LIST);
+  }
+
+  //----------
+
+  virtual ~MIP_ExePluginEntry() {
+    //MIP_UnregisterPlugins();
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  int main(int argc, char** argv) {
+
+    MIP_Descriptor* descriptor = MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(0);
+    MIP_Plugin* plugin = MIP_GLOBAL_PLUGIN_LIST.createPlugin(0);
+
     plugin->on_plugin_init();
     plugin->on_plugin_activate();
     plugin->on_plugin_start_processing();
@@ -30,7 +48,6 @@ public:
       if (editor) {
         uint32_t width = descriptor->getEditorWidth();
         uint32_t height = descriptor->getEditorHeight();
-        MIP_Print("w %i h %i\n",width,height);
         editor->attach(nullptr,0);
         editor->setSize(width,height);
         editor->show();
@@ -49,34 +66,25 @@ public:
 
     delete plugin;
     delete descriptor;
-  }
 
-  //----------
-
-  virtual ~MIP_ExePluginEntry() {
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-  int main(int argc, char** argv) {
-    //MIP_PRINT;
     return 0;
   }
 
 };
 
 //----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
-#define MIP_EXE_PLUGIN_ENTRY(D,P)                   \
-                                                    \
-  MIP_ExePluginEntry<D,P> GLOBAL_EXE_PLUGIN_ENTRY;  \
-                                                    \
-  int main(int argc, char** argv) {                 \
-    return GLOBAL_EXE_PLUGIN_ENTRY.main(argc,argv); \
-  }                                                 \
+MIP_ExePluginEntry GLOBAL_EXE_PLUGIN_ENTRY;
 
+//----------
+
+int main(int argc, char** argv) {
+  return GLOBAL_EXE_PLUGIN_ENTRY.main(argc,argv);
+}
 
 //----------------------------------------------------------------------
 #endif

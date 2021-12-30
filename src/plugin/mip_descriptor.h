@@ -44,9 +44,10 @@ class MIP_Descriptor {
 private:
 //------------------------------
 
-  char                  MVersionText[16]    = {0};
-  char                  MLongID[256]        = {0};
-  char                  MLongEditorID[256]  = {0};
+  char                  MVersionText[16]  = {0};
+  char                  MLongId[16]       = {0};
+  char                  MLongEditorId[16] = {0};
+  char                  MStringId[256]    = {0};
 
 //------------------------------
 protected:
@@ -58,7 +59,7 @@ protected:
   const char*           MEmail              = "";
   const char*           MUrl                = "";
   uint32_t              MVersion            = 0x00000000;
-  uint32_t              MShortID            = 0;
+  uint32_t              MShortId            = 0;
   MIP_ParameterArray    MParameters         = {};
   MIP_AudioPortArray    MAudioInputs        = {};
   MIP_AudioPortArray    MAudioOutputs       = {};
@@ -80,7 +81,7 @@ public:
   const char*           getEmail()                  { return MEmail; }
   const char*           getUrl()                    { return MUrl; }
   uint32_t              getVersion()                { return MVersion; }
-  uint32_t              getShortID()                { return MShortID; }
+  uint32_t              getShortId()                { return MShortId; }
   MIP_ParameterArray*   getParameters()             { return &MParameters; }
   uint32_t              getNumParameters()          { return MParameters.size(); }
   MIP_Parameter*        getParameter(uint32_t i)    { return MParameters[i]; }
@@ -113,9 +114,24 @@ public:
 
   //----------
 
-  const char* getLongID() {
-    //return MLongID;
-    return nullptr;
+  const char* getLongId() {
+    uint32_t* id = (uint32_t*)MLongId;
+    id[0] = MShortId;
+    id[1] = MIP_HashString(MName);
+    id[2] = MIP_HashString(MAuthor);
+    id[3] = MVersion;
+    return MLongId;
+  }
+
+  //----------
+
+  const char* getStringId() {
+    strcpy(MStringId,MAuthor);
+    strcat(MStringId,"/");
+    strcpy(MStringId,MName);
+    strcat(MStringId,"/");
+    strcpy(MStringId,getVersionText());
+    return MStringId;
   }
 
 };

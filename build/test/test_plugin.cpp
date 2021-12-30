@@ -1,20 +1,27 @@
 
-
 // nc -U -l -k /tmp/mip.socket
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 
-#define MIP_PLUGIN_EXE
+#define MIP_PLUGIN_CLAP
+//#define MIP_PLUGIN_VST2
+//#define MIP_PLUGIN_VST3
+//#define MIP_PLUGIN_LV2
+//#define MIP_PLUGIN_EXE
+
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
 
+//----------------------------------------------------------------------
+
 #include "mip.h"
 #include "plugin/mip_descriptor.h"
+#include "plugin/mip_editor.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_plugin_entry.h"
 
 //----------------------------------------------------------------------
 //
-//
+// descriptor
 //
 //----------------------------------------------------------------------
 
@@ -34,7 +41,7 @@ public:
 
 //----------------------------------------------------------------------
 //
-//
+// plugin
 //
 //----------------------------------------------------------------------
 
@@ -74,7 +81,6 @@ public:
   //----------
 
   void on_plugin_close_editor() final {
-    MIP_Assert(MEditor);
     delete MEditor;
     MEditor = nullptr;
   }
@@ -82,7 +88,6 @@ public:
   //----------
 
   void on_plugin_update_editor() final {
-    //MIP_Assert(MEditor);
     if (MEditor) MEditor->update();
   }
 
@@ -90,5 +95,20 @@ public:
 };
 
 //----------------------------------------------------------------------
+//
+// entry
+//
+//----------------------------------------------------------------------
 
-MIP_PLUGIN_ENTRY(myDescriptor,myPlugin);
+void MIP_RegisterPlugins(MIP_PluginList* AList) {
+  MIP_PRINT;
+  MIP_Descriptor* descriptor = new myDescriptor();
+  AList->appendPlugin(descriptor);
+}
+
+//----------
+
+MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, MIP_Descriptor* ADescriptor) {
+  MIP_PRINT;
+  return new myPlugin(ADescriptor);
+}

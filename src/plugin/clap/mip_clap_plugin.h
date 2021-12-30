@@ -6,31 +6,45 @@
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host_proxy.h"
 
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
 class MIP_ClapPlugin {
 
 //------------------------------
-protected:
+private:
 //------------------------------
 
-  MIP_ClapHostProxy*  MHost = nullptr;
+  MIP_Plugin*                     MPlugin         = nullptr;
+  MIP_ClapHostProxy*              MHostProxy      = nullptr;
+  const clap_plugin_descriptor_t* MClapDescriptor = nullptr;
+  const clap_host_t*              MClapHost       = nullptr;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_ClapPlugin(const clap_plugin_descriptor* desc, const clap_host_t* host) {
-    MClapPlugin.desc = desc;
-    MHost = new MIP_ClapHostProxy(host);
+  // we must delete APlugin
+
+  MIP_ClapPlugin(MIP_Plugin* APlugin, const clap_plugin_descriptor_t* descriptor, const clap_host_t* host) {
+    MClapDescriptor = descriptor;
+    MPlugin = APlugin; // delete this!
+    MHostProxy = new MIP_ClapHostProxy(host);
   }
 
   //----------
 
-  virtual ~MIP_ClapPlugin() {
-    delete MHost;
+  ~MIP_ClapPlugin() {
+    if (MPlugin) delete MPlugin;
+    delete MHostProxy;
   }
 
-  //----------
+//------------------------------
+public:
+//------------------------------
 
   const clap_plugin_t* getClapPlugin() {
     return &MClapPlugin;
@@ -40,37 +54,38 @@ public:
 public:
 //------------------------------
 
-  virtual bool init() { return true; }
-  virtual void destroy() {}
-  virtual bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) { return true; }
-  virtual void deactivate() {}
-  virtual bool start_processing() { return true; }
-  virtual void stop_processing() {}
+  virtual bool                init() { return true; }
+  virtual void                destroy() {}
+  virtual bool                activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) { return true; }
+  virtual void                deactivate() {}
+  virtual bool                start_processing() { return true; }
+  virtual void                stop_processing() {}
   virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_SLEEP; }
-  virtual void on_main_thread() {}
+  virtual void                on_main_thread() {}
+  //virtual const void*         get_extension(const char *id) { return nullptr; }
 
   virtual const void* get_extension(const char *id) {
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MExtAudioPorts;
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MExtAudioPortsConfig;
-    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MExtEventFilter;
-    if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          return &MExtFdSupport;
-    if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MExtGui;
-    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MExtGuiX11;
-    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MExtLatency;
-    if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MExtNoteName;
-    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MExtNotePorts;
-    if (strcmp(id,CLAP_EXT_PARAMS) == 0)              return &MExtParams;
-    if (strcmp(id,CLAP_EXT_STATE) == 0)               return &MExtState;
-    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MExtThreadPool;
-    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MExtTimerSupport;
-    // draft
-  //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MExtCheckForUpdate;
-    if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MExtFileReference;
-    if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MExtMidiMappings;
-    if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MExtPresetLoad;
-    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MExtQuickControls;
-    if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MExtSurround;
-    if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MExtTrackInfo;
+   MIP_Print("> clap_host_get_extension(%s)\n",id);
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { return &MExtAudioPorts; }
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  { return &MExtAudioPortsConfig; }
+//    if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    { return &MExtCheckForUpdate; }
+    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        { return &MExtEventFilter; }
+    if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          { return &MExtFdSupport; }
+    if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      { return &MExtFileReference; }
+    if (strcmp(id,CLAP_EXT_GUI) == 0)                 { return &MExtGui; }
+    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             { return &MExtLatency; }
+//    if (strcmp(id,CLAP_EXT_LOG) == 0)                 { return &MExtLog; }
+    if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       { return &MExtMidiMappings; }
+    if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           { return &MExtNoteName; }
+    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          { return &MExtNotePorts; }
+    if (strcmp(id,CLAP_EXT_PARAMS) == 0)              { return &MExtParams; }
+    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      { return &MExtQuickControls; }
+    if (strcmp(id,CLAP_EXT_STATE) == 0)               { return &MExtState; }
+//    if (strcmp(id,CLAP_EXT_THREAD_CHECK) == 0)        { return &MExtThreadCheck; }
+    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         { return &MExtThreadPool; }
+    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       { return &MExtTimerSupport; }
+    if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          { return &MExtTrackInfo; }
+//    if (strcmp(id,CLAP_EXT_TUNING) == 0)              { return &MExtTuning; }
     return nullptr;
   }
 
@@ -177,6 +192,8 @@ private: // callbacks
     return plug->on_main_thread();
   }
 
+  //----------
+
   //const
   clap_plugin_t MClapPlugin = {
     nullptr,
@@ -192,11 +209,13 @@ private: // callbacks
     clap_plugin_on_main_thread_callback
   };
 
-  //------------------------------
-  // extensions
-  //------------------------------
+//------------------------------
+private: // extensions
+//------------------------------
 
+  //--------------------
   // clap.audio-ports
+  //--------------------
 
   static uint32_t clap_plugin_audio_ports_count_callback(const clap_plugin_t* plugin, bool is_input) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -213,7 +232,9 @@ private: // callbacks
     clap_plugin_audio_ports_get_callback
   };
 
+  //--------------------
   // clap.audio-ports-config
+  //--------------------
 
   static uint32_t clap_plugin_audio_ports_config_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -236,7 +257,9 @@ private: // callbacks
     clap_plugin_audio_ports_config_select_callback
   };
 
+  //--------------------
   // clap.event-filter
+  //--------------------
 
   static bool clap_plugin_event_filter_accepts_callback(const clap_plugin_t *plugin, clap_event_type event_type) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -247,7 +270,9 @@ private: // callbacks
     clap_plugin_event_filter_accepts_callback
   };
 
+  //--------------------
   // clap.fd-support
+  //--------------------
 
   static void clap_plugin_fd_support_on_fd_callback(const clap_plugin_t *plugin, clap_fd fd, clap_fd_flags flags) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -258,7 +283,9 @@ private: // callbacks
     clap_plugin_fd_support_on_fd_callback
   };
 
+  //--------------------
   // clap.gui
+  //--------------------
 
   static bool clap_plugin_gui_create_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -317,7 +344,9 @@ private: // callbacks
     clap_plugin_gui_hide_callback
   };
 
+  //--------------------
   // clap.gui-x11
+  //--------------------
 
   static bool clap_plugin_gui_x11_attach_callback(const clap_plugin_t *plugin, const char *display_name, unsigned long window) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -328,7 +357,9 @@ private: // callbacks
     clap_plugin_gui_x11_attach_callback
   };
 
+  //--------------------
   // clap.latency
+  //--------------------
 
   static uint32_t clap_plugin_latency_get_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -339,7 +370,9 @@ private: // callbacks
     clap_plugin_latency_get_callback
   };
 
+  //--------------------
   // clap.note_name
+  //--------------------
 
   static uint32_t clap_plugin_note_name_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -356,7 +389,9 @@ private: // callbacks
     clap_plugin_note_name_get_callback
   };
 
+  //--------------------
   // clap.note_ports
+  //--------------------
 
   static uint32_t clap_plugin_note_ports_count_callback(const clap_plugin_t *plugin, bool is_input) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -373,8 +408,9 @@ private: // callbacks
     clap_plugin_note_ports_get_callback
   };
 
-
+  //--------------------
   // clap.params
+  //--------------------
 
   static uint32_t clap_plugin_params_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -415,8 +451,9 @@ private: // callbacks
     clap_plugin_params_flush_callback
   };
 
+  //--------------------
   // clap.render
-
+  //--------------------
 
   static void clap_plugin_render_set_callback(const clap_plugin_t *plugin, clap_plugin_render_mode mode) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -427,7 +464,9 @@ private: // callbacks
     clap_plugin_render_set_callback
   };
 
+  //--------------------
   // clap.state
+  //--------------------
 
   static bool clap_plugin_state_save_callback(const clap_plugin_t *plugin, clap_ostream_t *stream) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -444,7 +483,9 @@ private: // callbacks
     clap_plugin_state_load_callback
   };
 
+  //--------------------
   // clap.thread-pool
+  //--------------------
 
   static void clap_plugin_thread_pool_exec_callback(const clap_plugin_t *plugin, uint32_t task_index) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -455,7 +496,9 @@ private: // callbacks
     clap_plugin_thread_pool_exec_callback
   };
 
+  //--------------------
   // clap.timer-support
+  //--------------------
 
   static void clap_plugin_timer_support_on_timer_callback(const clap_plugin_t *plugin, clap_id timer_id) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -466,11 +509,13 @@ private: // callbacks
     clap_plugin_timer_support_on_timer_callback
   };
 
-  //------------------------------
-  // drafts
-  //------------------------------
+//------------------------------
+// drafts
+//------------------------------
 
+  //--------------------
   // clap.check-for-update.draft/0
+  //--------------------
 
 //  static void clap_plugin_check_for_update_check_callback(const clap_host_t *host, bool include_beta) {
 //    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -481,7 +526,9 @@ private: // callbacks
 //    clap_plugin_check_for_update_check_callback
 //  };
 
+  //--------------------
   // clap.file-reference.draft/0
+  //--------------------
 
   static uint32_t clap_plugin_file_reference_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -515,7 +562,9 @@ private: // callbacks
     clap_plugin_file_reference_save_resources_callback
   };
 
+  //--------------------
   // clap.midi-mappings.draft/0
+  //--------------------
 
   static uint32_t clap_plugin_midi_mappings_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -531,7 +580,9 @@ private: // callbacks
     clap_plugin_midi_mappings_get_callback
   };
 
+  //--------------------
   // clap.preset-load.draft/0
+  //--------------------
 
   static bool clap_plugin_preset_load_from_file_callback(const clap_plugin_t *plugin, const char *path) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -542,7 +593,9 @@ private: // callbacks
     clap_plugin_preset_load_from_file_callback
   };
 
+  //--------------------
   // clap.quick-controls.draft/0
+  //--------------------
 
   static uint32_t clap_plugin_quick_controls_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -571,7 +624,9 @@ private: // callbacks
     clap_plugin_quick_controls_get_selected_callback
   };
 
+  //--------------------
   // clap.surround.draft/0
+  //--------------------
 
   static uint32_t clap_plugin_surround_get_channel_type_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint32_t channel_index) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -582,7 +637,9 @@ private: // callbacks
     clap_plugin_surround_get_channel_type_callback,
   };
 
+  //--------------------
   // clap.track-info.draft/0
+  //--------------------
 
   static void clap_plugin_track_info_changed_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -597,4 +654,5 @@ private: // callbacks
 
 //----------------------------------------------------------------------
 #endif
+
 

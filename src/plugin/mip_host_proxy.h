@@ -12,6 +12,13 @@ class MIP_HostProxy {
 public:
 //------------------------------
 
+  MIP_HostProxy() {}
+  virtual ~MIP_HostProxy() {}
+
+//------------------------------
+public:
+//------------------------------
+
   virtual void updateParameter(uint32_t AIndex, float AValue) {}
   virtual void resizeEditor(uint32_t AWidth, uint32_t AHeight) {}
 
