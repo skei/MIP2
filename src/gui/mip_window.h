@@ -64,11 +64,12 @@ private:
 public:
 //------------------------------
 
-  MIP_Window(int32_t AWidth, int32_t AHeight, const char* ATitle="", void* AParentPtr=nullptr)
+  MIP_Window(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", MIP_WindowListener* AListener=nullptr, void* AParentPtr=nullptr)
   : MIP_ImplementedWindow(AWidth,AHeight,ATitle,AParentPtr)
   , MIP_Widget(MIP_FRect(AWidth,AHeight)) {
-    MName = "MIP_Window";
-    MWindowPainter = new MIP_Painter(this);
+    MName           = "MIP_Window";
+    MListener       = AListener;
+    MWindowPainter  = new MIP_Painter(this);
     #ifndef MIP_NO_WINDOW_BUFFERING
     createBuffer(AWidth,AHeight);
     #endif
@@ -87,7 +88,7 @@ public:
 public:
 //------------------------------
 
-  void setListener(MIP_WindowListener* l) { MListener = l; }
+  //void setListener(MIP_WindowListener* l) { MListener = l; }
   void setFillBackground(bool s=true)     { MFillBackground = s; }
   void setBackgroundColor(MIP_Color c)    { MBackgroundColor = c; }
 //------------------------------
@@ -225,6 +226,7 @@ public: // MIP_BaseWindow
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("w %i h %i\n",AWidth,AHeight);
+    realignWidgets();
   }
 
   //----------

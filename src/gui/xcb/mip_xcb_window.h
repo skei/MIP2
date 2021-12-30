@@ -609,7 +609,7 @@ private:
         //  RECT.combine( MIP_Rect( ex2->x, ex2->y, ex2->width, ex2->height ) );
         //}
 
-      if ((w < 1) || (h < 1)) {
+        if ((w < 1) || (h < 1)) {
         }
         else {
           beginPaint();

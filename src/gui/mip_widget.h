@@ -129,7 +129,7 @@ public:
 
   //----------
 
-  void paintWidgets() {
+  void realignWidgets() {
   }
 
 //------------------------------
