@@ -4,6 +4,7 @@
 
 #include "base/types/mip_queue.h"
 #include "gui/mip_window.h"
+#include "plugin/mip_descriptor.h"
 
 typedef MIP_Array<MIP_Widget*>      MIP_WidgetArray;
 typedef MIP_Queue<MIP_Widget*,1024> MIP_WidgetQueue;
@@ -32,6 +33,7 @@ class MIP_Editor
 private:
 //------------------------------
 
+  MIP_Descriptor*     MDescriptor         = nullptr;
   MIP_EditorListener* MListener           = nullptr;
   float*              MEditorParamValues  = nullptr;
   MIP_WidgetQueue     MEditorParamQueue   = {};
@@ -51,7 +53,13 @@ protected:
 public:
 //------------------------------
 
-  MIP_Editor(uint32_t num_params) {
+  //MIP_Editor(uint32_t num_params) {
+  MIP_Editor(MIP_EditorListener* AListener, MIP_Descriptor* ADescriptor) {
+    MDescriptor = ADescriptor;
+    MListener = AListener;
+    MWidth = ADescriptor->getEditorWidth();
+    MHeight = ADescriptor->getEditorHeight();
+    uint32_t num_params = ADescriptor->getNumParameters();
     MEditorParamValues = (float*)malloc(num_params * sizeof(float));
   }
 
@@ -66,9 +74,9 @@ public:
 public:
 //------------------------------
 
-  void setListener(MIP_EditorListener* l) {
-    MListener = l;
-  }
+  //void setListener(MIP_EditorListener* l) {
+  //  MListener = l;
+  //}
 
   //----------
 
@@ -88,6 +96,9 @@ public:
   }
 
   //
+
+  void update() {
+  }
 
 //------------------------------
 public:
@@ -127,9 +138,9 @@ public:
 //------------------------------
 
   virtual bool attach(const char* display_name, unsigned long window) {
-    MWindow = new MIP_Window(MWidth,MHeight,"Title",(void*)window);
+    MWindow = new MIP_Window(MWidth,MHeight,"Title",this,(void*)window);
     if (MWindow) {
-      MWindow->setListener(this);
+      //MWindow->setListener(this);
       return true;
     }
     return false;

@@ -25,9 +25,9 @@
 
 //----------
 
-#ifndef MIP_NO_PLUGIN
-  #include "plugin/mip_plugin.h"
-#endif
+//#ifndef MIP_NO_PLUGIN
+//  #include "plugin/mip_plugin.h"
+//#endif
 
 //----------------------------------------------------------------------
 #endif

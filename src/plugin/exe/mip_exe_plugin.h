@@ -1,13 +1,11 @@
-#ifndef mip_hosted_plugin_included
-#define mip_hosted_plugin_included
+#ifndef mip_exe_plugin_included
+#define mip_exe_plugin_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
 
-//----------------------------------------------------------------------
-
-class MIP_HostedPlugin {
-};
+//class MIP_ExePlugin {
+//};
 
 //----------------------------------------------------------------------
 #endif

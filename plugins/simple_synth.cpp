@@ -5,8 +5,12 @@
 #define MIP_DEBUG_PRINT_THREAD
 #define MIP_DEBUG_PRINT_TIME
 
+#define MIP_PLUGIN_CLAP
+
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
+
+//----------------------------------------------------------------------
 
 #include "mip.h"
 #include "audio/mip_audio_math.h"
@@ -28,21 +32,39 @@ typedef MIP_Queue<int32_t,1024> MIP_ParamQueue;
 //----------------------------------------------------------------------
 
 class myDescriptor
-: public MIP_ClapPluginDescriptor {
+: public MIP_Descriptor {
 
 //------------------------------
 public:
 //------------------------------
 
   myDescriptor() {
-    setName("myPlugin");
-    setVendor("Tor-Helge Skei");
-    setUrl("https://torhelgeskei.com");
-    setVersion("0.0.0");
-    setType(CLAP_PLUGIN_INSTRUMENT);
   }
 
 };
+
+//----------------------------------------------------------------------
+//
+// descriptor
+//
+//----------------------------------------------------------------------
+
+//class myDescriptor
+//: public MIP_ClapPluginDescriptor {
+//
+////------------------------------
+//public:
+////------------------------------
+//
+//  myDescriptor() {
+//    setName("myPlugin");
+//    setVendor("Tor-Helge Skei");
+//    setUrl("https://torhelgeskei.com");
+//    setVersion("0.0.0");
+//    setType(CLAP_PLUGIN_INSTRUMENT);
+//  }
+//
+//};
 
 //----------------------------------------------------------------------
 //
@@ -57,8 +79,12 @@ class myEditor
 public:
 //------------------------------
 
-  myEditor(uint32_t num_params)
-  : MIP_Editor(num_params) {
+  //myEditor(uint32_t num_params)
+  //: MIP_Editor(num_params) {
+  //}
+
+  myEditor(MIP_EditorListener* AListener, MIP_Descriptor* ADescriptor)
+  : MIP_Editor(AListener,ADescriptor) {
   }
 
   //----------
@@ -714,8 +740,9 @@ public: // gui
   // we don't have a window yet!
 
   bool gui_create() final {
-    MEditor = new myEditor( params_count() );
-    MEditor->setListener(this);
+    //MEditor = new myEditor( params_count() );
+    MEditor = new myEditor(this,MDescriptor);
+    //MEditor->setListener(this);
     return true;
   }
 
@@ -1222,3 +1249,9 @@ MIP_ClapPlugin* MIP_CreatePlugin(uint32_t index, const clap_plugin_descriptor* d
   if (index == 0) return new myPlugin(desc,host);
   return nullptr;
 }
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
