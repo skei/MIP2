@@ -16,24 +16,57 @@ typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
 //
 //----------------------------------------------------------------------
 
-struct MIP_Parameter {
+class MIP_Parameter {
+
+  friend class MIP_Descriptor;
 
 //------------------------------
-
-  const char* name        = "parameter";
-  const char* label       = "";
-  float       def_value   = 0.0;
-  float       min_value   = 0.0;
-  float       max_value   = 0.0;
-  uint32_t    num_steps   = 0;
-
+private:
 //------------------------------
 
-  MIP_Parameter(const char* AName, float AValue=0.0) {
-    name      = AName;
-    def_value = AValue;
+  int32_t     MIndex        = -1;
+  const char* MName         = "parameter";
+  const char* MLabel        = "";
+  float       MDefValue     = 0.0;
+  float       MMinValue     = 0.0;
+  float       MMaxValue     = 0.0;
+  uint32_t    MNumSteps     = 0;
+  bool        MCanAutomate  = true;
+  bool        MCanModulate  = false;
+
+//------------------------------
+public:
+//------------------------------
+
+  MIP_Parameter(const char* AName, float AdefValue=0.0, float AMinValue=0.0, float AMaxValue=0.0, uint32_t ANumSteps=0) {
+    MName     = AName;
+    MDefValue = AdefValue;
+    MMinValue = AMinValue;
+    MMaxValue = AMaxValue;
+    MNumSteps = ANumSteps;
   }
 
+  //----------
+
+  virtual ~MIP_Parameter() {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  int32_t     getIndex()    { return MIndex; }
+  const char* getName()     { return MName; }
+  const char* getLabel()    { return MLabel; }
+  float       getDefValue() { return MDefValue; }
+  float       getMinValue() { return MMinValue; }
+  float       getMaxValue() { return MMaxValue; }
+  uint32_t    getNumSteps() { return MNumSteps; }
+  bool        canAutomate() { return MCanAutomate; }
+  bool        canModulate() { return MCanModulate; }
+
+//------------------------------
+public:
 //------------------------------
 
   virtual float from01(float AValue) {

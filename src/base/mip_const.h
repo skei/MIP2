@@ -12,7 +12,7 @@ const char    MIP_HEX_TABLE[]    = "0123456789ABCDEF";
 const char    MIP_CSYMBOLS[]     = "________________________________________________0123456789_______ABCDEFGHIJKLMNOPQRSTUVWXYZ______abcdefghijklmnopqrstuvwxyz_____";
 const char    MIP_NULL_STRING[]  = "";
 
-// 4         4    5         5
+// 4           4  5         5
 // 123456789abcdef0123456789a
 // abcdefghijklmnopqrstuvwxyz
 // 5f = _

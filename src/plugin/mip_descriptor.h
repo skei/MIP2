@@ -75,6 +75,19 @@ protected:
 public:
 //------------------------------
 
+  MIP_Descriptor() {
+  }
+
+  virtual ~MIP_Descriptor() {
+    #ifndef MIP_NO_AUTODELETE
+    deleteParameters();
+    #endif
+  }
+
+//------------------------------
+public:
+//------------------------------
+
   const char*           getName()                   { return MName; }
   const char*           getAuthor()                 { return MAuthor; }
   const char*           getDescription()            { return MDescription; }
@@ -103,6 +116,22 @@ public:
 public:
 //------------------------------
 
+  void appendParameter(MIP_Parameter* AParameter) {
+    int32_t index = MParameters.size();
+    AParameter->MIndex = index;
+    MParameters.append(AParameter);
+  }
+
+  //----------
+
+  void deleteParameters() {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      delete MParameters[i];
+    }
+  }
+
+  //----------
+
   const char* getVersionText() {
     sprintf(MVersionText,"%i.%i.%i\n",
       ((MVersion & 0xff000000) >> 24),
@@ -116,7 +145,7 @@ public:
 
   const char* getLongId() {
     uint32_t* id = (uint32_t*)MLongId;
-    id[0] = MShortId;
+    id[0] = MIP_MAGIC_M_PL;//MShortId;
     id[1] = MIP_HashString(MName);
     id[2] = MIP_HashString(MAuthor);
     id[3] = MVersion;

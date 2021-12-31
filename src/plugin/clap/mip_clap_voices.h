@@ -5,6 +5,7 @@
 /*
   TODO:
   - redo this completely
+  in the meanwhile:
   - sample accurate events (in & out)
   - send event_mod events
   - handle note_choke

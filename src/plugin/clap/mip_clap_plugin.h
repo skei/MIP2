@@ -2,6 +2,13 @@
 #define mip_clap_plugin_included
 //----------------------------------------------------------------------
 
+/*
+  TODO: extreact MIP_Plugin to a class 'above' this,
+        so that this stays completely clap-focused
+*/
+
+//----------------------------------------------------------------------
+
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host_proxy.h"
