@@ -3,6 +3,9 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+
+#include "audio/mip_audio_jack.h"
+
 #include "plugin/mip_descriptor.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
@@ -14,7 +17,14 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_ExePluginEntry {
+class MIP_ExePluginEntry
+: public MIP_AudioIOListener {
+
+//------------------------------
+private:
+//------------------------------
+
+  MIP_AudioJack MAudio;
 
 //------------------------------
 public:
@@ -35,6 +45,10 @@ public:
 //------------------------------
 
   int main(int argc, char** argv) {
+
+    //MAudio.config(44100.0,256,3,2,2);
+    MAudio.init(this);
+    MAudio.start();
 
     MIP_Descriptor* descriptor = MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(0);
     MIP_Plugin* plugin = MIP_GLOBAL_PLUGIN_LIST.createPlugin(0);
@@ -66,6 +80,9 @@ public:
 
     delete plugin;
     delete descriptor;
+
+    MAudio.stop();
+    MAudio.exit();
 
     return 0;
   }

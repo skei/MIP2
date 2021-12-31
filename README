@@ -8,9 +8,11 @@ plugin wrappers, abstractions, simplifications, helpers, ..
 in progress, prototype, proof of concept, pre-, ..
 
 * os: linux (windows considered)
-* gui: xcb (cairo incoming)
 * plugin: clap (exe, vst2, vst3, maybe lv2 coming)
 * host: clap (other formats considered)
+* gui: xcb (cairo incoming)
+* io: jack audio/midi
+* other: too much to list..
 
 * headers-only
 * un-modern, un-cool c++
