@@ -3,7 +3,6 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-//#include "plugin/mip_plugin_entry.h"
 #include "plugin/mip_descriptor.h"
 #include "plugin/mip_editor.h"
 #include "plugin/mip_process_context.h"

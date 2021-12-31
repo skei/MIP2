@@ -50,6 +50,7 @@ public:
 
   MIP_PluginList() {
     MIP_PRINT;
+    MIP_RegisterPlugins(this);
   }
 
   //----------

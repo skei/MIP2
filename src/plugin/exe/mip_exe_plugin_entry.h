@@ -21,7 +21,7 @@ public:
 //------------------------------
 
   MIP_ExePluginEntry() {
-    MIP_RegisterPlugins(&MIP_GLOBAL_PLUGIN_LIST);
+    //MIP_RegisterPlugins(&MIP_GLOBAL_PLUGIN_LIST);
   }
 
   //----------

@@ -128,6 +128,7 @@
 			<Add library="cairo" />
 			<Add library="sndfile" />
 		</Linker>
+		<Unit filename="../LICENSE" />
 		<Unit filename="../README" />
 		<Unit filename="../apps/claphost.cpp">
 			<Option compile="0" />
@@ -385,6 +386,7 @@
 		<Unit filename="../src/plugin/mip_plugin_list.h" />
 		<Unit filename="../src/plugin/mip_process_context.h" />
 		<Unit filename="../src/plugin/vst2/mip_vst2.h" />
+		<Unit filename="../src/plugin/vst2/mip_vst2_plugin.h" />
 		<Unit filename="../src/plugin/vst2/mip_vst2_plugin_entry.h" />
 		<Unit filename="../src/plugin/vst3/mip_vst3.h" />
 		<Unit filename="../src/plugin/vst3/mip_vst3_plugin_entry.h" />
