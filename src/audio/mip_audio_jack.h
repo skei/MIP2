@@ -19,8 +19,6 @@ class MIP_AudioIOListener {
 
 //----------------------------------------------------------------------
 
-// https://github.com/jackaudio/example-clients/blob/master/midiseq.c
-
 class MIP_AudioJack {
 
 //------------------------------
@@ -30,10 +28,10 @@ private:
   MIP_AudioIOListener*  MListener         = nullptr;
 
   jack_client_t*        MJackClient       = nullptr;
-  jack_port_t*          MAudioInputPort1   = nullptr;
-  jack_port_t*          MAudioInputPort2   = nullptr;
-  jack_port_t*          MAudioOutputPort1  = nullptr;
-  jack_port_t*          MAudioOutputPort2  = nullptr;
+  jack_port_t*          MAudioInputPort1  = nullptr;
+  jack_port_t*          MAudioInputPort2  = nullptr;
+  jack_port_t*          MAudioOutputPort1 = nullptr;
+  jack_port_t*          MAudioOutputPort2 = nullptr;
   jack_port_t*          MMidiInputPort    = nullptr;
   jack_port_t*          MMidiOutputPort   = nullptr;
 
@@ -41,11 +39,100 @@ private:
   jack_nframes_t        MBufferSize       = 0;
 
 //------------------------------
-private:
+public:
 //------------------------------
 
 static
 int jack_process_callback(jack_nframes_t nframes, void* arg) {
+  MIP_AudioJack* jack = (MIP_AudioJack*)arg;
+  return jack->process(nframes);
+}
+
+//------------------------------
+public:
+//------------------------------
+
+  int process(jack_nframes_t nframes) {
+
+    // midi
+
+    void* midi_in_port  = jack_port_get_buffer(MMidiInputPort,nframes);
+    void* midi_out_port = jack_port_get_buffer(MMidiOutputPort,nframes);
+
+    jack_midi_clear_buffer(midi_out_port);
+    jack_nframes_t num_events = jack_midi_get_event_count(midi_in_port);
+    if (num_events > 0) 	{
+      jack_midi_event_t event;
+      for (uint32_t i=0; i<num_events; i++) {
+        jack_midi_event_get(&event,midi_in_port,i);
+        uint8_t msg1 = event.buffer[0];
+        uint8_t msg2 = event.buffer[1];
+        uint8_t msg3 = event.buffer[2];
+        MIP_Print("midi: %02x %02x %02x\n",msg1,msg2,msg3);
+        uint32_t offset = i;
+        jack_midi_data_t* buffer = jack_midi_event_reserve(midi_out_port,offset,3);
+        buffer[0] = msg1;
+        buffer[1] = msg2;
+        buffer[2] = msg3;
+      }
+    }
+
+    // audio
+
+    jack_default_audio_sample_t *input0 = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioInputPort1,nframes);
+    jack_default_audio_sample_t *input1 = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioInputPort2,nframes);
+    jack_default_audio_sample_t *output0 = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioOutputPort1,nframes);
+    jack_default_audio_sample_t *output1 = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioOutputPort2,nframes);
+    for (uint32_t i=0; i<nframes; i++) {
+      *output0++ = *input0++;
+      *output1++ = *input1++;
+    }
+
+    return 0;
+  }
+
+  //----------
+
+//	int i;
+//	void* port_buf = jack_port_get_buffer(MAudioInputPort1,nframes);
+//	jack_default_audio_sample_t *out = (jack_default_audio_sample_t *) jack_port_get_buffer (output_port, nframes);
+//	jack_midi_event_t in_event;
+//	jack_nframes_t event_index = 0;
+//	jack_nframes_t event_count = jack_midi_get_event_count(port_buf);
+//	if(event_count > 1) 	{
+//		printf(" midisine: have %d events\n", event_count);
+//		for(i=0; i<event_count; i++) 		{
+//			jack_midi_event_get(&in_event, port_buf, i);
+//			printf("    event %d time is %d. 1st byte is 0x%x\n", i, in_event.time, *(in_event.buffer));
+//		}
+//    /*printf("1st byte of 1st event addr is %p\n", in_events[0].buffer);*/
+//	}
+//	jack_midi_event_get(&in_event, port_buf, 0);
+//	for(i=0; i<nframes; i++) 	{
+//		if((in_event.time == i) && (event_index < event_count)) {
+//			if( ((*(in_event.buffer) & 0xf0)) == 0x90 ) {
+//				/* note on */
+//				note = *(in_event.buffer + 1);
+//				note_on = 1.0;
+//			}
+//			else if( ((*(in_event.buffer)) & 0xf0) == 0x80 )
+//			{
+//				/* note off */
+//				note = *(in_event.buffer + 1);
+//				note_on = 0.0;
+//			}
+//			event_index++;
+//			if(event_index < event_count)
+//				jack_midi_event_get(&in_event, port_buf, event_index);
+//		}
+//		ramp += note_frqs[note];
+//		ramp = (ramp > 1.0) ? ramp - 2.0 : ramp;
+//		out[i] = note_on*sin(2*M_PI*ramp);
+//	}
+//  return 0;
+
+  //----------
+
 //  void* port_buf = jack_port_get_buffer(output_port, nframes);
 //  unsigned char* buffer;
 //  jack_midi_clear_buffer(port_buf);
@@ -69,8 +156,6 @@ int jack_process_callback(jack_nframes_t nframes, void* arg) {
 //    }
 //    loop_index = loop_index+1 >= loop_nsamp ? 0 : loop_index+1;
 //  }
-  return 0;
-}
 
 //------------------------------
 public:
@@ -159,46 +244,6 @@ void calc_note_frqs(jack_default_audio_sample_t srate) {
 	for(i=0; i<128; i++) 	{
 		note_frqs[i] = (2.0 * 440.0 / 32.0) * pow(2, (((jack_default_audio_sample_t)i - 9.0) / 12.0)) / srate;
 	}
-}
-
-int process(jack_nframes_t nframes, void *arg) {
-	int i;
-	void* port_buf = jack_port_get_buffer(input_port, nframes);
-	jack_default_audio_sample_t *out = (jack_default_audio_sample_t *) jack_port_get_buffer (output_port, nframes);
-	jack_midi_event_t in_event;
-	jack_nframes_t event_index = 0;
-	jack_nframes_t event_count = jack_midi_get_event_count(port_buf);
-	if(event_count > 1) 	{
-		printf(" midisine: have %d events\n", event_count);
-		for(i=0; i<event_count; i++) 		{
-			jack_midi_event_get(&in_event, port_buf, i);
-			printf("    event %d time is %d. 1st byte is 0x%x\n", i, in_event.time, *(in_event.buffer));
-		}
-    /*printf("1st byte of 1st event addr is %p\n", in_events[0].buffer);*/
-	}
-	jack_midi_event_get(&in_event, port_buf, 0);
-	for(i=0; i<nframes; i++) 	{
-		if((in_event.time == i) && (event_index < event_count)) {
-			if( ((*(in_event.buffer) & 0xf0)) == 0x90 ) {
-				/* note on */
-				note = *(in_event.buffer + 1);
-				note_on = 1.0;
-			}
-			else if( ((*(in_event.buffer)) & 0xf0) == 0x80 )
-			{
-				/* note off */
-				note = *(in_event.buffer + 1);
-				note_on = 0.0;
-			}
-			event_index++;
-			if(event_index < event_count)
-				jack_midi_event_get(&in_event, port_buf, event_index);
-		}
-		ramp += note_frqs[note];
-		ramp = (ramp > 1.0) ? ramp - 2.0 : ramp;
-		out[i] = note_on*sin(2*M_PI*ramp);
-	}
-	return 0;
 }
 
 int srate(jack_nframes_t nframes, void *arg) {
