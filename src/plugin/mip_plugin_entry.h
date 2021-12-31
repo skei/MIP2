@@ -59,13 +59,4 @@
 #endif
 
 //----------------------------------------------------------------------
-
-#define MIP_PLUGIN_ENTRY(DESC,PLUG)   \
-  MIP_CLAP_PLUGIN_ENTRY(DESC,PLUG)    \
-  MIP_EXE_PLUGIN_ENTRY(DESC,PLUG)     \
-  MIP_LV2_PLUGIN_ENTRY(DESC,PLUG)     \
-  MIP_VST2_PLUGIN_ENTRY(DESC,PLUG)    \
-  MIP_VST3_PLUGIN_ENTRY(DESC,PLUG)
-
-//----------------------------------------------------------------------
 #endif

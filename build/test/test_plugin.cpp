@@ -3,10 +3,10 @@
 #define MIP_DEBUG_PRINT_SOCKET
 
 #define MIP_PLUGIN_CLAP
-//#define MIP_PLUGIN_VST2
-//#define MIP_PLUGIN_VST3
-//#define MIP_PLUGIN_LV2
-//#define MIP_PLUGIN_EXE
+#define MIP_PLUGIN_VST2
+#define MIP_PLUGIN_VST3
+#define MIP_PLUGIN_LV2
+#define MIP_PLUGIN_EXE
 
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
