@@ -19,6 +19,8 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_plugin_entry.h"
 
+#include "extern/tcc/libtcc.h"
+
 //----------------------------------------------------------------------
 //
 // descriptor
@@ -55,6 +57,8 @@ private:
   MIP_Descriptor* MDescriptor = nullptr;
   MIP_Editor*     MEditor     = nullptr;
 
+  TCCState* tcc = nullptr;
+
 //------------------------------
 public:
 //------------------------------
@@ -62,6 +66,9 @@ public:
   myPlugin(MIP_Descriptor* ADescriptor)
   : MIP_Plugin(ADescriptor) {
     MDescriptor = ADescriptor;
+
+    tcc = tcc_new();
+
   }
 
   //----------
