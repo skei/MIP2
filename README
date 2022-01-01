@@ -2,10 +2,13 @@ MIP 2
 "multum in parvo"
 (much in little)
 
+plugin wrappers, abstractions, simplifications, helpers, ..
+
 ----------
 
-plugin wrappers, abstractions, simplifications, helpers, ..
+note:
 in progress, prototype, proof of concept, pre-, ..
+
 
 * os: linux (windows considered)
 * plugin: clap, exe (vst2/3 coming, maybe lv2)
