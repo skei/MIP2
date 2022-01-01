@@ -58,6 +58,9 @@ protected:
   const char*           MDescription        = "";
   const char*           MEmail              = "";
   const char*           MUrl                = "";
+  const char*           MManualUrl          = "";
+  const char*           MSupportUrl         = "";
+  const char*           MKeywords           = "";
   uint32_t              MVersion            = 0x00000000;
   uint32_t              MShortId            = 0;
   MIP_ParameterArray    MParameters         = {};
@@ -93,6 +96,9 @@ public:
   const char*           getDescription()            { return MDescription; }
   const char*           getEmail()                  { return MEmail; }
   const char*           getUrl()                    { return MUrl; }
+  const char*           getManualUrl()              { return MManualUrl; }
+  const char*           getSupportUrl()             { return MSupportUrl; }
+  const char*           getKeywords()               { return MKeywords; }
   uint32_t              getVersion()                { return MVersion; }
   uint32_t              getShortId()                { return MShortId; }
   MIP_ParameterArray*   getParameters()             { return &MParameters; }
