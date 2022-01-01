@@ -57,7 +57,9 @@ public:
 
   ~MIP_PluginList() {
     MIP_PRINT;
+    #ifndef MIP_NO_AUTODELETE
     deletePlugins();
+    #endif
   }
 
 //------------------------------

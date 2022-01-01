@@ -114,19 +114,24 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++14" />
+			<Add option="-Wl,--as-needed" />
 			<Add directory="../src" />
 			<Add directory="../src/extern/vst3" />
+			<Add directory="../src/extern/tcc" />
 		</Compiler>
 		<Linker>
 			<Add library="pthread" />
+			<Add library="m" />
 			<Add library="dl" />
+			<Add library="sndfile" />
+			<Add library="cairo" />
+			<Add library="jack" />
 			<Add library="xcb" />
-			<Add library="xcb-util" />
 			<Add library="xcb-image" />
 			<Add library="xcb-cursor" />
 			<Add library="xcb-keysyms" />
-			<Add library="cairo" />
-			<Add library="sndfile" />
+			<Add library="xcb-util" />
+			<Add library="../src/extern/tcc/libtcc.so" />
 		</Linker>
 		<Unit filename="../LICENSE" />
 		<Unit filename="../README" />
@@ -169,6 +174,7 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../src/audio/mip_audio_file.h" />
+		<Unit filename="../src/audio/mip_audio_jack.h" />
 		<Unit filename="../src/audio/mip_audio_math.h" />
 		<Unit filename="../src/audio/mip_audio_utils.h" />
 		<Unit filename="../src/base/debug/mip_debug.h" />
