@@ -30,10 +30,9 @@ public:
     MAuthor = "Tor-Helge Skei";
     MEmail  = "tor.helge.skei@gmail.com";
     MUrl    = "https://torhelgeskei.com";
-
+    MCanReceiveMidi = true;
     MIP_Parameter* param = appendParameter( new MIP_Parameter( "Gain",   1 ));
     param->setCanModulate();
-
     appendInputPort( new MIP_AudioPort( "Input",  2 ));
     appendOutputPort(new MIP_AudioPort( "Output", 2 ));
   }
@@ -55,6 +54,7 @@ private:
   MIP_Descriptor* MDescriptor = nullptr;
   float           MGain       = 0.0;
   float           MGainMod    = 0.0;
+  int32_t         MNumNotes   = 0;
 
 //------------------------------
 public:
@@ -73,6 +73,18 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  void on_plugin_midi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
+    MIP_PRINT;
+    switch (AMsg1 & 0xF0) {
+      case 0x90: // note on
+        MNumNotes += 1;
+        break;
+      case 0x80: // note on
+        MNumNotes -= 1;
+        break;
+    }
+  }
 
   void on_plugin_parameter(uint32_t AIndex, float AValue) final {
     switch(AIndex) {
@@ -97,8 +109,14 @@ public:
     float*    out0  = AContext->outputs[0];
     float*    out1  = AContext->outputs[1];
     for (uint32_t i=0; i<num; i++) {
-      *out0++ = *in0++ * (MGain + MGainMod);
-      *out1++ = *in1++ * (MGain + MGainMod);
+      if (MNumNotes > 0) {
+        *out0++ = 0.0;
+        *out1++ = 0.0;
+      }
+      else {
+        *out0++ = *in0++ * (MGain + MGainMod);
+        *out1++ = *in1++ * (MGain + MGainMod);
+      }
     }
   }
 

@@ -75,15 +75,27 @@ public:
 //------------------------------
 
   void process_input_events(const clap_event_list_t* events) {
+    //int32_t port;
+    int32_t key;
+    int32_t chan;
+    float value;
     uint32_t num_events = events->size(events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_t* event = events->get(events,i);
       switch (event->type) {
         case CLAP_EVENT_NOTE_ON:
-          //event->note
+          //port = event->note.port_index;
+          key = event->note.key;
+          chan = event->note.channel;
+          value = event->note.velocity;
+          MPlugin->on_plugin_midi(MIP_MIDI_NOTE_ON + chan,key,value * 127.0);
           break;
         case CLAP_EVENT_NOTE_OFF:
-          //event->note
+          //port = event->note.port_index;
+          key = event->note.key;
+          chan = event->note.channel;
+          value = event->note.velocity;
+          MPlugin->on_plugin_midi(MIP_MIDI_NOTE_OFF + chan,key,value * 127.0);
           break;
         case CLAP_EVENT_NOTE_END:
           //event->note
