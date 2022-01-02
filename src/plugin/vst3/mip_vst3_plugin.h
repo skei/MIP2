@@ -46,13 +46,12 @@ class MIP_Vst3Plugin
 private:
 //------------------------------
 
-  MIP_Plugin*     MPlugin     = nullptr;
-  MIP_Descriptor* MDescriptor = nullptr;
+  MIP_Plugin*         MPlugin             = nullptr;
+  MIP_Descriptor*     MDescriptor         = nullptr;
   #ifndef MIP_NO_GUI
-  MIP_Editor*     MEditor     = nullptr;
+  MIP_Editor*         MEditor             = nullptr;
   #endif // MIP_NO_GUI
 
-  // vst3
   uint32_t            MRefCount           = 1;
   IComponentHandler*  MComponentHandler   = nullptr;
   IComponentHandler2* MComponentHandler2  = nullptr;
@@ -62,34 +61,31 @@ private:
   IRunLoop*           MRunLoop            = nullptr;
   uint32_t            MIoMode             = 0;
   char                MHostName[129]      = {0};
-  // setupProcessing
-  uint32_t  MProcessMode  = 0;
-  uint32_t  MSampleSize   = 0;
-  uint32_t  MBlockSize    = 0;
-  float     MSampleRate   = 0.0f;
-  // setProcessing
-  bool      MIsProcessing = false;
+  bool                MIsProcessing       = false;
+  uint32_t            MProcessMode        = 0;
+  uint32_t            MSampleSize         = 0;
+  uint32_t            MBlockSize          = 0;
+  float               MSampleRate         = 0.0;
+  MIP_ProcessContext  MProcessContext     = {0};
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Vst3Plugin(MIP_Plugin* APlugin/*, audioMasterCallback audioMaster*/) {
+  MIP_Vst3Plugin(MIP_Plugin* APlugin) {
     MIP_PRINT;
     MPlugin = APlugin; // delete this!
     MDescriptor = MPlugin->getDescriptor();
     MRefCount   = 1;
-
-//    setupParameterInfo();
-
+    setupParameterInfo();
   }
 
   //----------
 
-  ~MIP_Vst3Plugin() {
+  virtual ~MIP_Vst3Plugin() {
     MIP_PRINT;
     if (MPlugin) delete MPlugin;
-//    if (MParamInfos) MIP_Free(MParamInfos);
+    if (MParamInfos) free(MParamInfos);
   }
 
 //------------------------------
@@ -133,10 +129,6 @@ public: // editor listener
 //  }
 //
 //  #endif
-
-//------------------------------
-private:
-//------------------------------
 
 //------------------------------
 public:
@@ -236,6 +228,7 @@ private:
   */
 
   void setupParameterInfo() {
+    MIP_PRINT;
     if (!MParamInfos) {
       uint32_t num = MDescriptor->getNumParameters();
       MParamInfos = (ParameterInfo*)malloc( num * sizeof(ParameterInfo) );
@@ -255,6 +248,7 @@ private:
         MParamInfos[i].flags = flags;
       }
     }
+    MIP_PRINT;
   }
 
   //----------
@@ -412,7 +406,7 @@ private:
       for (int32_t i=0; i<num; i++) {
         Event event;
         inputEvents->getEvent(i,event);
-        uint32_t offset  = 0;
+        //uint32_t offset  = 0;
         uint8_t  msg1    = 0;
         uint8_t  msg2    = 0;
         uint8_t  msg3    = 0;
@@ -421,7 +415,7 @@ private:
         //float    value   = 0.0f;
         switch (event.type) {
           case Event::kNoteOnEvent:
-            offset  = event.sampleOffset;
+            //offset  = event.sampleOffset;
             msg1    = MIP_MIDI_NOTE_ON + event.noteOn.channel;
             msg2    = event.noteOn.pitch;
             msg3    = event.noteOn.velocity * 127;
@@ -430,7 +424,7 @@ private:
             //on_noteExpression(offset,type,noteid,value);
             break;
           case Event::kNoteOffEvent:
-            offset  = event.sampleOffset;
+            //offset  = event.sampleOffset;
             msg1    = MIP_MIDI_NOTE_OFF + event.noteOff.channel;
             msg2    = event.noteOff.pitch;
             msg3    = event.noteOff.velocity * 127;
@@ -441,7 +435,7 @@ private:
           case Event::kDataEvent:
             break;
           case Event::kPolyPressureEvent:
-            offset  = event.sampleOffset;
+            //offset  = event.sampleOffset;
             msg1    = MIP_MIDI_POLY_AFTERTOUCH + event.polyPressure.channel;
             msg2    = event.polyPressure.pitch;
             msg3    = event.polyPressure.pressure * 127;
@@ -489,6 +483,7 @@ public:
   */
 
   uint32 PLUGIN_API addRef() override {
+    MIP_PRINT;
     MRefCount++;
     return MRefCount;
   }
@@ -502,9 +497,9 @@ public:
   */
 
   uint32 PLUGIN_API release() override {
+    MIP_PRINT;
     const uint32 r = --MRefCount; // const uint32 ?
     if (r == 0) {
-//      MPlugin->on_plugin_deinit();
       delete this;
     };
     return r;
@@ -554,6 +549,7 @@ public:
   */
 
   tresult PLUGIN_API queryInterface(const TUID _iid, void** obj) override {
+    MIP_PRINT;
     *obj = nullptr;
     if ( FUnknownPrivate::iidEqual(IAudioProcessor_iid,_iid) ) {
       *obj = (IAudioProcessor*)this;
@@ -648,6 +644,7 @@ public:
   */
 
   tresult PLUGIN_API initialize(FUnknown* context) override {
+    MIP_PRINT;
     MHostApp = (IHostApplication*)context;
     //context->queryInterface(IHostApplication_iid, (void**)&MHostApp);
     if (MHostApp) {
@@ -670,6 +667,7 @@ public:
   */
 
   tresult PLUGIN_API terminate() override {
+    MIP_PRINT;
     MPlugin->on_plugin_deinit();
     return kResultOk;
   }
@@ -691,10 +689,9 @@ public:
   */
 
   tresult PLUGIN_API getControllerClassId(TUID classId) override {
+    MIP_PRINT;
     if (MDescriptor->hasEditor()) {
-
       memcpy(classId,MDescriptor->getLongEditorId(),16);
-
       return kResultOk;
     }
     else {
@@ -710,6 +707,7 @@ public:
   */
 
   tresult PLUGIN_API setIoMode(IoMode mode) override {
+    MIP_PRINT;
     //switch (mode) {
     //  case kSimple:             VST3_Trace("(kSimple)\n"); break;
     //  case kAdvanced:           VST3_Trace("(kAdvanced)\n"); break;
@@ -738,6 +736,7 @@ public:
   */
 
   int32 PLUGIN_API getBusCount(MediaType type, BusDirection dir) override {
+    MIP_PRINT;
     if (type == kAudio) {
       if (dir == kInput) return MDescriptor->getNumAudioInputs();
       else if (dir == kOutput) return MDescriptor->getNumAudioOutputs();
@@ -772,6 +771,7 @@ public:
   */
 
   tresult PLUGIN_API getBusInfo(MediaType type, BusDirection dir, int32 index, BusInfo& bus) override {
+    MIP_PRINT;
     if (type == kAudio) {
       bus.mediaType = kAudio;
       if (dir == kInput) {
@@ -820,6 +820,7 @@ public:
   */
 
   tresult PLUGIN_API getRoutingInfo(RoutingInfo& inInfo, RoutingInfo& outInfo) override {
+    MIP_PRINT;
     outInfo.mediaType = inInfo.mediaType; // MediaTypes::kAudio;
     outInfo.busIndex  = inInfo.busIndex;  // 0;
     outInfo.channel   = -1;
@@ -836,6 +837,7 @@ public:
   */
 
   tresult PLUGIN_API activateBus(MediaType type, BusDirection dir, int32 index, TBool state) override {
+    MIP_PRINT;
     return kResultOk;
   }
 
@@ -846,6 +848,7 @@ public:
   */
 
   tresult PLUGIN_API setActive(TBool state) override {
+    MIP_PRINT;
     if (state) MPlugin->on_plugin_activate(MSampleRate,0,MBlockSize);
     else MPlugin->on_plugin_deactivate();
     return kResultOk;
@@ -924,6 +927,7 @@ public:
   */
 
   tresult PLUGIN_API setState(IBStream* state) override {
+    MIP_PRINT;
     uint32_t version = 0;
     uint32_t mode = 0;
     int32_t size = 0;
@@ -967,6 +971,7 @@ public:
   */
 
   tresult PLUGIN_API getState(IBStream* state) override {
+    MIP_PRINT;
 //    uint32_t  version = MDescriptor->getVersion();
 //    uint32_t  mode    = 0;
 //    void*     ptr     = nullptr;
@@ -1002,10 +1007,13 @@ public:
     buses arrangements and return kResultFalse.
   */
 
-  // const SpeakerArrangement kStereo = kSpeakerL | kSpeakerR;
+  const SpeakerArrangement kStereo = kSpeakerL | kSpeakerR;
 
   tresult PLUGIN_API setBusArrangements(SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts) override {
-    return kResultTrue;
+    MIP_PRINT;
+    //if ((numIns == 2) && (*inputs == kStereo)) {}
+    if ((numIns == 2) && (numOuts == 2)) return kResultTrue;
+    return kResultFalse;
   }
 
   //----------
@@ -1017,9 +1025,24 @@ public:
   */
 
   tresult PLUGIN_API getBusArrangement(BusDirection dir, int32 index, SpeakerArrangement& arr) override {
-    if ((dir==kOutput) && (index==0)) {
-      arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
-      return kResultOk;
+    MIP_PRINT;
+    //if ((dir==kOutput) && (index==0)) {
+    //  arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
+    //  return kResultOk;
+    //}
+    if (dir == kInput) {
+      MIP_AudioPort* port = MDescriptor->getAudioInput(index);
+      if (port) {
+        arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
+        return kResultOk;
+      }
+    }
+    else if (dir == kOutput) {
+      MIP_AudioPort* port = MDescriptor->getAudioInput(index);
+      if (port) {
+        arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
+        return kResultOk;
+      }
     }
     return kResultFalse;
   }
@@ -1037,6 +1060,7 @@ public:
   */
 
   tresult PLUGIN_API canProcessSampleSize(int32 symbolicSampleSize) override {
+    //MIP_PRINT;
     if (symbolicSampleSize==kSample32) {
       return kResultTrue;
     }
@@ -1058,6 +1082,7 @@ public:
   */
 
   uint32 PLUGIN_API getLatencySamples() override {
+    //MIP_PRINT;
     return 0;
   }
 
@@ -1086,6 +1111,7 @@ public:
   */
 
   tresult PLUGIN_API setupProcessing(ProcessSetup& setup) override {
+    MIP_PRINT;
     MProcessMode  = setup.sampleRate;         // kRealtime, kPrefetch, kOffline
     MSampleSize   = setup.symbolicSampleSize; // kSample32, kSample64
     MBlockSize    = setup.maxSamplesPerBlock;
@@ -1107,6 +1133,7 @@ public:
   */
 
   tresult PLUGIN_API setProcessing(TBool state) override {
+    MIP_PRINT;
     MIsProcessing = state;
     return kResultOk;
   }
@@ -1258,30 +1285,28 @@ public:
   // assume only 1 input/output bus..
 
   tresult PLUGIN_API process(ProcessData& data) override {
+
     handleEventsInProcess(data);
     handleParametersInProcess(data);
     bool _flush = ( (data.numInputs == 0) && (data.numOutputs == 0) && (data.numSamples == 0) );
+
     if (!_flush) {
-      MIP_ProcessContext context;// = {0};
-      uint32_t i;
-//      for (i=0; i<MDescriptor->getNumInputs(); i++)   { context.inputs[i]  = data.inputs[0].channelBuffers32[i]; }
-//      for (i=0; i<MDescriptor->getNumOutputs(); i++)  { context.outputs[i] = data.outputs[0].channelBuffers32[i]; }
-//      context.numInputs     = MDescriptor->getNumInputs();
-//      context.numOutputs    = MDescriptor->getNumOutputs();
-//      context.numSamples    = data.numSamples;
-//      //context.oversample    = 1;
-//      context.samplerate    = data.processContext->sampleRate;
-//      context.samplepos     = data.processContext->continousTimeSamples;
-//      context.beatpos       = data.processContext->projectTimeMusic;
-//      context.tempo         = data.processContext->tempo;
-//      context.timesig_num   = data.processContext->timeSigNumerator;
-//      context.timesig_denom = data.processContext->timeSigDenominator;
-//      context.playstate     = MIP_PLUGIN_PLAYSTATE_NONE;
-//      if (data.processContext->state & ProcessContext::StatesAndFlags::kPlaying)      context.playstate |= MIP_PLUGIN_PLAYSTATE_PLAYING;
-//      if (data.processContext->state & ProcessContext::StatesAndFlags::kRecording)    context.playstate |= MIP_PLUGIN_PLAYSTATE_RECORDING;
-//      if (data.processContext->state & ProcessContext::StatesAndFlags::kCycleActive)  context.playstate |= MIP_PLUGIN_PLAYSTATE_LOOPING;
-      MPlugin->on_plugin_process(&context);
+
+      MProcessContext.num_inputs = MDescriptor->getNumAudioInputs();
+      MProcessContext.num_outputs = MDescriptor->getNumAudioOutputs();
+
+      //for (uint32_t i=0; i<MProcessContext.num_inputs; i++)  { MProcessContext.inputs[i]  = data.inputs[0].channelBuffers32[i];  }
+      //for (uint32_t i=0; i<MProcessContext.num_outputs; i++) { MProcessContext.outputs[i] = data.outputs[0].channelBuffers32[i]; }
+
+      MProcessContext.inputs      = data.inputs[0].channelBuffers32;
+      MProcessContext.outputs     = data.outputs[0].channelBuffers32;
+      MProcessContext.num_samples     = data.numSamples;
+      MProcessContext.samplerate    = data.processContext->sampleRate;
+      MProcessContext.tempo         = data.processContext->tempo;
+      MPlugin->on_plugin_process(&MProcessContext);
+
     }
+
     /*
       https://forum.juce.com/t/vst3-plugin-wrapper/12323/5
       I recall the Steinberg Validator complaining that process() should just
@@ -1306,6 +1331,7 @@ public:
   */
 
   uint32 PLUGIN_API getTailSamples() override {
+    //MIP_PRINT;
     return kNoTail;
   }
 
@@ -1337,6 +1363,7 @@ public:
   */
 
   tresult PLUGIN_API getMidiControllerAssignment(int32 busIndex, int16 channel, CtrlNumber midiControllerNumber, ParamID& id) override {
+    //MIP_PRINT;
     //if (busIndex == 0) {
       switch (midiControllerNumber) {
         case kAfterTouch: // 128
@@ -1449,6 +1476,7 @@ public:
   // Returns number of supported key switches for event bus index and channel.
 
   int32 PLUGIN_API getKeyswitchCount(int32 busIndex, int16 channel) override {
+    MIP_PRINT;
     return 0;
   }
 
@@ -1470,6 +1498,7 @@ public:
   // Returns key switch info.
 
   tresult PLUGIN_API getKeyswitchInfo(int32 busIndex, int16 channel, int32 keySwitchIndex, KeyswitchInfo& info) override {
+    MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1500,6 +1529,7 @@ public:
   */
 
   tresult PLUGIN_API connect(IConnectionPoint* other) override {
+    MIP_PRINT;
     //IMessage* msg;
     //msg->setMessageID("test");
     //other->notify(msg);
@@ -1511,6 +1541,7 @@ public:
   //Disconnects a given connection point from this.
 
   tresult PLUGIN_API disconnect(IConnectionPoint* other)  override {
+    MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1529,6 +1560,7 @@ public:
   */
 
   tresult PLUGIN_API notify(IMessage* message) override {
+    MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1551,6 +1583,7 @@ public:
   // Returns the flat count of units.
 
   int32 PLUGIN_API getUnitCount() override {
+    MIP_PRINT;
     return 1;
   }
 
@@ -1568,6 +1601,7 @@ public:
   */
 
   tresult PLUGIN_API getUnitInfo(int32 unitIndex, UnitInfo& info) override {
+    MIP_PRINT;
     if (unitIndex==0) {
       info.id = kRootUnitId; //0;
       info.parentUnitId = kNoParentUnitId;
@@ -1583,6 +1617,7 @@ public:
   // Gets the count of Program List.
 
   int32 PLUGIN_API getProgramListCount() override {
+    MIP_PRINT;
     return 0; // 1
   }
 
@@ -1599,6 +1634,7 @@ public:
   */
 
   tresult PLUGIN_API getProgramListInfo(int32 listIndex, ProgramListInfo& info) override {
+    MIP_PRINT;
     if (listIndex == 0) {
       info.id = 0;
       VST3_CharToUtf16("program",info.name);
@@ -1613,6 +1649,7 @@ public:
   // Gets for a given program list ID and program index its program name.
 
   tresult PLUGIN_API getProgramName(ProgramListID listId, int32 programIndex, String128 name) override {
+    MIP_PRINT;
     if ((listId == 0) && (programIndex == 0)) {
       VST3_CharToUtf16("program",name);
       return kResultOk;
@@ -1629,6 +1666,7 @@ public:
 
   //CString attributeId, String128 attributeValue) {
   tresult PLUGIN_API getProgramInfo(ProgramListID listId, int32 programIndex, Steinberg::Vst::CString attributeId, String128 attributeValue) override {
+    MIP_PRINT;
     ////attributeId = "";
     //if ((listId == 0) && (programIndex == 0) /* attributeId */) {
     //  char_to_utf16("",attributeValue);
@@ -1642,6 +1680,7 @@ public:
   // Returns kResultTrue if the given program index of a given program list ID supports PitchNames.
 
   tresult PLUGIN_API hasProgramPitchNames(ProgramListID listId, int32 programIndex) override {
+    MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1654,6 +1693,7 @@ public:
   */
 
   tresult PLUGIN_API getProgramPitchName(ProgramListID listId, int32 programIndex, int16 midiPitch, String128 name) override {
+    MIP_PRINT;
     //char_to_utf16("pitch",name);
     return kResultFalse;
   }
@@ -1663,6 +1703,7 @@ public:
   // Gets the current selected unit.
 
   UnitID PLUGIN_API getSelectedUnit() override {
+    MIP_PRINT;
     return 0;
   }
 
@@ -1671,6 +1712,7 @@ public:
   // Sets a new selected unit.
 
   tresult PLUGIN_API selectUnit(UnitID unitId) override {
+    MIP_PRINT;
     return kResultOk;
   }
 
@@ -1684,6 +1726,7 @@ public:
   */
 
   tresult PLUGIN_API getUnitByBus(MediaType type, BusDirection dir, int32 busIndex, int32 channel, UnitID& unitId) override {
+    MIP_PRINT;
     unitId = 0;
     return kResultOk;//False;
   }
@@ -1699,6 +1742,7 @@ public:
   */
 
   tresult PLUGIN_API setUnitProgramData(int32 listOrUnitId, int32 programIndex, IBStream* data) override {
+    MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1721,6 +1765,7 @@ public:
   */
 
   tresult PLUGIN_API setComponentState(IBStream* state) override {
+    MIP_PRINT;
     /*
     // we receive the current state of the component (processor part)
     if (state == nullptr) return kResultFalse;
@@ -1769,6 +1814,7 @@ public:
 
   //tresult PLUGIN_API setState(IBStream* state) {
   tresult PLUGIN_API setEditorState(IBStream* state) override {
+    MIP_PRINT;
     return kResultOk;
   }
 
@@ -1776,6 +1822,7 @@ public:
 
   //tresult PLUGIN_API getState(IBStream* state) {
   tresult PLUGIN_API getEditorState(IBStream* state) override {
+    MIP_PRINT;
     return kResultOk;
   }
 
@@ -1786,52 +1833,60 @@ public:
   */
 
   int32 PLUGIN_API getParameterCount() override {
+    MIP_PRINT;
     return MDescriptor->getNumParameters();
   }
 
   //----------
 
   tresult PLUGIN_API getParameterInfo(int32 paramIndex, ParameterInfo& info) override {
-    if (paramIndex >= 0) {
-      if (paramIndex < (int32)MDescriptor->getNumParameters()) {
-        MIP_Parameter* param = MDescriptor->getParameter(paramIndex);
-        if (param) {
-          memcpy(&info,&MParamInfos[paramIndex],sizeof(ParameterInfo));
-          return kResultOk;
-        }
-      } // index < numparams
-      else {
-        //MIP_Trace("paramIndex (%08x) >= num.params\n",paramIndex);
-        switch (paramIndex) {
-          case kAfterTouch: // 128
-            break;
-          case kPitchBend: // 129
-            break;
-          case kCtrlFilterResonance: // cc 74 (slide)
-            break;
-        }
-        switch (paramIndex & 0xffff0000) {
-          case MIP_VST3_PARAM_AFTERTOUCH:
-            break;
-          case MIP_VST3_PARAM_PITCHBEND:
-            break;
-          case MIP_VST3_PARAM_BRIGHTNESS:
-            break;
-        }
-        //return kResultOk;
-        return kResultFalse;
+    MIP_Print("index %i\n",paramIndex);
+    if (paramIndex < 0) return kResultFalse;
+
+    int32_t num_params = MDescriptor->getNumParameters();
+    if (paramIndex < num_params) {
+      MIP_Parameter* param = MDescriptor->getParameter(paramIndex);
+      if (param) {
+        memcpy(&info,&MParamInfos[paramIndex],sizeof(ParameterInfo));
+        return kResultOk;
       }
-    }
+    } // index < numparams
+
+    else { // > # params
+      //MIP_Trace("paramIndex (%08x) >= num.params\n",paramIndex);
+      switch (paramIndex) {
+        case kAfterTouch: // 128
+          break;
+        case kPitchBend: // 129
+          break;
+        case kCtrlFilterResonance: // cc 74 (slide)
+          break;
+      }
+      switch (paramIndex & 0xffff0000) {
+        case MIP_VST3_PARAM_AFTERTOUCH:
+          break;
+        case MIP_VST3_PARAM_PITCHBEND:
+          break;
+        case MIP_VST3_PARAM_BRIGHTNESS:
+          break;
+      }
+      //return kResultOk;
+      return kResultFalse;
+    } // > #params
+
     return kResultFalse;
+
   }
 
   //----------
 
   tresult PLUGIN_API getParamStringByValue(ParamID id, ParamValue valueNormalized, String128 string) override {
+    MIP_PRINT;
     if (id < MDescriptor->getNumParameters()) {
       MIP_Parameter* param = MDescriptor->getParameter(id);
       char buffer[32]; // ???
 //      param->getDisplayText(valueNormalized,buffer);
+      param->displayText(buffer,valueNormalized);
       VST3_CharToUtf16(buffer,string);
       return kResultOk;
     }
@@ -1860,6 +1915,7 @@ public:
   //----------
 
   ParamValue PLUGIN_API normalizedParamToPlain(ParamID id, ParamValue valueNormalized) override {
+    MIP_PRINT;
     if (id < MDescriptor->getNumParameters()) {
       MIP_Parameter* param = MDescriptor->getParameter(id);
       float v = param->from01(valueNormalized);
@@ -1873,6 +1929,7 @@ public:
   //----------
 
   ParamValue PLUGIN_API plainParamToNormalized(ParamID id, ParamValue plainValue) override {
+    MIP_PRINT;
     if (id < MDescriptor->getNumParameters()) {
       MIP_Parameter* param = MDescriptor->getParameter(id);
       float v = param->to01(plainValue);
@@ -1886,6 +1943,7 @@ public:
   //----------
 
   ParamValue PLUGIN_API getParamNormalized(ParamID id) override {
+    MIP_PRINT;
     if (id < MDescriptor->getNumParameters()) {
 //      float v = MPlugin->getParamValue(id);
       float v = 0;
@@ -1913,6 +1971,7 @@ public:
   // bitwig sends a ParamID = 0x3f800000
 
   tresult PLUGIN_API setParamNormalized(ParamID id, ParamValue value) override {
+    MIP_PRINT;
     if (id >= MDescriptor->getNumParameters()) {
       return kResultFalse; // ???
     }
@@ -1952,6 +2011,7 @@ public:
   */
 
   tresult PLUGIN_API setComponentHandler(IComponentHandler* handler) override {
+    MIP_PRINT;
     MComponentHandler = handler;
     //handler->queryInterface(IComponentHandler2::iid,(void**)&MComponentHandler2);
     //MIP_Vst3Host* host = (MIP_Vst3Host*)MPlugin->getHost();
@@ -1969,6 +2029,7 @@ public:
   */
 
   IPlugView* PLUGIN_API createView(FIDString name) override {
+    MIP_PRINT;
     if (MDescriptor->hasEditor()) {
       if (name && (strcmp(name,ViewType::kEditor) == 0)) {
         addRef();
@@ -1983,18 +2044,21 @@ public:
   //--------------------
 
   tresult PLUGIN_API setKnobMode(KnobMode mode) override {
+    MIP_PRINT;
     return kResultFalse;
   }
 
   //----------
 
   tresult PLUGIN_API openHelp(TBool onlyCheck) override {
+    MIP_PRINT;
     return kResultFalse;
   }
 
   //----------
 
   tresult PLUGIN_API openAboutBox(TBool onlyCheck) override {
+    MIP_PRINT;
     return kResultFalse;
   }
 
@@ -2003,6 +2067,7 @@ public:
   //--------------------
 
   tresult PLUGIN_API isPlatformTypeSupported(FIDString type) override {
+    MIP_PRINT;
     // "X11EmbedWindowID"
     if (type && strcmp(type,kPlatformTypeX11EmbedWindowID) == 0) {
       return kResultOk;
@@ -2026,6 +2091,7 @@ public:
   */
 
   tresult PLUGIN_API attached(void* parent, FIDString type) override {
+    MIP_PRINT;
 
     #ifndef MIP_NO_GUI
       if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
@@ -2059,6 +2125,7 @@ public:
   */
 
   tresult PLUGIN_API removed() override {
+    MIP_PRINT;
 
       #ifndef MIP_NO_GUI
       if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
@@ -2076,18 +2143,21 @@ public:
   //----------
 
   tresult PLUGIN_API onWheel(float distance) override {
+    MIP_PRINT;
     return kResultOk;
   }
 
   //----------
 
   tresult PLUGIN_API onKeyDown(char16 key, int16 keyCode, int16 modifiers) override {
+    MIP_PRINT;
     return kResultOk;
   }
 
   //----------
 
   tresult PLUGIN_API onKeyUp(char16 key, int16 keyCode, int16 modifiers) override {
+    MIP_PRINT;
     return kResultOk;
   }
 
@@ -2098,6 +2168,7 @@ public:
   */
 
   tresult PLUGIN_API getSize(ViewRect* size) override {
+    MIP_PRINT;
     if (MDescriptor->hasEditor()) {
       size->left    = 0;
       size->top     = 0;
@@ -2117,6 +2188,7 @@ public:
   */
 
   tresult PLUGIN_API onSize(ViewRect* newSize) override {
+    MIP_PRINT;
     if (MDescriptor->hasEditor()) {
       //MEditorWidth = newSize->getWidth();
       //MEditorHeight = newSize->getHeight();
@@ -2135,6 +2207,7 @@ public:
   */
 
   tresult PLUGIN_API onFocus(TBool state) override {
+    MIP_PRINT;
     return kResultOk;
   }
 
@@ -2146,6 +2219,7 @@ public:
   */
 
   tresult PLUGIN_API setFrame(IPlugFrame* frame) override {
+    MIP_PRINT;
 
     if (MDescriptor->hasEditor()) {
       MPlugFrame = frame;
@@ -2165,6 +2239,7 @@ public:
   */
 
   tresult PLUGIN_API canResize() override {
+    MIP_PRINT;
     return kResultFalse;
   }
 
@@ -2176,6 +2251,7 @@ public:
   */
 
   tresult PLUGIN_API checkSizeConstraint(ViewRect* rect) override {
+    MIP_PRINT;
     return kResultOk;//False;
   }
 
@@ -2192,6 +2268,7 @@ public:
   */
 
   void onTimer() override {
+    //MIP_PRINT;
 
     #ifndef MIP_NO_GUI
       MPlugin->on_updateEditor(MEditor);

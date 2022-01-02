@@ -135,7 +135,7 @@ public:
   MIP_PluginInfo* findPluginByLongId(const char* id) {
     for (uint32_t i=0; i<MPlugins.size(); i++) {
       MIP_Descriptor* descriptor = MPlugins[i]->descriptor;
-      if (id16_equal(id,descriptor->getLongId()) == 0) return MPlugins[i];
+      if (id16_equal(id,descriptor->getLongId())) return MPlugins[i];
     }
     return nullptr;
   }

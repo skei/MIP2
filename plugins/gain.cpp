@@ -26,7 +26,8 @@ public:
 //------------------------------
 
   Gain_Descriptor() {
-    MName   = "Gain";
+    //MName   = "Gain";
+    MName   = "mip_debug";
     MAuthor = "Tor-Helge Skei";
     MEmail  = "tor.helge.skei@gmail.com";
     MUrl    = "https://torhelgeskei.com";
@@ -62,6 +63,7 @@ public:
 
   Gain_Plugin(MIP_Descriptor* ADescriptor)
   : MIP_Plugin(ADescriptor) {
+    MIP_PRINT;
     MDescriptor = ADescriptor;
   }
 
