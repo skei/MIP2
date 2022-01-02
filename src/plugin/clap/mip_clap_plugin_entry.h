@@ -62,8 +62,8 @@ bool clap_plugin_entry_init_callback(const char *plugin_path) {
   for (uint32_t i=0; i<num; i++) {
     clap_plugin_descriptor_t* clapdesc = (clap_plugin_descriptor_t*)malloc(sizeof(clap_plugin_descriptor_t)); // not ptr to desc!
     if (clapdesc) {
-        MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(i);
-        if (info) {
+      MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(i);
+      if (info) {
         //MIP_Descriptor* desc = MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(i);
         MIP_Descriptor* desc    = info->descriptor;//MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(i);
         clapdesc->clap_version  = CLAP_VERSION;
