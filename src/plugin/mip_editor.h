@@ -3,11 +3,13 @@
 //----------------------------------------------------------------------
 
 #include "base/types/mip_queue.h"
-#include "gui/mip_window.h"
 #include "plugin/mip_descriptor.h"
 
-typedef MIP_Array<MIP_Widget*>      MIP_WidgetArray;
-typedef MIP_Queue<MIP_Widget*,1024> MIP_WidgetQueue;
+#ifndef MIP_NO_GUI
+  #include "gui/mip_window.h"
+  typedef MIP_Array<MIP_Widget*>      MIP_WidgetArray;
+  typedef MIP_Queue<MIP_Widget*,1024> MIP_WidgetQueue;
+#endif
 
 //----------------------------------------------------------------------
 //
@@ -26,8 +28,16 @@ public:
 //
 //----------------------------------------------------------------------
 
+#ifndef MIP_NO_GUI
+
 class MIP_Editor
 : public MIP_WindowListener {
+
+#else
+
+class MIP_Editor {
+
+#endif
 
 //------------------------------
 private:
@@ -36,18 +46,24 @@ private:
   MIP_Descriptor*     MDescriptor         = nullptr;
   MIP_EditorListener* MListener           = nullptr;
   float*              MEditorParamValues  = nullptr;
-  MIP_WidgetQueue     MEditorParamQueue   = {};
-  MIP_WidgetArray     MParameterToWidget  = {};
+
+  #ifndef MIP_NO_GUI
+  MIP_WidgetQueue   MEditorParamQueue   = {};
+  MIP_WidgetArray   MParameterToWidget  = {};
+  #endif
 
 //------------------------------
 protected:
 //------------------------------
 
   bool                MIsEditorOpen       = false;
-  MIP_Window*         MWindow             = nullptr;
   uint32_t            MWidth              = 400;
   uint32_t            MHeight             = 400;
   double              MScale              = 1.0;
+
+  #ifndef MIP_NO_GUI
+  MIP_Window*         MWindow             = nullptr;
+  #endif
 
 //------------------------------
 public:
@@ -67,7 +83,9 @@ public:
 
   virtual ~MIP_Editor() {
     free(MEditorParamValues);
+    #ifndef MIP_NO_GUI
     if (MWindow) delete MWindow;
+    #endif
   }
 
 //------------------------------
@@ -79,6 +97,8 @@ public:
   //}
 
   //----------
+
+  #ifndef MIP_NO_GUI
 
   MIP_Window* getWindow() {
     return MWindow;
@@ -100,6 +120,8 @@ public:
   void update() {
   }
 
+  #endif
+
 //------------------------------
 public:
 //------------------------------
@@ -107,12 +129,14 @@ public:
   // audio thread
 
   void queueEditorParam(int32_t AIndex, float AValue) {
+    #ifndef MIP_NO_GUI
     MIP_Widget* widget = MParameterToWidget[AIndex];
     //MIP_Print("index %i value %.3f widget %p\n",AIndex,AValue,widget);
     if (widget) {
       MEditorParamValues[AIndex] = AValue;
       MEditorParamQueue.write(widget);
     }
+    #endif
   }
 
   //----------
@@ -120,6 +144,7 @@ public:
   // timer
 
   void flushEditorParams() {
+    #ifndef MIP_NO_GUI
     if (MWindow && MIsEditorOpen) {
       MIP_Widget* widget;
       while (MEditorParamQueue.read(&widget)) {
@@ -131,6 +156,7 @@ public:
         }
       }
     }
+    #endif
   }
 
 //------------------------------
@@ -138,11 +164,13 @@ public:
 //------------------------------
 
   virtual bool attach(const char* display_name, unsigned long window) {
+    #ifndef MIP_NO_GUI
     MWindow = new MIP_Window(MWidth,MHeight,"Title",this,(void*)window);
     if (MWindow) {
       //MWindow->setListener(this);
       return true;
     }
+    #endif
     return false;
   }
 
@@ -150,28 +178,36 @@ public:
 
   virtual void show() {
     MIsEditorOpen = true;
+    #ifndef MIP_NO_GUI
     MWindow->open();
+    #endif
   }
 
   //----------
 
   virtual void hide() {
     MIsEditorOpen = false;
+    #ifndef MIP_NO_GUI
     MWindow->close();
+    #endif
   }
 
   //----------
 
   virtual void setWidth(uint32_t w) {
     MWidth = w;
+    #ifndef MIP_NO_GUI
     MWindow->setSize(MWidth,MHeight);
+    #endif
   }
 
   //----------
 
   virtual void setHeight(uint32_t h) {
     MHeight = h;
+    #ifndef MIP_NO_GUI
     MWindow->setSize(MWidth,MHeight);
+    #endif
   }
 
   //----------
@@ -179,7 +215,9 @@ public:
   virtual void setSize(uint32_t w, uint32_t h) {
     MWidth = w;
     MHeight = h;
+    #ifndef MIP_NO_GUI
     MWindow->setSize(MWidth,MHeight);
+    #endif
   }
 
   //----------
@@ -203,6 +241,8 @@ public:
 public: // window listener
 //------------------------------
 
+  #ifndef MIP_NO_GUI
+
   void do_window_updateWidget(MIP_Widget* AWidget) override {
     int32_t param_index = AWidget->getParameterIndex();
     float   param_value = AWidget->getValue();
@@ -216,6 +256,8 @@ public: // window listener
   void do_window_redrawWidget(MIP_Widget* AWidget) override {
     MWindow->paintWidget(AWidget);
   }
+
+  #endif
 
 };
 

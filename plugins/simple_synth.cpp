@@ -16,9 +16,12 @@
 #include "audio/mip_audio_math.h"
 #include "base/types/mip_queue.h"
 #include "base/utils/mip_convert.h"
-#include "plugin/mip_editor.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_voices.h"
+
+//#ifndef MIP_NO_GUI
+#include "plugin/mip_editor.h"
+//#endif
 
 #include "gui//mip_widget.h"
 #include "gui//mip_test_widget.h"

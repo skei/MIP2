@@ -20,7 +20,6 @@ public:
 
   MIP_Vst2PluginEntry() {
     MIP_PRINT;
-    //MIP_RegisterPlugins(&MIP_GLOBAL_PLUGIN_LIST);
   }
 
   //----------
@@ -139,8 +138,7 @@ __MIP_EXPORT
 AEffect* mip_vst2_entry(audioMasterCallback audioMaster) {
   MIP_PRINT;
   if (!audioMaster(0,audioMasterVersion,0,0,0,0)) return 0;
-  AEffect* effect = GLOBAL_VST2_PLUGIN_ENTRY.entry(audioMaster);
-  return effect;
+  return GLOBAL_VST2_PLUGIN_ENTRY.entry(audioMaster);
 }
 
 //----------------------------------------------------------------------

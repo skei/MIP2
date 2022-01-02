@@ -4,8 +4,11 @@
 
 #include "mip.h"
 #include "plugin/mip_descriptor.h"
-#include "plugin/mip_editor.h"
 #include "plugin/mip_process_context.h"
+
+//#ifndef MIP_NO_GUI
+#include "plugin/mip_editor.h"
+//#endif
 
 //----------------------------------------------------------------------
 //
@@ -17,10 +20,17 @@ class MIP_Plugin
 : public MIP_EditorListener {
 
 //------------------------------
+private:
+//------------------------------
+
+  MIP_Descriptor* MDescriptor = nullptr;
+
+//------------------------------
 public:
 //------------------------------
 
   MIP_Plugin(MIP_Descriptor* ADescriptor) {
+    MDescriptor = ADescriptor;
   }
 
   //----------
@@ -32,11 +42,19 @@ public:
 public:
 //------------------------------
 
-  virtual void        on_plugin_init() {}
+  MIP_Descriptor* getDescriptor() {
+    return MDescriptor;
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  virtual bool        on_plugin_init() { return true; }
   virtual void        on_plugin_deinit() {}
-  virtual void        on_plugin_activate() {}
+  virtual bool        on_plugin_activate(float sample_rate, uint32_t min_frames, uint32_t max_frames) { return true; }
   virtual void        on_plugin_deactivate() {}
-  virtual void        on_plugin_start_processing() {}
+  virtual bool        on_plugin_start_processing() { return true; }
   virtual void        on_plugin_stop_processing() {}
 
   virtual void        on_plugin_process(MIP_ProcessContext* AContext) {}

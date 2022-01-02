@@ -8,8 +8,12 @@
 
 #include "plugin/mip_descriptor.h"
 #include "plugin/mip_plugin.h"
-#include "plugin/mip_editor.h"
 #include "plugin/exe/mip_exe.h"
+
+//#ifndef MIP_NO_GUI
+#include "plugin/mip_editor.h"
+//#endif
+
 
 //----------------------------------------------------------------------
 //

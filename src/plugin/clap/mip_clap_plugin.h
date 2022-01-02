@@ -10,7 +10,9 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "base/utils/mip_convert.h"
 #include "plugin/mip_plugin.h"
+#include "plugin/mip_process_context.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host_proxy.h"
 
@@ -26,10 +28,16 @@ class MIP_ClapPlugin {
 private:
 //------------------------------
 
-  MIP_Plugin*                     MPlugin         = nullptr;
-  MIP_ClapHostProxy*              MClapHostProxy  = nullptr;
-  const clap_plugin_descriptor_t* MClapDescriptor = nullptr;
-  const clap_host_t*              MClapHost       = nullptr;
+  MIP_Plugin*                     MPlugin           = nullptr;
+  MIP_Descriptor*                 MDescriptor       = nullptr;
+  MIP_ClapHostProxy*              MClapHostProxy    = nullptr;
+
+  const clap_plugin_descriptor_t* MClapDescriptor   = nullptr;
+  const clap_host_t*              MClapHost         = nullptr;
+  clap_plugin_render_mode         MClapRenderMode   = 0;//CLAP_RENDER_REALTIME;
+
+  MIP_ProcessContext              MProcessContext   = {};
+  float*                          MParameterValues  = nullptr;
 
 //------------------------------
 public:
@@ -40,7 +48,10 @@ public:
   MIP_ClapPlugin(MIP_Plugin* APlugin, const clap_plugin_descriptor_t* descriptor, const clap_host_t* host) {
     MClapDescriptor = descriptor;
     MPlugin = APlugin; // delete this!
+    MDescriptor = APlugin->getDescriptor();
     MClapHostProxy = new MIP_ClapHostProxy(host);
+
+    MParameterValues = (float*)malloc(MDescriptor->getNumParameters() * sizeof(float));
   }
 
   //----------
@@ -48,6 +59,7 @@ public:
   ~MIP_ClapPlugin() {
     if (MPlugin) delete MPlugin;
     delete MClapHostProxy;
+    free(MParameterValues);
   }
 
 //------------------------------
@@ -62,93 +74,481 @@ public:
 public:
 //------------------------------
 
-  virtual bool                init() { return true; }
-  virtual void                destroy() {}
-  virtual bool                activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) { return true; }
-  virtual void                deactivate() {}
-  virtual bool                start_processing() { return true; }
-  virtual void                stop_processing() {}
-  virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_SLEEP; }
-  virtual void                on_main_thread() {}
+  void process_input_events(const clap_event_list_t* events) {
+    uint32_t num_events = events->size(events);
+    for (uint32_t i=0; i<num_events; i++) {
+      const clap_event_t* event = events->get(events,i);
+      switch (event->type) {
+        case CLAP_EVENT_NOTE_ON:
+          //MVoices.note_on(&event->note);
+          break;
+        case CLAP_EVENT_NOTE_OFF:
+          //MVoices.note_off(&event->note);
+          break;
+        case CLAP_EVENT_NOTE_END:
+          //event->note
+          break;
+        case CLAP_EVENT_NOTE_CHOKE:
+          //event->note
+          break;
+        case CLAP_EVENT_NOTE_EXPRESSION:
+          //event->note_expression
+          break;
+        case CLAP_EVENT_NOTE_MASK:
+          //event->note_mask
+          break;
+        case CLAP_EVENT_PARAM_VALUE:
+          MPlugin->on_plugin_parameter(event->param_value.param_id,event->param_value.value);
+          break;
+        case CLAP_EVENT_PARAM_MOD:
+          MPlugin->on_plugin_modulation(event->param_mod.param_id,event->param_mod.amount);
+          break;
+        case CLAP_EVENT_TRANSPORT:
+          break;
+        case CLAP_EVENT_MIDI:
+          MPlugin->on_plugin_midi(event->midi.data[0],event->midi.data[1],event->midi.data[2]);
+          break;
+        case CLAP_EVENT_MIDI_SYSEX:
+          break;
+      }
+    }
+  }
 
-  virtual const void* get_extension(const char *id) {
+  //----------
+
+  void process_output_events(const clap_event_list_t* events) {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  bool init() {
+    return MPlugin->on_plugin_init();
+  }
+
+  //----------
+
+  void destroy() {
+    MPlugin->on_plugin_deinit();
+  }
+
+  //----------
+
+  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
+    return MPlugin->on_plugin_activate(sample_rate,min_frames_count,max_frames_count);
+  }
+
+  //----------
+
+  void deactivate() {
+    MPlugin->on_plugin_deactivate();
+  }
+
+  //----------
+
+  bool start_processing() {
+    return MPlugin->on_plugin_start_processing();
+  }
+
+  //----------
+
+  void stop_processing() {
+    return MPlugin->on_plugin_stop_processing();
+  }
+
+  //----------
+
+  clap_process_status process(const clap_process_t *process) {
+    MPlugin->on_plugin_process(&MProcessContext);
+    return CLAP_PROCESS_CONTINUE;
+  }
+
+  //----------
+
+  const void* get_extension(const char *id) {
    //MIP_Print("get_extension: %s\n",id);
-//    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { return &MExtAudioPorts; }
-//    if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  { return &MExtAudioPortsConfig; }
-//    if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    { return &MExtCheckForUpdate; }
-//    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        { return &MExtEventFilter; }
-//    if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          { return &MExtFdSupport; }
-//    if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      { return &MExtFileReference; }
-//    if (strcmp(id,CLAP_EXT_GUI) == 0)                 { return &MExtGui; }
-//    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             { return &MExtLatency; }
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { return &MExtAudioPorts; }
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  { return &MExtAudioPortsConfig; }
+    //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    { return &MExtCheckForUpdate; }
+    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        { return &MExtEventFilter; }
+    if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          { return &MExtFdSupport; }
+    if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      { return &MExtFileReference; }
+    if (strcmp(id,CLAP_EXT_GUI) == 0)                 { return &MExtGui; }
+    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             { return &MExtLatency; }
 //    if (strcmp(id,CLAP_EXT_LOG) == 0)                 { return &MExtLog; }
-//    if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       { return &MExtMidiMappings; }
-//    if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           { return &MExtNoteName; }
-//    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          { return &MExtNotePorts; }
-//    if (strcmp(id,CLAP_EXT_PARAMS) == 0)              { return &MExtParams; }
-//    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      { return &MExtQuickControls; }
-//    if (strcmp(id,CLAP_EXT_STATE) == 0)               { return &MExtState; }
+    if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       { return &MExtMidiMappings; }
+    if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           { return &MExtNoteName; }
+    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          { return &MExtNotePorts; }
+    if (strcmp(id,CLAP_EXT_PARAMS) == 0)              { return &MExtParams; }
+    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      { return &MExtQuickControls; }
+    if (strcmp(id,CLAP_EXT_STATE) == 0)               { return &MExtState; }
 //    if (strcmp(id,CLAP_EXT_THREAD_CHECK) == 0)        { return &MExtThreadCheck; }
-//    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         { return &MExtThreadPool; }
-//    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       { return &MExtTimerSupport; }
-//    if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          { return &MExtTrackInfo; }
+    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         { return &MExtThreadPool; }
+    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       { return &MExtTimerSupport; }
+    if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          { return &MExtTrackInfo; }
 //    if (strcmp(id,CLAP_EXT_TUNING) == 0)              { return &MExtTuning; }
     return nullptr;
   }
 
-  // extensions
+  //----------
 
-  virtual uint32_t  audio_ports_count(bool is_input) { return 0; }
-  virtual bool      audio_ports_get(uint32_t index, bool is_input, clap_audio_port_info_t* info) { return false; }
-  virtual uint32_t  audio_ports_config_count() { return 0; }
-  virtual bool      audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) { return false; }
-  virtual bool      audio_ports_config_select(clap_id config_id) { return false; }
-  virtual bool      event_filter_accepts(clap_event_type event_type) { return false; }
-  virtual void      fd_support_on_fd(clap_fd fd, clap_fd_flags flags) {}
-  virtual bool      gui_create() { return false; }
-  virtual void      gui_destroy() {}
-  virtual void      gui_set_scale(double scale) {}
-  virtual bool      gui_get_size(uint32_t *width, uint32_t *height) { return false; }
-  virtual bool      gui_can_resize() { return false; }
-  virtual void      gui_round_size(uint32_t *width, uint32_t *height) {}
-  virtual bool      gui_set_size(uint32_t width, uint32_t height) { return false; }
-  virtual void      gui_show() {}
-  virtual void      gui_hide() {}
-  virtual bool      gui_x11_attach(const char *display_name, unsigned long window) { return false; }
-  virtual uint32_t  latency_get() { return 0; }
-  virtual uint32_t  note_name_count() { return 0; }
-  virtual bool      note_name_get(uint32_t index, clap_note_name_t *note_name) { return false; }
-  virtual uint32_t  note_ports_count(bool is_input) { return 0; }
-  virtual bool      note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t *info) { return false; }
-  virtual uint32_t  params_count() { return 0; }
-  virtual bool      params_get_info(int32_t param_index, clap_param_info_t* param_info) { return false; }
-  virtual bool      params_get_value(clap_id param_id, double *value) { return false; }
-  virtual bool      params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) { return false; }
-  virtual bool      params_text_to_value(clap_id param_id, const char *display, double *value) { return false; }
-  virtual void      params_flush(const clap_event_list_t *input_parameter_changes, const clap_event_list_t *output_parameter_changes) {}
-  virtual void      render_set(clap_plugin_render_mode mode) {}
-  virtual bool      state_save(clap_ostream_t *stream) { return false; }
-  virtual bool      state_load(clap_istream_t *stream) { return false; }
-  virtual void      thread_pool_exec(uint32_t task_index) {}
-  virtual void      timer_support_on_timer(clap_id timer_id) {}
+  void on_main_thread() {
+  }
 
-  // drafts
+//------------------------------
+public: // extensions
+//------------------------------
 
-  virtual void      check_for_update_check(const clap_host_t *host, bool include_beta) {}
-  virtual uint32_t  file_reference_count() { return 0; }
-  virtual bool      file_reference_get(uint32_t index, clap_file_reference_t *file_reference) { return false; }
-  virtual bool      file_reference_get_hash(clap_id resource_id, clap_hash hash, uint8_t* digest, uint32_t digest_size) { return false; }
-  virtual bool      file_reference_update_path(clap_id resource_id, const char *path) { return false; }
-  virtual bool      file_reference_save_resources() { return false; }
-  virtual uint32_t  midi_mappings_count() { return 0; }
-  virtual bool      midi_mappings_get(uint32_t index, clap_midi_mapping_t *mapping) { return false; }
-  virtual bool      preset_load_from_file(const char *path) { return false; }
-  virtual uint32_t  quick_controls_count() { return 0; }
-  virtual bool      quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) { return false; }
-  virtual void      quick_controls_select(clap_id page_id) {}
-  virtual clap_id   quick_controls_get_selected() { return 0; }
-  virtual uint32_t  surround_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index) { return 0; }
-  virtual void      track_info_changed() {}
+  uint32_t audio_ports_count(bool is_input) {
+    if (is_input) return MDescriptor->getNumAudioInputs();
+    else return MDescriptor->getNumAudioOutputs();
+    return 0;
+  }
+
+  //----------
+
+  bool audio_ports_get(uint32_t index, bool is_input, clap_audio_port_info_t* info) {
+    if (is_input) {
+      MIP_AudioPort* port = MDescriptor->getAudioInput(index);
+      if (port) {
+        strncpy(info->name,port->name,CLAP_NAME_SIZE-1);
+        info->id            = index;
+        info->channel_count = port->num_channels;
+        info->channel_map   = CLAP_CHMAP_STEREO;
+        info->sample_size   = 32;
+        info->is_main       = true;
+        info->is_cv         = false;
+        info->in_place      = false;
+        return true;
+      }
+    }
+    else {
+      MIP_AudioPort* port = MDescriptor->getAudioOutput(index);
+      if (port) {
+        strncpy(info->name,port->name,CLAP_NAME_SIZE-1);
+        info->id            = 0;
+        info->channel_count = port->num_channels;
+        info->channel_map   = CLAP_CHMAP_STEREO;
+        info->sample_size   = 32;
+        info->is_main       = true;
+        info->is_cv         = false;
+        info->in_place      = false;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  //----------
+
+  uint32_t audio_ports_config_count() {
+    return 0;
+  }
+
+  //----------
+
+  bool audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) {
+    return false;
+  }
+
+  //----------
+
+  bool audio_ports_config_select(clap_id config_id) {
+    return false;
+  }
+
+  //----------
+
+  bool event_filter_accepts(clap_event_type event_type) {
+    switch (event_type) {
+      case CLAP_EVENT_NOTE_ON:          return true;
+      case CLAP_EVENT_NOTE_OFF:         return true;
+      case CLAP_EVENT_NOTE_END:         return true;
+      case CLAP_EVENT_NOTE_CHOKE:       return true;
+      case CLAP_EVENT_NOTE_EXPRESSION:  return true;
+      case CLAP_EVENT_NOTE_MASK:        return true;
+      case CLAP_EVENT_PARAM_VALUE:      return true;
+      case CLAP_EVENT_PARAM_MOD:        return true;
+      case CLAP_EVENT_TRANSPORT:        return true;
+      case CLAP_EVENT_MIDI:             return true;
+      case CLAP_EVENT_MIDI_SYSEX:       return true;
+    }
+    return false;
+  }
+
+  //----------
+
+  void fd_support_on_fd(clap_fd fd, clap_fd_flags flags) {
+  }
+
+  //----------
+
+  bool gui_create() {
+    return false;
+  }
+
+  //----------
+
+  void gui_destroy() {
+  }
+
+  //----------
+
+  void gui_set_scale(double scale) {
+  }
+
+  //----------
+
+  bool gui_get_size(uint32_t *width, uint32_t *height) {
+    return false;
+  }
+
+  //----------
+
+  bool gui_can_resize() {
+    return false;
+  }
+
+  //----------
+
+  void gui_round_size(uint32_t *width, uint32_t *height) {
+  }
+
+  //----------
+
+  bool gui_set_size(uint32_t width, uint32_t height) {
+    return false;
+  }
+
+  //----------
+
+  void gui_show() {
+  }
+
+  //----------
+
+  void gui_hide() {
+  }
+
+  //----------
+
+  bool gui_x11_attach(const char *display_name, unsigned long window) {
+    return false;
+  }
+
+  //----------
+
+  uint32_t latency_get() {
+    return 0;
+  }
+
+  //----------
+
+  uint32_t note_name_count() {
+    return 0;
+  }
+
+  //----------
+
+  bool note_name_get(uint32_t index, clap_note_name_t *note_name) {
+    return false;
+  }
+
+  //----------
+
+  uint32_t note_ports_count(bool is_input) {
+    return 0;
+  }
+
+  //----------
+
+  bool note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t *info) {
+    return false;
+  }
+
+  //----------
+
+  uint32_t params_count() {
+    return MDescriptor->getNumParameters();
+  }
+
+  //----------
+
+  bool params_get_info(int32_t param_index, clap_param_info_t* param_info) {
+    MIP_Parameter* param = MDescriptor->getParameter(param_index);
+    if (param) {
+      strncpy(param_info->name,param->getName(),CLAP_NAME_SIZE-1);
+      strncpy(param_info->module,"Module?",CLAP_MODULE_SIZE-1);
+      param_info->id            = param_index;
+      param_info->flags         = 0;
+      if (param->canModulate()) param_info->flags |= CLAP_PARAM_IS_MODULATABLE;
+      param_info->cookie        = nullptr; // param?
+      param_info->min_value     = param->getMinValue();
+      param_info->max_value     = param->getMaxValue();
+      param_info->default_value = param->getDefValue();
+      return true;
+    }
+    return false;
+  }
+
+  //----------
+
+  bool params_get_value(clap_id param_id, double *value) {
+    *value = MParameterValues[param_id];
+    return true;
+  }
+
+  //----------
+
+  bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) {
+    MIP_FloatToString(display,value,3);
+    return true;
+  }
+
+  //----------
+
+  bool params_text_to_value(clap_id param_id, const char *display, double *value) {
+    *value = MIP_StringToFloat((char*)display);
+    return true;
+  }
+
+  //----------
+
+  void params_flush(const clap_event_list_t *input_parameter_changes, const clap_event_list_t *output_parameter_changes) {
+    process_input_events(input_parameter_changes);
+    //process_output_events(output_parameter_changes);
+  }
+
+  //----------
+
+  void render_set(clap_plugin_render_mode mode) {
+    MClapRenderMode = mode;
+  }
+
+  //----------
+
+  bool state_save(clap_ostream_t *stream) {
+    //stream->write(stream,version,sizeof(float));
+    uint32_t num = MDescriptor->getNumParameters();
+    stream->write(stream, &num ,sizeof(uint32_t));
+    for (uint32_t i=0; i<num; i++) {
+      stream->write(stream,&MParameterValues[i],sizeof(float));
+    }
+    return true;
+  }
+
+  //----------
+
+  bool state_load(clap_istream_t *stream) {
+    //stream->read(stream, version ,sizeof(float));
+    uint32_t num;
+    stream->read(stream,&num,sizeof(uint32_t));
+    for (uint32_t i=0; i<num; i++) {
+      stream->read(stream,&MParameterValues[i],sizeof(float));
+    }
+    return true;
+  }
+
+  //----------
+
+  void thread_pool_exec(uint32_t task_index) {
+  }
+
+  //----------
+
+  void timer_support_on_timer(clap_id timer_id) {
+    MPlugin->on_plugin_update_editor();
+  }
+
+//------------------------------
+public: // drafts
+//------------------------------
+
+  void check_for_update_check(const clap_host_t *host, bool include_beta) {
+  }
+
+  //----------
+
+  uint32_t file_reference_count() {
+    return 0;
+  }
+
+  //----------
+
+  bool file_reference_get(uint32_t index, clap_file_reference_t *file_reference) {
+    return false;
+  }
+
+  //----------
+
+  bool file_reference_get_hash(clap_id resource_id, clap_hash hash, uint8_t* digest, uint32_t digest_size) {
+    return false;
+  }
+
+  //----------
+
+  bool file_reference_update_path(clap_id resource_id, const char *path) {
+    return false;
+  }
+
+  //----------
+
+  bool file_reference_save_resources() {
+    return false;
+  }
+
+  //----------
+
+  uint32_t midi_mappings_count() {
+    return 0;
+  }
+
+  //----------
+
+  bool midi_mappings_get(uint32_t index, clap_midi_mapping_t *mapping) {
+    return false;
+  }
+
+  //----------
+
+  bool preset_load_from_file(const char *path) {
+    return false;
+  }
+
+  //----------
+
+  uint32_t quick_controls_count() {
+    return 0;
+  }
+
+  //----------
+
+  bool quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) {
+    return false;
+  }
+
+  //----------
+
+  void quick_controls_select(clap_id page_id) {
+  }
+
+  //----------
+
+  clap_id quick_controls_get_selected() {
+    return 0;
+  }
+
+  //----------
+
+  uint32_t surround_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index) {
+    return 0;
+  }
+
+  //----------
+
+  void track_info_changed() {
+  }
 
 //------------------------------
 private: // callbacks

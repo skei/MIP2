@@ -138,6 +138,22 @@ public:
 
   //----------
 
+  void appendInputPort(MIP_AudioPort* APort) {
+    //int32_t index = MAudioInputs.size();
+    //AParameter->MIndex = index;
+    MAudioInputs.append(APort);
+  }
+
+  //----------
+
+  void deleteAudioInputs() {
+    for (uint32_t i=0; i<MAudioInputs.size(); i++) {
+      delete MAudioInputs[i];
+    }
+  }
+
+  //----------
+
   const char* getVersionText() {
     sprintf(MVersionText,"%i.%i.%i\n",
       ((MVersion & 0xff000000) >> 24),
