@@ -136,6 +136,7 @@ void MIP_RegisterPlugins(MIP_PluginList* AList) {
 //----------
 
 MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, MIP_Descriptor* ADescriptor) {
-  return new Gain_Plugin(ADescriptor);
+  if (AIndex == 0) return new Gain_Plugin(ADescriptor);
+  return nullptr;
 }
 
