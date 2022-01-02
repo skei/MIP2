@@ -77,10 +77,10 @@ public:
   void on_plugin_midi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
     MIP_PRINT;
     switch (AMsg1 & 0xF0) {
-      case 0x90: // note on
+      case MIP_MIDI_NOTE_ON:
         MNumNotes += 1;
         break;
-      case 0x80: // note on
+      case MIP_MIDI_NOTE_OFF: // note on
         MNumNotes -= 1;
         break;
     }
