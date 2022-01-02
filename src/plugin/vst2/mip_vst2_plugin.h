@@ -246,7 +246,7 @@ public: // vst2
   //----------
 
   void vst2_process(float** inputs, float** outputs, VstInt32 sampleFrames) {
-    MIP_PRINT;
+    //MIP_PRINT;
 
 //    updateParametersInProcess();
 //    //MHost->updateTime();
@@ -274,13 +274,13 @@ public: // vst2
   //----------
 
   void vst2_processDouble(double** inputs, double** outputs, VstInt32 sampleFrames) {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //----------
 
   VstIntPtr vst2_dispatcher(VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt) {
-    MIP_PRINT;
+    //MIP_PRINT;
     VstIntPtr result = 0;
 
 //    char*     cptr      = (char*)ptr;

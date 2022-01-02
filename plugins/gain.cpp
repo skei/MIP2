@@ -2,6 +2,8 @@
 // nc -U -l -k /tmp/mip.socket
 #define MIP_DEBUG_PRINT_SOCKET
 
+#define MIP_PLUGIN_CLAP
+#define MIP_PLUGIN_VST2
 #define MIP_PLUGIN_VST3
 #define MIP_NO_GUI
 
@@ -26,8 +28,8 @@ public:
 //------------------------------
 
   Gain_Descriptor() {
-    //MName   = "Gain";
-    MName   = "mip_debug";
+    MName   = "Gain";
+    //MName   = "mip_debug";
     MAuthor = "Tor-Helge Skei";
     MEmail  = "tor.helge.skei@gmail.com";
     MUrl    = "https://torhelgeskei.com";

@@ -62,6 +62,8 @@ private:
 protected:
 //------------------------------
 
+  char                  MRealName[256]      = {0};
+
   const char*           MName               = "";
   const char*           MAuthor             = "";
   const char*           MDescription        = "";
@@ -102,6 +104,7 @@ public:
 public:
 //------------------------------
 
+
   const char*           getName()                   { return MName; }
   const char*           getAuthor()                 { return MAuthor; }
   const char*           getDescription()            { return MDescription; }
@@ -128,6 +131,14 @@ public:
   bool                  hasEditor()                 { return MHasEditor; }
   uint32_t              getEditorWidth()            { return MEditorWidth; }
   uint32_t              getEditorHeight()           { return MEditorHeight; }
+
+  const char* getRealName() {
+    strcpy(MRealName,MName);
+    #ifdef MIP_DEBUG
+    strcat(MRealName," (debug)");
+    #endif
+    return MRealName;
+  }
 
 //------------------------------
 public:

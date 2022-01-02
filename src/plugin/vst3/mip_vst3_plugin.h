@@ -1007,7 +1007,8 @@ public:
     buses arrangements and return kResultFalse.
   */
 
-  const SpeakerArrangement kStereo = kSpeakerL | kSpeakerR;
+  //Steinberg::Vst::
+  //const SpeakerArrangement kStereo = kSpeakerL | kSpeakerR;
 
   tresult PLUGIN_API setBusArrangements(SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts) override {
     MIP_PRINT;
