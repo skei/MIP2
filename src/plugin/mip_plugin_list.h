@@ -121,6 +121,7 @@ public:
 
   //----------
 
+  // clap, lv2?
   MIP_PluginInfo* findPluginById(const char* id) {
     //MIP_PRINT;
     for (uint32_t i=0; i<MPlugins.size(); i++) {
@@ -130,6 +131,16 @@ public:
     return nullptr;
   }
 
+  // vst3
+  MIP_PluginInfo* findPluginByLongId(const char* id) {
+    for (uint32_t i=0; i<MPlugins.size(); i++) {
+      MIP_Descriptor* descriptor = MPlugins[i]->descriptor;
+      if (id16_equal(id,descriptor->getLongId()) == 0) return MPlugins[i];
+    }
+    return nullptr;
+  }
+
+
   //----------
 
   MIP_Plugin* createPlugin(uint32_t AIndex) {
@@ -137,6 +148,22 @@ public:
     MIP_Descriptor* descriptor = MPlugins[AIndex]->descriptor;
     return MIP_CreatePlugin(AIndex,descriptor);
   }
+
+//------------------------------
+private:
+//------------------------------
+
+  bool id16_equal(const void* id1, const void* id2) {
+    uint32_t* ptr1 = (uint32_t*)id1;
+    uint32_t* ptr2 = (uint32_t*)id2;
+    if (ptr1[0] != ptr2[0]) return false;
+    if (ptr1[1] != ptr2[1]) return false;
+    if (ptr1[2] != ptr2[2]) return false;
+    if (ptr1[3] != ptr2[3]) return false;
+    return true;
+  }
+
+
 
 
 };

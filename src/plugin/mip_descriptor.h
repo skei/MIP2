@@ -200,6 +200,15 @@ public:
     return MLongId;
   }
 
+  const char* getLongEditorId() {
+    uint32_t* id = (uint32_t*)MLongId;
+    id[0] = MIP_MAGIC_M_ED;//MShortId;
+    id[1] = MIP_HashString(MName);
+    id[2] = MIP_HashString(MAuthor);
+    id[3] = MVersion;
+    return MLongId;
+  }
+
   //----------
 
   const char* getStringId() {

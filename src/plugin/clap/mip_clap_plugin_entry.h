@@ -58,7 +58,6 @@ const clap_plugin_factory GLOBAL_CLAP_PLUGIN_FACTORY = {
 
 bool clap_plugin_entry_init_callback(const char *plugin_path) {
   //MIP_Print("path: %s\n",plugin_path);
-  //MIP_RegisterPlugins(&MIP_GLOBAL_PLUGIN_LIST);
   uint32_t num = MIP_GLOBAL_PLUGIN_LIST.getNumPlugins();
   for (uint32_t i=0; i<num; i++) {
     clap_plugin_descriptor_t* clapdesc = (clap_plugin_descriptor_t*)malloc(sizeof(clap_plugin_descriptor_t)); // not ptr to desc!

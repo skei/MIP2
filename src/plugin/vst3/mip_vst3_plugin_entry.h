@@ -6,6 +6,8 @@
 #include "plugin/mip_descriptor.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/vst3/mip_vst3.h"
+#include "plugin/vst3/mip_vst3_plugin.h"
+#include "plugin/vst3/mip_vst3_utils.h"
 
 //#ifndef MIP_NO_GUI
 #include "plugin/mip_editor.h"
@@ -27,7 +29,6 @@ private:
 
   uint32_t        MRefCount     = 1;
   FUnknown*       MHostContext  = nullptr;
-//  MIP_Descriptor* MDescriptor   = nullptr;
 
 //------------------------------
 public:
@@ -36,14 +37,12 @@ public:
   MIP_Vst3PluginEntry() {
     MIP_PRINT;
     MRefCount = 1;
-//    MDescriptor = new DESC();
   }
 
   //----------
 
   virtual ~MIP_Vst3PluginEntry() {
     MIP_PRINT;
-//    if (MDescriptor) delete MDescriptor;
   }
 
 //------------------------------
@@ -104,50 +103,58 @@ public:
 
   tresult PLUGIN_API getFactoryInfo(PFactoryInfo* info) override {
     MIP_PRINT;
-//    strcpy(info->vendor,MDescriptor->getAuthor());
-//    strcpy(info->url,MDescriptor->getUrl());
-//    strcpy(info->email,MDescriptor->getEmail());
-//    info->flags = PFactoryInfo::kNoFlags;
+    strcpy(info->vendor,"<author>");
+    strcpy(info->url,"<url>");
+    strcpy(info->email,"<email>");
+    info->flags = PFactoryInfo::kNoFlags;
     return kResultOk;
   }
 
   //----------
 
+
   int32   PLUGIN_API countClasses() override {
     MIP_PRINT;
-    return 1;
+    //return 1;
+    uint32_t num = MIP_GLOBAL_PLUGIN_LIST.getNumPlugins();
+    MIP_Print("%i\n",num);
+    return num;
   }
 
   //----------
 
   tresult PLUGIN_API getClassInfo(int32 index, PClassInfo* info) override {
     MIP_PRINT;
-    switch (index) {
-      case 0:
-//        memcpy(info->cid,(const char*)MDescriptor->getLongId(),16);
-//        info->cardinality = PClassInfo::kManyInstances;
-//        strncpy(info->category,kVstAudioEffectClass,PClassInfo::kCategorySize);
-//        strncpy(info->name,MDescriptor->getName(),PClassInfo::kNameSize);
-        return kResultOk;
-    }
-    return kResultFalse;
+    MIP_PluginInfo* plugin_info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(index);
+    MIP_Descriptor* plugin_desc = plugin_info->descriptor;
+    memcpy(info->cid,(const char*)plugin_desc->getLongId(),16);
+    info->cardinality = PClassInfo::kManyInstances;
+    strncpy(info->category,kVstAudioEffectClass,PClassInfo::kCategorySize);
+    strncpy(info->name,plugin_desc->getName(),PClassInfo::kNameSize);
+    return kResultOk;
   }
 
   //----------
 
   tresult PLUGIN_API createInstance(FIDString cid, FIDString _iid, void** obj) override {
-    MIP_PRINT;
-//    if (FUnknownPrivate::iidEqual(MDescriptor->getLongId(),cid)) {
-//      INST* instance = new INST(MDescriptor);
-//      KODE_Vst3Instance* vst3_instance = KODE_New KODE_Vst3Instance(instance);
-//      instance->setListener(vst3_instance);
-//      instance->on_open();
-//      instance->setDefaultParameterValues();
-//      instance->updateAllParameters();
-//      *obj = (Vst::IComponent*)vst3_instance;
-//      return kResultOk;
-//    }
+    MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.findPluginByLongId(cid); // byLongId
+    if (info) {
+      MIP_Print("index %i\n",info->index);
+      uint32_t index = info->index;
+      MIP_Descriptor* desc = info->descriptor;
+      if (desc) {
+        MIP_Plugin* plugin = MIP_CreatePlugin(index,desc); // deleted in MIP_Vst3Plugin destructor
+//        MIP_Vst3Plugin* vst3_plugin = new MIP_Vst3Plugin(plugin); // deleted where ?
+        // plugin->setListener(vst3_instance);
+        // plugin->on_open();
+        // plugin->setDefaultParameterValues();
+        // plugin->updateAllParameters();
+//        *obj = (Vst::IComponent*)vst3_plugin;
+//        return kResultOk;
+      }
+    }
     *obj = nullptr;
+    MIP_Print("ok\n");;
     return kNotImplemented;
   }
 
@@ -155,27 +162,28 @@ public:
   // IPluginFactory2
   //--------------------
 
+//    memcpy(info->cid,(const char*)plugin_desc->getLongId(),16);
+//    info->cardinality = PClassInfo::kManyInstances;
+//    strncpy(info->category,kVstAudioEffectClass,PClassInfo::kCategorySize);
+//    strncpy(info->name,plugin_desc->getName(),PClassInfo::kNameSize);
+//    return kResultOk;
+
+
   tresult PLUGIN_API getClassInfo2(int32 index, PClassInfo2* info) override {
     MIP_PRINT;
-//    switch (index) {
-//      case 0:
-//        KODE_Memcpy(info->cid,(const char*)MDescriptor->getLongId(),16);
-//        info->cardinality = PClassInfo::kManyInstances;
-//        KODE_Strcpy(info->category,kVstAudioEffectClass);
-//        KODE_Strcpy(info->name,MDescriptor->getName());
-//        info->classFlags = 0;
-//        if (MDescriptor->hasFlag(KODE_PLUGIN_IS_SYNTH)) {
-//          KODE_Strcpy(info->subCategories,Vst::PlugType::kInstrument);
-//        }
-//        else {
-//          KODE_Strcpy(info->subCategories,Vst::PlugType::kFx);
-//        }
-//        KODE_Strcpy(info->vendor,MDescriptor->getAuthor());
-//        KODE_Strcpy(info->version,MDescriptor->getVersionText());
-//        KODE_Strcpy(info->sdkVersion,kVstVersionString);
-//        return kResultOk;
-//    }
-    return kResultFalse;
+    MIP_PluginInfo* plugin_info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(index);
+    MIP_Descriptor* plugin_desc = plugin_info->descriptor;
+    memcpy(info->cid,(const char*)plugin_desc->getLongId(),16);
+    info->cardinality = PClassInfo::kManyInstances;
+    strcpy(info->category,kVstAudioEffectClass);
+    strcpy(info->name,plugin_desc->getName());
+    info->classFlags = 0;
+    if (plugin_desc->isSynth()) strcpy(info->subCategories,Vst::PlugType::kInstrument);
+    else strcpy(info->subCategories,Vst::PlugType::kFx);
+    strcpy(info->vendor,plugin_desc->getAuthor());
+    strcpy(info->version,plugin_desc->getVersionText());
+    strcpy(info->sdkVersion,kVstVersionString);
+    return kResultOk;
   }
 
   //--------------------

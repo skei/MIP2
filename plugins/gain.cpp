@@ -2,7 +2,7 @@
 // nc -U -l -k /tmp/mip.socket
 #define MIP_DEBUG_PRINT_SOCKET
 
-#define MIP_PLUGIN_CLAP
+#define MIP_PLUGIN_VST3
 #define MIP_NO_GUI
 
 //----------

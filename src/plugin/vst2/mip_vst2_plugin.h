@@ -30,8 +30,9 @@ class MIP_Vst2Plugin {
 private:
 //------------------------------
 
-  AEffect     MAEffect  = {0};
   MIP_Plugin* MPlugin   = nullptr;
+
+  AEffect     MAEffect  = {0};
 
 //  KODE_Vst2Host*      MVst2Host             = nullptr;
 //  KODE_IntQueue       MProcessMessageQueue  = {};

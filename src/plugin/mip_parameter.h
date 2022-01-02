@@ -26,6 +26,7 @@ private:
 
   int32_t     MIndex        = -1;
   const char* MName         = "parameter";
+  const char* MShortName    = "param";
   const char* MLabel        = "";
   float       MDefValue     = 0.0;
   float       MMinValue     = 0.0;
@@ -40,6 +41,7 @@ public:
 
   MIP_Parameter(const char* AName, float AdefValue=0.0, float AMinValue=0.0, float AMaxValue=1.0, uint32_t ANumSteps=0) {
     MName     = AName;
+
     MDefValue = AdefValue;
     MMinValue = AMinValue;
     MMaxValue = AMaxValue;
@@ -55,23 +57,17 @@ public:
 public:
 //------------------------------
 
-  int32_t     getIndex()    { return MIndex; }
-  const char* getName()     { return MName; }
-  const char* getLabel()    { return MLabel; }
-  float       getDefValue() { return MDefValue; }
-  float       getMinValue() { return MMinValue; }
-  float       getMaxValue() { return MMaxValue; }
-  uint32_t    getNumSteps() { return MNumSteps; }
-  bool        canAutomate() { return MCanAutomate; }
-  bool        canModulate() { return MCanModulate; }
+  int32_t     getIndex()      { return MIndex; }
+  const char* getName()       { return MName; }
+  const char* getShortName()  { return MShortName; }
+  const char* getLabel()      { return MLabel; }
+  float       getDefValue()   { return MDefValue; }
+  float       getMinValue()   { return MMinValue; }
+  float       getMaxValue()   { return MMaxValue; }
+  uint32_t    getNumSteps()   { return MNumSteps; }
+  bool        canAutomate()   { return MCanAutomate; }
+  bool        canModulate()   { return MCanModulate; }
 
-  //int32_t     getIndex()    { return MIndex; }
-  //const char* getName()     { return MName; }
-  //const char* getLabel()    { return MLabel; }
-  //float       getDefValue() { return MDefValue; }
-  //float       getMinValue() { return MMinValue; }
-  //float       getMaxValue() { return MMaxValue; }
-  //uint32_t    getNumSteps() { return MNumSteps; }
   void        setCanAutomate(bool b=true) { MCanAutomate = b; }
   void        setCanModulate(bool b=true) { MCanModulate = b; }
 
