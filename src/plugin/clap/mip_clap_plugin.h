@@ -46,12 +46,12 @@ public:
   // we must delete APlugin
 
   MIP_ClapPlugin(MIP_Plugin* APlugin, const clap_plugin_descriptor_t* descriptor, const clap_host_t* host) {
-    MClapDescriptor = descriptor;
-    MPlugin = APlugin; // delete this!
-    MDescriptor = APlugin->getDescriptor();
-    MClapHostProxy = new MIP_ClapHostProxy(host);
-
-    MParameterValues = (float*)malloc(MDescriptor->getNumParameters() * sizeof(float));
+    MPlugin           = APlugin; // delete this!
+    MDescriptor       = APlugin->getDescriptor();
+    MClapDescriptor   = descriptor;
+    MClapHostProxy    = new MIP_ClapHostProxy(host);
+    MParameterValues  = (float*)malloc(MDescriptor->getNumParameters() * sizeof(float));
+    MClapPlugin.desc  = descriptor;
   }
 
   //----------
@@ -80,10 +80,10 @@ public:
       const clap_event_t* event = events->get(events,i);
       switch (event->type) {
         case CLAP_EVENT_NOTE_ON:
-          //MVoices.note_on(&event->note);
+          //event->note
           break;
         case CLAP_EVENT_NOTE_OFF:
-          //MVoices.note_off(&event->note);
+          //event->note
           break;
         case CLAP_EVENT_NOTE_END:
           //event->note
@@ -98,6 +98,7 @@ public:
           //event->note_mask
           break;
         case CLAP_EVENT_PARAM_VALUE:
+          MParameterValues[event->param_value.param_id] = event->param_value.value;
           MPlugin->on_plugin_parameter(event->param_value.param_id,event->param_value.value);
           break;
         case CLAP_EVENT_PARAM_MOD:
@@ -136,6 +137,7 @@ public:
   //----------
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
+    MProcessContext.samplerate = sample_rate;
     return MPlugin->on_plugin_activate(sample_rate,min_frames_count,max_frames_count);
   }
 
@@ -159,7 +161,15 @@ public:
 
   //----------
 
+  //TODO: fix this.. don't hardcode stuff!!
+
   clap_process_status process(const clap_process_t *process) {
+    process_input_events(process->in_events);
+    MProcessContext.num_inputs  = 2;  // MDescriptor->getNumAudioInputs();
+    MProcessContext.num_outputs = 2;  // MDescriptor->getNumAudioOutputs();
+    MProcessContext.num_samples = process->frames_count;
+    MProcessContext.inputs      = process->audio_inputs[0].data32;
+    MProcessContext.outputs     = process->audio_outputs[0].data32;
     MPlugin->on_plugin_process(&MProcessContext);
     return CLAP_PROCESS_CONTINUE;
   }
@@ -167,26 +177,25 @@ public:
   //----------
 
   const void* get_extension(const char *id) {
-   //MIP_Print("get_extension: %s\n",id);
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { return &MExtAudioPorts; }
+    //if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { return &MExtAudioPorts; }
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  { return &MExtAudioPortsConfig; }
     //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    { return &MExtCheckForUpdate; }
     if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        { return &MExtEventFilter; }
-    if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          { return &MExtFdSupport; }
-    if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      { return &MExtFileReference; }
-    if (strcmp(id,CLAP_EXT_GUI) == 0)                 { return &MExtGui; }
-    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             { return &MExtLatency; }
+    //if (strcmp(id,CLAP_EXT_FD_SUPPORT) == 0)          { return &MExtFdSupport; }
+    //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      { return &MExtFileReference; }
+    //if (strcmp(id,CLAP_EXT_GUI) == 0)                 { return &MExtGui; }
+    //if (strcmp(id,CLAP_EXT_LATENCY) == 0)             { return &MExtLatency; }
 //    if (strcmp(id,CLAP_EXT_LOG) == 0)                 { return &MExtLog; }
-    if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       { return &MExtMidiMappings; }
-    if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           { return &MExtNoteName; }
-    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          { return &MExtNotePorts; }
+    //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       { return &MExtMidiMappings; }
+    //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           { return &MExtNoteName; }
+    //if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          { return &MExtNotePorts; }
     if (strcmp(id,CLAP_EXT_PARAMS) == 0)              { return &MExtParams; }
-    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      { return &MExtQuickControls; }
+    //if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      { return &MExtQuickControls; }
     if (strcmp(id,CLAP_EXT_STATE) == 0)               { return &MExtState; }
 //    if (strcmp(id,CLAP_EXT_THREAD_CHECK) == 0)        { return &MExtThreadCheck; }
-    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         { return &MExtThreadPool; }
-    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       { return &MExtTimerSupport; }
-    if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          { return &MExtTrackInfo; }
+    //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         { return &MExtThreadPool; }
+    //if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       { return &MExtTimerSupport; }
+    //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          { return &MExtTrackInfo; }
 //    if (strcmp(id,CLAP_EXT_TUNING) == 0)              { return &MExtTuning; }
     return nullptr;
   }
@@ -925,7 +934,7 @@ private: // extensions
   //--------------------
 
 //  static void clap_plugin_check_for_update_check_callback(const clap_host_t *host, bool include_beta) {
-//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+////    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
 //    return plug->
 //  }
 //
@@ -946,6 +955,7 @@ private: // extensions
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->file_reference_get(index,file_reference);
   }
+
   static bool clap_plugin_file_reference_get_hash_callback(const clap_plugin_t *plugin, clap_id resource_id, clap_hash hash, uint8_t* digest, uint32_t digest_size) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->file_reference_get_hash(resource_id,hash,digest,digest_size);

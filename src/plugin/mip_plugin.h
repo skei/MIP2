@@ -4,11 +4,8 @@
 
 #include "mip.h"
 #include "plugin/mip_descriptor.h"
-#include "plugin/mip_process_context.h"
-
-//#ifndef MIP_NO_GUI
 #include "plugin/mip_editor.h"
-//#endif
+#include "plugin/mip_process_context.h"
 
 //----------------------------------------------------------------------
 //

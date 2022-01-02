@@ -1,6 +1,7 @@
 
 // nc -U -l -k /tmp/mip.socket
 #define MIP_DEBUG_PRINT_SOCKET
+
 #define MIP_PLUGIN_CLAP
 #define MIP_NO_GUI
 
@@ -25,9 +26,16 @@ public:
 //------------------------------
 
   Gain_Descriptor() {
-    MName = "Gain";
-    MAuthor = "Tor-HElge Skei";
-    appendParameter( new MIP_Parameter("Gain",1) );
+    MName   = "Gain";
+    MAuthor = "Tor-Helge Skei";
+    MEmail  = "tor.helge.skei@gmail.com";
+    MUrl    = "https://torhelgeskei.com";
+
+    MIP_Parameter* param = appendParameter( new MIP_Parameter( "Gain",   1 ));
+    param->setCanModulate();
+
+    appendInputPort( new MIP_AudioPort( "Input",  2 ));
+    appendOutputPort(new MIP_AudioPort( "Output", 2 ));
   }
 };
 
@@ -46,6 +54,7 @@ private:
 
   MIP_Descriptor* MDescriptor = nullptr;
   float           MGain       = 0.0;
+  float           MGainMod    = 0.0;
 
 //------------------------------
 public:
@@ -73,15 +82,23 @@ public:
 
   //----------
 
+  void on_plugin_modulation(uint32_t AIndex, float AValue) final {
+    switch(AIndex) {
+      case 0: MGainMod = AValue; break;
+    }
+  }
+
+  //----------
+
   void on_plugin_process(MIP_ProcessContext* AContext) final {
     uint32_t  num   = AContext->num_samples;
     float*    in0   = AContext->inputs[0];
-    float*    in1   = AContext->inputs[0];
+    float*    in1   = AContext->inputs[1];
     float*    out0  = AContext->outputs[0];
-    float*    out1  = AContext->outputs[0];
+    float*    out1  = AContext->outputs[1];
     for (uint32_t i=0; i<num; i++) {
-      *out0++ = *in0++ * MGain;
-      *out1++ = *in1++ * MGain;
+      *out0++ = *in0++ * (MGain + MGainMod);
+      *out1++ = *in1++ * (MGain + MGainMod);
     }
   }
 
@@ -94,7 +111,6 @@ public:
 //----------------------------------------------------------------------
 
 void MIP_RegisterPlugins(MIP_PluginList* AList) {
-  MIP_PRINT;
   MIP_Descriptor* descriptor = new Gain_Descriptor();
   AList->appendPlugin(descriptor);
 }
@@ -102,7 +118,6 @@ void MIP_RegisterPlugins(MIP_PluginList* AList) {
 //----------
 
 MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, MIP_Descriptor* ADescriptor) {
-  MIP_PRINT;
   return new Gain_Plugin(ADescriptor);
 }
 

@@ -23,6 +23,15 @@ public:
   uint32_t    num_channels  = 0;
   //uint32_t    direction     = 0; // 0=in, 1=out
 
+//------------------------------
+public:
+//------------------------------
+
+  MIP_AudioPort(const char* AName, uint32_t ANumChannels) {
+    name = AName;
+    num_channels = ANumChannels;
+  }
+
 };
 
 typedef MIP_Array<MIP_AudioPort*> MIP_AudioPortArray;
@@ -84,6 +93,8 @@ public:
   virtual ~MIP_Descriptor() {
     #ifndef MIP_NO_AUTODELETE
     deleteParameters();
+    deleteAudioInputs();
+    deleteAudioOutputs();
     #endif
   }
 
@@ -122,10 +133,11 @@ public:
 public:
 //------------------------------
 
-  void appendParameter(MIP_Parameter* AParameter) {
+  MIP_Parameter* appendParameter(MIP_Parameter* AParameter) {
     int32_t index = MParameters.size();
     AParameter->MIndex = index;
     MParameters.append(AParameter);
+    return AParameter;
   }
 
   //----------
@@ -138,10 +150,9 @@ public:
 
   //----------
 
-  void appendInputPort(MIP_AudioPort* APort) {
-    //int32_t index = MAudioInputs.size();
-    //AParameter->MIndex = index;
+  MIP_AudioPort* appendInputPort(MIP_AudioPort* APort) {
     MAudioInputs.append(APort);
+    return APort;
   }
 
   //----------
@@ -154,8 +165,23 @@ public:
 
   //----------
 
+  MIP_AudioPort* appendOutputPort(MIP_AudioPort* APort) {
+    MAudioOutputs.append(APort);
+    return APort;
+  }
+
+  //----------
+
+  void deleteAudioOutputs() {
+    for (uint32_t i=0; i<MAudioOutputs.size(); i++) {
+      delete MAudioOutputs[i];
+    }
+  }
+
+  //----------
+
   const char* getVersionText() {
-    sprintf(MVersionText,"%i.%i.%i\n",
+    sprintf(MVersionText,"%i.%i.%i",
       ((MVersion & 0xff000000) >> 24),
       ((MVersion & 0x00ff0000) >> 16),
        (MVersion & 0x0000ffff)

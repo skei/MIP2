@@ -14,14 +14,12 @@
 //----------------------------------------------------------------------
 
 uint32_t clap_plugin_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
-  MIP_PRINT;
   return MIP_GLOBAL_PLUGIN_LIST.getNumPlugins();
 }
 
 //----------
 
 const clap_plugin_descriptor_t* clap_plugin_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
-  MIP_PRINT;
   MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(index);
   if (info) {
     return  (const clap_plugin_descriptor*)info->ptr;
@@ -32,7 +30,7 @@ const clap_plugin_descriptor_t* clap_plugin_factory_get_plugin_descriptor_callba
 //----------
 
 const clap_plugin_t* clap_plugin_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-  MIP_PRINT;
+  //MIP_Print("id: %s host: %s, %s, %s\n",plugin_id,host->name,host->vendor,host->version);
   MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.findPluginById(plugin_id);
   const clap_plugin_descriptor* clapdesc = (const clap_plugin_descriptor*)info->ptr;
   if (clapdesc && (strcmp(plugin_id,clapdesc->id) == 0)) {
@@ -59,7 +57,7 @@ const clap_plugin_factory GLOBAL_CLAP_PLUGIN_FACTORY = {
 //----------------------------------------------------------------------
 
 bool clap_plugin_entry_init_callback(const char *plugin_path) {
-  MIP_PRINT;
+  //MIP_Print("path: %s\n",plugin_path);
   //MIP_RegisterPlugins(&MIP_GLOBAL_PLUGIN_LIST);
   uint32_t num = MIP_GLOBAL_PLUGIN_LIST.getNumPlugins();
   for (uint32_t i=0; i<num; i++) {
@@ -68,7 +66,7 @@ bool clap_plugin_entry_init_callback(const char *plugin_path) {
         MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(i);
         if (info) {
         //MIP_Descriptor* desc = MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(i);
-        MIP_Descriptor* desc = info->descriptor;//MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(i);
+        MIP_Descriptor* desc    = info->descriptor;//MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(i);
         clapdesc->clap_version  = CLAP_VERSION;
         clapdesc->id            = desc->getStringId();      //"";
         clapdesc->name          = desc->getName();          //"";
@@ -92,7 +90,6 @@ bool clap_plugin_entry_init_callback(const char *plugin_path) {
 //----------
 
 void clap_plugin_entry_deinit_callback() {
-  MIP_PRINT;
   uint32_t num = MIP_GLOBAL_PLUGIN_LIST.getNumPlugins();
   for (uint32_t i=0; i<num; i++) {
     MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(i);
@@ -109,7 +106,7 @@ void clap_plugin_entry_deinit_callback() {
 //----------
 
 const void* clap_plugin_entry_get_factory_callback(const char *factory_id) {
-  MIP_PRINT;
+  //MIP_Print("id: %s\n",factory_id);
   if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
     return &GLOBAL_CLAP_PLUGIN_FACTORY;
   }

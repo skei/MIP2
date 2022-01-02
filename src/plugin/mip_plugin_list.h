@@ -49,14 +49,14 @@ public:
 //------------------------------
 
   MIP_PluginList() {
-    MIP_PRINT;
+    //MIP_PRINT;
     MIP_RegisterPlugins(this);
   }
 
   //----------
 
   ~MIP_PluginList() {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_AUTODELETE
     deletePlugins();
     #endif
@@ -67,7 +67,7 @@ public:
 //------------------------------
 
   uint32_t appendPlugin(MIP_PluginInfo* info) {
-    MIP_PRINT;
+    //MIP_PRINT;
     uint32_t index = MPlugins.size();
     info->index = index;
     MPlugins.append(info);
@@ -77,7 +77,7 @@ public:
   //----------
 
   uint32_t appendPlugin(MIP_Descriptor* descriptor) {
-    MIP_PRINT;
+    //MIP_PRINT;
     MIP_PluginInfo* info = new MIP_PluginInfo();
     info->descriptor = descriptor;
     uint32_t index = MPlugins.size();
@@ -89,7 +89,7 @@ public:
   //----------
 
   void deletePlugins() {
-    MIP_PRINT;
+    //MIP_PRINT;
     for (uint32_t i=0; i<MPlugins.size(); i++) {
       delete MPlugins[i];
     }
@@ -99,21 +99,21 @@ public:
   //----------
 
   uint32_t getNumPlugins() {
-    MIP_PRINT;
+    //MIP_PRINT;
     return MPlugins.size();
   }
 
   //----------
 
   MIP_PluginInfo* getPluginInfo(uint32_t index) {
-    MIP_PRINT;
+    //MIP_PRINT;
     return MPlugins[index];
   }
 
   //----------
 
   MIP_Descriptor* getPluginDescriptor(uint32_t index) {
-    MIP_PRINT;
+    //MIP_PRINT;
     MIP_PluginInfo* info = MPlugins[index];
     if (info) return info->descriptor;
     return nullptr;
@@ -122,7 +122,7 @@ public:
   //----------
 
   MIP_PluginInfo* findPluginById(const char* id) {
-    MIP_PRINT;
+    //MIP_PRINT;
     for (uint32_t i=0; i<MPlugins.size(); i++) {
       MIP_Descriptor* descriptor = MPlugins[i]->descriptor;
       if (strcmp(id,descriptor->getStringId()) == 0) return MPlugins[i];
@@ -133,7 +133,7 @@ public:
   //----------
 
   MIP_Plugin* createPlugin(uint32_t AIndex) {
-    MIP_PRINT;
+    //MIP_PRINT;
     MIP_Descriptor* descriptor = MPlugins[AIndex]->descriptor;
     return MIP_CreatePlugin(AIndex,descriptor);
   }
