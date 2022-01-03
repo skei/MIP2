@@ -9,8 +9,8 @@ in progress, prototype, proof of concept, pre-, ..
 
 
 * os: linux (windows considered)
-* plugin: clap, exe (vst2/3 coming, maybe lv2)
-* host: clap (other formats coming)
+* plugin: clap, exe, vst2, vst3, (lv2 considered)
+* host: clap (other formats coming, ladspa/dssi dropped)
 * gui: xcb (cairo coming)
 * io: jack audio/midi
 * other: too much to list..
