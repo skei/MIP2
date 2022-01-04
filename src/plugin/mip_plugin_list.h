@@ -12,7 +12,7 @@ class MIP_PluginList;
 class MIP_HostProxy;
 
 void MIP_RegisterPlugins(MIP_PluginList* AList);
-MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, MIP_Descriptor* ADescriptor);
+MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, MIP_Descriptor* ADescriptor, MIP_HostProxy* AHost);
 
 //----------------------------------------------------------------------
 //
@@ -143,10 +143,10 @@ public:
 
   //----------
 
-  MIP_Plugin* createPlugin(uint32_t AIndex) {
+  MIP_Plugin* createPlugin(uint32_t AIndex, MIP_HostProxy* AHost) {
     //MIP_PRINT;
     MIP_Descriptor* descriptor = MPlugins[AIndex]->descriptor;
-    return MIP_CreatePlugin(AIndex,descriptor);
+    return MIP_CreatePlugin(AIndex,descriptor,AHost);
   }
 
 //------------------------------

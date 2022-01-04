@@ -38,7 +38,8 @@ struct MIP_ClapPluginHostExt {
 //
 //----------------------------------------------------------------------
 
-class MIP_ClapHostProxy {
+class MIP_ClapHostProxy
+: public MIP_HostProxy {
 
 //------------------------------
 private:
@@ -69,6 +70,23 @@ public:
   //----------
 
   ~MIP_ClapHostProxy() {
+  }
+
+//------------------------------
+public: // host proxy
+//------------------------------
+
+  void updateParameter(uint32_t AIndex, float AValue) final {
+    MIP_PRINT;
+  }
+
+  void resizeEditor(uint32_t AWidth, uint32_t AHeight) final {
+    MIP_PRINT;
+  }
+
+  void sendMidi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
+    MIP_PRINT;
+    //queueMidi/flushMidi
   }
 
 //------------------------------

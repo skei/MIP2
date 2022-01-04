@@ -19,10 +19,11 @@ class MIP_ClapHost {
 private:
 //------------------------------
 
-  const char*               MPluginPath     = "";
-  char                      MPathOnly[512]  = {0};
-  void*                     MLibHandle      = nullptr;
-  const clap_plugin_entry*  MClapEntry      = nullptr;
+  const char*                 MPluginPath     = "";
+  char                        MPathOnly[512]  = {0};
+  void*                       MLibHandle      = nullptr;
+  const clap_plugin_entry*    MClapEntry      = nullptr;
+  const clap_plugin_factory*  MClapFactory    = nullptr;
 
 //------------------------------
 public:
@@ -40,7 +41,9 @@ public:
 public:
 //------------------------------
 
-  const clap_host* getClapHost() { return &MClapHost; }
+  const clap_host*            getClapHost()     { return &MClapHost; }
+  const clap_plugin_entry*    getClapEntry()    { return MClapEntry; }
+  const clap_plugin_factory*  getClapFactory()  { return MClapFactory; }
 
   void setHostData(void* data)          { MClapHost.host_data = data; }
   void setHostName(const char* txt)     { MClapHost.name      = txt; }
@@ -50,36 +53,43 @@ public:
 
   //----------
 
-  // TODO: factory
+  bool _load_error(const char* str, bool cl=true) {
+    MIP_Print("%s\n",str);
+    if (cl) dlclose(MLibHandle);
+    MLibHandle = nullptr;
+    return false;
+  }
+
+  //----------
 
   bool loadPlugin(const char* path) {
     MPluginPath = path;
+
     MLibHandle = dlopen(path,RTLD_LAZY|RTLD_LOCAL); // RTLD_NOW
-    if (!MLibHandle) {
-      MIP_Print("couldn't load %s\n",path);
-      return false;
-    }
-    MClapEntry = (struct clap_plugin_entry*)dlsym(MLibHandle,"clap_plugin_entry");
-    if (!MClapEntry) {
-      MIP_Print("couldn't find 'clap_plugin_entry'\n");
-      dlclose(MLibHandle);
-      MLibHandle = nullptr;
-      return false;
-    }
+    if (!MLibHandle) return _load_error("couldn't load plugin",false);
+
+    MClapEntry = (struct clap_plugin_entry*)dlsym(MLibHandle,"clap_entry");
+    if (!MClapEntry) return _load_error("couldn't find 'clap_entry'");
+
     get_path_only(MPathOnly,path);
-    return MClapEntry->init(MPathOnly);
+    if (!MClapEntry->init(MPathOnly)) return _load_error("entry.init error");
+
+    MClapFactory = (const clap_plugin_factory*)MClapEntry->get_factory(CLAP_PLUGIN_FACTORY_ID);
+    if (!MClapFactory) return _load_error("couldn't get plugin factory");
+
+    return true;
   }
 
   //----------
 
   void unoadPlugin() {
-    if (MClapEntry) MClapEntry->deinit();
+    //if (MClapEntry) MClapEntry->deinit();
     if (MLibHandle) dlclose(MLibHandle);
   }
 
   //----------
 
-  const clap_plugin* instantiatePlugin(const char* path, uint32_t index) {
+  const clap_plugin* createPlugin(const char* path, uint32_t index) {
 //    if (!MClapEntry) return nullptr;
 //    if (!path) return nullptr;
 //    if (index >= MClapEntry->get_plugin_count()) return nullptr;
@@ -107,9 +117,9 @@ public:
 
   //----------
 
-  //void destroyPlugin(const clap_plugin* plugin) {
-  //  if (plugin) plugin->destroy(plugin);
-  //}
+  void destroyPlugin(const clap_plugin* plugin) {
+    if (plugin) plugin->destroy(plugin);
+  }
 
 //------------------------------
 private:

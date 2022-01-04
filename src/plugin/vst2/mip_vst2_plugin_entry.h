@@ -35,7 +35,12 @@ public:
   AEffect* entry(audioMasterCallback audioMaster) {
     MIP_PRINT;
     MIP_Descriptor* descriptor = MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(0);
-    MIP_Plugin* plugin = MIP_GLOBAL_PLUGIN_LIST.createPlugin(0); // deleted in MIP_Vst2Plugin destructor
+
+TODO
+
+    MIP_Vst2HostProxy* hostproxy = new MIP_Vst2Hostproxy(audioMaster)
+    MIP_Plugin* plugin = MIP_GLOBAL_PLUGIN_LIST.createPlugin(0,hostproxy); // deleted in MIP_Vst2Plugin destructor
+
     MIP_Vst2Plugin* vst2plugin = new MIP_Vst2Plugin(plugin,audioMaster);
     AEffect* effect = vst2plugin->getAEffect();
     memset(effect,0,sizeof(AEffect));

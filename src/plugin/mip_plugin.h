@@ -5,6 +5,7 @@
 #include "mip.h"
 #include "plugin/mip_descriptor.h"
 #include "plugin/mip_editor.h"
+#include "plugin/mip_host_proxy.h"
 #include "plugin/mip_process_context.h"
 
 //----------------------------------------------------------------------
@@ -17,22 +18,25 @@ class MIP_Plugin
 : public MIP_EditorListener {
 
 //------------------------------
-private:
+protected:
 //------------------------------
 
   MIP_Descriptor* MDescriptor = nullptr;
+  MIP_HostProxy*  MHost       = nullptr;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Plugin(MIP_Descriptor* ADescriptor) {
+  MIP_Plugin(MIP_Descriptor* ADescriptor, MIP_HostProxy* AHost) {
     MDescriptor = ADescriptor;
+    MHost = AHost;
   }
 
   //----------
 
   virtual ~MIP_Plugin() {
+    if (MHost) delete MHost;
   }
 
 //------------------------------

@@ -183,6 +183,9 @@ public:
     MProcessContext.inputs      = process->audio_inputs[0].data32;
     MProcessContext.outputs     = process->audio_outputs[0].data32;
     MPlugin->on_plugin_process(&MProcessContext);
+
+    //post-process: fluahMidi to host?
+
     return CLAP_PROCESS_CONTINUE;
   }
 

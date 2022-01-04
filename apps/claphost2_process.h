@@ -2,8 +2,6 @@
 #define claphost_process_included
 //----------------------------------------------------------------------
 
-#if 0
-
 // in progress!!
 
 #define MAX_BLOCK_EVENTS  1024
@@ -563,8 +561,6 @@ public:
 
 
 #undef MAX_BLOCK_SIZE
-
-#endif // 0
 
 //----------------------------------------------------------------------
 #endif

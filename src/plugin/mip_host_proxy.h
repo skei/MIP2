@@ -21,6 +21,7 @@ public:
 
   virtual void updateParameter(uint32_t AIndex, float AValue) {}
   virtual void resizeEditor(uint32_t AWidth, uint32_t AHeight) {}
+  virtual void sendMidi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) {}
 
 };
 

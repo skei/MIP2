@@ -3,8 +3,8 @@
 #define MIP_DEBUG_PRINT_SOCKET
 
 #define MIP_PLUGIN_CLAP
-#define MIP_PLUGIN_VST2
-#define MIP_PLUGIN_VST3
+//#define MIP_PLUGIN_VST2
+//#define MIP_PLUGIN_VST3
 #define MIP_NO_GUI
 
 //----------
@@ -12,6 +12,7 @@
 #include "mip.h"
 #include "plugin/mip_descriptor.h"
 #include "plugin/mip_plugin.h"
+#include "plugin/mip_host_proxy.h"
 #include "plugin/mip_plugin_entry.h"
 
 //----------------------------------------------------------------------
@@ -63,8 +64,8 @@ private:
 public:
 //------------------------------
 
-  Gain_Plugin(MIP_Descriptor* ADescriptor)
-  : MIP_Plugin(ADescriptor) {
+  Gain_Plugin(MIP_Descriptor* ADescriptor, MIP_HostProxy* AHost)
+  : MIP_Plugin(ADescriptor,AHost) {
     MIP_PRINT;
     MDescriptor = ADescriptor;
   }
@@ -83,9 +84,11 @@ public:
     switch (AMsg1 & 0xF0) {
       case MIP_MIDI_NOTE_ON:
         MNumNotes += 1;
+        //MHost->sendMidi(AMsg1,AMsg2,AMsg3);
         break;
       case MIP_MIDI_NOTE_OFF: // note on
         MNumNotes -= 1;
+        //MHost->sendMidi(AMsg1,AMsg2,AMsg3);
         break;
     }
   }
@@ -139,8 +142,8 @@ void MIP_RegisterPlugins(MIP_PluginList* AList) {
 
 //----------
 
-MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, MIP_Descriptor* ADescriptor) {
-  if (AIndex == 0) return new Gain_Plugin(ADescriptor);
+MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, MIP_Descriptor* ADescriptor, MIP_HostProxy* AHost) {
+  if (AIndex == 0) return new Gain_Plugin(ADescriptor,AHost);
   return nullptr;
 }
 

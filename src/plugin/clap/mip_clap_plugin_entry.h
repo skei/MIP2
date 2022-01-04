@@ -35,7 +35,10 @@ const clap_plugin_t* clap_plugin_factory_create_plugin_callback(const struct cla
   const clap_plugin_descriptor* clapdesc = (const clap_plugin_descriptor*)info->ptr;
   if (clapdesc && (strcmp(plugin_id,clapdesc->id) == 0)) {
     // deleted in MIP_ClapPlugin  (?)
-    MIP_Plugin* plugin = MIP_CreatePlugin(info->index,info->descriptor);
+
+    MIP_HostProxy* hostproxy = new MIP_ClapHostProxy(host); // deleted in ~MIP_Plugin()
+
+    MIP_Plugin* plugin = MIP_CreatePlugin(info->index,info->descriptor,hostproxy);
     MIP_ClapPlugin* clapplugin = new MIP_ClapPlugin(plugin,clapdesc,host);
     if (plugin) return clapplugin->getClapPlugin();
   }
