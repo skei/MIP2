@@ -31,11 +31,9 @@ private:
   MIP_Plugin*                     MPlugin           = nullptr;
   MIP_Descriptor*                 MDescriptor       = nullptr;
   MIP_ClapHostProxy*              MClapHostProxy    = nullptr;
-
+  //const clap_host_t*              MClapHost         = nullptr;
   const clap_plugin_descriptor_t* MClapDescriptor   = nullptr;
-  const clap_host_t*              MClapHost         = nullptr;
   clap_plugin_render_mode         MClapRenderMode   = 0;//CLAP_RENDER_REALTIME;
-
   MIP_ProcessContext              MProcessContext   = {};
   float*                          MParameterValues  = nullptr;
 
@@ -43,13 +41,15 @@ private:
 public:
 //------------------------------
 
-  // we must delete APlugin
+  // we must delete APlugin & clap host proxy
 
-  MIP_ClapPlugin(MIP_Plugin* APlugin, const clap_plugin_descriptor_t* descriptor, const clap_host_t* host) {
+  //MIP_ClapPlugin(MIP_Plugin* APlugin, const clap_plugin_descriptor_t* descriptor, const clap_host_t* host) {
+  MIP_ClapPlugin(MIP_Plugin* APlugin, const clap_plugin_descriptor_t* descriptor, MIP_ClapHostProxy* hostproxy) {
     MPlugin           = APlugin; // delete this!
     MDescriptor       = APlugin->getDescriptor();
     MClapDescriptor   = descriptor;
-    MClapHostProxy    = new MIP_ClapHostProxy(host);
+    MClapHostProxy    = hostproxy;
+    //MClapHost         = hostproxy->getClapHost();
     MParameterValues  = (float*)malloc(MDescriptor->getNumParameters() * sizeof(float));
     MClapPlugin.desc  = descriptor;
   }
@@ -58,7 +58,7 @@ public:
 
   ~MIP_ClapPlugin() {
     if (MPlugin) delete MPlugin;
-    delete MClapHostProxy;
+    if (MClapHostProxy) delete MClapHostProxy;
     free(MParameterValues);
   }
 
@@ -74,27 +74,31 @@ public:
 public:
 //------------------------------
 
-  void process_input_events(const clap_event_list_t* events) {
+  void process_input_events(const clap_input_events_t* events) {
     //int32_t port;
     int32_t key;
     int32_t chan;
     float value;
     uint32_t num_events = events->size(events);
     for (uint32_t i=0; i<num_events; i++) {
-      const clap_event_t* event = events->get(events,i);
+      const clap_event_header_t*      event       = events->get(events,i);
+      const clap_event_note_t*        note_event  = (clap_event_note_t*)event;
+      const clap_event_param_value_t* param_event = (clap_event_param_value_t*)event;
+      const clap_event_param_mod_t*   mod_event   = (clap_event_param_mod_t*)event;
+      const clap_event_midi_t*        midi_event  = (clap_event_midi_t*)event;
       switch (event->type) {
         case CLAP_EVENT_NOTE_ON:
           //port = event->note.port_index;
-          key = event->note.key;
-          chan = event->note.channel;
-          value = event->note.velocity;
+          key = note_event->key;
+          chan = note_event->channel;
+          value = note_event->velocity;
           MPlugin->on_plugin_midi(MIP_MIDI_NOTE_ON + chan,key,value * 127.0);
           break;
         case CLAP_EVENT_NOTE_OFF:
           //port = event->note.port_index;
-          key = event->note.key;
-          chan = event->note.channel;
-          value = event->note.velocity;
+          key = note_event->key;
+          chan = note_event->channel;
+          value = note_event->velocity;
           MPlugin->on_plugin_midi(MIP_MIDI_NOTE_OFF + chan,key,value * 127.0);
           break;
         case CLAP_EVENT_NOTE_END:
@@ -106,20 +110,20 @@ public:
         case CLAP_EVENT_NOTE_EXPRESSION:
           //event->note_expression
           break;
-        case CLAP_EVENT_NOTE_MASK:
-          //event->note_mask
-          break;
+        //case CLAP_EVENT_NOTE_MASK:
+        //  //event->note_mask
+        //  break;
         case CLAP_EVENT_PARAM_VALUE:
-          MParameterValues[event->param_value.param_id] = event->param_value.value;
-          MPlugin->on_plugin_parameter(event->param_value.param_id,event->param_value.value);
+          MParameterValues[param_event->param_id] = param_event->value;
+          MPlugin->on_plugin_parameter(param_event->param_id,param_event->value);
           break;
         case CLAP_EVENT_PARAM_MOD:
-          MPlugin->on_plugin_modulation(event->param_mod.param_id,event->param_mod.amount);
+          MPlugin->on_plugin_modulation(mod_event->param_id,mod_event->amount);
           break;
         case CLAP_EVENT_TRANSPORT:
           break;
         case CLAP_EVENT_MIDI:
-          MPlugin->on_plugin_midi(event->midi.data[0],event->midi.data[1],event->midi.data[2]);
+          MPlugin->on_plugin_midi(midi_event->data[0],midi_event->data[1],midi_event->data[2]);
           break;
         case CLAP_EVENT_MIDI_SYSEX:
           break;
@@ -129,7 +133,7 @@ public:
 
   //----------
 
-  void process_output_events(const clap_event_list_t* events) {
+  void process_output_events(const clap_output_events_t* events) {
   }
 
 //------------------------------
@@ -284,14 +288,14 @@ public: // extensions
 
   //----------
 
-  bool event_filter_accepts(clap_event_type event_type) {
+  bool event_filter_accepts(uint16_t space_id, uint16_t event_type) {
     switch (event_type) {
       case CLAP_EVENT_NOTE_ON:          return true;
       case CLAP_EVENT_NOTE_OFF:         return true;
       case CLAP_EVENT_NOTE_END:         return true;
       case CLAP_EVENT_NOTE_CHOKE:       return true;
       case CLAP_EVENT_NOTE_EXPRESSION:  return true;
-      case CLAP_EVENT_NOTE_MASK:        return true;
+      //case CLAP_EVENT_NOTE_MASK:        return true;
       case CLAP_EVENT_PARAM_VALUE:      return true;
       case CLAP_EVENT_PARAM_MOD:        return true;
       case CLAP_EVENT_TRANSPORT:        return true;
@@ -303,8 +307,8 @@ public: // extensions
 
   //----------
 
-  void fd_support_on_fd(clap_fd fd, clap_fd_flags flags) {
-  }
+//  void fd_support_on_fd(clap_fd fd, clap_fd_flags flags) {
+//  }
 
   //----------
 
@@ -319,7 +323,8 @@ public: // extensions
 
   //----------
 
-  void gui_set_scale(double scale) {
+  bool gui_set_scale(double scale) {
+    return false;
   }
 
   //----------
@@ -439,9 +444,9 @@ public: // extensions
 
   //----------
 
-  void params_flush(const clap_event_list_t *input_parameter_changes, const clap_event_list_t *output_parameter_changes) {
-    process_input_events(input_parameter_changes);
-    //process_output_events(output_parameter_changes);
+  void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {
+    process_input_events(in);
+    //process_output_events(out);
   }
 
   //----------
@@ -692,9 +697,9 @@ private: // extensions
   // clap.event-filter
   //--------------------
 
-  static bool clap_plugin_event_filter_accepts_callback(const clap_plugin_t *plugin, clap_event_type event_type) {
+  static bool clap_plugin_event_filter_accepts_callback(const clap_plugin_t *plugin, uint16_t space_id, uint16_t event_type) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->event_filter_accepts(event_type);
+    return plug->event_filter_accepts(space_id,event_type);
   }
 
   clap_plugin_event_filter_t MExtEventFilter = {
@@ -705,14 +710,14 @@ private: // extensions
   // clap.fd-support
   //--------------------
 
-  static void clap_plugin_fd_support_on_fd_callback(const clap_plugin_t *plugin, clap_fd fd, clap_fd_flags flags) {
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->fd_support_on_fd(fd,flags);
-  }
-
-  clap_plugin_fd_support_t MExtFdSupport = {
-    clap_plugin_fd_support_on_fd_callback
-  };
+//  static void clap_plugin_fd_support_on_fd_callback(const clap_plugin_t *plugin, clap_fd fd, clap_fd_flags flags) {
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->fd_support_on_fd(fd,flags);
+//  }
+//
+//  clap_plugin_fd_support_t MExtFdSupport = {
+//    clap_plugin_fd_support_on_fd_callback
+//  };
 
   //--------------------
   // clap.gui
@@ -728,7 +733,7 @@ private: // extensions
     return plug->gui_destroy();
   }
 
-  static void clap_plugin_gui_set_scale_callback(const clap_plugin_t *plugin, double scale) {
+  static bool clap_plugin_gui_set_scale_callback(const clap_plugin_t *plugin, double scale) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_set_scale(scale);
   }
@@ -868,9 +873,9 @@ private: // extensions
     return plug->params_text_to_value(param_id,display,value);
   }
 
-  static void clap_plugin_params_flush_callback(const clap_plugin_t* plugin, const clap_event_list_t *input_parameter_changes, const clap_event_list_t *output_parameter_changes) {
+  static void clap_plugin_params_flush_callback(const clap_plugin_t* plugin, const clap_input_events_t* in, const clap_output_events_t* out) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->params_flush(input_parameter_changes,output_parameter_changes);
+    return plug->params_flush(in,out);
   }
 
   clap_plugin_params_t MExtParams = {
@@ -1060,14 +1065,24 @@ private: // extensions
   // clap.surround.draft/0
   //--------------------
 
-  static uint32_t clap_plugin_surround_get_channel_type_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint32_t channel_index) {
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->surround_get_channel_type(is_input,port_index,channel_index);
-  }
+  //static uint32_t clap_plugin_surround_get_channel_type_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint32_t channel_index) {
+  //  MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+  //  return plug->surround_get_channel_type(is_input,port_index,channel_index);
+  //}
+
+   static uint32_t clap_plugin_surround_get_channel_map_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) {
+    return 0;
+   }
+
+   static void clap_plugin_surround_changed_callback(const clap_plugin_t *plugin) {
+   }
 
   clap_plugin_surround_t MExtSurround = {
-    clap_plugin_surround_get_channel_type_callback,
+    clap_plugin_surround_get_channel_map_callback,
+    clap_plugin_surround_changed_callback
+
   };
+
 
   //--------------------
   // clap.track-info.draft/0

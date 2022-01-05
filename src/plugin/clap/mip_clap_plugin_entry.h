@@ -34,12 +34,9 @@ const clap_plugin_t* clap_plugin_factory_create_plugin_callback(const struct cla
   MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.findPluginById(plugin_id);
   const clap_plugin_descriptor* clapdesc = (const clap_plugin_descriptor*)info->ptr;
   if (clapdesc && (strcmp(plugin_id,clapdesc->id) == 0)) {
-    // deleted in MIP_ClapPlugin  (?)
-
-    MIP_HostProxy* hostproxy = new MIP_ClapHostProxy(host); // deleted in ~MIP_Plugin()
-
-    MIP_Plugin* plugin = MIP_CreatePlugin(info->index,info->descriptor,hostproxy);
-    MIP_ClapPlugin* clapplugin = new MIP_ClapPlugin(plugin,clapdesc,host);
+    MIP_ClapHostProxy* hostproxy = new MIP_ClapHostProxy(host);                     // deleted in MIP_Plugin() destructor
+    MIP_Plugin* plugin = MIP_CreatePlugin(info->index,info->descriptor,hostproxy);  // deleted in MIP_ClapPlugin destructor
+    MIP_ClapPlugin* clapplugin = new MIP_ClapPlugin(plugin,clapdesc,hostproxy);     // --"--
     if (plugin) return clapplugin->getClapPlugin();
   }
   return nullptr;
@@ -78,8 +75,8 @@ bool clap_plugin_entry_init_callback(const char *plugin_path) {
         clapdesc->support_url   = desc->getSupportUrl();    //"";
         clapdesc->version       = desc->getVersionText();   //"";
         clapdesc->description   = desc->getDescription();   //"";
-        clapdesc->keywords      = desc->getKeywords();      //"";
-        clapdesc->plugin_type   = CLAP_PLUGIN_AUDIO_EFFECT;
+        clapdesc->features      = desc->getKeywords();      //"";
+        //clapdesc->plugin_type   = CLAP_PLUGIN_AUDIO_EFFECT;
         //MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(i);
         info->ptr = clapdesc;
       }

@@ -6,6 +6,7 @@
 #include "plugin/mip_descriptor.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/vst3/mip_vst3.h"
+#include "plugin/vst3/mip_vst3_host_proxy.h"
 #include "plugin/vst3/mip_vst3_plugin.h"
 #include "plugin/vst3/mip_vst3_utils.h"
 
@@ -154,12 +155,17 @@ public:
       MIP_DPrint(" (index %i) -> kResultOk\n",info->index);
       uint32_t index = info->index;
       MIP_Descriptor* desc = info->descriptor;
-      MIP_Plugin* plugin = MIP_CreatePlugin(index,desc); // deleted in MIP_Vst3Plugin destructor
-      MIP_Vst3Plugin* vst3_plugin = new MIP_Vst3Plugin(plugin); // deleted where ?
+
+      MIP_Vst3HostProxy* hostproxy = new MIP_Vst3HostProxy();       // deleted in MIP_Plugin() destructor
+      MIP_Plugin* plugin = MIP_CreatePlugin(index,desc,hostproxy);  // deleted in MIP_Vst3Plugin destructor
+
+      MIP_Vst3Plugin* vst3_plugin = new MIP_Vst3Plugin(plugin);     // deleted in MIP_Vst3Plugin.release()
+
 //      plugin->setListener(vst3_instance);
 //      plugin->on_plugin_open();
 //      plugin->setDefaultParameterValues();
 //      plugin->updateAllParameters();
+
       *obj = (Vst::IComponent*)vst3_plugin;
       return kResultOk;
     }

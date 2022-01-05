@@ -30,7 +30,7 @@ public:
 
   MIP_Plugin(MIP_Descriptor* ADescriptor, MIP_HostProxy* AHost) {
     MDescriptor = ADescriptor;
-    MHost = AHost;
+    MHost       = AHost;
   }
 
   //----------

@@ -5,6 +5,7 @@
 #include "mip.h"
 #include "plugin/vst2/mip_vst2.h"
 #include "plugin/vst2/mip_vst2_plugin.h"
+#include "plugin/vst2/mip_vst2_host_proxy.h"
 
 //----------------------------------------------------------------------
 //
@@ -36,9 +37,7 @@ public:
     MIP_PRINT;
     MIP_Descriptor* descriptor = MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(0);
 
-TODO
-
-    MIP_Vst2HostProxy* hostproxy = new MIP_Vst2Hostproxy(audioMaster)
+    MIP_Vst2HostProxy* hostproxy = new MIP_Vst2HostProxy(/*audioMaster*/);
     MIP_Plugin* plugin = MIP_GLOBAL_PLUGIN_LIST.createPlugin(0,hostproxy); // deleted in MIP_Vst2Plugin destructor
 
     MIP_Vst2Plugin* vst2plugin = new MIP_Vst2Plugin(plugin,audioMaster);

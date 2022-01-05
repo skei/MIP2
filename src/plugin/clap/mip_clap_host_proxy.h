@@ -11,7 +11,7 @@ struct MIP_ClapPluginHostExt {
   clap_host_audio_ports*        audio_ports         = nullptr;
   clap_host_audio_ports_config* audio_ports_config  = nullptr;
   clap_host_event_filter*       event_filter        = nullptr;
-  clap_host_fd_support*         fd_support          = nullptr;
+//  clap_host_fd_support*         fd_support          = nullptr;
   clap_host_gui*                gui                 = nullptr;
   clap_host_latency*            latency             = nullptr;
   clap_host_log*                log                 = nullptr;
@@ -72,6 +72,10 @@ public:
   ~MIP_ClapHostProxy() {
   }
 
+  //
+
+  const clap_host* getClapHost() { return MHost; }
+
 //------------------------------
 public: // host proxy
 //------------------------------
@@ -101,7 +105,7 @@ public:
   bool has_ext_audio_ports()        { return (MHostExt.audio_ports != nullptr); }
   bool has_ext_audio_ports_config() { return (MHostExt.audio_ports_config != nullptr); }
   bool has_ext_event_filter()       { return (MHostExt.event_filter != nullptr); }
-  bool has_ext_fd_support()         { return (MHostExt.fd_support != nullptr); }
+//  bool has_ext_fd_support()         { return (MHostExt.fd_support != nullptr); }
   bool has_ext_gui()                { return (MHostExt.gui != nullptr); }
   bool has_ext_latency()            { return (MHostExt.latency != nullptr); }
   bool has_ext_log()                { return (MHostExt.log != nullptr); }
@@ -175,27 +179,27 @@ public: // extensions
   // fd_support
 
 
-  bool fd_support_register_fd(clap_fd fd, clap_fd_flags flags) {
-    if (MHostExt.fd_support) return MHostExt.fd_support->register_fd(MHost,fd,flags);
-    return false;
-  }
-
-  bool fd_support_modify_fd(clap_fd fd, clap_fd_flags flags) {
-    if (MHostExt.fd_support) return MHostExt.fd_support->modify_fd(MHost,fd,flags);
-    return false;
-  }
-
-  bool fd_support_unregister_fd(clap_fd fd) {
-    if (MHostExt.fd_support) return MHostExt.fd_support->unregister_fd(MHost,fd);
-    return false;
-  }
+//  bool fd_support_register_fd(clap_fd fd, clap_fd_flags flags) {
+//    if (MHostExt.fd_support) return MHostExt.fd_support->register_fd(MHost,fd,flags);
+//    return false;
+//  }
+//
+//  bool fd_support_modify_fd(clap_fd fd, clap_fd_flags flags) {
+//    if (MHostExt.fd_support) return MHostExt.fd_support->modify_fd(MHost,fd,flags);
+//    return false;
+//  }
+//
+//  bool fd_support_unregister_fd(clap_fd fd) {
+//    if (MHostExt.fd_support) return MHostExt.fd_support->unregister_fd(MHost,fd);
+//    return false;
+//  }
 
   // gui
 
-  bool gui_resize(uint32_t width, uint32_t height) {
-    if (MHostExt.gui) return MHostExt.gui->resize(MHost,width,height);
-    return false;
-  }
+//  bool gui_resize(uint32_t width, uint32_t height) {
+//    if (MHostExt.gui) return MHostExt.gui->resize(MHost,width,height);
+//    return false;
+//  }
 
   // latency
 
@@ -332,7 +336,7 @@ private:
     MHostExt.audio_ports        = (clap_host_audio_ports*)        get_extension(CLAP_EXT_AUDIO_PORTS);
     MHostExt.audio_ports_config = (clap_host_audio_ports_config*) get_extension(CLAP_EXT_AUDIO_PORTS_CONFIG);
     MHostExt.event_filter       = (clap_host_event_filter*)       get_extension(CLAP_EXT_EVENT_FILTER);
-    MHostExt.fd_support         = (clap_host_fd_support*)         get_extension(CLAP_EXT_FD_SUPPORT);
+//    MHostExt.fd_support         = (clap_host_fd_support*)         get_extension(CLAP_EXT_FD_SUPPORT);
     MHostExt.gui                = (clap_host_gui*)                get_extension(CLAP_EXT_GUI);
     MHostExt.latency            = (clap_host_latency*)            get_extension(CLAP_EXT_LATENCY);
     MHostExt.log                = (clap_host_log*)                get_extension(CLAP_EXT_LOG);

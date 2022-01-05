@@ -143,6 +143,10 @@
 		<Unit filename="../apps/claphost/mip_clap_host.h" />
 		<Unit filename="../apps/claphost/mip_clap_plugin.h" />
 		<Unit filename="../apps/claphost/mip_clap_plugin_entry.h" />
+		<Unit filename="../apps/claphost2.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../experiments/clap/CLAP_plugin.h" />
 		<Unit filename="../experiments/clap/CLAP_plugin_entry.h" />
 		<Unit filename="../experiments/clap/editor.h" />
@@ -396,10 +400,14 @@
 		<Unit filename="../src/plugin/mip_plugin_list.h" />
 		<Unit filename="../src/plugin/mip_process_context.h" />
 		<Unit filename="../src/plugin/vst2/mip_vst2.h" />
+		<Unit filename="../src/plugin/vst2/mip_vst2_host_proxy.h" />
 		<Unit filename="../src/plugin/vst2/mip_vst2_plugin.h" />
 		<Unit filename="../src/plugin/vst2/mip_vst2_plugin_entry.h" />
 		<Unit filename="../src/plugin/vst3/mip_vst3.h" />
+		<Unit filename="../src/plugin/vst3/mip_vst3_host_proxy.h" />
+		<Unit filename="../src/plugin/vst3/mip_vst3_plugin.h" />
 		<Unit filename="../src/plugin/vst3/mip_vst3_plugin_entry.h" />
+		<Unit filename="../src/plugin/vst3/mip_vst3_utils.h" />
 		<Unit filename="build.cpp" />
 		<Unit filename="test/test.cpp">
 			<Option compile="0" />
