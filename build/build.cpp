@@ -16,12 +16,12 @@
 //----------------------------------------------------------------------
 
 //#include "../apps/claphost.cpp"
-//#include "../apps/claphost2.cpp"
+#include "../apps/claphost2.cpp"
 
 //----------------------------------------------------------------------
 // plugins
 //----------------------------------------------------------------------
 
-#include "../plugins/gain.cpp"
+//#include "../plugins/gain.cpp"
 //#include "../plugins/sa_botage.cpp"
 //#include "../plugins/simple_synth.cpp"

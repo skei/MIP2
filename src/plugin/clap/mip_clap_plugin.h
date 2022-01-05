@@ -75,58 +75,66 @@ public:
 //------------------------------
 
   void process_input_events(const clap_input_events_t* events) {
-    //int32_t port;
-    int32_t key;
-    int32_t chan;
-    float value;
     uint32_t num_events = events->size(events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t*      event       = events->get(events,i);
-      const clap_event_note_t*        note_event  = (clap_event_note_t*)event;
-      const clap_event_param_value_t* param_event = (clap_event_param_value_t*)event;
-      const clap_event_param_mod_t*   mod_event   = (clap_event_param_mod_t*)event;
-      const clap_event_midi_t*        midi_event  = (clap_event_midi_t*)event;
       switch (event->type) {
-        case CLAP_EVENT_NOTE_ON:
-          //port = event->note.port_index;
-          key = note_event->key;
-          chan = note_event->channel;
-          value = note_event->velocity;
+        case CLAP_EVENT_NOTE_ON: {
+          const clap_event_note_t* note_event = (clap_event_note_t*)event;
+          //int32_t port = event->note.port_index;
+          int32_t key = note_event->key;
+          int32_t chan = note_event->channel;
+          float value = note_event->velocity;
           MPlugin->on_plugin_midi(MIP_MIDI_NOTE_ON + chan,key,value * 127.0);
           break;
-        case CLAP_EVENT_NOTE_OFF:
-          //port = event->note.port_index;
-          key = note_event->key;
-          chan = note_event->channel;
-          value = note_event->velocity;
+        }
+        case CLAP_EVENT_NOTE_OFF: {
+          const clap_event_note_t* note_event = (clap_event_note_t*)event;
+          //int32_t port = event->note.port_index;
+          int32_t key = note_event->key;
+          int32_t chan = note_event->channel;
+          float value = note_event->velocity;
           MPlugin->on_plugin_midi(MIP_MIDI_NOTE_OFF + chan,key,value * 127.0);
           break;
-        case CLAP_EVENT_NOTE_END:
-          //event->note
+        }
+        case CLAP_EVENT_NOTE_END: {
+          //const clap_event_note_t* note_event = (clap_event_note_t*)event;
           break;
-        case CLAP_EVENT_NOTE_CHOKE:
-          //event->note
+        }
+        case CLAP_EVENT_NOTE_CHOKE: {
+          //const clap_event_note_t* note_event = (clap_event_note_t*)event;
           break;
-        case CLAP_EVENT_NOTE_EXPRESSION:
-          //event->note_expression
+        }
+        case CLAP_EVENT_NOTE_EXPRESSION: {
+          //const clap_event_note_expression_t* expression_event = (clap_event_note_expression_t*)event;
           break;
-        //case CLAP_EVENT_NOTE_MASK:
-        //  //event->note_mask
+        }
+        //case CLAP_EVENT_NOTE_MASK: {
         //  break;
-        case CLAP_EVENT_PARAM_VALUE:
+        //}
+        case CLAP_EVENT_PARAM_VALUE: {
+          const clap_event_param_value_t* param_event = (clap_event_param_value_t*)event;
           MParameterValues[param_event->param_id] = param_event->value;
           MPlugin->on_plugin_parameter(param_event->param_id,param_event->value);
           break;
-        case CLAP_EVENT_PARAM_MOD:
+        }
+        case CLAP_EVENT_PARAM_MOD: {
+          const clap_event_param_mod_t* mod_event = (clap_event_param_mod_t*)event;
           MPlugin->on_plugin_modulation(mod_event->param_id,mod_event->amount);
           break;
-        case CLAP_EVENT_TRANSPORT:
+        }
+        case CLAP_EVENT_TRANSPORT: {
           break;
-        case CLAP_EVENT_MIDI:
+        }
+        case CLAP_EVENT_MIDI: {
+          const clap_event_midi_t* midi_event = (clap_event_midi_t*)event;
           MPlugin->on_plugin_midi(midi_event->data[0],midi_event->data[1],midi_event->data[2]);
           break;
-        case CLAP_EVENT_MIDI_SYSEX:
+        }
+        case CLAP_EVENT_MIDI_SYSEX: {
+          //const clap_event_midi_sysex_t* sysex_event = (clap_event_midi_sysex_t*)event;
           break;
+        }
       }
     }
   }
@@ -177,7 +185,8 @@ public:
 
   //----------
 
-  //TODO: fix this.. don't hardcode stuff!!
+  //TODO:
+  // this is ugly!! fix this!! don't hardcode stuff!!
 
   clap_process_status process(const clap_process_t *process) {
     process_input_events(process->in_events);
@@ -1065,24 +1074,20 @@ private: // extensions
   // clap.surround.draft/0
   //--------------------
 
-  //static uint32_t clap_plugin_surround_get_channel_type_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint32_t channel_index) {
-  //  MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-  //  return plug->surround_get_channel_type(is_input,port_index,channel_index);
-  //}
-
-   static uint32_t clap_plugin_surround_get_channel_map_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) {
-    return 0;
-   }
-
-   static void clap_plugin_surround_changed_callback(const clap_plugin_t *plugin) {
-   }
-
-  clap_plugin_surround_t MExtSurround = {
-    clap_plugin_surround_get_channel_map_callback,
-    clap_plugin_surround_changed_callback
-
-  };
-
+//   static uint32_t clap_plugin_surround_get_channel_map_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) {
+//      MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//      return plug->surround_get_channel_map(is_input,port_index,channel_map,channel_map_capacity);
+//    return 0;
+//   }
+//
+//   static void clap_plugin_surround_changed_callback(const clap_plugin_t *plugin) {
+//   }
+//
+//  clap_plugin_surround_t MExtSurround = {
+//    clap_plugin_surround_get_channel_map_callback,
+//    clap_plugin_surround_changed_callback
+//
+//  };
 
   //--------------------
   // clap.track-info.draft/0

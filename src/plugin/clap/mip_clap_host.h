@@ -6,6 +6,7 @@
 
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
+#include "plugin/clap/mip_clap_hosted_plugin.h"
 
 //----------------------------------------------------------------------
 //
@@ -82,44 +83,69 @@ public:
 
   //----------
 
-  void unoadPlugin() {
+  void unloadPlugin() {
     //if (MClapEntry) MClapEntry->deinit();
     if (MLibHandle) dlclose(MLibHandle);
   }
 
   //----------
 
-  const clap_plugin* createPlugin(const char* path, uint32_t index) {
-//    if (!MClapEntry) return nullptr;
-//    if (!path) return nullptr;
-//    if (index >= MClapEntry->get_plugin_count()) return nullptr;
-//    const clap_plugin_descriptor* descriptor = MClapEntry->get_plugin_descriptor(index);
-//    if (!descriptor) {
-//      MIP_Print("couldn't get descriptor\n");
-//      return nullptr;
-//    }
-//    const clap_plugin* plugin = MClapEntry->create_plugin( &MClapHost, descriptor->id );
-//    if (!plugin) {
-//      MIP_Print("couldn't create plugin\n");
-//      return nullptr;
-//    }
-//    bool result = plugin->init(plugin);
-//    if (result) {
-//      return plugin;
-//    }
-//    else {
-//      MIP_Print("couldn't init plugin\n");
-//      plugin->destroy(plugin);
-//      return nullptr;
-//    }
+  MIP_ClapHostedPlugin* instantiatePlugin(const char* path, uint32_t index) {
+    //if (!MClapEntry) return nullptr;
+    if (!MClapFactory) return nullptr;
+    if (index >= MClapFactory->get_plugin_count(MClapFactory)) return nullptr;
+    const clap_plugin_descriptor* descriptor = MClapFactory->get_plugin_descriptor(MClapFactory,index);
+    if (!descriptor) {
+      MIP_Print("couldn't get descriptor\n");
+      return nullptr;
+    }
+    const clap_plugin* plugin = MClapFactory->create_plugin(MClapFactory,&MClapHost,descriptor->id);
+    if (!plugin) {
+      MIP_Print("couldn't create plugin\n");
+      return nullptr;
+    }
+    bool result = plugin->init(plugin);
+    if (result) {
+      return new MIP_ClapHostedPlugin(plugin);
+    }
+    else {
+      MIP_Print("couldn't init plugin\n");
+      plugin->destroy(plugin);
+      return nullptr;
+    }
     return nullptr;
   }
 
   //----------
 
-  void destroyPlugin(const clap_plugin* plugin) {
-    if (plugin) plugin->destroy(plugin);
+  //void destroyPlugin(const clap_plugin* plugin) {
+  //  if (plugin) plugin->destroy(plugin);
+  //}
+
+  void destroyPlugin(MIP_ClapHostedPlugin* plugin) {
+    const clap_plugin* clapplug = plugin->getClapPlugin();
+    if (clapplug) clapplug->destroy(clapplug);
   }
+
+
+
+//------------------------------
+public:
+//------------------------------
+
+//  uint32_t getNumPlugins() {
+//    return MClapFactory->get_plugin_count(MClapFactory);
+//  }
+//
+//  const char* getPluginName(uint32_t index) {
+//    const clap_plugin_descriptor_t* descriptor = MClapFactory->get_plugin_descriptor(MClapFactory,index);
+//    return descriptor->name;
+//  }
+//
+//  const char* getPluginDescription(uint32_t index) {
+//    const clap_plugin_descriptor_t* descriptor = MClapFactory->get_plugin_descriptor(MClapFactory,index);
+//    return descriptor->description;
+//  }
 
 //------------------------------
 private:
@@ -179,7 +205,7 @@ public:
     if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) return &MClapHostAudioPortsConfig;
     if (strcmp(extension_id, CLAP_EXT_CHECK_FOR_UPDATE    ) == 0) return &MClapHostChekForUpdate;
     if (strcmp(extension_id, CLAP_EXT_EVENT_FILTER        ) == 0) return &MClapHostEventFilter;
-    if (strcmp(extension_id, CLAP_EXT_FD_SUPPORT          ) == 0) return &MClapHostFdSupport;
+    //if (strcmp(extension_id, CLAP_EXT_FD_SUPPORT          ) == 0) return &MClapHostFdSupport;
     if (strcmp(extension_id, CLAP_EXT_FILE_REFERENCE      ) == 0) return &MClapHostFileReference;
     if (strcmp(extension_id, CLAP_EXT_GUI                 ) == 0) return &MClapHostGui;
     if (strcmp(extension_id, CLAP_EXT_LATENCY             ) == 0) return &MClapHostLatency;
@@ -263,24 +289,24 @@ public: // extensions
   // fd-support
   //------------------------------
 
-  virtual bool fd_support_register_fd(clap_fd fd, clap_fd_flags flags) {
-    MIP_PRINT;
-    return false;
-  }
+  //virtual bool fd_support_register_fd(clap_fd fd, clap_fd_flags flags) {
+  //  MIP_PRINT;
+  //  return false;
+  //}
 
   //----------
 
-  virtual bool fd_support_modify_fd(clap_fd fd, clap_fd_flags flags) {
-    MIP_PRINT;
-    return false;
-  }
+  //virtual bool fd_support_modify_fd(clap_fd fd, clap_fd_flags flags) {
+  //  MIP_PRINT;
+  //  return false;
+  //}
 
   //----------
 
-  virtual bool fd_support_unregister_fd(clap_fd fd) {
-    MIP_PRINT;
-    return false;
-  }
+  //virtual bool fd_support_unregister_fd(clap_fd fd) {
+  //  MIP_PRINT;
+  //  return false;
+  //}
 
   //------------------------------
   // file-reference.draft/0
@@ -534,26 +560,26 @@ private: // extensions
 
   // fd-support
 
-  static bool clap_host_fd_support_register_fd_callback(const clap_host *host, clap_fd fd, clap_fd_flags flags) {
-    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
-    return host_->fd_support_register_fd(fd,flags);
-  }
+  //static bool clap_host_fd_support_register_fd_callback(const clap_host *host, clap_fd fd, clap_fd_flags flags) {
+  //  MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+  //  return host_->fd_support_register_fd(fd,flags);
+  //}
 
-  static bool clap_host_fd_support_modify_fd_callback(const clap_host *host, clap_fd fd, clap_fd_flags flags) {
-    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
-    return host_->fd_support_modify_fd(fd,flags);
-  }
+  //static bool clap_host_fd_support_modify_fd_callback(const clap_host *host, clap_fd fd, clap_fd_flags flags) {
+  //  MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+  //  return host_->fd_support_modify_fd(fd,flags);
+  //}
 
-  static bool clap_host_fd_support_unregister_fd_callback(const clap_host *host, clap_fd fd) {
-    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
-    return host_->fd_support_unregister_fd(fd);
-  }
+  //static bool clap_host_fd_support_unregister_fd_callback(const clap_host *host, clap_fd fd) {
+  //  MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+  //  return host_->fd_support_unregister_fd(fd);
+  //}
 
-  clap_host_fd_support MClapHostFdSupport = {
-    clap_host_fd_support_register_fd_callback,
-    clap_host_fd_support_modify_fd_callback,
-    clap_host_fd_support_unregister_fd_callback
-  };
+  //clap_host_fd_support MClapHostFdSupport = {
+  //  clap_host_fd_support_register_fd_callback,
+  //  clap_host_fd_support_modify_fd_callback,
+  //  clap_host_fd_support_unregister_fd_callback
+  //};
 
   // file-reference.draft/0
 
