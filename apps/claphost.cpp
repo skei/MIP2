@@ -65,6 +65,8 @@ void print_help() {
   printf("  -b  --block_size    <samples>        (default 256)\n");
   printf("  -c  --channels      <inputs:outputs> (default 2:2)\n");
   printf("  -d  --decay-seconds <seconds>        (default 0.0)\n");
+  printf("  -r  --remap         <cc:param_id>\n");
+
   printf("  -l  --list-plugins\n");
   printf("  -p  --print-descriptor\n");
   printf("  -f  --fuzz-block-size\n");

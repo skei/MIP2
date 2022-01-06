@@ -76,31 +76,16 @@ public:
 public:
 //------------------------------
 
+ // called by plugin
+
   uint32_t input_events_size() {
-    return MClapInputEvents.size();
+    return MClapEvents.size();
   }
 
   //----------
 
   const clap_event_header_t* input_events_get(uint32_t index) {
-    return MClapInputEvents[index];
-  }
-
-  //----------
-
-  void input_events_push_back(const clap_event_header_t* event) {
-  }
-
-  //----------
-
-  uint32_t output_events_size() {
-    return 0;
-  }
-
-  //----------
-
-  const clap_event_header_t* output_events_get(uint32_t index) {
-    return NULL;
+    return MClapEvents[index];
   }
 
   //----------
@@ -140,12 +125,12 @@ private: // callbacks
 private:
 //------------------------------
 
-  clap_process              MContext;
-  clap_event_transport      MContextTransport;
-  clap_audio_buffer         MContextAudioInputs;
-  clap_audio_buffer         MContextAudioOutputs;
-  clap_input_events_t       MContextInputEvents;
-  clap_output_events_t      MContextOutputEvents;
+  clap_process          MContext;
+  clap_event_transport  MContextTransport;
+  clap_audio_buffer     MContextAudioInputs;
+  clap_audio_buffer     MContextAudioOutputs;
+  clap_input_events_t   MContextInputEvents;
+  clap_output_events_t  MContextOutputEvents;
 
 //------------------------------
 private:
@@ -239,13 +224,8 @@ private:
       MClapEvents[i] = nullptr;
     }
     MClapEvents.clear();
-
-    /*
-      we don't allocate any midievents
-      (just get pointers to existing ones),
-      so nothing to free
-    */
-
+    // we don't allocate any midievents, (just get pointers to existing ones),
+    // so nothing to free
     MMidiEvents.clear();
   }
 
@@ -271,7 +251,7 @@ private:
       switch( msg1 & 0xF0) {
 
         case MIP_MIDI_NOTE_OFF: {
-          clap_event_note_t* note_event = (clap_event_note_t*)malloc(sizeof(clap_event_note_t));  // deleted in deleteInputEvents()
+          clap_event_note_t* note_event = (clap_event_note_t*)malloc(sizeof(clap_event_note_t)); // deleted in deleteInputEvents()
           clap_event_header_t* event = (clap_event_header_t*)note_event;
           memset(note_event,0,sizeof(clap_event_note_t));
           note_event->header.size     = sizeof(clap_event_note_t);  // event size including this header, eg: sizeof (clap_event_note)
@@ -288,7 +268,7 @@ private:
         }
 
         case MIP_MIDI_NOTE_ON: {
-          clap_event_note_t* note_event = (clap_event_note_t*)malloc(sizeof(clap_event_note_t));  // deleted in deleteInputEvents()
+          clap_event_note_t* note_event = (clap_event_note_t*)malloc(sizeof(clap_event_note_t)); // deleted in deleteInputEvents()
           clap_event_header_t* event = (clap_event_header_t*)note_event;
           memset(note_event,0,sizeof(clap_event_note_t));
           note_event->header.size     = sizeof(clap_event_note_t);  // event size including this header, eg: sizeof (clap_event_note)
@@ -305,7 +285,7 @@ private:
         }
 
         case MIP_MIDI_POLY_AFTERTOUCH: {
-          clap_event_note_expression_t* expression_event = (clap_event_note_expression_t*)malloc(sizeof(clap_event_note_expression_t));  // deleted in deleteInputEvents()
+          clap_event_note_expression_t* expression_event = (clap_event_note_expression_t*)malloc(sizeof(clap_event_note_expression_t)); // deleted in deleteInputEvents()
           clap_event_header_t* event = (clap_event_header_t*)expression_event;
           memset(expression_event,0,sizeof(clap_event_note_expression_t));
           expression_event->header.size     = sizeof(clap_event_note_expression_t);  // event size including this header, eg: sizeof (clap_event_note)
@@ -322,10 +302,9 @@ private:
           break;
         }
 
-
-        case MIP_MIDI_CONTROL_CHANGE: { // control change
+        case MIP_MIDI_CONTROL_CHANGE: {
           if (arg_remap_cc == msg2) {
-            clap_event_param_value_t* param_value_event = (clap_event_param_value_t*)malloc(sizeof(clap_event_param_value_t));  // deleted in deleteInputEvents()
+            clap_event_param_value_t* param_value_event = (clap_event_param_value_t*)malloc(sizeof(clap_event_param_value_t)); // deleted in deleteInputEvents()
             clap_event_header_t* event = (clap_event_header_t*)param_value_event;
             memset(param_value_event,0,sizeof(clap_event_param_value_t));
             param_value_event->header.size      = sizeof(clap_event_param_value_t);  // event size including this header, eg: sizeof (clap_event_note)
@@ -471,13 +450,13 @@ public:
 
     // remapping
 
-//    if ((arg_remap_cc >= 0) && (arg_remap_param >= 0)) {
-//      MInstance->getParam(arg_remap_param,&MRemapParamInfo);
-//    }
+    //if ((arg_remap_cc >= 0) && (arg_remap_param >= 0)) {
+    //  MInstance->getParam(arg_remap_param,&MRemapParamInfo);
+    //}
 
-//    uint32_t num_blocks = num_samples / arg->block_size;
-//    num_blocks += 1; // just to be sure :-)
-//    float seconds_per_block = arg->block_size / arg->sample_rate;
+    //uint32_t num_blocks = num_samples / arg->block_size;
+    //num_blocks += 1; // just to be sure :-)
+    //float seconds_per_block = arg->block_size / arg->sample_rate;
 
     // prepare
 
@@ -495,24 +474,26 @@ public:
     while (num_samples > 0) {
 
       // block size
+
       uint32_t block_size = arg_block_size;
       if (arg_fuzz_block_size) {
-
         //block_size = 1 + (rand() % arg_block_size); // min 16?
         block_size = rand() % (arg_block_size+1); // (0..blocksize, incl)
-
       }
       if (block_size > num_samples) {
         block_size = num_samples;
       }
       float block_size_seconds = block_size / arg_sample_rate;
 
-      // events for current block
+      // midi input
+
       if (arg_midi_input_file) {
         clearInputEvents();
         MMidiPlayer.GetEventsForBlock(MCurrentTime,block_size_seconds,&MMidiEvents);
         convertInputEvents();
       }
+
+      // audio input
 
       //else {
       if (arg_audio_input_file) {
@@ -520,14 +501,19 @@ public:
       }
 
       // update time
+
       MContext.steady_time = MCurrentSample;
 
       // process
+
       MContext.frames_count = block_size;
       plugin->process(plugin,&MContext);
 
       // save audio output
+
       MAudioOutputFile.write(arg_num_audio_outputs,block_size, MAudioOutputBuffers);
+
+      // next..
 
       MCurrentSample  += block_size;
       MCurrentTime    += block_size_seconds;
