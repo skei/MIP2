@@ -408,7 +408,7 @@ private:
 public:
 //------------------------------
 
-  void process(MIP_ClapHostedPlugin* hosted_plugin) {
+  int process(MIP_ClapHostedPlugin* hosted_plugin) {
     MSampleRate = arg_sample_rate;
     const clap_plugin* plugin = hosted_plugin->getClapPlugin();
     uint32_t num_samples = 0;
@@ -430,7 +430,7 @@ public:
       bool result = MAudioInputFile.open(arg_audio_input_file,MIP_AUDIO_FILE_READ);
       if (!result) {
         printf("* Error: Couldn't open audio input file\n");
-        return;
+        return -10;
       }
       printf("Audio input file opened (length = %i frames\n",(int)MAudioInputFile.getInfo()->frames);
       if (MAudioInputFile.getInfo()->frames > num_samples) {
@@ -445,13 +445,13 @@ public:
       bool result = MAudioOutputFile.open(arg_audio_output_file,MIP_AUDIO_FILE_WRITE,arg_sample_rate,arg_num_audio_outputs);
       if (!result ){
         printf("* Error: Couldn't open audio output file\n");
-        return;
+        return -11;
       }
       printf("Audio output file opened\n");
     }
     else {
       printf("* Error: No audio output file specified\n");
-      return;
+      return -12;
     }
 
     // length
@@ -460,7 +460,7 @@ public:
 
     if (num_samples == 0) {
       printf("* Error: num_samples == 0\n");
-      //return;
+      //return -13;
     }
 
     // because of larry.mid (20 minutes or something..)
@@ -556,9 +556,12 @@ public:
       printf("Audio output file closed\n");
     }
 
+    return 0;
+
   }
 
   //----------
+
 
 };
 

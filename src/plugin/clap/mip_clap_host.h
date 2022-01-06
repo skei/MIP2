@@ -328,7 +328,7 @@ public: // extensions
 
   virtual bool gui_resize(uint32_t width, uint32_t height) {
     MIP_PRINT;
-    return false;
+    return true;
   }
 
   //------------------------------
@@ -413,14 +413,14 @@ public: // extensions
 
   virtual bool thread_check_is_main_thread() {
     MIP_PRINT;
-    return false;
+    return true;
   }
 
   //----------
 
   virtual bool thread_check_is_audio_thread() {
     MIP_PRINT;
-    return false;
+    return true;
   }
 
   //------------------------------
