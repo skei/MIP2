@@ -175,7 +175,7 @@ int main(int argc, char** argv) {
   else {
     printf("process\n");
     plugin = host.instantiatePlugin(arg_plugin_path,arg_plugin_index);
-    plugin->init();
+    //plugin->init();
     plugin->activate(arg_sample_rate,1,arg_block_size);
     plugin->start_processing();
 
@@ -184,7 +184,7 @@ int main(int argc, char** argv) {
 
     plugin->stop_processing();
     plugin->deactivate();
-    plugin->destroy();
+    //plugin->destroy();
   }
 
   host.unloadPlugin();

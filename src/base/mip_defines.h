@@ -68,14 +68,14 @@
 //
 //----------------------------------------------------------------------
 
-//#ifdef MIP_PLUGIN_ALL
-//  #define MIP_PLUGIN_EXE
-//  #define MIP_PLUGIN_CLAP
-//  #define MIP_PLUGIN_LV2
-//  #define MIP_PLUGIN_VST2
-//  #define MIP_PLUGIN_VST3
-//#endif
-//
+#ifdef MIP_PLUGIN_ALL
+  #define MIP_PLUGIN_EXE
+  #define MIP_PLUGIN_CLAP
+  #define MIP_PLUGIN_VST2
+  #define MIP_PLUGIN_VST3
+  //#define MIP_PLUGIN_LV2
+#endif
+
 //----------
 
 //#ifdef MIP_EXE

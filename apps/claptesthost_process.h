@@ -263,7 +263,7 @@ private:
           note_event->key             = msg2;
           note_event->channel         = msg1 & 0x0f;
           note_event->velocity        = msg3 / 127.0;
-          MClapInputEvents.append(event);
+          MClapEvents.append(event);
           break;
         }
 
@@ -280,7 +280,7 @@ private:
           note_event->key             = msg2;
           note_event->channel         = msg1 & 0x0f;
           note_event->velocity        = msg3 / 127.0;
-          MClapInputEvents.append(event);
+          MClapEvents.append(event);
           break;
         }
 
@@ -298,7 +298,7 @@ private:
           expression_event->key             = msg2;
           expression_event->channel         = msg1 & 0x0f;
           expression_event->value           = msg3 / 127.0; // TODO
-          MClapInputEvents.append(event);
+          MClapEvents.append(event);
           break;
         }
 
@@ -318,7 +318,7 @@ private:
             param_value_event->key              = -1;
             param_value_event->channel          = -1;//msg1 & 15;
             param_value_event->value            = (float)msg3 / 127.0;
-            MClapInputEvents.append(event);
+            MClapEvents.append(event);
           }
           else {
             clap_event_midi_t* midi_event = (clap_event_midi_t*)malloc(sizeof(clap_event_midi_t));  // deleted in deleteInputEvents()
@@ -332,7 +332,7 @@ private:
             midi_event->data[0]         = msg1;
             midi_event->data[1]         = msg2;
             midi_event->data[2]         = msg3;
-            MClapInputEvents.append(event);
+            MClapEvents.append(event);
             break;
           }
           break;
@@ -374,7 +374,7 @@ private:
         //    midi_event->data[0]         = msg1;
         //    midi_event->data[1]         = msg2;
         //    midi_event->data[2]         = msg3;
-        //    MClapInputEvents.append(event);
+        //    MClapEvents.append(event);
         //    break;
         //  break;
         //}
@@ -470,6 +470,8 @@ public:
     srand(1);
     MCurrentSample = 0;   // current position (in samples)
     MCurrentTime = 0.0;   // current position (in seconds)
+
+    printf("processing %i samples\n",num_samples);
 
     while (num_samples > 0) {
 

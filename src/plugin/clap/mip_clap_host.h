@@ -91,7 +91,6 @@ public:
   //----------
 
   MIP_ClapHostedPlugin* instantiatePlugin(const char* path, uint32_t index) {
-    //if (!MClapEntry) return nullptr;
     if (!MClapFactory) return nullptr;
     if (index >= MClapFactory->get_plugin_count(MClapFactory)) return nullptr;
     const clap_plugin_descriptor* descriptor = MClapFactory->get_plugin_descriptor(MClapFactory,index);
@@ -110,7 +109,7 @@ public:
     }
     else {
       MIP_Print("couldn't init plugin\n");
-      plugin->destroy(plugin);
+      //plugin->destroy(plugin);
       return nullptr;
     }
     return nullptr;
@@ -202,25 +201,25 @@ public:
   virtual const void* get_extension(const char *extension_id) {
     MIP_Print("extension id: %s\n",extension_id);
     if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS         ) == 0) return &MClapHostAudioPorts;
-    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) return &MClapHostAudioPortsConfig;
-    if (strcmp(extension_id, CLAP_EXT_CHECK_FOR_UPDATE    ) == 0) return &MClapHostChekForUpdate;
+//    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) return &MClapHostAudioPortsConfig;
+//    if (strcmp(extension_id, CLAP_EXT_CHECK_FOR_UPDATE    ) == 0) return &MClapHostChekForUpdate;
     if (strcmp(extension_id, CLAP_EXT_EVENT_FILTER        ) == 0) return &MClapHostEventFilter;
     //if (strcmp(extension_id, CLAP_EXT_FD_SUPPORT          ) == 0) return &MClapHostFdSupport;
-    if (strcmp(extension_id, CLAP_EXT_FILE_REFERENCE      ) == 0) return &MClapHostFileReference;
+//    if (strcmp(extension_id, CLAP_EXT_FILE_REFERENCE      ) == 0) return &MClapHostFileReference;
     if (strcmp(extension_id, CLAP_EXT_GUI                 ) == 0) return &MClapHostGui;
     if (strcmp(extension_id, CLAP_EXT_LATENCY             ) == 0) return &MClapHostLatency;
     if (strcmp(extension_id, CLAP_EXT_LOG                 ) == 0) return &MClapHostLog;
-    if (strcmp(extension_id, CLAP_EXT_MIDI_MAPPINGS       ) == 0) return &MClapHostMidiMappings;
-    if (strcmp(extension_id, CLAP_EXT_NOTE_NAME           ) == 0) return &MClapHostNoteName;
-    if (strcmp(extension_id, CLAP_EXT_NOTE_PORTS          ) == 0) return &MClapHostNotePorts;
+//    if (strcmp(extension_id, CLAP_EXT_MIDI_MAPPINGS       ) == 0) return &MClapHostMidiMappings;
+//    if (strcmp(extension_id, CLAP_EXT_NOTE_NAME           ) == 0) return &MClapHostNoteName;
+//    if (strcmp(extension_id, CLAP_EXT_NOTE_PORTS          ) == 0) return &MClapHostNotePorts;
     if (strcmp(extension_id, CLAP_EXT_PARAMS              ) == 0) return &MClapHostParams;
-    if (strcmp(extension_id, CLAP_EXT_QUICK_CONTROLS      ) == 0) return &MClapHostQuickControls;
+//    if (strcmp(extension_id, CLAP_EXT_QUICK_CONTROLS      ) == 0) return &MClapHostQuickControls;
     if (strcmp(extension_id, CLAP_EXT_STATE               ) == 0) return &MClapHostState;
     if (strcmp(extension_id, CLAP_EXT_THREAD_CHECK        ) == 0) return &MClapHostThreadCheck;
-    if (strcmp(extension_id, CLAP_EXT_THREAD_POOL         ) == 0) return &MClapHostThreadPool;
-    if (strcmp(extension_id, CLAP_EXT_TIMER_SUPPORT       ) == 0) return &MClapHostTimerSupport;
-    if (strcmp(extension_id, CLAP_EXT_TRACK_INFO          ) == 0) return &MClapHostTrackInfo;
-    if (strcmp(extension_id, CLAP_EXT_TUNING              ) == 0) return &MClapHostTuning;
+//    if (strcmp(extension_id, CLAP_EXT_THREAD_POOL         ) == 0) return &MClapHostThreadPool;
+//    if (strcmp(extension_id, CLAP_EXT_TIMER_SUPPORT       ) == 0) return &MClapHostTimerSupport;
+//    if (strcmp(extension_id, CLAP_EXT_TRACK_INFO          ) == 0) return &MClapHostTrackInfo;
+//    if (strcmp(extension_id, CLAP_EXT_TUNING              ) == 0) return &MClapHostTuning;
     return nullptr;
   }
 
@@ -344,7 +343,7 @@ public: // extensions
   //------------------------------
 
   virtual void log_log(clap_log_severity severity, const char *msg) {
-    MIP_PRINT;
+    MIP_Print("severity: %i msg: %s\n",severity,msg);
   }
 
   //------------------------------
@@ -412,14 +411,14 @@ public: // extensions
   //------------------------------
 
   virtual bool thread_check_is_main_thread() {
-    MIP_PRINT;
+    //MIP_PRINT;
     return true;
   }
 
   //----------
 
   virtual bool thread_check_is_audio_thread() {
-    MIP_PRINT;
+    //MIP_PRINT;
     return true;
   }
 

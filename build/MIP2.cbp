@@ -135,11 +135,11 @@
 		</Linker>
 		<Unit filename="../LICENSE" />
 		<Unit filename="../README" />
-		<Unit filename="../apps/claphost.cpp">
+		<Unit filename="../apps/claptesthost.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../apps/claphost_process.h" />
+		<Unit filename="../apps/claptesthost_process.h" />
 		<Unit filename="../experiments/clap/CLAP_plugin.h" />
 		<Unit filename="../experiments/clap/CLAP_plugin_entry.h" />
 		<Unit filename="../experiments/clap/editor.h" />
@@ -171,6 +171,18 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../plugins/simple_synth.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../plugins/templates/minimal.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../plugins/templates/plugin.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../plugins/templates/synth.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
@@ -381,6 +393,7 @@
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_entry.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_voices.h" />
 		<Unit filename="../src/plugin/exe/mip_exe.h" />
+		<Unit filename="../src/plugin/exe/mip_exe_host_proxy.h" />
 		<Unit filename="../src/plugin/exe/mip_exe_plugin_entry.h" />
 		<Unit filename="../src/plugin/lv2/mip_lv2.h" />
 		<Unit filename="../src/plugin/lv2/mip_lv2_plugin_entry.h" />
