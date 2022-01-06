@@ -5,6 +5,7 @@
 #include <dlfcn.h>
 
 #include "mip.h"
+//#include "base/system/mip_time.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_hosted_plugin.h"
 
@@ -14,7 +15,9 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_ClapHost {
+class MIP_ClapHost
+/*: public MIP_TimerListener*/ {
+
 
 //------------------------------
 private:
@@ -25,6 +28,8 @@ private:
   void*                       MLibHandle      = nullptr;
   const clap_plugin_entry*    MClapEntry      = nullptr;
   const clap_plugin_factory*  MClapFactory    = nullptr;
+
+  //MIP_Timer*                  MTimer          = nullptr;
 
 //------------------------------
 public:
@@ -193,6 +198,15 @@ private:
   }
 
 //------------------------------
+public: // timer listener
+//------------------------------
+
+  //void on_timerCallback(void) override {
+  //  //MIP_PRINT;
+  //  //hosted_plugin->timer()
+  //}
+
+//------------------------------
 public:
 //------------------------------
 
@@ -204,25 +218,25 @@ public:
   virtual const void* get_extension(const char *extension_id) {
     MIP_Print("extension_id: %s -> ",extension_id);
 //    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS         ) == 0) { MIP_DPrint("%p\n",&MClapHostAudioPorts);        return &MClapHostAudioPorts; }
-  //if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) { MIP_DPrint("%p\n",&MClapHostAudioPortsConfig);  return &MClapHostAudioPortsConfig; }
-  //if (strcmp(extension_id, CLAP_EXT_CHECK_FOR_UPDATE    ) == 0) { MIP_DPrint("%p\n",&MClapHostChekForUpdate);     return &MClapHostChekForUpdate; }
+//    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) { MIP_DPrint("%p\n",&MClapHostAudioPortsConfig);  return &MClapHostAudioPortsConfig; }
+//    if (strcmp(extension_id, CLAP_EXT_CHECK_FOR_UPDATE    ) == 0) { MIP_DPrint("%p\n",&MClapHostChekForUpdate);     return &MClapHostChekForUpdate; }
 //    if (strcmp(extension_id, CLAP_EXT_EVENT_FILTER        ) == 0) { MIP_DPrint("%p\n",&MClapHostEventFilter);       return &MClapHostEventFilter; }
-  //if (strcmp(extension_id, CLAP_EXT_FD_SUPPORT          ) == 0) { MIP_DPrint("%p\n",&MClapHostFdSupport);         return &MClapHostFdSupport; }
-  //if (strcmp(extension_id, CLAP_EXT_FILE_REFERENCE      ) == 0) { MIP_DPrint("%p\n",&MClapHostFileReference);     return &MClapHostFileReference; }
+//    //if (strcmp(extension_id, CLAP_EXT_FD_SUPPORT          ) == 0) { MIP_DPrint("%p\n",&MClapHostFdSupport);         return &MClapHostFdSupport; }
+//    if (strcmp(extension_id, CLAP_EXT_FILE_REFERENCE      ) == 0) { MIP_DPrint("%p\n",&MClapHostFileReference);     return &MClapHostFileReference; }
 //    if (strcmp(extension_id, CLAP_EXT_GUI                 ) == 0) { MIP_DPrint("%p\n",&MClapHostGui);               return &MClapHostGui; }
 //    if (strcmp(extension_id, CLAP_EXT_LATENCY             ) == 0) { MIP_DPrint("%p\n",&MClapHostLatency);           return &MClapHostLatency; }
 //    if (strcmp(extension_id, CLAP_EXT_LOG                 ) == 0) { MIP_DPrint("%p\n",&MClapHostLog);               return &MClapHostLog; }
-  //if (strcmp(extension_id, CLAP_EXT_MIDI_MAPPINGS       ) == 0) { MIP_DPrint("%p\n",&MClapHostMidiMappings);      return &MClapHostMidiMappings; }
-  //if (strcmp(extension_id, CLAP_EXT_NOTE_NAME           ) == 0) { MIP_DPrint("%p\n",&MClapHostNoteName);          return &MClapHostNoteName; }
-  //if (strcmp(extension_id, CLAP_EXT_NOTE_PORTS          ) == 0) { MIP_DPrint("%p\n",&MClapHostNotePorts);         return &MClapHostNotePorts; }
+//    if (strcmp(extension_id, CLAP_EXT_MIDI_MAPPINGS       ) == 0) { MIP_DPrint("%p\n",&MClapHostMidiMappings);      return &MClapHostMidiMappings; }
+//    if (strcmp(extension_id, CLAP_EXT_NOTE_NAME           ) == 0) { MIP_DPrint("%p\n",&MClapHostNoteName);          return &MClapHostNoteName; }
+//    if (strcmp(extension_id, CLAP_EXT_NOTE_PORTS          ) == 0) { MIP_DPrint("%p\n",&MClapHostNotePorts);         return &MClapHostNotePorts; }
 //    if (strcmp(extension_id, CLAP_EXT_PARAMS              ) == 0) { MIP_DPrint("%p\n",&MClapHostParams);            return &MClapHostParams; }
-  //if (strcmp(extension_id, CLAP_EXT_QUICK_CONTROLS      ) == 0) { MIP_DPrint("%p\n",&MClapHostQuickControls);     return &MClapHostQuickControls; }
+//    if (strcmp(extension_id, CLAP_EXT_QUICK_CONTROLS      ) == 0) { MIP_DPrint("%p\n",&MClapHostQuickControls);     return &MClapHostQuickControls; }
 //    if (strcmp(extension_id, CLAP_EXT_STATE               ) == 0) { MIP_DPrint("%p\n",&MClapHostState);             return &MClapHostState; }
 //    if (strcmp(extension_id, CLAP_EXT_THREAD_CHECK        ) == 0) { MIP_DPrint("%p\n",&MClapHostThreadCheck);       return &MClapHostThreadCheck; }
-  //if (strcmp(extension_id, CLAP_EXT_THREAD_POOL         ) == 0) { MIP_DPrint("%p\n",&MClapHostThreadPool);        return &MClapHostThreadPool; }
-  //if (strcmp(extension_id, CLAP_EXT_TIMER_SUPPORT       ) == 0) { MIP_DPrint("%p\n",&MClapHostTimerSupport);      return &MClapHostTimerSupport; }
-  //if (strcmp(extension_id, CLAP_EXT_TRACK_INFO          ) == 0) { MIP_DPrint("%p\n",&MClapHostTrackInfo);         return &MClapHostTrackInfo; }
-  //if (strcmp(extension_id, CLAP_EXT_TUNING              ) == 0) { MIP_DPrint("%p\n",&MClapHostTuning);            return &MClapHostTuning; }
+//    if (strcmp(extension_id, CLAP_EXT_THREAD_POOL         ) == 0) { MIP_DPrint("%p\n",&MClapHostThreadPool);        return &MClapHostThreadPool; }
+//  if (strcmp(extension_id, CLAP_EXT_TIMER_SUPPORT       ) == 0) { MIP_DPrint("%p\n",&MClapHostTimerSupport);      return &MClapHostTimerSupport; }
+//    if (strcmp(extension_id, CLAP_EXT_TRACK_INFO          ) == 0) { MIP_DPrint("%p\n",&MClapHostTrackInfo);         return &MClapHostTrackInfo; }
+//    if (strcmp(extension_id, CLAP_EXT_TUNING              ) == 0) { MIP_DPrint("%p\n",&MClapHostTuning);            return &MClapHostTuning; }
     MIP_DPrint("null\n");
     return nullptr;
   }
@@ -441,6 +455,8 @@ public: // extensions
 
   virtual bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) {
     MIP_Print("period_ms %i -> false\n",period_ms);
+    //MTimer = new MIP_Timer(this);
+    //MTimer->start(period_ms);
     return false;
   }
 
@@ -448,6 +464,9 @@ public: // extensions
 
   virtual bool timer_support_unregister_timer(clap_id timer_id) {
     MIP_Print("timer_id %i -> false\n",timer_id);
+    //MTimer->stop();
+    //delete MTimer;
+    //MTimer = nullptr;
     return false;
   }
 

@@ -49,21 +49,19 @@ private:
 private:
 //------------------------------
 
-  alignas(32) float MAudioInputBuffer1[MAX_BLOCK_SIZE];
-  alignas(32) float MAudioInputBuffer2[MAX_BLOCK_SIZE];
-  alignas(32) float MAudioOutputBuffer1[MAX_BLOCK_SIZE];
-  alignas(32) float MAudioOutputBuffer2[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioInputBuffer1[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioInputBuffer2[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioOutputBuffer1[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioOutputBuffer2[MAX_BLOCK_SIZE];
+  alignas(32) float*  MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
+  alignas(32) float*  MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
 
-  //alignas(32)
-  float* MAudioInputBuffers[2] = {
-    MAudioInputBuffer1,
-    MAudioInputBuffer2
-  };
-  //alignas(32)
-  float* MAudioOutputBuffers[2] = {
-    MAudioOutputBuffer1,
-    MAudioOutputBuffer2
-  };
+  alignas(64) double  MAudioInputBuffer1_64[MAX_BLOCK_SIZE];
+  alignas(64) double  MAudioInputBuffer2_64[MAX_BLOCK_SIZE];
+  alignas(64) double  MAudioOutputBuffer1_64[MAX_BLOCK_SIZE];
+  alignas(64) double  MAudioOutputBuffer2_64[MAX_BLOCK_SIZE];
+  alignas(64) double* MAudioInputBuffers_64[2] = { MAudioInputBuffer1_64, MAudioInputBuffer2_64 };
+  alignas(64) double* MAudioOutputBuffers_64[2] = { MAudioOutputBuffer1_64, MAudioOutputBuffer2_64 };
 
 //------------------------------
 public:
@@ -146,7 +144,7 @@ private:
 
   void prepare_audio_inputs(uint32_t channels, uint32_t latency=0) {
     MContextAudioInputs.data32           = MAudioInputBuffers;
-    MContextAudioInputs.data64           = NULL;
+    MContextAudioInputs.data64           = MAudioInputBuffers_64; //NULL;
     MContextAudioInputs.channel_count    = channels;
     MContextAudioInputs.latency          = latency;
     MContextAudioInputs.constant_mask    = 0;
@@ -154,7 +152,7 @@ private:
 
   void prepare_audio_outputs(uint32_t channels, uint32_t latency=0) {
     MContextAudioOutputs.data32          = MAudioOutputBuffers;
-    MContextAudioOutputs.data64          = NULL;
+    MContextAudioOutputs.data64          = MAudioOutputBuffers_64; //NULL;
     MContextAudioOutputs.channel_count   = channels;
     MContextAudioOutputs.latency         = latency;
     MContextAudioOutputs.constant_mask   = 0;
@@ -187,19 +185,24 @@ private:
   */
 
   void prepare_transport() {
-    MContextTransport.flags              = CLAP_TRANSPORT_IS_PLAYING;
-    MContextTransport.song_pos_beats     = 0;
-    MContextTransport.song_pos_seconds   = 0;
-    MContextTransport.tempo              = 120.0;
-    MContextTransport.tempo_inc          = 0.0;
-    MContextTransport.bar_start          = 0;
-    MContextTransport.bar_number         = 0;
-    MContextTransport.loop_start_beats   = 0;
-    MContextTransport.loop_end_beats     = 0;
-    MContextTransport.loop_start_seconds = 0;
-    MContextTransport.loop_end_seconds   = 0;
-    MContextTransport.tsig_num           = 4;
-    MContextTransport.tsig_denom         = 4;
+    MContextTransport.header.size = sizeof(clap_event_transport);
+    MContextTransport.header.time         = 0;
+    MContextTransport.header.space_id     = 0;
+    MContextTransport.header.type         = CLAP_EVENT_TRANSPORT;
+    MContextTransport.header.flags        = 0; // CLAP_EVENT_IS_LIVE;
+    MContextTransport.flags               = CLAP_TRANSPORT_IS_PLAYING;
+    MContextTransport.song_pos_beats      = 0;
+    MContextTransport.song_pos_seconds    = 0;
+    MContextTransport.tempo               = 120.0;
+    MContextTransport.tempo_inc           = 0.0;
+    MContextTransport.bar_start           = 0;
+    MContextTransport.bar_number          = 0;
+    MContextTransport.loop_start_beats    = 0;
+    MContextTransport.loop_end_beats      = 0;
+    MContextTransport.loop_start_seconds  = 0;
+    MContextTransport.loop_end_seconds    = 0;
+    MContextTransport.tsig_num            = 4;
+    MContextTransport.tsig_denom          = 4;
   }
 
   void prepare_context(uint32_t channels, uint32_t blocksize, uint32_t latency=0) {
@@ -208,7 +211,7 @@ private:
     MContext.transport            = &MContextTransport;
     MContext.audio_inputs         = &MContextAudioInputs;
     MContext.audio_outputs        = &MContextAudioOutputs;
-    MContext.audio_inputs_count   = 0; // TODO
+    MContext.audio_inputs_count   = channels; // 0; // TODO
     MContext.audio_outputs_count  = channels;
     MContext.in_events            = &MContextInputEvents;
     MContext.out_events           = &MContextOutputEvents;
@@ -479,19 +482,20 @@ public:
 
 //----------
 // editor
-//    const clap_plugin_gui_t*     gui     = (const clap_plugin_gui_t*    )plugin->get_extension(plugin,CLAP_EXT_GUI    );
-//    const clap_plugin_gui_x11_t* gui_x11 = (const clap_plugin_gui_x11_t*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);
-//    uint32_t width = 256;
-//    uint32_t height = 256;
-//    if (gui && gui_x11) {
-//      gui->create(plugin);
-//      gui->get_size(plugin,&width,&height);
-//      MWindow = new MIP_Window(width,height,"plugin");
-//      MWindow->open();
-//      xcb_window_t xcbwin = MWindow->getXcbWindow();
-//      gui_x11->attach(plugin,nullptr,xcbwin);
-//      gui->show(plugin);
-//    }
+    const clap_plugin_gui_t*     gui     = (const clap_plugin_gui_t*    )plugin->get_extension(plugin,CLAP_EXT_GUI    );
+    const clap_plugin_gui_x11_t* gui_x11 = (const clap_plugin_gui_x11_t*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);
+    uint32_t width = 256;
+    uint32_t height = 256;
+    if (gui && gui_x11) {
+      gui->create(plugin);
+      gui->set_scale(plugin,1.0); //
+      gui->get_size(plugin,&width,&height);
+      MWindow = new MIP_Window(width,height,"plugin");
+      MWindow->open();
+      xcb_window_t xcbwin = MWindow->getXcbWindow();
+      gui_x11->attach(plugin,nullptr /*""*/,xcbwin);
+      gui->show(plugin);
+    }
 //----------
 
     printf("processing %i samples\n",num_samples);
@@ -550,10 +554,10 @@ public:
 
 //----------
 // editor
-//    gui->hide(plugin);
-//    gui->destroy(plugin);
-//    MWindow->close();
-//    delete MWindow;
+    gui->hide(plugin);
+    gui->destroy(plugin);
+    MWindow->close();
+    delete MWindow;
 //----------
 
     printf("Finished processing\n");
