@@ -2,7 +2,7 @@
 /*
   idea:
 
-  tcc (tiny c compiler)
+  embedded libtcc (tiny c compiler)
   expose clap api (and mip utils, gui, dsp) to tcc
   and plugin hosting
   "file-watch", auto-recompile
