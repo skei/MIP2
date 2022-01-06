@@ -139,14 +139,7 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../apps/claphost/claphost_process.h" />
-		<Unit filename="../apps/claphost/mip_clap_host.h" />
-		<Unit filename="../apps/claphost/mip_clap_plugin.h" />
-		<Unit filename="../apps/claphost/mip_clap_plugin_entry.h" />
-		<Unit filename="../apps/claphost2.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
+		<Unit filename="../apps/claphost_process.h" />
 		<Unit filename="../experiments/clap/CLAP_plugin.h" />
 		<Unit filename="../experiments/clap/CLAP_plugin_entry.h" />
 		<Unit filename="../experiments/clap/editor.h" />
@@ -257,6 +250,7 @@
 		<Unit filename="../src/extern/clap/events.h" />
 		<Unit filename="../src/extern/clap/ext/audio-ports-config.h" />
 		<Unit filename="../src/extern/clap/ext/audio-ports.h" />
+		<Unit filename="../src/extern/clap/ext/draft/ambisonic.h" />
 		<Unit filename="../src/extern/clap/ext/draft/check-for-update.h" />
 		<Unit filename="../src/extern/clap/ext/draft/file-reference.h" />
 		<Unit filename="../src/extern/clap/ext/draft/midi-mappings.h" />
@@ -266,7 +260,7 @@
 		<Unit filename="../src/extern/clap/ext/draft/track-info.h" />
 		<Unit filename="../src/extern/clap/ext/draft/tuning.h" />
 		<Unit filename="../src/extern/clap/ext/event-filter.h" />
-		<Unit filename="../src/extern/clap/ext/fd-support.h" />
+		<Unit filename="../src/extern/clap/ext/event-registry.h" />
 		<Unit filename="../src/extern/clap/ext/gui-cocoa.h" />
 		<Unit filename="../src/extern/clap/ext/gui-free-standing.h" />
 		<Unit filename="../src/extern/clap/ext/gui-win32.h" />
@@ -277,6 +271,7 @@
 		<Unit filename="../src/extern/clap/ext/note-name.h" />
 		<Unit filename="../src/extern/clap/ext/note-ports.h" />
 		<Unit filename="../src/extern/clap/ext/params.h" />
+		<Unit filename="../src/extern/clap/ext/posix-fd-support.h" />
 		<Unit filename="../src/extern/clap/ext/render.h" />
 		<Unit filename="../src/extern/clap/ext/state.h" />
 		<Unit filename="../src/extern/clap/ext/thread-check.h" />
