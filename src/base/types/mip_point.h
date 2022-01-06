@@ -10,7 +10,7 @@ public:
   union {
     struct { T x,y; };
     struct { T w,h; };
-    struct { T hor,vert; };
+    struct { T horiz,vert; };
   };
 
 public:

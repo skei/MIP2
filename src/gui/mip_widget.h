@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "base/types/mip_array.h"
+#include "base/types/mip_point.h"
 #include "base/types/mip_rect.h"
 #include "gui/mip_painter.h"
 
@@ -14,29 +15,55 @@ typedef MIP_Array<MIP_Widget*> MIP_Widgets;
 
 //----------------------------------------------------------------------
 
+//struct MIP_WidgetOptions {
+//  bool autoMouseCursor  = false;
+//  bool autoMouseHide    = false;
+//  bool autoMouseLock    = false;
+//  bool autoSendHint     = false;
+//  //bool canMove          = false;
+//  //bool canResize        = false;
+//};
+
+//----------
+
+struct MIP_WidgetLayout {
+  uint32_t    alignment     = MIP_WIDGET_ALIGN_NONE;
+  MIP_FRect   initialRect   = {};
+  MIP_FRect   innerBorder   = {};
+  MIP_FRect   outerBorder   = {};
+  MIP_FPoint  widgetSpacing = {};
+};
+
+//----------------------------------------------------------------------
+
 class MIP_Widget {
 
 //------------------------------
 protected:
 //------------------------------
 
-  const char* MName           = "MIP_Widget";
+  const char*       MName           = "MIP_Widget";
 
-  MIP_Widget* MParent         = nullptr;
-  MIP_Widgets MChildren       = {};
+  MIP_Widget*       MParent         = nullptr;
+  MIP_Widgets       MChildren       = {};
 
-  MIP_FRect   MRect           = {};
-  int32_t     MWidgetIndex    = -1;
-  int32_t     MParameterIndex = -1;
-  float       MValue          = 0.0;
-  float       MMinValue       = 0.0;
-  float       MMaxValue       = 1.0;
-  float       MDefValue       = 0.0;
-  uint32_t    MNumSteps       = 0.0;
-  float       MModValue       = 0.0;
+  MIP_FRect         MRect           = {};
+  int32_t           MWidgetIndex    = -1;
+  int32_t           MParameterIndex = -1;
 
-  bool        MIsActive       = true;
-  bool        MIsVisible      = true;
+  float             MValue          = 0.0;
+  float             MModValue       = 0.0;
+
+  float             MMinValue       = 0.0;
+  float             MMaxValue       = 1.0;
+  float             MDefValue       = 0.0;
+  uint32_t          MNumSteps       = 0.0;
+
+  bool              MIsActive       = true;
+  bool              MIsVisible      = true;
+
+//MIP_WidgetOptions MOptions        = {};
+  MIP_WidgetLayout  MLayout         = {};
 
 //------------------------------
 public:
@@ -76,8 +103,8 @@ public:
   void  setParameterIndex(int32_t i)  { MParameterIndex = i; }
   void  setWidgetIndex(int32_t i)     { MWidgetIndex = i; }
 
-  void  setActive(bool s=true)  { MIsActive = s; }
-  void  setVisible(bool s=true) { MIsVisible = s; }
+  void  setActive(bool s=true)        { MIsActive = s; }
+  void  setVisible(bool s=true)       { MIsVisible = s; }
 
 //------------------------------
 public:
@@ -200,6 +227,7 @@ public:
 
   virtual void on_widget_connect(int32_t AParameterIndex) {
     //MIP_Print("%s : i %i\n",MName,AParameterIndex);
+    //MParameterIndex = AParameterIndex;
   }
 
   virtual void on_widget_timer() {

@@ -73,8 +73,8 @@ public:
 
     // audio
 
-    jack_default_audio_sample_t *input0 = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioInputPort1,nframes);
-    jack_default_audio_sample_t *input1 = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioInputPort2,nframes);
+    jack_default_audio_sample_t *input0  = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioInputPort1,nframes);
+    jack_default_audio_sample_t *input1  = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioInputPort2,nframes);
     jack_default_audio_sample_t *output0 = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioOutputPort1,nframes);
     jack_default_audio_sample_t *output1 = (jack_default_audio_sample_t*)jack_port_get_buffer(MAudioOutputPort2,nframes);
     for (uint32_t i=0; i<nframes; i++) {
