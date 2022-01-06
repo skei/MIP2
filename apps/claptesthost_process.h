@@ -479,19 +479,19 @@ public:
 
 //----------
 // editor
-    const clap_plugin_gui_t*     gui     = (const clap_plugin_gui_t*    )plugin->get_extension(plugin,CLAP_EXT_GUI    );
-    const clap_plugin_gui_x11_t* gui_x11 = (const clap_plugin_gui_x11_t*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);
-    uint32_t width = 256;
-    uint32_t height = 256;
-    if (gui && gui_x11) {
-      gui->create(plugin);
-      gui->get_size(plugin,&width,&height);
-      MWindow = new MIP_Window(width,height,"plugin");
-      MWindow->open();
-      xcb_window_t xcbwin = MWindow->getXcbWindow();
-      gui_x11->attach(plugin,nullptr,xcbwin);
-      gui->show(plugin);
-    }
+//    const clap_plugin_gui_t*     gui     = (const clap_plugin_gui_t*    )plugin->get_extension(plugin,CLAP_EXT_GUI    );
+//    const clap_plugin_gui_x11_t* gui_x11 = (const clap_plugin_gui_x11_t*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);
+//    uint32_t width = 256;
+//    uint32_t height = 256;
+//    if (gui && gui_x11) {
+//      gui->create(plugin);
+//      gui->get_size(plugin,&width,&height);
+//      MWindow = new MIP_Window(width,height,"plugin");
+//      MWindow->open();
+//      xcb_window_t xcbwin = MWindow->getXcbWindow();
+//      gui_x11->attach(plugin,nullptr,xcbwin);
+//      gui->show(plugin);
+//    }
 //----------
 
     printf("processing %i samples\n",num_samples);
@@ -546,14 +546,14 @@ public:
 
     }
 
-    MIP_Sleep(10000);
+    //MIP_Sleep(10000);
 
 //----------
 // editor
-    gui->hide(plugin);
-    gui->destroy(plugin);
-    MWindow->close();
-    delete MWindow;
+//    gui->hide(plugin);
+//    gui->destroy(plugin);
+//    MWindow->close();
+//    delete MWindow;
 //----------
 
     printf("Finished processing\n");

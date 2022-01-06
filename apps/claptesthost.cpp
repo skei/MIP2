@@ -189,7 +189,9 @@ int main(int argc, char** argv) {
     //plugin->destroy();
   }
 
+  printf("unloading plugin\n");
   host.unloadPlugin();
+  printf("unloading ok\n");
   return result;
 }
 
