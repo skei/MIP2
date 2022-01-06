@@ -198,6 +198,11 @@ private:
 public:
 //------------------------------
 
+  /*
+    TODO:
+    should we have a flag/bitfield for which extensions we support?
+  */
+
   virtual const void* get_extension(const char *extension_id) {
     MIP_Print("extension id: %s\n",extension_id);
     if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS         ) == 0) return &MClapHostAudioPorts;
