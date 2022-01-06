@@ -1,3 +1,6 @@
+// TODO: need to find a proper name for this..
+// (and not confuse it with regular clap names/structs)
+
 
 // nc -U -l -k /tmp/mip.socket
 //#define MIP_DEBUG_PRINT_SOCKET
@@ -46,7 +49,7 @@ int32_t     arg_remap_param       = -1;
 
 //----------
 
-#include "claphost_process.h"
+#include "claptesthost_process.h"
 
 //----------------------------------------------------------------------
 //
@@ -55,7 +58,7 @@ int32_t     arg_remap_param       = -1;
 //----------------------------------------------------------------------
 
 void print_help() {
-  printf("usage: claphost plugin-path index [options]\n");
+  printf("usage: claptesthost plugin-path index [options]\n");
   printf("options:\n");
   printf("  -h  --help\n");
   printf("  -m  --midi-input    <path>\n");
