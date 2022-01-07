@@ -11,11 +11,18 @@
   * audio processing (audio effect)
     (should more or less work, already?)
 
+  * load preset from file
+    (clap.preset-load)
+
   * print more diagnostic info
     - list parameters
     - audio/event/note ports
 
   * update gui while processing?
+
+  * add latency (clap.latency) to rendering time..
+
+  * render offline?
 
 
 */
