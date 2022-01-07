@@ -26,13 +26,9 @@ in progress, prototype, proof of concept, pre-, ..
 
 ----------
 
-see also:
-(most of this is already ported over to MIP2, or will be soon)
+https://raw.githubusercontent.com/skei/MIP2/master/screenshots/gui_old.png
 
-mip:              https://github.com/skei/MIP
-claphost:         https://github.com/skei/MIP/tree/master/apps
-simple mpe synth: https://github.com/skei/MIP/tree/master/plugins/templates
-kode3:            https://github.com/skei/kode3
+https://www.youtube.com/watch?v=8gMQY8lFopg
 
 ----------
 
@@ -41,7 +37,11 @@ g++ -shared build.o -o mip_debug.so -fPIE -lpthread -ldl -lxcb -lxcb-util -lxcb-
 
 ----------
 
-https://raw.githubusercontent.com/skei/MIP2/master/screenshots/gui_old.png
+see also:
+(most of this is already ported over to MIP2, or will be soon)
 
-https://www.youtube.com/watch?v=8gMQY8lFopg
+mip:              https://github.com/skei/MIP
+claphost:         https://github.com/skei/MIP/tree/master/apps
+simple mpe synth: https://github.com/skei/MIP/tree/master/plugins/templates
+kode3:            https://github.com/skei/kode3
 
