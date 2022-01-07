@@ -12,6 +12,10 @@
 
 //----------------------------------------------------------------------
 
+#ifdef MIP_WIN32
+  #undef MIP_DEBUG
+#endif
+
 #ifndef MIP_DEBUG
   #undef MIP_DEBUG_ASSER
   #undef MIP_DEBUG_CALLSTACK

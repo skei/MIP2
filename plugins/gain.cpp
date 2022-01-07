@@ -65,7 +65,7 @@ public:
 
   Gain_Plugin(MIP_Descriptor* ADescriptor, MIP_HostProxy* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
-    MIP_PRINT;
+    //MIP_PRINT;
     MDescriptor = ADescriptor;
   }
 
@@ -79,7 +79,7 @@ public:
 //------------------------------
 
   void on_plugin_midi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
-    MIP_PRINT;
+    //MIP_PRINT;
     switch (AMsg1 & 0xF0) {
       case MIP_MIDI_NOTE_ON:
         MNumNotes += 1;

@@ -7,8 +7,8 @@
 
 #define MIP_NO_PLUGIN
 
-//#define MIP_NO_GUI
-#define MIP_GUI_XCB
+#define MIP_NO_GUI
+//#define MIP_GUI_XCB
 
 //#define MIP_GUI_XCB
 //#define MIP_USE_CAIRO

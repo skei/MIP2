@@ -22,10 +22,12 @@
 
 #include "mip.h"
 
-// MIP_GetThreadId
-#include <sys/syscall.h>
-#include <sys/unistd.h>
-#define gettid() syscall(SYS_gettid)
+#ifdef MIP_LINUX
+  // MIP_GetThreadId
+  #include <sys/syscall.h>
+  #include <sys/unistd.h>
+  #define gettid() syscall(SYS_gettid)
+#endif
 
 // sleep
 // -lrt
@@ -55,6 +57,7 @@ uint32_t MIP_HashString(const char* buffer) {
 
 // uint32_t thread_id = MIP_GetThreadId();
 
+#ifdef MIP_LINUX
 pid_t MIP_GetProcessId() {
   return getpid();
 }
@@ -64,6 +67,7 @@ pid_t MIP_GetProcessId() {
 pid_t MIP_GetThreadId() {
   return gettid();
 }
+#endif
 
 //----------------------------------------------------------------------
 

@@ -2,6 +2,37 @@
 #define mip_audio_file_included
 //----------------------------------------------------------------------
 
+#define MIP_AUDIO_FILE_READ   0x10
+#define MIP_AUDIO_FILE_WRITE  0x20
+#define MIP_AUDIO_FILE_RDWR   0x30
+
+#ifdef MIP_WIN32
+
+struct SF_INFO {
+  int64_t	frames;
+  int32_t samplerate;
+  int32_t channels;
+  int32_t format;
+  int32_t sections;
+  int32_t seekable;
+} ;
+
+class MIP_AudioFile {
+
+public:
+
+  SF_INFO* getInfo() { return nullptr; }
+  bool open(const char *APath, uint32_t AMode=MIP_AUDIO_FILE_READ, uint32_t ASampleRate=44100, uint32_t AChannels=2) { return true; }
+  void close() {}
+  int32_t read(uint32_t AChannels, uint32_t ABlockSize, float **ABuffers) { return 0; }
+  void write(uint32_t AChannels, uint32_t ABlockSize, float **ABuffers) {}
+  void printInfo() {}
+
+};
+
+#else
+//#ifdef MIP_LINUX
+
 #include <sndfile.h>
 
 //----------
@@ -11,9 +42,6 @@
 //SFM_RDWR    0x30
 
 
-#define MIP_AUDIO_FILE_READ   0x10
-#define MIP_AUDIO_FILE_WRITE  0x20
-#define MIP_AUDIO_FILE_RDWR   0x30
 
 //----------------------------------------------------------------------
 //
@@ -149,6 +177,8 @@ public:
   }
 
 };
+
+#endif // ! WIN32
 
 //----------------------------------------------------------------------
 #endif

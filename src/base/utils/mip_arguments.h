@@ -62,7 +62,7 @@ public:
     char* e;
     int result = strtol( MArgv[i], &e, 10 ); // base 10
     if (e == MArgv[i]) {
-      MIP_Print("Error parsing argument '%s'. expected int\n",MArgv[i]);
+      printf("Error parsing argument '%s'. expected int\n",MArgv[i]);
       return 0;
     }
     return result;
@@ -75,7 +75,7 @@ public:
     char* e;
     float result = strtof(MArgv[i],&e);
     if (e == MArgv[i]) {
-      MIP_Print("Error parsing argument '%s'. expected float\n",MArgv[i]);
+      printf("Error parsing argument '%s'. expected float\n",MArgv[i]);
       return 0.0;
     }
     return result;
@@ -192,7 +192,7 @@ public:
         char* e;
         int result = strtol(text2, &e, 10); // base 10
         if (e == text2) {
-          MIP_Print("Error parsing argument '%s'. expected int\n",text2);
+          printf("Error parsing argument '%s'. expected int\n",text2);
           return 0;
         }
         return result;
@@ -216,7 +216,7 @@ public:
         char* e;
         float result = strtof(text2, &e); // base 10
         if (e == text2) {
-          MIP_Print("Error parsing argument '%s'. expected int\n",text2);
+          printf("Error parsing argument '%s'. expected int\n",text2);
           return 0;
         }
         return result;

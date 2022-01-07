@@ -14,12 +14,12 @@
   #define __MIP_STDCALL
 #endif
 
-//#ifdef MIP_WIN32
-//  #define __MIP_EXPORT  __attribute__ ((dllexport))
-//  #define __MIP_IMPORT  __attribute__ ((dllimport))
-//  #define __MIP_CDECL   __attribute__ ((cdecl))
-//  #define __MIP_STDCALL __attribute__ ((stdcall))
-//#endif
+#ifdef MIP_WIN32
+  #define __MIP_EXPORT  __attribute__ ((dllexport))
+  #define __MIP_IMPORT  __attribute__ ((dllimport))
+  #define __MIP_CDECL   __attribute__ ((cdecl))
+  #define __MIP_STDCALL __attribute__ ((stdcall))
+#endif
 
 //------------------------------
 // linux
@@ -33,10 +33,10 @@
   #define __MIP_EXPORT __MIP_PUBLIC
 #endif
 
-//#ifdef MIP_WIN32
-//  #define __MIP_PUBLIC
-//  #define __MIP_LOCAL
-//#endif
+#ifdef MIP_WIN32
+  #define __MIP_PUBLIC
+  #define __MIP_LOCAL
+#endif
 
 //------------------------------
 // attributes

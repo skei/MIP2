@@ -81,15 +81,15 @@ public: // host proxy
 //------------------------------
 
   void updateParameter(uint32_t AIndex, float AValue) final {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   void resizeEditor(uint32_t AWidth, uint32_t AHeight) final {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   void sendMidi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
-    MIP_PRINT;
+    //MIP_PRINT;
     //queueMidi/flushMidi
   }
 

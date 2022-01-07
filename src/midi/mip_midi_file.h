@@ -430,7 +430,7 @@ private:
 //------------------------------
 
   uint8_t peek_byte() {
-    assert(MBufferPtr);
+    //assert(MBufferPtr);
     uint8_t v = *MBufferPtr;
     return v;
   }
@@ -438,7 +438,7 @@ private:
   //----------
 
   uint8_t read_byte() {
-    assert(MBufferPtr);
+    //assert(MBufferPtr);
     uint8_t v = *MBufferPtr++;
     return v;
   }
@@ -446,7 +446,7 @@ private:
   //----------
 
   uint16_t read_short() {
-    assert(MBufferPtr);
+    //assert(MBufferPtr);
     uint8_t v1 = read_byte();
     uint8_t v2 = read_byte();
     return (v1<<8) + v2;
@@ -455,7 +455,7 @@ private:
   //----------
 
   uint32_t read_uint() {
-    assert(MBufferPtr);
+    //assert(MBufferPtr);
     uint8_t v1 = read_byte();
     uint8_t v2 = read_byte();
     uint8_t v3 = read_byte();
@@ -497,7 +497,7 @@ private:
   //----------
 
   uint8_t* read_data(uint32_t length) {
-    assert(MBufferPtr);
+    //assert(MBufferPtr);
     uint8_t* result = MBufferPtr;
     MBufferPtr += length;
     return result;
@@ -946,7 +946,7 @@ private:
       case 0x00:
 
         length = read_variable();
-        assert(length == 2);
+        //assert(length == 2);
         v1 = read_byte();
         v2 = read_byte();
         //v = (v1<<8) + v2;
@@ -1114,7 +1114,7 @@ private:
 
       case 0x20:
         length = read_variable();
-        assert(length == 1);
+        //assert(length == 1);
         v1 = read_byte();
         midi_event = new MIP_MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData(v1);
@@ -1128,7 +1128,7 @@ private:
 
       case 0x21:
         length = read_variable();
-        assert(length == 1);
+        //assert(length == 1);
         v1 = read_byte();
         midi_event = new MIP_MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData(v1);
@@ -1144,7 +1144,7 @@ private:
 
       case 0x2f:
         length = read_variable();
-        assert(length == 0);
+        //assert(length == 0);
         midi_event = new MIP_MidiEvent(ADeltaTime,AEvent,meta,0);
         //midi_event->setData((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
@@ -1170,7 +1170,7 @@ private:
 
       case 0x51:
         length = read_variable();
-        assert(length == 3);
+        //assert(length == 3);
         v1 = read_byte();
         v2 = read_byte();
         v3 = read_byte();
@@ -1195,7 +1195,7 @@ private:
 
       case 0x54:
         length = read_variable();
-        assert(length == 5);
+        //assert(length == 5);
         v1 = read_byte();
         v2 = read_byte();
         v3 = read_byte();
@@ -1230,7 +1230,7 @@ private:
 
       case 0x58:
         length = read_variable();
-        assert(length == 4);
+        //assert(length == 4);
         v1 = read_byte();
         v2 = read_byte();
         v3 = read_byte();
@@ -1257,7 +1257,7 @@ private:
 
       case 0x59:
         length = read_variable();
-        assert(length == 2);
+        //assert(length == 2);
         v1 = read_byte(); // -7 7 flats 0 key of C 7 7 sharps
         v2 = read_byte();  // 0 major 1 minor
         midi_event = new MIP_MidiEvent(ADeltaTime,AEvent,meta,0);

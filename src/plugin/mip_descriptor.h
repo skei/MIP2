@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "base/types/mip_array.h"
+#include "base/utils/mip_utils.h"
 #include "plugin/mip_parameter.h"
 
 //----------------------------------------------------------------------

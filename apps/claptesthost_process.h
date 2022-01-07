@@ -14,14 +14,20 @@
 #include "midi/mip_midi_player.h"
 #include "plugin/clap/mip_clap_hosted_plugin.h"
 
+#ifndef MIP_NO_GUI
 #include "gui/mip_window.h"
+#endif
 
 typedef MIP_Array<clap_event_header_t*> MIP_ClapEventHeaders;
 
 //----------------------------------------------------------------------
 
 class Process
+#ifndef MIP_NO_GUI
 : public MIP_WindowListener {
+#else
+{
+#endif
 
 //------------------------------
 private:
@@ -42,7 +48,9 @@ private:
   MIP_ClapEventHeaders      MClapEvents       = {};
   clap_param_info           MRemapParamInfo   = {0};
 
+  #ifndef MIP_NO_GUI
   MIP_Window*               MWindow           = nullptr;;
+  #endif
 
 
 //------------------------------
@@ -480,6 +488,8 @@ public:
     MCurrentSample = 0;   // current position (in samples)
     MCurrentTime = 0.0;   // current position (in seconds)
 
+  #ifndef MIP_NO_GUI
+
 //----------
 // editor
     const clap_plugin_gui_t*     gui     = (const clap_plugin_gui_t*    )plugin->get_extension(plugin,CLAP_EXT_GUI    );
@@ -497,6 +507,8 @@ public:
       gui->show(plugin);
     }
 //----------
+
+  #endif
 
     printf("processing %i samples\n",num_samples);
 
@@ -552,6 +564,8 @@ public:
 
     //MIP_Sleep(10000);
 
+  #ifndef MIP_NO_GUI
+
 //----------
 // editor
     gui->hide(plugin);
@@ -559,6 +573,8 @@ public:
     MWindow->close();
     delete MWindow;
 //----------
+
+  #endif
 
     printf("Finished processing\n");
 

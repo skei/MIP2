@@ -2,7 +2,11 @@
 #define mip_clap_host_included
 //----------------------------------------------------------------------
 
-#include <dlfcn.h>
+#ifdef MIP_LINUX
+  #include <dlfcn.h>
+#else
+  #include <windows.h>
+#endif
 
 #include "mip.h"
 //#include "base/system/mip_time.h"
@@ -23,9 +27,14 @@ class MIP_ClapHost
 private:
 //------------------------------
 
+  #ifdef MIP_WIN32
+    HINSTANCE                 MLibHandle      = nullptr;
+  #else
+    void*                     MLibHandle      = nullptr;
+  #endif
+
   const char*                 MPluginPath     = "";
   char                        MPathOnly[512]  = {0};
-  void*                       MLibHandle      = nullptr;
   const clap_plugin_entry*    MClapEntry      = nullptr;
   const clap_plugin_factory*  MClapFactory    = nullptr;
 
@@ -60,8 +69,12 @@ public:
   //----------
 
   bool _load_error(const char* str, bool cl=true) {
-    MIP_Print("%s\n",str);
-    if (cl) dlclose(MLibHandle);
+    printf("%s\n",str);
+    #ifdef MIP_WIN32
+      //if (cl) dlclose(MLibHandle);
+    #else
+      if (cl) dlclose(MLibHandle);
+    #endif
     MLibHandle = nullptr;
     return false;
   }
@@ -71,10 +84,19 @@ public:
   bool loadPlugin(const char* path) {
     MPluginPath = path;
 
-    MLibHandle = dlopen(path,RTLD_LAZY|RTLD_LOCAL); // RTLD_NOW
+    #ifdef MIP_WIN32
+      MLibHandle = LoadLibrary(path);
+    #else
+      MLibHandle = dlopen(path,RTLD_LAZY|RTLD_LOCAL); // RTLD_NOW
+    #endif
     if (!MLibHandle) return _load_error("couldn't load plugin",false);
 
-    MClapEntry = (struct clap_plugin_entry*)dlsym(MLibHandle,"clap_entry");
+    #ifdef MIP_WIN32
+      MClapEntry = (struct clap_plugin_entry*)GetProcAddress(MLibHandle,"clap_entry");
+    #else
+      MClapEntry = (struct clap_plugin_entry*)dlsym(MLibHandle,"clap_entry");
+    #endif
+
     if (!MClapEntry) return _load_error("couldn't find 'clap_entry'");
 
     get_path_only(MPathOnly,path);
@@ -90,7 +112,10 @@ public:
 
   void unloadPlugin() {
     //if (MClapEntry) MClapEntry->deinit();
-    if (MLibHandle) dlclose(MLibHandle);
+    #ifdef MIP_WIN32
+    #else
+      if (MLibHandle) dlclose(MLibHandle);
+    #endif
   }
 
   //----------
@@ -100,12 +125,12 @@ public:
     if (index >= MClapFactory->get_plugin_count(MClapFactory)) return nullptr;
     const clap_plugin_descriptor* descriptor = MClapFactory->get_plugin_descriptor(MClapFactory,index);
     if (!descriptor) {
-      MIP_Print("couldn't get descriptor\n");
+      printf("couldn't get descriptor\n");
       return nullptr;
     }
     const clap_plugin* plugin = MClapFactory->create_plugin(MClapFactory,&MClapHost,descriptor->id);
     if (!plugin) {
-      MIP_Print("couldn't create plugin\n");
+      printf("couldn't create plugin\n");
       return nullptr;
     }
     bool result = plugin->init(plugin);
@@ -113,7 +138,7 @@ public:
       return new MIP_ClapHostedPlugin(plugin);
     }
     else {
-      MIP_Print("couldn't init plugin\n");
+      printf("couldn't init plugin\n");
       //plugin->destroy(plugin);
       return nullptr;
     }
@@ -216,7 +241,7 @@ public:
   */
 
   virtual const void* get_extension(const char *extension_id) {
-    MIP_Print("extension_id: %s -> ",extension_id);
+    printf("extension_id: %s -> ",extension_id);
 //    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS         ) == 0) { MIP_DPrint("%p\n",&MClapHostAudioPorts);        return &MClapHostAudioPorts; }
 //    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) { MIP_DPrint("%p\n",&MClapHostAudioPortsConfig);  return &MClapHostAudioPortsConfig; }
 //    if (strcmp(extension_id, CLAP_EXT_CHECK_FOR_UPDATE    ) == 0) { MIP_DPrint("%p\n",&MClapHostChekForUpdate);     return &MClapHostChekForUpdate; }
@@ -237,26 +262,26 @@ public:
 //  if (strcmp(extension_id, CLAP_EXT_TIMER_SUPPORT       ) == 0) { MIP_DPrint("%p\n",&MClapHostTimerSupport);      return &MClapHostTimerSupport; }
 //    if (strcmp(extension_id, CLAP_EXT_TRACK_INFO          ) == 0) { MIP_DPrint("%p\n",&MClapHostTrackInfo);         return &MClapHostTrackInfo; }
 //    if (strcmp(extension_id, CLAP_EXT_TUNING              ) == 0) { MIP_DPrint("%p\n",&MClapHostTuning);            return &MClapHostTuning; }
-    MIP_DPrint("null\n");
+    printf("null\n");
     return nullptr;
   }
 
   //----------
 
   virtual void request_restart() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //----------
 
   virtual void request_process() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //----------
 
   virtual void request_callback() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
 //------------------------------
@@ -268,14 +293,14 @@ public: // extensions
   //------------------------------
 
   virtual uint32_t audio_ports_get_preferred_sample_size() {
-    MIP_Print("-> 32\n");
+    printf("-> 32\n");
     return 32;
   }
 
   //----------
 
   virtual void audio_ports_rescan(uint32_t flags) {
-    MIP_Print("flags: %i\n",flags);
+    printf("flags: %i\n",flags);
   }
 
   //------------------------------
@@ -283,7 +308,7 @@ public: // extensions
   //------------------------------
 
   virtual void audio_ports_config_rescan() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //------------------------------
@@ -291,7 +316,7 @@ public: // extensions
   //------------------------------
 
   virtual void check_for_update_on_new_version(const clap_check_for_update_info *update_info) {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //------------------------------
@@ -299,7 +324,7 @@ public: // extensions
   //------------------------------
 
   virtual void event_filter_changed() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //------------------------------
@@ -330,13 +355,13 @@ public: // extensions
   //------------------------------
 
   virtual void file_reference_changed() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //----------
 
   virtual void file_reference_set_dirty(clap_id resource_id) {
-    MIP_Print("resource_id %i\n",resource_id);
+    printf("resource_id %i\n",resource_id);
   }
 
   //------------------------------
@@ -344,7 +369,7 @@ public: // extensions
   //------------------------------
 
   virtual bool gui_resize(uint32_t width, uint32_t height) {
-    MIP_Print("width %i height %i -> true\n",width,height);
+    printf("width %i height %i -> true\n",width,height);
     return true;
   }
 
@@ -353,7 +378,7 @@ public: // extensions
   //------------------------------
 
   virtual void latency_changed() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //------------------------------
@@ -361,7 +386,7 @@ public: // extensions
   //------------------------------
 
   virtual void log_log(clap_log_severity severity, const char *msg) {
-    MIP_Print("severity: %i msg: %s\n",severity,msg);
+    printf("severity: %i msg: %s\n",severity,msg);
   }
 
   //------------------------------
@@ -369,7 +394,7 @@ public: // extensions
   //------------------------------
 
   virtual void midi_mappings_changed() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //------------------------------
@@ -377,7 +402,7 @@ public: // extensions
   //------------------------------
 
   virtual void note_name_changed() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //------------------------------
@@ -385,7 +410,7 @@ public: // extensions
   //------------------------------
 
   virtual void note_ports_rescan(uint32_t flags) {
-    MIP_Print("flags %i\n",flags);
+    printf("flags %i\n",flags);
   }
 
   //------------------------------
@@ -393,19 +418,19 @@ public: // extensions
   //------------------------------
 
   virtual void params_rescan(clap_param_rescan_flags flags) {
-    MIP_Print("flags %i\n",flags);
+    printf("flags %i\n",flags);
   }
 
   //----------
 
   virtual void params_clear(clap_id param_id, clap_param_clear_flags flags) {
-    MIP_Print("param_id %i flags %i\n",param_id,flags);
+    printf("param_id %i flags %i\n",param_id,flags);
   }
 
   //----------
 
   virtual void params_request_flush() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //------------------------------
@@ -413,7 +438,7 @@ public: // extensions
   //------------------------------
 
   virtual void quick_controls_changed(clap_quick_controls_changed_flags flags) {
-    MIP_Print("flags %i\n",flags);
+    printf("flags %i\n",flags);
   }
 
   //------------------------------
@@ -421,7 +446,7 @@ public: // extensions
   //------------------------------
 
   virtual void state_mark_dirty() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //------------------------------
@@ -429,14 +454,14 @@ public: // extensions
   //------------------------------
 
   virtual bool thread_check_is_main_thread() {
-    //MIP_Print("-> true\n");
+    //printf("-> true\n");
     return true;
   }
 
   //----------
 
   virtual bool thread_check_is_audio_thread() {
-    //MIP_Print("-> true\n");
+    //printf("-> true\n");
     return true;
   }
 
@@ -445,7 +470,7 @@ public: // extensions
   //------------------------------
 
   virtual bool thread_pool_request_exec(uint32_t num_tasks) {
-    MIP_Print("num_tasks %i -> false\n",num_tasks);
+    printf("num_tasks %i -> false\n",num_tasks);
     return false;
   }
 
@@ -454,7 +479,7 @@ public: // extensions
   //------------------------------
 
   virtual bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) {
-    MIP_Print("period_ms %i -> false\n",period_ms);
+    printf("period_ms %i -> false\n",period_ms);
     //MTimer = new MIP_Timer(this);
     //MTimer->start(period_ms);
     return false;
@@ -463,7 +488,7 @@ public: // extensions
   //----------
 
   virtual bool timer_support_unregister_timer(clap_id timer_id) {
-    MIP_Print("timer_id %i -> false\n",timer_id);
+    printf("timer_id %i -> false\n",timer_id);
     //MTimer->stop();
     //delete MTimer;
     //MTimer = nullptr;
@@ -475,7 +500,7 @@ public: // extensions
   //------------------------------
 
   virtual bool track_info_get(clap_track_info *info) {
-    MIP_Print("-> false\n");
+    printf("-> false\n");
     return false;
   }
 
@@ -484,7 +509,7 @@ public: // extensions
   //------------------------------
 
   virtual double tuning_get(int32_t key, int32_t channel) {
-    MIP_Print("-> 0.0\n");
+    printf("-> 0.0\n");
     return 0.0;
   }
 
