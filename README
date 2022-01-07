@@ -41,5 +41,7 @@ g++ -shared build.o -o mip_debug.so -fPIE -lpthread -ldl -lxcb -lxcb-util -lxcb-
 
 ----------
 
+https://raw.githubusercontent.com/skei/MIP2/master/screenshots/gui_old.png
 
+https://www.youtube.com/watch?v=8gMQY8lFopg
 
