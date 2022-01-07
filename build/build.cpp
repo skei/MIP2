@@ -1,13 +1,12 @@
 
 
 #include "../apps/claptesthost.cpp"
-
-//#include "test/test.cpp"
-
-
-//#include "../plugins/cclap.cpp"
 //#include "../plugins/gain.cpp"
 
+
+
+//#include "test/test.cpp"
+//#include "../plugins/cclap.cpp"
 //#include "../plugins/templates/plugin.cpp"
 
 //----------------------------------------------------------------------

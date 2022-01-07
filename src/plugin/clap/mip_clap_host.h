@@ -289,6 +289,14 @@ public: // extensions
 //------------------------------
 
   //------------------------------
+  // ambisonic
+  //------------------------------
+
+  virtual void ambisonic_changed() {
+    //MIP_PRINT;
+  }
+
+  //------------------------------
   // audio-ports
   //------------------------------
 
@@ -328,27 +336,12 @@ public: // extensions
   }
 
   //------------------------------
-  // fd-support
+  // event-registry
   //------------------------------
 
-  //virtual bool fd_support_register_fd(clap_fd fd, clap_fd_flags flags) {
-  //  MIP_PRINT;
-  //  return false;
-  //}
-
-  //----------
-
-  //virtual bool fd_support_modify_fd(clap_fd fd, clap_fd_flags flags) {
-  //  MIP_PRINT;
-  //  return false;
-  //}
-
-  //----------
-
-  //virtual bool fd_support_unregister_fd(clap_fd fd) {
-  //  MIP_PRINT;
-  //  return false;
-  //}
+  virtual bool event_registry_query(const char *space_name, uint16_t *space_id) {
+    return false;
+  }
 
   //------------------------------
   // file-reference.draft/0
@@ -434,6 +427,29 @@ public: // extensions
   }
 
   //------------------------------
+  // posix-fd-support
+  //------------------------------
+
+  virtual bool posix_fd_support_register_fd(int fd, int flags) {
+    //MIP_PRINT;
+    return false;
+  }
+
+  //----------
+
+  virtual bool posix_fd_support_modify_fd(int fd, int flags) {
+    //MIP_PRINT;
+    return false;
+  }
+
+  //----------
+
+  virtual bool posix_fd_support_unregister_fd(int fd) {
+    //MIP_PRINT;
+    return false;
+  }
+
+  //------------------------------
   // quick-controls.draft/0
   //------------------------------
 
@@ -448,6 +464,17 @@ public: // extensions
   virtual void state_mark_dirty() {
     //MIP_PRINT;
   }
+
+  //------------------------------
+  // surround
+  //------------------------------
+
+  virtual void surround_changed() {
+  }
+
+  virtual void surround_get_preferred_channel_map(uint8_t* channel_map, uint32_t channel_map_capacity, uint32_t* channel_count) {
+  }
+
 
   //------------------------------
   // thread-check
@@ -555,6 +582,17 @@ private:
 private: // extensions
 //------------------------------
 
+  // ambisonic
+
+  static void clap_host_ambisonic_changed_callback(const clap_host_t *host) {
+    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+    return host_->ambisonic_changed();
+  }
+
+  clap_host_ambisonic MClapHostAmbisonic = {
+    clap_host_ambisonic_changed_callback
+  };
+
   // audio-ports
 
   static uint32_t clap_host_audio_ports_get_preferred_sample_size_callback(const clap_host *host) {
@@ -605,28 +643,16 @@ private: // extensions
     clap_host_event_filter_changed_callback
   };
 
-  // fd-support
+  // event-registry
 
-  //static bool clap_host_fd_support_register_fd_callback(const clap_host *host, clap_fd fd, clap_fd_flags flags) {
-  //  MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
-  //  return host_->fd_support_register_fd(fd,flags);
-  //}
+  static bool clap_host_event_registry_query_callback(const clap_host_t *host, const char *space_name, uint16_t *space_id) {
+    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+    return host_->event_registry_query(space_name,space_id);
+  }
 
-  //static bool clap_host_fd_support_modify_fd_callback(const clap_host *host, clap_fd fd, clap_fd_flags flags) {
-  //  MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
-  //  return host_->fd_support_modify_fd(fd,flags);
-  //}
-
-  //static bool clap_host_fd_support_unregister_fd_callback(const clap_host *host, clap_fd fd) {
-  //  MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
-  //  return host_->fd_support_unregister_fd(fd);
-  //}
-
-  //clap_host_fd_support MClapHostFdSupport = {
-  //  clap_host_fd_support_register_fd_callback,
-  //  clap_host_fd_support_modify_fd_callback,
-  //  clap_host_fd_support_unregister_fd_callback
-  //};
+  clap_host_event_registry MClapHostEventRegistry = {
+    clap_host_event_registry_query_callback
+  };
 
   // file-reference.draft/0
 
@@ -734,6 +760,29 @@ private: // extensions
     clap_host_params_request_flush_callback
   };
 
+  // posix-fd-support
+
+  static bool clap_host_posix_fd_support_register_fd_callback(const clap_host *host, int fd, int flags) {
+    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+    return host_->posix_fd_support_register_fd(fd,flags);
+  }
+
+  static bool clap_host_posix_fd_support_modify_fd_callback(const clap_host *host, int fd, int flags) {
+    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+    return host_->posix_fd_support_modify_fd(fd,flags);
+  }
+
+  static bool clap_host_posix_fd_support_unregister_fd_callback(const clap_host *host, int fd) {
+    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+    return host_->posix_fd_support_unregister_fd(fd);
+  }
+
+  clap_host_posix_fd_support MClapHostFdSupport = {
+    clap_host_posix_fd_support_register_fd_callback,
+    clap_host_posix_fd_support_modify_fd_callback,
+    clap_host_posix_fd_support_unregister_fd_callback
+  };
+
   // quick-controls.draft/0
 
   static void clap_host_quick_controls_changed_callback(const clap_host *host, clap_quick_controls_changed_flags flags) {
@@ -754,6 +803,23 @@ private: // extensions
 
   clap_host_state MClapHostState = {
     clap_host_state_mark_dirty_callback
+  };
+
+  // surround
+
+  static void clap_host_surround_changed_callback(const clap_host_t *host) {
+    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+    host_->surround_changed();
+  }
+
+  static void clap_host_surround_get_preferred_channel_map_callback(const clap_host_t *host, uint8_t* channel_map, uint32_t channel_map_capacity, uint32_t* channel_count) {
+    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+    host_->surround_get_preferred_channel_map(channel_map,channel_map_capacity,channel_count);
+  }
+
+  clap_host_surround MClapHostSurround = {
+    clap_host_surround_changed_callback,
+    clap_host_surround_get_preferred_channel_map_callback
   };
 
   // thread-check

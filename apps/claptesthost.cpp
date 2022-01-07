@@ -1,6 +1,26 @@
-// TODO: need to find a proper name for this..
-// (and not confuse it with regular clap names/structs)
 
+/*
+  TODO:
+
+  * find a proper name for this..
+    (and not confuse it with regular clap names/structs)
+
+  * cc -> parameter remapping
+    (should work, already?)
+
+  * audio processing (audio effect)
+    (should more or less work, already?)
+
+  * print more diagnostic info
+    - list parameters
+    - audio/event/note ports
+
+  * update gui while processing?
+
+
+*/
+
+//----------------------------------------------------------------------
 
 // nc -U -l -k /tmp/mip.socket
 //#define MIP_DEBUG_PRINT_SOCKET

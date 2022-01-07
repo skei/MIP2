@@ -316,11 +316,6 @@ public: // extensions
 
   //----------
 
-//  void fd_support_on_fd(clap_fd fd, clap_fd_flags flags) {
-//  }
-
-  //----------
-
   bool gui_create() {
     return false;
   }
@@ -456,6 +451,11 @@ public: // extensions
   void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {
     process_input_events(in);
     //process_output_events(out);
+  }
+
+  //----------
+
+  void posix_fd_support_on_fd(int fd, int flags) {
   }
 
   //----------
@@ -716,19 +716,6 @@ private: // extensions
   };
 
   //--------------------
-  // clap.fd-support
-  //--------------------
-
-//  static void clap_plugin_fd_support_on_fd_callback(const clap_plugin_t *plugin, clap_fd fd, clap_fd_flags flags) {
-//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-//    return plug->fd_support_on_fd(fd,flags);
-//  }
-//
-//  clap_plugin_fd_support_t MExtFdSupport = {
-//    clap_plugin_fd_support_on_fd_callback
-//  };
-
-  //--------------------
   // clap.gui
   //--------------------
 
@@ -897,6 +884,19 @@ private: // extensions
   };
 
   //--------------------
+  // clap.posix-fd-support
+  //--------------------
+
+  static void clap_plugin_posix_fd_support_on_fd_callback(const clap_plugin_t *plugin, int fd, int flags) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->posix_fd_support_on_fd(fd,flags);
+  }
+
+  clap_plugin_posix_fd_support MExtFdSupport = {
+    clap_plugin_posix_fd_support_on_fd_callback
+  };
+
+  //--------------------
   // clap.render
   //--------------------
 
@@ -957,6 +957,14 @@ private: // extensions
 //------------------------------
 // drafts
 //------------------------------
+
+  //--------------------
+  // clap.ambisonic
+  //--------------------
+
+//  typedef struct clap_plugin_ambisonic {
+//    bool (*get_info)(const clap_plugin_t* plugin, bool is_input, uint32_t port_index, clap_ambisonic_info_t* info);
+//  } clap_plugin_ambisonic_t;
 
   //--------------------
   // clap.check-for-update.draft/0
