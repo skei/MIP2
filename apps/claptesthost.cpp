@@ -24,6 +24,9 @@
 
   * render offline?
 
+  * is there problems with using libsndfile in windows/mac?
+    do we want to make our own wav import/exporter?
+
 
 */
 
