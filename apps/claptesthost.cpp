@@ -1,32 +1,43 @@
 
 /*
-  TODO:
+  TODO, consider, nloltes, etc..
 
   * find a proper name for this..
-    (and not confuse it with regular clap names/structs)
+    (and not confuse it with regular clap names/structs,
+    there's already clap_host, etc..))
 
   * cc -> parameter remapping
     (should work, already?)
+    do we want more than one at a time?
 
   * audio processing (audio effect)
     (should more or less work, already?)
 
   * load preset from file
-    (clap.preset-load)
+    (use clap.preset-load)
 
   * print more diagnostic info
     - list parameters
     - audio/event/note ports
 
   * update gui while processing?
+    a bit messy, and unnecessary?
+    need timer and event handling, etc..
 
-  * add latency (clap.latency) to rendering time..
+  * add latency (clap.latency) to rendering total time..
 
-  * render offline?
+  * notify pklugin about offline rendering?
+    or 'simulare' realtime, like we do now?
 
-  * is there problems with using libsndfile in windows/mac?
+  * is there problems with using libsndfile on win/mac?
     do we want to make our own wav import/exporter?
+    (not too hard, but tedious..)
 
+  * optimize?
+    but is there any point?
+    this isn't realtime, or performance-critical..
+    - reading/writing audio from disk is sample by sample
+    - we're converting and allocating buffers for midi events per block
 
 */
 

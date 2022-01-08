@@ -1,7 +1,7 @@
 
 
-#include "../apps/claptesthost.cpp"
-//#include "../plugins/gain.cpp"
+//#include "../apps/claptesthost.cpp"
+#include "../plugins/gain.cpp"
 
 
 

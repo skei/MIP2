@@ -232,7 +232,7 @@ public: // timer listener
   //}
 
 //------------------------------
-public:
+public: // clap plugin
 //------------------------------
 
   /*
@@ -241,47 +241,48 @@ public:
   */
 
   virtual const void* get_extension(const char *extension_id) {
-    printf("extension_id: %s -> ",extension_id);
-//    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS         ) == 0) { MIP_DPrint("%p\n",&MClapHostAudioPorts);        return &MClapHostAudioPorts; }
-//    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) { MIP_DPrint("%p\n",&MClapHostAudioPortsConfig);  return &MClapHostAudioPortsConfig; }
-//    if (strcmp(extension_id, CLAP_EXT_CHECK_FOR_UPDATE    ) == 0) { MIP_DPrint("%p\n",&MClapHostChekForUpdate);     return &MClapHostChekForUpdate; }
-//    if (strcmp(extension_id, CLAP_EXT_EVENT_FILTER        ) == 0) { MIP_DPrint("%p\n",&MClapHostEventFilter);       return &MClapHostEventFilter; }
-//    //if (strcmp(extension_id, CLAP_EXT_FD_SUPPORT          ) == 0) { MIP_DPrint("%p\n",&MClapHostFdSupport);         return &MClapHostFdSupport; }
-//    if (strcmp(extension_id, CLAP_EXT_FILE_REFERENCE      ) == 0) { MIP_DPrint("%p\n",&MClapHostFileReference);     return &MClapHostFileReference; }
-//    if (strcmp(extension_id, CLAP_EXT_GUI                 ) == 0) { MIP_DPrint("%p\n",&MClapHostGui);               return &MClapHostGui; }
-//    if (strcmp(extension_id, CLAP_EXT_LATENCY             ) == 0) { MIP_DPrint("%p\n",&MClapHostLatency);           return &MClapHostLatency; }
-//    if (strcmp(extension_id, CLAP_EXT_LOG                 ) == 0) { MIP_DPrint("%p\n",&MClapHostLog);               return &MClapHostLog; }
-//    if (strcmp(extension_id, CLAP_EXT_MIDI_MAPPINGS       ) == 0) { MIP_DPrint("%p\n",&MClapHostMidiMappings);      return &MClapHostMidiMappings; }
-//    if (strcmp(extension_id, CLAP_EXT_NOTE_NAME           ) == 0) { MIP_DPrint("%p\n",&MClapHostNoteName);          return &MClapHostNoteName; }
-//    if (strcmp(extension_id, CLAP_EXT_NOTE_PORTS          ) == 0) { MIP_DPrint("%p\n",&MClapHostNotePorts);         return &MClapHostNotePorts; }
-//    if (strcmp(extension_id, CLAP_EXT_PARAMS              ) == 0) { MIP_DPrint("%p\n",&MClapHostParams);            return &MClapHostParams; }
-//    if (strcmp(extension_id, CLAP_EXT_QUICK_CONTROLS      ) == 0) { MIP_DPrint("%p\n",&MClapHostQuickControls);     return &MClapHostQuickControls; }
-//    if (strcmp(extension_id, CLAP_EXT_STATE               ) == 0) { MIP_DPrint("%p\n",&MClapHostState);             return &MClapHostState; }
-//    if (strcmp(extension_id, CLAP_EXT_THREAD_CHECK        ) == 0) { MIP_DPrint("%p\n",&MClapHostThreadCheck);       return &MClapHostThreadCheck; }
-//    if (strcmp(extension_id, CLAP_EXT_THREAD_POOL         ) == 0) { MIP_DPrint("%p\n",&MClapHostThreadPool);        return &MClapHostThreadPool; }
-//  if (strcmp(extension_id, CLAP_EXT_TIMER_SUPPORT       ) == 0) { MIP_DPrint("%p\n",&MClapHostTimerSupport);      return &MClapHostTimerSupport; }
-//    if (strcmp(extension_id, CLAP_EXT_TRACK_INFO          ) == 0) { MIP_DPrint("%p\n",&MClapHostTrackInfo);         return &MClapHostTrackInfo; }
-//    if (strcmp(extension_id, CLAP_EXT_TUNING              ) == 0) { MIP_DPrint("%p\n",&MClapHostTuning);            return &MClapHostTuning; }
-    printf("null\n");
+    MIP_Print("extension_id: %s -> ",extension_id);
+    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS         ) == 0) { MIP_DPrint("%p\n",&MClapHostAudioPorts);        return &MClapHostAudioPorts; }
+    if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) { MIP_DPrint("%p\n",&MClapHostAudioPortsConfig);  return &MClapHostAudioPortsConfig; }
+    if (strcmp(extension_id, CLAP_EXT_CHECK_FOR_UPDATE    ) == 0) { MIP_DPrint("%p\n",&MClapHostChekForUpdate);     return &MClapHostChekForUpdate; }
+    if (strcmp(extension_id, CLAP_EXT_EVENT_FILTER        ) == 0) { MIP_DPrint("%p\n",&MClapHostEventFilter);       return &MClapHostEventFilter; }
+    if (strcmp(extension_id, CLAP_EXT_EVENT_REGISTRY      ) == 0) { MIP_DPrint("%p\n",&MClapHostEventRegistry);     return &MClapHostEventRegistry; }
+    if (strcmp(extension_id, CLAP_EXT_POSIX_FD_SUPPORT    ) == 0) { MIP_DPrint("%p\n",&MClapHostPosixFdSupport);    return &MClapHostPosixFdSupport; }
+    if (strcmp(extension_id, CLAP_EXT_FILE_REFERENCE      ) == 0) { MIP_DPrint("%p\n",&MClapHostFileReference);     return &MClapHostFileReference; }
+    if (strcmp(extension_id, CLAP_EXT_GUI                 ) == 0) { MIP_DPrint("%p\n",&MClapHostGui);               return &MClapHostGui; }
+    if (strcmp(extension_id, CLAP_EXT_LATENCY             ) == 0) { MIP_DPrint("%p\n",&MClapHostLatency);           return &MClapHostLatency; }
+    if (strcmp(extension_id, CLAP_EXT_LOG                 ) == 0) { MIP_DPrint("%p\n",&MClapHostLog);               return &MClapHostLog; }
+    if (strcmp(extension_id, CLAP_EXT_MIDI_MAPPINGS       ) == 0) { MIP_DPrint("%p\n",&MClapHostMidiMappings);      return &MClapHostMidiMappings; }
+    if (strcmp(extension_id, CLAP_EXT_NOTE_NAME           ) == 0) { MIP_DPrint("%p\n",&MClapHostNoteName);          return &MClapHostNoteName; }
+    if (strcmp(extension_id, CLAP_EXT_NOTE_PORTS          ) == 0) { MIP_DPrint("%p\n",&MClapHostNotePorts);         return &MClapHostNotePorts; }
+    if (strcmp(extension_id, CLAP_EXT_PARAMS              ) == 0) { MIP_DPrint("%p\n",&MClapHostParams);            return &MClapHostParams; }
+    if (strcmp(extension_id, CLAP_EXT_QUICK_CONTROLS      ) == 0) { MIP_DPrint("%p\n",&MClapHostQuickControls);     return &MClapHostQuickControls; }
+    if (strcmp(extension_id, CLAP_EXT_STATE               ) == 0) { MIP_DPrint("%p\n",&MClapHostState);             return &MClapHostState; }
+    if (strcmp(extension_id, CLAP_EXT_THREAD_CHECK        ) == 0) { MIP_DPrint("%p\n",&MClapHostThreadCheck);       return &MClapHostThreadCheck; }
+    if (strcmp(extension_id, CLAP_EXT_THREAD_POOL         ) == 0) { MIP_DPrint("%p\n",&MClapHostThreadPool);        return &MClapHostThreadPool; }
+    if (strcmp(extension_id, CLAP_EXT_TIMER_SUPPORT       ) == 0) { MIP_DPrint("%p\n",&MClapHostTimerSupport);      return &MClapHostTimerSupport; }
+    if (strcmp(extension_id, CLAP_EXT_TRACK_INFO          ) == 0) { MIP_DPrint("%p\n",&MClapHostTrackInfo);         return &MClapHostTrackInfo; }
+    if (strcmp(extension_id, CLAP_EXT_TUNING              ) == 0) { MIP_DPrint("%p\n",&MClapHostTuning);            return &MClapHostTuning; }
+    MIP_DPrint("null\n");
     return nullptr;
   }
 
   //----------
 
   virtual void request_restart() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //----------
 
   virtual void request_process() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //----------
 
   virtual void request_callback() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
 //------------------------------
@@ -293,7 +294,7 @@ public: // extensions
   //------------------------------
 
   virtual void ambisonic_changed() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //------------------------------
@@ -301,14 +302,14 @@ public: // extensions
   //------------------------------
 
   virtual uint32_t audio_ports_get_preferred_sample_size() {
-    printf("-> 32\n");
+    MIP_Print("-> 32\n");
     return 32;
   }
 
   //----------
 
   virtual void audio_ports_rescan(uint32_t flags) {
-    printf("flags: %i\n",flags);
+    MIP_Print("flags: %i\n",flags);
   }
 
   //------------------------------
@@ -316,7 +317,7 @@ public: // extensions
   //------------------------------
 
   virtual void audio_ports_config_rescan() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //------------------------------
@@ -324,7 +325,7 @@ public: // extensions
   //------------------------------
 
   virtual void check_for_update_on_new_version(const clap_check_for_update_info *update_info) {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //------------------------------
@@ -332,14 +333,15 @@ public: // extensions
   //------------------------------
 
   virtual void event_filter_changed() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //------------------------------
   // event-registry
   //------------------------------
 
-  virtual bool event_registry_query(const char *space_name, uint16_t *space_id) {
+  virtual bool event_registry_query(const char* space_name, uint16_t* space_id) {
+    MIP_Print("space_name %s -> false\n",space_name);
     return false;
   }
 
@@ -348,13 +350,13 @@ public: // extensions
   //------------------------------
 
   virtual void file_reference_changed() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //----------
 
   virtual void file_reference_set_dirty(clap_id resource_id) {
-    printf("resource_id %i\n",resource_id);
+    MIP_Print("resource_id %i\n",resource_id);
   }
 
   //------------------------------
@@ -362,7 +364,7 @@ public: // extensions
   //------------------------------
 
   virtual bool gui_resize(uint32_t width, uint32_t height) {
-    printf("width %i height %i -> true\n",width,height);
+    MIP_Print("width %i height %i -> true\n",width,height);
     return true;
   }
 
@@ -371,7 +373,7 @@ public: // extensions
   //------------------------------
 
   virtual void latency_changed() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //------------------------------
@@ -379,7 +381,7 @@ public: // extensions
   //------------------------------
 
   virtual void log_log(clap_log_severity severity, const char *msg) {
-    printf("severity: %i msg: %s\n",severity,msg);
+    MIP_Print("severity: %i msg: %s\n",severity,msg);
   }
 
   //------------------------------
@@ -387,7 +389,7 @@ public: // extensions
   //------------------------------
 
   virtual void midi_mappings_changed() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //------------------------------
@@ -395,7 +397,7 @@ public: // extensions
   //------------------------------
 
   virtual void note_name_changed() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //------------------------------
@@ -403,7 +405,7 @@ public: // extensions
   //------------------------------
 
   virtual void note_ports_rescan(uint32_t flags) {
-    printf("flags %i\n",flags);
+    MIP_Print("flags %i\n",flags);
   }
 
   //------------------------------
@@ -411,19 +413,19 @@ public: // extensions
   //------------------------------
 
   virtual void params_rescan(clap_param_rescan_flags flags) {
-    printf("flags %i\n",flags);
+    MIP_Print("flags %i\n",flags);
   }
 
   //----------
 
   virtual void params_clear(clap_id param_id, clap_param_clear_flags flags) {
-    printf("param_id %i flags %i\n",param_id,flags);
+    MIP_Print("param_id %i flags %i\n",param_id,flags);
   }
 
   //----------
 
   virtual void params_request_flush() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //------------------------------
@@ -431,21 +433,21 @@ public: // extensions
   //------------------------------
 
   virtual bool posix_fd_support_register_fd(int fd, int flags) {
-    //MIP_PRINT;
+    MIP_PRINT;
     return false;
   }
 
   //----------
 
   virtual bool posix_fd_support_modify_fd(int fd, int flags) {
-    //MIP_PRINT;
+    MIP_PRINT;
     return false;
   }
 
   //----------
 
   virtual bool posix_fd_support_unregister_fd(int fd) {
-    //MIP_PRINT;
+    MIP_PRINT;
     return false;
   }
 
@@ -454,7 +456,7 @@ public: // extensions
   //------------------------------
 
   virtual void quick_controls_changed(clap_quick_controls_changed_flags flags) {
-    printf("flags %i\n",flags);
+    MIP_Print("flags %i\n",flags);
   }
 
   //------------------------------
@@ -462,7 +464,7 @@ public: // extensions
   //------------------------------
 
   virtual void state_mark_dirty() {
-    //MIP_PRINT;
+    MIP_PRINT;
   }
 
   //------------------------------
@@ -470,9 +472,11 @@ public: // extensions
   //------------------------------
 
   virtual void surround_changed() {
+    MIP_PRINT;
   }
 
   virtual void surround_get_preferred_channel_map(uint8_t* channel_map, uint32_t channel_map_capacity, uint32_t* channel_count) {
+    MIP_PRINT;
   }
 
 
@@ -481,14 +485,14 @@ public: // extensions
   //------------------------------
 
   virtual bool thread_check_is_main_thread() {
-    //printf("-> true\n");
+    //MIP_Print("-> true\n");
     return true;
   }
 
   //----------
 
   virtual bool thread_check_is_audio_thread() {
-    //printf("-> true\n");
+    //MIP_Print("-> true\n");
     return true;
   }
 
@@ -497,7 +501,7 @@ public: // extensions
   //------------------------------
 
   virtual bool thread_pool_request_exec(uint32_t num_tasks) {
-    printf("num_tasks %i -> false\n",num_tasks);
+    MIP_Print("num_tasks %i -> false\n",num_tasks);
     return false;
   }
 
@@ -506,7 +510,7 @@ public: // extensions
   //------------------------------
 
   virtual bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) {
-    printf("period_ms %i -> false\n",period_ms);
+    MIP_Print("period_ms %i -> false\n",period_ms);
     //MTimer = new MIP_Timer(this);
     //MTimer->start(period_ms);
     return false;
@@ -515,7 +519,7 @@ public: // extensions
   //----------
 
   virtual bool timer_support_unregister_timer(clap_id timer_id) {
-    printf("timer_id %i -> false\n",timer_id);
+    MIP_Print("timer_id %i -> false\n",timer_id);
     //MTimer->stop();
     //delete MTimer;
     //MTimer = nullptr;
@@ -527,7 +531,7 @@ public: // extensions
   //------------------------------
 
   virtual bool track_info_get(clap_track_info *info) {
-    printf("-> false\n");
+    MIP_Print("-> false\n");
     return false;
   }
 
@@ -536,7 +540,7 @@ public: // extensions
   //------------------------------
 
   virtual double tuning_get(int32_t key, int32_t channel) {
-    printf("-> 0.0\n");
+    MIP_Print("-> 0.0\n");
     return 0.0;
   }
 
@@ -777,7 +781,7 @@ private: // extensions
     return host_->posix_fd_support_unregister_fd(fd);
   }
 
-  clap_host_posix_fd_support MClapHostFdSupport = {
+  clap_host_posix_fd_support MClapHostPosixFdSupport = {
     clap_host_posix_fd_support_register_fd_callback,
     clap_host_posix_fd_support_modify_fd_callback,
     clap_host_posix_fd_support_unregister_fd_callback
