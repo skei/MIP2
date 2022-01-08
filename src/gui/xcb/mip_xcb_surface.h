@@ -5,6 +5,7 @@
 #include "mip.h"
 #include "gui/mip_drawable.h"
 #include "gui/base/mip_base_surface.h"
+#include "gui/xcb/mip_xcb_utils.h"
 
 #ifdef KODE_USE_CAIRO
 #include "gui/cairo/mip_cairo.h"
@@ -120,7 +121,7 @@ public: // drawable
     cairo_surface_t* surface = cairo_xcb_surface_create(
       MConnection,
       MPixmap,
-      kode_xcb_find_visual(MConnection,MTargetVisual),
+      mip_xcb_find_visual(MConnection,MTargetVisual),
       MWidth,
       MHeight
     );

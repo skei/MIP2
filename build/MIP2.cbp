@@ -621,6 +621,10 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="test/test.h" />
+		<Unit filename="test/test_gui.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="test/test_plugin.cpp">
 			<Option compile="0" />
 			<Option link="0" />

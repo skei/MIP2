@@ -7,6 +7,7 @@
 #include "base/types/mip_point.h"
 #include "base/types/mip_rect.h"
 #include "gui/mip_painter.h"
+#include "gui/base/mip_base_window.h"
 
 //----------------------------------------------------------------------
 
@@ -120,8 +121,8 @@ public:
 //------------------------------
 
   MIP_Widget(MIP_FRect ARect) {
-    MRect = ARect;
-//    init(MIP_FRect());
+    //MRect = ARect;
+    init(ARect);
   }
 
   //----------
@@ -137,11 +138,11 @@ public:
 public: // set
 //------------------------------
 
-//  void init(MIP_FRect ARect) {
-//    setRect(ARect);
-//    setInitialRect(ARect);
-//    setContentRect(MIP_FRect(0,0));
-//  }
+  void init(MIP_FRect ARect) {
+    setRect(ARect);
+    setInitialRect(ARect);
+    setContentRect(MIP_FRect(0,0));
+  }
 
 //------------------------------
 public: // set
@@ -322,6 +323,7 @@ public:
   //}
 
   void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect) {
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
     if (MChildren.size() > 0) {
       for (int32_t i = MChildren.size()-1; i >= 0; i--) {
         MIP_Widget* child = MChildren[i];
@@ -767,14 +769,14 @@ public:
 
   //----------
 
-//  virtual void attachWindow(MIP_BaseWindow* AWindow) {
-//    //MOwner = AWindow;
-//    uint32_t num = MChildren.size();
-//    for (uint32_t i=0; i<num; i++) {
-//      MIP_Widget* child = MChildren[i];
-//      child->attachWindow(AWindow);
-//    }
-//  }
+  virtual void attachWindow(MIP_BaseWindow* AWindow) {
+    //MOwner = AWindow;
+    uint32_t num = MChildren.size();
+    for (uint32_t i=0; i<num; i++) {
+      MIP_Widget* child = MChildren[i];
+      child->attachWindow(AWindow);
+    }
+  }
 
 //------------------------------
 public:

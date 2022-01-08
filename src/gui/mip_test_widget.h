@@ -17,7 +17,7 @@ class MIP_TestWidget
 private:
 //------------------------------
 
-  bool MIsDragging    = false;
+  bool  MIsDragging   = false;
   float MClickedX     = 0.0;
   float MClickedY     = 0.0;
   float MClickedValue = 0.0;
@@ -43,7 +43,10 @@ public:
 //------------------------------
 
   void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect) override {
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
     MIP_FRect rect = MRect;
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",rect.x,rect.y,rect.w,rect.h);;
+
     if (MIsDragging) APainter->fillRectangle(rect,0.75);
     else APainter->fillRectangle(rect,0.45);
     float w = (float)MRect.w;
@@ -74,7 +77,7 @@ public:
       MClickedY     = AYpos;
       MClickedValue = MValue;
       //do_widget_update(this);
-      do_widget_redraw(this);
+      do_widget_redraw(this,MRect);
     }
   }
 
@@ -90,7 +93,7 @@ public:
       if (value != MValue) { // todo: MIP_NearlyEqual
         MValue = value;
         do_widget_update(this);
-        do_widget_redraw(this);
+        do_widget_redraw(this,MRect);
       }
     }
   }
@@ -100,7 +103,7 @@ public:
   void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
     //MIP_Print("%s : x %.2f y %.2f b %i s %i\n",MName,AXpos,AYpos,AButton,AState);
     MIsDragging = false;
-    do_widget_redraw(this);
+    do_widget_redraw(this,MRect);
   }
 
 

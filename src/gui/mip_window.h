@@ -2,7 +2,7 @@
 #define mip_window_included
 //----------------------------------------------------------------------
 
-//#define MIP_NO_WINDOW_BUFFERING
+#define MIP_NO_WINDOW_BUFFERING
 
 //
 
@@ -63,8 +63,8 @@ private:
   MIP_Surface*        MBufferSurface    = nullptr;
   #endif
 
-  bool                MFillBackground   = true;
-  MIP_Color           MBackgroundColor  = MIP_Color(0.5);
+  bool                MFillWindowBackground   = true;
+  MIP_Color           MWindowBackgroundColor  = MIP_Color(0.5);
 
   //KODE_Widget*  MMouseHoverWidget       = KODE_NULL;
   //KODE_Widget*  MMouseModalWidget       = KODE_NULL;
@@ -90,37 +90,27 @@ public:
   MIP_Window(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", MIP_WindowListener* AListener=nullptr, void* AParentPtr=nullptr)
   : MIP_ImplementedWindow(AWidth,AHeight,ATitle,AParentPtr)
   , MIP_Widget(MIP_FRect(AWidth,AHeight)) {
-    MName           = "MIP_Window";
-    MListener       = AListener;
-    MWindowPainter  = new MIP_Painter(this);
+    MName = "MIP_Window";
+    MListener = AListener;
+    //MOwner = this;
+    //setName("KODE_Window");
+    //setRect(KODE_FRect(AWidth,AHeight));
+    //flags.autoClip = true;
+    MWindowPainter = new MIP_Painter(this);
     #ifndef MIP_NO_WINDOW_BUFFERING
     createBuffer(AWidth,AHeight);
     #endif
 
-//    //MOwner = this;
-//    setName("KODE_Window");
-//    setRect(KODE_FRect(AWidth,AHeight));
-//    MWindowPainter = new KODE_Painter(this);
-//    #ifndef KODE_NO_WINDOW_BUFFERING
-//      createBuffer(AWidth,AHeight);
-//    #endif
-//    //flags.autoClip = true;
 
   }
 
   //----------
 
   virtual ~MIP_Window() {
-    delete MWindowPainter;
+    if (MWindowPainter) delete MWindowPainter;
     #ifndef MIP_NO_WINDOW_BUFFERING
     deleteBuffer();
     #endif
-
-//    if (MWindowPainter) delete MWindowPainter;
-//    #ifndef KODE_NO_WINDOW_BUFFERING
-//      destroyBuffer();
-//    #endif
-
   }
 
 //------------------------------
@@ -155,11 +145,13 @@ public:
 public:
 //------------------------------
 
-  //void setListener(MIP_WindowListener* l) { MListener = l; }
-  void setFillBackground(bool s=true)     { MFillBackground = s; }
-  void setBackgroundColor(MIP_Color c)    { MBackgroundColor = c; }
+//  //void setListener(MIP_WindowListener* l) { MListener = l; }
+  void setWindowFillBackground(bool s=true)     { MFillWindowBackground = s; }
+  void setWindowBackgroundColor(MIP_Color c)    { MWindowBackgroundColor = c; }
 
-  void fillBackground(MIP_FRect ARect) {
+  //----------
+
+  void fillWindowBackground(MIP_FRect ARect) {
     #ifdef MIP_NO_WINDOW_BUFFERING
       MWindowPainter->fillRectangle(ARect,MBackgroundColor);
     #else
@@ -232,6 +224,7 @@ public: // window
 //------------------------------
 
   void paintWindow(MIP_FRect ARect) {
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
     paintWidgets(MWindowPainter,ARect);
   }
 
@@ -276,9 +269,10 @@ public: // buffer
   //----------
 
   void paintBuffer(MIP_FRect ARect) {
-    if (MFillBackground) {
-      MBufferPainter->fillRectangle(ARect,MBackgroundColor);
-    }
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
+    //if (MFillBackground) {
+    //  MBufferPainter->fillRectangle(ARect,MBackgroundColor);
+    //}
     paintWidgets(MBufferPainter,ARect);
     blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
   }
@@ -290,12 +284,9 @@ public: // window
 //------------------------------
 
   void open() override {
-
-//TODO:
-//    attachWindow(this);
-//    alignChildren();
-//    MIP_ImplementedWindow::open();
-
+    attachWindow(this);
+    alignWidgets();
+    MIP_ImplementedWindow::open();
     //#ifndef KODE_PLUGIN_EXE
     //  //on_window_paint(0,0,MRect.w,MRect.h);
     //  paintWidget(this,MRect,0);
@@ -303,8 +294,8 @@ public: // window
   }
 
   //void close() override {
-  //  attachWindow(KODE_NULL);
-  //  KODE_ImplementedWindow::close();
+  //  attachWindow(nullptr);
+  //  MIP_ImplementedWindow::close();
   //}
 
   // -> MIP_Widget
@@ -327,6 +318,7 @@ public: // window
 
   void paintWidget(MIP_Widget* AWidget) {
     MIP_FRect rect = AWidget->getRect();
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",rect.x,rect.y,rect.w,rect.h);
     #ifdef MIP_NO_WINDOW_BUFFERING
     paintWindow(rect);
     #else
@@ -337,6 +329,7 @@ public: // window
   //----------
 
   void paint(MIP_FRect ARect) {
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     #ifdef MIP_NO_WINDOW_BUFFERING
     paintWindow(ARect);
     #else
@@ -534,7 +527,7 @@ public: // MIP_BaseWindow
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
     MIP_FRect rect = MIP_FRect(AXpos,AYpos,AWidth,AHeight);
-//    if (MFillBackground) fillBackground(rect);
+    if (MFillWindowBackground) fillWindowBackground(rect);
     #ifdef MIP_NO_WINDOW_BUFFERING
     paintWindow(rect);
     #else
@@ -558,17 +551,14 @@ public: // MIP_Widget
 
   void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
     //MIP_PRINT;
-
-//    invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
-
-//TODO
 //    if (MListener) MListener->do_window_redrawWidget(AWidget);
-
+    invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
   }
 
   //----------
 
   void do_widget_realign(MIP_Widget* AWidget, uint32_t AMode=0) override {
+    //MIP_PRINT;
   }
 
   //----------
@@ -624,7 +614,7 @@ public: // MIP_Widget
   //----------
 
   void do_widget_setHint(MIP_Widget* AWidget, const char* AHint) override {
-    MIP_Print("%s\n",AHint);
+    //MIP_Print("%s\n",AHint);
   }
 
   //----------
