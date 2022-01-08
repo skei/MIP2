@@ -27,6 +27,8 @@ public:
 public:
 //------------------------------
 
+  virtual MIP_Painter* getPainter() { return nullptr; }
+
   virtual void setWindowPos(uint32_t AXpos, uint32_t AYpos) {}
   virtual void setWindowSize(uint32_t AWidth, uint32_t AHeight) {}
   virtual void setWindowTitle(const char* ATitle) {}

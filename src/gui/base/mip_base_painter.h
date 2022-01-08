@@ -40,6 +40,7 @@ public:
 
   virtual float getTextWidth(const char* AText) { return 0.0; }
   virtual float getTextHeight(const char* AText) { return 0.0; }
+  //virtual void  getTextSize(const char* AText, float* AWidth, float* AHeight) { *AWidth = 0.0; *AHeight = 0.0; }
 
   virtual void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, uint32_t AWidth=1) {}
   virtual void drawRectangle(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) {}

@@ -126,7 +126,7 @@ public:
   //}
 
   //virtual KODE_Painter* getPainter() {
-  MIP_Painter* getPainter() {
+  MIP_Painter* getPainter() override {
     #ifdef MIP_NO_WINDOW_BUFFERING
     return MWindowPainter;
     #else
@@ -153,9 +153,9 @@ public:
 
   void fillWindowBackground(MIP_FRect ARect) {
     #ifdef MIP_NO_WINDOW_BUFFERING
-      MWindowPainter->fillRectangle(ARect,MBackgroundColor);
+      MWindowPainter->fillRectangle(ARect,MWindowBackgroundColor);
     #else
-      MBufferPainter->fillRectangle(ARect,MBackgroundColor);
+      MBufferPainter->fillRectangle(ARect,MWindowBackgroundColor);
     #endif
   }
 

@@ -2,12 +2,15 @@
 #define mip_widget_included
 //----------------------------------------------------------------------
 
+#define MIP_WIDGET_MAX_PARAMS 8
+
 #include "mip.h"
 #include "base/types/mip_array.h"
 #include "base/types/mip_point.h"
 #include "base/types/mip_rect.h"
 #include "gui/mip_painter.h"
 #include "gui/base/mip_base_window.h"
+#include "plugin/mip_parameter.h"
 
 //----------------------------------------------------------------------
 
@@ -16,7 +19,7 @@ typedef MIP_Array<MIP_Widget*> MIP_Widgets;
 
 //----------------------------------------------------------------------
 
-struct MIP_WidgetOptions {
+struct MIP_WidgetFlags {
   //bool autoMouseCursor  = false;
   //bool autoMouseHide    = false;
   //bool autoMouseLock    = false;
@@ -85,21 +88,21 @@ protected:
   float           MValue                  = 0.0;
   float           MDefaultValue           = 0.0;
 
-//MIP_Parameter*  MParameters[MAX_PARAMS] = {0};            // otrs to connected parameters
+  MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // otrs to connected parameters
 //float           MMinValue               = 0.0;
 //float           MMaxValue               = 1.0;
 //uint32_t        MNumSteps               = 0.0;
 //bool            MIsActive               = true;
 //bool            MIsVisible              = true;
 
-  bool            MFillBackground         = false;
-  bool            MDrawBorder             = false;
-  bool            MDrawText               = false;
-  MIP_Color       MBackgroundColor        = MIP_COLOR_GRAY;
-  MIP_Color       MBorderColor            = MIP_COLOR_LIGHT_GRAY;
-  const char*     MText                   = "";
-  MIP_Color       MTextColor              = MIP_COLOR_BLACK;
-  uint32_t        MTextAlignment          = MIP_TEXT_ALIGN_CENTER;
+//  bool            MFillBackground         = false;
+//  bool            MDrawBorder             = false;
+//  bool            MDrawText               = false;
+//  MIP_Color       MBackgroundColor        = MIP_COLOR_GRAY;
+//  MIP_Color       MBorderColor            = MIP_COLOR_LIGHT_GRAY;
+//  const char*     MText                   = "";
+//  MIP_Color       MTextColor              = MIP_COLOR_BLACK;
+//  uint32_t        MTextAlignment          = MIP_TEXT_ALIGN_CENTER;
 
 //MIP_Surface*    MImageSurface           = nullptr;
 //bool            MImageSurfaceAllocated  = false;
@@ -113,7 +116,7 @@ protected:
 public:
 //------------------------------
 
-  MIP_WidgetOptions options = {};
+  MIP_WidgetFlags   flags   = {};
   MIP_WidgetLayout  layout  = {};
 
 //------------------------------
@@ -179,14 +182,14 @@ public: // set
   virtual void setInitialWidth(float AW)                    { MInitialRect.w = AW; }
   virtual void setModValue(float v)                         { MModValue = v; }
   virtual void setName(const char* AName)                   { MName = AName; }
-  //virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
+  virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
   virtual void setParameterIndex(int32_t i)                 { MParameterIndex = i; }
   virtual void setParent(MIP_Widget* AParent)               { MParent = AParent; }
   virtual void setPos(float AXpos, float AYpos)             { MRect.x = AXpos; MRect.y = AYpos; }
   virtual void setRect(MIP_FRect ARect)                     { MRect = ARect; }
   virtual void setRect(float x, float y, float w, float h)  { MRect.x=x; MRect.y=y; MRect.w=w;MRect.h=h; }
   virtual void setSize(float AWidth, float AHeight)         { MRect.w = AWidth; MRect.h = AHeight; }
-  virtual void setText(const char* AText)                   { MText = AText; }
+//  virtual void setText(const char* AText)                   { MText = AText; }
   virtual void setValue(float AValue)                       { MValue = AValue; }
   virtual void setWidth(float AWidth)                       { MRect.w = AWidth; }
 
@@ -211,11 +214,11 @@ public:
   virtual float           getModValue()               { return MModValue; }
   virtual const char*     getName()                   { return MName; }
   virtual uint32_t        getNumChildren()            { return MChildren.size(); }
-//virtual MIP_Parameter*  getParameter(uint32_t i=0)  { return MParameters[i]; }
+  virtual MIP_Parameter*  getParameter(uint32_t i=0)  { return MParameters[i]; }
   virtual int32_t         getParameterIndex()         { return MParameterIndex; }
   virtual MIP_Widget*     getParent()                 { return MParent; }
   virtual MIP_FRect       getRect()                   { return MRect; }
-  virtual const char*     getText()                   { return MText; }
+//  virtual const char*     getText()                   { return MText; }
   virtual float           getValue()                  { return MValue; }
 
 //virtual MIP_Surface*    getImageSurface()           { return MImageSurface; }
@@ -255,8 +258,8 @@ public:
   //  if (num > 0) {
   //    for (int32_t i=(num-1); i>=0; i--) {
   //      MIP_Widget* widget = MChildren[i];
-  //      //if (widget->options.visible) {
-  //      if (widget->options.active) {
+  //      //if (widget->flags.visible) {
+  //      if (widget->flags.active) {
   //        if ( widget->getRect().contains(AXpos,AYpos) ) {
   //          MIP_Widget* child = widget->findChild(AXpos,AYpos);
   //          if (child) return child;
@@ -273,7 +276,7 @@ public:
     if (MChildren.size() > 0) {
       for (int32_t i = MChildren.size()-1; i >= 0; i--) {
         MIP_Widget* child = MChildren[i];
-        if (child->options.active) {
+        if (child->flags.active) {
           MIP_FRect rect = child->getRect();
           if (rect.contains(AXpos,AYpos)) {
             if (ARecursive) {
@@ -303,10 +306,10 @@ public:
   //  clip_rect.shrink(layout.innerBorder);
   //  clip_rect.overlap(ARect);
   //  if (clip_rect.isEmpty()) return;
-  //  if (options.autoClip) APainter->pushClip(clip_rect);
+  //  if (flags.autoClip) APainter->pushClip(clip_rect);
   //  for (uint32_t i=0; i<MChildren.size(); i++) {
   //    MIP_Widget* child = MChildren[i];
-  //    if (child->options.visible) {
+  //    if (child->flags.visible) {
   //      MIP_FRect child_rect = child->getRect();
   //      if (child_rect.isNotEmpty()) {
   //        //if (child_rect.touches(mrect)) {
@@ -319,18 +322,18 @@ public:
   //      } // !child.empty
   //    } // child.visible
   //  } // for all children
-  //  if (options.autoClip) APainter->popClip();
+  //  if (flags.autoClip) APainter->popClip();
   //}
 
-  void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect) {
+  void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode=0) {
     //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
     if (MChildren.size() > 0) {
       for (int32_t i = MChildren.size()-1; i >= 0; i--) {
         MIP_Widget* child = MChildren[i];
-        if (child->options.visible) {
+        if (child->flags.visible) {
           MIP_FRect rect = child->getRect();
           if (rect.touches(ARect)) {
-            child->on_widget_paint(APainter,ARect);
+            child->on_widget_paint(APainter,ARect,AMode);
           }
         }
       }
@@ -387,16 +390,16 @@ public:
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* child = MChildren[i];
-      if (child->options.visible) {
+      if (child->flags.visible) {
 
         MIP_FRect  rect      = child->getInitialRect();
         uint32_t    alignment = child->layout.alignment;
 
-        if (child->options.sizePercent) {
+        if (child->flags.sizePercent) {
           rect.w = client.w * (rect.w * 0.01f);
           rect.h = client.h * (rect.h * 0.01f);
         }
-        if (child->options.posPercent) {
+        if (child->flags.posPercent) {
           rect.x = client.w * (rect.x * 0.01f);
           rect.y = client.w * (rect.y * 0.01f);
         }
@@ -739,7 +742,7 @@ public:
       content.h += layout.innerBorder.h;
     }
     MContentRect = content;
-    //if (options.autoSize) {
+    //if (flags.autoSize) {
     //  MRect.w = content.w;
     //  MRect.h = content.h;
     //}
@@ -751,7 +754,7 @@ public:
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* child = MChildren[i];
-      if (child->options.visible) {
+      if (child->flags.visible) {
         //child->setChildrenOffset(AOffsetX,AOffsetY);
         child->MRect.x += AOffsetX;
         child->MRect.y += AOffsetY;
@@ -782,18 +785,18 @@ public:
 public:
 //------------------------------
 
-//  virtual void update() {
-//    do_widget_update(this);
-//  }
-//
-//  //----------
-//
-//  virtual void redraw() {
-//    do_widget_redraw(this,getRect(),0);
-//  }
-//
-//  //----------
-//
+  virtual void update() {
+    do_widget_update(this);
+  }
+
+  //----------
+
+  virtual void redraw() {
+    do_widget_redraw(this,getRect(),0);
+  }
+
+  //----------
+
 //  virtual void setImage(MIP_Drawable* ATarget, MIP_Surface* ASurface) {
 //    MImageSurface = ASurface;
 //    MImageSurfaceAllocated = false;
@@ -865,7 +868,7 @@ public:
     //MIP_Print("%s : w %.2f h %.2f\n",MName,AWidth,AHeight);
   }
 
-  virtual void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect) {
+  virtual void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode=0) {
     //MIP_Print("%s : x %.2f y %.2f w %.2f h %.2f\n",MName,ARect.x,ARect.y,ARect.w,ARect.h);
 //    paintChildren(APainter,ARect,AMode);
   }
@@ -884,14 +887,14 @@ public:
 
   virtual void on_widget_mouseEnter(float AXpos, float AYpos, MIP_Widget* AFrom) {
     //MIP_Print("%s : x %.2f y %.2f from %s\n",MName,AXpos,AYpos,(AFrom)?AFrom->getName():"?");
-//    if (options.autoCursor) do_widget_setMouseCursor(this,MCursor);
-//    if (options.autoHint) do_widget_setHint(this,MHint);
+//    if (flags.autoCursor) do_widget_setMouseCursor(this,MCursor);
+//    if (flags.autoHint) do_widget_setHint(this,MHint);
   }
 
   virtual void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo) {
     //MIP_Print("%s : x %.2f y %.2f to %s\n",MName,AXpos,AYpos,(ATo)?ATo->getName():"?");
-//    if (options.autoCursor) do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
-//    if (options.autoHint) do_widget_setHint(this,"");
+//    if (flags.autoCursor) do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
+//    if (flags.autoHint) do_widget_setHint(this,"");
   }
 
   virtual void on_widget_mouseDragEnter(float AXpos, float AYpos, MIP_Widget* AFrom) {
