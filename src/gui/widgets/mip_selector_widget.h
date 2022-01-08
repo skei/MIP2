@@ -1,47 +1,47 @@
-#ifndef kode_selector_widget_included
-#define kode_selector_widget_included
+#ifndef mip_selector_widget_included
+#define mip_selector_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/kode_menu_widget.h"
-#include "gui/widgets/kode_text_widget.h"
+#include "gui/widgets/mip_menu_widget.h"
+#include "gui/widgets/mip_text_widget.h"
 
-class KODE_SelectorWidget
-: public KODE_TextWidget
-, public KODE_MenuListener {
+class MIP_SelectorWidget
+: public MIP_TextWidget
+, public MIP_MenuListener {
 
 //------------------------------
 private:
 //------------------------------
 
-  KODE_MenuWidget*    MMenu     = KODE_NULL;
-  //KODE_MenuListener*  MListener = KODE_NULL;
+  MIP_MenuWidget*    MMenu     = nullptr;
+  //MIP_MenuListener*  MListener = nullptr;
   bool MDrawTriangle = true;
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_SelectorWidget(KODE_FRect ARect)
-  : KODE_TextWidget(ARect) {
-    setName("KODE_SelectorWidget");
+  MIP_SelectorWidget(MIP_FRect ARect)
+  : MIP_TextWidget(ARect) {
+    setName("MIP_SelectorWidget");
     setHint("selector");
-    setCursor(KODE_CURSOR_FINGER);
+    setCursor(MIP_CURSOR_FINGER);
     setFillBackground(true);
-    setBackgroundColor(KODE_COLOR_DARK_GRAY);
-    setTextColor(KODE_COLOR_WHITE);
+    setBackgroundColor(MIP_COLOR_DARK_GRAY);
+    setTextColor(MIP_COLOR_WHITE);
     setDrawBorder(false);
     setDrawText(true);
     setText("<select>");
   }
 
-  virtual ~KODE_SelectorWidget() {
+  virtual ~MIP_SelectorWidget() {
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  virtual void setMenu(KODE_MenuWidget* AMenu) {
+  virtual void setMenu(MIP_MenuWidget* AMenu) {
     MMenu = AMenu;
   }
 
@@ -49,7 +49,7 @@ public:
     MDrawTriangle = ADraw;
   }
 
-  //virtual void setListener(KODE_MenuListener* AListener) {
+  //virtual void setListener(MIP_MenuListener* AListener) {
   //  MListener = AListener;
   //}
 
@@ -107,7 +107,7 @@ public:
 //    }
 
   void on_menuEvent(int32_t AIndex) override {
-    //KODE_Print("AIndex %i\n",AIndex);
+    //MIP_Print("AIndex %i\n",AIndex);
     float v = indexToValue(AIndex);
     setValue(v);
     do_widget_update(this);
@@ -118,8 +118,8 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) final {
-    KODE_FRect mrect = getRect();
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) final {
+    MIP_FRect mrect = getRect();
     if (MMenu) {
       //if (MMenu->getNumItems() > 0) {
         float val = getValue();
@@ -132,14 +132,14 @@ public:
       //else MText = "neg";
     }
     //else MText = "(no menu)";
-    KODE_TextWidget::on_widget_paint(APainter,ARect,AMode);
-    //APainter->setDrawColor(KODE_LightGrey);
+    MIP_TextWidget::on_widget_paint(APainter,ARect,AMode);
+    //APainter->setDrawColor(MIP_LightGrey);
     if (MDrawTriangle) {
       APainter->fillTriangle(
         mrect.x2() - 12,  mrect.y2() - 9,
         mrect.x2() - 5,   mrect.y2() - 9,
         mrect.x2() - 9,   mrect.y2() - 5,
-        KODE_COLOR_LIGHT_GRAY
+        MIP_COLOR_LIGHT_GRAY
       );
     }
   }
@@ -147,8 +147,8 @@ public:
   //----------
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
-    //KODE_TextWidget::on_widget_mouseClick(AXpos,AYpos,AButton,AState,ATimeStamp); // Release ??
-    if (AButton == KODE_BUTTON_LEFT) {
+    //MIP_TextWidget::on_widget_mouseClick(AXpos,AYpos,AButton,AState,ATimeStamp); // Release ??
+    if (AButton == MIP_BUTTON_LEFT) {
       if (MMenu) {
         MMenu->open(this,AXpos,AYpos);
       }

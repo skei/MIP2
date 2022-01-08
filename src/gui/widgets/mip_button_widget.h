@@ -1,13 +1,13 @@
-#ifndef kode_button_widget_included
-#define kode_button_widget_included
+#ifndef mip_button_widget_included
+#define mip_button_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/kode_text_widget.h"
+#include "gui/widgets/mip_text_widget.h"
 
 //----------------------------------------------------------------------
 
-class KODE_ButtonWidget
-: public KODE_TextWidget {
+class MIP_ButtonWidget
+: public MIP_TextWidget {
 
 //------------------------------
 protected:
@@ -17,32 +17,32 @@ protected:
   bool        MDrawTriangle       = false;
 
   const char* MOnText             = "On";
-  KODE_Color  MOnBackgroundColor  = KODE_Color(0.7f);
-  KODE_Color  MOnBorderColor      = KODE_Color(0.3f);
-  KODE_Color  MOnTextColor        = KODE_Color(0.3f);
-  uint32_t    MOnTextAlignment    = KODE_TEXT_ALIGN_CENTER;
-  KODE_FRect  MOnTextOffset       = KODE_FRect(2,2,2,2);
+  MIP_Color  MOnBackgroundColor  = MIP_Color(0.7f);
+  MIP_Color  MOnBorderColor      = MIP_Color(0.3f);
+  MIP_Color  MOnTextColor        = MIP_Color(0.3f);
+  uint32_t    MOnTextAlignment    = MIP_TEXT_ALIGN_CENTER;
+  MIP_FRect  MOnTextOffset       = MIP_FRect(2,2,2,2);
 
   const char* MOffText            = "Off";
-  KODE_Color  MOffBackgroundColor = KODE_Color(0.3f);
-  KODE_Color  MOffBorderColor     = KODE_Color(0.7f);
-  KODE_Color  MOffTextColor       = KODE_Color(0.7f);
-  uint32_t    MOffTextAlignment   = KODE_TEXT_ALIGN_CENTER;
-  KODE_FRect  MOffTextOffset      = KODE_FRect(2,2,2,2);
+  MIP_Color  MOffBackgroundColor = MIP_Color(0.3f);
+  MIP_Color  MOffBorderColor     = MIP_Color(0.7f);
+  MIP_Color  MOffTextColor       = MIP_Color(0.7f);
+  uint32_t    MOffTextAlignment   = MIP_TEXT_ALIGN_CENTER;
+  MIP_FRect  MOffTextOffset      = MIP_FRect(2,2,2,2);
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_ButtonWidget(KODE_FRect ARect)
-  : KODE_TextWidget(ARect) {
-    setName("KODE_ButtonWidget");
+  MIP_ButtonWidget(MIP_FRect ARect)
+  : MIP_TextWidget(ARect) {
+    setName("MIP_ButtonWidget");
     setHint("button");
-    setCursor(KODE_CURSOR_FINGER);
+    setCursor(MIP_CURSOR_FINGER);
     setFillBackground(true);
   }
 
-  virtual ~KODE_ButtonWidget() {
+  virtual ~MIP_ButtonWidget() {
   }
 
 //------------------------------
@@ -63,12 +63,12 @@ public:
     MOffTextAlignment = AOff;
   }
 
-  virtual void setTextColor(KODE_Color AOff, KODE_Color AOn) {
+  virtual void setTextColor(MIP_Color AOff, MIP_Color AOn) {
     MOnTextColor = AOn;
     MOffTextColor = AOff;
   }
 
-  virtual void setBackgroundColor(KODE_Color AOff, KODE_Color AOn) {
+  virtual void setBackgroundColor(MIP_Color AOff, MIP_Color AOn) {
     MOnBackgroundColor = AOn;
     MOffBackgroundColor = AOff;
   }
@@ -82,27 +82,27 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) override {
-    KODE_FRect mrect = getRect();
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
+    MIP_FRect mrect = getRect();
     if (getValue() >= 0.5) { // on
-      KODE_TextWidget::setText(MOnText);
-      KODE_TextWidget::setTextColor(MOnTextColor);
-      KODE_TextWidget::setTextAlignment(MOnTextAlignment);
-      KODE_TextWidget::setBackgroundColor(MOnBackgroundColor);
+      MIP_TextWidget::setText(MOnText);
+      MIP_TextWidget::setTextColor(MOnTextColor);
+      MIP_TextWidget::setTextAlignment(MOnTextAlignment);
+      MIP_TextWidget::setBackgroundColor(MOnBackgroundColor);
       //APainter->drawText(mrect,MOnText,MOnTextAlignment,MOnTextColor);
       //APainter->fillRectangle(getRect(),MOnBackgroundColor);
-      //KODE_FRect rect = getRect();
+      //MIP_FRect rect = getRect();
       //rect.shrink(MOnTextOffset);
       //APainter->drawText(rect,MOnText,MOnTextAlignment,MOnTextColor);
       //APainter->drawRectangle(getRect(),MOnBorderColor);
     }
     else { // off
-      KODE_TextWidget::setText(MOffText);
-      KODE_TextWidget::setTextColor(MOffTextColor);
-      KODE_TextWidget::setTextAlignment(MOffTextAlignment);
-      KODE_TextWidget::setBackgroundColor(MOffBackgroundColor);
+      MIP_TextWidget::setText(MOffText);
+      MIP_TextWidget::setTextColor(MOffTextColor);
+      MIP_TextWidget::setTextAlignment(MOffTextAlignment);
+      MIP_TextWidget::setBackgroundColor(MOffBackgroundColor);
       //APainter->fillRectangle(getRect(),MOffBackgroundColor);
-      //KODE_FRect rect = getRect();
+      //MIP_FRect rect = getRect();
       //rect.shrink(MOffTextOffset);
       //APainter->drawText(rect,MOffText,MOffTextAlignment,MOffTextColor);
       //APainter->drawRectangle(getRect(),MOffBorderColor);
@@ -112,10 +112,10 @@ public:
     drawText(APainter,ARect,AMode);
     if (MDrawTriangle) {
       if (getValue() >= 0.5) {
-        APainter->fillTriangle( mrect.x2() - 12, mrect.y2() - 9,   mrect.x2() - 5, mrect.y2() - 9,   mrect.x2() - 9, mrect.y2() - 5,   KODE_COLOR_LIGHT_GRAY);
+        APainter->fillTriangle( mrect.x2() - 12, mrect.y2() - 9,   mrect.x2() - 5, mrect.y2() - 9,   mrect.x2() - 9, mrect.y2() - 5,   MIP_COLOR_LIGHT_GRAY);
       }
       else {
-        APainter->fillTriangle( mrect.x2() - 9, mrect.y2() - 13,   mrect.x2() - 5, mrect.y2() - 9,   mrect.x2() - 9, mrect.y2() - 5,   KODE_COLOR_LIGHT_GRAY);
+        APainter->fillTriangle( mrect.x2() - 9, mrect.y2() - 13,   mrect.x2() - 5, mrect.y2() - 9,   mrect.x2() - 9, mrect.y2() - 5,   MIP_COLOR_LIGHT_GRAY);
       }
     }
     drawBorder(APainter,ARect,AMode);
@@ -125,7 +125,7 @@ public:
   //----------
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
-    if (AButton == KODE_BUTTON_LEFT) {
+    if (AButton == MIP_BUTTON_LEFT) {
       if (MIsToggle) {
         setValue(1.0f - getValue());
       }
@@ -140,7 +140,7 @@ public:
   //----------
 
   void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
-    if (AButton == KODE_BUTTON_LEFT) {
+    if (AButton == MIP_BUTTON_LEFT) {
       if (!MIsToggle) {
         setValue(0.0f);
         update();

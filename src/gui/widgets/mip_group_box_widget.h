@@ -1,19 +1,19 @@
-#ifndef kode_group_box_widget_included
-#define kode_group_box_widget_included
+#ifndef mip_group_box_widget_included
+#define mip_group_box_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/kode_widgets.h"
+#include "gui/mip_widgets.h"
 
 
-class KODE_GroupBoxWidget
-: public KODE_Widget {
+class MIP_GroupBoxWidget
+: public MIP_Widget {
 
 //------------------------------
 private:
 //------------------------------
 
-  KODE_ButtonWidget*  MTitleBar   = KODE_NULL;
-  KODE_PanelWidget*   MContainer  = KODE_NULL;
+  MIP_ButtonWidget*  MTitleBar   = nullptr;
+  MIP_PanelWidget*   MContainer  = nullptr;
   bool                MClosed     = false;
   bool                MClosable   = true;
   float               MOpenSize   = 0.0f;
@@ -25,27 +25,27 @@ public:
 
   #define HEADER_HEIGHT 20
 
-  KODE_GroupBoxWidget(KODE_FRect ARect, bool AClosed=false)
-  : KODE_Widget(ARect) {
-    setName("KODE_GroupBoxWidget");
+  MIP_GroupBoxWidget(MIP_FRect ARect, bool AClosed=false)
+  : MIP_Widget(ARect) {
+    setName("MIP_GroupBoxWidget");
     setHint("groupbox");
-    //setCursor(KODE_CURSOR_);
+    //setCursor(MIP_CURSOR_);
 
-    MTitleBar = new KODE_ButtonWidget( KODE_FRect(0,HEADER_HEIGHT) );
-    MTitleBar->layout.alignment = KODE_WIDGET_ALIGN_FILL_TOP;
+    MTitleBar = new MIP_ButtonWidget( MIP_FRect(0,HEADER_HEIGHT) );
+    MTitleBar->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     MTitleBar->setIsToggle();
     MTitleBar->setText("Open","Closed");
-    MTitleBar->setBackgroundColor(KODE_Color(0.4),KODE_Color(0.4));
-    MTitleBar->setTextColor(KODE_Color(0.8),KODE_Color(0.8));
+    MTitleBar->setBackgroundColor(MIP_Color(0.4),MIP_Color(0.4));
+    MTitleBar->setTextColor(MIP_Color(0.8),MIP_Color(0.8));
 
-    MContainer = new KODE_PanelWidget();
-    MContainer->layout.alignment = KODE_WIDGET_ALIGN_FILL_CLIENT;
+    MContainer = new MIP_PanelWidget();
+    MContainer->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     MContainer->setFillBackground(false);
     MContainer->setDrawBorder(false);
-    //MContainer->setCursor(KODE_CURSOR_CROSS);
+    //MContainer->setCursor(MIP_CURSOR_CROSS);
 
-    KODE_Widget::appendWidget( MTitleBar );
-    KODE_Widget::appendWidget( MContainer );
+    MIP_Widget::appendWidget( MTitleBar );
+    MIP_Widget::appendWidget( MContainer );
 
     MOpenSize   = ARect.h;
     MClosedSize = MTitleBar->getRect().h;
@@ -63,20 +63,20 @@ public:
 
   }
 
-  virtual ~KODE_GroupBoxWidget() {
+  virtual ~MIP_GroupBoxWidget() {
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_ButtonWidget* getTitleBar(void) {
+  MIP_ButtonWidget* getTitleBar(void) {
     return MTitleBar;
   }
 
   //----------
 
-  KODE_PanelWidget* getContainer(void) {
+  MIP_PanelWidget* getContainer(void) {
     return MContainer;
   }
 
@@ -101,7 +101,7 @@ public:
       MClosed = false;
       MContainer->flags.active = true;
       MContainer->flags.visible = true;
-//      setResized( KODE_Point(0,0) );
+//      setResized( MIP_Point(0,0) );
       setHeight(MOpenSize);
       setInitialHeight(MOpenSize);
       do_widget_resized(this/*,MRect.w,MOpenSize*/);
@@ -116,7 +116,7 @@ public:
       MContainer->flags.active = false;
       MContainer->flags.visible = false;
 //      float rs = MClosedSize - getInitialRect().h;
-//      setResized( KODE_Point(0,rs) );
+//      setResized( MIP_Point(0,rs) );
       setHeight(MClosedSize);
       setInitialHeight(MClosedSize);
       do_widget_resized(this/*,MRect.w,MClosedSize*/);
@@ -134,7 +134,7 @@ public:
 public:
 //------------------------------
 
-  KODE_Widget* appendWidget(KODE_Widget* AWidget) override {
+  MIP_Widget* appendWidget(MIP_Widget* AWidget) override {
     return MContainer->appendWidget(AWidget);
   }
 
@@ -142,7 +142,7 @@ public:
 public:
 //------------------------------
 
-  void do_widget_update(KODE_Widget* ASender) override {
+  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
     if (ASender == MTitleBar) {
       if (MClosable) {
         if (MTitleBar->getValue() >= 0.5f) {
@@ -156,7 +156,7 @@ public:
       }
     }
     else {
-      KODE_Widget::do_widget_update(ASender);
+      MIP_Widget::do_widget_update(ASender);
     }
   }
 

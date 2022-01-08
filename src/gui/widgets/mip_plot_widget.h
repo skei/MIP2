@@ -1,20 +1,20 @@
-#ifndef kode_plot_widget_included
-#define kode_plot_widget_included
+#ifndef mip_plot_widget_included
+#define mip_plot_widget_included
 //----------------------------------------------------------------------
 
 #define MAX_WIDTH 4096
 
-#include "gui/kode_widget.h"
+#include "gui/mip_widget.h"
 
-class KODE_PlotWidget
-: public KODE_Widget {
+class MIP_PlotWidget
+: public MIP_Widget {
 
 //------------------------------
 private:
 //------------------------------
 
-  KODE_Color  MBackColor          = KODE_COLOR_DARK_GRAY;
-  KODE_Color  MLineColor          = KODE_COLOR_LIGHT_GRAY;
+  MIP_Color  MBackColor          = MIP_COLOR_DARK_GRAY;
+  MIP_Color  MLineColor          = MIP_COLOR_LIGHT_GRAY;
   bool        MDrawBackground     = true;
   bool        MBipolar            = true;
   float       MValues[MAX_WIDTH]  = {0};
@@ -24,14 +24,14 @@ private:
 public:
 //------------------------------
 
-  KODE_PlotWidget(KODE_FRect ARect)
-  : KODE_Widget(ARect) {
-    setName("KODE_PlotWidget");
+  MIP_PlotWidget(MIP_FRect ARect)
+  : MIP_Widget(ARect) {
+    setName("MIP_PlotWidget");
     setHint("plot");
     //memset(MValues,0,sizeof(MValues));
   }
 
-  virtual ~KODE_PlotWidget() {
+  virtual ~MIP_PlotWidget() {
   }
 
 //------------------------------
@@ -49,8 +49,8 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) override {
-    KODE_FRect mrect = getRect();
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
+    MIP_FRect mrect = getRect();
     if (MDrawBackground) {
       APainter->fillRectangle(mrect,MBackColor);
     }
@@ -67,7 +67,7 @@ public:
       x++;
       yprev = y;
     }
-    KODE_Widget::on_widget_paint(APainter,ARect,AMode);
+    MIP_Widget::on_widget_paint(APainter,ARect,AMode);
   }
 
 };

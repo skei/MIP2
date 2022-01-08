@@ -1,8 +1,8 @@
-#ifndef kode_keyboard_widget_included
-#define kode_keyboard_widget_included
+#ifndef mip_keyboard_widget_included
+#define mip_keyboard_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/kode_widget.h"
+#include "gui/mip_widget.h"
 
 /*
 
@@ -20,7 +20,7 @@
 */
 
 //static
-const int32_t KODE_KEYBOARD_INTERNAL_NOTE_DATA[12*2] = {
+const int32_t MIP_KEYBOARD_INTERNAL_NOTE_DATA[12*2] = {
   0, 0, // c
   2, 3, // c#
   1, 1, // d
@@ -37,8 +37,8 @@ const int32_t KODE_KEYBOARD_INTERNAL_NOTE_DATA[12*2] = {
 
 //----------------------------------------------------------------------
 
-class KODE_KeyboardWidget
-: public KODE_Widget {
+class MIP_KeyboardWidget
+: public MIP_Widget {
 
 //------------------------------
 private:
@@ -54,32 +54,32 @@ protected:
 
   int32_t     MDist             = 2;
   float       MRatio            = 0.6;
-  KODE_Color  MBlackColor       = KODE_Color(0.35);
-  KODE_Color  MWhiteColor       = KODE_Color(0.65);
-  KODE_Color  MBlackActiveColor = KODE_Color(0);
-  KODE_Color  MWhiteActiveColor = KODE_Color(1);
-  bool        MVertical         = true;//false;
+  MIP_Color  MBlackColor        = MIP_Color(0.35);
+  MIP_Color  MWhiteColor        = MIP_Color(0.65);
+  MIP_Color  MBlackActiveColor  = MIP_Color(0);
+  MIP_Color  MWhiteActiveColor  = MIP_Color(1);
+  bool        MVertical         = false;
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_KeyboardWidget(KODE_FRect ARect=KODE_FRect())
-  : KODE_Widget(ARect) {
-    setName("KODE_KeyboardWidget");
+  MIP_KeyboardWidget(MIP_FRect ARect=MIP_FRect())
+  : MIP_Widget(ARect) {
+    setName("MIP_KeyboardWidget");
     setHint("keyboard");
-    setCursor(KODE_CURSOR_FINGER);
+    setCursor(MIP_CURSOR_FINGER);
     //recalc();
   }
 
-  virtual ~KODE_KeyboardWidget() {
+  virtual ~MIP_KeyboardWidget() {
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  virtual void setColors(KODE_Color AWhite, KODE_Color ABlack, KODE_Color AWhiteActive, KODE_Color ABlackActive) {
+  virtual void setColors(MIP_Color AWhite, MIP_Color ABlack, MIP_Color AWhiteActive, MIP_Color ABlackActive) {
     MWhiteColor       = AWhite;
     MWhiteActiveColor = AWhiteActive;
     MBlackColor       = ABlack;
@@ -119,7 +119,7 @@ public:
 //------------------------------
 
   virtual void recalc_note_rects(void) {
-    KODE_FRect mrect = getRect();
+    MIP_FRect mrect = getRect();
     if (MVertical) {
       int32_t size = mrect.h;
       float   s1 = (float)size / 21.0; // 7 notes, 3 'splits' per note?
@@ -131,10 +131,10 @@ public:
       int32_t x2    = mrect.w - 1;
       for (int32_t note=0; note<12; note++) {
         int32_t n4    = note * 4;
-        int32_t iofs  = KODE_KEYBOARD_INTERNAL_NOTE_DATA[note*2];
+        int32_t iofs  = MIP_KEYBOARD_INTERNAL_NOTE_DATA[note*2];
         float   ofs   = (float)iofs * s1;
         y1 += ofs;
-        int32_t typ   = KODE_KEYBOARD_INTERNAL_NOTE_DATA[(note*2)+1];
+        int32_t typ   = MIP_KEYBOARD_INTERNAL_NOTE_DATA[(note*2)+1];
         switch(typ) {
           case 0: // C
             MNoteRects1[n4+0] = x0;         MNoteRects1[n4+1] = floorf(y1);
@@ -171,10 +171,10 @@ public:
       int32_t y2    = mrect.h - 1;
       for (int32_t note=0; note<12; note++) {
         int32_t n4    = note * 4;
-        int32_t iofs  = KODE_KEYBOARD_INTERNAL_NOTE_DATA[note*2];
+        int32_t iofs  = MIP_KEYBOARD_INTERNAL_NOTE_DATA[note*2];
         float   ofs   = (float)iofs * s1;
         x1 += ofs;
-        int32_t typ   = KODE_KEYBOARD_INTERNAL_NOTE_DATA[(note*2)+1];
+        int32_t typ   = MIP_KEYBOARD_INTERNAL_NOTE_DATA[(note*2)+1];
         switch(typ) {
           case 0: // C
             MNoteRects1[n4+0] = floorf(x1);             MNoteRects1[n4+1] = 0;
@@ -207,8 +207,8 @@ public:
 
   // which = 0..1, top/bottom
 
-  virtual void fill_note_rects(KODE_Painter* APainter, int32_t note, uint32_t which, KODE_Color color) {
-    KODE_FRect r;
+  virtual void fill_note_rects(MIP_Painter* APainter, int32_t note, uint32_t which, MIP_Color color) {
+    MIP_FRect r;
     float x = getRect().x;
     float y = getRect().y;
     int32_t n = note * 4;
@@ -231,8 +231,8 @@ public:
 
   //----------
 
-  virtual void draw_note(KODE_Painter* APainter, int32_t ANote, bool AActive=false) {
-    int32_t typ = KODE_KEYBOARD_INTERNAL_NOTE_DATA[(ANote*2)+1];
+  virtual void draw_note(MIP_Painter* APainter, int32_t ANote, bool AActive=false) {
+    int32_t typ = MIP_KEYBOARD_INTERNAL_NOTE_DATA[(ANote*2)+1];
     if (typ == 3) {
       if (AActive) {
         fill_note_rects(APainter,ANote,1,MBlackActiveColor);
@@ -256,17 +256,17 @@ public:
   //----------
 
   virtual int32_t find_note(float AXpos, float AYpos) {
-    KODE_FRect mrect = getRect();
+    MIP_FRect mrect = getRect();
     //int32_t hit = -1;
     for (int32_t note=0; note<12; note++) {
       int32_t n4 = note*4;
-      KODE_FRect r;
+      MIP_FRect r;
       r.x =  mrect.x + MNoteRects1[n4  ];
       r.y =  mrect.y + MNoteRects1[n4+1];
       r.w = (mrect.x + MNoteRects1[n4+2]) - r.x;
       r.h = (mrect.y + MNoteRects1[n4+3]) - r.y;
       if (r.contains(AXpos,AYpos)) return note;
-      int32_t typ = KODE_KEYBOARD_INTERNAL_NOTE_DATA[/*n2*/(note*2)+1];
+      int32_t typ = MIP_KEYBOARD_INTERNAL_NOTE_DATA[/*n2*/(note*2)+1];
       if (typ < 3) { //0,1,2 = white keys
         r.x =  mrect.x + MNoteRects2[n4  ];
         r.y =  mrect.y + MNoteRects2[n4+1];
@@ -283,7 +283,7 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) override {
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
     recalc_note_rects();
     for (int32_t note=0; note<12; note++) {
       bool active = MActiveMap[note];
@@ -294,8 +294,8 @@ public:
   //----------
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
-    KODE_FRect mrect = getRect();
-    if (AButton == KODE_BUTTON_LEFT) {
+    MIP_FRect mrect = getRect();
+    if (AButton == MIP_BUTTON_LEFT) {
       int32_t note = find_note(AXpos,AYpos);
       if (note >= 0) {
         if (MActiveMap[note]) deactivate(note);

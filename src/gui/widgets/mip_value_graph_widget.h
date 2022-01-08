@@ -1,53 +1,53 @@
-#ifndef kode_value_graph_widget_included
-#define kode_value_graph_widget_included
+#ifndef mip_value_graph_widget_included
+#define mip_value_graph_widget_included
 //----------------------------------------------------------------------
 
-#include "base/utils/kode_random.h"
-#include "gui/kode_widget.h"
+#include "base/utils/mip_random.h"
+#include "gui/mip_widget.h"
 
 //----------
 
-#define KODE_NUM_WIDGETNODES 1024
+#define MIP_NUM_WIDGETNODES 1024
 
-struct KODE_ValueGraphNode {
+struct MIP_ValueGraphNode {
   float     value;
   uint32_t  flags;
 };
 
 //----------------------------------------------------------------------
 
-class KODE_ValueGraphWidget
-: public KODE_Widget {
+class MIP_ValueGraphWidget
+: public MIP_Widget {
 
 //------------------------------
 private:
 //------------------------------
 
-  KODE_Color      MBackColor;
-  KODE_Color      MLineColor;
-  KODE_Color      MNodeColor;
+  MIP_Color      MBackColor;
+  MIP_Color      MLineColor;
+  MIP_Color      MNodeColor;
   int32_t         MNumNodes;
-  KODE_ValueGraphNode MNodes[KODE_NUM_WIDGETNODES];
+  MIP_ValueGraphNode MNodes[MIP_NUM_WIDGETNODES];
   int32_t         MSelected;
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_ValueGraphWidget(KODE_FRect ARect, int32_t ANum)
-  : KODE_Widget(ARect) {
-    setName("KODE_ValueGraphWidget");
+  MIP_ValueGraphWidget(MIP_FRect ARect, int32_t ANum)
+  : MIP_Widget(ARect) {
+    setName("MIP_ValueGraphWidget");
     setHint("valuegraph");
-    MBackColor = KODE_COLOR_DARK_GRAY;
-    MLineColor = KODE_COLOR_LIGHT_GRAY;
-    MNodeColor = KODE_COLOR_BRIGHT_YELLOW;
+    MBackColor = MIP_COLOR_DARK_GRAY;
+    MLineColor = MIP_COLOR_LIGHT_GRAY;
+    MNodeColor = MIP_COLOR_BRIGHT_YELLOW;
     MNumNodes = ANum;
     memset(MNodes,0,sizeof(MNodes));
     MSelected = -1;
-//    setFlag(KODE_WIDGET_HOVER);
+//    setFlag(MIP_WIDGET_HOVER);
 //    //setFlag(kwf_clip);
-    for (int32_t i=0; i<KODE_NUM_WIDGETNODES; i++) {
-      MNodes[i].value = KODE_RandomSigned();
+    for (int32_t i=0; i<MIP_NUM_WIDGETNODES; i++) {
+      MNodes[i].value = MIP_RandomSigned();
       MNodes[i].flags = 0;
     }
   }
@@ -83,8 +83,8 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) override {
-    KODE_FRect mrect = getRect();
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
+    MIP_FRect mrect = getRect();
       APainter->fillRectangle(mrect,MBackColor);
       //APainter->setFillColor(MNodeColor);
       if (MNumNodes>0) {
@@ -112,7 +112,7 @@ public:
             }
 
             if (i==MSelected) {
-              APainter->fillRectangle( KODE_FRect(x-3, mrect.y+h1-3, 6, 6), MNodeColor );
+              APainter->fillRectangle( MIP_FRect(x-3, mrect.y+h1-3, 6, 6), MNodeColor );
             }
 
             x += w;
@@ -141,25 +141,25 @@ public:
       }
   }
 
-//  void on_widget_enter(float AXpos, float AYpos, KODE_Widget* AFrom, uint32_t ATimeStamp=0) override {
+//  void on_widget_enter(float AXpos, float AYpos, MIP_Widget* AFrom, uint32_t ATimeStamp=0) override {
 //    //if (flags.autoCursor) do_widget_setMouseCursor(this,MCursor);
 //    //if (flags.autoHint) do_widget_setHint(this,MHint);
 //  }
 
-  void on_widget_leave(float AXpos, float AYpos, KODE_Widget* ATo, uint32_t ATimeStamp=0) override {
-//    //if (flags.autoCursor) do_widget_setMouseCursor(this,KODE_CURSOR_DEFAULT);
+  void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo/*, uint32_t ATimeStamp=0*/) override {
+//    //if (flags.autoCursor) do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
 //    //if (flags.autoHint) do_widget_setHint(this,"");
       //SWidget::on_leave(AWidget);
       if (MSelected>=0) {
         MSelected = -1;
         do_widget_redraw(this,getRect(),0);
       }
-      KODE_Widget::on_widget_leave(AXpos,AYpos,ATo,ATimeStamp);
+      MIP_Widget::on_widget_mouseLeave(AXpos,AYpos,ATo/*,ATimeStamp*/);
   }
 
 };
 
-#undef KODE_NUM_WIDGETNODES
+#undef MIP_NUM_WIDGETNODES
 
 //----------------------------------------------------------------------
 #endif

@@ -1,33 +1,33 @@
-#ifndef kode_container_widget_included
-#define kode_container_widget_included
+#ifndef mip_container_widget_included
+#define mip_container_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/kode_widget.h"
+#include "gui/mip_widget.h"
 
-class KODE_ContainerWidget
-: public KODE_Widget {
+class MIP_ContainerWidget
+: public MIP_Widget {
 
 //------------------------------
 private:
 //------------------------------
 
-  KODE_Widget*  MContent = KODE_NULL;
+  MIP_Widget*  MContent = nullptr;
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_ContainerWidget(KODE_FRect ARect)
-  : KODE_Widget(ARect) {
-    setName("KODE_ContainerWidget");
+  MIP_ContainerWidget(MIP_FRect ARect)
+  : MIP_Widget(ARect) {
+    setName("MIP_ContainerWidget");
     setHint("container");
     flags.visible = false;
     flags.active = false;
-    MContent = new KODE_Widget(ARect);
+    MContent = new MIP_Widget(ARect);
 
   }
 
-  virtual ~KODE_ContainerWidget() {
+  virtual ~MIP_ContainerWidget() {
   }
 
 //------------------------------
@@ -60,7 +60,7 @@ public:
 public:
 //------------------------------
 
-  KODE_Widget* appendWidget(KODE_Widget* AWidget) override {
+  MIP_Widget* appendWidget(MIP_Widget* AWidget) override {
     return MContent->appendWidget(AWidget);
   }
 
@@ -68,8 +68,8 @@ public:
 public:
 //------------------------------
 
-  void do_widget_update(KODE_Widget* ASender) override {
-    KODE_Widget::do_widget_update(ASender);
+  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
+    MIP_Widget::do_widget_update(ASender);
     //if (ASender == MTitleBar) {
     //  if (MClosable) {
     //    if (MTitleBar->getValue() >= 0.5f) open();
@@ -80,44 +80,44 @@ public:
 
   //----------
 
-//  void do_widget_redraw(KODE_Widget* ASender, KODE_FRect ARect, uint32_t AMode) override {
-//    KODE_Widget::do_widget_redraw(ASender,ARect,AMode);
+//  void do_widget_redraw(MIP_Widget* ASender, MIP_FRect ARect, uint32_t AMode) override {
+//    MIP_Widget::do_widget_redraw(ASender,ARect,AMode);
 //  }
 
-//  void do_widget_moved(KODE_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f) override {
-//    KODE_Widget::do_widget_moved(ASender,ADeltaX,ADeltaY);
+//  void do_widget_moved(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f) override {
+//    MIP_Widget::do_widget_moved(ASender,ADeltaX,ADeltaY);
 //  }
 
-//  void do_widget_resized(KODE_Widget* ASender) override {
-//    KODE_Widget::do_widget_resized(ASender);
+//  void do_widget_resized(MIP_Widget* ASender) override {
+//    MIP_Widget::do_widget_resized(ASender);
 //  }
 
-//  void do_widget_grabMouseCursor(KODE_Widget* ASender) override {
-//    KODE_Widget::do_widget_grabMouseCursor(ASender);
+//  void do_widget_grabMouseCursor(MIP_Widget* ASender) override {
+//    MIP_Widget::do_widget_grabMouseCursor(ASender);
 //  }
 
-//  void do_widget_grabKeyboard(KODE_Widget* ASender) override {
-//    KODE_Widget::do_widget_grabKeyboard(ASender);
+//  void do_widget_grabKeyboard(MIP_Widget* ASender) override {
+//    MIP_Widget::do_widget_grabKeyboard(ASender);
 //  }
 
-//  void do_widget_grabModal(KODE_Widget* ASender) override {
-//    KODE_Widget::do_widget_grabModal(ASender);
+//  void do_widget_grabModal(MIP_Widget* ASender) override {
+//    MIP_Widget::do_widget_grabModal(ASender);
 //  }
 
-//  void do_widget_setMouseCursor(KODE_Widget* ASender, int32_t ACursor) override {
-//    KODE_Widget::do_widget_setMouseCursor(ASender,ACursor);
+//  void do_widget_setMouseCursor(MIP_Widget* ASender, int32_t ACursor) override {
+//    MIP_Widget::do_widget_setMouseCursor(ASender,ACursor);
 //  }
 
-//  void do_widget_setMouseCursorPos(KODE_Widget* ASender, float AXpos, float AYpos) override {
-//    KODE_Widget::do_widget_setMouseCursorPos(ASender,AXpos,AYpos);
+//  void do_widget_setMouseCursorPos(MIP_Widget* ASender, float AXpos, float AYpos) override {
+//    MIP_Widget::do_widget_setMouseCursorPos(ASender,AXpos,AYpos);
 //  }
 
-//  void do_widget_setHint(KODE_Widget* ASender, const char* AHint) override {
-//    KODE_Widget::do_widget_setHint(ASender,AHint);
+//  void do_widget_setHint(MIP_Widget* ASender, const char* AHint) override {
+//    MIP_Widget::do_widget_setHint(ASender,AHint);
 //  }
 
-//  void do_widget_notify(KODE_Widget* AWidget, uint32_t AValue=0) override {
-//    KODE_Widget::do_widget_notify(AWidget,AValue);
+//  void do_widget_notify(MIP_Widget* AWidget, uint32_t AValue=0) override {
+//    MIP_Widget::do_widget_notify(AWidget,AValue);
 //  }
 
 };

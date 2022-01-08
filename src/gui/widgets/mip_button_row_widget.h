@@ -1,17 +1,17 @@
-#ifndef kode_button_row_widget_included
-#define kode_button_row_widget_included
+#ifndef mip_button_row_widget_included
+#define mip_button_row_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/kode_grid_widget.h"
+#include "gui/widgets/mip_grid_widget.h"
 
-#define KODE_MAX_STATES 32
+#define MIP_MAX_STATES 32
 
-#define KODE_BUTTON_ROW_SINGLE  0
-#define KODE_BUTTON_ROW_MULTI   1
+#define MIP_BUTTON_ROW_SINGLE  0
+#define MIP_BUTTON_ROW_MULTI   1
 
 
-class KODE_ButtonRowWidget
-: public KODE_GridWidget {
+class MIP_ButtonRowWidget
+: public MIP_GridWidget {
 
 //------------------------------
 protected:
@@ -19,11 +19,11 @@ protected:
 
   int32_t     MMode                     = 0;
   int32_t     MSelected                 = 0;
-  bool        MStates[KODE_MAX_STATES]  = {0};
-  const char* MLabels[KODE_MAX_STATES]  = {0};
+  bool        MStates[MIP_MAX_STATES]  = {0};
+  const char* MLabels[MIP_MAX_STATES]  = {0};
 
-  KODE_Color  MTextColor                = KODE_Color(0.8);
-  KODE_Color  MActiveColor              = KODE_Color(0.4);
+  MIP_Color  MTextColor                = MIP_Color(0.8);
+  MIP_Color  MActiveColor              = MIP_Color(0.4);
 
   bool        MValueIsBits              = false;
   uint32_t    MNumBits                  = 0;
@@ -32,15 +32,15 @@ protected:
 public:
 //------------------------------
 
-    //int32_t ANum, const char** ATxt, int32_t AMode=KODE_BUTTON_ROW_SINGLE)
+    //int32_t ANum, const char** ATxt, int32_t AMode=MIP_BUTTON_ROW_SINGLE)
 
-  KODE_ButtonRowWidget(KODE_FRect ARect, int32_t ANum, const char** ATxt=KODE_NULL, int32_t AMode=KODE_BUTTON_ROW_SINGLE)
-  : KODE_GridWidget(ARect,ANum,1) {
+  MIP_ButtonRowWidget(MIP_FRect ARect, int32_t ANum, const char** ATxt=nullptr, int32_t AMode=MIP_BUTTON_ROW_SINGLE)
+  : MIP_GridWidget(ARect,ANum,1) {
 
-    KODE_GridWidget::setName("KODE_ButtonRowWidget");
+    MIP_GridWidget::setName("MIP_ButtonRowWidget");
     setHint("buttonrow");
-    setCursor(KODE_CURSOR_FINGER);
-    //setBackgroundColor(KODE_GREY);
+    setCursor(MIP_CURSOR_FINGER);
+    //setBackgroundColor(MIP_GREY);
     //setFlag(kwf_opaque);
 
     MMode                 = AMode;
@@ -53,12 +53,12 @@ public:
 
     //MWidth = ANum;//5;
     //MHeight = 1;
-    //for (int32 i=0; i<KODE_MAX_STATES; i++) {
+    //for (int32 i=0; i<MIP_MAX_STATES; i++) {
 
     if (ATxt) {
       for (int32_t i=0; i<ANum; i++) {
         MStates[i] = false;
-        //MLabels[i] = KODE_NULL;
+        //MLabels[i] = MIP_NULL;
         MLabels[i] = (char*)ATxt[i];
       }
     }
@@ -67,7 +67,7 @@ public:
 
   //----------
 
-  virtual ~KODE_ButtonRowWidget() {
+  virtual ~MIP_ButtonRowWidget() {
   }
 
 //------------------------------
@@ -87,13 +87,13 @@ public:
   float getValue() override {
     if (MValueIsBits) {
       uint32_t bits = getButtonBits();
-      //KODE_Print("getButtonBits %i\n",bits);
+      //MIP_Print("getButtonBits %i\n",bits);
       float v = (float)bits / 255.0;
-      KODE_GridWidget::setValue(v);
+      MIP_GridWidget::setValue(v);
       return v;
     }
     else {
-      return KODE_GridWidget::getValue();
+      return MIP_GridWidget::getValue();
     }
   }
 
@@ -104,11 +104,11 @@ public:
       float f = AValue * 255.0;
       int i = (int)f;
       setButtonBits(i);
-      //KODE_Print("setButtonBits %i\n",i);
-      KODE_GridWidget::setValue(AValue);
+      //MIP_Print("setButtonBits %i\n",i);
+      MIP_GridWidget::setValue(AValue);
     }
     else {
-      KODE_GridWidget::setValue(AValue);
+      MIP_GridWidget::setValue(AValue);
       selectValue(AValue);
     }
   }
@@ -148,8 +148,8 @@ public:
 
     void selectButton(int32_t index/*, bool ARedraw=false*/) {
       MSelected = index;
-      //KTrace(['click cell: ',AX,',',AY,',',AB,KODE_CR]);
-      if (MMode == KODE_BUTTON_ROW_SINGLE) {
+      //KTrace(['click cell: ',AX,',',AY,',',AB,MIP_CR]);
+      if (MMode == MIP_BUTTON_ROW_SINGLE) {
         //for (int32 i=0; i<MWidth; i++) { // FHeight if vertical
 
         for (int32_t i=0; i<MNumColumns; i++) { // FHeight if vertical
@@ -162,8 +162,8 @@ public:
         selected/(steps-1)
         */
         float v = (float)MSelected / ((float)MNumColumns - 1.0f);
-        KODE_Widget::setValue(v);
-        //KODE_Trace("%0.3f\n",v);
+        MIP_Widget::setValue(v);
+        //MIP_Trace("%0.3f\n",v);
       }
       else {
         MStates[MSelected] = MStates[MSelected] ? false : true;
@@ -180,7 +180,7 @@ public:
 
     void selectValue(float AValue) {
       float num = AValue * MNumColumns; // 0 = 0, 1 = 4, 0.999 = 3
-      num = KODE_Min(num,float(MNumColumns-1));
+      num = MIP_Min(num,float(MNumColumns-1));
       selectButton( (int)num );
       //do_redraw(self,FRect);
       //do_update(self);
@@ -222,8 +222,8 @@ public:
 
   //----------
 
-  void on_paintCell(/*KWidget* AWidget,*/ KODE_Painter* APainter, KODE_FRect ARect, int32_t AX, int32_t AY) override {
-    //KODE_Print("%i %i\n",AX,AY);
+  void on_paintCell(/*KWidget* AWidget,*/ MIP_Painter* APainter, MIP_FRect ARect, int32_t AX, int32_t AY) override {
+    //MIP_Print("%i %i\n",AX,AY);
 
     char buf[256];
     //APainter->setPenSize(1);
@@ -243,19 +243,19 @@ public:
 
     const char* txt = MLabels[AX];
     if (txt) {
-      APainter->drawText(ARect,txt,KODE_TEXT_ALIGN_CENTER,MTextColor);
+      APainter->drawText(ARect,txt,MIP_TEXT_ALIGN_CENTER,MTextColor);
     }
     else {
-      //KODE_IntToString(buf,AX);
+      //MIP_IntToString(buf,AX);
       sprintf(buf,"%i",AX);
-      APainter->drawText(ARect,buf,KODE_TEXT_ALIGN_CENTER,MTextColor);
+      APainter->drawText(ARect,buf,MIP_TEXT_ALIGN_CENTER,MTextColor);
     }
 
   }
 
 };
 
-#undef KODE_MAX_STATES
+#undef MIP_MAX_STATES
 
 //----------------------------------------------------------------------
 #endif

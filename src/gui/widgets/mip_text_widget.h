@@ -44,6 +44,7 @@ public:
 public:
 //------------------------------
 
+  virtual void setText(const char* AText)             { MText = AText; }
   virtual void setDrawText(bool ADraw)                { MDrawText = ADraw; }
   virtual void setDrawParamText(bool ADraw)           { MDrawParamText = ADraw; }
   virtual void setTextAlignment(uint32_t AAlignment)  { MTextAlignment = AAlignment; }

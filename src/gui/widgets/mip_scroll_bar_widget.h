@@ -1,44 +1,44 @@
-#ifndef kode_scroll_bar_widget_included
-#define kode_scroll_bar_widget_included
+#ifndef mip_scroll_bar_widget_included
+#define mip_scroll_bar_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/kode_widget.h"
+#include "gui/mip_widget.h"
 
-class KODE_ScrollBarWidget
-: public KODE_Widget {
+class MIP_ScrollBarWidget
+: public MIP_Widget {
 
 //------------------------------
 protected:
 //------------------------------
 
-  KODE_Color  MBackgroundColor  = KODE_COLOR_DARK_GRAY;
-  KODE_Color  MThumbColor       = KODE_COLOR_LIGHT_GRAY;
-  KODE_Color  MInteractiveColor = KODE_COLOR_WHITE;
+  MIP_Color  MBackgroundColor  = MIP_COLOR_DARK_GRAY;
+  MIP_Color  MThumbColor       = MIP_COLOR_LIGHT_GRAY;
+  MIP_Color  MInteractiveColor = MIP_COLOR_WHITE;
   float       MThumbPos         = 0.0f;
   float       MPrevThumbPos     = 0.0f;
   float       MThumbSize        = 0.2f;
   float       MPageSize         = 0.2f;
 
-  KODE_FRect  MThumbRect        = KODE_FRect(0,0);
+  MIP_FRect  MThumbRect        = MIP_FRect(0,0);
   bool        MIsDragging       = false;
   float       MClickedX         = 0.0f;
   float       MClickedY         = 0.0f;
   float       MClickedPos       = 0.0f;
 
-  uint32_t    MDirection        = KODE_HORIZONTAL;
+  uint32_t    MDirection        = MIP_HORIZONTAL;
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_ScrollBarWidget(KODE_FRect ARect)
-  : KODE_Widget(ARect) {
-    setName("KODE_ScrollBarWidget");
+  MIP_ScrollBarWidget(MIP_FRect ARect)
+  : MIP_Widget(ARect) {
+    setName("MIP_ScrollBarWidget");
     setHint("scrollbar");
-    //if (AVertical) setFlag(KODE_WIDGET_VERTICAL);
+    //if (AVertical) setFlag(MIP_WIDGET_VERTICAL);
   }
 
-  virtual ~KODE_ScrollBarWidget() {
+  virtual ~MIP_ScrollBarWidget() {
   }
 
 //------------------------------
@@ -63,19 +63,19 @@ public:
     return MThumbSize;
   }
 
-  virtual void setBackgroundColor(KODE_Color AColor) {
+  virtual void setBackgroundColor(MIP_Color AColor) {
     MBackgroundColor = AColor;
   }
 
   //----------
 
-  virtual void setThumbColor(KODE_Color AColor) {
+  virtual void setThumbColor(MIP_Color AColor) {
     MThumbColor = AColor;
   }
 
   //----------
 
-  virtual void setInteractiveColor(KODE_Color AColor) {
+  virtual void setInteractiveColor(MIP_Color AColor) {
     MInteractiveColor = AColor;
   }
 
@@ -84,7 +84,7 @@ public:
   virtual void setThumbPos(float APos, bool ARedraw=true) {
     MPrevThumbPos = MThumbPos;
     MThumbPos = APos;
-    MThumbPos = KODE_Clamp(MThumbPos,0.0f,1.0f);
+    MThumbPos = MIP_Clamp(MThumbPos,0.0f,1.0f);
     //recalcThumbRect();
     if (ARedraw) do_widget_redraw(this,getRect(),0);
   }
@@ -97,7 +97,7 @@ public:
       MPrevThumbPos = MThumbPos;
       MThumbPos = 0.0f;
     }
-    MThumbSize = KODE_Clamp(MThumbSize,0.0f,1.0f);
+    MThumbSize = MIP_Clamp(MThumbSize,0.0f,1.0f);
     //recalcThumbRect();
     if (ARedraw) do_widget_redraw(this,getRect(),0);
   }
@@ -111,8 +111,8 @@ public:
   //----------
 
   virtual void recalcThumbRect() {
-    KODE_FRect mrect = getRect();
-    if (MDirection == KODE_VERTICAL) {
+    MIP_FRect mrect = getRect();
+    if (MDirection == MIP_VERTICAL) {
       float thumb = mrect.h * MThumbSize;
       float available = mrect.h - thumb;
       MThumbRect.x = mrect.x;
@@ -128,7 +128,7 @@ public:
       MThumbRect.w = thumb;
       MThumbRect.h = mrect.h;
     }
-    //KODE_Trace("ThumbRect %.2f %.2f %.2f %.2f\n",MThumbRect.x,MThumbRect.y,MThumbRect.w,MThumbRect.h);
+    //MIP_Trace("ThumbRect %.2f %.2f %.2f %.2f\n",MThumbRect.x,MThumbRect.y,MThumbRect.w,MThumbRect.h);
   }
 
 //------------------------------
@@ -141,8 +141,8 @@ public:
   //void on_widget_setSize(float AWidth, float AHeight) final {
   //}
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) final {
-    //KODE_Widget::on_widget_paint(APainter,ARect,+);
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) final {
+    //MIP_Widget::on_widget_paint(APainter,ARect,+);
     recalcThumbRect();
     //APainter->setFillColor(MBackgroundColor);
     //APainter->fillRectangle(MRect);
@@ -154,9 +154,9 @@ public:
   }
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
-    KODE_FRect mrect = getRect();
-    //KODE_Widget::on_widget_mouseClick(AXpos,AYpos,AButton,AState);
-    if (AButton == KODE_BUTTON_LEFT) {
+    MIP_FRect mrect = getRect();
+    //MIP_Widget::on_widget_mouseClick(AXpos,AYpos,AButton,AState);
+    if (AButton == MIP_BUTTON_LEFT) {
       if (MThumbRect.contains(AXpos,AYpos)) {
         MClickedX = AXpos;
         MClickedY = AYpos;
@@ -166,7 +166,7 @@ public:
         //do_widget_redraw(this,mrect,0);
       }
       else {
-        if (MDirection == KODE_VERTICAL) {
+        if (MDirection == MIP_VERTICAL) {
           if (AYpos < MThumbRect.y) {
             MPrevThumbPos = MThumbPos;
             MThumbPos -= MPageSize;
@@ -203,8 +203,8 @@ public:
   }
 
   void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
-    //KODE_Widget::on_mouseRelease(AXpos,AYpos,AButton,AState);
-    if (AButton == KODE_BUTTON_LEFT) {
+    //MIP_Widget::on_mouseRelease(AXpos,AYpos,AButton,AState);
+    if (AButton == MIP_BUTTON_LEFT) {
       if (MIsDragging) {
         MIsDragging = false;
         //MIsInteractive = false;
@@ -214,14 +214,14 @@ public:
   }
 
   void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp=0) final {
-    KODE_FRect mrect = getRect();
-    //KODE_Widget::on_mouseMove(AXpos,AYpos,AState);
+    MIP_FRect mrect = getRect();
+    //MIP_Widget::on_mouseMove(AXpos,AYpos,AState);
     if (MIsDragging) {
 
       float available = 0.0f;
       float dist = 0.0f;
       float thumb_size = 0.0f;
-      if (MDirection == KODE_VERTICAL) {
+      if (MDirection == MIP_VERTICAL) {
         dist = AYpos - MClickedY;
         thumb_size = mrect.h * MThumbSize;
         available = mrect.h - thumb_size;
@@ -235,7 +235,7 @@ public:
         float v = dist / available;
         MPrevThumbPos = MThumbPos;
         MThumbPos = MClickedPos + v;
-        MThumbPos = KODE_Clamp(MThumbPos,0.0f,1.0f);
+        MThumbPos = MIP_Clamp(MThumbPos,0.0f,1.0f);
         //recalcThumbRect();
         do_widget_update(this);
         do_widget_redraw(this,mrect,0);
@@ -249,13 +249,13 @@ public:
 //  void on_widget_keyRelease(uint32_t AKey, char AChar, uint32_t AState, uint32_t ATimeStamp=0) final {
 //  }
 //
-//  void on_widget_enter(float AXpos, float AYpos, KODE_Widget* AFrom, uint32_t ATimeStamp=0) final {
+//  void on_widget_enter(float AXpos, float AYpos, MIP_Widget* AFrom, uint32_t ATimeStamp=0) final {
 //  }
 //
-//  void on_widget_leave(float AXpos, float AYpos, KODE_Widget* ATo, uint32_t ATimeStamp=0) final {
+//  void on_widget_leave(float AXpos, float AYpos, MIP_Widget* ATo, uint32_t ATimeStamp=0) final {
 //  }
 //
-//  void on_widget_connect(KODE_Parameter* AParameter, uint32_t ASubIndex) final {
+//  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) final {
 //  }
 
 };

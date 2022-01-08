@@ -50,9 +50,7 @@ struct MIP_WidgetFlags {
 
 struct MIP_WidgetLayout {
   uint32_t    alignment     = MIP_WIDGET_ALIGN_CLIENT;
-  //MIP_FRect   initialRect   = {};
   MIP_FRect   innerBorder   = MIP_FRect(0,0);   // space between widgets and parent edges
-  //MIP_FPoint  widgetSpacing = MIP_FPoint(0,0);  // space inbetween widgets
   MIP_FPoint  spacing       = MIP_FPoint(0,0);  // space inbetween widgets
   MIP_FRect   extraBorder   = MIP_FRect(0,0);   // extra space/border for each widget
   bool        contentBorder = true;             // true if content rect includes innerBorder of parent
@@ -89,6 +87,7 @@ protected:
   float           MDefaultValue           = 0.0;
 
   MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // otrs to connected parameters
+
 //float           MMinValue               = 0.0;
 //float           MMaxValue               = 1.0;
 //uint32_t        MNumSteps               = 0.0;
@@ -230,15 +229,18 @@ public:
 public:
 //------------------------------
 
-  virtual uint32_t appendWidget(MIP_Widget* AWidget) {
+  //virtual uint32_t appendWidget(MIP_Widget* AWidget) {
+  virtual MIP_Widget* appendWidget(MIP_Widget* AWidget) {
     if (AWidget) {
       AWidget->MParent = this;
       uint32_t index = MChildren.size();
       AWidget->MWidgetIndex = index;
       MChildren.append(AWidget);
-      return index;
+      //return index;
+      return AWidget;
     }
-    return -1;
+    //return -1;
+    return nullptr;
   }
 
   //----------
@@ -870,7 +872,7 @@ public:
 
   virtual void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode=0) {
     //MIP_Print("%s : x %.2f y %.2f w %.2f h %.2f\n",MName,ARect.x,ARect.y,ARect.w,ARect.h);
-//    paintChildren(APainter,ARect,AMode);
+    paintWidgets(APainter,ARect,AMode);
   }
 
   virtual void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) {
@@ -887,14 +889,14 @@ public:
 
   virtual void on_widget_mouseEnter(float AXpos, float AYpos, MIP_Widget* AFrom) {
     //MIP_Print("%s : x %.2f y %.2f from %s\n",MName,AXpos,AYpos,(AFrom)?AFrom->getName():"?");
-//    if (flags.autoCursor) do_widget_setMouseCursor(this,MCursor);
-//    if (flags.autoHint) do_widget_setHint(this,MHint);
+    if (flags.autoCursor) do_widget_setMouseCursor(this,MCursor);
+    if (flags.autoHint) do_widget_setHint(this,MHint);
   }
 
   virtual void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo) {
     //MIP_Print("%s : x %.2f y %.2f to %s\n",MName,AXpos,AYpos,(ATo)?ATo->getName():"?");
-//    if (flags.autoCursor) do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
-//    if (flags.autoHint) do_widget_setHint(this,"");
+    if (flags.autoCursor) do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
+    if (flags.autoHint) do_widget_setHint(this,"");
   }
 
   virtual void on_widget_mouseDragEnter(float AXpos, float AYpos, MIP_Widget* AFrom) {
@@ -952,8 +954,8 @@ public:
   // widget has changed position or size..
   // parent might need to realign its ch8ld widgets
 
-  virtual void do_widget_realign(MIP_Widget* AWidget, uint32_t AMode=0) {
-    if (MParent) MParent->do_widget_realign(AWidget,AMode);
+  virtual void do_widget_realign(MIP_Widget* AWidget, bool ARecursive=true) {
+    if (MParent) MParent->do_widget_realign(AWidget,ARecursive);
   }
 
   /*

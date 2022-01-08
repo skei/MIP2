@@ -1,50 +1,50 @@
-#ifndef kode_slider_widget_included
-#define kode_slider_widget_included
+#ifndef mip_slider_widget_included
+#define mip_slider_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/kode_drag_value_widget.h"
+#include "gui/widgets/mip_drag_value_widget.h"
 
 //----------------------------------------------------------------------
 
-class KODE_SliderWidget
-: public KODE_DragValueWidget {
+class MIP_SliderWidget
+: public MIP_DragValueWidget {
 
 //------------------------------
 protected:
 //------------------------------
 
   bool        MDrawValueBar             = true;
-  KODE_Color  MValueBarColor            = KODE_Color(0.7);
-  uint32_t    MValueBarDirection        = KODE_RIGHT;
-  KODE_FRect  MValueBarOffset           = KODE_FRect(1,1,1,1);
-  KODE_Color  MInteractiveValueBarColor = KODE_Color(0.9);
+  MIP_Color  MValueBarColor            = MIP_Color(0.7);
+  uint32_t    MValueBarDirection        = MIP_RIGHT;
+  MIP_FRect  MValueBarOffset           = MIP_FRect(1,1,1,1);
+  MIP_Color  MInteractiveValueBarColor = MIP_Color(0.9);
 
   //bool        MDrawValueBarQuantized    = false;
-  //KODE_Color  MValueBarQuantizedColor   = KODE_Color(0.3);
+  //MIP_Color  MValueBarQuantizedColor   = MIP_Color(0.3);
 
   bool        MDrawQuantized    = false;
-  KODE_Color  MQuantizedColor   = KODE_Color(0.3);
+  MIP_Color  MQuantizedColor   = MIP_Color(0.3);
 
   bool        MDrawSnap         = false;
-  KODE_Color  MSnapColor        = KODE_Color(0.3);
+  MIP_Color  MSnapColor        = MIP_Color(0.3);
 
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_SliderWidget(KODE_FRect ARect)
-  : KODE_DragValueWidget(ARect) {
-    setName("KODE_SliderWidget");
+  MIP_SliderWidget(MIP_FRect ARect)
+  : MIP_DragValueWidget(ARect) {
+    setName("MIP_SliderWidget");
     setHint("slider");
     MDrawBorder       = true;
-    MBackgroundColor  = KODE_Color(0.7);
-    MTextColor        = KODE_Color(0);
-    MValueTextColor   = KODE_Color(0);
-    MTextOffset       = KODE_FRect(6,0,0,0);
+    MBackgroundColor  = MIP_Color(0.7);
+    MTextColor        = MIP_Color(0);
+    MValueTextColor   = MIP_Color(0);
+    MTextOffset       = MIP_FRect(6,0,0,0);
   }
 
-  virtual ~KODE_SliderWidget() {
+  virtual ~MIP_SliderWidget() {
   }
 
 //------------------------------
@@ -55,7 +55,7 @@ public:
     MDrawValueBar = ADraw;
   }
 
-  virtual void setValueBarColor(KODE_Color AColor) {
+  virtual void setValueBarColor(MIP_Color AColor) {
     MValueBarColor = AColor;
   }
 
@@ -67,7 +67,7 @@ public:
     MDrawQuantized = ADraw;
   }
 
-  virtual void setQuantizedColor(KODE_Color AColor) {
+  virtual void setQuantizedColor(MIP_Color AColor) {
     MQuantizedColor = AColor;
   }
 
@@ -75,32 +75,32 @@ public:
     MDrawSnap = ADraw;
   }
 
-  virtual void setSnapColor(KODE_Color AColor) {
+  virtual void setSnapColor(MIP_Color AColor) {
     MSnapColor = AColor;
   }
 
   //----------
 
-  virtual void drawValueBar(KODE_BasePainter* APainter, KODE_FRect ARect, uint32_t AMode) {
+  virtual void drawValueBar(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MDrawValueBar) {
-      KODE_FRect  rect  = getRect();
+      MIP_FRect  rect  = getRect();
       float       value = getValue();
       rect.shrink(MValueBarOffset);
       float w = rect.w * value;
       float h = rect.h * value;
       switch (MValueBarDirection) {
-        case KODE_LEFT:
+        case MIP_LEFT:
           rect.x = rect.x2() - w;
           rect.w = w;
           break;
-        case KODE_RIGHT:
+        case MIP_RIGHT:
           rect.w = w;
           break;
-        case KODE_UP:
+        case MIP_UP:
           rect.y = rect.y2() - h;
           rect.h = h;
           break;
-        case KODE_DOWN:
+        case MIP_DOWN:
           rect.h = h;
           break;
       }
@@ -114,28 +114,30 @@ public:
         if (MDrawQuantized) {
           uint32_t num = getQuantizeSteps();
           if (num > 0) {
-            KODE_FRect r = getRect();
+            MIP_FRect r = getRect();
             float step = r.w / (float)(num-1);
             float x = r.x + step;
             for (uint32_t i=0; i<num-1; i++) {
-              APainter->setColor(MQuantizedColor);
-              APainter->setLineWidth(1);
-              APainter->moveTo(x,rect.y);
-              APainter->lineTo(x,rect.y2());
-              APainter->strokePath();
+//              APainter->setColor(MQuantizedColor);
+//              APainter->setLineWidth(1);
+//              APainter->moveTo(x,rect.y);
+//              APainter->lineTo(x,rect.y2());
+//              APainter->strokePath();
+              APainter->drawLine(x,rect.y,x,rect.y2(),MQuantizedColor,1);
               x += step;
             } // for
           } // num > 0
         } // draw q
       //} // quantize
       if (MDrawSnap) {
-        KODE_FRect r = getRect();
+        MIP_FRect r = getRect();
         float x = r.x + (r.w * getSnapPos());
-        APainter->setColor(MSnapColor);
-        APainter->setLineWidth(1);
-        APainter->moveTo(x,rect.y);
-        APainter->lineTo(x,rect.y2());
-        APainter->strokePath();
+//        APainter->setColor(MSnapColor);
+//        APainter->setLineWidth(1);
+//        APainter->moveTo(x,rect.y);
+//        APainter->lineTo(x,rect.y2());
+//        APainter->strokePath();
+        APainter->drawLine(x,rect.y,x,rect.y2(),MSnapColor,1);
       } // draw snap
 
     }
@@ -145,7 +147,7 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) override {
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
     fillBackground(APainter,ARect,AMode);
     //paintChildren(APainter,getRect(),AMode);
     drawValueBar(APainter,ARect,AMode);

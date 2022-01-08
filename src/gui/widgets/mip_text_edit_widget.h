@@ -1,9 +1,9 @@
-#ifndef kode_text_edit_widget_included
-#define kode_text_edit_widget_included
+#ifndef mip_text_edit_widget_included
+#define mip_text_edit_widget_included
 //----------------------------------------------------------------------
 
-#include "base/utils/kode_strutils.h"
-#include "gui/kode_widget.h"
+#include "base/utils/mip_strutils.h"
+#include "gui/mip_widget.h"
 
 #define kkc_enter     65293 // 13
 #define kkc_esc       65307 // 27
@@ -14,17 +14,17 @@
 #define kkc_delete    65535 // 5
 #define kkc_backspace 65288 // 6
 
-class KODE_TextEditWidget
-: public KODE_Widget {
+class MIP_TextEditWidget
+: public MIP_Widget {
 
 //------------------------------
 private:
 //------------------------------
 
     char        MText[256]  = {0};
-    KODE_Color  MTextColor  = KODE_COLOR_BLACK;
-    KODE_Color  MBackColor  = KODE_COLOR_LIGHT_GRAY;
-    KODE_Color  MCaretColor = KODE_COLOR_BRIGHT_RED;
+    MIP_Color  MTextColor  = MIP_COLOR_BLACK;
+    MIP_Color  MBackColor  = MIP_COLOR_LIGHT_GRAY;
+    MIP_Color  MCaretColor = MIP_COLOR_BRIGHT_RED;
     bool        MEditing    = false;
     int32_t     MCaretPos   = 0;
 
@@ -33,17 +33,17 @@ private:
 public:
 //------------------------------
 
-  KODE_TextEditWidget(KODE_FRect ARect)
-  : KODE_Widget(ARect) {
-    setName("KODE_TextEditWidget");
+  MIP_TextEditWidget(MIP_FRect ARect)
+  : MIP_Widget(ARect) {
+    setName("MIP_TextEditWidget");
     setHint("textedit");
-    setCursor(KODE_CURSOR_IBEAM);
+    setCursor(MIP_CURSOR_IBEAM);
     //strncpy(MText,AText,255);
   }
 
   //----------
 
-  virtual ~KODE_TextEditWidget() {
+  virtual ~MIP_TextEditWidget() {
   }
 
 //------------------------------
@@ -63,7 +63,7 @@ private:
     MEditing = true;
     MCaretPos = strlen(MText);
     //do_widget_update(this);
-    do_widget_grabKeyboard(this);
+//    do_widget_grabKeyboard(this);
 //    do_widget_grabModal(this);
     do_widget_redraw(this,getRect(),0);
   }
@@ -73,8 +73,8 @@ private:
   void stop_edit() {
     MEditing = false;
     //do_widget_update(this);
-    do_widget_grabKeyboard(KODE_NULL);
-//    do_widget_grabModal(KODE_NULL);
+//    do_widget_grabKeyboard(MIP_NULL);
+//    do_widget_grabModal(MIP_NULL);
     do_widget_redraw(this,getRect(),0);
   }
 
@@ -82,17 +82,17 @@ private:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) override {
-    KODE_Widget::on_widget_paint(APainter,ARect,AMode);
-    KODE_FRect mrect = getRect();
-    KODE_FRect r;
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
+    MIP_Widget::on_widget_paint(APainter,ARect,AMode);
+    MIP_FRect mrect = getRect();
+    MIP_FRect r;
     APainter->fillRectangle(mrect,MBackColor);
     if (MEditing) {
       //APainter->setTextColor(MTextColor);
-      //APainter->drawText(MRect.x+2,MRect.y,MRect.x2()-2,MRect.y2(),MText,KODE_TEXT_ALIGN_LEFT);
+      //APainter->drawText(MRect.x+2,MRect.y,MRect.x2()-2,MRect.y2(),MText,MIP_TEXT_ALIGN_LEFT);
       r = mrect;
       r.shrink(2,0,2,0); // 2 = text border
-      APainter->drawText(r,MText,KODE_TEXT_ALIGN_LEFT,MTextColor);
+      APainter->drawText(r,MText,MIP_TEXT_ALIGN_LEFT,MTextColor);
       char c = MText[MCaretPos];
       MText[MCaretPos] = 0;
       int32_t txtwidth = APainter->getTextWidth(MText);
@@ -104,19 +104,19 @@ public:
     } // editing
     else {
       //APainter->setTextColor(MTextColor);
-      //APainter->drawText(MRect.x+2,MRect.y,MRect.x2()-4,MRect.y2(),MText,KODE_TEXT_ALIGN_LEFT);
+      //APainter->drawText(MRect.x+2,MRect.y,MRect.x2()-4,MRect.y2(),MText,MIP_TEXT_ALIGN_LEFT);
       r = mrect;
       r.shrink(2,0,4,0);
-      APainter->drawText(r,MText,KODE_TEXT_ALIGN_LEFT,MTextColor);
+      APainter->drawText(r,MText,MIP_TEXT_ALIGN_LEFT,MTextColor);
     } // not editing
   }
 
   //----------
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
-    //KODE_Widget::on_widget_mouseClick(AXpos,AYpos,AButton,AState);
+    //MIP_Widget::on_widget_mouseClick(AXpos,AYpos,AButton,AState);
     switch(AButton) {
-      case KODE_BUTTON_LEFT:
+      case MIP_BUTTON_LEFT:
         if (getRect().contains(AXpos,AYpos)) {
           if (!MEditing) start_edit();
         }
@@ -124,7 +124,7 @@ public:
           stop_edit();
         }
         break;
-      case KODE_BUTTON_RIGHT:
+      case MIP_BUTTON_RIGHT:
         if (MEditing) stop_edit();
         break;
     }
@@ -134,12 +134,12 @@ public:
 
   // AKey = key code, not ascii..
 
-  void on_widget_keyPress(uint32_t AKey, char AChar, uint32_t AState, uint32_t ATimeStamp=0) override {
-    //KODE_Print("AChar %i AKey %i AState %i\n",(int)AChar,AKey,AState);
-    KODE_FRect mrect = getRect();
+  void on_widget_keyPress(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp=0) override {
+    //MIP_Print("AChar %i AKey %i AState %i\n",(int)AChar,AKey,AState);
+    MIP_FRect mrect = getRect();
     int32_t len;
     char  c;
-    //KODE_Widget::on_keyPress(AChar,AKey,AState);
+    //MIP_Widget::on_keyPress(AChar,AKey,AState);
     //STrace("key: %i, skift: %i\n",AKey,AState);
     switch(AKey) {
       case kkc_enter:
@@ -175,7 +175,7 @@ public:
       case kkc_delete:
         len = strlen(MText);
         if ((uint32_t)MCaretPos < strlen(MText)) {
-          KODE_DeleteChar(MText,MCaretPos);
+          MIP_DeleteChar(MText,MCaretPos);
           do_widget_update(this);
           do_widget_redraw(this,mrect,0);
         }
@@ -183,7 +183,7 @@ public:
       case kkc_backspace:
         if (MCaretPos > 0) {
           MCaretPos -= 1;
-          KODE_DeleteChar(MText,MCaretPos);
+          MIP_DeleteChar(MText,MCaretPos);
           do_widget_update(this);
           do_widget_redraw(this,mrect,0);
         }
@@ -191,7 +191,7 @@ public:
       default:
         if ((AKey >= 32) && (AKey <= 127)) {
           c = AKey & 0xff;
-          KODE_InsertChar(MText,MCaretPos,c);
+          MIP_InsertChar(MText,MCaretPos,c);
           MCaretPos += 1;
           do_widget_update(this);
           do_widget_redraw(this,mrect,0);

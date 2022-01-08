@@ -1,5 +1,5 @@
-#ifndef kode_range_slider_widget_included
-#define kode_range_slider_widget_included
+#ifndef mip_range_slider_widget_included
+#define mip_range_slider_widget_included
 //----------------------------------------------------------------------
 
 /*
@@ -19,13 +19,13 @@
 */
 
 
-#include "gui/widgets/kode_panel_widget.h"
+#include "gui/widgets/mip_panel_widget.h"
 
 //----------------------------------------------------------------------
 
-class KODE_RangeSliderWidget
-: public KODE_PanelWidget {
-//: public KODE_DragValueWidget {
+class MIP_RangeSliderWidget
+: public MIP_PanelWidget {
+//: public MIP_DragValueWidget {
 
 //------------------------------
 protected:
@@ -34,10 +34,10 @@ protected:
   float       MValue2               = 0.0f;
   bool        MDrawValueText        = true;
 
-  KODE_Color  MBackgroundColor      = KODE_COLOR_GRAY;
-  KODE_Color  MBarColor             = KODE_COLOR_LIGHT_GRAY;
+  MIP_Color  MBackgroundColor      = MIP_COLOR_GRAY;
+  MIP_Color  MBarColor             = MIP_COLOR_LIGHT_GRAY;
 
-  KODE_Color  MEdgeColor            = KODE_COLOR_WHITE;
+  MIP_Color  MEdgeColor            = MIP_COLOR_WHITE;
   uint32_t    MEdgeWidth            = 3;
   int32_t     MHoverEdge            = -1;
   bool        MIsDragging1          = false;
@@ -47,25 +47,25 @@ protected:
   char        MValue1Text[32]       = {0};
   char        MValue2Text[32]       = {0};
 
-  KODE_Color  MValue1TextColor      = KODE_Color(0.0f);
-  uint32_t    MValue1TextAlignment  = KODE_TEXT_ALIGN_LEFT;
-  KODE_FRect  MValue1TextOffset     = KODE_FRect(2,2,2,2);
+  MIP_Color  MValue1TextColor      = MIP_Color(0.0f);
+  uint32_t    MValue1TextAlignment  = MIP_TEXT_ALIGN_LEFT;
+  MIP_FRect  MValue1TextOffset     = MIP_FRect(2,2,2,2);
 
-  KODE_Color  MValue2TextColor      = KODE_Color(0.0f);
-  uint32_t    MValue2TextAlignment  = KODE_TEXT_ALIGN_RIGHT;
-  KODE_FRect  MValue2TextOffset     = KODE_FRect(2,2,2,2);
+  MIP_Color  MValue2TextColor      = MIP_Color(0.0f);
+  uint32_t    MValue2TextAlignment  = MIP_TEXT_ALIGN_RIGHT;
+  MIP_FRect  MValue2TextOffset     = MIP_FRect(2,2,2,2);
 
   bool        MDrawLabel            = true;
   const char* MLabel                = "";
-  KODE_Color  MLabelColor           = KODE_COLOR_BLACK;
+  MIP_Color  MLabelColor           = MIP_COLOR_BLACK;
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_RangeSliderWidget(KODE_FRect ARect)
-  : KODE_PanelWidget(ARect) {
-    setName("KODE_RangeSliderWidget");
+  MIP_RangeSliderWidget(MIP_FRect ARect)
+  : MIP_PanelWidget(ARect) {
+    setName("MIP_RangeSliderWidget");
     setHint("rangeslider");
   }
 
@@ -73,9 +73,9 @@ public:
 public:
 //------------------------------
 
-  virtual void setBackgroundColor(KODE_Color AColor)  { MBackgroundColor = AColor; }
-  virtual void setBarColor(KODE_Color AColor)         { MBarColor = AColor; }
-  virtual void setEdgeColor(KODE_Color AColor)        { MEdgeColor = AColor; }
+  virtual void setBackgroundColor(MIP_Color AColor)  { MBackgroundColor = AColor; }
+  virtual void setBarColor(MIP_Color AColor)         { MBarColor = AColor; }
+  virtual void setEdgeColor(MIP_Color AColor)        { MEdgeColor = AColor; }
 
   virtual float getValue2(void) {
     return MValue2;
@@ -90,7 +90,7 @@ public:
 //------------------------------
 
   virtual void findHoverEdge(float AXpos) {
-    KODE_FRect mrect = getRect();
+    MIP_FRect mrect = getRect();
     float v = (AXpos - mrect.x) / mrect.w;
     float d1 = v - getValue();
     float d2 = v - getValue2();
@@ -129,35 +129,35 @@ public:
       //do_widget_setHint(this,hint);
       do_widget_redraw(this,mrect,0);
       if (MHoverEdge >= 0) {
-        do_widget_setMouseCursor(this,KODE_CURSOR_ARROWLEFTRIGHT);
+        do_widget_setMouseCursor(this,MIP_CURSOR_ARROWLEFTRIGHT);
       }
       else {
-        do_widget_setMouseCursor(this,KODE_CURSOR_DEFAULT);
+        do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
       }
     }
   }
 
   //----------
 
-  void drawValues(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) {
+  void drawValues(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MDrawValueText) {
       float value1 = getValue();
       float value2 = getValue2();
       const char* label = "";
-      KODE_Parameter* param = getParameter();
+      MIP_Parameter* param = getParameter();
       if (param) {
         label = param->getLabel();
-        param->getDisplayText(value1,MValue1Text);
-        param->getDisplayText(value2,MValue2Text);
+        param->displayText(MValue1Text,value1);
+        param->displayText(MValue2Text,value2);
       }
       else {
         label = MLabel;
-        KODE_FloatToString(MValue1Text,value1);
-        KODE_FloatToString(MValue2Text,value2);
+        MIP_FloatToString(MValue1Text,value1);
+        MIP_FloatToString(MValue2Text,value2);
       }
-      KODE_FRect value1_rect = getRect();
-      KODE_FRect value2_rect = getRect();
-      KODE_FRect label_rect = getRect();
+      MIP_FRect value1_rect = getRect();
+      MIP_FRect value2_rect = getRect();
+      MIP_FRect label_rect = getRect();
       value1_rect.shrink(MValue1TextOffset);
       value2_rect.shrink(MValue2TextOffset);
       //label_rect.shrink(MValueTextOffset);
@@ -165,7 +165,7 @@ public:
       //  float width = APainter->getTextWidth(label);
       //  label_rect.x = value_rect.x2() - width;
       //  label_rect.w = width;
-      //  value_rect.w -= (width + KODE_VALUE_WIDGET_LABEL_SPACE);
+      //  value_rect.w -= (width + MIP_VALUE_WIDGET_LABEL_SPACE);
       //}
       if (MDrawValueText) {
 //        APainter->setFontSize(14);
@@ -173,7 +173,7 @@ public:
         APainter->drawText(value2_rect,MValue2Text,MValue2TextAlignment,MValue2TextColor);
       }
       if (MDrawLabel) {
-        APainter->drawText(label_rect,label,KODE_TEXT_ALIGN_CENTER,MLabelColor);
+        APainter->drawText(label_rect,label,MIP_TEXT_ALIGN_CENTER,MLabelColor);
       }
     }
   }
@@ -182,8 +182,8 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) final {
-    KODE_FRect mrect = getRect();
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) final {
+    MIP_FRect mrect = getRect();
     //APainter->fillRectangle( mrect, MBackgroundColor );
     fillBackground(APainter,ARect,AMode);
     float x1 = mrect.x + (mrect.w * getValue());
@@ -191,17 +191,17 @@ public:
     float w  = (x2 - x1 + 1);
     //if (w > 0) {
       if (w < 3) {
-        APainter->fillRectangle( KODE_FRect(x1-1,mrect.y,2,mrect.h), MBarColor );
+        APainter->fillRectangle( MIP_FRect(x1-1,mrect.y,2,mrect.h), MBarColor );
       }
       else {
-        APainter->fillRectangle( KODE_FRect(x1,mrect.y,w,mrect.h), MBarColor );
+        APainter->fillRectangle( MIP_FRect(x1,mrect.y,w,mrect.h), MBarColor );
       }
     //}
     if (MHoverEdge == 0) {
-      APainter->fillRectangle( KODE_FRect(x1,mrect.y,MEdgeWidth,mrect.h), MEdgeColor );
+      APainter->fillRectangle( MIP_FRect(x1,mrect.y,MEdgeWidth,mrect.h), MEdgeColor );
     }
     else if (MHoverEdge == 1) {
-      APainter->fillRectangle( KODE_FRect(x2-MEdgeWidth,mrect.y,MEdgeWidth,mrect.h), MEdgeColor );
+      APainter->fillRectangle( MIP_FRect(x2-MEdgeWidth,mrect.y,MEdgeWidth,mrect.h), MEdgeColor );
     }
     //drawLabel(APainter,ARect,AMode);
     drawValues(APainter,ARect,AMode);
@@ -211,11 +211,11 @@ public:
   //----------
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
-    if (AButton == KODE_BUTTON_LEFT) {
+    if (AButton == MIP_BUTTON_LEFT) {
       if (MHoverEdge==0) MIsDragging1 = true;
       else if (MHoverEdge==1) MIsDragging2 = true;
       //MIsInteractive = true;
-      //if (hasFlag(KODE_WIDGET_HIDECURSOR)) do_setCursor(this,KODE_CURSOR_HIDE);
+      //if (hasFlag(MIP_WIDGET_HIDECURSOR)) do_setCursor(this,MIP_CURSOR_HIDE);
       do_widget_redraw(this,getRect(),0);
     }
   }
@@ -223,16 +223,16 @@ public:
   //----------
 
   void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
-    if (AButton == KODE_BUTTON_LEFT) {
+    if (AButton == MIP_BUTTON_LEFT) {
       MIsDragging1 = false;
       MIsDragging2 = false;
       if (getRect().contains(AXpos,AYpos)) findHoverEdge(AXpos);
       else {
         MHoverEdge = -1;
-        do_widget_setMouseCursor(this,KODE_CURSOR_DEFAULT);
+        do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
       }
       //MIsInteractive = false;
-      //if (hasFlag(KODE_WIDGET_HIDECURSOR)) do_setCursor(this,KODE_CURSOR_SHOW);
+      //if (hasFlag(MIP_WIDGET_HIDECURSOR)) do_setCursor(this,MIP_CURSOR_SHOW);
       do_widget_redraw(this,getRect(),0);
     }
   }
@@ -240,9 +240,9 @@ public:
   //----------
 
   void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp=0) final {
-    KODE_FRect mrect = getRect();
+    MIP_FRect mrect = getRect();
     float v = (AXpos - mrect.x) / mrect.w;
-    v = KODE_Clamp(v,0,1);
+    v = MIP_Clamp(v,0,1);
     float value1 = getValue();
     float value2 = getValue2();
     if (MIsDragging1) {
@@ -250,7 +250,7 @@ public:
       if (value1 > value2) {
         setValue(value2);
         setValue2(value1);
-        //KODE_Swap(MIsDragging1,MIsDragging2);
+        //MIP_Swap(MIsDragging1,MIsDragging2);
         {
           bool temp = MIsDragging1;
           MIsDragging1 = MIsDragging2;
@@ -269,7 +269,7 @@ public:
       if (value1 > value2) {
         setValue(value2);
         setValue2(value1);
-        //KODE_Swap(MIsDragging1,MIsDragging2);
+        //MIP_Swap(MIsDragging1,MIsDragging2);
         {
           bool temp = MIsDragging1;
           MIsDragging1 = MIsDragging2;
@@ -291,18 +291,18 @@ public:
 
   //----------
 
-  void on_widget_enter(float AXpos, float AYpos, KODE_Widget* AFrom, uint32_t ATimeStamp=0) final {
+  void on_widget_mouseEnter(float AXpos, float AYpos, MIP_Widget* AFrom/*, uint32_t ATimeStamp=0*/) final {
     findHoverEdge(AXpos);
     if (flags.autoHint) do_widget_setHint(this,getHint());
   }
 
   //----------
 
-  void on_widget_leave(float AXpos, float AYpos, KODE_Widget* ATo, uint32_t ATimeStamp=0) final {
+  void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo/*, uint32_t ATimeStamp=0*/) final {
     if (MHoverEdge >= 0) {
       MHoverEdge = -1;
       do_widget_redraw(this,getRect(),0);
-      do_widget_setMouseCursor(this,KODE_CURSOR_DEFAULT);
+      do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
     }
     if (flags.autoHint) do_widget_setHint(this,"");
   }

@@ -1,20 +1,20 @@
-#ifndef kode_curve_widget_includedbutton
-#define kode_curve_widget_included
+#ifndef mip_curve_widget_includedbutton
+#define mip_curve_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/kode_drag_value_widget.h"
+#include "gui/widgets/mip_drag_value_widget.h"
 
-class KODE_CurveWidget
-: public KODE_DragValueWidget {
+class MIP_CurveWidget
+: public MIP_DragValueWidget {
 
 //------------------------------
 protected:
 //------------------------------
 
-    KODE_Color  MCurveColor     = KODE_COLOR_DARK_GRAY;
-    KODE_Color  MInteractColor  = KODE_COLOR_WHITE;
+    MIP_Color  MCurveColor     = MIP_COLOR_DARK_GRAY;
+    MIP_Color  MInteractColor  = MIP_COLOR_WHITE;
     bool        MDecay          = false;
-  //KODE_Point  MCoords[1024]   = {0};
+  //MIP_Point  MCoords[1024]   = {0};
     float       MXCoords[1024]   = {0};
     float       MYCoords[1024]   = {0};
 
@@ -22,13 +22,13 @@ protected:
 public:
 //------------------------------
 
-  KODE_CurveWidget(KODE_FRect ARect, bool ADecay=true)
-  : KODE_DragValueWidget(ARect) {
+  MIP_CurveWidget(MIP_FRect ARect, bool ADecay=true)
+  : MIP_DragValueWidget(ARect) {
 
-    setName("KODE_CurveWidget");
+    setName("MIP_CurveWidget");
     setHint("curve");
     setText("curve");
-    setBackgroundColor(KODE_Color(0.55f,0.55f,0.55f));
+    setBackgroundColor(MIP_Color(0.55f,0.55f,0.55f));
 
     MDecay = ADecay;
 
@@ -36,22 +36,22 @@ public:
 
   //----------
 
-  virtual ~KODE_CurveWidget() {
+  virtual ~MIP_CurveWidget() {
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  virtual void setCurveColor(KODE_Color AColor)    { MCurveColor = AColor; }
-  virtual void setInteractColor(KODE_Color AColor) { MInteractColor = AColor; }
+  virtual void setCurveColor(MIP_Color AColor)    { MCurveColor = AColor; }
+  virtual void setInteractColor(MIP_Color AColor) { MInteractColor = AColor; }
 
 //------------------------------
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) override {
-    KODE_FRect mrect = getRect();
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
+    MIP_FRect mrect = getRect();
       int32_t num = mrect.w;
 
       // calc coords
@@ -72,7 +72,7 @@ public:
 
         float value = getValue();
         for (int32_t i=0; i<num; i++) {
-          float n = KODE_Curve(x,value);
+          float n = MIP_Curve(x,value);
           MXCoords[i] = mrect.x + i;
           MYCoords[i] = mrect.y2() + 1 - (n * (float)mrect.h);
           x += xadd;
@@ -101,7 +101,7 @@ public:
 
       //APainter->setPenSize(2);
 
-      KODE_Color color = MCurveColor;
+      MIP_Color color = MCurveColor;
       //if (MIsInteractive) color = MInteractColor;
 
       for (int32_t i=0; i<num; i++) {

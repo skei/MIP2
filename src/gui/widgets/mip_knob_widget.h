@@ -1,32 +1,32 @@
-#ifndef kode_knob_widget_included
-#define kode_knob_widget_included
+#ifndef mip_knob_widget_included
+#define mip_knob_widget_included
 //----------------------------------------------------------------------
 
-#include "kode.h"
+#include "mip.h"
 
-//#include "base/kode_rect.h"
-#include "gui/kode_painter.h"
-#include "gui/kode_widget.h"
+//#include "base/mip_rect.h"
+#include "gui/mip_painter.h"
+#include "gui/mip_widget.h"
 
-#include "gui/widgets/kode_drag_value_widget.h"
+#include "gui/widgets/mip_drag_value_widget.h"
 
 //----------------------------------------------------------------------
 
-class KODE_KnobWidget
-: public KODE_DragValueWidget {
+class MIP_KnobWidget
+: public MIP_DragValueWidget {
 
 //------------------------------
 private:
 //------------------------------
 
-  //KODE_FPoint MKnobOffset   = KODE_FPoint(0,0);
-  //KODE_FPoint MLabelOffset  = KODE_FPoint(0,0);
-  //KODE_FPoint MValueOffset  = KODE_FPoint(0,0);
+  //MIP_FPoint MKnobOffset   = MIP_FPoint(0,0);
+  //MIP_FPoint MLabelOffset  = MIP_FPoint(0,0);
+  //MIP_FPoint MValueOffset  = MIP_FPoint(0,0);
 
   bool        MDrawKnob             = true;
-  KODE_Color  MKnobColor            = KODE_COLOR_LIGHT_GRAY;
-  KODE_Color  MInteractiveKnobColor = KODE_COLOR_WHITE;
-  KODE_Color  MKnobBack             = KODE_COLOR_DARK_GRAY;
+  MIP_Color  MKnobColor            = MIP_COLOR_LIGHT_GRAY;
+  MIP_Color  MInteractiveKnobColor = MIP_COLOR_WHITE;
+  MIP_Color  MKnobBack             = MIP_COLOR_DARK_GRAY;
   //uint32_t    MKnobSize             = 5.0f;
 
   bool        MBipolar              = false;
@@ -34,25 +34,25 @@ private:
   float       MArcThickness         = 0.20;
   float       MNeedleLength         = 0.25;
   float       MNeedleThickness      = 0.10;
-  KODE_Color  MNeedleColor          = KODE_COLOR_LIGHT_GRAY;
+  MIP_Color  MNeedleColor          = MIP_COLOR_LIGHT_GRAY;
 
   bool        MDrawSteppedArc       = false;
-  KODE_Color  MStepColor            = KODE_COLOR_GRAY;
+  MIP_Color  MStepColor            = MIP_COLOR_GRAY;
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_KnobWidget(KODE_FRect ARect)
-  : KODE_DragValueWidget(ARect) {
-    setName("KODE_KnobWidget");
+  MIP_KnobWidget(MIP_FRect ARect)
+  : MIP_DragValueWidget(ARect) {
+    setName("MIP_KnobWidget");
     setHint("knob");
     setFillBackground(false);
     setDrawBorder(false);
     //MKnobSize = ARect.w * 0.2f;
   }
 
-  virtual ~KODE_KnobWidget() {
+  virtual ~MIP_KnobWidget() {
   }
 
 //------------------------------
@@ -60,20 +60,20 @@ public:
 //------------------------------
 
   virtual void setDrawKnob(bool ADraw=true)               { MDrawKnob = ADraw; }
-  virtual void setKnobColor(KODE_Color AColor)            { MKnobColor = AColor; }
-  virtual void setInteractiveKnobColor(KODE_Color AColor)            { MInteractiveKnobColor = AColor; }
-  virtual void setKnobBackgroundColor(KODE_Color AColor)  { MKnobBack = AColor; }
+  virtual void setKnobColor(MIP_Color AColor)            { MKnobColor = AColor; }
+  virtual void setInteractiveKnobColor(MIP_Color AColor)            { MInteractiveKnobColor = AColor; }
+  virtual void setKnobBackgroundColor(MIP_Color AColor)  { MKnobBack = AColor; }
   virtual void setBipolar(bool bi=true)                   { MBipolar = bi; }
 
-  //void setArcColor(KODE_Color AColor)           { MArcColor = AColor; }
-  //void setArcBackgroundColor(KODE_Color AColor) { MArcBackgroundColor = AColor; }
+  //void setArcColor(MIP_Color AColor)           { MArcColor = AColor; }
+  //void setArcBackgroundColor(MIP_Color AColor) { MArcBackgroundColor = AColor; }
   void setArcThickness(float AThickness)        { MArcThickness = AThickness; }
   void setNeedleLength(float ALength)           { MNeedleLength = ALength; }
   void setNeedleThickness(float AThickness)     { MNeedleThickness = AThickness; }
-  void setNeedleColor(KODE_Color AColor)        { MNeedleColor = AColor; }
+  void setNeedleColor(MIP_Color AColor)        { MNeedleColor = AColor; }
 
   void setDrawSteppedArc(bool ADraw=true) { MDrawSteppedArc = ADraw; }
-  void setStepColor(KODE_Color AColor)    { MStepColor = AColor; }
+  void setStepColor(MIP_Color AColor)    { MStepColor = AColor; }
 
   //----------
 
@@ -81,7 +81,7 @@ public:
 public:
 //------------------------------
 
-  virtual void drawKnob(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) {
+  virtual void drawKnob(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MDrawKnob) {
 
       float     value             = getValue();
@@ -92,7 +92,7 @@ public:
       float     needle_length     = S * MNeedleLength; // / 4;
       float     needle_thickness  = S * MNeedleThickness; // arc_thickness * 0.33f;
 
-      KODE_FRect r = getRect();
+      MIP_FRect r = getRect();
       //r.shrink(0.5f + MKnobSize * 0.5f);
       r.shrink((arc_thickness / 2.0f) + 1.0f);
 
@@ -138,9 +138,9 @@ public:
 
       // steps
 
-      //KODE_Parameter* param;
-      //if (MParameter) param = (KODE_Parameter*)MParameter;
-      //else param = KODE_NULL;
+      //MIP_Parameter* param;
+      //if (MParameter) param = (MIP_Parameter*)MParameter;
+      //else param = MIP_NULL;
 
       if (getQuantize() && MDrawSteppedArc) {
         //APainter->setDrawColor(MStepColor);
@@ -151,8 +151,8 @@ public:
           float vv = va;
           for (uint32_t i=1; i<num-1; i++) {
             float v = ((1.0f - vv) * 0.8f) + 0.1f;
-            float a = sinf( v * KODE_PI2  );
-            float b = cosf( v * KODE_PI2 );
+            float a = sinf( v * MIP_PI2  );
+            float b = cosf( v * MIP_PI2 );
             float x1  = x + (int32_t)(a * step_start);
             float y1  = y + (int32_t)(b * step_start);
             float x2  = x + (int32_t)(a * step_end);
@@ -170,8 +170,8 @@ public:
       //}
 
       float v = ((1.0f - value) * 0.8f) + 0.1f; // 0.1 = (1.0 - 0.8) / 2.0
-      float a = sinf( v * KODE_PI2  );
-      float b = cosf( v * KODE_PI2 );
+      float a = sinf( v * MIP_PI2  );
+      float b = cosf( v * MIP_PI2 );
       float x1  = x;
       float y1  = y;
       float x2  = x + (a * needle_length);
@@ -184,7 +184,7 @@ public:
       //
 
       /*
-      APainter->setDrawColor(KODE_Red);
+      APainter->setDrawColor(MIP_Red);
       APainter->setPenSize(1);
       r.shrink(arc_thickness);
       value = getDragValue();
@@ -202,7 +202,7 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) override {
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
     fillBackground(APainter,ARect,AMode);
     drawKnob(APainter,ARect,AMode);
     //paintChildren(APainter,ARect,AMode);

@@ -1,5 +1,5 @@
-#ifndef kode_graph_widget_included
-#define kode_graph_widget_included
+#ifndef mip_graph_widget_included
+#define mip_graph_widget_included
 //----------------------------------------------------------------------
 
 /*
@@ -8,14 +8,14 @@
   - wire endpoint calculations are wrong..
 */
 
-//#include "base/types/kode_list.h"
-#include "gui/widgets/kode_panel_widget.h"
-#include "gui/kode_widget.h"
+//#include "base/types/mip_list.h"
+#include "gui/widgets/mip_panel_widget.h"
+#include "gui/mip_widget.h"
 
-struct  KODE_GraphPin;
-class   KODE_GraphWire;
-class   KODE_GraphModule;
-struct  KODE_Graph;
+struct  MIP_GraphPin;
+class   MIP_GraphWire;
+class   MIP_GraphModule;
+struct  MIP_Graph;
 
 //----------------------------------------------------------------------
 //
@@ -36,29 +36,29 @@ struct  KODE_Graph;
 
 //----------
 
-enum KODE_PinType {
+enum MIP_PinType {
   kpt_data    = 0,
   kpt_signal  = 1,
 };
 
 //----------
 
-class KODE_GraphWire : public KODE_ListNode {
+class MIP_GraphWire : public MIP_ListNode {
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_GraphModule* inModule  = KODE_NULL;
+  MIP_GraphModule* inModule  = MIP_NULL;
   int32_t           inPin     = 0;
-  KODE_GraphModule* outModule = KODE_NULL;
+  MIP_GraphModule* outModule = MIP_NULL;
   int32_t           outPin    = 0;
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_GraphWire(KODE_GraphModule* AInModule, int32_t AInPin, KODE_GraphModule* AOutModule, int32_t AOutPin) {
+  MIP_GraphWire(MIP_GraphModule* AInModule, int32_t AInPin, MIP_GraphModule* AOutModule, int32_t AOutPin) {
     inModule  = AInModule;
     inPin     = AInPin;
     outModule = AOutModule;
@@ -69,7 +69,7 @@ public:
 
 //----------
 
-class KODE_GraphModule : public KODE_ListNode {
+class MIP_GraphModule : public MIP_ListNode {
 
 //------------------------------
 public:
@@ -122,42 +122,42 @@ public:
 //
 //----------------------------------------------------------------------
 
-class KODE_GraphWidget
-: public KODE_PanelWidget {
+class MIP_GraphWidget
+: public MIP_PanelWidget {
 
 //------------------------------
 private:
 //------------------------------
 
-//KODE_Graph*   MGraph      = KODE_NULL;
-  KODE_List     MModules;
-  KODE_List     MWires;
-  KODE_Painter* MPainter    = KODE_NULL;
-  KODE_FRect    MPaintRect  = KODE_FRect(0,0);
+//MIP_Graph*   MGraph      = MIP_NULL;
+  MIP_List     MModules;
+  MIP_List     MWires;
+  MIP_Painter* MPainter    = MIP_NULL;
+  MIP_FRect    MPaintRect  = MIP_FRect(0,0);
 
 //------------------------------
 protected:
 //------------------------------
 
-    KODE_Color MModuleColor             = KODE_COLOR_LIGHT_GRAY;
-    KODE_Color MSelectedModuleColor     = KODE_COLOR_DARK_GRAY;
+    MIP_Color MModuleColor             = MIP_COLOR_LIGHT_GRAY;
+    MIP_Color MSelectedModuleColor     = MIP_COLOR_DARK_GRAY;
 
-    KODE_Color MSignalPinColor          = KODE_COLOR_LIGHT_GRAY;
-    KODE_Color MDataPinColor            = KODE_COLOR_DARK_GRAY;
-    KODE_Color MSignalPinHoverColor     = KODE_COLOR_BLACK;
-    KODE_Color MDataPinHoverColor       = KODE_COLOR_WHITE;
+    MIP_Color MSignalPinColor          = MIP_COLOR_LIGHT_GRAY;
+    MIP_Color MDataPinColor            = MIP_COLOR_DARK_GRAY;
+    MIP_Color MSignalPinHoverColor     = MIP_COLOR_BLACK;
+    MIP_Color MDataPinHoverColor       = MIP_COLOR_WHITE;
 
-    KODE_Color MModuleNameColor         = KODE_COLOR_DARK_GRAY;
-    KODE_Color MSelectedModuleNameColor = KODE_COLOR_LIGHT_GRAY;
+    MIP_Color MModuleNameColor         = MIP_COLOR_DARK_GRAY;
+    MIP_Color MSelectedModuleNameColor = MIP_COLOR_LIGHT_GRAY;
 
-    KODE_Color MSignalWireColor          = KODE_COLOR_LIGHT_GRAY;
-    KODE_Color MDataWireColor            = KODE_COLOR_DARK_GRAY;
+    MIP_Color MSignalWireColor          = MIP_COLOR_LIGHT_GRAY;
+    MIP_Color MDataWireColor            = MIP_COLOR_DARK_GRAY;
 
     bool              MDraggingModules  = false;
     bool              MDraggingWire     = false;
     bool              MDraggingSelect   = false;
     // hovering
-    KODE_GraphModule* MHoverModule      = KODE_NULL;
+    MIP_GraphModule* MHoverModule      = MIP_NULL;
     int32_t           MHoverInput       = -1;
     int32_t           MHoverOutput      = -1;
     int32_t           MMousePrevX       = 0;
@@ -167,7 +167,7 @@ protected:
     int32_t           MDragWireY1       = 0;
     int32_t           MDragWireX2       = 0;
     int32_t           MDragWireY2       = 0;
-    KODE_GraphModule* MDragWireModule   = KODE_NULL;
+    MIP_GraphModule* MDragWireModule   = MIP_NULL;
     int32_t           MDragWireInput    = -1;
     int32_t           MDragWireOutput   = -1;
     // selection
@@ -181,21 +181,21 @@ protected:
 public:
 //------------------------------
 
-  KODE_GraphWidget(KODE_FRect ARect=KODE_FRect())
-  : KODE_PanelWidget(ARect) {
+  MIP_GraphWidget(MIP_FRect ARect=MIP_FRect())
+  : MIP_PanelWidget(ARect) {
 
-    setName("KODE_GraphWidget");
+    setName("MIP_GraphWidget");
     setHint("graph");
     clearSelection();
-//    setFlag(KODE_WIDGET_HOVER);
-//    //setFlag(KODE_WIDGET_CLIP);
-    setBackgroundColor( KODE_Color(0.55f) );
+//    setFlag(MIP_WIDGET_HOVER);
+//    //setFlag(MIP_WIDGET_CLIP);
+    setBackgroundColor( MIP_Color(0.55f) );
   }
 
   //----------
 
-  virtual ~KODE_GraphWidget() {
-    #ifndef KODE_NO_AUTODELETE
+  virtual ~MIP_GraphWidget() {
+    #ifndef MIP_NO_AUTODELETE
       deleteModules();
       deleteWires();
     #endif
@@ -211,16 +211,16 @@ public:
 
   public:
 
-    //void appendModule(KODE_GraphModule* AModule) {
+    //void appendModule(MIP_GraphModule* AModule) {
     //  MModules.append(AModule);
     //}
 
     //----------
 
     void deleteModules(void) {
-      KODE_ListNode* node = MModules.head();
+      MIP_ListNode* node = MModules.head();
       while (node) {
-        KODE_ListNode* next = node->next();
+        MIP_ListNode* next = node->next();
         delete node;
         node = next;
       }
@@ -228,7 +228,7 @@ public:
 
     //----------
 
-    void addModule(KODE_GraphModule* AModule, int32_t AXpos, int32_t AYpos, const char* AName="") {
+    void addModule(MIP_GraphModule* AModule, int32_t AXpos, int32_t AYpos, const char* AName="") {
       AModule->xpos = AXpos;
       AModule->ypos = AYpos;
       AModule->selected = false;
@@ -239,16 +239,16 @@ public:
 
     //----------
 
-    void removeModule(KODE_GraphModule* AModule) {
+    void removeModule(MIP_GraphModule* AModule) {
       MModules.removeNode(AModule);
     }
 
     //----------
 
     void removeSelectedModules(void) {
-      KODE_ListNode* node = MModules.head();
+      MIP_ListNode* node = MModules.head();
       while (node) {
-        KODE_GraphModule* module = (KODE_GraphModule*)node;
+        MIP_GraphModule* module = (MIP_GraphModule*)node;
         node = node->next();
         if (module->selected) {
           removeWires(module);
@@ -264,16 +264,16 @@ public:
 
   public:
 
-    void appendWire(KODE_GraphWire* AWire) {
+    void appendWire(MIP_GraphWire* AWire) {
       MWires.insertTail(AWire);
     }
 
     //----------
 
     void deleteWires(void) {
-      KODE_ListNode* node = MWires.head();
+      MIP_ListNode* node = MWires.head();
       while (node) {
-        KODE_ListNode* next = node->next();
+        MIP_ListNode* next = node->next();
         delete node;
         node = next;
       }
@@ -282,13 +282,13 @@ public:
 
     //----------
 
-    void addWire(KODE_GraphWire* AWire) {
+    void addWire(MIP_GraphWire* AWire) {
       MWires.insertTail(AWire);
     }
 
     //----------
 
-    void removeWire(KODE_GraphWire* AWire) {
+    void removeWire(MIP_GraphWire* AWire) {
       MWires.removeNode(AWire);
     }
 
@@ -296,10 +296,10 @@ public:
 
     // remove all input wires connected to a specific pin on a module
 
-    void removeInputWires(KODE_GraphModule* AModule, int32_t APin) {
-      KODE_ListNode* node = MWires.head();
+    void removeInputWires(MIP_GraphModule* AModule, int32_t APin) {
+      MIP_ListNode* node = MWires.head();
       while (node) {
-        KODE_GraphWire* wire = (KODE_GraphWire*)node;
+        MIP_GraphWire* wire = (MIP_GraphWire*)node;
         node = node->next();
         if ((AModule == wire->inModule) && (APin == wire->inPin))
         /*or ( (AModule = wire.outModule) and (APin = wire.outPin) )*/ {
@@ -314,10 +314,10 @@ public:
 
     // remove all input wires connected to a specific pin on a module
 
-    void removeOutputWires(KODE_GraphModule* AModule, int32_t APin) {
-      KODE_ListNode* node = MWires.head();
+    void removeOutputWires(MIP_GraphModule* AModule, int32_t APin) {
+      MIP_ListNode* node = MWires.head();
       while (node) {
-        KODE_GraphWire* wire = (KODE_GraphWire*)node;
+        MIP_GraphWire* wire = (MIP_GraphWire*)node;
         node = node->next();
         if ((AModule == wire->outModule) && (APin == wire->outPin)  )
         /*or ( (AModule = wire.outModule) and (APin = wire.outPin) )*/ {
@@ -332,12 +332,12 @@ public:
 
     // remove all wires connected to a module
 
-    void removeWires(KODE_GraphModule* AModule) {
+    void removeWires(MIP_GraphModule* AModule) {
       //node : KListNode;
-      //ire : KODE_GraphWire;
-      KODE_ListNode* node = MWires.head();
+      //ire : MIP_GraphWire;
+      MIP_ListNode* node = MWires.head();
       while (node) {
-        KODE_GraphWire* wire = (KODE_GraphWire*)node;
+        MIP_GraphWire* wire = (MIP_GraphWire*)node;
         node = node->next();
         if ((AModule == wire->inModule) || (AModule == wire->outModule)) {
           removeWire(wire);
@@ -351,30 +351,30 @@ public:
 
     // find wire, input or output
 
-    KODE_GraphWire* findWire(KODE_GraphModule* AModule, int32_t APin) {
-      KODE_ListNode* node = MWires.head();
+    MIP_GraphWire* findWire(MIP_GraphModule* AModule, int32_t APin) {
+      MIP_ListNode* node = MWires.head();
       while (node) {
-        KODE_GraphWire* wire = (KODE_GraphWire*)node;
+        MIP_GraphWire* wire = (MIP_GraphWire*)node;
         if ( ((AModule == wire->inModule ) && (APin == wire->inPin ))
           || ((AModule == wire->outModule) && (APin == wire->outPin)) ) return wire;//System.exit(wire);
         node = node->next();
       }
-      return KODE_NULL;
+      return MIP_NULL;
     }
 
     //----------
 
-    KODE_GraphWire* findWire(KODE_GraphModule* AInModule, int32_t AInPin, KODE_GraphModule* AOutModule, int32_t AOutPin) {
-      KODE_ListNode* node = MWires.head();
+    MIP_GraphWire* findWire(MIP_GraphModule* AInModule, int32_t AInPin, MIP_GraphModule* AOutModule, int32_t AOutPin) {
+      MIP_ListNode* node = MWires.head();
       while (node) {
-        KODE_GraphWire* wire = (KODE_GraphWire*)node;
+        MIP_GraphWire* wire = (MIP_GraphWire*)node;
         if ( (AInModule  == wire->inModule)
           && (AInPin     == wire->inPin)
           && (AOutModule == wire->outModule)
           && (AOutPin    == wire->outPin) ) return wire;
         node = node->next();
       }
-      return KODE_NULL;
+      return MIP_NULL;
     }
 
   //----------------------------------------
@@ -384,9 +384,9 @@ public:
   public:
 
     bool hasSelection(void) {
-      KODE_ListNode* node = MModules.head();
+      MIP_ListNode* node = MModules.head();
       while (node) {
-        KODE_GraphModule* module = (KODE_GraphModule*)node;
+        MIP_GraphModule* module = (MIP_GraphModule*)node;
         if (module->selected) return true;
         node = node->next();
       }
@@ -396,9 +396,9 @@ public:
     //----------
 
     void clearSelection(void) {
-      KODE_ListNode* node = MModules.head();
+      MIP_ListNode* node = MModules.head();
       while (node) {
-        KODE_GraphModule* module = (KODE_GraphModule*)node;
+        MIP_GraphModule* module = (MIP_GraphModule*)node;
         module->selected = false;
         node = node->next();
       }
@@ -406,25 +406,25 @@ public:
 
     //----------
 
-    void selectModule(KODE_GraphModule* AModule) {
+    void selectModule(MIP_GraphModule* AModule) {
       AModule->selected = true;
     }
 
     //----------
 
-    void deselectModule(KODE_GraphModule* AModule) {
+    void deselectModule(MIP_GraphModule* AModule) {
       AModule->selected = false;
     }
 
     //----------
 
-    void toggleModule(KODE_GraphModule* AModule) {
+    void toggleModule(MIP_GraphModule* AModule) {
       AModule->selected = AModule->selected ? false : true;
     }
 
     //----------
 
-    bool isSelected(KODE_GraphModule* AModule) {
+    bool isSelected(MIP_GraphModule* AModule) {
       return AModule->selected;
     }
 
@@ -446,9 +446,9 @@ public:
         y1 = y2;
         y2 = temp;
       }
-      KODE_ListNode* node = MModules.head();
+      MIP_ListNode* node = MModules.head();
       while (node) {
-        KODE_GraphModule* module = (KODE_GraphModule*)node;
+        MIP_GraphModule* module = (MIP_GraphModule*)node;
         if ( ( module->xpos                <= x2)
           && ((module->xpos+MODULE_WIDTH)  >= x1)
           && ( module->ypos                <= y2)
@@ -463,9 +463,9 @@ public:
     //----------
 
     void moveSelectedModules(int32_t AXdelta, int32_t AYdelta) {
-      KODE_ListNode* node = MModules.head();
+      MIP_ListNode* node = MModules.head();
       while (node) {
-        KODE_GraphModule* module = (KODE_GraphModule*)node;
+        MIP_GraphModule* module = (MIP_GraphModule*)node;
         if (module->selected) {
           module->xpos = module->xpos + AXdelta;
           module->ypos = module->ypos + AYdelta;
@@ -480,7 +480,7 @@ public:
 
   public:
 
-    void startDragInput(KODE_GraphModule* AModule, int32_t APin) {
+    void startDragInput(MIP_GraphModule* AModule, int32_t APin) {
       MDraggingWire   = true;
       MDragWireInput  = APin;
       MDragWireOutput = -1;
@@ -493,7 +493,7 @@ public:
 
     //----------
 
-    void startDragOutput(KODE_GraphModule* AModule, int32_t APin) {
+    void startDragOutput(MIP_GraphModule* AModule, int32_t APin) {
       MDraggingWire   = true;
       MDragWireInput  = -1;
       MDragWireOutput = APin;
@@ -520,25 +520,25 @@ public:
 
   public:
 
-    void drawModule(KODE_GraphModule* AModule) {
+    void drawModule(MIP_GraphModule* AModule) {
 
-      KODE_FRect module_full_rect = KODE_FRect(
+      MIP_FRect module_full_rect = MIP_FRect(
         getRect().x + AModule->xpos,
         getRect().y + AModule->ypos,
         MODULE_WIDTH - 1,
         MODULE_HEIGHT - 1
       );
 
-      KODE_FRect module_body_rect = module_full_rect;
+      MIP_FRect module_body_rect = module_full_rect;
       module_body_rect.shrink(0,PIN_YDIST,0,PIN_YDIST);
 
-      KODE_Color color;
+      MIP_Color color;
 
-      KODE_FRect input_rect = module_body_rect;
+      MIP_FRect input_rect = module_body_rect;
       input_rect.y -= PIN_YDIST;
       input_rect.setSize(PIN_WIDTH,PIN_HEIGHT);
 
-      KODE_FRect output_rect = module_body_rect;
+      MIP_FRect output_rect = module_body_rect;
       output_rect.y += (output_rect.h + PIN_YDIST - PIN_HEIGHT);
       output_rect.setSize(PIN_WIDTH,PIN_HEIGHT);
 
@@ -571,17 +571,17 @@ public:
       for (int32_t i=0; i<AModule->numOutputs; i++) {
         // fill
         //if (AModule->outputs[i] == kpt_signal)
-        //  MPainter->fillRectangle(KODE_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MSignalPinColor);
+        //  MPainter->fillRectangle(MIP_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MSignalPinColor);
         //else
-        //  MPainter->fillRectangle(KODE_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MDataPinColor);
+        //  MPainter->fillRectangle(MIP_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MDataPinColor);
         if (AModule->outputs[i] == kpt_signal) color = MSignalPinColor; else color = MDataPinColor;
         MPainter->fillRectangle( output_rect, color );
         // border
         if ((AModule == MHoverModule) && (i == MHoverOutput) && (!MDraggingModules)) {
           //if (AModule->outputs[i] == kpt_signal)
-          //  MPainter->drawRectangle(KODE_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MSignalPinHoverColor);
+          //  MPainter->drawRectangle(MIP_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MSignalPinHoverColor);
           //else if (AModule->outputs[i] == kpt_data)
-          //  MPainter->drawRectangle(KODE_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MDataPinHoverColor);
+          //  MPainter->drawRectangle(MIP_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MDataPinHoverColor);
           if (AModule->outputs[i] == kpt_signal) color = MSignalPinHoverColor; else color = MDataPinHoverColor;
           MPainter->drawRectangle( output_rect, color );
         }
@@ -591,12 +591,12 @@ public:
       // name
 
       //if (AModule->selected)
-      //  MPainter->drawText(KODE_FRect(x,y,w,h),AModule->name,KODE_TEXT_ALIGN_CENTER,MSelectedModuleNameColor);
+      //  MPainter->drawText(MIP_FRect(x,y,w,h),AModule->name,MIP_TEXT_ALIGN_CENTER,MSelectedModuleNameColor);
       //else
-      //  MPainter->drawText(KODE_FRect(x,y,w,h),AModule->name,KODE_TEXT_ALIGN_CENTER,MModuleNameColor);
+      //  MPainter->drawText(MIP_FRect(x,y,w,h),AModule->name,MIP_TEXT_ALIGN_CENTER,MModuleNameColor);
 
       if (AModule->selected) color = MSelectedModuleNameColor; else color = MModuleNameColor;
-      MPainter->drawText(module_body_rect,AModule->name,KODE_TEXT_ALIGN_CENTER,color);
+      MPainter->drawText(module_body_rect,AModule->name,MIP_TEXT_ALIGN_CENTER,color);
 
       // border
 
@@ -609,7 +609,7 @@ public:
 
     //----------
 
-    void drawWire(KODE_GraphWire* AWire) {
+    void drawWire(MIP_GraphWire* AWire) {
 
       int32_t x1 = getRect().x + AWire->outModule->xpos + (AWire->outPin * PIN_XDIST);// + 2;
       int32_t y1 = getRect().y + AWire->outModule->ypos;// + 31 - 2;
@@ -630,7 +630,7 @@ public:
       //else
       //  MPainter->drawLine(x1,y1,x2,y2,MDataWireColor,1);
 
-      KODE_Color color;
+      MIP_Color color;
       if (AWire->outModule->outputs[AWire->outPin] == kpt_signal) color = MSignalWireColor; else color = MDataWireColor;
       MPainter->drawLine(x1,y1,x2,y2,color,1);
 
@@ -639,9 +639,9 @@ public:
     //----------
 
     void drawModules(void) {
-      KODE_ListNode* node = MModules.head();
+      MIP_ListNode* node = MModules.head();
       while (node) {
-        KODE_GraphModule* module = (KODE_GraphModule*)node;
+        MIP_GraphModule* module = (MIP_GraphModule*)node;
         drawModule(module);
         node = node->next();
       }
@@ -650,9 +650,9 @@ public:
     //----------
 
     void drawWires(void) {
-      KODE_ListNode* node = MWires.head();
+      MIP_ListNode* node = MWires.head();
       while (node) {
-        KODE_GraphWire* wire = (KODE_GraphWire*)node;
+        MIP_GraphWire* wire = (MIP_GraphWire*)node;
         drawWire(wire);
         node = node->next();
       }
@@ -662,8 +662,8 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(KODE_Painter* APainter, KODE_FRect ARect, uint32_t AMode) override {
-    KODE_PanelWidget::on_widget_paint(APainter,ARect,AMode);
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
+    MIP_PanelWidget::on_widget_paint(APainter,ARect,AMode);
     MPainter    = APainter;
     MPaintRect  = ARect;
     //ACanvas.setDrawColor(KLightGrey);
@@ -672,12 +672,12 @@ public:
     drawModules();
     drawWires();
     if (MDraggingWire) {
-      APainter->drawLine(MDragWireX1,MDragWireY1,MDragWireX2,MDragWireY2,KODE_COLOR_WHITE,1);
+      APainter->drawLine(MDragWireX1,MDragWireY1,MDragWireX2,MDragWireY2,MIP_COLOR_WHITE,1);
     }
     if (MDraggingSelect) {
       float w = MDragSelectX2 - MDragSelectX1;
       float h = MDragSelectY2 - MDragSelectY1;
-      APainter->drawRectangle(KODE_FRect(MDragSelectX1,MDragSelectY1,w,h),KODE_COLOR_LIGHT_YELLOW,1);
+      APainter->drawRectangle(MIP_FRect(MDragSelectX1,MDragSelectY1,w,h),MIP_COLOR_LIGHT_YELLOW,1);
     }
     APainter->popClip();
   }
@@ -688,8 +688,8 @@ public:
   // x,y = local coords (graph)
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
-      KODE_ListNode* node;
-      KODE_GraphModule* module;
+      MIP_ListNode* node;
+      MIP_GraphModule* module;
       int32_t pin;
       bool changed;
       int32_t x,y;
@@ -697,13 +697,13 @@ public:
       x = AXpos - getRect().x;
       y = AYpos - getRect().y;
       changed = false;
-      if (AButton == KODE_BUTTON_LEFT) {
+      if (AButton == MIP_BUTTON_LEFT) {
         MMousePrevX = AXpos;
         MMousePrevY = AYpos;
-        module = KODE_NULL;
+        module = MIP_NULL;
         node = MModules.tail();
         while (node) {
-          module = (KODE_GraphModule*)node;
+          module = (MIP_GraphModule*)node;
           if (module->inside(x,y)) {
 
             // inputs
@@ -717,7 +717,7 @@ public:
             // base
 
             if (module->insideBase(x,y)) {
-              if (AState & KODE_KEY_CTRL) {
+              if (AState & MIP_KEY_CTRL) {
                 toggleModule(module);
                 changed = true;
               }
@@ -745,14 +745,14 @@ public:
         if (!node) {
 
           if (hasSelection()) {
-            if (!(AState & KODE_KEY_CTRL)) {
+            if (!(AState & MIP_KEY_CTRL)) {
               clearSelection();
               changed = true;
             }
           }
 
           if (!MDraggingSelect) {
-            if (!(AState & KODE_KEY_CTRL))
+            if (!(AState & MIP_KEY_CTRL))
               clearSelection();
             startDragSelect(AXpos,AYpos);
           }
@@ -760,19 +760,19 @@ public:
         } // node
       }
       if (changed) do_widget_redraw(this,getRect(),0);
-      KODE_PanelWidget::on_widget_mouseClick(AXpos,AYpos,AButton,AState);
+      MIP_PanelWidget::on_widget_mouseClick(AXpos,AYpos,AButton,AState);
   }
 
   //----------
 
   void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
-      KODE_GraphWire* wire;
+      MIP_GraphWire* wire;
       bool changed;
 
       //AXpos -= FRect.x;
       //AYpos -= FRect.y;
       changed = false;
-      if (AButton == KODE_BUTTON_LEFT) {
+      if (AButton == MIP_BUTTON_LEFT) {
 
         if (MDraggingModules) {
           MDraggingModules = false;
@@ -793,7 +793,7 @@ public:
                   delete wire;
                 }
                 else {
-                  addWire( new KODE_GraphWire(MDragWireModule,MDragWireInput, MHoverModule, MHoverOutput) ); // in -> out
+                  addWire( new MIP_GraphWire(MDragWireModule,MDragWireInput, MHoverModule, MHoverOutput) ); // in -> out
                 }
               }
               else {
@@ -811,7 +811,7 @@ public:
                   delete wire;
                 }
                 else {
-                  addWire( new KODE_GraphWire(MHoverModule,MHoverInput,MDragWireModule,MDragWireOutput) ); // in -> out
+                  addWire( new MIP_GraphWire(MHoverModule,MHoverInput,MDragWireModule,MDragWireOutput) ); // in -> out
                 }
               } // output
               else {
@@ -832,7 +832,7 @@ public:
 
       if (changed) do_widget_redraw(this,getRect(),0);
       //inherited;
-      KODE_PanelWidget::on_widget_mouseRelease(AXpos,AYpos,AButton,AState);
+      MIP_PanelWidget::on_widget_mouseRelease(AXpos,AYpos,AButton,AState);
   }
 
   //----------
@@ -841,9 +841,9 @@ public:
       int32_t x = AXpos - getRect().x;
       int32_t y = AYpos - getRect().y;
       bool changed = false;
-      KODE_ListNode* node = (KODE_GraphModule*)MModules.tail();
+      MIP_ListNode* node = (MIP_GraphModule*)MModules.tail();
       while (node) {
-        KODE_GraphModule* module = (KODE_GraphModule*)node;
+        MIP_GraphModule* module = (MIP_GraphModule*)node;
         if (module->inside(x,y)) {
 
           // inputs
@@ -892,7 +892,7 @@ public:
       } // while
 
       if (!node) {
-        MHoverModule = KODE_NULL;
+        MHoverModule = MIP_NULL;
         if (MHoverInput != -1) {
           MHoverInput = -1;
           changed = true;
@@ -926,7 +926,7 @@ public:
       MMousePrevX = AXpos;
       MMousePrevY = AYpos;
 
-      KODE_PanelWidget::on_widget_mouseMove(AXpos,AYpos,AState);
+      MIP_PanelWidget::on_widget_mouseMove(AXpos,AYpos,AState);
   }
 
   //----------
@@ -941,8 +941,8 @@ public:
   public:
   //------------------------------
 
-//  void do_widget_realign(KODE_Widget* ASender, bool ARecursive=true) override {
-//    //KODE_PRINT;
+//  void do_widget_realign(MIP_Widget* ASender, bool ARecursive=true) override {
+//    //MIP_PRINT;
 //    //alignChildren(ARecursive);
 //    findContentRect();
 //  }

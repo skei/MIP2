@@ -1,13 +1,13 @@
-#ifndef kode_scroll_box_widget_includedbutton
-#define kode_scroll_box_widget_included
+#ifndef mip_scroll_box_widget_includedbutton
+#define mip_scroll_box_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/kode_widget.h"
-#include "gui/widgets/kode_panel_widget.h"
-#include "gui/widgets/kode_scroll_bar_widget.h"
+#include "gui/mip_widget.h"
+#include "gui/widgets/mip_panel_widget.h"
+#include "gui/widgets/mip_scroll_bar_widget.h"
 
-class KODE_ScrollBoxWidget
-: public KODE_PanelWidget {
+class MIP_ScrollBoxWidget
+: public MIP_PanelWidget {
 
 //------------------------------
 protected:
@@ -16,16 +16,16 @@ protected:
   bool showHorizontalScrollBar  = true;
   bool showVerticalScrollBar    = true;
 
-  KODE_ScrollBarWidget* MVerticalScrollBar    = KODE_NULL;
-  KODE_ScrollBarWidget* MHorizontalScrollBar  = KODE_NULL;
-  KODE_PanelWidget*     MContent              = KODE_NULL;
+  MIP_ScrollBarWidget* MVerticalScrollBar    = nullptr;
+  MIP_ScrollBarWidget* MHorizontalScrollBar  = nullptr;
+  MIP_PanelWidget*     MContent              = nullptr;
 
 //------------------------------
 public:
 //------------------------------
 
-  KODE_ScrollBoxWidget(KODE_FRect ARect=KODE_FRect(), bool AVertical=true, bool AHorizontal=true)
-  : KODE_PanelWidget(ARect) {
+  MIP_ScrollBoxWidget(MIP_FRect ARect=MIP_FRect(), bool AVertical=true, bool AHorizontal=true)
+  : MIP_PanelWidget(ARect) {
     showVerticalScrollBar = AVertical;
     showHorizontalScrollBar = AHorizontal;
     setup(ARect);
@@ -33,58 +33,58 @@ public:
 
   //----------
 
-  //KODE_ScrollBoxWidget()
-  //: KODE_PanelWidget() {
-  //  setup(KODE_FRect());
+  //MIP_ScrollBoxWidget()
+  //: MIP_PanelWidget() {
+  //  setup(MIP_FRect());
   //}
 
   //----------
 
-  virtual ~KODE_ScrollBoxWidget() {
+  virtual ~MIP_ScrollBoxWidget() {
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  void setup(KODE_FRect ARect=KODE_FRect()) {
-    setName("KODE_ScrollBoxWidget");
+  void setup(MIP_FRect ARect=MIP_FRect()) {
+    setName("MIP_ScrollBoxWidget");
     setHint("scrollbox");
     setFillBackground(false);
     setDrawBorder(true);
     if (showVerticalScrollBar) {
-      MVerticalScrollBar = new KODE_ScrollBarWidget( KODE_FRect(10,10) );
-      MVerticalScrollBar->layout.alignment = KODE_WIDGET_ALIGN_FILL_RIGHT;
-      MVerticalScrollBar->setDirection(KODE_VERTICAL);
+      MVerticalScrollBar = new MIP_ScrollBarWidget( MIP_FRect(10,10) );
+      MVerticalScrollBar->layout.alignment = MIP_WIDGET_ALIGN_FILL_RIGHT;
+      MVerticalScrollBar->setDirection(MIP_VERTICAL);
       if (showHorizontalScrollBar) {
         MVerticalScrollBar->layout.extraBorder.h = 10;
       }
-      KODE_PanelWidget::appendWidget(MVerticalScrollBar);
+      MIP_PanelWidget::appendWidget(MVerticalScrollBar);
     }
     if (showHorizontalScrollBar) {
-      MHorizontalScrollBar = new KODE_ScrollBarWidget( KODE_FRect(10,10) );
-      MHorizontalScrollBar->layout.alignment = KODE_WIDGET_ALIGN_FILL_BOTTOM;
-      MHorizontalScrollBar->setDirection(KODE_HORIZONTAL);
+      MHorizontalScrollBar = new MIP_ScrollBarWidget( MIP_FRect(10,10) );
+      MHorizontalScrollBar->layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
+      MHorizontalScrollBar->setDirection(MIP_HORIZONTAL);
       //MHorizontalScrollBar->layout.extraBorder.w = 10;
-      KODE_PanelWidget::appendWidget(MHorizontalScrollBar);
+      MIP_PanelWidget::appendWidget(MHorizontalScrollBar);
     }
-    MContent = new KODE_PanelWidget();
-    MContent->layout.alignment = KODE_WIDGET_ALIGN_FILL_CLIENT;
+    MContent = new MIP_PanelWidget();
+    MContent->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     //MContent->layout.spacing = 5;
     //MContent->layout.innerBorder = 0;
-    KODE_PanelWidget::appendWidget(MContent);
+    MIP_PanelWidget::appendWidget(MContent);
 
   }
 
   //----------
 
-  virtual KODE_Widget* getContentWidget() {
+  virtual MIP_Widget* getContentWidget() {
     return MContent;
   }
 
   //----------
 
-  void updateScroll(KODE_Widget* ASender, float visible, float pos, float prev=0) {
+  void updateScroll(MIP_Widget* ASender, float visible, float pos, float prev=0) {
     if (ASender == MVerticalScrollBar) {
       //float pos  = MVerticalScrollBar->getThumbPos();
       //float prev = MVerticalScrollBar->getPrevThumbPos();
@@ -113,21 +113,21 @@ public:
 public:
 //------------------------------
 
-  KODE_Widget* appendWidget(KODE_Widget* AWidget) override {
+  MIP_Widget* appendWidget(MIP_Widget* AWidget) override {
     return MContent->appendWidget(AWidget);
   }
 
   //----------
 
-  void alignChildren(bool ARecursive=true) override {
-    KODE_Widget::alignChildren();
-    KODE_FRect content = MContent->getContentRect();
+  void alignWidgets(bool ARecursive=true) override {
+    MIP_Widget::alignWidgets();
+    MIP_FRect content = MContent->getContentRect();
     float rect_w = MContent->getRect().w;
     float rect_h = MContent->getRect().h;
     if (showVerticalScrollBar) {
       if (rect_h > 0) {
         float thumb_ratio = rect_h / content.h;         // szize of thumb (0..1)
-        float thumb_size = KODE_Clamp(thumb_ratio,0,1);
+        float thumb_size = MIP_Clamp(thumb_ratio,0,1);
         MVerticalScrollBar->setThumbSize(thumb_size,false);
         float visible = MVerticalScrollBar->getThumbSize();
         float pos     = MVerticalScrollBar->getThumbPos();
@@ -142,7 +142,7 @@ public:
     if (showHorizontalScrollBar) {
       if (rect_w > 0) {
         float thumb_ratio = rect_w / content.w;         // szize of thumb (0..1)
-        float thumb_size = KODE_Clamp(thumb_ratio,0,1);
+        float thumb_size = MIP_Clamp(thumb_ratio,0,1);
         MHorizontalScrollBar->setThumbSize(thumb_size,false);
         float visible = MHorizontalScrollBar->getThumbSize();
         float pos     = MHorizontalScrollBar->getThumbPos();
@@ -161,7 +161,7 @@ public:
 public:
 //------------------------------
 
-  void do_widget_update(KODE_Widget* ASender) override {
+  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
     if (ASender == MVerticalScrollBar) {
       float visible = MVerticalScrollBar->getThumbSize();
       float pos     = MVerticalScrollBar->getThumbPos();
@@ -175,15 +175,15 @@ public:
       updateScroll(MHorizontalScrollBar,visible,pos,prev);
     }
     else {
-      KODE_PanelWidget::do_widget_update(ASender);
+      MIP_PanelWidget::do_widget_update(ASender);
     }
   }
 
   //----------
 
-  void do_widget_realign(KODE_Widget* ASender, bool ARecursive=true) override {
-    //KODE_PRINT;
-    alignChildren(ARecursive);
+  void do_widget_realign(MIP_Widget* ASender, bool ARecursive=true) override {
+    //MIP_PRINT;
+    alignWidgets(ARecursive);
     redraw();
   }
 

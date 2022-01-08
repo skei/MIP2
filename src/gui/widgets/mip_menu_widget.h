@@ -1,5 +1,5 @@
-#ifndef kode_menu_widget_included
-#define kode_menu_widget_included
+#ifndef mip_menu_widget_included
+#define mip_menu_widget_included
 //----------------------------------------------------------------------
 
 /*
@@ -8,31 +8,31 @@
     menu size?
 */
 
-#include "gui/widgets/kode_menu_item_widget.h"
-#include "gui/widgets/kode_panel_widget.h"
+#include "gui/widgets/mip_menu_item_widget.h"
+#include "gui/widgets/mip_panel_widget.h"
 
-//typedef vector<char*> KODE_MenuItems;
-typedef KODE_Array<char*> KODE_MenuItems;
+//typedef vector<char*> MIP_MenuItems;
+typedef MIP_Array<char*> MIP_MenuItems;
 
 //----------------------------------------------------------------------
 
-class KODE_MenuListener {
+class MIP_MenuListener {
   public:
     virtual void on_menuEvent(int32_t AIndex) {}
 };
 
 //----------------------------------------------------------------------
 
-class KODE_MenuWidget
-: public KODE_PanelWidget
-, public KODE_MenuListener {
+class MIP_MenuWidget
+: public MIP_PanelWidget
+, public MIP_MenuListener {
 
 //------------------------------
 protected:
 //------------------------------
 
-  KODE_MenuListener*  MListener     = KODE_NULL;
-  KODE_MenuItems      MItems;
+  MIP_MenuListener*   MListener     = nullptr;
+  MIP_MenuItems       MItems;
   uint32_t            MBorderSize   = 5; //0; //1;
   float               MMenuWidth    = 96;
   float               MMenuHeight   = 16;
@@ -49,21 +49,21 @@ protected:
 public:
 //------------------------------
 
-  KODE_MenuWidget(KODE_FRect ARect)
-  : KODE_PanelWidget(ARect) {
+  MIP_MenuWidget(MIP_FRect ARect)
+  : MIP_PanelWidget(ARect) {
 
-    setName("KODE_MenuWidget");
+    setName("MIP_MenuWidget");
     setHint("menu");
 //    MMenuWidth  = ARect.w;
 //    MMenuHeight = ARect.h;
     flags.active = false;
     flags.visible = false;
     setFillBackground();
-    setBackgroundColor(KODE_COLOR_LIGHT_GRAY);
+    setBackgroundColor(MIP_COLOR_LIGHT_GRAY);
     setDrawBorder();
   }
 
-  virtual ~KODE_MenuWidget() {
+  virtual ~MIP_MenuWidget() {
   }
 
 //------------------------------
@@ -140,9 +140,9 @@ public:
 
   //----------
 
-  virtual void open(KODE_MenuListener* AListener, int32_t AXpos, int32_t AYpos) {
-    //KODE_FRect mrect = getRect();
-    //KODE_Print("%i,%i / %i,%i\n",MItemWidth,MItemHeight,MItemsX,MItemsY);
+  virtual void open(MIP_MenuListener* AListener, int32_t AXpos, int32_t AYpos) {
+    //MIP_FRect mrect = getRect();
+    //MIP_Print("%i,%i / %i,%i\n",MItemWidth,MItemHeight,MItemsX,MItemsY);
     MListener = AListener;
     MPrevSelected = MSelectedItem;
     //int32_t w = (MItemWidth  * MItemsX) + (MBorderSize * (MItemsX+1));
@@ -153,19 +153,19 @@ public:
     if (MMirrorX) AXpos -= MMenuWidth;
     if (MMirrorY) AYpos -= MMenuHeight;
 
-    //setRect(KODE_FRect(AXpos,AYpos,w,h));
+    //setRect(MIP_FRect(AXpos,AYpos,w,h));
 
-    //KODE_Print("%i,%i - %i,%i\n",AXpos,AYpos,w,h);
-    KODE_FRect R = KODE_FRect(AXpos+MBorderSize, AYpos+MBorderSize, MItemWidth, MItemHeight);
+    //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,w,h);
+    MIP_FRect R = MIP_FRect(AXpos+MBorderSize, AYpos+MBorderSize, MItemWidth, MItemHeight);
     uint32_t num = MItems.size();
     uint32_t i = 0;
-    deleteChildren();
+    deleteWidgets();
     for (uint32_t x=0; x<MItemsX; x++) {
       for (uint32_t y=0; y<MItemsY; y++) {
         if (i < num) {
           const char* txt = MItems[i];
-          //KODE_Print("%i %i %s : %i %i %i %i\n",x,y,txt,(int)R.x,(int)R.y,(int)R.w,(int)R.h);
-          KODE_MenuItemWidget* mi = (KODE_MenuItemWidget*)appendWidget( new KODE_MenuItemWidget( R ));
+          //MIP_Print("%i %i %s : %i %i %i %i\n",x,y,txt,(int)R.x,(int)R.y,(int)R.w,(int)R.h);
+          MIP_MenuItemWidget* mi = (MIP_MenuItemWidget*)appendWidget( new MIP_MenuItemWidget( R ));
           mi->setText(txt);
           R.y += MItemHeight;
         }
@@ -181,24 +181,24 @@ public:
     //setWidth(MMenuWidth);
     //setHeight(MMenuHeight);
 
-    KODE_FRect menu_rect = KODE_FRect(AXpos,AYpos,MMenuWidth,MMenuHeight);
-    //KODE_Print("%.0f,%.0f - %.0f,%.0f\n",menu_rect.x,menu_rect.y,menu_rect.w,menu_rect.h);
+    MIP_FRect menu_rect = MIP_FRect(AXpos,AYpos,MMenuWidth,MMenuHeight);
+    //MIP_Print("%.0f,%.0f - %.0f,%.0f\n",menu_rect.x,menu_rect.y,menu_rect.w,menu_rect.h);
     //setRect(AXpos,AYpos,MMenuWidth,MMenuHeight);
     setRect(menu_rect);
     do_widget_redraw(this,menu_rect,0); // redraw parent?
-    do_widget_grabModal(this);
+//    do_widget_grabModal(this);
   }
 
   //----------
 
   virtual void close(void) {
-    MListener = KODE_NULL;
+    MListener = nullptr;
     //MIsActive = false;
     //MIsVisible = false;
     flags.active = false;
     flags.visible = false;
     do_widget_redraw(this,getRect(),0);
-    do_widget_grabModal(KODE_NULL);
+//    do_widget_grabModal(nullptr);
     setWidth(0);
     setHeight(0);
   }
@@ -208,9 +208,9 @@ public:
 //------------------------------
 
   virtual void appendMenuItem2(const char* ALabel) {
-    KODE_MenuItemWidget* text;
-    text = new KODE_MenuItemWidget( KODE_FRect(50,20) );
-    text->layout.alignment = KODE_WIDGET_ALIGN_FILL_TOP;
+    MIP_MenuItemWidget* text;
+    text = new MIP_MenuItemWidget( MIP_FRect(50,20) );
+    text->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     text->setText(ALabel);
     appendWidget(text);
   }
@@ -224,8 +224,8 @@ public:
 public:
 //------------------------------
 
-  void alignChildren(bool ARecursive=true) override {
-    KODE_PanelWidget::alignChildren(ARecursive);
+  void alignWidgets(bool ARecursive=true) override {
+    MIP_PanelWidget::alignWidgets(ARecursive);
   }
 
 //------------------------------
@@ -233,8 +233,8 @@ public:
 //------------------------------
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
-    KODE_PanelWidget::on_widget_mouseClick(AXpos,AYpos,AButton,AState);
-    if (AButton == KODE_BUTTON_LEFT) {
+    MIP_PanelWidget::on_widget_mouseClick(AXpos,AYpos,AButton,AState,ATimeStamp);
+    if (AButton == MIP_BUTTON_LEFT) {
       if (!getRect().contains(AXpos,AYpos)) {
         // left-clicked outside of widget
         MSelectedItem = MPrevSelected;
@@ -242,7 +242,7 @@ public:
         close();
       }
     }
-    if (AButton == KODE_BUTTON_RIGHT) {
+    if (AButton == MIP_BUTTON_RIGHT) {
       // right-clicked
       MSelectedItem = MPrevSelected;
       if (MListener) MListener->on_menuEvent(MSelectedItem);
@@ -256,27 +256,27 @@ public:
 
   // item selected
 
-  void do_widget_update(KODE_Widget* ASender) final {
-    int32_t index = ASender->getIndex();
+  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) final {
+    int32_t index = ASender->getWidgetIndex();
     MSelectedItem = index;
     if (MListener) MListener->on_menuEvent(MSelectedItem);
     close();
-    KODE_PanelWidget::do_widget_update(this);
-    //KODE_Widget::do_widget_update(ASender);
+    MIP_PanelWidget::do_widget_update(this,AMode);
+    //MIP_Widget::do_widget_update(ASender);
   }
 
   //----------
 
   // (right button clicked)
 
-  void do_widget_notify(KODE_Widget* AWidget, uint32_t AValue=0) final {
-    if (AValue == KODE_MENU_NOTIFY_CLOSE) {
+  void do_widget_notify(MIP_Widget* AWidget, uint32_t AValue=0) final {
+    if (AValue == MIP_MENU_NOTIFY_CLOSE) {
       // right clicked on menuitem
       MSelectedItem = MPrevSelected;
       if (MListener) MListener->on_menuEvent(MSelectedItem);
       close();
     }
-    //KODE_Widget::do_widget_notify(AWidget,AValue);
+    //MIP_Widget::do_widget_notify(AWidget,AValue);
   }
 
 };
@@ -306,10 +306,10 @@ public:
 
   public:
 
-    void do_update(KODE_Widget* ASender) override {
+    void do_update(MIP_Widget* ASender) override {
     }
 
-    void do_notify(KODE_Widget* ASender, int32_t AMsg) override {
+    void do_notify(MIP_Widget* ASender, int32_t AMsg) override {
     }
 
 };
