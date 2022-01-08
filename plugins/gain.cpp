@@ -6,6 +6,8 @@
 //#define MIP_PLUGIN_VST2
 //#define MIP_PLUGIN_VST3
 
+#define MIP_DEBUG_CLAP
+
 //----------
 
 #include "mip.h"

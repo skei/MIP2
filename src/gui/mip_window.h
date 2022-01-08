@@ -174,31 +174,41 @@ public: // buffer
 public: // window
 //------------------------------
 
-  void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect) {
-    if (MChildren.size() > 0) {
-      for (int32_t i = MChildren.size()-1; i >= 0; i--) {
-        MIP_Widget* child = MChildren[i];
-        if (child->isVisible()) {
-          MIP_FRect rect = child->getRect();
-          if (rect.touches(ARect)) {
-            child->on_widget_paint(APainter,ARect);
-          }
-        }
-      }
-    }
-  }
+  // -> MIP_Widget
+
+//  void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect) {
+//    if (MChildren.size() > 0) {
+//      for (int32_t i = MChildren.size()-1; i >= 0; i--) {
+//        MIP_Widget* child = MChildren[i];
+//        if (child->isVisible()) {
+//          MIP_FRect rect = child->getRect();
+//          if (rect.touches(ARect)) {
+//            child->on_widget_paint(APainter,ARect);
+//          }
+//        }
+//      }
+//    }
+//  }
 
   //----------
 
-  void paintWidget(MIP_Widget* AWidget) {
-    MIP_FRect rect = AWidget->getRect();
-    #ifdef MIP_NO_WINDOW_BUFFERING
-    paintWindow(rect);
-    #else
-    paintBuffer(rect);
-    #endif
+  //void paintWidget(MIP_Widget* AWidget) {
+  //  MIP_FRect rect = AWidget->getRect();
+  //  #ifdef MIP_NO_WINDOW_BUFFERING
+  //  paintWindow(rect);
+  //  #else
+  //  paintBuffer(rect);
+  //  #endif
+  //};
 
-  };
+  void paint(MIP_FRect ARect) {
+    #ifdef MIP_NO_WINDOW_BUFFERING
+    paintWindow(ARect);
+    #else
+    paintBuffer(ARect);
+    #endif
+  }
+
 
 //------------------------------
 public: // MIP_BaseWindow

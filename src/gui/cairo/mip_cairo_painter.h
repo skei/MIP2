@@ -150,7 +150,21 @@ public:
 public:
 //------------------------------
 
+  KODE_Drawable* getTarget() override {
+    return MTarget;
+  }
 
+  //----------
+
+  void resize(uint32_t AWidth, uint32_t AHeight) override {
+    if (MIsWindow) {
+      cairo_xcb_surface_set_size(MCairoSurface,AWidth,AHeight);
+    }
+  }
+
+//------------------------------
+public:
+//------------------------------
 
   /*
     Do any pending drawing for the surface and also restore any temporary
@@ -208,22 +222,6 @@ public:
   }
 
   //----------
-
-//------------------------------
-public:
-//------------------------------
-
-  KODE_Drawable* getTarget() override {
-    return MTarget;
-  }
-
-  //----------
-
-  void resize(uint32_t AWidth, uint32_t AHeight) override {
-    if (MIsWindow) {
-      cairo_xcb_surface_set_size(MCairoSurface,AWidth,AHeight);
-    }
-  }
 
 //------------------------------
 public: // clip

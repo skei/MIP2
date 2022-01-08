@@ -159,6 +159,24 @@ public:
   void realignWidgets() {
   }
 
+  //----------
+
+  // was: MIP_Window.paintWidgets
+
+  void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect) {
+    if (MChildren.size() > 0) {
+      for (int32_t i = MChildren.size()-1; i >= 0; i--) {
+        MIP_Widget* child = MChildren[i];
+        if (child->isVisible()) {
+          MIP_FRect rect = child->getRect();
+          if (rect.touches(ARect)) {
+            child->on_widget_paint(APainter,ARect);
+          }
+        }
+      }
+    }
+  }
+
 //------------------------------
 public:
 //------------------------------

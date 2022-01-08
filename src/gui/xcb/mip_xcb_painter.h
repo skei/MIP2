@@ -97,8 +97,11 @@ public:
   }
 
 //------------------------------
-public:
+public: // base painter
 //------------------------------
+
+  void resize(uint32_t AWidth, uint32_t AHeight) override {
+  }
 
 //------------------------------
 public:
@@ -132,6 +135,8 @@ private:
     values[0] = color;
     xcb_change_gc(MConnection, MGC, mask, values);
   }
+
+  //----------
 
   void set_background_color(MIP_Color AColor) {
     uint8_t r = AColor.r * 255.0f;

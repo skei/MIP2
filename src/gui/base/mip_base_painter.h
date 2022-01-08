@@ -29,8 +29,15 @@ public:
 
   virtual MIP_Drawable* getTarget() { return nullptr; }
   virtual void resize(uint32_t AWidth, uint32_t AHeight) {}
+
+  virtual void flush() {}
+  virtual void dirty() {}
+  virtual void dirty(KODE_FRect ARect) {}
+  virtual void finish() {}
+
   virtual void setClip(MIP_FRect ARect) {}
   virtual void resetClip() {}
+
   virtual float getTextWidth(const char* AText) { return 0.0; }
   virtual float getTextHeight(const char* AText) { return 0.0; }
 

@@ -88,6 +88,13 @@ public:
   }
 
 //------------------------------
+public: // base surface
+//------------------------------
+
+  void resize(uint32_t AWidth, uint32_t AHeight) override {
+  }
+
+//------------------------------
 public: // drawable
 //------------------------------
 

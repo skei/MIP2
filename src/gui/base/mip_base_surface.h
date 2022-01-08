@@ -32,6 +32,13 @@ public:
 public:
 //------------------------------
 
+  virtual void resize(uint32_t AWidth, uint32_t AHeight) {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
   //virtual void fill(MIP_Color AColor) {}
   //virtual void fill(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, MIP_Color AColor) {}
   //virtual void blit(int32_t ADstX, int32_t ADstY, MIP_Drawable* ASource) {}
