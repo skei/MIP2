@@ -168,7 +168,7 @@ public:
   MIP_CLAP_VIRTUAL
   bool init() {
     bool result = MPlugin->on_plugin_init();
-    MIP_ClapPrint("-> %s\n",result?"true":"false");
+    MIP_ClapPrint("-> '%s'\n",result?"true":"false");
     return result;
   }
 
@@ -186,7 +186,7 @@ public:
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
     MProcessContext.samplerate = sample_rate;
     bool result = MPlugin->on_plugin_activate(sample_rate,min_frames_count,max_frames_count);
-    MIP_ClapPrint("sample_rate %.2f min_frames %i max_frames %i -> %s\n",sample_rate,min_frames_count,max_frames_count,result?"true":"false");
+    MIP_ClapPrint("sample_rate %.2f min_frames %i max_frames %i -> '%s'\n",sample_rate,min_frames_count,max_frames_count,result?"true":"false");
     return result;
   }
 
@@ -203,7 +203,7 @@ public:
   MIP_CLAP_VIRTUAL
   bool start_processing() {
     bool result = MPlugin->on_plugin_start_processing();
-    MIP_ClapPrint("-> %s\n",result?"true":"false");
+    MIP_ClapPrint("-> '%s'\n",result?"true":"false");
     return result;
   }
 
@@ -238,7 +238,7 @@ public:
 
   MIP_CLAP_VIRTUAL
   const void* get_extension(const char *id) {
-    MIP_ClapPrint("id %s -> ",id);
+    MIP_ClapPrint("id '%s' -> ",id);
     if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           { MIP_ClapDPrint("%p\n",&MExtAmbisonic);        return &MExtAmbisonic; }
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { MIP_ClapDPrint("%p\n",&MExtAudioPorts);       return &MExtAudioPorts; }
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  { MIP_ClapDPrint("%p\n",&MExtAudioPortsConfig); return &MExtAudioPortsConfig; }
@@ -449,7 +449,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool gui_x11_attach(const char *display_name, unsigned long window) {
-    MIP_ClapPrint("display_name %s window %i -> false\n",display_name,window);
+    MIP_ClapPrint("display_name '%s' window %i -> false\n",display_name,window);
     return false;
   }
 
@@ -498,7 +498,7 @@ public: // extensions
   MIP_CLAP_VIRTUAL
   uint32_t params_count() {
     uint32_t num = MDescriptor->getNumParameters();
-    MIP_ClapPrint("-> num\n",num);
+    MIP_ClapPrint("-> %i\n",num);
     return num;
   }
 
@@ -530,7 +530,7 @@ public: // extensions
   MIP_CLAP_VIRTUAL
   bool params_get_value(clap_id param_id, double *value) {
     *value = MParameterValues[param_id];
-    MIP_ClapPrint("param_id %i -> %.2f true\n",param_id,*value);
+    MIP_ClapPrint("param_id %i -> %f true\n",param_id,*value);
     return true;
   }
 
@@ -539,7 +539,7 @@ public: // extensions
   MIP_CLAP_VIRTUAL
   bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) {
     MIP_FloatToString(display,value,3);
-    MIP_ClapPrint("param_id %i value %.2f-> %s true\n",param_id,value,display);
+    MIP_ClapPrint("param_id %i value %f-> '%s' true\n",param_id,value,display);
     return true;
   }
 
@@ -548,7 +548,7 @@ public: // extensions
   MIP_CLAP_VIRTUAL
   bool params_text_to_value(clap_id param_id, const char *display, double *value) {
     *value = MIP_StringToFloat((char*)display);
-    MIP_ClapPrint("param_id %i display %s -> %.2f true\n",param_id,display,*value);
+    MIP_ClapPrint("param_id %i display '%s' -> %f true\n",param_id,display,*value);
     return true;
   }
 
@@ -634,7 +634,7 @@ public: // drafts
 
   MIP_CLAP_VIRTUAL
   void check_for_update_check(bool include_beta) {
-    MIP_ClapPrint("include_beta %s\n",include_beta?"true":"false");
+    MIP_ClapPrint("include_beta '%s'\n",include_beta?"true":"false");
   }
 
   //----------
@@ -697,7 +697,7 @@ public: // drafts
 
   MIP_CLAP_VIRTUAL
   bool preset_load_from_file(const char *path) {
-    MIP_ClapPrint("path %s-> false\n",path);
+    MIP_ClapPrint("path '%s'-> false\n",path);
     return false;
   }
 

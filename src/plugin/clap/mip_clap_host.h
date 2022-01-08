@@ -247,7 +247,7 @@ public: // clap plugin
 
   MIP_CLAP_VIRTUAL
   const void* get_extension(const char *extension_id) {
-    MIP_ClapPrint("extension_id: %s -> ",extension_id);
+    MIP_ClapPrint("extension_id: '%s' -> ",extension_id);
     if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS         ) == 0) { MIP_ClapDPrint("%p\n",&MClapHostAudioPorts);        return &MClapHostAudioPorts; }
     if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS_CONFIG  ) == 0) { MIP_ClapDPrint("%p\n",&MClapHostAudioPortsConfig);  return &MClapHostAudioPortsConfig; }
     if (strcmp(extension_id, CLAP_EXT_CHECK_FOR_UPDATE    ) == 0) { MIP_ClapDPrint("%p\n",&MClapHostChekForUpdate);     return &MClapHostChekForUpdate; }
@@ -357,7 +357,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool event_registry_query(const char* space_name, uint16_t* space_id) {
-    MIP_ClapPrint("space_name %s -> false\n",space_name);
+    MIP_ClapPrint("space_name '%s' -> false\n",space_name);
     return false;
   }
 
@@ -402,7 +402,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   void log_log(clap_log_severity severity, const char *msg) {
-    MIP_ClapPrint("severity: %i msg: %s\n",severity,msg);
+    MIP_ClapPrint("severity: %i msg: '%s'\n",severity,msg);
   }
 
   //------------------------------
