@@ -45,12 +45,14 @@ public:
 
   void set_width(uint32_t w) {
     MWidth = w;
-    MWindow->setSize(MWidth,MHeight);
+    //MWindow->setSize(MWidth,MHeight);
+    MWindow->setWindowSize(MWidth,MHeight);
   }
 
   void set_height(uint32_t h) {
     MHeight = h;
-    MWindow->setSize(MWidth,MHeight);
+    //MWindow->setSize(MWidth,MHeight);
+    MWindow->setWindowSize(MWidth,MHeight);
   }
 
   void set_scale(double scale) {

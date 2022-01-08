@@ -197,7 +197,8 @@ public:
   virtual void setWidth(uint32_t w) {
     MWidth = w;
     #ifndef MIP_NO_GUI
-    MWindow->setSize(MWidth,MHeight);
+    //MWindow->setSize(MWidth,MHeight);
+    MWindow->setWindowSize(MWidth,MHeight);
     #endif
   }
 
@@ -206,7 +207,8 @@ public:
   virtual void setHeight(uint32_t h) {
     MHeight = h;
     #ifndef MIP_NO_GUI
-    MWindow->setSize(MWidth,MHeight);
+    //MWindow->setSize(MWidth,MHeight);
+    MWindow->setWindowSize(MWidth,MHeight);
     #endif
   }
 
@@ -216,7 +218,8 @@ public:
     MWidth = w;
     MHeight = h;
     #ifndef MIP_NO_GUI
-    MWindow->setSize(MWidth,MHeight);
+    //MWindow->setSize(MWidth,MHeight);
+    MWindow->setWindowSize(MWidth,MHeight);
     #endif
   }
 

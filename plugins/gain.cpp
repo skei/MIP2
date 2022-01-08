@@ -1,12 +1,15 @@
 
 // nc -U -l -k /tmp/mip.socket
 #define MIP_DEBUG_PRINT_SOCKET
-#define MIP_NO_GUI
+
+//#define MIP_NO_GUI
+#define MIP_GUI_XCB
+
+#define MIP_DEBUG_CLAP
+
 #define MIP_PLUGIN_CLAP
 //#define MIP_PLUGIN_VST2
 //#define MIP_PLUGIN_VST3
-
-#define MIP_DEBUG_CLAP
 
 //----------
 

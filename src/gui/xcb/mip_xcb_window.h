@@ -274,7 +274,7 @@ private:
       removeDecorations();
     }
     else {
-      setTitle(ATitle);
+      setWindowTitle(ATitle);
       wantDeleteWindowEvent();
     }
     MWindowXpos   = 0;
@@ -958,7 +958,7 @@ private:
 public:
 //------------------------------
 
-  void setPos(uint32_t AXpos, uint32_t AYpos) override {
+  void setWindowPos(uint32_t AXpos, uint32_t AYpos) override {
     MWindowXpos = AXpos;
     MWindowYpos = AYpos;
     static uint32_t values[] = {
@@ -971,7 +971,7 @@ public:
 
   //----------
 
-  void setSize(uint32_t AWidth, uint32_t AHeight) override {
+  void setWindowSize(uint32_t AWidth, uint32_t AHeight) override {
     MWindowWidth = AWidth;
     MWindowHeight = AHeight;
     static uint32_t values[] = {
@@ -985,7 +985,7 @@ public:
 
   //----------
 
-  void setTitle(const char* ATitle) override {
+  void setWindowTitle(const char* ATitle) override {
     xcb_change_property(
       MConnection,
       XCB_PROP_MODE_REPLACE,

@@ -32,7 +32,7 @@ public:
 
   virtual void flush() {}
   virtual void dirty() {}
-  virtual void dirty(KODE_FRect ARect) {}
+  virtual void dirty(MIP_FRect ARect) {}
   virtual void finish() {}
 
   virtual void setClip(MIP_FRect ARect) {}
