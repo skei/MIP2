@@ -2,8 +2,8 @@
 #define mip_bitmap_included
 //----------------------------------------------------------------------
 
-#define MIP_NO_BITMAP_PNG
-#define MIP_NO_BITMAP_PNG_FILE
+//#define MIP_NO_BITMAP_PNG
+//#define MIP_NO_BITMAP_PNG_FILE
 #define MIP_NO_BITMAP_DRAW
 #define MIP_NO_BITMAP_FONT
 #define MIP_NO_BITMAP_PROC
@@ -19,8 +19,7 @@
   #include "gui/cairo/mip_cairo.h"
 #endif
 
-/*
-#include "base/utils/mip_math.h"
+//#include "base/utils/mip_math.h"
 //#include "gui/mip_drawable.h"
 
 #ifndef MIP_NO_BITMAP_PNG
@@ -34,8 +33,6 @@
   #define STB_TRUETYPE_IMPLEMENTATION
   #include "extern/stb/stb_truetype.h"
 #endif
-
-*/
 
 //----------------------------------------------------------------------
 

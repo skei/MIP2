@@ -33,10 +33,12 @@ protected:
 public:
 //------------------------------
 
-  MIP_SliderWidget(MIP_FRect ARect)
+  MIP_SliderWidget(MIP_FRect ARect, const char* AText="", float AValue=0.0)
   : MIP_DragValueWidget(ARect) {
     setName("MIP_SliderWidget");
     setHint("slider");
+    MText = AText;
+    MValue = AValue;
     MDrawBorder       = true;
     MBackgroundColor  = MIP_Color(0.7);
     MTextColor        = MIP_Color(0);

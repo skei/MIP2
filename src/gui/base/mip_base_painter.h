@@ -38,6 +38,12 @@ public:
   virtual void setClip(MIP_FRect ARect) {}
   virtual void resetClip() {}
 
+  //virtual void pushClip(MIP_FRect ARect) {}
+  //virtual MIP_FRect popClip() {}
+  //virtual void resetClipStack() {}
+  //virtual void setClipRect(MIP_FRect ARect) {}
+  //virtual MIP_FRect getClipRect() {}
+
   virtual float getTextWidth(const char* AText) { return 0.0; }
   virtual float getTextHeight(const char* AText) { return 0.0; }
   //virtual void  getTextSize(const char* AText, float* AWidth, float* AHeight) { *AWidth = 0.0; *AHeight = 0.0; }

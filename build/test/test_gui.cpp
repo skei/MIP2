@@ -20,8 +20,8 @@ int main() {
   window->appendWidget( new MIP_PanelWidget(        MIP_FRect(  10, 10,   150,20  )  ));
   window->appendWidget( new MIP_TextWidget(         MIP_FRect(  10, 35,   150,20  ), "Text" ));
   window->appendWidget( new MIP_ValueWidget(        MIP_FRect(  10, 60,   150,20  ), "Value" ));
-  window->appendWidget( new MIP_DragValueWidget(    MIP_FRect(  10, 85,   150,20  )  ));
-  window->appendWidget( new MIP_SliderWidget(       MIP_FRect(  10, 110,  150,20  )  ));
+  window->appendWidget( new MIP_DragValueWidget(    MIP_FRect(  10, 85,   150,20  ), "DragValue", 0.3  ));
+  window->appendWidget( new MIP_SliderWidget(       MIP_FRect(  10, 110,  150,20  ), "Slider"  ));
   window->appendWidget( new MIP_ScrollBarWidget(    MIP_FRect(  10, 135,  150,20  )  ));
   window->appendWidget( new MIP_ButtonWidget(       MIP_FRect(  10, 160,  150,20  )  ));
   window->appendWidget( new MIP_RangeSliderWidget(  MIP_FRect(  10, 185,  150,20  )  ));

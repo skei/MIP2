@@ -12,6 +12,12 @@ class MIP_ImageWidget
 : public MIP_PanelWidget {
 
 //------------------------------
+private:
+//------------------------------
+
+  MIP_Surface*  MSurface = nullptr;
+
+//------------------------------
 public:
 //------------------------------
 
@@ -28,10 +34,10 @@ public:
 //------------------------------
 
   virtual void drawImage(MIP_BasePainter* APainter) {
-    MIP_Surface* surface = getImageSurface();
-    if (surface) {
-      MIP_FRect rect = MIP_FRect(0,0,surface->getWidth(),surface->getHeight());
-      APainter->drawBitmap(getRect().x,getRect().y,surface,rect);
+    //MIP_Surface* surface = getImageSurface();
+    if (MSurface) {
+      MIP_FRect rect = MIP_FRect(0,0,MSurface->getWidth(),MSurface->getHeight());
+      APainter->drawBitmap(getRect().x,getRect().y,MSurface,rect);
     }
   }
 
@@ -42,7 +48,7 @@ public:
   void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
     fillBackground(APainter,ARect,AMode);
     drawImage(APainter);
-    paintChildren(APainter,ARect,AMode);
+    paintWidgets(APainter,ARect,AMode);
     drawBorder(APainter,ARect,AMode);
   }
 

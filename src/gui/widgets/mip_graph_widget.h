@@ -8,7 +8,7 @@
   - wire endpoint calculations are wrong..
 */
 
-//#include "base/types/mip_list.h"
+#include "base/types/mip_list.h"
 #include "gui/widgets/mip_panel_widget.h"
 #include "gui/mip_widget.h"
 
@@ -49,9 +49,9 @@ class MIP_GraphWire : public MIP_ListNode {
 public:
 //------------------------------
 
-  MIP_GraphModule* inModule  = MIP_NULL;
+  MIP_GraphModule* inModule  = nullptr;
   int32_t           inPin     = 0;
-  MIP_GraphModule* outModule = MIP_NULL;
+  MIP_GraphModule* outModule = nullptr;
   int32_t           outPin    = 0;
 
 //------------------------------
@@ -129,10 +129,10 @@ class MIP_GraphWidget
 private:
 //------------------------------
 
-//MIP_Graph*   MGraph      = MIP_NULL;
+//MIP_Graph*   MGraph      = nullptr;
   MIP_List     MModules;
   MIP_List     MWires;
-  MIP_Painter* MPainter    = MIP_NULL;
+  MIP_Painter* MPainter    = nullptr;
   MIP_FRect    MPaintRect  = MIP_FRect(0,0);
 
 //------------------------------
@@ -157,7 +157,7 @@ protected:
     bool              MDraggingWire     = false;
     bool              MDraggingSelect   = false;
     // hovering
-    MIP_GraphModule* MHoverModule      = MIP_NULL;
+    MIP_GraphModule* MHoverModule      = nullptr;
     int32_t           MHoverInput       = -1;
     int32_t           MHoverOutput      = -1;
     int32_t           MMousePrevX       = 0;
@@ -167,7 +167,7 @@ protected:
     int32_t           MDragWireY1       = 0;
     int32_t           MDragWireX2       = 0;
     int32_t           MDragWireY2       = 0;
-    MIP_GraphModule* MDragWireModule   = MIP_NULL;
+    MIP_GraphModule* MDragWireModule   = nullptr;
     int32_t           MDragWireInput    = -1;
     int32_t           MDragWireOutput   = -1;
     // selection
@@ -359,7 +359,7 @@ public:
           || ((AModule == wire->outModule) && (APin == wire->outPin)) ) return wire;//System.exit(wire);
         node = node->next();
       }
-      return MIP_NULL;
+      return nullptr;
     }
 
     //----------
@@ -374,7 +374,7 @@ public:
           && (AOutPin    == wire->outPin) ) return wire;
         node = node->next();
       }
-      return MIP_NULL;
+      return nullptr;
     }
 
   //----------------------------------------
@@ -700,7 +700,7 @@ public:
       if (AButton == MIP_BUTTON_LEFT) {
         MMousePrevX = AXpos;
         MMousePrevY = AYpos;
-        module = MIP_NULL;
+        module = nullptr;
         node = MModules.tail();
         while (node) {
           module = (MIP_GraphModule*)node;
@@ -760,7 +760,7 @@ public:
         } // node
       }
       if (changed) do_widget_redraw(this,getRect(),0);
-      MIP_PanelWidget::on_widget_mouseClick(AXpos,AYpos,AButton,AState);
+      MIP_PanelWidget::on_widget_mouseClick(AXpos,AYpos,AButton,AState,ATimeStamp);
   }
 
   //----------
@@ -832,7 +832,7 @@ public:
 
       if (changed) do_widget_redraw(this,getRect(),0);
       //inherited;
-      MIP_PanelWidget::on_widget_mouseRelease(AXpos,AYpos,AButton,AState);
+      MIP_PanelWidget::on_widget_mouseRelease(AXpos,AYpos,AButton,AState,ATimeStamp);
   }
 
   //----------
@@ -892,7 +892,7 @@ public:
       } // while
 
       if (!node) {
-        MHoverModule = MIP_NULL;
+        MHoverModule = nullptr;
         if (MHoverInput != -1) {
           MHoverInput = -1;
           changed = true;
@@ -926,7 +926,7 @@ public:
       MMousePrevX = AXpos;
       MMousePrevY = AYpos;
 
-      MIP_PanelWidget::on_widget_mouseMove(AXpos,AYpos,AState);
+      MIP_PanelWidget::on_widget_mouseMove(AXpos,AYpos,AState,ATimeStamp);
   }
 
   //----------
