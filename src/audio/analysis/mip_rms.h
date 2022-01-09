@@ -1,5 +1,5 @@
-#ifndef kode_rms_included
-#define kode_rms_included
+#ifndef mip_rms_included
+#define mip_rms_included
 //----------------------------------------------------------------------
 
 // original author: lubomir i ivanov (for axonlib)
@@ -16,7 +16,7 @@
     rmsfilter.reset();                        // to reset the rms value
 */
 
-class KODE_Rms {
+class MIP_Rms {
 
   private:
 
@@ -24,7 +24,7 @@ class KODE_Rms {
 
   public:
 
-    KODE_Rms() {
+    MIP_Rms() {
       reset();
       setup(300, 44100);
     }
@@ -54,7 +54,7 @@ class KODE_Rms {
     //----------
 
     float process(float input) {
-      fout = a0*input*input + b1*fout + KODE_FLOAT_DENORM;
+      fout = a0*input*input + b1*fout + MIP_FLOAT_DENORM;
       return sqrt(fout);
     }
 

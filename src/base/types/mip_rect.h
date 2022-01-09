@@ -28,12 +28,12 @@ public:
     h = 0;
   }
 
-  //MIP_Rect(T _v) {
-  //  x = _v;
-  //  y = _v;
-  //  w = _v;
-  //  h = _v;
-  //}
+  MIP_Rect(T _v) {
+    x = 0;
+    y = 0;
+    w = _v;
+    h = _v;
+  }
 
   MIP_Rect(T _w, T _h) {
     x = 0;

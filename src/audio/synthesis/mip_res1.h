@@ -1,14 +1,14 @@
-#ifndef kode_res1_included
-#define kode_res1_included
+#ifndef mip_res1_included
+#define mip_res1_included
 //----------------------------------------------------------------------
 
-#include "common/kode_interpolate.h"
-#include "common/kode_math.h"
-#include "common/kode_random.h"
-#include "audio/_backup/synthesis/kode_waveguide.h"
-//#include "audio/_backup/waveforms/kode_waveform_polyblep.h"
-#include "audio/_backup/filters/kode_dc_filter.h"
-#include "audio/_backup/filters/kode_rc_filter.h"
+#include "common/mip_interpolate.h"
+#include "common/mip_math.h"
+#include "common/mip_random.h"
+#include "audio/_backup/synthesis/mip_waveguide.h"
+//#include "audio/_backup/waveforms/mip_waveform_polyblep.h"
+#include "audio/_backup/filters/mip_dc_filter.h"
+#include "audio/_backup/filters/mip_rc_filter.h"
 
 
 //----------
@@ -26,13 +26,13 @@
 //----------------------------------------------------------------------
 
 
-class KODE_Res1 {
+class MIP_Res1 {
 
   private:
 
-    KODE_RcFilter   nshape;
-    KODE_DcFilter   dc;
-    KODE_WaveGuide  wg1;
+    MIP_RcFilter   nshape;
+    MIP_DcFilter   dc;
+    MIP_WaveGuide  wg1;
     //KWaveGuide      wg2;
     float           MSampleRate;
     float           MInvRate;
@@ -55,7 +55,7 @@ class KODE_Res1 {
 
   public:
 
-    KODE_Res1() {
+    MIP_Res1() {
       _hz1    = 0.0f;
       _os     = 1;
       _type   = krt_off;
@@ -121,8 +121,8 @@ class KODE_Res1 {
       float len,fb;
       float w;
       //float v1,v2;
-      float rnd = KODE_RandomSigned();
-      nshape.setWeight( 1 - KODE_Curve(_nshape,0.9) );
+      float rnd = MIP_RandomSigned();
+      nshape.setWeight( 1 - MIP_Curve(_nshape,0.9) );
       rnd = nshape.process(rnd);
       float nv = v + rnd * _noise;
       wg1.damp_lo(1-_damp);
@@ -153,7 +153,7 @@ class KODE_Res1 {
 
           //len = MSampleRate / (_hz1*(KMax(0.01f,_tune)));
 
-          float h = KODE_Clamp(_hz1,20,MSampleRate*0.5);
+          float h = MIP_Clamp(_hz1,20,MSampleRate*0.5);
 
           len = MSampleRate / h;//(_hz1*(KMax(0.01f,_tune)));
 
@@ -162,7 +162,7 @@ class KODE_Res1 {
           fb = (fb*fb*fb);
           fb = 1 - fb;
           w = wg1.feed(nv,fb,len);
-          v = KODE_Interpolate_Linear( _mix, v, w );
+          v = MIP_Interpolate_Linear( _mix, v, w );
           v = dc.process(v);  // ???
 //          break;
 //      }

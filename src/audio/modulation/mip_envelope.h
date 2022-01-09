@@ -1,5 +1,5 @@
-#ifndef kode_envelope_included
-#define kode_envelope_included
+#ifndef mip_envelope_included
+#define mip_envelope_included
 //----------------------------------------------------------------------
 
 // exponential decay
@@ -43,19 +43,19 @@ pos()         = position arrived at speed in samples
 
 #include <math.h>
 
-#define kode_env_rate_scale     10.0f // 30.0f
-#define kode_env_threshold      KODE_TINY
+#define mip_env_rate_scale     10.0f // 30.0f
+#define mip_env_threshold      MIP_TINY
 
-#define KODE_ENVELOPE_OFF       0
-#define KODE_ENVELOPE_ATTACK    1
-#define KODE_ENVELOPE_DECAY     2
-#define KODE_ENVELOPE_SUSTAIN   3
-#define KODE_ENVELOPE_RELEASE   4
-#define KODE_ENVELOPE_FINISHED  5
+#define MIP_ENVELOPE_OFF       0
+#define MIP_ENVELOPE_ATTACK    1
+#define MIP_ENVELOPE_DECAY     2
+#define MIP_ENVELOPE_SUSTAIN   3
+#define MIP_ENVELOPE_RELEASE   4
+#define MIP_ENVELOPE_FINISHED  5
 
 //----------------------------------------------------------------------
 
-struct KODE_EnvelopeStage {
+struct MIP_EnvelopeStage {
   float target;
   float rate;
 };
@@ -68,20 +68,20 @@ struct KODE_EnvelopeStage {
 
 //----------------------------------------------------------------------
 
-class KODE_ExponentialAdsrEnvelope {
+class MIP_ExponentialAdsrEnvelope {
 
   private:
 
     float               MSampleRate = 0;// = 44100;
     float               MValue = 0;
     int32_t             MStage = 0;
-    KODE_EnvelopeStage  MStages[5]; // -,a,d,s,r
+    MIP_EnvelopeStage  MStages[5]; // -,a,d,s,r
 
   public:
 
-    KODE_ExponentialAdsrEnvelope() {
+    MIP_ExponentialAdsrEnvelope() {
       //MScale = 50.0f;//6.0f;
-      MStage = KODE_ENVELOPE_OFF;
+      MStage = MIP_ENVELOPE_OFF;
       MValue = 0.0f;
     }
 
@@ -115,9 +115,9 @@ class KODE_ExponentialAdsrEnvelope {
 
       //return 1.0f / (ms*1000.0f)
 
-      //return 1.0f - expf(-2.0f * KODE_PI * ms / MSampleRate);
+      //return 1.0f - expf(-2.0f * MIP_PI * ms / MSampleRate);
 
-      float a = ms * kode_env_rate_scale; // 0..1 -> 0..25
+      float a = ms * mip_env_rate_scale; // 0..1 -> 0..25
       a = (a*a*a);  // 0..25 -> 0..625 (a*a*a = 15625)
       a += 1.0f;
       //if (a > 0) return 1.0f / a;
@@ -128,37 +128,37 @@ class KODE_ExponentialAdsrEnvelope {
     //----------
 
     void setAttack(float AValue) {
-      //float r1 = AValue * kode_env_rate_scale;
+      //float r1 = AValue * mip_env_rate_scale;
       //float r2 = (r1*r1*r1) + 1;
-      MStages[KODE_ENVELOPE_ATTACK].target = 1.0f;
-      //MStages[KODE_ENVELOPE_ATTACK].rate   = 1.0f / r2;
-      MStages[KODE_ENVELOPE_ATTACK].rate   = calcRate(AValue);
+      MStages[MIP_ENVELOPE_ATTACK].target = 1.0f;
+      //MStages[MIP_ENVELOPE_ATTACK].rate   = 1.0f / r2;
+      MStages[MIP_ENVELOPE_ATTACK].rate   = calcRate(AValue);
     }
 
     void setDecay(float AValue) {
-      //float r1 = AValue * kode_env_rate_scale;
+      //float r1 = AValue * mip_env_rate_scale;
       //float r2 = (r1*r1*r1) + 1;
-      //MStages[KODE_ENVELOPE_DECAY].target = ATarget; // set in setSustain
-      //MStages[KODE_ENVELOPE_DECAY].rate = 1.0f / r2;
-      MStages[KODE_ENVELOPE_DECAY].rate = calcRate(AValue);
+      //MStages[MIP_ENVELOPE_DECAY].target = ATarget; // set in setSustain
+      //MStages[MIP_ENVELOPE_DECAY].rate = 1.0f / r2;
+      MStages[MIP_ENVELOPE_DECAY].rate = calcRate(AValue);
     }
 
     void setSustain(float AValue) {
       //float r1 = AValue;                  // * env_rate_scale;
       //float r2 = (r1*r1*r1);              // + 1;
-      //MStages[KODE_ENVELOPE_DECAY].target = r2;   // set in setSustain
-      //MStages[KODE_ENVELOPE_SUSTAIN].target = r2; // set in setSustain
-      MStages[KODE_ENVELOPE_DECAY].target = AValue;
-      MStages[KODE_ENVELOPE_SUSTAIN].target = AValue;
-      MStages[KODE_ENVELOPE_SUSTAIN].rate = 1.0f;
+      //MStages[MIP_ENVELOPE_DECAY].target = r2;   // set in setSustain
+      //MStages[MIP_ENVELOPE_SUSTAIN].target = r2; // set in setSustain
+      MStages[MIP_ENVELOPE_DECAY].target = AValue;
+      MStages[MIP_ENVELOPE_SUSTAIN].target = AValue;
+      MStages[MIP_ENVELOPE_SUSTAIN].rate = 1.0f;
     }
 
     void setRelease(float AValue) {
-      //float r1 = AValue * kode_env_rate_scale;
+      //float r1 = AValue * mip_env_rate_scale;
       //float r2 = (r1*r1*r1) + 1;
-      MStages[KODE_ENVELOPE_RELEASE].target = 0.0f;
-      //MStages[KODE_ENVELOPE_RELEASE].rate   = 1.0f / r2;
-      MStages[KODE_ENVELOPE_RELEASE].rate = calcRate(AValue);
+      MStages[MIP_ENVELOPE_RELEASE].target = 0.0f;
+      //MStages[MIP_ENVELOPE_RELEASE].rate   = 1.0f / r2;
+      MStages[MIP_ENVELOPE_RELEASE].rate = calcRate(AValue);
     }
 
     //----------
@@ -190,7 +190,7 @@ class KODE_ExponentialAdsrEnvelope {
     //----------
 
     void noteOn(void) {
-      MStage = KODE_ENVELOPE_ATTACK;
+      MStage = MIP_ENVELOPE_ATTACK;
       MValue = 0.0f;
 
     }
@@ -198,19 +198,19 @@ class KODE_ExponentialAdsrEnvelope {
     //----------
 
     void noteOff(void) {
-      MStage = KODE_ENVELOPE_RELEASE;
+      MStage = MIP_ENVELOPE_RELEASE;
     }
 
     //----------
 
     float process(void) {
-      if (MStage == KODE_ENVELOPE_OFF) return 0.0f;
-      if (MStage == KODE_ENVELOPE_FINISHED) return 0.0f;
-      if (MStage == KODE_ENVELOPE_SUSTAIN) return MValue;
+      if (MStage == MIP_ENVELOPE_OFF) return 0.0f;
+      if (MStage == MIP_ENVELOPE_FINISHED) return 0.0f;
+      if (MStage == MIP_ENVELOPE_SUSTAIN) return MValue;
       float target = MStages[MStage].target;
       float rate   = MStages[MStage].rate;
       MValue += ( (target-MValue) * rate );
-      if (fabs(target-MValue) <= kode_env_threshold) {
+      if (fabs(target-MValue) <= mip_env_threshold) {
         MStage += 1;
       }
       return MValue;
@@ -231,7 +231,7 @@ class KODE_ExponentialAdsrEnvelope {
       float rate   = MStages[MStage].rate;
       MValue += (target - MValue) * (1 - pow(1 - rate, ASteps));
 
-      //if (fabs(target-MValue) <= kode_env_threshold) {
+      //if (fabs(target-MValue) <= mip_env_threshold) {
       //  MStage += 1;
       //}
 

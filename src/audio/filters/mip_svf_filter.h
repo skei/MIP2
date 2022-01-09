@@ -1,8 +1,8 @@
-#ifndef kode_filter_svf_included
-#define kode_filter_svf_included
+#ifndef mip_filter_svf_included
+#define mip_filter_svf_included
 //----------------------------------------------------------------------
 
-#include "base/utils/kode_math.h"
+#include "base/utils/mip_math.h"
 
 /*
   http://www.kvraudio.com/forum/viewtopic.php?p=6371172#p6371172
@@ -21,7 +21,7 @@
 #define kft_bp    3
 #define kft_n     4
 
-class KODE_SvfFilter {
+class MIP_SvfFilter {
 
   private:
 
@@ -33,7 +33,7 @@ class KODE_SvfFilter {
 
   public:
 
-    KODE_SvfFilter() {
+    MIP_SvfFilter() {
       //MMode = kft_none;
       //MFreq = 1;
       //MBW   = 0;
@@ -48,7 +48,7 @@ class KODE_SvfFilter {
     }
 
     void setMode(uint32_t AMode) {
-      //KODE_Print("%i\n",AMode);
+      //MIP_Print("%i\n",AMode);
       MMode = AMode;
       //z1 = 0;
       //z2 = 0;
@@ -95,7 +95,7 @@ class KODE_SvfFilter {
     float processMod(float AValue, float AFreq, float ABW) {
       MFreq += AFreq;
       //MBW   += ABW;
-      KODE_Clamp(MFreq,0.0f,1.0f);
+      MIP_Clamp(MFreq,0.0f,1.0f);
       //KClamp(MBW,0,1);
       float result = process(AValue);
       MFreq -= AFreq;

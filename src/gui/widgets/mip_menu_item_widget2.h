@@ -15,6 +15,9 @@ private:
 
   MIP_TextWidget*  MTextWidget = nullptr;
 
+  const char* MText = "";
+  MIP_Color   MTextColor = MIP_COLOR_BLACK;
+
   //MIP_Color  MNormalBackgroundColor  = MIP_COLOR_GRAY;
   //MIP_Color  MNormalTextColor        = MIP_COLOR_BLACK;
   //MIP_Color  MHoverBackgroundColor  = MIP_COLOR_DARK_GRAY;
@@ -51,6 +54,12 @@ public:
 //    //text->layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
 //    appendWidget(text);
 //  }
+
+  virtual void setText(const char* AText) { MText = AText; }
+  virtual void setTextColor(MIP_Color AColor) { MTextColor = AColor; }
+
+  //virtual void setDrawText(bool ADraw)                { MDrawText = ADraw; }
+
 
 //------------------------------
 public:
@@ -89,12 +98,12 @@ public:
 
   //----------
 
-  //void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) final {
-  //  //MIsHovering = false;
-  //  setBackgroundColor(MIP_COLOR_DARK_GRAY);
-  //  setTextColor(MIP_COLOR_LIGHT_GRAY);
-  //  do_widget_redraw(this,getRect(),0);
-  //}
+  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) final {
+    //MIsHovering = false;
+    setBackgroundColor(MIP_COLOR_DARK_GRAY);
+    setTextColor(MIP_COLOR_LIGHT_GRAY);
+    do_widget_redraw(this,getRect(),0);
+  }
 
 };
 

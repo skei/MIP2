@@ -1,5 +1,5 @@
-#ifndef kode_filter_karlsen_included
-#define kode_filter_karlsen_included
+#ifndef mip_filter_karlsen_included
+#define mip_filter_karlsen_included
 //----------------------------------------------------------------------
 
 //#define sDenorm (1.0e-24);
@@ -27,7 +27,7 @@
 
 //----------------------------------------------------------------------
 
-class KODE_KarlsenFilter {
+class MIP_KarlsenFilter {
   private:
     float   fQ;
     float   fF1,fF;
@@ -75,14 +75,14 @@ class KODE_KarlsenFilter {
 
   public:
 
-    KODE_KarlsenFilter() {
+    MIP_KarlsenFilter() {
       fFS = 44100;
       setFrequency(1000);
       fOS = 2;
       setQ(1);
     }
 
-    ~KODE_KarlsenFilter() {
+    ~MIP_KarlsenFilter() {
     }
 
     void process(float AValue/*, float* L, float* B, float* N, float* H*/) {
@@ -92,7 +92,7 @@ class KODE_KarlsenFilter {
         fTmp = (fTmp*0.418)+((fQ*fPole[4])*0.582); // dynamic feedback
         float intfp = (fTmp*0.36)+(prevfp*0.64); // feedback phase
 
-        fPole[1] = (((AValue + /*sDenorm*/ KODE_FLOAT_DENORM )-intfp) * fF1) + (fPole[1] * (1 - fF1));
+        fPole[1] = (((AValue + /*sDenorm*/ MIP_FLOAT_DENORM )-intfp) * fF1) + (fPole[1] * (1 - fF1));
 
         if (fPole[1] > 1) fPole[1] = 1;
         else if (fPole[1] < -1) fPole[1] = -1;

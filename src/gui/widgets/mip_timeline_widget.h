@@ -1,11 +1,11 @@
 #if 0
 
-#ifndef kode_timeline_widget_included
-#define kode_timeline_widget_included
+#ifndef mip_timeline_widget_included
+#define mip_timeline_widget_included
 //----------------------------------------------------------------------
 
-#include "base/kode_list.h"
-#include "gui/kode_widget.h"
+#include "base/mip_list.h"
+#include "gui/mip_widget.h"
 
 //----------
 
@@ -21,8 +21,8 @@
 // segment
 //----------------------------------------------------------------------
 
-class KODE_TimelineSegment
-: public KODE_ListNode {
+class MIP_TimelineSegment
+: public MIP_ListNode {
 
   public:
 
@@ -45,8 +45,8 @@ class KODE_TimelineSegment
 
   public:
 
-    KODE_TimelineSegment(const char* AName, float AStart, float AEnd)
-    : KODE_ListNode() {
+    MIP_TimelineSegment(const char* AName, float AStart, float AEnd)
+    : MIP_ListNode() {
       MName     = AName;
       MStartPos = AStart;
       MEndPos   = AEnd;
@@ -55,7 +55,7 @@ class KODE_TimelineSegment
 
     //----------
 
-    virtual ~KODE_TimelineSegment() {
+    virtual ~MIP_TimelineSegment() {
     }
 
     //----------
@@ -67,22 +67,22 @@ class KODE_TimelineSegment
 
 };
 
-//typedef list<KODE_TimelineSegment*> KODE_TimelineSegments;
-//typedef KODE_Array<KODE_TimelineSegment*> KODE_TimelineSegments;
+//typedef list<MIP_TimelineSegment*> MIP_TimelineSegments;
+//typedef MIP_Array<MIP_TimelineSegment*> MIP_TimelineSegments;
 
 //----------------------------------------------------------------------
 // track
 //----------------------------------------------------------------------
 
-class KODE_TimelineTrack
-: public KODE_ListNode {
+class MIP_TimelineTrack
+: public MIP_ListNode {
 
   private:
 
     const char* MName     = "track";
     bool        MSelected = false;
-    KODE_List   MSegments;
-    //KODE_TimelineSegments MSegments;
+    MIP_List   MSegments;
+    //MIP_TimelineSegments MSegments;
 
   public:
 
@@ -90,28 +90,28 @@ class KODE_TimelineTrack
     void            setName(char* AName) { MName = AName; }
     void            select(float ASelected=true) { MSelected = ASelected; }
     bool            isSelected(void) { return MSelected; }
-    KODE_ListNode*  getSegments(void) { return MSegments.head(); }
-    //KODE_TimelineSegments*  getSegments(void) { return &MSegments; }
+    MIP_ListNode*  getSegments(void) { return MSegments.head(); }
+    //MIP_TimelineSegments*  getSegments(void) { return &MSegments; }
 
   public:
 
-    KODE_TimelineTrack(const char* AName)
-    : KODE_ListNode() {
+    MIP_TimelineTrack(const char* AName)
+    : MIP_ListNode() {
       MName = AName;
       MSelected = false;
     }
 
     //----------
 
-    virtual ~KODE_TimelineTrack() {
-      #ifndef KODE_NO_AUTODELETE
+    virtual ~MIP_TimelineTrack() {
+      #ifndef MIP_NO_AUTODELETE
       deleteSegments();
       #endif
     }
 
     //----------
 
-    void addSegment(KODE_TimelineSegment* ASegment) {
+    void addSegment(MIP_TimelineSegment* ASegment) {
       MSegments.insertTail(ASegment);
       //MSegments.push_back(ASegment);
     }
@@ -130,14 +130,14 @@ class KODE_TimelineTrack
 
 };
 
-//typedef KODE_Array<KODE_TimelineTrack*> KODE_TimelineTracks;
+//typedef MIP_Array<MIP_TimelineTrack*> MIP_TimelineTracks;
 
 //----------------------------------------------------------------------
 // track
 //----------------------------------------------------------------------
 
-class KODE_TimelineWidget
-: public KODE_Widget {
+class MIP_TimelineWidget
+: public MIP_Widget {
 
   private:
     float                 MZoom             = 1.0f;
@@ -145,29 +145,29 @@ class KODE_TimelineWidget
     int32_t               MPrevMouseX       = 0;
     int32_t               MPrevMouseY       = 0;
   private:
-    KODE_TimelineTrack*   MHoverTrack       = KODE_NULL;
-    KODE_TimelineSegment* MHoverSegment     = KODE_NULL;
+    MIP_TimelineTrack*   MHoverTrack       = MIP_NULL;
+    MIP_TimelineSegment* MHoverSegment     = MIP_NULL;
     float                 MHoverTime        = -1.0f;
     bool                  MHoverLeft        = false;
     bool                  MHoverRight       = false;
   private:
-    KODE_TimelineSegment* MDraggingSegment  = KODE_NULL;
+    MIP_TimelineSegment* MDraggingSegment  = MIP_NULL;
     bool                  MDraggingLeft     = false;
     bool                  MDraggingRight    = false;
   protected:
-    KODE_Color  MBackColor        = KODE_Grey;
-    KODE_Color  MTrackBackColor   = KODE_DarkGrey;
-    KODE_Color  MTrackTextColor   = KODE_LightGrey;
-    KODE_Color  MSegmentBackColor = KODE_LightGrey;
-    KODE_Color  MSegmentTextColor = KODE_DarkGrey;
-    KODE_Color  MBorderColor      = KODE_Black;
-    KODE_Color  MTextColor        = KODE_Red;
+    MIP_Color  MBackColor        = MIP_Grey;
+    MIP_Color  MTrackBackColor   = MIP_DarkGrey;
+    MIP_Color  MTrackTextColor   = MIP_LightGrey;
+    MIP_Color  MSegmentBackColor = MIP_LightGrey;
+    MIP_Color  MSegmentTextColor = MIP_DarkGrey;
+    MIP_Color  MBorderColor      = MIP_Black;
+    MIP_Color  MTextColor        = MIP_Red;
 
   private:
 
-    //KODE_TimelineTracks   MTracks;
+    //MIP_TimelineTracks   MTracks;
 
-    KODE_List MTracks;
+    MIP_List MTracks;
 //    int32_t   MCursor;
 
   //------------------------------
@@ -176,8 +176,8 @@ class KODE_TimelineWidget
 
   public:
 
-    //KODE_TimelineTracks*  getTracks(void)            { return &MTracks; }
-    KODE_ListNode*  getTracks(void)            { return MTracks.head(); }
+    //MIP_TimelineTracks*  getTracks(void)            { return &MTracks; }
+    MIP_ListNode*  getTracks(void)            { return MTracks.head(); }
 //    int32_t         getCursor(void)            { return MCursor; }
     float           getZoom(void)              { return MZoom; }
     float           getStartpos(void)          { return MStartPos; }
@@ -192,17 +192,17 @@ class KODE_TimelineWidget
 
   public:
 
-    KODE_TimelineWidget(KODE_Rect ARect)
-    : KODE_Widget(ARect) {
-      MName = "KODE_TimelineWidget";
-      setFlag(KODE_WIDGET_HOVER);
-      //setFlag(KODE_WIDGET_CLIP);
+    MIP_TimelineWidget(MIP_Rect ARect)
+    : MIP_Widget(ARect) {
+      MName = "MIP_TimelineWidget";
+      setFlag(MIP_WIDGET_HOVER);
+      //setFlag(MIP_WIDGET_CLIP);
     }
 
     //----------
 
-    virtual ~KODE_TimelineWidget() {
-      #ifndef KODE_NO_AUTODELETE
+    virtual ~MIP_TimelineWidget() {
+      #ifndef MIP_NO_AUTODELETE
       deleteTracks();
       #endif
     }
@@ -213,7 +213,7 @@ class KODE_TimelineWidget
 
   public:
 
-    void addTrack(KODE_TimelineTrack* ATrack) {
+    void addTrack(MIP_TimelineTrack* ATrack) {
       //MTracks.append(ATrack);
       //MTracks.push_back(ATrack);
       MTracks.insertTail(ATrack);
@@ -247,7 +247,7 @@ class KODE_TimelineWidget
 
     int32_t calcPixels(int32_t ATime) {
       float pixel = ATime * PIXELS_PER_SECOND;
-      return KODE_Trunc( pixel*MZoom );
+      return MIP_Trunc( pixel*MZoom );
     }
 
     //----------
@@ -279,7 +279,7 @@ class KODE_TimelineWidget
     int32_t calcXpos(float ATime) {
       if (ATime >= 0) {
         float pixel = ((ATime*MZoom) * PIXELS_PER_SECOND);
-        return  TRACK_WIDTH + KODE_Trunc(pixel);
+        return  TRACK_WIDTH + MIP_Trunc(pixel);
       }
       return -1;
     }
@@ -292,22 +292,22 @@ class KODE_TimelineWidget
 
     */
 
-    KODE_TimelineTrack* findTrack(int32_t AYpos) {
+    MIP_TimelineTrack* findTrack(int32_t AYpos) {
       int32_t y = AYpos - MRect.y;
-      if (y < 0) return KODE_NULL;
+      if (y < 0) return MIP_NULL;
       int32_t t = y / TRACK_HEIGHT;
 
-      KODE_ListNode* node = (KODE_ListNode*)MTracks.head();
+      MIP_ListNode* node = (MIP_ListNode*)MTracks.head();
       while (node) {
-        if (t == 0) return (KODE_TimelineTrack*)node;
+        if (t == 0) return (MIP_TimelineTrack*)node;
         t -= 1;
         node = node->next();
       }
       return nullptr;
 
-      //KODE_TimelineTracks::iterator iter = MTracks.begin();
+      //MIP_TimelineTracks::iterator iter = MTracks.begin();
       //while (iter != MTracks.end()) {
-      //  KODE_TimelineTrack* track = *iter;
+      //  MIP_TimelineTrack* track = *iter;
       //  if (t == 0) return track;
       //  t -= 1;
       //}
@@ -316,21 +316,21 @@ class KODE_TimelineWidget
 
     //----------
 
-    KODE_TimelineSegment* findSegment(KODE_TimelineTrack* ATrack, float ATime) {
+    MIP_TimelineSegment* findSegment(MIP_TimelineTrack* ATrack, float ATime) {
 
-      //KODE_ListNode* node = (KODE_ListNode*)ATrack->getSegments()->head();
-      KODE_ListNode* node = ATrack->getSegments();
+      //MIP_ListNode* node = (MIP_ListNode*)ATrack->getSegments()->head();
+      MIP_ListNode* node = ATrack->getSegments();
       while (node) {
-        KODE_TimelineSegment* segment = (KODE_TimelineSegment*)node;
+        MIP_TimelineSegment* segment = (MIP_TimelineSegment*)node;
         if ( (ATime >= segment->getStart()) && (ATime <= segment->getEnd()) ) return segment;
         node = node->next();
       }
-      return KODE_NULL;
+      return MIP_NULL;
 
-      //KODE_TimelineSegments* segments = ATrack->getSegments();
-      //KODE_TimelineSegments::iterator iter = segments->begin();
+      //MIP_TimelineSegments* segments = ATrack->getSegments();
+      //MIP_TimelineSegments::iterator iter = segments->begin();
       //while (iter != segments->end()) {
-      //  KODE_TimelineSegment* segment = *iter;
+      //  MIP_TimelineSegment* segment = *iter;
       //  if ( (ATime >= segment->getStart()) && (ATime <= segment->getEnd()) ) return segment;
       //}
       //return nullptr;
@@ -344,7 +344,7 @@ class KODE_TimelineWidget
 
     void on_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState) override {
       bool changed = false;
-      if (AButton == KODE_BUTTON_LEFT) {
+      if (AButton == MIP_BUTTON_LEFT) {
         MPrevMouseX = AXpos;
         MPrevMouseY = AYpos;
         if (!MHoverSegment) return;
@@ -360,7 +360,7 @@ class KODE_TimelineWidget
 
     void on_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState) override {
       bool changed = false;
-      if (AButton == KODE_BUTTON_LEFT) {
+      if (AButton == MIP_BUTTON_LEFT) {
         //if (!MDraggingSegment) return;
         MDraggingSegment = nullptr;
         MDraggingLeft = false;
@@ -382,8 +382,8 @@ class KODE_TimelineWidget
       //AYpos -= MPadding.y;
 
       bool changed = false;
-      KODE_TimelineTrack* track = findTrack(AYpos);
-      KODE_TimelineSegment* segment = nullptr;
+      MIP_TimelineTrack* track = findTrack(AYpos);
+      MIP_TimelineSegment* segment = nullptr;
 
       MHoverTime = calcTime(AXpos - MRect.x);
       //KTrace("MHoverTime %.3f\n",MHoverTime);
@@ -397,7 +397,7 @@ class KODE_TimelineWidget
 
         if (MDraggingLeft) {
           st += diff;
-          st = KODE_Max(st,0.0f);
+          st = MIP_Max(st,0.0f);
           if (st > (en-mintime)) st = (en-mintime);
         }
         else if (MDraggingRight) {
@@ -408,11 +408,11 @@ class KODE_TimelineWidget
           // dragging segment
           float le = en - st;
           st += diff;
-          st = KODE_Max(st,0.0f);
+          st = MIP_Max(st,0.0f);
           en = st + le;
         }
 
-//        KODE_TimelineSegment* prv = (KODE_TimelineSegment*)MDraggingSegment->prev();
+//        MIP_TimelineSegment* prv = (MIP_TimelineSegment*)MDraggingSegment->prev();
 //        if (prv) {
 //          if (st <= prv->getEnd()) {
 //            float le = en - st;
@@ -421,7 +421,7 @@ class KODE_TimelineWidget
 //          }
 //        }
 
-//        KODE_TimelineSegment* nxt = (KODE_TimelineSegment*)MDraggingSegment->next();
+//        MIP_TimelineSegment* nxt = (MIP_TimelineSegment*)MDraggingSegment->next();
 //        if (nxt) {
 //          if (en >= nxt->getStart()) {
 //            float le = en - st;
@@ -477,7 +477,7 @@ class KODE_TimelineWidget
 
     //----------
 
-    void on_paint(KODE_Painter* APainter, KODE_Rect ARect) override {
+    void on_paint(MIP_Painter* APainter, MIP_Rect ARect) override {
       APainter->setFillColor(MBackColor);
       APainter->fillRectangle(MRect.x,MRect.y,MRect.x2(),MRect.y2());
       APainter->setDrawColor(MBorderColor);
@@ -487,24 +487,24 @@ class KODE_TimelineWidget
       //int32_t x2 := MRect.x2;
       int32_t y1 = MRect.y;
 
-      //KODE_ListNode* tnode = (KODE_ListNode*)MTracks.head();
+      //MIP_ListNode* tnode = (MIP_ListNode*)MTracks.head();
       //while (tnode) {
-        //KODE_TimelineTrack* track = (KODE_TimelineTrack*)tnode;
+        //MIP_TimelineTrack* track = (MIP_TimelineTrack*)tnode;
 
-      //KODE_TimelineTrack* track = MTracks.head();
-      KODE_TimelineTrack* track = (KODE_TimelineTrack*)MTracks.head();
+      //MIP_TimelineTrack* track = MTracks.head();
+      MIP_TimelineTrack* track = (MIP_TimelineTrack*)MTracks.head();
       while (track) {
-        //KODE_Trace("track %p\n",track);
+        //MIP_Trace("track %p\n",track);
 
         int32_t x2 = x1 + TRACK_WIDTH - 1;
         int32_t y2 = y1 + TRACK_HEIGHT - 1;
         // { track background }
-        if (track == MHoverTrack) APainter->setFillColor( KODE_Color(0.3,0.3,0.3) );
+        if (track == MHoverTrack) APainter->setFillColor( MIP_Color(0.3,0.3,0.3) );
         else APainter->setFillColor(MTrackBackColor);
         APainter->fillRectangle(x1,y1,x2,y2);
         // { track name }
         APainter->setTextColor(MTrackTextColor);
-        APainter->drawText(x1+2,y1,x2-2,y2,track->getName(), KODE_TEXT_ALIGN_CENTER);
+        APainter->drawText(x1+2,y1,x2-2,y2,track->getName(), MIP_TEXT_ALIGN_CENTER);
         // { track border }
         APainter->setDrawColor(MBorderColor);   // below
 
@@ -517,70 +517,70 @@ class KODE_TimelineWidget
 
         // { track segments }
 
-        //KODE_ListNode* snode = (KODE_ListNode*)track->getSegments()->head();
+        //MIP_ListNode* snode = (MIP_ListNode*)track->getSegments()->head();
         //while (snode) {
-        //  KODE_TimelineSegment* segment = (KODE_TimelineSegment*)snode;
+        //  MIP_TimelineSegment* segment = (MIP_TimelineSegment*)snode;
 
-        //KODE_TimelineSegment* segment = track->getSegments()->head();
-      KODE_TimelineSegment* segment = (KODE_TimelineSegment*)track->getSegments();
+        //MIP_TimelineSegment* segment = track->getSegments()->head();
+      MIP_TimelineSegment* segment = (MIP_TimelineSegment*)track->getSegments();
 
         while (segment) {
-          //KODE_Trace("track %p\n",track);
+          //MIP_Trace("track %p\n",track);
 
           float ss = segment->getStart() * MZoom * PIXELS_PER_SECOND;
           float se = segment->getEnd() * MZoom * PIXELS_PER_SECOND;
           // { back }
-          if (segment == MHoverSegment) APainter->setFillColor( KODE_Color(0.7,0.7,0.7) );
+          if (segment == MHoverSegment) APainter->setFillColor( MIP_Color(0.7,0.7,0.7) );
           else APainter->setFillColor(MSegmentBackColor);
           APainter->fillRectangle(x2+1+trunc(ss),y1,x2+1+trunc(se),y2-1);
           // { name }
           APainter->setTextColor(MSegmentTextColor);
-          APainter->drawText(x2+1+KODE_Trunc(ss),y1,x2+1+KODE_Trunc(se),y2,segment->getName(),KODE_TEXT_ALIGN_CENTER);
+          APainter->drawText(x2+1+MIP_Trunc(ss),y1,x2+1+MIP_Trunc(se),y2,segment->getName(),MIP_TEXT_ALIGN_CENTER);
           // { border }
           APainter->setDrawColor(MBorderColor);
           //APainter->drawRectangle(x2+1+trunc(ss),y1,x2+1+trunc(se),y2);
 
           //APainter->drawLine(x2+1+KTrunc(ss),y1,x2+1+KTrunc(ss),y2);
           //APainter->drawLine(x2+1+KTrunc(se),y1,x2+1+KTrunc(se),y2);
-          APainter->drawVLine(x2+1+KODE_Trunc(ss),y1,y2);
-          APainter->drawVLine(x2+1+KODE_Trunc(se),y1,y2);
+          APainter->drawVLine(x2+1+MIP_Trunc(ss),y1,y2);
+          APainter->drawVLine(x2+1+MIP_Trunc(se),y1,y2);
 
           // { resize indicators }
           if (segment == MHoverSegment) {
-            APainter->setFillColor( KODE_DarkRed );
-            if (MHoverLeft)   APainter->fillRectangle(x2+1+KODE_Trunc(ss),y1,x2+1+KODE_Trunc(ss)+(DRAG_HANDLE_SIZE-1),y2);
-            if (MHoverRight)  APainter->fillRectangle(x2+1+KODE_Trunc(se)-(DRAG_HANDLE_SIZE-1),y1,x2+1+KODE_Trunc(se),y2);
+            APainter->setFillColor( MIP_DarkRed );
+            if (MHoverLeft)   APainter->fillRectangle(x2+1+MIP_Trunc(ss),y1,x2+1+MIP_Trunc(ss)+(DRAG_HANDLE_SIZE-1),y2);
+            if (MHoverRight)  APainter->fillRectangle(x2+1+MIP_Trunc(se)-(DRAG_HANDLE_SIZE-1),y1,x2+1+MIP_Trunc(se),y2);
           }
 
           //snode = snode->next();
-          segment = (KODE_TimelineSegment*)segment->next();
+          segment = (MIP_TimelineSegment*)segment->next();
         } // while segment
 
         y1 += TRACK_HEIGHT;
 
         //tnode = tnode->next();
-        track = (KODE_TimelineTrack*)track->next();
+        track = (MIP_TimelineTrack*)track->next();
       } // while tnode
 
       float cur = MCursor * MZoom * PIXELS_PER_SECOND;
-      APainter->setDrawColor( KODE_LightRed );
+      APainter->setDrawColor( MIP_LightRed );
 
       //APainter->drawLine( MRect.x + KTrunc(cur), MRect.y, MRect.x + KTrunc(cur), MRect.y2() );
-      APainter->drawVLine( MRect.x + KODE_Trunc(cur), MRect.y, MRect.y2() );
+      APainter->drawVLine( MRect.x + MIP_Trunc(cur), MRect.y, MRect.y2() );
 
       //KWidget::on_widgetPaint(AWidget,APainter,ARect,AMode);
     }
 
     //----------
 
-    void on_leave(float AXpos, float AYpos, KODE_Widget* AFrom=nullptr) override {
+    void on_leave(float AXpos, float AYpos, MIP_Widget* AFrom=nullptr) override {
       bool changed = false;
       if (MHoverTrack) {
-        MHoverTrack = KODE_NULL;
+        MHoverTrack = MIP_NULL;
         changed = true;
       }
       if (MHoverSegment) {
-        MHoverSegment = KODE_NULL;
+        MHoverSegment = MIP_NULL;
         changed = true;
       }
       if (changed) do_redraw(this,MRect);

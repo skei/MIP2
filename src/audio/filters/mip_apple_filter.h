@@ -1,5 +1,5 @@
-#ifndef kode_filter_apple_included
-#define kode_filter_apple_included
+#ifndef mip_filter_apple_included
+#define mip_filter_apple_included
 //----------------------------------------------------------------------
 
 // original author: lubomir i ivanov (for axonlib)
@@ -7,9 +7,9 @@
 
 //----------------------------------------------------------------------
 
-#include "common/kode_math.h"
+#include "common/mip_math.h"
 
-class KODE_AppleFilter {
+class MIP_AppleFilter {
 
   private:
 
@@ -21,7 +21,7 @@ class KODE_AppleFilter {
 
   public:
 
-    KODE_AppleFilter() {
+    MIP_AppleFilter() {
       mX1 = 0;
       mX2 = 0;
       mY1 = 0;
@@ -52,7 +52,7 @@ class KODE_AppleFilter {
     void setCutoff(float ACutoff) {
       sx = 16 + ACutoff * 1.20103;
       //cx = trunc(exp(sx*{log2}ln(1.059))*8.17742); // ln,log2,log10,logn
-      cx = KODE_Trunc(exp(sx*log2(1.059))*8.17742); // ln,log2,log10,logn
+      cx = MIP_Trunc(exp(sx*log2(1.059))*8.17742); // ln,log2,log10,logn
     }
 
     //----------
@@ -71,9 +71,9 @@ class KODE_AppleFilter {
       //coeffcients
       float cutoff = 2 * cx / srate;
       res = pow(10, 0.05 * -res);
-      float k = 0.5 * res * sin(KODE_PI * cutoff);
+      float k = 0.5 * res * sin(MIP_PI * cutoff);
       float c1 = 0.5 * (1 - k) / (1 + k);
-      float c2 = (0.5 + c1) * cos(KODE_PI * cutoff);
+      float c2 = (0.5 + c1) * cos(MIP_PI * cutoff);
       float c3 = (0.5 + c1 - c2) * 0.25;
       mA0 = 2 * c3;
       mA1 = 2 * 2 * c3;

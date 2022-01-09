@@ -1,10 +1,10 @@
-#ifndef kode_karplusstrong_included
-#define kode_karplusstrong_included
+#ifndef mip_karplusstrong_included
+#define mip_karplusstrong_included
 //----------------------------------------------------------------------
 
 #if 0
 
-#include "audio/synthesis/kode_waveguide.h"
+#include "audio/synthesis/mip_waveguide.h"
 
 //----------
 
@@ -15,7 +15,7 @@
 
 //----------
 
-class KODE_KarplusStrong {
+class MIP_KarplusStrong {
 
   private:
 

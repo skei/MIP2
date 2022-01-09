@@ -13,20 +13,19 @@ class MIP_SliderWidget
 protected:
 //------------------------------
 
-  bool        MDrawValueBar             = true;
-  MIP_Color  MValueBarColor            = MIP_Color(0.7);
-  uint32_t    MValueBarDirection        = MIP_RIGHT;
-  MIP_FRect  MValueBarOffset           = MIP_FRect(1,1,1,1);
-  MIP_Color  MInteractiveValueBarColor = MIP_Color(0.9);
+  bool      MDrawValueBar             = true;
+  MIP_Color MValueBarColor            = MIP_Color(0.7);
+  uint32_t  MValueBarDirection        = MIP_RIGHT;
+  MIP_FRect MValueBarOffset           = MIP_FRect(1,1,1,1);
+  MIP_Color MInteractiveValueBarColor = MIP_Color(0.9);
+  bool      MDrawQuantized            = false;
+  MIP_Color MQuantizedColor           = MIP_Color(0.3);
+  bool      MDrawSnap                 = false;
+  MIP_Color MSnapColor                = MIP_Color(0.3);
 
-  //bool        MDrawValueBarQuantized    = false;
-  //MIP_Color  MValueBarQuantizedColor   = MIP_Color(0.3);
+  //bool      MDrawValueBarQuantized    = false;
+  //MIP_Color MValueBarQuantizedColor   = MIP_Color(0.3);
 
-  bool        MDrawQuantized    = false;
-  MIP_Color  MQuantizedColor   = MIP_Color(0.3);
-
-  bool        MDrawSnap         = false;
-  MIP_Color  MSnapColor        = MIP_Color(0.3);
 
 
 //------------------------------

@@ -7,15 +7,15 @@
 
 //----------------------------------------------------------------------
 
-//#define KODE_PLUGIN_MAX_MIDI_SEND   256
-//#define KODE_PLUGIN_MESSAGE_QUEUE_SIZE 32
+//#define MIP_PLUGIN_MAX_MIDI_SEND   256
+//#define MIP_PLUGIN_MESSAGE_QUEUE_SIZE 32
 //
-//typedef KODE_Queue<uint32_t,KODE_PLUGIN_MESSAGE_QUEUE_SIZE> KODE_IntQueue;
+//typedef MIP_Queue<uint32_t,MIP_PLUGIN_MESSAGE_QUEUE_SIZE> MIP_IntQueue;
 //
-//struct KODE_VstEvents {
+//struct MIP_VstEvents {
 //  VstInt32  numEvents;
 //  VstIntPtr reserved;
-//  VstEvent* events[KODE_PLUGIN_MAX_MIDI_SEND];
+//  VstEvent* events[MIP_PLUGIN_MAX_MIDI_SEND];
 //};
 
 //----------------------------------------------------------------------
@@ -34,20 +34,20 @@ private:
 
   AEffect     MAEffect  = {0};
 
-//  KODE_Vst2Host*      MVst2Host             = nullptr;
-//  KODE_IntQueue       MProcessMessageQueue  = {};
-//  KODE_IntQueue       MGuiMessageQueue      = {};
+//  MIP_Vst2Host*      MVst2Host             = nullptr;
+//  MIP_IntQueue       MProcessMessageQueue  = {};
+//  MIP_IntQueue       MGuiMessageQueue      = {};
 //  AEffect             MAEffect              = {0};
 //  audioMasterCallback MAudioMaster          = nullptr;
-//  KODE_Descriptor*    MDescriptor           = nullptr;
-//  KODE_Instance*      MInstance             = nullptr;
+//  MIP_Descriptor*    MDescriptor           = nullptr;
+//  MIP_Instance*      MInstance             = nullptr;
 //  uint32_t            MCurrentProgram       = 0;
 //  float               MSampleRate           = 0.0f;
 //  uint32_t            MMaxBlockSize         = 0;
 //  ERect               MVstRect              = {0};
 //  uint32_t            MKnobMode             = 0;
-//  KODE_VstEvents      MVstEvents            = {0};
-//  VstMidiEvent        MVstMidiSendEvents[KODE_PLUGIN_MAX_MIDI_SEND] = {0};
+//  MIP_VstEvents      MVstEvents            = {0};
+//  VstMidiEvent        MVstMidiSendEvents[MIP_PLUGIN_MAX_MIDI_SEND] = {0};
 //  float               MTempo                = 0.0f;
 //  uint32_t            MTimeSigNum           = 0;
 //  uint32_t            MTimeSigDenom         = 0;
@@ -60,11 +60,11 @@ private:
 //  bool                MIsProcessing         = false;
 ////bool                MIsInitialized        = false;
 ////bool                MNeedToInitializeParameters = true;
-//  #ifndef KODE_NO_GUI
-//    KODE_Editor*        MEditor             = nullptr;
+//  #ifndef MIP_NO_GUI
+//    MIP_Editor*        MEditor             = nullptr;
 //    bool                MIsEditorOpen       = false;
-//  #endif // KODE_NO_GUI
-//  KODE_ProcessContext MProcessContext       = {0};
+//  #endif // MIP_NO_GUI
+//  MIP_ProcessContext MProcessContext       = {0};
 
 
 //------------------------------
@@ -79,9 +79,9 @@ public:
 //    MInstance = AInstance;
 //    MDescriptor = MInstance->getDescriptor();
 //    initParameters();
-//    MVst2Host = new KODE_Vst2Host(&MAEffect,AAudioMaster);
+//    MVst2Host = new MIP_Vst2Host(&MAEffect,AAudioMaster);
 //    memset(&MVstMidiSendEvents,0,sizeof(MVstMidiSendEvents));
-//    for (uint32_t i=0; i<KODE_PLUGIN_MAX_MIDI_SEND; i++) {
+//    for (uint32_t i=0; i<MIP_PLUGIN_MAX_MIDI_SEND; i++) {
 //      MVstEvents.events[i] = (VstEvent*)&MVstMidiSendEvents[i];
 //    }
 
@@ -106,7 +106,7 @@ public:
 public: // editor listener
 //------------------------------
 
-//  #ifndef KODE_NO_GUI
+//  #ifndef MIP_NO_GUI
 //
 //  /*
 //    we run our gui in its own thread, but need to communicate with the
@@ -122,7 +122,7 @@ public: // editor listener
 //
 //  void on_editor_updateParameter(uint32_t AIndex, float AValue) override {
 //    //MEditorParameterValues[AIndex] = AValue;
-//    //KODE_Parameter* parameter = MDescriptor->parameters[AIndex];
+//    //MIP_Parameter* parameter = MDescriptor->parameters[AIndex];
 //    //float value = parameter->from01(AValue);
 //    float value = AValue;
 //    MInstance->setParameterValue(AIndex,value);
@@ -143,7 +143,7 @@ private:
 //  void initParameters() {
 //    uint32_t num = MDescriptor->getNumParameters();
 //    for (uint32_t i=0; i<num; i++) {
-//      KODE_Parameter* parameter = MDescriptor->getParameter(i);
+//      MIP_Parameter* parameter = MDescriptor->getParameter(i);
 //      parameter->setDefValue(parameter->to01( parameter->getDefValue() ));
 //      parameter->setMinValue(parameter->to01( parameter->getMinValue() ));
 //      parameter->setMaxValue(parameter->to01( parameter->getMaxValue() ));
@@ -212,7 +212,7 @@ private:
 //
 //  //----------
 //
-//  #ifndef KODE_NO_GUI
+//  #ifndef MIP_NO_GUI
 //  void updateEditorInIdle() {
 //    flushGuiMessages();
 //  }
@@ -227,7 +227,7 @@ public: // vst2
 
 //    MInstance->setParameterValue(index,parameter);
 //    queueProcessMessage(index);
-//    #ifndef KODE_NO_GUI
+//    #ifndef MIP_NO_GUI
 //      if (MIsEditorOpen) queueGuiMessage(index);
 //    #endif
 
@@ -296,7 +296,7 @@ public: // vst2
 //      */
 //
 //      case effOpen: // 0
-//        //KODE_Vst2Trace("vst2: dispatcher/effOpen\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effOpen\n");
 //        MIsOpen = true;
 //        //updateHostInfo();
 //        //MInstance->on_open();
@@ -315,7 +315,7 @@ public: // vst2
 //      */
 //
 //      case effClose: // 1
-//        //KODE_Vst2Trace("vst2: dispatcher/effClose\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effClose\n");
 //        MIsOpen = false;
 //
 //        MInstance->on_plugin_destroy();
@@ -325,7 +325,7 @@ public: // vst2
 //      //----------
 //
 //      case effSetProgram: { // 2
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetProgram %i\n",(int)value);
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetProgram %i\n",(int)value);
 //        uint32_t program = (uint32_t)value;
 //        //if (program != MCurrentProgram) {
 //        //  on_programChange(program);
@@ -344,7 +344,7 @@ public: // vst2
 //      */
 //
 //      case effGetProgram: // 3
-//        ////KODE_Vst2Trace("vst2: dispatcher/effGetProgram\n");
+//        ////MIP_Vst2Trace("vst2: dispatcher/effGetProgram\n");
 //        return MCurrentProgram;
 //
 //      //----------
@@ -357,8 +357,8 @@ public: // vst2
 //      */
 //
 //      case effSetProgramName: { // 4
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetProgramName '%s'\n",cptr);
-//        //KODE_Strcpy(MProgramName,txt);
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetProgramName '%s'\n",cptr);
+//        //MIP_Strcpy(MProgramName,txt);
 //        break;
 //      }
 //
@@ -372,10 +372,10 @@ public: // vst2
 //      */
 //
 //      case effGetProgramName: // 5
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetProgramName\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetProgramName\n");
 //        *cptr = 0;
 //        break;
-//        //KODE_Strcpy((char*)ptr,MProgramName);
+//        //MIP_Strcpy((char*)ptr,MProgramName);
 //        //return 1;
 //
 //      //----------
@@ -391,8 +391,8 @@ public: // vst2
 //      */
 //
 //      case effGetParamLabel: { // 6
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetParamLabel %i\n",index);
-//        KODE_Parameter* pa = MDescriptor->getParameter(index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetParamLabel %i\n",index);
+//        MIP_Parameter* pa = MDescriptor->getParameter(index);
 //        strcpy((char*)ptr,pa->getLabel());
 //        return 1;
 //        break;
@@ -407,8 +407,8 @@ public: // vst2
 //      */
 //
 //      case effGetParamDisplay: { // 7
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetParamDisplay %i\n",index);
-//        KODE_Parameter* pa = MDescriptor->getParameter(index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetParamDisplay %i\n",index);
+//        MIP_Parameter* pa = MDescriptor->getParameter(index);
 //        float v = MInstance->getParameterValue(index);
 //        v = pa->from01(v);
 //        char str[32];
@@ -427,8 +427,8 @@ public: // vst2
 //      */
 //
 //      case effGetParamName: { // 8
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetParamName %i\n",index);
-//        KODE_Parameter* pa = MDescriptor->getParameter(index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetParamName %i\n",index);
+//        MIP_Parameter* pa = MDescriptor->getParameter(index);
 //        strcpy((char*)ptr,pa->getName());
 //        return 1;
 //        break;
@@ -444,7 +444,7 @@ public: // vst2
 //      */
 //
 //      case effSetSampleRate: // 10
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetSampleRate %.3f\n",opt);
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetSampleRate %.3f\n",opt);
 //        MSampleRate = opt;
 //
 ////        MInstance->on_sampleRate(MSampleRate);
@@ -460,7 +460,7 @@ public: // vst2
 //      */
 //
 //      case effSetBlockSize: // 11
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetBlockSize %i\n",(int)value);
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetBlockSize %i\n",(int)value);
 //        MMaxBlockSize = (VstInt32)value;
 //        break;
 //
@@ -499,7 +499,7 @@ public: // vst2
 //      */
 //
 //      case effMainsChanged: // 12
-//        //KODE_Vst2Trace("vst2: dispatcher/effMainsChanged %i\n",(int)value);
+//        //MIP_Vst2Trace("vst2: dispatcher/effMainsChanged %i\n",(int)value);
 //        if (value == 0) { // suspend
 //          MIsProcessing = false;
 //          MIsSuspended = true;
@@ -531,7 +531,7 @@ public: // vst2
 //      */
 //
 //      case effEditGetRect: // 13
-//        //KODE_Vst2Trace("vst2: dispatcher/effEditGetRect\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effEditGetRect\n");
 //        if (MDescriptor->hasEditor()) {
 //          uint32_t w = MDescriptor->getEditorWidth();
 //          uint32_t h = MDescriptor->getEditorHeight();
@@ -555,12 +555,12 @@ public: // vst2
 //      */
 //
 //      case effEditOpen: // 14
-//        //KODE_Vst2Trace("vst2: dispatcher/effEditOpen\n");
-//        #ifndef KODE_NO_GUI
+//        //MIP_Vst2Trace("vst2: dispatcher/effEditOpen\n");
+//        #ifndef MIP_NO_GUI
 //        if (MDescriptor->hasEditor()) {
 //          if (!MIsEditorOpen) {
 //            MIsEditorOpen = true;
-//            //MEditor = (KODE_Editor*)MInstance->on_openEditor(ptr);
+//            //MEditor = (MIP_Editor*)MInstance->on_openEditor(ptr);
 //
 ////            MEditor = MInstance->on_plugin_openEditor(/*ptr*/);
 ////            //MInstance->copyParameterValuesToEditor(MEditor);
@@ -569,7 +569,7 @@ public: // vst2
 ////            uint32_t height = MDescriptor->editorHeight;
 ////            MEditor->open(width,height,ptr);
 //
-//            MEditor = _kode_create_editor(this,MDescriptor);
+//            MEditor = _mip_create_editor(this,MDescriptor);
 //            MInstance->on_plugin_createEditor(MEditor);
 //
 //            MEditor->attach("",ptr);
@@ -581,7 +581,7 @@ public: // vst2
 //            return 1;
 //          }
 //        }
-//        #endif // KODE_NO_GUI
+//        #endif // MIP_NO_GUI
 //        break;
 //
 //      //----------
@@ -590,8 +590,8 @@ public: // vst2
 //      */
 //
 //      case effEditClose: // 15
-//        //KODE_Vst2Trace("vst2: dispatcher/effEditClose\n");
-//        #ifndef KODE_NO_GUI
+//        //MIP_Vst2Trace("vst2: dispatcher/effEditClose\n");
+//        #ifndef MIP_NO_GUI
 //        if (MDescriptor->hasEditor()) {
 //          if (MIsEditorOpen) {
 //            MIsEditorOpen = false;
@@ -612,7 +612,7 @@ public: // vst2
 //            }
 //          }
 //        }
-//        #endif // KODE_NO_GUI
+//        #endif // MIP_NO_GUI
 //        break;
 //
 //      //----------
@@ -629,18 +629,18 @@ public: // vst2
 //      */
 //
 //      case effEditIdle: // 19
-//        //KODE_Vst2Trace("vst2: dispatcher/effEditIdle\n");
-//        #ifndef KODE_NO_GUI
+//        //MIP_Vst2Trace("vst2: dispatcher/effEditIdle\n");
+//        #ifndef MIP_NO_GUI
 //        if (MDescriptor->hasEditor()) {
 //          if (MIsEditorOpen) {
-//            //KODE_Assert(MEditor);
+//            //MIP_Assert(MEditor);
 //
 //            MInstance->on_plugin_updateEditor(MEditor);
 //
 //            updateEditorInIdle();
 //          }
 //        }
-//        #endif // KODE_NO_GUI
+//        #endif // MIP_NO_GUI
 //        break;
 //
 //      //----------
@@ -690,7 +690,7 @@ public: // vst2
 //      */
 //
 //      case effGetChunk: // 23
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetChunk %i\n",index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetChunk %i\n",index);
 //        //if (index==0) return MInstance->on_saveBank((void**)ptr);
 //        //else return MInstance->on_saveProgram((void**)ptr);
 //        {
@@ -722,7 +722,7 @@ public: // vst2
 //      */
 //
 //      case effSetChunk: // 24
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetChunk %i %i\n",index,(int)value);
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetChunk %i %i\n",index,(int)value);
 //        {
 //          //if (index==0) return MInstance->on_loadBank(ptr,value); // was not retrurn
 //          //else  /*if (index==1)*/ return MInstance->on_loadProgram(ptr,value);
@@ -767,7 +767,7 @@ public: // vst2
 //      */
 //
 //      case effProcessEvents: { // 25
-//        //KODE_Vst2Trace("vst2: dispatcher/effProcessEvents\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effProcessEvents\n");
 //        if ((MDescriptor->isSynth()) || (MDescriptor->canReceiveMidi())) {
 //          VstEvents* ev = (VstEvents*)ptr;
 //          int num_events = ev->numEvents;
@@ -795,9 +795,9 @@ public: // vst2
 //      */
 //
 //      case effCanBeAutomated: { // 26
-//        //KODE_Vst2Trace("vst2: dispatcher/effCanBeAutomated %i\n",index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effCanBeAutomated %i\n",index);
 //        uint32_t res = 0;
-//        KODE_Parameter* param = MDescriptor->getParameter(index);
+//        MIP_Parameter* param = MDescriptor->getParameter(index);
 //        if (param->canAutomate()) res = 1;
 //        return res;
 //      }
@@ -821,7 +821,7 @@ public: // vst2
 //      */
 //
 //      case effString2Parameter: // 27
-//        //KODE_Vst2Trace("vst2: dispatcher/effString2Parameter %i\n",index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effString2Parameter %i\n",index);
 //        break;
 //
 //      //----------
@@ -836,7 +836,7 @@ public: // vst2
 //      */
 //
 //      case effGetProgramNameIndexed: // 29
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetProgramNameIndexed %i\n",index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetProgramNameIndexed %i\n",index);
 //        //KStrcpy((char*)ptr,MProgramName);
 //        //return (VstIntPtr)MPrograms[index]->getName();
 //        strncpy((char*)ptr,"default",24);
@@ -868,10 +868,10 @@ public: // vst2
 //      */
 //
 //      case effGetInputProperties: { // 33
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetInputProperties %i\n",index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetInputProperties %i\n",index);
 //        VstPinProperties* pin = (VstPinProperties*)ptr;
 //        /* char* pc = */ strcpy(pin->label,"input "); // returns ptr to end of string? ptr to the '\0', or after the 0?
-//        /* *pc++ = KODE_HEX_TABLE[index&0x0f];
+//        /* *pc++ = MIP_HEX_TABLE[index&0x0f];
 //        *pc = 0; */
 //        pin->flags = 1; // active
 //        if ((index & 1) == 0) pin->flags |= 2; // first of stereo pair
@@ -884,10 +884,10 @@ public: // vst2
 //      */
 //
 //      case effGetOutputProperties: { // 34
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetOutputProperties %i\n",index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetOutputProperties %i\n",index);
 //        VstPinProperties* pin = (VstPinProperties*)ptr;
 //        /* char* pc = */ strcpy(pin->label,"output ");
-//        /* *pc++ = KODE_HEX_TABLE[index&0x0f];
+//        /* *pc++ = MIP_HEX_TABLE[index&0x0f];
 //        *pc = 0; */
 //        pin->flags = 1; // active
 //        if ((index & 1) == 0) pin->flags |= 2; // first of stereo pair
@@ -915,7 +915,7 @@ public: // vst2
 //      */
 //
 //      case effGetPlugCategory: { // 35
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetPlugCategory\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetPlugCategory\n");
 //        uint32_t res = 0;
 //        res = (MDescriptor->isSynth()) ? kPlugCategSynth : kPlugCategEffect;
 //        //if (MPlugin->hasFlag(kpf_tool)) res = kPlugCategGenerator;
@@ -932,7 +932,7 @@ public: // vst2
 //      */
 //
 //      case effOfflineNotify: // 38
-//        //KODE_Vst2Trace("vst2: dispatcher/effOfflineNotify\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effOfflineNotify\n");
 //        break;
 //
 //      //----------
@@ -944,7 +944,7 @@ public: // vst2
 //      */
 //
 //      case effOfflinePrepare: // 39
-//        //KODE_Vst2Trace("vst2: dispatcher/effOfflinePrepare\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effOfflinePrepare\n");
 //        break;
 //
 //      //----------
@@ -956,7 +956,7 @@ public: // vst2
 //      */
 //
 //      case effOfflineRun: // 40
-//        //KODE_Vst2Trace("vst2: dispatcher/effOfflineRun\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effOfflineRun\n");
 //        break;
 //
 //      //----------
@@ -967,7 +967,7 @@ public: // vst2
 //      */
 //
 //      case effProcessVarIo: // 41
-//        //KODE_Vst2Trace("vst2: dispatcher/effProcessVarIo\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effProcessVarIo\n");
 //        break;
 //
 //      //----------
@@ -979,7 +979,7 @@ public: // vst2
 //      */
 //
 //      case effSetSpeakerArrangement: // 42
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetSpeakerArrangement\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetSpeakerArrangement\n");
 //        break;
 //
 //      //----------
@@ -997,7 +997,7 @@ public: // vst2
 //      */
 //
 //      case effSetBypass: // 44
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetBypass %i\n",(int)value);
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetBypass %i\n",(int)value);
 //        return 1;
 //
 //      //----------
@@ -1008,15 +1008,15 @@ public: // vst2
 //      */
 //
 //      case effGetEffectName: // 45
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetEffectName\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetEffectName\n");
 //        strcpy(str,MDescriptor->getName());
-//        //#ifdef KODE_32BIT
+//        //#ifdef MIP_32BIT
 //        //  str += "_32";
 //        //#endif
-//        //#ifdef KODE_64BIT
+//        //#ifdef MIP_64BIT
 //        //  str += "_64";
 //        //#endif
-//        #ifdef KODE_DEBUG
+//        #ifdef MIP_DEBUG
 //          strcat(str,"_debug");
 //        #endif
 //        strcpy((char*)ptr,(char*)str);
@@ -1030,7 +1030,7 @@ public: // vst2
 //      */
 //
 //      case effGetVendorString: // 47
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetVendorString\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetVendorString\n");
 //        strcpy((char*)ptr,(char*)MDescriptor->getAuthor());
 //        break;
 //
@@ -1042,7 +1042,7 @@ public: // vst2
 //      */
 //
 //      case effGetProductString: // 48
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetProductString\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetProductString\n");
 //        strcpy((char*)ptr,(char*)MDescriptor->getDescription());
 //        break;
 //
@@ -1053,7 +1053,7 @@ public: // vst2
 //      */
 //
 //      case effGetVendorVersion: // 49
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetVendorVersion\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetVendorVersion\n");
 //        return MDescriptor->getVersion();
 //
 //      //----------
@@ -1077,7 +1077,7 @@ public: // vst2
 //      */
 //
 //      case effVendorSpecific: // 50
-//        //KODE_Vst2Trace("vst2: dispatcher/effVendorSpecific\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effVendorSpecific\n");
 //        break;
 //
 //      //----------
@@ -1112,44 +1112,44 @@ public: // vst2
 //
 //        // plug-in will send Vst/MIDI events to Host
 //        if (MDescriptor->canSendMidi()) {
-//          if (!strcmp(p,"sendVstEvents"))    {} //KODE_Vst2Trace(" -> 1\n"); return 1; }
-//          if (!strcmp(p,"sendVstMidiEvent")) {} //KODE_Vst2Trace(" -> 1\n"); return 1; }
+//          if (!strcmp(p,"sendVstEvents"))    {} //MIP_Vst2Trace(" -> 1\n"); return 1; }
+//          if (!strcmp(p,"sendVstMidiEvent")) {} //MIP_Vst2Trace(" -> 1\n"); return 1; }
 //        }
 //
 //        // plug-in can receive Vst/MIDI events to Host
 //        if (MDescriptor->canReceiveMidi()) {
-//          if (!strcmp(p,"receiveVstEvents"))     {} //KODE_Vst2Trace(" -> 1\n"); return 1; }
-//          if (!strcmp(p,"receiveVstMidiEvent"))  {} //KODE_Vst2Trace(" -> 1\n"); return 1; }
+//          if (!strcmp(p,"receiveVstEvents"))     {} //MIP_Vst2Trace(" -> 1\n"); return 1; }
+//          if (!strcmp(p,"receiveVstMidiEvent"))  {} //MIP_Vst2Trace(" -> 1\n"); return 1; }
 //        }
 //
 //        // plug-in can receive Time info from Host
 //        if (!strcmp(p,"receiveVstTimeInfo")) {
-//          //KODE_Vst2Trace(" -> 1\n");
+//          //MIP_Vst2Trace(" -> 1\n");
 //          return 1;
 //        }
 //
 //        // plug-in supports offline functions (#offlineNotify, #offlinePrepare, #offlineRun)
 //        if (!strcmp(p,"offline")) {
-//          //KODE_Vst2Trace("-> 0\n");
+//          //MIP_Vst2Trace("-> 0\n");
 //          return 0;
 //        }
 //
 //        // plug-in supports function #getMidiProgramName ()
 //        if (!strcmp(p,"midiProgramNames")) {
-//          //KODE_Vst2Trace("-> 0\n");
+//          //MIP_Vst2Trace("-> 0\n");
 //          return 0;
 //        }
 //
 //        // plug-in supports function setBypass()
 //        if (!strcmp(p,"bypass")) {
-//          //KODE_Vst2Trace(" -> 1\n");
+//          //MIP_Vst2Trace(" -> 1\n");
 //          return 1;
 //        }
 //
 //        if (!strcmp(p,"MPE")) {
-//          //#ifdef KODE_DEBUG_VST
-//        //  #ifdef KODE_PLUGIN_MPE
-//        //    //KODE_Vst2Trace("-> 1\n");
+//          //#ifdef MIP_DEBUG_VST
+//        //  #ifdef MIP_PLUGIN_MPE
+//        //    //MIP_Vst2Trace("-> 1\n");
 //        //    return 1;
 //
 //          //if (MDescriptor->hasFlag(kpf_mpe)) return 1;
@@ -1157,8 +1157,8 @@ public: // vst2
 //          //#else
 //          //VST_TRACE("vst dispatcher: effCanDo '%s' >> 0",(char*)ptr);
 //        //  #endif
-//          //#endif // KODE_PLUGIN_MPE
-//          //#ifdef KODE_PLUGIN_MPE
+//          //#endif // MIP_PLUGIN_MPE
+//          //#ifdef MIP_PLUGIN_MPE
 //          //MHostMPE = true;
 //          //// MVoices.setMPE(true);
 //          //on_setMode(kpm_mpe,MHostMPE);
@@ -1177,18 +1177,18 @@ public: // vst2
 //          calls.
 //        */
 //
-//        //#ifdef KODE_PLUGIN_REAPER_EXT
+//        //#ifdef MIP_PLUGIN_REAPER_EXT
 //        //if (MFlags&kpf_reaper) {
 //        //  // Warning: range check error while evaluating constants
 //        //  //and (Pos(ptr,'hasCockosExtensions') <> 0) then result := {%H-}$beef0000;
 //        //  if (!SStrcmp(p,"hasCockosExtensions")) return 0xbeef0000;
 //        //}
-//        //#endif // KODE_PLUGIN_REAPER_EXT
+//        //#endif // MIP_PLUGIN_REAPER_EXT
 //
 //        if (!strcmp(p,"hasCockosExtensions")) {
-//          //KODE_Vst2Trace("-> 0\n"); return 0;
+//          //MIP_Vst2Trace("-> 0\n"); return 0;
 //        }
-//       //KODE_Vst2Trace("-> 0\n");
+//       //MIP_Vst2Trace("-> 0\n");
 //        return 0;
 //      }
 //
@@ -1200,7 +1200,7 @@ public: // vst2
 //      */
 //
 //      case effGetTailSize: // 52
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetTailSize\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetTailSize\n");
 //        //if (MTail == -1) return 1;
 //        return -1;//0;
 //        //break;
@@ -1217,9 +1217,9 @@ public: // vst2
 //        reaper calls this even if we don't have an editor..
 //      */
 //
-//      //#ifndef KODE_PLUGIN_VST2_VESTIGE
+//      //#ifndef MIP_PLUGIN_VST2_VESTIGE
 //      //case DECLARE_VST_DEPRECATED(effIdle): // 53
-//      //  //KODE_Vst2Trace("vst2: dispatcher/effIdle (deprecated)\n");
+//      //  //MIP_Vst2Trace("vst2: dispatcher/effIdle (deprecated)\n");
 //      //  break;
 //      //#endif
 //
@@ -1231,7 +1231,7 @@ public: // vst2
 //      */
 //
 //      case effGetParameterProperties: { // 56
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetParameterProperties %i\n",index);
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetParameterProperties %i\n",index);
 //        break;
 //      }
 //
@@ -1242,7 +1242,7 @@ public: // vst2
 //      */
 //
 //      case effGetVstVersion: // 58
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetVstVersion\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetVstVersion\n");
 //        return 2;
 //        //break;
 //
@@ -1258,7 +1258,7 @@ public: // vst2
 //      */
 //
 //      case effEditKeyDown: // 59
-//        //KODE_Vst2Trace("vst2: dispatcher/effEditKeyDown %i %i %i\n",index,(int)value,(int)opt);
+//        //MIP_Vst2Trace("vst2: dispatcher/effEditKeyDown %i %i %i\n",index,(int)value,(int)opt);
 //        break;
 //
 //      //----------
@@ -1271,7 +1271,7 @@ public: // vst2
 //      */
 //
 //      case effEditKeyUp: // 60
-//        //KODE_Vst2Trace("vst2: dispatcher/effEditKeyUp %i %i %i\n",index,(int)value,(int)opt);
+//        //MIP_Vst2Trace("vst2: dispatcher/effEditKeyUp %i %i %i\n",index,(int)value,(int)opt);
 //        break;
 //
 //      //----------
@@ -1282,7 +1282,7 @@ public: // vst2
 //      */
 //
 //      case effSetEditKnobMode: // 61
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetEditKnobMode %i\n",(int)value);
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetEditKnobMode %i\n",(int)value);
 //        MKnobMode = (uint32_t)value;
 //        //return 1;
 //        break;
@@ -1297,7 +1297,7 @@ public: // vst2
 //      */
 //
 //      case effGetMidiProgramName: // 62
-//        ////KODE_Vst2Trace("vst2: dispatcher/effGetMidiProgramName\n");
+//        ////MIP_Vst2Trace("vst2: dispatcher/effGetMidiProgramName\n");
 //        break;
 //
 //      //----------
@@ -1309,7 +1309,7 @@ public: // vst2
 //      */
 //
 //      case effGetCurrentMidiProgram: // 63
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetCurrentMidiProgram\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetCurrentMidiProgram\n");
 //        break;
 //
 //      //----------
@@ -1322,7 +1322,7 @@ public: // vst2
 //      */
 //
 //      case effGetMidiProgramCategory: // 64
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetMidiProgramCategory\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetMidiProgramCategory\n");
 //        break;
 //
 //      //----------
@@ -1333,7 +1333,7 @@ public: // vst2
 //      */
 //
 //      case effHasMidiProgramsChanged: // 65
-//        //KODE_Vst2Trace("vst2: dispatcher/effHasMidiProgramsChanged\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effHasMidiProgramsChanged\n");
 //        break;
 //
 //      //----------
@@ -1344,7 +1344,7 @@ public: // vst2
 //      */
 //
 //      case effGetMidiKeyName: // 66
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetMidiKeyName\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetMidiKeyName\n");
 //        break;
 //
 //      //----------
@@ -1355,7 +1355,7 @@ public: // vst2
 //      */
 //
 //      case effBeginSetProgram: // 67
-//        //KODE_Vst2Trace("vst2: dispatcher/effBeginSetProgram\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effBeginSetProgram\n");
 //        break;
 //
 //      //----------
@@ -1365,7 +1365,7 @@ public: // vst2
 //      */
 //
 //      case effEndSetProgram: // 68
-//        //KODE_Vst2Trace("vst2: dispatcher/effEndSetProgram\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effEndSetProgram\n");
 //        break;
 //
 ////--------------------
@@ -1378,7 +1378,7 @@ public: // vst2
 //      */
 //
 //      case effGetSpeakerArrangement: // 69
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetSpeakerArrangement\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetSpeakerArrangement\n");
 //        break;
 //
 //      //----------
@@ -1391,7 +1391,7 @@ public: // vst2
 //      */
 //
 //      case effShellGetNextPlugin: // 70
-//        //KODE_Vst2Trace("vst2: dispatcher/effShellGetNextPlugin\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effShellGetNextPlugin\n");
 //        break;
 //
 //      //----------
@@ -1423,7 +1423,7 @@ public: // vst2
 //      */
 //
 //      case effStartProcess: //71
-//        //KODE_Vst2Trace("vst2: dispatcher/effStartProcess\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effStartProcess\n");
 //        MIsProcessing = true;
 //        break;
 //
@@ -1435,7 +1435,7 @@ public: // vst2
 //      */
 //
 //      case effStopProcess: // 72
-//        //KODE_Vst2Trace("vst2: dispatcher/effStopProcess\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effStopProcess\n");
 //        MIsProcessing = false;
 //        break;
 //
@@ -1447,7 +1447,7 @@ public: // vst2
 //      */
 //
 //      case effSetTotalSampleToProcess: // 73
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetTotalSampleToProcess\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetTotalSampleToProcess\n");
 //        break;
 //
 //      //----------
@@ -1460,7 +1460,7 @@ public: // vst2
 //      */
 //
 //      case effSetPanLaw: // 74
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetPanLaw %i %.3f\n",(int)value,opt);
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetPanLaw %i %.3f\n",(int)value,opt);
 //        break;
 //
 //      //----------
@@ -1473,7 +1473,7 @@ public: // vst2
 //      */
 //
 //      case effBeginLoadBank: // 75
-//        //KODE_Vst2Trace("vst2: dispatcher/effBeginLoadBank\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effBeginLoadBank\n");
 //        break;
 //
 //      //----------
@@ -1484,7 +1484,7 @@ public: // vst2
 //      */
 //
 //      case effBeginLoadProgram: // 76
-//        //KODE_Vst2Trace("vst2: dispatcher/effBeginLoadProgram\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effBeginLoadProgram\n");
 //        break;
 //
 ////--------------------
@@ -1497,7 +1497,7 @@ public: // vst2
 //      */
 //
 //      case effSetProcessPrecision: // 77
-//        //KODE_Vst2Trace("vst2: dispatcher/effSetProcessPrecision %i\n",(int)value);
+//        //MIP_Vst2Trace("vst2: dispatcher/effSetProcessPrecision %i\n",(int)value);
 //        break;
 //
 //      //----------
@@ -1507,7 +1507,7 @@ public: // vst2
 //      */
 //
 //      case effGetNumMidiInputChannels: // 78
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetNumMidiInputChannels\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetNumMidiInputChannels\n");
 //        break;
 //
 //      //----------
@@ -1517,13 +1517,13 @@ public: // vst2
 //      */
 //
 //      case effGetNumMidiOutputChannels: // 79
-//        //KODE_Vst2Trace("vst2: dispatcher/effGetNumMidiOutputChannels\n");
+//        //MIP_Vst2Trace("vst2: dispatcher/effGetNumMidiOutputChannels\n");
 //        break;
 //
 //      //----------
 //
 //      default:
-//        //KODE_Vst2Trace("unhandled opcode: %i\n",opcode);
+//        //MIP_Vst2Trace("unhandled opcode: %i\n",opcode);
 //        break;
 //
 //      //--------------------

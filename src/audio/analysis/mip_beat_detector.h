@@ -1,9 +1,9 @@
-#ifndef kode_beat_detector_included
-#define kode_beat_detector_included
+#ifndef mip_beat_detector_included
+#define mip_beat_detector_included
 //----------------------------------------------------------------------
 
 #define FREQ_LP_BEAT  150.0                             /* Low Pass filter frequency */
-#define T_FILTER      1.0/(2.0 * KODE_PI*FREQ_LP_BEAT)  /* Low Pass filter time constant */
+#define T_FILTER      1.0/(2.0 * MIP_PI*FREQ_LP_BEAT)  /* Low Pass filter time constant */
 #define BEAT_RTIME    0.02                              /* Release time of enveloppe detector in second */
 
 /*
@@ -19,7 +19,7 @@ end;
 
 // http://www.musicdsp.org/showArchiveComment.php?ArchiveID=200
 
-class KODE_BeatDetector {
+class MIP_BeatDetector {
 
   private:
 
@@ -37,7 +37,7 @@ class KODE_BeatDetector {
 
   public:
 
-    KODE_BeatDetector() {
+    MIP_BeatDetector() {
       MFilter1Out = 0.0;
       MFilter2Out = 0.0;
       MPeakEnv = 0.0;
@@ -48,7 +48,7 @@ class KODE_BeatDetector {
 
     //----------
 
-    ~KODE_BeatDetector() {
+    ~MIP_BeatDetector() {
     }
 
     //----------

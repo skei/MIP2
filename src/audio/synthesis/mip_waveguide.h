@@ -1,5 +1,5 @@
-#ifndef kode_waveguide_included
-#define kode_waveguide_included
+#ifndef mip_waveguide_included
+#define mip_waveguide_included
 //----------------------------------------------------------------------
 
 // something fishy with this..
@@ -26,27 +26,27 @@
 //#define MAX_WG_DELAY 65536
 #define MAX_WG_DELAY 10240
 
-#include "audio/filters/kode_rc_filter.h"
+#include "audio/filters/mip_rc_filter.h"
 
-#define KODE_WAVEGUIDE_MODE_OFF     0
-#define KODE_WAVEGUIDE_MODE_PLUCKED 1
-#define KODE_WAVEGUIDE_MODE_BOWED   2
-#define KODE_WAVEGUIDE_MODE_BLOWN   3
+#define MIP_WAVEGUIDE_MODE_OFF     0
+#define MIP_WAVEGUIDE_MODE_PLUCKED 1
+#define MIP_WAVEGUIDE_MODE_BOWED   2
+#define MIP_WAVEGUIDE_MODE_BLOWN   3
 
 //----------------------------------------------------------------------
 
-class KODE_WaveGuide {
+class MIP_WaveGuide {
 
   private:
 
-    KODE_RcFilter MFilter_LP;
+    MIP_RcFilter MFilter_LP;
     float         MBuffer[MAX_WG_DELAY] = {0};
-    uint32_t      MMode                 = KODE_WAVEGUIDE_MODE_PLUCKED;
+    uint32_t      MMode                 = MIP_WAVEGUIDE_MODE_PLUCKED;
     int           MCounter              = 0;
     bool          MWrapped              = false;
     float         MPhase                = 0.0f;
-    
-  //KODE_RcFilter MFilter_HP;
+
+  //MIP_RcFilter MFilter_HP;
   //float         MBuffer2[MAX_WG_DELAY];
   //bool          MImpulse  = false;
 
@@ -55,24 +55,24 @@ class KODE_WaveGuide {
     void setSampleRate(float rate)  { MFilter_LP.setSampleRate(rate); /*MFilter_HP.sampleRate(rate);*/ }
     void setDamping(float damp)     { MFilter_LP.setWeight(damp); }
     void setMode(uint32_t AMode)    { MMode = AMode; }
-    
+
     bool hasWrapped(void)           { return MWrapped; }
-    
-    
+
+
     //bool isImpulse(void)            { return MImpulse; }
     //void setImpulse(bool imp=true)  { MImpulse = imp; }
     //void damp_hi(float damp)    { MFilter_HP.weight(damp); }
 
   public:
 
-    KODE_WaveGuide() {
+    MIP_WaveGuide() {
       clear();
       //MImpulse = false;
     }
 
     //----------
 
-    virtual ~KODE_WaveGuide() {
+    virtual ~MIP_WaveGuide() {
     }
 
     //----------
@@ -83,9 +83,9 @@ class KODE_WaveGuide {
       MPhase    = 0.0f;
       // this created a spike in cu each time a note was started..
       // do we need to clear the buffer?
-      KODE_Memset(MBuffer,0,MAX_WG_DELAY*sizeof(float));
+      MIP_Memset(MBuffer,0,MAX_WG_DELAY*sizeof(float));
     }
-    
+
     void reset() {
       MWrapped  = false;
       MPhase    = 0.0f;
@@ -112,9 +112,9 @@ class KODE_WaveGuide {
     //----------
 
     float feed(float AInput, float AFeedback, float ADelay) {
-      
-      if ((MMode == KODE_WAVEGUIDE_MODE_PLUCKED) && MWrapped) AInput = 0.0f;
-      
+
+      if ((MMode == MIP_WAVEGUIDE_MODE_PLUCKED) && MWrapped) AInput = 0.0f;
+
       // calculate delay offset
       float back = (float)MCounter - ADelay;
       if (back < 0.0) back = MAX_WG_DELAY + back;
@@ -142,7 +142,7 @@ class KODE_WaveGuide {
 
       float fb = (AInput + output * AFeedback);
       fb = MFilter_LP.process(fb);
-      //fb = KODE_Clamp(fb,-1,1);
+      //fb = MIP_Clamp(fb,-1,1);
       //fb = softclip(fb);
       fb = atan(fb);
 
@@ -152,7 +152,7 @@ class KODE_WaveGuide {
 
       MPhase += 1.0f;
       if (MPhase >= ADelay) { MWrapped = true; }
-      
+
       return output;
     }
     //----------
@@ -186,7 +186,7 @@ class KODE_WaveGuide {
       float output = ((c3*x+c2)*x+c1)*x+c0;
       // feedback/damping
 //      float fb = MFilter_LP.process(AInput + output * AFeedback); // was +
-//      fb = KODE_Clamp(fb,-1,1);
+//      fb = MIP_Clamp(fb,-1,1);
 //      MBuffer[MCounter] = fb;
 //      MCounter++;
 //      if (MCounter >= ADelay) { MWrapped = true; }

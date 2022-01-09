@@ -18,11 +18,11 @@
 
 //----------------------------------------------------------------------
 
-#define KODE_LV2_MAX_URI_LENGTH     256
-#define KODE_LV2_MANIFEST_TTL_SIZE  65536
-#define KODE_LV2_PLUGIN_TTL_SIZE    65536
+#define MIP_LV2_MAX_URI_LENGTH     256
+#define MIP_LV2_MANIFEST_TTL_SIZE  65536
+#define MIP_LV2_PLUGIN_TTL_SIZE    65536
 
-#define KODE_LV2_EXPORT_TTL
+#define MIP_LV2_EXPORT_TTL
 
 //----------------------------------------------------------------------
 #endif

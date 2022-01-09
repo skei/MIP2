@@ -1,5 +1,5 @@
 
-class KODE_WalshHadamard {
+class MIP_WalshHadamard {
 };
 
 /*

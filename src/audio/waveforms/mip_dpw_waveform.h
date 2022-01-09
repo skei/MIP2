@@ -1,5 +1,5 @@
-#ifndef kode_waveform_dpw
-#define kode_waveform_dpw
+#ifndef mip_waveform_dpw
+#define mip_waveform_dpw
 //----------------------------------------------------------------------
 
 /*
@@ -86,11 +86,11 @@
   / 1
 */
 
-class KODE_DpwSawWaveform {
+class MIP_DpwSawWaveform {
   private:
     float x1;
   public:
-    KODE_DpwSawWaveform() {
+    MIP_DpwSawWaveform() {
       reset();/*x1 = 0;*/
     }
     void reset(void) { x1 = 0; }
@@ -116,17 +116,17 @@ class KODE_DpwSawWaveform {
   / 1
 */
 
-class KODE_Dpw2SawWaveform {
+class MIP_Dpw2SawWaveform {
   private:
     float x1;
   public:
-    KODE_Dpw2SawWaveform() {
+    MIP_Dpw2SawWaveform() {
       x1 = 0;
     }
     void reset(void) { x1 = 0; }
     float process(float t, float dt) {
 
-      // Correct phase, so it would be in line with sin(2.*KODE_PI * t)
+      // Correct phase, so it would be in line with sin(2.*MIP_PI * t)
       t += (0.5f + (0.5f*dt));
       if (t >= 1) t -= 1;
 
@@ -152,11 +152,11 @@ class KODE_Dpw2SawWaveform {
   / 1
 */
 
-class KODE_Dpw3SawWaveform {
+class MIP_Dpw3SawWaveform {
   private:
     float x1,x2;
   public:
-    KODE_Dpw3SawWaveform() {
+    MIP_Dpw3SawWaveform() {
       x1 = 0;
       x2 = 0;
     }

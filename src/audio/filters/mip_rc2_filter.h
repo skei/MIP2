@@ -1,11 +1,11 @@
-#ifndef kode_filter_rc2_included
-#define kode_filter_rc2_included
+#ifndef mip_filter_rc2_included
+#define mip_filter_rc2_included
 //----------------------------------------------------------------------
 
 // http://musicdsp.org/showArchiveComment.php?ArchiveID=185
 
 
-class KODE_Rc2Filter {
+class MIP_Rc2Filter {
 
   private:
 
@@ -15,14 +15,14 @@ class KODE_Rc2Filter {
 
   public:
 
-    KODE_Rc2Filter() {
+    MIP_Rc2Filter() {
       z0 = 0.0f;
       z1 = 0.0f;
     }
 
     //----------
 
-    ~KODE_Rc2Filter() {
+    ~MIP_Rc2Filter() {
     }
 
     //----------
@@ -37,9 +37,9 @@ class KODE_Rc2Filter {
     //----------
 
     void setFreq(float AFreq, float ARate) {
-      c = 2.0f * sinf( KODE_PI * AFreq / ARate );
+      c = 2.0f * sinf( MIP_PI * AFreq / ARate );
       //You can approximate this (tuning error towards nyquist):
-      //c := KODE_PI2*freq/samplerate;
+      //c := MIP_PI2*freq/samplerate;
     }
 
     //----------

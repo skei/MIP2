@@ -1,5 +1,5 @@
 
-class KODE_EnvelopeDetector {
+class MIP_EnvelopeDetector {
 };
 
 /*

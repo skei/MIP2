@@ -1,4 +1,3 @@
-
 #define MIP_NO_PLUGIN
 #define MIP_GUI_XCB
 //#define MIP_USE_CAIRO
@@ -15,32 +14,100 @@
 int main() {
   //MIP_Print("Hello world!\n");
 
+  MIP_Parameter* parameter1 = new MIP_Parameter( "p1", 0.5, 0.1, 0.9 );
+  MIP_Widget* widget = nullptr;
+
   MIP_Window* window = new MIP_Window(640,480,"MIP_Window");
   window->setFillWindowBackground(true);
-  window->setWindowBackgroundColor(MIP_COLOR_DARK_GRAY);
+  window->setWindowBackgroundColor(MIP_COLOR_GRAY);
 
-  window->appendWidget( new MIP_PanelWidget(        MIP_FRect(  10, 10,   150,20  )  ));
-  window->appendWidget( new MIP_TextWidget(         MIP_FRect(  10, 35,   150,20  ), "Text" ));
-  window->appendWidget( new MIP_ValueWidget(        MIP_FRect(  10, 60,   150,20  ), "Value" ));
-  window->appendWidget( new MIP_DragValueWidget(    MIP_FRect(  10, 85,   150,20  ), "DragValue", 0.3  ));
-  window->appendWidget( new MIP_SliderWidget(       MIP_FRect(  10, 110,  150,20  ), "Slider"  ));
-  window->appendWidget( new MIP_ScrollBarWidget(    MIP_FRect(  10, 135,  150,20  )  ));
-  window->appendWidget( new MIP_RangeSliderWidget(  MIP_FRect(  10, 160,  150,20  )  ));
-  window->appendWidget( new MIP_ButtonWidget(       MIP_FRect(  10, 185,  150,20  )  ));
-  window->appendWidget( new MIP_ButtonRowWidget(    MIP_FRect(  10, 210,  150,20  ), 5 ));
-  window->appendWidget( new MIP_KeyboardWidget(     MIP_FRect(  10, 235,  150,35  )  ));
-  window->appendWidget( new MIP_SelectorWidget(     MIP_FRect(  10, 275,  150,20  )  ));
-  window->appendWidget( new MIP_SliderBankWidget(   MIP_FRect(  10, 300,  150,30  )  ));
+  // left panel
 
-  window->appendWidget( new MIP_KnobWidget(         MIP_FRect(  170,26,   40,40   )  ));
-  window->appendWidget( new MIP_Knob2Widget(        MIP_FRect(  215,10,   40,72   )  ));
-  window->appendWidget( new MIP_CurveWidget(        MIP_FRect(  260,26,   40,40   )  ));
+  MIP_Widget* left_panel = new MIP_PanelWidget(MIP_FRect(200));
+  left_panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
+  left_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
+  left_panel->layout.spacing = MIP_FPoint(5,5);
+  window->appendWidget(left_panel);
+
+    widget = new MIP_PanelWidget(20);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_TextWidget(20,"Text");
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_ValueWidget(20,"Value");
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_DragValueWidget(20,"DragValue",0.3);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_SliderWidget(20,"Slider");
+    widget->setParameter(parameter1);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_ScrollBarWidget(20);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_RangeSliderWidget(20);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_ButtonWidget(20);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_ButtonRowWidget(20,5);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_KeyboardWidget(20);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_SelectorWidget(20);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+    widget = new MIP_SliderBankWidget(20);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    left_panel->appendWidget(widget);
+
+  // sizer
+
+  MIP_SizerWidget* sizer = new MIP_SizerWidget(MIP_FRect(5),MIP_SIZER_LEFT,left_panel);
+  window->appendWidget(sizer);
+
+  // right panel
+
+  MIP_Widget* right_panel = new MIP_PanelWidget(MIP_FRect(0));
+  right_panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+  window->appendWidget(right_panel);
+
+    widget = new MIP_KnobWidget(MIP_FRect(10,10,40,40));
+    widget->layout.alignment = MIP_WIDGET_ALIGN_CLIENT;
+    right_panel->appendWidget(widget);
+
+    widget = new MIP_Knob2Widget( MIP_FRect(50,10,40,72) );
+    widget->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+    right_panel->appendWidget(widget);
+
+    widget = new MIP_CurveWidget(40);
+    widget->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+    right_panel->appendWidget(widget);
 
   //window->alignWidgets();
   window->open();
   window->eventLoop();
   window->close();
   delete window;
+
+  delete parameter1;
 
   return 0;
 }

@@ -1,5 +1,5 @@
-#ifndef kode_pitch_tracker_included
-#define kode_pitch_tracker_included
+#ifndef mip_pitch_tracker_included
+#define mip_pitch_tracker_included
 //----------------------------------------------------------------------
 
 /*
@@ -76,7 +76,7 @@
 
 //----------------------------------------------------------------------
 
-class KODE_PitchTracker {
+class MIP_PitchTracker {
 
   private:
     double	_prevPitch;
@@ -152,12 +152,12 @@ class KODE_PitchTracker {
       double si, si1;
       // must be a power of 2
       samplecount = _floor_power2(samplecount);
-      double *sam = (double *)KODE_Malloc(sizeof(double)*samplecount);
-      KODE_Memcpy(sam, samples + startsample, sizeof(double)*samplecount);
+      double *sam = (double *)MIP_Malloc(sizeof(double)*samplecount);
+      MIP_Memcpy(sam, samples + startsample, sizeof(double)*samplecount);
       int curSamNb = samplecount;
-      int *distances = (int *)KODE_Malloc(sizeof(int)*samplecount);
-      int *mins = (int *)KODE_Malloc(sizeof(int)*samplecount);
-      int *maxs = (int *)KODE_Malloc(sizeof(int)*samplecount);
+      int *distances = (int *)MIP_Malloc(sizeof(int)*samplecount);
+      int *mins = (int *)MIP_Malloc(sizeof(int)*samplecount);
+      int *maxs = (int *)MIP_Malloc(sizeof(int)*samplecount);
       int nbMins, nbMaxs;
       // algorithm parameters
       int maxFLWTlevels = 6;
@@ -266,7 +266,7 @@ class KODE_PitchTracker {
         // maxs = [5, 20, 100,...]
         // compute distances
         int d;
-        KODE_Memset(distances, 0, samplecount*sizeof(int));
+        MIP_Memset(distances, 0, samplecount*sizeof(int));
 
         for (i = 0 ; i < nbMins ; i++) {
           for (j = 1; j < differenceLevelsN; j++) {
@@ -364,10 +364,10 @@ class KODE_PitchTracker {
 
     cleanup:
 
-      KODE_Free(distances);
-      KODE_Free(mins);
-      KODE_Free(maxs);
-      KODE_Free(sam);
+      MIP_Free(distances);
+      MIP_Free(mins);
+      MIP_Free(maxs);
+      MIP_Free(sam);
 
       return pitchF;
     }

@@ -1,5 +1,5 @@
-#ifndef kode_fft_included
-#define kode_fft_included
+#ifndef mip_fft_included
+#define mip_fft_included
 //----------------------------------------------------------------------
 
 /*
@@ -11,13 +11,13 @@
 #include "extern/pffft/pffft.h"
 #include "extern/pffft/pffft.c.h"
 
-//#include "common/kode_math_fast.h"
-#include "common/kode_math_int.h"
-//#include "base/kode_integer.h"
+//#include "common/mip_math_fast.h"
+#include "common/mip_math_int.h"
+//#include "base/mip_integer.h"
 
 //----------------------------------------------------------------------
 
-class KODE_Fft {
+class MIP_Fft {
 
   private:
     PFFFT_Setup*  MFft;
@@ -28,7 +28,7 @@ class KODE_Fft {
 
   public:
 
-    KODE_Fft() {
+    MIP_Fft() {
       MFft        = nullptr;
       MFftSize    = 0;
       MFftSizeInv = 0;
@@ -38,13 +38,13 @@ class KODE_Fft {
 
     //----------
 
-    KODE_Fft(uint32_t ASize) {
+    MIP_Fft(uint32_t ASize) {
       create(ASize);
     }
 
     //----------
 
-    virtual ~KODE_Fft() {
+    virtual ~MIP_Fft() {
       destroy();
     }
 
@@ -68,14 +68,14 @@ class KODE_Fft {
     */
 
     void create(int32_t ASize) {
-      KODE_Assert( KODE_IsPowerOfTwo(ASize) );
+      MIP_Assert( MIP_IsPowerOfTwo(ASize) );
       if (ASize>0) {
         MFftSize = ASize;
         MFftSizeInv = 1.0f / (float)ASize;
         MFft = pffft_new_setup(MFftSize,PFFFT_COMPLEX);
         uint32_t num_bytes  = MFftSize * 2 * sizeof(float);
         MFftBuffer  = (float*)pffft_aligned_malloc(num_bytes);
-        KODE_Memset(MFftBuffer,0,num_bytes);
+        MIP_Memset(MFftBuffer,0,num_bytes);
       }
     }
 
@@ -97,7 +97,7 @@ class KODE_Fft {
   public:
 
     void setSize(int32_t ASize) {
-      KODE_Assert( KODE_IsPowerOfTwo(ASize) );
+      MIP_Assert( MIP_IsPowerOfTwo(ASize) );
       if (ASize != MFftSize) {
         if (MFft) destroy();
         create(ASize);
@@ -107,7 +107,7 @@ class KODE_Fft {
     //----------
 
     void process(float* ABuffer) {
-      KODE_Assert(MFft!=nullptr);
+      MIP_Assert(MFft!=nullptr);
       if (MFft) {
         pffft_transform_ordered(MFft,ABuffer,MFftBuffer,nullptr,PFFFT_FORWARD);
       }

@@ -1,5 +1,5 @@
-#ifndef kode_filter_cytomic_included
-#define kode_filter_cytomic_included
+#ifndef mip_filter_cytomic_included
+#define mip_filter_cytomic_included
 //----------------------------------------------------------------------
 
 /*
@@ -18,7 +18,7 @@
 
 //----------------------------------------------------------------------
 
-enum KODE_CytomicFilterTypes {
+enum MIP_CytomicFilterTypes {
   kft_none      = 0,
   kft_lowpass   = 1,
   kft_bandpass  = 2,
@@ -33,7 +33,7 @@ enum KODE_CytomicFilterTypes {
 
 //----------------------------------------------------------------------
 
-class KODE_CytomicFilter {
+class MIP_CytomicFilter {
 
   private:
 
@@ -47,7 +47,7 @@ class KODE_CytomicFilter {
 
   public:
 
-    KODE_CytomicFilter() {
+    MIP_CytomicFilter() {
       _ic1eq = _ic2eq = _v1 = _v2 = _v3 = 0;
     }
 
@@ -131,7 +131,7 @@ class KODE_CytomicFilter {
             _m2 = 1-_A*_A;
             break;
           default:
-            KODE_Assert(false);
+            MIP_Assert(false);
         }
       }
 

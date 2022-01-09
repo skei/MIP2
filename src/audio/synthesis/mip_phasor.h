@@ -1,17 +1,17 @@
-#ifndef kode_phasor_included
-#define kode_phasor_included
+#ifndef mip_phasor_included
+#define mip_phasor_included
 //----------------------------------------------------------------------
 
 // 0..1
 
 //----------------------------------------------------------------------
 
-#include "base/kode_math.h"
-#include "audio/kode_audio_math.h"
+#include "base/mip_math.h"
+#include "audio/mip_audio_math.h"
 
 //----------
 
-class KODE_Phasor {
+class MIP_Phasor {
 
   private:
     float MSampleRate = 0.0f;
@@ -114,14 +114,14 @@ class KODE_Phasor {
 
     void tick(void) {
       t += dt;
-      t = KODE_Modulo(t,1.0f);
+      t = MIP_Modulo(t,1.0f);
     }
 
     //----------
 
     void tick(float a) {
       t += a;
-      t = KODE_Modulo(t,1.0f);
+      t = MIP_Modulo(t,1.0f);
     }
 
   //----------------------------------------
@@ -131,7 +131,7 @@ class KODE_Phasor {
   public:
 
     float process(void) {
-      //KODE_Trace("t %.3f dt %.3f\n",t,dt);
+      //MIP_Trace("t %.3f dt %.3f\n",t,dt);
       float result = t;
       //t += dt;
       //t = KModulo(t,1.0f);

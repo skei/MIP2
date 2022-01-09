@@ -120,17 +120,17 @@ public:
 public:
 //------------------------------
 
-//  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) override {
-//      wdg_knob->setParameter(AParameter);
-//      if (AParameter) {
-//        wdg_label->setText( AParameter->getName() );
-//        float value = 0.0f;
-//        //const char* txt = AParameter->getDisplayText(value);
-//        //MIP_FloatToString(value_text,AValue);
-//        sprintf(value_text,"%.3f",value);
-//        wdg_value->setText(value_text);
-//      }
-//  }
+  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) override {
+      wdg_knob->setParameter(AParameter);
+      if (AParameter) {
+        wdg_label->setText( AParameter->getName() );
+        float value = 0.0f;
+        //const char* txt = AParameter->getDisplayText(value);
+        //MIP_FloatToString(value_text,AValue);
+        sprintf(value_text,"%.3f",value);
+        wdg_value->setText(value_text);
+      }
+  }
 
 //------------------------------
 public:

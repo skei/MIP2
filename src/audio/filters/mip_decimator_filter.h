@@ -1,5 +1,5 @@
-#ifndef kode_filter_decimator_included
-#define kode_filter_decimator_included
+#ifndef mip_filter_decimator_included
+#define mip_filter_decimator_included
 //----------------------------------------------------------------------
 
 // Hiqh quality /2 decimators
@@ -25,12 +25,12 @@
 
 //----------------------------------------------------------------------
 
-class KODE_Decimator5Filter {
+class MIP_Decimator5Filter {
   private:
     float R1,R2,R3,R4,R5;
     float h0, h1, h3, h5;
   public:
-    KODE_Decimator5Filter() {
+    MIP_Decimator5Filter() {
       h0 = 346/692.0;
       h1 = 208/692.0;
       h3 = -44/692.0;
@@ -80,12 +80,12 @@ local(h5x0 h3x0 h1x0) (
 
 //----------------------------------------------------------------------
 
-class KODE_Decimator7Filter {
+class MIP_Decimator7Filter {
   private:
     float R1,R2,R3,R4,R5,R6,R7;
     float h0,h1,h3,h5,h7;
   public:
-    KODE_Decimator7Filter() {
+    MIP_Decimator7Filter() {
       h0 = 802/1604.0;
       h1 = 490/1604.0;
       h3 = -116/1604.0;
@@ -118,12 +118,12 @@ class KODE_Decimator7Filter {
 
 //----------------------------------------------------------------------
 
-class KODE_Decimator9Filter {
+class MIP_Decimator9Filter {
   private:
     float R1,R2,R3,R4,R5,R6,R7,R8,R9;
     float h0,h1,h3,h5,h7,h9;
   public:
-    KODE_Decimator9Filter() {
+    MIP_Decimator9Filter() {
       h0 = 8192/16384.0;
       h1 = 5042/16384.0;
       h3 = -1277/16384.0;
@@ -196,7 +196,7 @@ local(h9x0 h7x0 h5x0 h3x0 h1x0)
 
 // T.Rochebois
 
-class KODE_Decimator17Filter {
+class MIP_Decimator17Filter {
 
   private:
 
@@ -205,7 +205,7 @@ class KODE_Decimator17Filter {
 
   public:
 
-    KODE_Decimator17Filter() {
+    MIP_Decimator17Filter() {
       h17 = (5.18944944e-005);
       h15 = (-0.000572688237);
       h13 = (0.00207426259);
@@ -256,7 +256,7 @@ class KODE_Decimator17Filter {
 // https://forum.cockos.com/showpost.php?p=1701930&postcount=44
 //----------------------------------------------------------------------
 
-class KODE_Decimator59Filter {
+class MIP_Decimator59Filter {
 };
 
 // -96dB  17.5kHz at 44.1kHz   ov2 -> srate

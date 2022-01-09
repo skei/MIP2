@@ -1,11 +1,11 @@
-#ifndef kode_filter_allpass_included
-#define kode_filter_allpass_included
+#ifndef mip_filter_allpass_included
+#define mip_filter_allpass_included
 //----------------------------------------------------------------------
 
-//#include "base/kode_math.h" // KKillDenorm
-#include "audio/kode_audio_math.h" // KKillDenorm
+//#include "base/mip_math.h" // KKillDenorm
+#include "audio/mip_audio_math.h" // KKillDenorm
 
-class KODE_AllpassFilter {
+class MIP_AllpassFilter {
 
   private:
 
@@ -25,11 +25,11 @@ class KODE_AllpassFilter {
     //  y2  = 0;
     //}
 
-    KODE_AllpassFilter() {
+    MIP_AllpassFilter() {
       setCoefficient(0);
     }
 
-    KODE_AllpassFilter(float ACoefficient) {
+    MIP_AllpassFilter(float ACoefficient) {
       setCoefficient(ACoefficient);
     }
 
@@ -53,7 +53,7 @@ class KODE_AllpassFilter {
       //output := KKillDenorm(output);
       //y0 := output;
       y0 = x2 + ( (AInput-y2) * a );
-      y0 = KODE_KillDenormal(y0);
+      y0 = MIP_KillDenormal(y0);
       return y0;
     }
 
@@ -98,7 +98,7 @@ public:
 
     void Reset()
     {
-		KODE_Memset(this->_Buffer, 0, 3072 * sizeof(float));
+		MIP_Memset(this->_Buffer, 0, 3072 * sizeof(float));
     }
 
     __forceinline float Process(float input)

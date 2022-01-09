@@ -1,5 +1,5 @@
-#ifndef kode_waveform_ptr_included
-#define kode_waveform_ptr_included
+#ifndef mip_waveform_ptr_included
+#define mip_waveform_ptr_included
 //----------------------------------------------------------------------
 
 /*
@@ -63,7 +63,7 @@
   / 1         1     1
 */
 
-class KODE_Ptr1SawWaveform {
+class MIP_Ptr1SawWaveform {
   public:
     float process(float t, float dt) {
       float T0 = dt;
@@ -92,7 +92,7 @@ class KODE_Ptr1SawWaveform {
   / 1           1     1
 */
 
-class KODE_Ptr2SawWaveform {
+class MIP_Ptr2SawWaveform {
   public:
     float process(float t, float dt) {
       float T0 = dt;
@@ -135,7 +135,7 @@ class KODE_Ptr2SawWaveform {
   / 2           2     2
 */
 
-class KODE_Ptr3SawWaveform {
+class MIP_Ptr3SawWaveform {
   public:
     float process(float t, float dt) {
       float T0 = dt;
@@ -189,7 +189,7 @@ class KODE_Ptr3SawWaveform {
 
 /*
 
-class KODE_Ptr1XorWaveform {
+class MIP_Ptr1XorWaveform {
   public:
     float process(float t, float dt) {
       float T0 = dt;

@@ -58,8 +58,7 @@ public:
     //if (flags.autoHint) do_widget_setHint(this,"");
   }
 
-  //void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) override {
-  void on_widget_connect(int32_t AParameterIndex) override {
+  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) override {
   }
 
 //------------------------------

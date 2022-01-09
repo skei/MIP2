@@ -1,20 +1,20 @@
-#ifndef kode_audio_delay_included
-#define kode_audio_delay_included
+#ifndef mip_audio_delay_included
+#define mip_audio_delay_included
 //----------------------------------------------------------------------
 
-#include "base/kode_math.h"
-//#include "audio/filters/kode_dc_filter.h"
-#include "audio/kode_audio_math.h"
+#include "base/mip_math.h"
+//#include "audio/filters/mip_dc_filter.h"
+#include "audio/mip_audio_math.h"
 
 //----------------------------------------------------------------------
 
-struct KODE_NoDelayFx {
+struct MIP_NoDelayFx {
   float process(float x) { return x; }
 };
 
 //----------------------------------------------------------------------
 
-//template <int MAX_DELAY, typename FBLOOPFX=KODE_NoDelayFx>
+//template <int MAX_DELAY, typename FBLOOPFX=MIP_NoDelayFx>
 //class KSimpleDelay {
 //
 //  private:
@@ -62,8 +62,8 @@ struct KODE_NoDelayFx {
 
 //----------------------------------------------------------------------
 
-template <int MAX_DELAY, typename FBLOOPFX=KODE_NoDelayFx>
-class KODE_InterpolatedDelay {
+template <int MAX_DELAY, typename FBLOOPFX=MIP_NoDelayFx>
+class MIP_InterpolatedDelay {
 
   private:
 
@@ -72,36 +72,36 @@ class KODE_InterpolatedDelay {
     float       MPhase              = 0.0f;
     bool        MWrapped            = false;
     FBLOOPFX    MFBLoopFX;
-    //KODE_DcFilter  MDC;
+    //MIP_DcFilter  MDC;
 
   public:
 
-    KODE_InterpolatedDelay() {
+    MIP_InterpolatedDelay() {
       clear();
     }
 
-    ~KODE_InterpolatedDelay() {
+    ~MIP_InterpolatedDelay() {
     }
-    
+
   public:
 
     FBLOOPFX* getFeedbackFX(void) {
       return &MFBLoopFX;
     }
-    
+
     bool hasWrapped() {
       return MWrapped;
     }
-    
+
     void reset(void) {
       MCounter = 0;
     }
 
     void clear(void) {
       MCounter = 0;
-      KODE_Memset(MBuffer,0,MAX_DELAY*sizeof(float));
+      MIP_Memset(MBuffer,0,MAX_DELAY*sizeof(float));
     }
-    
+
     void start() {
       MWrapped = false;
       MPhase = 0.0f;
@@ -109,8 +109,8 @@ class KODE_InterpolatedDelay {
 
     float process(float AInput, float AFeedback, float ADelay) {
 
-      KODE_Assert( ADelay > 0 );
-      KODE_Assert( ADelay < MAX_DELAY );
+      MIP_Assert( ADelay > 0 );
+      MIP_Assert( ADelay < MAX_DELAY );
 
       // calculate delay offset
       float back = (float)MCounter - ADelay;
@@ -136,19 +136,19 @@ class KODE_InterpolatedDelay {
       float output = ((c3 * x + c2) * x + c1) * x + c0;
 
       //output = MDC.process(output);
-      //output = KODE_KillDenormal(output);
+      //output = MIP_KillDenormal(output);
 
       float fb = output * AFeedback;
       float flt = MFBLoopFX.process(fb);
       float out = AInput + flt;
 
       //out = atan(out); // KClamp((AInput + flt), -1, 1);
-      
+
       if (out >  1.0f) out =  1.0f;
       if (out < -1.0f) out = -1.0f;
 
-      KODE_Assert( MCounter >= 0 );
-      KODE_Assert( MCounter < MAX_DELAY );
+      MIP_Assert( MCounter >= 0 );
+      MIP_Assert( MCounter < MAX_DELAY );
 
       MBuffer[MCounter] = out;
 
@@ -156,13 +156,13 @@ class KODE_InterpolatedDelay {
       if (MCounter >= MAX_DELAY) {
         MCounter -= MAX_DELAY;// 0;
       }
-      
+
       MPhase += 1.0f;
       if (MPhase >= ADelay) {
         MWrapped = true;
         while (MPhase >= ADelay) MPhase -= ADelay;
       }
-      
+
       return output;
     }
 

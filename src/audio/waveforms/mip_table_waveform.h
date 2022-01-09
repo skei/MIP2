@@ -1,5 +1,5 @@
-#ifndef kode_waveform_table_included
-#define kode_waveform_table_included
+#ifndef mip_waveform_table_included
+#define mip_waveform_table_included
 //----------------------------------------------------------------------
 
 /*
@@ -83,8 +83,8 @@
 
 #include <math.h>
 
-#define KODE_WAVETABLE_LINEAR_INTERPOLATION
-#define KODE_WAVETABLE_MAX_TABLES 32
+#define MIP_WAVETABLE_LINEAR_INTERPOLATION
+#define MIP_WAVETABLE_MAX_TABLES 32
 
 /*
   2k * 32 = 64k * sizeof(float) = 256k
@@ -97,16 +97,16 @@ typedef struct {
   float   topFreq;
   int32_t   len;
   float   *table;
-} KODE_WaveTable;
+} MIP_WaveTable;
 
 //----------------------------------------------------------------------
 
-class KODE_TableWaveform {
+class MIP_TableWaveform {
 
   private:
 
     int32_t         MNumTables;
-    KODE_WaveTable  MTables[KODE_WAVETABLE_MAX_TABLES];
+    MIP_WaveTable  MTables[MIP_WAVETABLE_MAX_TABLES];
 
   //------------------------------
   //
@@ -114,9 +114,9 @@ class KODE_TableWaveform {
 
   public:
 
-    KODE_TableWaveform() {
+    MIP_TableWaveform() {
       MNumTables = 0;
-      for (int32_t i=0; i<KODE_WAVETABLE_MAX_TABLES; i++) {
+      for (int32_t i=0; i<MIP_WAVETABLE_MAX_TABLES; i++) {
         MTables[i].topFreq = 0;
         MTables[i].len = 0;
         MTables[i].table = nullptr;
@@ -125,10 +125,10 @@ class KODE_TableWaveform {
 
     //----------
 
-    ~KODE_TableWaveform() {
-      for (int32_t i=0; i<KODE_WAVETABLE_MAX_TABLES; i++) {
+    ~MIP_TableWaveform() {
+      for (int32_t i=0; i<MIP_WAVETABLE_MAX_TABLES; i++) {
         float *temp = MTables[i].table;
-        if (temp) KODE_Delete [] temp;
+        if (temp) MIP_Delete [] temp;
       }
     }
 
@@ -235,8 +235,8 @@ class KODE_TableWaveform {
     */
 
     int32_t addTable(int32_t len, float *tableIn, float topFreq) {
-      if (MNumTables < KODE_WAVETABLE_MAX_TABLES) {
-        float* T = MTables[MNumTables].table = KODE_New float[len];
+      if (MNumTables < MIP_WAVETABLE_MAX_TABLES) {
+        float* T = MTables[MNumTables].table = MIP_New float[len];
         MTables[MNumTables].len = len;
         MTables[MNumTables].topFreq = topFreq;
         ++MNumTables;
@@ -268,11 +268,11 @@ class KODE_TableWaveform {
         scale = 1.0 / max * .999;
       }
       // normalize
-      float* wave = KODE_New float[len];
+      float* wave = MIP_New float[len];
       for (int32_t idx = 0; idx < len; idx++) wave[idx] = ai[idx] * scale;
       if (addTable(len,wave,topFreq)) scale = 0.0;
       // skei: delete wave ???
-      KODE_Delete [] wave;
+      MIP_Delete [] wave;
       return scale;
     }
 
@@ -297,8 +297,8 @@ class KODE_TableWaveform {
       // point where the aliased harmonic would meet the next octave table, which is an additional 1/3
       float topFreq = 2.0 / 3.0 / maxHarmonic;
       // for subsquent tables, float topFreq and remove upper half of harmonics
-      float *ar = KODE_New float [numSamples];
-      float *ai = KODE_New float [numSamples];
+      float *ar = MIP_New float [numSamples];
+      float *ai = MIP_New float [numSamples];
       float scale = 0.0;
       while (maxHarmonic) {
         // fill the table in with the needed harmonics
@@ -316,8 +316,8 @@ class KODE_TableWaveform {
         maxHarmonic >>= 1;
       }
       // skei: delete ar/ai ???
-      KODE_Delete [] ar;
-      KODE_Delete [] ai;
+      MIP_Delete [] ar;
+      MIP_Delete [] ai;
     }
 
   //------------------------------
@@ -332,8 +332,8 @@ class KODE_TableWaveform {
     void makeSaw(int32_t tableLen=2048) {
       //int32_t tableLen = 2048;    // to give full bandwidth from 20 Hz
       int32_t idx;
-      float *freqRe = KODE_New float [tableLen];
-      float *freqIm = KODE_New float [tableLen];
+      float *freqRe = MIP_New float [tableLen];
+      float *freqIm = MIP_New float [tableLen];
       // make a sawtooth
       for (idx = 0; idx < tableLen; idx++) { freqIm[idx] = 0.0; }
       freqRe[0] = freqRe[tableLen >> 1] = 0.0;
@@ -344,8 +344,8 @@ class KODE_TableWaveform {
       // build a wavetable oscillator
       fillTables(freqRe,freqIm,tableLen);
       // skei: free freqRe/Im ???
-      KODE_Delete [] freqRe;
-      KODE_Delete [] freqIm;
+      MIP_Delete [] freqRe;
+      MIP_Delete [] freqIm;
     }
 
     //----------
@@ -353,8 +353,8 @@ class KODE_TableWaveform {
     // creates an oscillator from an arbitrary time domain wave
 
     void makeWave(float *waveSamples, int32_t tableLen) {
-      float *freqRe = KODE_New float [tableLen];
-      float *freqIm = KODE_New float [tableLen];
+      float *freqRe = MIP_New float [tableLen];
+      float *freqIm = MIP_New float [tableLen];
       // take FFT
       for (int32_t idx = 0; idx < tableLen; idx++) {
         freqIm[idx] = waveSamples[idx];
@@ -364,8 +364,8 @@ class KODE_TableWaveform {
       // build a wavetable oscillator
       fillTables(freqRe,freqIm,tableLen);
       // skei: free freqRe/Im ???
-      //KODE_Delete [] freqRe;
-      //KODE_Delete [] freqIm;
+      //MIP_Delete [] freqRe;
+      //MIP_Delete [] freqIm;
     }
 
   //------------------------------
@@ -387,9 +387,9 @@ class KODE_TableWaveform {
       // grab the appropriate wavetable
       int32_t tableIdx = 0;
       while ((dt >= MTables[tableIdx].topFreq) && (tableIdx < (MNumTables - 1))) { ++tableIdx; }
-      KODE_WaveTable* wavetable = &MTables[tableIdx];
+      MIP_WaveTable* wavetable = &MTables[tableIdx];
 
-      #ifdef KODE_WAVETABLE_LINEAR_INTERPOLATION
+      #ifdef MIP_WAVETABLE_LINEAR_INTERPOLATION
 
         float temp = t * wavetable->len;
         int32_t intPart = temp;
@@ -411,8 +411,8 @@ class KODE_TableWaveform {
 
 };
 
-//#undef KODE_WAVETABLE_LINEAR_INTERPOLATION
-#undef KODE_WAVETABLE_MAX_TABLES
+//#undef MIP_WAVETABLE_LINEAR_INTERPOLATION
+#undef MIP_WAVETABLE_MAX_TABLES
 
 //----------------------------------------------------------------------
 #endif

@@ -1,5 +1,5 @@
-#ifndef kode_hall_reverb_included
-#define kode_hall_reverb_included
+#ifndef mip_hall_reverb_included
+#define mip_hall_reverb_included
 //----------------------------------------------------------------------
 
 /*
@@ -10,10 +10,10 @@
 */
 
 /*
-      appendParameter( KODE_New S3_ParamFloat("dry",      0,  -48,    0  ) );
-      appendParameter( KODE_New S3_ParamFloat("wet",     -12, -48,    0  ) );
-      appendParameter( KODE_New S3_ParamFloat("length",   1,    0.01, 3  ) );
-      appendParameter( KODE_New S3_ParamFloat("predelay", 10,   0,    100) );
+      appendParameter( MIP_New S3_ParamFloat("dry",      0,  -48,    0  ) );
+      appendParameter( MIP_New S3_ParamFloat("wet",     -12, -48,    0  ) );
+      appendParameter( MIP_New S3_ParamFloat("length",   1,    0.01, 3  ) );
+      appendParameter( MIP_New S3_ParamFloat("predelay", 10,   0,    100) );
 */
 
 //----------------------------------------------------------------------
@@ -22,7 +22,7 @@
 
 //----------
 
-class KODE_HallReverb {
+class MIP_HallReverb {
 
   private:
 
@@ -60,10 +60,10 @@ class KODE_HallReverb {
 
   public:
 
-    KODE_HallReverb() {
+    MIP_HallReverb() {
       tmp1 = 0;
       tmp2 = 0;
-      KODE_Memset(&BUF,0,sizeof(BUF));
+      MIP_Memset(&BUF,0,sizeof(BUF));
       needrecalc = true;
     }
 
@@ -165,7 +165,7 @@ class KODE_HallReverb {
         g9  = 0.62;
         g11 = 0.62;
         f   = expf( logf(0.001) / ( p_len*MSampleRate / (l5+l6+l7+l8) ) );
-        d   = expf( -2*KODE_PI*18000/MSampleRate );
+        d   = expf( -2*MIP_PI*18000/MSampleRate );
         dry = powf(10,(p_dry/20)); // 10^(p_dry/20);
         wet = powf(10,(p_wet/20)); // 10^(p_wet/20);
         needrecalc = false;

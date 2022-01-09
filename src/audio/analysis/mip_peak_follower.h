@@ -1,5 +1,5 @@
 
-class KODE_PeakFollower {
+class MIP_PeakFollower {
 };
 
 /*

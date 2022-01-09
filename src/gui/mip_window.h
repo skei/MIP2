@@ -91,8 +91,8 @@ public:
     MName = "MIP_Window";
     MListener = AListener;
     //MOwner = this;
-    //setName("KODE_Window");
-    //setRect(KODE_FRect(AWidth,AHeight));
+    //setName("MIP_Window");
+    //setRect(MIP_FRect(AWidth,AHeight));
     //flags.autoClip = true;
     MWindowPainter = new MIP_Painter(this);
     #ifndef MIP_NO_WINDOW_BUFFERING
@@ -114,16 +114,18 @@ public:
 //------------------------------
 public:
 //------------------------------
+//#define MIP_USE_GPL
+
 
   //virtual bool isBuffered() {
-  //  #ifdef KODE_NO_WINDOW_BUFFERING
+  //  #ifdef MIP_NO_WINDOW_BUFFERING
   //  return false;
   //  #else
   //  return true;
   //  #endif
   //}
 
-  //virtual KODE_Painter* getPainter() {
+  //virtual MIP_Painter* getPainter() {
   MIP_Painter* getPainter() override {
     #ifdef MIP_NO_WINDOW_BUFFERING
     return MWindowPainter;
@@ -160,9 +162,9 @@ public:
 public:
 //------------------------------
 
-//  void paintWidget(KODE_Widget* AWidget, KODE_FRect ARect, uint32_t AMode=0) {
+//  void paintWidget(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) {
 //
-//    #ifdef KODE_NO_WINDOW_BUFFERING
+//    #ifdef MIP_NO_WINDOW_BUFFERING
 //      //if (flags.autoClip) MWindowPainter->pushClip(ARect);
 //      AWidget->on_widget_paint(MWindowPainter,ARect,AMode);
 //      //if (flags.autoClip) MWindowPainter->popClip();
@@ -177,7 +179,7 @@ public:
   //----------
 
 //  void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
-//    #ifndef KODE_NO_WINDOW_BUFFERING
+//    #ifndef MIP_NO_WINDOW_BUFFERING
 //      resizeBuffer(AWidth,AHeight);
 //    #endif
 //    MRect.w = AWidth;
@@ -340,7 +342,7 @@ public: // window
     attachWindow(this);
     alignWidgets();
     MIP_ImplementedWindow::open();
-    //#ifndef KODE_PLUGIN_EXE
+    //#ifndef MIP_PLUGIN_EXE
     //  //on_window_paint(0,0,MRect.w,MRect.h);
     //  paintWidget(this,MRect,0);
     //#endif
@@ -444,7 +446,7 @@ public: // MIP_BaseWindow
   void on_window_mouseClick(int32_t AXpos, int32_t AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
     //MIP_Print("x %i y %i b %i s %i ts %i\n",AXpos,AYpos,AButton,AState,ATimeStamp);
     //bool double_click = false;
-    //if ((ATimeStamp - MPrevClickTime) < KODE_GUI_DBLCLICK_MS) {
+    //if ((ATimeStamp - MPrevClickTime) < MIP_GUI_DBLCLICK_MS) {
     //  double_click = true;
     //}
     //MPrevClickTime = ATimeStamp;
@@ -518,7 +520,7 @@ public: // MIP_BaseWindow
     if (!MMouseClickedWidget) {
       MMouseHoverWidget = nullptr;
       updateHoverWidget(AXpos,AYpos,ATimeStamp);
-      //on_widget_enter(AXpos,AYpos,KODE_NULL);
+      //on_widget_enter(AXpos,AYpos,MIP_NULL);
     }
   }
 
@@ -529,9 +531,9 @@ public: // MIP_BaseWindow
   void on_window_mouseLeave(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) override {
     //MIP_Print("x %i y %i ts %i\n",AXpos,AYpos,ATimeStamp);
     if (!MMouseClickedWidget) {
-      //MMouseHoverWidget = KODE_NULL;
+      //MMouseHoverWidget = MIP_NULL;
       updateHoverWidget(AXpos,AYpos,ATimeStamp);
-      //on_widget_leave(AXpos,AYpos,KODE_NULL);
+      //on_widget_leave(AXpos,AYpos,MIP_NULL);
     }
   }
 
@@ -599,8 +601,8 @@ public: // MIP_Widget
     notify parent of widget, and realign/redraw
   */
 
-//  void do_widget_resized(KODE_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f) override {
-//    //KODE_Widget* parent = ASender->getParent();
+//  void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f) override {
+//    //MIP_Widget* parent = ASender->getParent();
 //    //if (parent) {
 //    //  parent->alignChildren();
 //    //  do_widget_redraw(parent,parent->getRect(),0);
@@ -664,14 +666,14 @@ public: // MIP_Widget
   //----------
 
   //void do_widget_grabKeyboard(MIP_Widget* AWidget) override {
-  //  //KODE_Print("%p\n",AWidget);
+  //  //MIP_Print("%p\n",AWidget);
   //  MKeyInputWidget = AWidget;
   //}
 
   //----------
 
   //void do_widget_grabModal(MIP_Widget* AWidget) override {
-  //  //KODE_Print("%p\n",AWidget);
+  //  //MIP_Print("%p\n",AWidget);
   //  MMouseModalWidget = AWidget;
   //  //if (AWidget)
   //    updateHoverWidget(MMouseX,MMouseY);

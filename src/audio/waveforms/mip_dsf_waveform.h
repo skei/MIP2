@@ -1,10 +1,10 @@
-#ifndef kode_waveform_dsf_included
-#define kode_waveform_dsf_included
+#ifndef mip_waveform_dsf_included
+#define mip_waveform_dsf_included
 //----------------------------------------------------------------------
 
 #include <math.h>
-#include "common/kode_math_fast.h"
-//#include "base/kode_math_table.h"
+#include "common/mip_math_fast.h"
+//#include "base/mip_math_table.h"
 
 /*
   * pitch 'offset' between t1 & t2 = "distance" between partials
@@ -50,7 +50,7 @@
 
 //----------------------------------------------------------------------
 
-class KODE_DsfWaveform {
+class MIP_DsfWaveform {
 
   private:
 
@@ -58,7 +58,7 @@ class KODE_DsfWaveform {
 
   public:
 
-    KODE_DsfWaveform() {
+    MIP_DsfWaveform() {
     }
 
     //----------
@@ -78,8 +78,8 @@ class KODE_DsfWaveform {
     //----------
 
     float process(float t1, float t2, float a, float N) {
-      t1               *= KODE_PI2;
-      t2               *= KODE_PI2;
+      t1               *= MIP_PI2;
+      t2               *= MIP_PI2;
       float N1          = N + 1;
       float aa          = a * a;
       float a2          = a * 2;
@@ -108,16 +108,16 @@ class KODE_DsfWaveform {
 
     /*
     float processF(float t1, float t2, float a, float N) {
-      t1               *= KODE_PI2;
-      t2               *= KODE_PI2;
+      t1               *= MIP_PI2;
+      t2               *= MIP_PI2;
       float N1          = N + 1.0f;
       float aa          = a * a;
       float a2          = a * 2.0f;
-      float w_t1      = KWrap(t1,         -KODE_PI,KODE_PI);
-      float w_t2      = KWrap(t2,         -KODE_PI,KODE_PI);
-      float w_t2t1    = KWrap((t2-t1),    -KODE_PI,KODE_PI);
-      float w_t1nt2   = KWrap((t1+N*t2),  -KODE_PI,KODE_PI);
-      float w_t1n1t2  = KWrap((t1+N1*t2), -KODE_PI,KODE_PI);
+      float w_t1      = KWrap(t1,         -MIP_PI,MIP_PI);
+      float w_t2      = KWrap(t2,         -MIP_PI,MIP_PI);
+      float w_t2t1    = KWrap((t2-t1),    -MIP_PI,MIP_PI);
+      float w_t1nt2   = KWrap((t1+N*t2),  -MIP_PI,MIP_PI);
+      float w_t1n1t2  = KWrap((t1+N1*t2), -MIP_PI,MIP_PI);
       float sin_t1      = KSinF2(w_t1);
       float cos_t2      = KCosF2(w_t2);
       float sin_t2t1    = KSinF2(w_t2t1);
@@ -136,8 +136,8 @@ class KODE_DsfWaveform {
 
     /*
     float process2(float t1, float t2, float a, float N) {
-      t1 *= KODE_PI2;
-      t2 *= KODE_PI2;
+      t1 *= MIP_PI2;
+      t2 *= MIP_PI2;
       float N1          = N + 1;
       float aa          = a * a;
       float a2          = a * 2;

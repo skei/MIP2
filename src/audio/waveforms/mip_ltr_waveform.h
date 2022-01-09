@@ -1,10 +1,10 @@
 
-class KODE_LtrWaveform {
+class MIP_LtrWaveform {
 };
 
 //
-//{$include kode.inc}
-//unit kode_osc_ltr;
+//{$include mip.inc}
+//unit mip_osc_ltr;
 //
 ////----------------------------------------------------------------------
 //interface
@@ -19,7 +19,7 @@ class KODE_LtrWaveform {
 ////----------------------------------------------------------------------
 //
 //uses
-//  kode_math;
+//  mip_math;
 //
 ////function KOsc_Saw_Sinc(t,dt:Single) : Single; inline;
 ////begin

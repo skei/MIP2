@@ -1,5 +1,5 @@
-#ifndef kode_filter_downsample_included
-#define kode_filter_downsample_included
+#ifndef mip_filter_downsample_included
+#define mip_filter_downsample_included
 //----------------------------------------------------------------------
 
 
@@ -37,13 +37,13 @@ const float KDownSample_Coefficients[32] = {
 
 //----------
 
-class KODE_DownSampleFilter {
+class MIP_DownSampleFilter {
   private:
     // 32 long normalized Kaiser (param = 6.4) windowed sinc function
     float MInput[BUFFER_SIZE];
     int32 MIndex;
   public:
-    KODE_DownSampleFilter() {
+    MIP_DownSampleFilter() {
       reset();
     }
     void reset(void) {

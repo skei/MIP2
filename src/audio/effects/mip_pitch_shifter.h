@@ -1,8 +1,8 @@
-#ifndef kode_pitch_shifter_included
-#define kode_pitch_shifter_included
+#ifndef mip_pitch_shifter_included
+#define mip_pitch_shifter_included
 //----------------------------------------------------------------------
 
-class KODE_PitchShifter {
+class MIP_PitchShifter {
 
   private:
 
@@ -18,7 +18,7 @@ class KODE_PitchShifter {
 
   public:
 
-    KODE_PitchShifter() {
+    MIP_PitchShifter() {
       inc_      = 0;
       len_      = 0;
       fade_     = 0;
@@ -27,10 +27,10 @@ class KODE_PitchShifter {
       base      = 0;
       old_base  = 0;
       fade_base = 0;
-      KODE_Memset(buffer,0,sizeof(buffer));
+      MIP_Memset(buffer,0,sizeof(buffer));
     }
 
-    ~KODE_PitchShifter() {
+    ~MIP_PitchShifter() {
     }
 
   public:

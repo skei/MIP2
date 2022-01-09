@@ -1,8 +1,8 @@
-#ifndef kode_lpc_included
-#define kode_lpc_included
+#ifndef mip_lpc_included
+#define mip_lpc_included
 //----------------------------------------------------------------------
 
-class KODE_Lpc {
+class MIP_Lpc {
 };
 
 #if 0
@@ -19,7 +19,7 @@ class KODE_Lpc {
   length L and warping of lambda
 */
 
-void KODE_AutoCorrelate(float* x, float* R, int32 P, float lambda, int32 l=-1) {
+void MIP_AutoCorrelate(float* x, float* R, int32 P, float lambda, int32 l=-1) {
 //var
 //  dl,Rt     : TDoubleArray;
 //  r1,r2,r1t : Double;
@@ -65,7 +65,7 @@ void KODE_AutoCorrelate(float* x, float* R, int32 P, float lambda, int32 l=-1) {
   and reflection coefficients K
 */
 
-void KODE_LevinsonRecursion(P:Integer; R,A,K:TSingleArray) {
+void MIP_LevinsonRecursion(P:Integer; R,A,K:TSingleArray) {
 var
   Am1       : TDoubleArray;
   i,j,s,m   : Integer;

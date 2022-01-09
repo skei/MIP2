@@ -1,5 +1,5 @@
-#ifndef kode_waveform_blamp
-#define kode_waveform_blamp
+#ifndef mip_waveform_blamp
+#define mip_waveform_blamp
 //----------------------------------------------------------------------
 
 /*
@@ -13,7 +13,7 @@
 
 // http://www.kvraudio.com/forum/viewtopic.php?p=6107378#p6107378 // tale
 
-float KODE_PolyBlamp(float t, float dt) {
+float MIP_PolyBlamp(float t, float dt) {
   if (t < dt) {
     t = t/dt - 1;
     return (float)-1/3 * t*t*t;
@@ -29,7 +29,7 @@ float KODE_PolyBlamp(float t, float dt) {
 
 //----------------------------------------------------------------------
 
-class KODE_PolyblampTriWaveform {
+class MIP_PolyblampTriWaveform {
   public:
     float process(float t, float dt) {
       // Start with naive triangle.
@@ -44,11 +44,11 @@ class KODE_PolyblampTriWaveform {
       float scale = 4 * dt;
       float t2 = t + 0.25;
       t2 -= floor(t2);
-      tri += scale * KODE_PolyBlamp(t2, dt);
+      tri += scale * MIP_PolyBlamp(t2, dt);
       // Correct rising discontinuity.
       t2 = t2 + 0.5;
       t2 = t2 - floor(t2);
-      tri -= scale * KODE_PolyBlamp(t2,dt);
+      tri -= scale * MIP_PolyBlamp(t2,dt);
       return tri;
     }
 };

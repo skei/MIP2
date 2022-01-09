@@ -1,5 +1,5 @@
-#ifndef kode_gordonsmith_included
-#define kode_gordonsmith_included
+#ifndef mip_gordonsmith_included
+#define mip_gordonsmith_included
 //----------------------------------------------------------------------
 
 // unfinished
@@ -30,7 +30,7 @@
   clicks.
 */
 
-class KODE_GordonSmith {
+class MIP_GordonSmith {
 
 private:
 
@@ -46,7 +46,7 @@ private:
 
   public:
 
-    KODE_GordonSmith() {
+    MIP_GordonSmith() {
       init = false;
     }
 
@@ -60,7 +60,7 @@ private:
     void frequency(float frequency, float sampleRate) {
       fo = frequency;
       fs = sampleRate;
-      theta = 2 * KODE_PI * fo / fs;
+      theta = 2 * MIP_PI * fo / fs;
       epsilon = 2 * sinf(theta / 2);
       if (!init) {
         yn1 = sinf(-1 * theta);

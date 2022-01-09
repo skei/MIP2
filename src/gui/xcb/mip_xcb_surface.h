@@ -7,7 +7,7 @@
 #include "gui/base/mip_base_surface.h"
 #include "gui/xcb/mip_xcb_utils.h"
 
-#ifdef KODE_USE_CAIRO
+#ifdef MIP_USE_CAIRO
 #include "gui/cairo/mip_cairo.h"
 #endif
 

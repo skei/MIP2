@@ -1,5 +1,5 @@
-#ifndef kode_filter_rbj_included
-#define kode_filter_rbj_included
+#ifndef mip_filter_rbj_included
+#define mip_filter_rbj_included
 //----------------------------------------------------------------------
 
 // biquad
@@ -45,7 +45,7 @@
 
 //----------------------------------------------------------------------
 
-class KODE_RbjFilter {
+class MIP_RbjFilter {
 
   private:
 
@@ -68,7 +68,7 @@ class KODE_RbjFilter {
 
   public:
 
-    KODE_RbjFilter() {
+    MIP_RbjFilter() {
       MFilterType = 0;
       MFreq = 500;
       MQ = 0.3;
@@ -102,7 +102,7 @@ class KODE_RbjFilter {
 
       if (MFilterType>=6) {
         float A = pow(10.0,(MDBGain/40.0));
-        omega = KODE_PI2*MFreq/ASampleRate;
+        omega = MIP_PI2*MFreq/ASampleRate;
         tsin = sin(omega);
         tcos = cos(omega);
         if (MQIsBandWidth) alpha = tsin*sinh(log2(2.0)/2.0*MQ*omega/tsin);
@@ -147,7 +147,7 @@ class KODE_RbjFilter {
       //other filter types
 
       else {
-        omega = KODE_PI2*MFreq/ASampleRate;
+        omega = MIP_PI2*MFreq/ASampleRate;
         tsin = sin(omega);
         tcos = cos(omega);
         if (MQIsBandWidth) alpha = tsin*sinh(log2(2)/2*MQ*omega/tsin);

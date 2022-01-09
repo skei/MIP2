@@ -1,5 +1,5 @@
-#ifndef kode_sinusoid_included
-#define kode_sinusoid_included
+#ifndef mip_sinusoid_included
+#define mip_sinusoid_included
 //----------------------------------------------------------------------
 
 // sinusoid (approximation)
@@ -9,7 +9,7 @@
 
 //----------
 
-class KODE_Sinusoid {
+class MIP_Sinusoid {
 
   private:
 
@@ -20,7 +20,7 @@ class KODE_Sinusoid {
 
   public:
 
-    KODE_Sinusoid() {
+    MIP_Sinusoid() {
       t = 0.0;
       dt = 0.0;
       srate = 0.0;

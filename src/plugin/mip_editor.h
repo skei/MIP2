@@ -112,7 +112,9 @@ public:
     }
     MParameterToWidget[AParamIndex] = AWidget;
     AWidget->setParameterIndex(AParamIndex);
-    AWidget->on_widget_connect(AParamIndex);
+    MIP_Parameter* param = MDescriptor->getParameter(AParamIndex);
+    AWidget->setParameter(param);
+    AWidget->on_widget_connect(param);
   }
 
   //

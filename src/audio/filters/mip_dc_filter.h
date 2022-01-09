@@ -1,5 +1,5 @@
-#ifndef kode_filter_dc_included
-#define kode_filter_dc_included
+#ifndef mip_filter_dc_included
+#define mip_filter_dc_included
 //----------------------------------------------------------------------
 
 // original author: lubomir i ivanov (for axonlib)
@@ -7,8 +7,8 @@
 
 //----------------------------------------------------------------------
 
-#include "base/kode.h"
-#include "base/kode_const.h"
+#include "base/mip.h"
+#include "base/mip_const.h"
 
 /*
   DC offset filter.
@@ -16,7 +16,7 @@
   http://www-ccrma.stanford.edu/~jos/filters/
 */
 
-class KODE_DcFilter {
+class MIP_DcFilter {
 
   private:
 
@@ -25,7 +25,7 @@ class KODE_DcFilter {
 
   public:
 
-    KODE_DcFilter() {
+    MIP_DcFilter() {
       x1 = 0;
       y1 = 0;
       R = 0.999;
@@ -34,10 +34,10 @@ class KODE_DcFilter {
     //----------
 
     float process(float AValue) {
-      float y = AValue - x1 + (R*y1) + KODE_FLOAT_DENORM;
+      float y = AValue - x1 + (R*y1) + MIP_FLOAT_DENORM;
       x1 = AValue;
       y1 = y;
-      return y - KODE_FLOAT_DENORM;
+      return y - MIP_FLOAT_DENORM;
     }
 
 };
@@ -68,7 +68,7 @@ class KODE_DcFilter {
   }
 */
 
-class KODE_Dc2Filter {
+class MIP_Dc2Filter {
 
   private:
     float R;
@@ -76,7 +76,7 @@ class KODE_Dc2Filter {
 
   public:
 
-    KODE_Dc2Filter() {
+    MIP_Dc2Filter() {
       x1 = 0.0f;
       y1 = 0.0f;
     }
@@ -84,7 +84,7 @@ class KODE_Dc2Filter {
     //----------
 
     void setSamplerate(float r) {
-      R = 1.0f - (KODE_PI2 * 20.0f / r);
+      R = 1.0f - (MIP_PI2 * 20.0f / r);
     }
 
     //----------

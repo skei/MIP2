@@ -1,5 +1,5 @@
-#ifndef kode_filter_linkwitzriley_included
-#define kode_filter_linkwitzriley_included
+#ifndef mip_filter_linkwitzriley_included
+#define mip_filter_linkwitzriley_included
 //----------------------------------------------------------------------
 
 /*
@@ -12,7 +12,7 @@
 
 //----------------------------------------------------------------------
 
-class KODE_LinkwitzRileyFilter {
+class MIP_LinkwitzRileyFilter {
 
   private:
 
@@ -40,7 +40,7 @@ class KODE_LinkwitzRileyFilter {
 
   public:
 
-    KODE_LinkwitzRileyFilter() {
+    MIP_LinkwitzRileyFilter() {
       fc = 0.0f;
       srate = 0.0f;
       a0 = a1 = a2 = a3 = a4 = 0.0f;
@@ -49,15 +49,15 @@ class KODE_LinkwitzRileyFilter {
       ym1 = ym2 = ym3 = ym4 = 0.0f;
     }
 
-    ~KODE_LinkwitzRileyFilter() {
+    ~MIP_LinkwitzRileyFilter() {
     }
 
     void calcCoeffs(int32_t AMode=0) {
-      float wc      = KODE_PI2 * fc;
+      float wc      = MIP_PI2 * fc;
       float wc2     = wc*wc;
       float wc3     = wc2*wc;
       float wc4     = wc2*wc2;
-      float k       = wc / tan(KODE_PI*fc/srate);
+      float k       = wc / tan(MIP_PI*fc/srate);
       float k2      = k*k;
       float k3      = k2*k;
       float k4      = k2*k2;

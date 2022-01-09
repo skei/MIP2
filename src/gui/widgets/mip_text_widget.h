@@ -20,7 +20,7 @@ protected:
   MIP_Color   MTextColor      = MIP_COLOR_BLACK;
   MIP_FRect   MTextOffset     = MIP_FRect(2,2,2,2);
   bool        MDrawText       = true;
-  bool        MDrawParamText  = false;//true;
+  bool        MDrawParamText  = true;
 
 //------------------------------
 public:

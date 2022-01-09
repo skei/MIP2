@@ -1,5 +1,5 @@
 
-class KODE_EnvelopeFollower {
+class MIP_EnvelopeFollower {
 };
 
 /*

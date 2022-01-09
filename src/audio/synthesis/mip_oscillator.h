@@ -1,20 +1,20 @@
-#ifndef kode_oscillator_included
-#define kode_oscillator_included
+#ifndef mip_oscillator_included
+#define mip_oscillator_included
 //----------------------------------------------------------------------
 
 /*
   todo: phase mod & sync -> KPhasor
 */
 
-class KODE_Oscillator {
+class MIP_Oscillator {
 
 private:
-  
+
     float   t           = 0.0f;
     //float   t2          = 0.0f;
     float   hz          = 440.0f     ;
     float   sample_rate = 44100.0f;
-    
+
     float   pm          = 0.0f;
     bool    sync        = false;
     float*  pm_buffer   = nullptr;
@@ -71,7 +71,7 @@ private:
     //----------
 
     // phase mod
-    
+
     // t2 -> t_
 
     float phase_mod(float t, int i) {

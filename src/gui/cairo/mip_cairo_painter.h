@@ -32,8 +32,8 @@ public:
 
 #if 0
 
-//#define KODE_CAIRO_USE_XCB_FOR_BITMAPS
-//#define KODE_CAIRO_USE_XCB_FOR_CLIPPING
+//#define MIP_CAIRO_USE_XCB_FOR_BITMAPS
+//#define MIP_CAIRO_USE_XCB_FOR_CLIPPING
 
 /*
   Most surface types allow accessing the surface without using Cairo functions.
@@ -45,19 +45,19 @@ public:
 
 //----------------------------------------------------------------------
 
-#include "kode.h"
-#include "gfx/kode_bitmap.h"
-#include "gui/kode_drawable.h"
-#include "gui/kode_window.h"
-#include "gui/cairo/kode_cairo.h"
-#include "gui/xcb/kode_xcb_painter.h"
+#include "mip.h"
+#include "gfx/mip_bitmap.h"
+#include "gui/mip_drawable.h"
+#include "gui/mip_window.h"
+#include "gui/cairo/mip_cairo.h"
+#include "gui/xcb/mip_xcb_painter.h"
 
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
 
 const
-cairo_font_slant_t kode_font_slant[3] = {
+cairo_font_slant_t mip_font_slant[3] = {
   CAIRO_FONT_SLANT_NORMAL,
   CAIRO_FONT_SLANT_ITALIC,
   CAIRO_FONT_SLANT_OBLIQUE
@@ -66,7 +66,7 @@ cairo_font_slant_t kode_font_slant[3] = {
 //----------
 
 const
-cairo_font_weight_t kode_font_weight[2] = {
+cairo_font_weight_t mip_font_weight[2] = {
   CAIRO_FONT_WEIGHT_NORMAL,
   CAIRO_FONT_WEIGHT_BOLD
 };
@@ -74,14 +74,14 @@ cairo_font_weight_t kode_font_weight[2] = {
 //----------
 
 const
-cairo_line_cap_t kode_line_cap[3] = {
+cairo_line_cap_t mip_line_cap[3] = {
   CAIRO_LINE_CAP_BUTT,
   CAIRO_LINE_CAP_ROUND,
   CAIRO_LINE_CAP_SQUARE
 };
 
 const
-cairo_line_join_t kode_line_join[3] = {
+cairo_line_join_t mip_line_join[3] = {
   CAIRO_LINE_JOIN_MITER,
   CAIRO_LINE_JOIN_ROUND,
   CAIRO_LINE_JOIN_BEVEL
@@ -91,21 +91,21 @@ cairo_line_join_t kode_line_join[3] = {
 //
 //----------------------------------------------------------------------
 
-class KODE_CairoPainter
-: public KODE_XcbPainter {
+class MIP_CairoPainter
+: public MIP_XcbPainter {
 
 //------------------------------
 private:
 //------------------------------
 
-  cairo_t*            MCairo        = KODE_NULL;
-  cairo_surface_t*    MCairoSurface = KODE_NULL;
-  KODE_Drawable*      MTarget       = nullptr;
+  cairo_t*            MCairo        = MIP_NULL;
+  cairo_surface_t*    MCairoSurface = MIP_NULL;
+  MIP_Drawable*      MTarget       = nullptr;
   bool                MIsWindow     = false;
 
-//KODE_Color          MDrawColor    = KODE_LightGrey;
-//KODE_Color          MFillColor    = KODE_DarkGrey;
-//KODE_Color          MTextColor    = KODE_White;
+//MIP_Color          MDrawColor    = MIP_LightGrey;
+//MIP_Color          MFillColor    = MIP_DarkGrey;
+//MIP_Color          MTextColor    = MIP_White;
 
 //------------------------------
 public:
@@ -126,9 +126,9 @@ public:
     must be called whenever the size of the window changes.
   */
 
-  KODE_CairoPainter(KODE_Drawable* ATarget)
-  : KODE_XcbPainter(ATarget) {
-    //KODE_Assert(ATarget->isCairo());
+  MIP_CairoPainter(MIP_Drawable* ATarget)
+  : MIP_XcbPainter(ATarget) {
+    //MIP_Assert(ATarget->isCairo());
     MTarget = ATarget;
     if (ATarget->isWindow()) MIsWindow = true;
     MCairoSurface = ATarget->createCairoSurface();
@@ -140,7 +140,7 @@ public:
 
   //----------
 
-  virtual ~KODE_CairoPainter() {
+  virtual ~MIP_CairoPainter() {
     //check_cairo_errors(MCairo);
     cairo_destroy(MCairo);
     cairo_surface_destroy(MCairoSurface);
@@ -150,7 +150,7 @@ public:
 public:
 //------------------------------
 
-  KODE_Drawable* getTarget() override {
+  MIP_Drawable* getTarget() override {
     return MTarget;
   }
 
@@ -195,7 +195,7 @@ public:
   //  cairo_surface_mark_dirty_rectangle(MCairoSurface,AX1,AY1,AX2,AY2);
   //}
 
-  void dirty(KODE_FRect ARect) override {
+  void dirty(MIP_FRect ARect) override {
     //cairo_surface_mark_dirty_rectangle(MCairoSurface,ARect.x,ARect.y,ARect.x2(),ARect.y2());
     cairo_surface_mark_dirty_rectangle(MCairoSurface,ARect.x,ARect.y,ARect.w,ARect.h);
   }
@@ -227,7 +227,7 @@ public:
 public: // clip
 //------------------------------
 
-#ifndef KODE_CAIRO_USE_XCB_FOR_CLIPPING
+#ifndef MIP_CAIRO_USE_XCB_FOR_CLIPPING
 
 
   /*
@@ -235,8 +235,8 @@ public: // clip
   - Calling cairo_clip() can only make the clip region smaller, never larger
   */
 
-  void setClip(KODE_FRect ARect) override {
-    //KODE_Trace("CLIP x %.0f y %.0f w %.0f h %.0f\n",AX1,AY1,AX2-AX1,AY2-AY1);
+  void setClip(MIP_FRect ARect) override {
+    //MIP_Trace("CLIP x %.0f y %.0f w %.0f h %.0f\n",AX1,AY1,AX2-AX1,AY2-AY1);
     cairo_reset_clip(MCairo);
     cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w+1,ARect.h+1);
     cairo_clip(MCairo);
@@ -246,11 +246,11 @@ public: // clip
   //----------
 
   void resetClip() override {
-    //KODE_Trace("RESET CLIP\n");
+    //MIP_Trace("RESET CLIP\n");
     cairo_reset_clip(MCairo);
   }
 
-#endif // KODE_CAIRO_USE_XCB_FOR_CLIPPING
+#endif // MIP_CAIRO_USE_XCB_FOR_CLIPPING
 
 //------------------------------
 public: // get
@@ -274,7 +274,7 @@ public: // get
 public: // set
 //------------------------------
 
-  void setColor(KODE_Color AColor) override {
+  void setColor(MIP_Color AColor) override {
     cairo_set_source_rgba(MCairo,AColor.r,AColor.g,AColor.b,AColor.a);
   }
 
@@ -293,13 +293,13 @@ public: // set
   //----------
 
   void setLineCap(uint32_t ALineCap) override {
-    cairo_set_line_cap(MCairo,kode_line_cap[ALineCap]);
+    cairo_set_line_cap(MCairo,mip_line_cap[ALineCap]);
   }
 
   //----------
 
   void setLineJoin(uint32_t ALineJoin) override {
-    cairo_set_line_join(MCairo,kode_line_join[ALineJoin]);
+    cairo_set_line_join(MCairo,mip_line_join[ALineJoin]);
   }
 
   //----------
@@ -322,7 +322,7 @@ public: // set
   */
 
   void setFontFace(const char* AName, uint32_t ASlant, uint32_t AWeight) override {
-    cairo_select_font_face(MCairo,AName,kode_font_slant[ASlant],kode_font_weight[AWeight]);
+    cairo_select_font_face(MCairo,AName,mip_font_slant[ASlant],mip_font_weight[AWeight]);
   }
 
 //------------------------------
@@ -343,7 +343,7 @@ public: // path
 
   //----------
 
-  void fillPathGradient(float AX1, float AY1, float AX2, float AY2, KODE_Color AColor1, KODE_Color AColor2, bool AVertical, bool APreserve=false) override {
+  void fillPathGradient(float AX1, float AY1, float AX2, float AY2, MIP_Color AColor1, MIP_Color AColor2, bool AVertical, bool APreserve=false) override {
     cairo_pattern_t *pat;
     if (AVertical) pat = cairo_pattern_create_linear( AX1,AY1, AX1,AY2 );
     else pat = cairo_pattern_create_linear( AX1,AY1, AX2,AY1 );
@@ -398,7 +398,7 @@ public:
 
   //----------
 
-  void rectangle(KODE_FRect ARect) override {
+  void rectangle(MIP_FRect ARect) override {
     cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w,ARect.h);
   }
 
@@ -408,7 +408,7 @@ public:
   //             32
 
   //void roundedRectangle(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t ACorners) {
-  void roundedRectangle(KODE_FRect ARect, float ARadius, uint32_t ACorners) override {
+  void roundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners) override {
     int32_t x = ARect.x;
     int32_t y = ARect.y;
     int32_t w = ARect.w;//+1;
@@ -416,13 +416,13 @@ public:
     int32_t r = ARadius;
     float degrees = M_PI / 180.0;
     cairo_new_sub_path(MCairo);
-    if (ACorners & KODE_CORNER_RIGHT_TOP) cairo_arc(MCairo, x+w-r-0, y+r, r, -90*degrees, 0*degrees);
+    if (ACorners & MIP_CORNER_RIGHT_TOP) cairo_arc(MCairo, x+w-r-0, y+r, r, -90*degrees, 0*degrees);
     else cairo_move_to(MCairo, x+w-0, y);
-    if (ACorners & KODE_CORNER_RIGHT_BOTTOM) cairo_arc(MCairo, x+w-r-0, y+h-r-0, r, 0*degrees, 90*degrees);
+    if (ACorners & MIP_CORNER_RIGHT_BOTTOM) cairo_arc(MCairo, x+w-r-0, y+h-r-0, r, 0*degrees, 90*degrees);
     else cairo_line_to(MCairo, x+w-0, y+h-0);
-    if (ACorners & KODE_CORNER_LEFT_BOTTOM) cairo_arc(MCairo, x+r, y+h-r-0, r, 90*degrees, 180*degrees);
+    if (ACorners & MIP_CORNER_LEFT_BOTTOM) cairo_arc(MCairo, x+r, y+h-r-0, r, 90*degrees, 180*degrees);
     else cairo_line_to(MCairo, x, y+h-0);
-    if (ACorners & KODE_CORNER_LEFT_TOP) cairo_arc(MCairo, x+r, y+r, r, 180*degrees, 270*degrees);
+    if (ACorners & MIP_CORNER_LEFT_TOP) cairo_arc(MCairo, x+r, y+r, r, 180*degrees, 270*degrees);
     else cairo_line_to(MCairo, x, y);
     cairo_close_path(MCairo);
   }
@@ -430,7 +430,7 @@ public:
   //----------
 
   //void ellipse(float AX1, float AY1, float AX2, float AY2) {
-  void ellipse(KODE_FRect ARect) override {
+  void ellipse(MIP_FRect ARect) override {
     float w2 = ARect.w * 0.5f;
     float h2 = ARect.h * 0.5f;
     cairo_save(MCairo);
@@ -470,16 +470,16 @@ public:
 public: // draw
 //------------------------------
 
-  void drawPoint(float AX, float AY, KODE_Color AColor) override {
+  void drawPoint(float AX, float AY, MIP_Color AColor) override {
     setColor(AColor);
-    ellipse(KODE_FRect(AX-0.5f,AY-0.5f,AX+0.5f,AY+0.5f));
+    ellipse(MIP_FRect(AX-0.5f,AY-0.5f,AX+0.5f,AY+0.5f));
     //_rectangle(AX,AY,AX+1,AY+1);
     fillPath();
   }
 
   //----------
 
-  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     moveTo(AXpos1,AYpos1);
@@ -499,7 +499,7 @@ public: // draw
 
   //----------
 
-  void drawRectangle(KODE_FRect ARect, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawRectangle(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     rectangle(ARect);
@@ -508,7 +508,7 @@ public: // draw
 
   //----------
 
-  void drawArc(KODE_FRect ARect, float AAngle1, float AAngle2, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     arc(ARect.x,ARect.y,ARect.x2(),ARect.y2(),AAngle1,AAngle2);
@@ -517,7 +517,7 @@ public: // draw
 
   //----------
 
-  void drawEllipse(KODE_FRect ARect, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawEllipse(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     ellipse(ARect);
@@ -526,7 +526,7 @@ public: // draw
 
   //----------
 
-  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     triangle(AX1,AY1,AX2,AY2,AX3,AY3);
@@ -535,7 +535,7 @@ public: // draw
 
   //----------
 
-  void drawCurve(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, float AX4, float AY4, KODE_Color AColor, uint32_t AWidth=1) override {
+  void drawCurve(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, float AX4, float AY4, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     moveTo(AX1,AY1);
@@ -546,7 +546,7 @@ public: // draw
   //----------
 
   //void drawRoundedRectangle(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t AC) override {
-  void drawRoundedRectangle(KODE_FRect ARect, float ARadius, uint32_t ACorners, KODE_Color AColor, uint32_t AWidth=1) {
+  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor, uint32_t AWidth=1) {
     setColor(AColor);
     setLineWidth(AWidth);
     //roundedRectangle(AX1,AY1,AX2,AY2,AR,AC);
@@ -558,7 +558,7 @@ public: // draw
 public: // fill
 //------------------------------
 
-  void fillRectangle(KODE_FRect ARect, KODE_Color AColor) override {
+  void fillRectangle(MIP_FRect ARect, MIP_Color AColor) override {
     setColor(AColor);
     rectangle(ARect);
     fillPath();
@@ -566,7 +566,7 @@ public: // fill
 
   //----------
 
-  void fillArc(KODE_FRect ARect, float AAngle1, float AAngle2, KODE_Color AColor) override {
+  void fillArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor) override {
     setColor(AColor);
     //float x = AX1 + ((AX2-AX1)*0.5f);
     //float y = AY1 + ((AY2-AY1)*0.5f);
@@ -577,7 +577,7 @@ public: // fill
 
   //----------
 
-  void fillRoundedRectangle(KODE_FRect ARect, float ARadius, uint32_t ACorners, KODE_Color AColor) override {
+  void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor) override {
     setColor(AColor);
     roundedRectangle(ARect,ARadius,ACorners);
     fillPath();
@@ -585,7 +585,7 @@ public: // fill
 
   //----------
 
-  void fillEllipse(KODE_FRect ARect, KODE_Color AColor) override {
+  void fillEllipse(MIP_FRect ARect, MIP_Color AColor) override {
     setColor(AColor);
     ellipse(ARect);
     fillPath();
@@ -593,7 +593,7 @@ public: // fill
 
   //----------
 
-  void fillTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, KODE_Color AColor) override {
+  void fillTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor) override {
     setColor(AColor);
     triangle(AX1,AY1,AX2,AY2,AX3,AY3);
     fillPath();
@@ -601,7 +601,7 @@ public: // fill
 
   //----------
 
-  //void fillPolygon(int32 ANum, float* ACoords, KODE_Color AColor) override {
+  //void fillPolygon(int32 ANum, float* ACoords, MIP_Color AColor) override {
   //  if (ANum > 0) {
   //    _moveTo(ACoords[0],ACoords[1]);
   //    for (int32 i=1; i<ANum; i++) {
@@ -621,14 +621,14 @@ public: // fill
 
   //----------
 
-  //void fillRectangleGradient(float AX1, float AY1, float AX2, float AY2, KODE_Color AColor1, KODE_Color AColor2, bool AVertical) override {
+  //void fillRectangleGradient(float AX1, float AY1, float AX2, float AY2, MIP_Color AColor1, MIP_Color AColor2, bool AVertical) override {
   //  _rectangle(AX1,AY1,AX2,AY2);
   //  _fillGradient(AX1,AY1,AX2,AY2,AColor1,AColor2,AVertical);
   //}
 
   //----------
 
-  //void fillRoundedRectangleGradient(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t ACorners, KODE_Color AColor1, KODE_Color AColor2, bool AVertical) override {
+  //void fillRoundedRectangleGradient(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t ACorners, MIP_Color AColor1, MIP_Color AColor2, bool AVertical) override {
   //  _roundedRectangle(AX1,AY1,AX2,AY2,AR,ACorners);
   //  _fillGradient(AX1,AY1,AX2,AY2,AColor1,AColor2,AVertical);
   //}
@@ -637,7 +637,7 @@ public: // fill
 public: // text
 //------------------------------
 
-  void drawText(float AXpos, float AYpos, const char* AText, KODE_Color AColor) override {
+  void drawText(float AXpos, float AYpos, const char* AText, MIP_Color AColor) override {
     setColor(AColor);
     cairo_move_to(MCairo,AXpos,AYpos);
     cairo_show_text(MCairo,AText);
@@ -645,9 +645,9 @@ public: // text
 
   //----------
 
-  void drawText(KODE_FRect ARect, const char* AText, uint32_t AAlignment, KODE_Color AColor) override {
+  void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {
     setColor(AColor);
-    //KODE_Assert(AText);
+    //MIP_Assert(AText);
     cairo_text_extents_t e;
     float xx,yy;
     float x = ARect.x;
@@ -656,23 +656,23 @@ public: // text
     float h = ARect.h; //+1;
     cairo_text_extents(MCairo,AText,&e);
     switch (AAlignment) {
-      case KODE_TEXT_ALIGN_LEFT:
+      case MIP_TEXT_ALIGN_LEFT:
         xx = x;
         yy = (y+h/2) - (e.height/2 + e.y_bearing);
         break;
-      case KODE_TEXT_ALIGN_RIGHT:
+      case MIP_TEXT_ALIGN_RIGHT:
         xx = (x+w-1) - (e.width + e.x_bearing);
         yy = (y+h/2) - (e.height/2 + e.y_bearing);
         break;
-      case KODE_TEXT_ALIGN_TOP:
+      case MIP_TEXT_ALIGN_TOP:
         xx = (x + w/2) - (e.width/2  + e.x_bearing);
         yy = y + e.height;
         break;
-      case KODE_TEXT_ALIGN_BOTTOM:
+      case MIP_TEXT_ALIGN_BOTTOM:
         xx = (x + w/2) - (e.width/2  + e.x_bearing);
         yy = (y+h-1) - (e.height + e.y_bearing);
         break;
-      case KODE_TEXT_ALIGN_CENTER:
+      case MIP_TEXT_ALIGN_CENTER:
         xx = (x + w/2) - (e.width/2  + e.x_bearing);
         yy = (y+h/2) - (e.height/2 + e.y_bearing);
         break;
@@ -688,20 +688,20 @@ public: // text
 public: // bitmap
 //------------------------------
 
-#ifndef KODE_CAIRO_USE_XCB_FOR_BITMAPS
+#ifndef MIP_CAIRO_USE_XCB_FOR_BITMAPS
 
-  //void uploadBitmap(float AXpos, float AYpos, KODE_Bitmap* ABitmap) override {
+  //void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
   //}
 
   //----------
 
-  void drawBitmap(float AXpos, float AYpos, KODE_Drawable* ASource) override {
-    drawBitmap(AXpos,AYpos,ASource,KODE_FRect(0,0,ASource->getWidth(),ASource->getHeight()));
+  void drawBitmap(float AXpos, float AYpos, MIP_Drawable* ASource) override {
+    drawBitmap(AXpos,AYpos,ASource,MIP_FRect(0,0,ASource->getWidth(),ASource->getHeight()));
   }
 
   //----------
 
-  void drawBitmap(float AXpos, float AYpos, KODE_Drawable* ASource, KODE_FRect ASrc) override {
+  void drawBitmap(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) override {
     cairo_surface_t* srf = ASource->createCairoSurface();
     cairo_set_source_surface(MCairo,srf,/*0,0*/AXpos-ASrc.x,AYpos-ASrc.y);
     cairo_surface_destroy(srf);
@@ -711,7 +711,7 @@ public: // bitmap
 
   //----------
 
-  void drawBitmap(KODE_FRect ADst, KODE_Drawable* ASource, KODE_FRect ASrc) override {
+  void drawBitmap(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) override {
     //drawBitmap(ADst.x,ADst.y,ADst.w,ADst.h,ASource,ASrc.x,ASrc.y,ASrc.w,ASrc.h);
     float xscale = (float)ADst.w / (float)ASrc.w;
     float yscale = (float)ADst.h / (float)ASrc.h;
@@ -726,7 +726,7 @@ public: // bitmap
     cairo_restore(MCairo);
   }
 
-#endif // KODE_CAIRO_USE_XCB_FOR_BITMAPS
+#endif // MIP_CAIRO_USE_XCB_FOR_BITMAPS
 
 };
 

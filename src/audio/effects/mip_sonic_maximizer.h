@@ -1,8 +1,8 @@
-#ifndef kode_sonic_maximizer_included
-#define kode_sonic_maximizer_included
+#ifndef mip_sonic_maximizer_included
+#define mip_sonic_maximizer_included
 //----------------------------------------------------------------------
 
-#include "kode.h"
+#include "mip.h"
 
 //----------------------------------------------------------------------
 
@@ -10,12 +10,12 @@
 #define c_ampdB   8.65617025
 #define freqHP    2243.2
 #define freqLP    224.32
-#define freqHP_p2 -KODE_PI2 * freqHP
-#define freqLP_p2 -KODE_PI2 * freqLP
+#define freqHP_p2 -MIP_PI2 * freqHP
+#define freqLP_p2 -MIP_PI2 * freqLP
 
 //----------------------------------------------------------------------
 
-class KODE_SonicMaximizer {
+class MIP_SonicMaximizer {
 
   private:
 
@@ -36,8 +36,8 @@ class KODE_SonicMaximizer {
 
   //public:
   //
-  //  KODE_SonicMaximizer() {}
-  //  ~KODE_SonicMaximizer() {}
+  //  MIP_SonicMaximizer() {}
+  //  ~MIP_SonicMaximizer() {}
 
   public:
 

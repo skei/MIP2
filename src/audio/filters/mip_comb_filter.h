@@ -1,5 +1,5 @@
-#ifndef kode_filter_comb_included
-#define kode_filter_comb_included
+#ifndef mip_filter_comb_included
+#define mip_filter_comb_included
 //----------------------------------------------------------------------
 
 // https://github.com/rjeschke/cetonesynths/blob/master/cetoneorg/reverb.h
@@ -15,7 +15,7 @@
 
 //----------
 
-class KODE_CombFilter {
+class MIP_CombFilter {
 
   private:
 
@@ -33,7 +33,7 @@ class KODE_CombFilter {
 
   public:
 
-    KODE_CombFilter() {
+    MIP_CombFilter() {
       //_Size;
       //_Damp1;
       //_Damp2;
@@ -43,7 +43,7 @@ class KODE_CombFilter {
 
     //----------
 
-    ~KODE_CombFilter() {
+    ~MIP_CombFilter() {
     }
 
   //------------------------------
@@ -54,7 +54,7 @@ class KODE_CombFilter {
 
     void reset(void) {
       _History = 0.0f;
-      KODE_Memset(_Buffer, 0, MAX_BUFFER * sizeof(float));
+      MIP_Memset(_Buffer, 0, MAX_BUFFER * sizeof(float));
     }
 
     //----------

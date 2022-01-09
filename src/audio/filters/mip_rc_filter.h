@@ -1,12 +1,12 @@
-#ifndef kode_filter_rc_included
-#define kode_filter_rc_included
+#ifndef mip_filter_rc_included
+#define mip_filter_rc_included
 //----------------------------------------------------------------------
 
 #include <math.h> // expf
 
 //----------
 
-class KODE_RcFilter {
+class MIP_RcFilter {
 
   private:
 
@@ -27,13 +27,13 @@ class KODE_RcFilter {
 
   public:
 
-    KODE_RcFilter() {
+    MIP_RcFilter() {
       MValue  = 0;
       MTarget = 0;  // 1
       MWeight = 0;  // 1
     }
 
-    ~KODE_RcFilter() {
+    ~MIP_RcFilter() {
     }
 
     void setup(float AValue=0, float ATarget=0, float AWeight=0) {
@@ -54,7 +54,7 @@ class KODE_RcFilter {
 
     void setFrequency(float AFrequency/*, float ASampleRate*/) {
       //if (ASampleRate > 0)
-        MWeight = 1 - expf(-KODE_PI2 * AFrequency / MSampleRate );
+        MWeight = 1 - expf(-MIP_PI2 * AFrequency / MSampleRate );
       //else
       //  MWeight = 0;
     }

@@ -1,5 +1,5 @@
-#ifndef kode_filter_hiir_included
-#define kode_filter_hiir_included
+#ifndef mip_filter_hiir_included
+#define mip_filter_hiir_included
 //----------------------------------------------------------------------
 
 /*
@@ -49,19 +49,19 @@
   operations.
 */
 
-#include "audio/_backup/filters/kode_allpass_filter.h"
+#include "audio/_backup/filters/mip_allpass_filter.h"
 
 //----------------------------------------------------------------------
 
 //rejection=104dB, transition band=0.01
 
-class KODE_Hiir12SteepFilter {
+class MIP_Hiir12SteepFilter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1,a2,a3,a4,a5;
-    KODE_AllpassFilter b0,b1,b2,b3,b4,b5;
+    MIP_AllpassFilter a0,a1,a2,a3,a4,a5;
+    MIP_AllpassFilter b0,b1,b2,b3,b4,b5;
   public:
-    KODE_Hiir12SteepFilter() {
+    MIP_Hiir12SteepFilter() {
       FPrevious = 0;
       a0.setCoefficient(0.036681502163648017);
       a1.setCoefficient(0.2746317593794541);
@@ -84,7 +84,7 @@ class KODE_Hiir12SteepFilter {
       a = a3.process(a);
       a = a4.process(a);
       a = a5.process(a);
-//      a = KODE_KillDenormal(a);
+//      a = MIP_KillDenormal(a);
       float b = AInput;
       b = b0.process(b);
       b = b1.process(b);
@@ -112,13 +112,13 @@ class KODE_Hiir12SteepFilter {
 
 //rejection=86dB, transition band=0.01
 
-class KODE_Hiir10SteepFilter {
+class MIP_Hiir10SteepFilter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1,a2,a3,a4;
-    KODE_AllpassFilter b0,b1,b2,b3,b4;
+    MIP_AllpassFilter a0,a1,a2,a3,a4;
+    MIP_AllpassFilter b0,b1,b2,b3,b4;
   public:
-    KODE_Hiir10SteepFilter() {
+    MIP_Hiir10SteepFilter() {
       FPrevious = 0;
       a0.setCoefficient(0.051457617441190984);
       a1.setCoefficient(0.35978656070567017);
@@ -165,13 +165,13 @@ class KODE_Hiir10SteepFilter {
 
 //rejection=69dB, transition band=0.01
 
-class KODE_Hiir8SteepFilter {
+class MIP_Hiir8SteepFilter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1,a2,a3;
-    KODE_AllpassFilter b0,b1,b2,b3;
+    MIP_AllpassFilter a0,a1,a2,a3;
+    MIP_AllpassFilter b0,b1,b2,b3;
   public:
-    KODE_Hiir8SteepFilter() {
+    MIP_Hiir8SteepFilter() {
       FPrevious = 0;
       a0.setCoefficient(0.07711507983241622);
       a1.setCoefficient(0.4820706250610472);
@@ -214,13 +214,13 @@ class KODE_Hiir8SteepFilter {
 
 //rejection=51dB, transition band=0.01
 
-class KODE_Hiir6SteepFilter {
+class MIP_Hiir6SteepFilter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1,a2;
-    KODE_AllpassFilter b0,b1,b2;
+    MIP_AllpassFilter a0,a1,a2;
+    MIP_AllpassFilter b0,b1,b2;
   public:
-    KODE_Hiir6SteepFilter() {
+    MIP_Hiir6SteepFilter() {
       FPrevious = 0;
       a0.setCoefficient(0.1271414136264853);
       a1.setCoefficient(0.6528245886369117);
@@ -259,13 +259,13 @@ class KODE_Hiir6SteepFilter {
 
 //rejection=53dB, transition band=0.05
 
-class KODE_Hiir4SteepFilter {
+class MIP_Hiir4SteepFilter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1;
-    KODE_AllpassFilter b0,b1;
+    MIP_AllpassFilter a0,a1;
+    MIP_AllpassFilter b0,b1;
   public:
-    KODE_Hiir4SteepFilter() {
+    MIP_Hiir4SteepFilter() {
       FPrevious = 0;
       a0.setCoefficient(0.12073211751675449);
       a1.setCoefficient(0.6632020224193995);
@@ -300,13 +300,13 @@ class KODE_Hiir4SteepFilter {
 
 //rejection=36dB, transition band=0.1
 
-class KODE_Hiir2SteepFilter {
+class MIP_Hiir2SteepFilter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0;
-    KODE_AllpassFilter b0;
+    MIP_AllpassFilter a0;
+    MIP_AllpassFilter b0;
   public:
-    KODE_Hiir2SteepFilter() {
+    MIP_Hiir2SteepFilter() {
       FPrevious = 0;
       a0.setCoefficient(0.23647102099689224);
       b0.setCoefficient(0.7145421497126001);
@@ -340,13 +340,13 @@ class KODE_Hiir2SteepFilter {
 
 //rejection=150dB, transition band=0.05
 
-class KODE_Hiir12Filter {
+class MIP_Hiir12Filter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1,a2,a3,a4,a5;
-    KODE_AllpassFilter b0,b1,b2,b3,b4,b5;
+    MIP_AllpassFilter a0,a1,a2,a3,a4,a5;
+    MIP_AllpassFilter b0,b1,b2,b3,b4,b5;
   public:
-    KODE_Hiir12Filter() {
+    MIP_Hiir12Filter() {
       FPrevious = 0;
       a0.setCoefficient(0.01677466677723562);
       a1.setCoefficient(0.13902148819717805);
@@ -369,7 +369,7 @@ class KODE_Hiir12Filter {
       a = a3.process(a);
       a = a4.process(a);
       a = a5.process(a);
-      a = KODE_KillDenormal(a);
+      a = MIP_KillDenormal(a);
       float b = AInput;
       b = b0.process(b);
       b = b1.process(b);
@@ -377,7 +377,7 @@ class KODE_Hiir12Filter {
       b = b3.process(b);
       b = b4.process(b);
       b = b5.process(b);
-      b = KODE_KillDenormal(b);
+      b = MIP_KillDenormal(b);
       float result = ( a + FPrevious ) * 0.5;
       FPrevious = b;
       return result;
@@ -395,13 +395,13 @@ class KODE_Hiir12Filter {
 
 //rejection=133dB, transition band=0.05
 
-class KODE_Hiir10Filter {
+class MIP_Hiir10Filter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1,a2,a3,a4;
-    KODE_AllpassFilter b0,b1,b2,b3,b4;
+    MIP_AllpassFilter a0,a1,a2,a3,a4;
+    MIP_AllpassFilter b0,b1,b2,b3,b4;
   public:
-    KODE_Hiir10Filter() {
+    MIP_Hiir10Filter() {
       FPrevious = 0;
       a0.setCoefficient(0.02366831419883467);
       a1.setCoefficient(0.18989476227180174);
@@ -421,14 +421,14 @@ class KODE_Hiir10Filter {
       a = a2.process(a);
       a = a3.process(a);
       a = a4.process(a);
-      a = KODE_KillDenormal(a);
+      a = MIP_KillDenormal(a);
       float b = AInput;
       b = b0.process(b);
       b = b1.process(b);
       b = b2.process(b);
       b = b3.process(b);
       b = b4.process(b);
-      b = KODE_KillDenormal(b);
+      b = MIP_KillDenormal(b);
       float result = ( a + FPrevious ) * 0.5;
       FPrevious = b;
       return result;
@@ -446,13 +446,13 @@ class KODE_Hiir10Filter {
 
 //rejection=106dB, transition band=0.05
 
-class KODE_Hiir8Filter {
+class MIP_Hiir8Filter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1,a2,a3;
-    KODE_AllpassFilter b0,b1,b2,b3;
+    MIP_AllpassFilter a0,a1,a2,a3;
+    MIP_AllpassFilter b0,b1,b2,b3;
   public:
-    KODE_Hiir8Filter() {
+    MIP_Hiir8Filter() {
       FPrevious = 0;
       a0.setCoefficient(0.03583278843106211);
       a1.setCoefficient(0.2720401433964576);
@@ -469,13 +469,13 @@ class KODE_Hiir8Filter {
       a = a1.process(a);
       a = a2.process(a);
       a = a3.process(a);
-      a = KODE_KillDenormal(a);
+      a = MIP_KillDenormal(a);
       float b = AInput;
       b = b0.process(b);
       b = b1.process(b);
       b = b2.process(b);
       b = b3.process(b);
-      b = KODE_KillDenormal(b);
+      b = MIP_KillDenormal(b);
       float result = ( a + FPrevious ) * 0.5;
       FPrevious = b;
       return result;
@@ -493,13 +493,13 @@ class KODE_Hiir8Filter {
 
 //rejection=80dB, transition band=0.05
 
-class KODE_Hiir6Filter {
+class MIP_Hiir6Filter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1,a2;
-    KODE_AllpassFilter b0,b1,b2;
+    MIP_AllpassFilter a0,a1,a2;
+    MIP_AllpassFilter b0,b1,b2;
   public:
-    KODE_Hiir6Filter() {
+    MIP_Hiir6Filter() {
       FPrevious = 0;
       a0.setCoefficient(0.06029739095712437);
       a1.setCoefficient(0.4125907203610563);
@@ -513,12 +513,12 @@ class KODE_Hiir6Filter {
       a = a0.process(a);
       a = a1.process(a);
       a = a2.process(a);
-      a = KODE_KillDenormal(a);
+      a = MIP_KillDenormal(a);
       float b = AInput;
       b = b0.process(b);
       b = b1.process(b);
       b = b2.process(b);
-      b = KODE_KillDenormal(b);
+      b = MIP_KillDenormal(b);
       float result = ( a + FPrevious ) * 0.5;
       FPrevious = b;
       return result;
@@ -536,13 +536,13 @@ class KODE_Hiir6Filter {
 
 //rejection=70dB, transition band=0.1
 
-class KODE_Hiir4Filter {
+class MIP_Hiir4Filter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0,a1;
-    KODE_AllpassFilter b0,b1;
+    MIP_AllpassFilter a0,a1;
+    MIP_AllpassFilter b0,b1;
   public:
-    KODE_Hiir4Filter() {
+    MIP_Hiir4Filter() {
       FPrevious = 0;
       a0.setCoefficient(0.07986642623635751);
       a1.setCoefficient(0.5453536510711322);
@@ -553,11 +553,11 @@ class KODE_Hiir4Filter {
       float a = AInput;
       a = a0.process(a);
       a = a1.process(a);
-      a = KODE_KillDenormal(a);
+      a = MIP_KillDenormal(a);
       float b = AInput;
       b = b0.process(b);
       b = b1.process(b);
-      b = KODE_KillDenormal(b);
+      b = MIP_KillDenormal(b);
       float result = ( a + FPrevious ) * 0.5;
       FPrevious = b;
       return result;
@@ -575,13 +575,13 @@ class KODE_Hiir4Filter {
 
 //rejection=36dB, transition band=0.1
 
-class KODE_Hiir2Filter {
+class MIP_Hiir2Filter {
   private:
     float FPrevious;
-    KODE_AllpassFilter a0;//,a1,a2;
-    KODE_AllpassFilter b0;//,b1,b2;
+    MIP_AllpassFilter a0;//,a1,a2;
+    MIP_AllpassFilter b0;//,b1,b2;
   public:
-    KODE_Hiir2Filter() {
+    MIP_Hiir2Filter() {
       FPrevious = 0;
       a0.setCoefficient(0.23647102099689224);
       b0.setCoefficient(0.7145421497126001);
@@ -589,10 +589,10 @@ class KODE_Hiir2Filter {
     float process(float AInput) {
       float a = AInput;
       a = a0.process(a);
-      a = KODE_KillDenormal(a);
+      a = MIP_KillDenormal(a);
       float b = AInput;
       b = b0.process(b);
-      b = KODE_KillDenormal(b);
+      b = MIP_KillDenormal(b);
       float result = ( a + FPrevious ) * 0.5;
       FPrevious = b;
       return result;

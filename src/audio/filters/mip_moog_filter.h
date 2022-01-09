@@ -1,9 +1,9 @@
 
-class KODE_MoogFilter {
+class MIP_MoogFilter {
 };
 
-//{$include kode.inc}
-//unit kode_filter_moog;
+//{$include mip.inc}
+//unit mip_filter_moog;
 //
 //{
 //  http://musicdsp.org/showArchiveComment.php?ArchiveID=253
@@ -63,7 +63,7 @@ class KODE_MoogFilter {
 ////----------------------------------------------------------------------
 //
 //uses
-//  kode_const;
+//  mip_const;
 //
 ////----------
 //

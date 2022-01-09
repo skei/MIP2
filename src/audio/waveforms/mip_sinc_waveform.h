@@ -1,5 +1,5 @@
-#ifndef kode_waveform_sinc
-#define kode_waveform_sinc
+#ifndef mip_waveform_sinc
+#define mip_waveform_sinc
 //----------------------------------------------------------------------
 
 // can't get this to work..
@@ -56,7 +56,7 @@
 
 */
 
-class KODE_SincSawWaveform {
+class MIP_SincSawWaveform {
 
   private:
     //float p;      // current position
@@ -76,7 +76,7 @@ class KODE_SincSawWaveform {
 
   public:
 
-    KODE_SincSawWaveform() {
+    MIP_SincSawWaveform() {
       //p     = 0.0f;
       //dp    = 1.0f;
 
@@ -120,7 +120,7 @@ class KODE_SincSawWaveform {
       //  t = tmax + tmax - t;
       //  dt = -dt;
       //}
-      //x = KODE_PI * t;
+      //x = MIP_PI * t;
 
       //dt = 1.0f;
 
@@ -134,7 +134,7 @@ class KODE_SincSawWaveform {
         //_t = -_t;
         _dt = -_dt;
       }
-      x = KODE_PI * _t;
+      x = MIP_PI * _t;
 
       if (x < 0.00001f) x=0.00001f; //don't divide by 0
       saw = leak*saw + dc + (float)sin(x)/(x);

@@ -1,5 +1,5 @@
-#ifndef kode_waveform_eptr_included
-#define kode_waveform_eptr_included
+#ifndef mip_waveform_eptr_included
+#define mip_waveform_eptr_included
 //----------------------------------------------------------------------
 
 /*
@@ -37,7 +37,7 @@
 //  return result;
 //}
 
-class KODE_EptrSawWaveform {
+class MIP_EptrSawWaveform {
   public:
     float process(float t, float dt) {
       float result = t;

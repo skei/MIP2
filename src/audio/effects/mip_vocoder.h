@@ -1,5 +1,5 @@
-#ifndef kode_vocoder_included
-#define kode_vocoder_included
+#ifndef mip_vocoder_included
+#define mip_vocoder_included
 //----------------------------------------------------------------------
 
 //#define AMPLIFIER         16.0
@@ -13,7 +13,7 @@
 
 //----------
 
-struct KODE_VocoderBandpass {
+struct MIP_VocoderBandpass {
   float c, f, att;
   float freq;
   float low1, low2;
@@ -22,13 +22,13 @@ struct KODE_VocoderBandpass {
   float y;
 };
 
-struct KODE_VocoderBandsOut {
+struct MIP_VocoderBandsOut {
   float decay;
   float oldval;
   float level;		// 0.0 - 1.0 level of this output band
 };
 
-const float KODE_VocoderDecayTable[] = {
+const float MIP_VocoderDecayTable[] = {
   1/100.0,
   1/100.0, 1/100.0, 1/100.0,
   1/125.0, 1/125.0, 1/125.0,
@@ -39,15 +39,15 @@ const float KODE_VocoderDecayTable[] = {
 
 //----------------------------------------------------------------------
 
-class KODE_Vocoder {
+class MIP_Vocoder {
 
   private:
 
     float                   MSampleRate               = 0.0f;
     uint32_t                MBandsCount               = 0;
-    KODE_VocoderBandpass   MBandsFormant[MAX_BANDS]  = {};
-    KODE_VocoderBandpass   MBandsCarrier[MAX_BANDS]  = {};
-    KODE_VocoderBandsOut  MBandsOut[MAX_BANDS]      = {};
+    MIP_VocoderBandpass   MBandsFormant[MAX_BANDS]  = {};
+    MIP_VocoderBandpass   MBandsCarrier[MAX_BANDS]  = {};
+    MIP_VocoderBandsOut  MBandsOut[MAX_BANDS]      = {};
     float                   MBandsLevel[MAX_BANDS]    = {};
 
     float MPreCarrierGain   = 1.0f;
@@ -57,12 +57,12 @@ class KODE_Vocoder {
 
   public:
 
-    KODE_Vocoder() {
+    MIP_Vocoder() {
     }
 
     //----------
 
-    ~KODE_Vocoder() {
+    ~MIP_Vocoder() {
     }
 
   public:
@@ -82,25 +82,25 @@ class KODE_Vocoder {
     void setNumBands(uint32_t ANumBands) {
       MBandsCount = ANumBands;
       for (uint32_t i=0; i<ANumBands; i++) {
-        KODE_Memset(&MBandsFormant[i], 0, sizeof(KODE_VocoderBandpass));
+        MIP_Memset(&MBandsFormant[i], 0, sizeof(MIP_VocoderBandpass));
         // stretch existing bands
         float a = 16.0 * i/(float)ANumBands;
         if (a < 4.0) MBandsFormant[i].freq = 150 + 420 * a / 4.0;
         else MBandsFormant[i].freq = 600 * pow (1.23, a - 4.0);
 
-        float c = MBandsFormant[i].freq * KODE_PI2 / MSampleRate;
+        float c = MBandsFormant[i].freq * MIP_PI2 / MSampleRate;
         MBandsFormant[i].c = c * c;
         MBandsFormant[i].f = 0.4/c;
         MBandsFormant[i].att = 1/(6.0 + ((exp (MBandsFormant[i].freq / MSampleRate) - 1) * 10));
-        KODE_Memcpy(&MBandsCarrier[i], &MBandsFormant[i], sizeof(KODE_VocoderBandpass));
-        MBandsOut[i].decay = KODE_VocoderDecayTable[(int32_t)a];
+        MIP_Memcpy(&MBandsCarrier[i], &MBandsFormant[i], sizeof(MIP_VocoderBandpass));
+        MBandsOut[i].decay = MIP_VocoderDecayTable[(int32_t)a];
         //MBandsOut[i].level = CLAMP(MBandsLevel[i], 0.0, 1.0);
       }
     }
 
   private:
 
-    void processBandpasses(KODE_VocoderBandpass* bands, float sample) {
+    void processBandpasses(MIP_VocoderBandpass* bands, float sample) {
       for (uint32_t i=0; i < MBandsCount; i++) {
         bands[i].high1 = sample - bands[i].f * bands[i].mid1 - bands[i].low1;
         bands[i].mid1 += bands[i].high1 * bands[i].c;
@@ -117,7 +117,7 @@ class KODE_Vocoder {
     void process(float** AInputs, float** AOutputs, uint32_t ANumSamples) {
 
       for (uint32_t i=0; i<MBandsCount; i++) {
-        MBandsOut[i].level = KODE_Clamp(MBandsLevel[i], 0.0, 1.0);
+        MBandsOut[i].level = MIP_Clamp(MBandsLevel[i], 0.0, 1.0);
         //MBandsOut[i].level = CLAMP(MBandsLevel[i], 0.0, 1.0);
       }
 

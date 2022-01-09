@@ -74,7 +74,7 @@ protected:
   MIP_Widget*     MParent                 = nullptr;
   MIP_Widgets     MChildren               = {};
   int32_t         MWidgetIndex            = -1;
-  int32_t         MParameterIndex         = -1;
+  //int32_t         MParameterIndex         = -1;
 
   MIP_FRect       MRect                   = {};
   MIP_FRect       MInitialRect            = MIP_FRect(0,0); // starting rect (used by layout
@@ -86,7 +86,7 @@ protected:
   float           MValue                  = 0.0;
   float           MDefaultValue           = 0.0;
 
-  MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // otrs to connected parameters
+  MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // ptrs to connected parameters
 
 //float           MMinValue               = 0.0;
 //float           MMaxValue               = 1.0;
@@ -182,7 +182,7 @@ public: // set
   virtual void setModValue(float v)                         { MModValue = v; }
   virtual void setName(const char* AName)                   { MName = AName; }
   virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
-  virtual void setParameterIndex(int32_t i)                 { MParameterIndex = i; }
+  //virtual void setParameterIndex(int32_t i)                 { MParameterIndex = i; }
   virtual void setParent(MIP_Widget* AParent)               { MParent = AParent; }
   virtual void setPos(float AXpos, float AYpos)             { MRect.x = AXpos; MRect.y = AYpos; }
   virtual void setRect(MIP_FRect ARect)                     { MRect = ARect; }
@@ -214,7 +214,7 @@ public:
   virtual const char*     getName()                   { return MName; }
   virtual uint32_t        getNumChildren()            { return MChildren.size(); }
   virtual MIP_Parameter*  getParameter(uint32_t i=0)  { return MParameters[i]; }
-  virtual int32_t         getParameterIndex()         { return MParameterIndex; }
+  //virtual int32_t         getParameterIndex()         { return MParameterIndex; }
   virtual MIP_Widget*     getParent()                 { return MParent; }
   virtual MIP_FRect       getRect()                   { return MRect; }
 //  virtual const char*     getText()                   { return MText; }
@@ -915,10 +915,15 @@ public:
     //MIP_Print("%s : k %i s %i\n",MName,AKey,AState);
   }
 
-  virtual void on_widget_connect(int32_t AParameterIndex) {
+  virtual void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex=0) {
     //MIP_Print("%s : i %i\n",MName,AParameterIndex);
-    //MParameterIndex = AParameterIndex;
+    //MParameters[ASubIndex] = AParameter;
   }
+
+  //virtual void on_widget_connect(int32_t AParameterIndex) {
+  //  //MIP_Print("%s : i %i\n",MName,AParameterIndex);
+  //  //MParameterIndex = AParameterIndex;
+ // }
 
   virtual void on_widget_timer() {
     //MIP_Print("%s\n",MName);
@@ -973,7 +978,7 @@ public:
     //resize(ADeltaX,ADeltaY);
     if (MParent) {
       MParent->alignWidgets();
-//      MParent->redraw();
+      MParent->redraw();
     }
   }
 

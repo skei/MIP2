@@ -1,5 +1,5 @@
-#ifndef kode_filter_onepole_included
-#define kode_filter_onepole_included
+#ifndef mip_filter_onepole_included
+#define mip_filter_onepole_included
 //----------------------------------------------------------------------
 
 // original author: lubomir i ivanov (for axonlib)
@@ -18,7 +18,7 @@
   4: hs
 */
 
-class KODE_OnePoleFilter {
+class MIP_OnePoleFilter {
 
   private:
 
@@ -43,7 +43,7 @@ class KODE_OnePoleFilter {
 
   public:
 
-    KODE_OnePoleFilter() {
+    MIP_OnePoleFilter() {
       reset_p();
       FInterpolate = false;
       FType = 0;
@@ -76,7 +76,7 @@ class KODE_OnePoleFilter {
       FType = AType;
       if ((FType < 0) || (FType > 4)) FType = 0;
       // coeff
-      b1 = exp(-KODE_PI2*AFreq / ASRate);
+      b1 = exp(-MIP_PI2*AFreq / ASRate);
       a0 = 1 - b1;
       // has interpolation
       FInterpolate = true;
@@ -117,20 +117,20 @@ class KODE_OnePoleFilter {
           return AInput * _gain;
           break;
         case 1: // lp
-          y = (i_a0 * AInput) + (i_b1*y) + KODE_FLOAT_DENORM;
-          return (y - KODE_FLOAT_DENORM) * _gain;
+          y = (i_a0 * AInput) + (i_b1*y) + MIP_FLOAT_DENORM;
+          return (y - MIP_FLOAT_DENORM) * _gain;
           break;
         case 2: // hp
-          y = (i_a0 * AInput) + (i_b1*y) + KODE_FLOAT_DENORM;
-          return (AInput - y - KODE_FLOAT_DENORM) * _gain;
+          y = (i_a0 * AInput) + (i_b1*y) + MIP_FLOAT_DENORM;
+          return (AInput - y - MIP_FLOAT_DENORM) * _gain;
           break;
         case 3: // ls
-          y = (i_a0*AInput) + (i_b1*y) + KODE_FLOAT_DENORM;
-          return AInput + ((y - KODE_FLOAT_DENORM) * _gain2);
+          y = (i_a0*AInput) + (i_b1*y) + MIP_FLOAT_DENORM;
+          return AInput + ((y - MIP_FLOAT_DENORM) * _gain2);
           break;
         case 4: // hs
-          y = (i_a0*AInput) + (i_b1*y) + KODE_FLOAT_DENORM;
-          return AInput + ((AInput - y - KODE_FLOAT_DENORM) * _gain2);
+          y = (i_a0*AInput) + (i_b1*y) + MIP_FLOAT_DENORM;
+          return AInput + ((AInput - y - MIP_FLOAT_DENORM) * _gain2);
           break;
       }
     }

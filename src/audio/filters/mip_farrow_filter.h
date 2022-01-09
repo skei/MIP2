@@ -1,8 +1,8 @@
-#ifndef kode_filter_farrow_included
-#define kode_filter_farrow_included
+#ifndef mip_filter_farrow_included
+#define mip_filter_farrow_included
 //----------------------------------------------------------------------
 
-class KODE_FarrowFilter {
+class MIP_FarrowFilter {
 };
 
 #if 0

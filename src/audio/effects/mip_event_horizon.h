@@ -1,13 +1,13 @@
-#ifndef kode_event_horizon_included
-#define kode_event_horizon_included
+#ifndef mip_event_horizon_included
+#define mip_event_horizon_included
 //----------------------------------------------------------------------
 
-#include "kode.h"
+#include "mip.h"
 
 //----------------------------------------------------------------------
 
-//#define KODE_PI   M_PI
-//#define KODE_PI2  (M_PI * 2.0)
+//#define MIP_PI   M_PI
+//#define MIP_PI2  (M_PI * 2.0)
 
 //#define _log2db 8.6858896380650365530225783783321   /* 20 / ln(10) */
 //#define _db2log 0.11512925464970228420089957273422  /* ln(10) / 20 */
@@ -22,7 +22,7 @@ template <typename T> int sign(T val) {
 //
 //----------------------------------------------------------------------
 
-class KODE_EventHorizon {
+class MIP_EventHorizon {
 
   private:
 
@@ -37,7 +37,7 @@ class KODE_EventHorizon {
 
   public:
 
-    KODE_EventHorizon() {
+    MIP_EventHorizon() {
       slider1   = 0.0f;
       slider2   = 0.0f;
       slider3   = 0.0f;
@@ -45,7 +45,7 @@ class KODE_EventHorizon {
       reset();
     }
 
-    ~KODE_EventHorizon() {
+    ~MIP_EventHorizon() {
     }
 
   public:

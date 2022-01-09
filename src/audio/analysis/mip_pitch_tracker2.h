@@ -1,10 +1,10 @@
-#ifndef kode_pitchtracker2_included
-#define kode_pitchtracker2_included
+#ifndef mip_pitchtracker2_included
+#define mip_pitchtracker2_included
 //----------------------------------------------------------------------
 
-#include "common/kode_math.h"
+#include "common/mip_math.h"
 
-class KODE_PitchTracker2 {
+class MIP_PitchTracker2 {
 
   private:
     float b0 = 0;
@@ -18,10 +18,10 @@ class KODE_PitchTracker2 {
 
   public:
 
-    KODE_PitchTracker2() {
+    MIP_PitchTracker2() {
     }
 
-    ~KODE_PitchTracker2() {
+    ~MIP_PitchTracker2() {
     }
 
   public:
@@ -30,7 +30,7 @@ class KODE_PitchTracker2 {
       // Filter coefs for power averaging
       // Trapezoidal filter gave me more accurate power at
       // high frequencies than standard EWMA
-      float tc = tan( 1000.0 / (sample_rate * milliseconds) * KODE_PI );
+      float tc = tan( 1000.0 / (sample_rate * milliseconds) * MIP_PI );
       b0 = tc / ( 1.0 + tc );
       a1 = ( tc - 1 ) / ( tc + 1 );
     }
