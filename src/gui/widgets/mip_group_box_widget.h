@@ -12,12 +12,12 @@ class MIP_GroupBoxWidget
 private:
 //------------------------------
 
-  MIP_ButtonWidget*  MTitleBar   = nullptr;
-  MIP_PanelWidget*   MContainer  = nullptr;
-  bool                MClosed     = false;
-  bool                MClosable   = true;
-  float               MOpenSize   = 0.0f;
-  float               MClosedSize = 0.0f;
+  MIP_ButtonWidget* MTitleBar   = nullptr;
+  MIP_PanelWidget*  MContainer  = nullptr;
+  bool              MClosed     = false;
+  bool              MClosable   = true;
+  float             MOpenSize   = 0.0f;
+  float             MClosedSize = 0.0f;
 
 //------------------------------
 public:
@@ -34,7 +34,7 @@ public:
     MTitleBar = new MIP_ButtonWidget( MIP_FRect(0,HEADER_HEIGHT) );
     MTitleBar->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     MTitleBar->setIsToggle();
-    MTitleBar->setText("Open","Closed");
+    MTitleBar->setText("Closed","Open");
     MTitleBar->setBackgroundColor(MIP_Color(0.4),MIP_Color(0.4));
     MTitleBar->setTextColor(MIP_Color(0.8),MIP_Color(0.8));
 

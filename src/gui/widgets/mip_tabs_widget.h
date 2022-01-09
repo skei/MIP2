@@ -14,8 +14,8 @@ class MIP_TabsWidget
 protected:
 //------------------------------
 
-    MIP_ButtonRowWidget* MHeader;
-    MIP_PagesWidget*     MPages;
+    MIP_ButtonRowWidget*  MHeader;
+    MIP_PagesWidget*      MPages;
     int32_t               MNumPages;
 
 //------------------------------
@@ -45,9 +45,9 @@ public:
 public:
 //------------------------------
 
-  virtual MIP_Widget*  getHeader(void)    { return MHeader; }
-  virtual MIP_Widget*  getPages(void)     { return MPages; }
-  virtual int32_t       getNumPages(void)  { return MNumPages; }
+  virtual MIP_Widget* getHeader(void)    { return MHeader; }
+  virtual MIP_Widget* getPages(void)     { return MPages; }
+  virtual int32_t     getNumPages(void)  { return MNumPages; }
 
   //----------
 

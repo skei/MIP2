@@ -120,7 +120,7 @@ public:
   //----------
 
   void alignWidgets(bool ARecursive=true) override {
-    MIP_Widget::alignWidgets();
+    MIP_Widget::alignWidgets(ARecursive);
     MIP_FRect content = MContent->getContentRect();
     float rect_w = MContent->getRect().w;
     float rect_h = MContent->getRect().h;
