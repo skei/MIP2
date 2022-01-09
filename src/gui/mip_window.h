@@ -178,15 +178,15 @@ public:
 
   //----------
 
-//  void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
-//    #ifndef MIP_NO_WINDOW_BUFFERING
-//      resizeBuffer(AWidth,AHeight);
-//    #endif
-//    MRect.w = AWidth;
-//    MRect.h = AHeight;
-//    alignChildren(/*this*/);
-//    if (MWindowPainter) MWindowPainter->resize(AWidth,AHeight);
-//  }
+  void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
+    #ifndef MIP_NO_WINDOW_BUFFERING
+      resizeBuffer(AWidth,AHeight);
+    #endif
+    MRect.w = AWidth;
+    MRect.h = AHeight;
+    alignWidgets();
+    if (MWindowPainter) MWindowPainter->resize(AWidth,AHeight);
+  }
 
   //----------
 
@@ -419,8 +419,8 @@ public: // MIP_BaseWindow
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("w %i h %i\n",AWidth,AHeight);
-    //resizeWindow(AWidth,AHeight);
-    alignWidgets();
+    resizeWindow(AWidth,AHeight);
+    //alignWidgets();
   }
 
   //----------

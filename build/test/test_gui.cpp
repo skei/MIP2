@@ -66,7 +66,7 @@ int main() {
     widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     left_panel->appendWidget(widget);
 
-    widget = new MIP_KeyboardWidget(20);
+    widget = new MIP_KeyboardWidget(35);
     widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     left_panel->appendWidget(widget);
 
@@ -74,7 +74,7 @@ int main() {
     widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     left_panel->appendWidget(widget);
 
-    widget = new MIP_SliderBankWidget(20);
+    widget = new MIP_SliderBankWidget(30);
     widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     left_panel->appendWidget(widget);
 
@@ -87,18 +87,20 @@ int main() {
 
   MIP_Widget* right_panel = new MIP_PanelWidget(MIP_FRect(0));
   right_panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+  right_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
+  right_panel->layout.spacing = 10;//MIP_FPoint(10);
   window->appendWidget(right_panel);
 
     widget = new MIP_KnobWidget(MIP_FRect(10,10,40,40));
-    widget->layout.alignment = MIP_WIDGET_ALIGN_CLIENT;
-    right_panel->appendWidget(widget);
-
-    widget = new MIP_Knob2Widget( MIP_FRect(50,10,40,72) );
-    widget->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+    widget->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
     right_panel->appendWidget(widget);
 
     widget = new MIP_CurveWidget(40);
-    widget->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+    widget->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    right_panel->appendWidget(widget);
+
+    widget = new MIP_Knob2Widget( MIP_FRect(50,10,40,72) );
+    widget->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
     right_panel->appendWidget(widget);
 
   //window->alignWidgets();

@@ -301,46 +301,46 @@ public:
     - cull/clip children using ARect (clipping rect)
   */
 
-  //virtual void paintChildren(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
-  //  MIP_FRect mrect = getRect();
-  //  mrect.overlap(ARect);
-  //  MIP_FRect clip_rect = getRect();
-  //  clip_rect.shrink(layout.innerBorder);
-  //  clip_rect.overlap(ARect);
-  //  if (clip_rect.isEmpty()) return;
-  //  if (flags.autoClip) APainter->pushClip(clip_rect);
-  //  for (uint32_t i=0; i<MChildren.size(); i++) {
-  //    MIP_Widget* child = MChildren[i];
-  //    if (child->flags.visible) {
-  //      MIP_FRect child_rect = child->getRect();
-  //      if (child_rect.isNotEmpty()) {
-  //        //if (child_rect.touches(mrect)) {
-  //          MIP_FRect overlap_rect = clip_rect;//mrect;
-  //          overlap_rect.overlap(child_rect);
-  //          if (overlap_rect.isNotEmpty()) {
-  //            child->on_widget_paint(APainter,overlap_rect,AMode);  // clip rect
-  //          } // !overlap.empty
-  //        //} // child.touches
-  //      } // !child.empty
-  //    } // child.visible
-  //  } // for all children
-  //  if (flags.autoClip) APainter->popClip();
-  //}
-
   void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode=0) {
-    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
-    if (MChildren.size() > 0) {
-      for (int32_t i = MChildren.size()-1; i >= 0; i--) {
-        MIP_Widget* child = MChildren[i];
-        if (child->flags.visible) {
-          MIP_FRect rect = child->getRect();
-          if (rect.touches(ARect)) {
-            child->on_widget_paint(APainter,ARect,AMode);
-          }
-        }
-      }
-    }
+    MIP_FRect mrect = getRect();
+    mrect.overlap(ARect);
+    MIP_FRect clip_rect = getRect();
+    clip_rect.shrink(layout.innerBorder);
+    clip_rect.overlap(ARect);
+    if (clip_rect.isEmpty()) return;
+    if (flags.autoClip) APainter->pushClip(clip_rect);
+    for (uint32_t i=0; i<MChildren.size(); i++) {
+      MIP_Widget* child = MChildren[i];
+      if (child->flags.visible) {
+        MIP_FRect child_rect = child->getRect();
+        if (child_rect.isNotEmpty()) {
+          //if (child_rect.touches(mrect)) {
+            MIP_FRect overlap_rect = clip_rect;//mrect;
+            overlap_rect.overlap(child_rect);
+            if (overlap_rect.isNotEmpty()) {
+              child->on_widget_paint(APainter,overlap_rect,AMode);  // clip rect
+            } // !overlap.empty
+          //} // child.touches
+        } // !child.empty
+      } // child.visible
+    } // for all children
+    if (flags.autoClip) APainter->popClip();
   }
+
+//  void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode=0) {
+//    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
+//    if (MChildren.size() > 0) {
+//      for (int32_t i = MChildren.size()-1; i >= 0; i--) {
+//        MIP_Widget* child = MChildren[i];
+//        if (child->flags.visible) {
+//          MIP_FRect rect = child->getRect();
+//          if (rect.touches(ARect)) {
+//            child->on_widget_paint(APainter,ARect,AMode);
+//          }
+//        }
+//      }
+//    }
+//  }
 
   //----------
 
