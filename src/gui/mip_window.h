@@ -2,7 +2,7 @@
 #define mip_window_included
 //----------------------------------------------------------------------
 
-#define MIP_NO_WINDOW_BUFFERING
+//#define MIP_NO_WINDOW_BUFFERING
 
 //
 
