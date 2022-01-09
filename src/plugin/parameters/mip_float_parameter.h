@@ -1,12 +1,12 @@
-#ifndef kode_float_parameter_included
-#define kode_float_parameter_included
+#ifndef mip_float_parameter_included
+#define mip_float_parameter_included
 //----------------------------------------------------------------------
 
-#include "kode.h"
-#include "plugin/kode_parameter.h"
+#include "mip.h"
+#include "plugin/mip_parameter.h"
 
-class KODE_FloatParameter
-: public KODE_Parameter {
+class MIP_FloatParameter
+: public MIP_Parameter {
 
 //------------------------------
 protected:
@@ -25,14 +25,14 @@ protected:
 public:
 //------------------------------
 
-  KODE_FloatParameter()
-  : KODE_Parameter("") {
+  MIP_FloatParameter()
+  : MIP_Parameter("") {
   }
 
   //----------
 
-  KODE_FloatParameter(const char* AName, float AVal, float AMin=0.0f, float AMax=1.0f, float AStep=0.0f)
-  : KODE_Parameter(AName,AVal) {
+  MIP_FloatParameter(const char* AName, float AVal, float AMin=0.0f, float AMax=1.0f, float AStep=0.0f)
+  : MIP_Parameter(AName,AVal) {
     MIndex    = -1;
     MName     = AName;
     MLabel    = "";
@@ -42,8 +42,8 @@ public:
     setup(AVal);
   }
 
-  KODE_FloatParameter(const char* AName, const char* ALabel, float AVal, float AMin=0.0f, float AMax=1.0f, float AStep=0.0f)
-  : KODE_Parameter(AName,AVal) {
+  MIP_FloatParameter(const char* AName, const char* ALabel, float AVal, float AMin=0.0f, float AMax=1.0f, float AStep=0.0f)
+  : MIP_Parameter(AName,AVal) {
     MIndex    = -1;
     MName     = AName;
     MLabel    = ALabel;
@@ -62,9 +62,9 @@ private:
     MInvRange = 1 / MRange;
     if (MStep > 0) {
       //MIsStepped  = true;
-      MNumSteps   = 1 + round( MRange / MStep ); // was: KODE_Round
+      MNumSteps   = 1 + round( MRange / MStep ); // was: MIP_Round
       MStepSize = 1.0f / (float)(MNumSteps - 1);
-      //KODE_Trace("%i MStep %f MStepSize %f\n",MStep,MStepSize);
+      //MIP_Trace("%i MStep %f MStepSize %f\n",MStep,MStepSize);
       MHalfStep = 0.5 * MStepSize;
     } else {
       //MIsStepped  = false;
@@ -75,7 +75,7 @@ private:
     }
     //MDefValue = to01(MDefValue);
     MDefValue = ((AVal - MMinValue) * MInvRange);
-    //KODE_Trace("%f\n",MDefValue);
+    //MIP_Trace("%f\n",MDefValue);
   }
 
 //------------------------------

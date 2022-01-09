@@ -1,18 +1,18 @@
-#ifndef kode_pow_parameter_included
-#define kode_pow_parameter_included
+#ifndef mip_pow_parameter_included
+#define mip_pow_parameter_included
 //----------------------------------------------------------------------
 
-#include "kode.h"
-#include "plugin/kode_parameter.h"
-#include "plugin/parameters/kode_float_parameter.h"
+#include "mip.h"
+#include "plugin/mip_parameter.h"
+#include "plugin/parameters/mip_float_parameter.h"
 
 // value^n
 
-// appendParameter( new KODE_ParamPow( "pow/post", 440,  2,true,     20, 20000, 1 )); // n^2 = 20.20000, default = 440
-// appendParameter( new KODE_ParamPow( "pow",      5,    2,false,    1,  10,    1 ));    // 1^2..10^2, default = 5^2
+// appendParameter( new MIP_ParamPow( "pow/post", 440,  2,true,     20, 20000, 1 )); // n^2 = 20.20000, default = 440
+// appendParameter( new MIP_ParamPow( "pow",      5,    2,false,    1,  10,    1 ));    // 1^2..10^2, default = 5^2
 
-class KODE_PowParameter
-: public KODE_FloatParameter {
+class MIP_PowParameter
+: public MIP_FloatParameter {
 
 private:
 
@@ -21,8 +21,8 @@ private:
 
 public:
 
-  KODE_PowParameter(const char* AName, float AVal, float APower, bool APost=false, float AMin=0.0f, float AMax=1.0f, float AStep=0.0f)
-  : KODE_FloatParameter(AName,AVal,AMin,AMax,AStep) {
+  MIP_PowParameter(const char* AName, float AVal, float APower, bool APost=false, float AMin=0.0f, float AMax=1.0f, float AStep=0.0f)
+  : MIP_FloatParameter(AName,AVal,AMin,AMax,AStep) {
     MPower = APower;
     MPost = APost;
     setup(AVal);
@@ -38,8 +38,8 @@ public:
 //    }
   }
 
-  KODE_PowParameter(const char* AName, const char* ALabel, float AVal, float APower, bool APost=false, float AMin=0.0f, float AMax=1.0f, float AStep=0.0f)
-  : KODE_FloatParameter(AName,ALabel,AVal,AMin,AMax,AStep) {
+  MIP_PowParameter(const char* AName, const char* ALabel, float AVal, float APower, bool APost=false, float AMin=0.0f, float AMax=1.0f, float AStep=0.0f)
+  : MIP_FloatParameter(AName,ALabel,AVal,AMin,AMax,AStep) {
     MPower = APower;
     MPost = APost;
     setup(AVal);
@@ -64,12 +64,12 @@ public:
   float to01(float AValue) override {
     float result = 0.0f;
     if (MPost) {
-      float n = KODE_FloatParameter::to01(AValue);
+      float n = MIP_FloatParameter::to01(AValue);
       if (MPower > 0) result = powf(n,1.0f/MPower);
     }
     else {
       if (MPower > 0) AValue = powf(AValue,1.0f/MPower);
-      result = KODE_FloatParameter::to01(AValue);
+      result = MIP_FloatParameter::to01(AValue);
     }
     return result;
   }
@@ -80,10 +80,10 @@ public:
     float result = 0.0f;
     if (MPost) {
       float n = powf(AValue,MPower);
-      result = KODE_FloatParameter::from01(n);
+      result = MIP_FloatParameter::from01(n);
     }
     else {
-      float n = KODE_FloatParameter::from01(AValue);
+      float n = MIP_FloatParameter::from01(AValue);
       result = powf(n,MPower);
     }
     return result;

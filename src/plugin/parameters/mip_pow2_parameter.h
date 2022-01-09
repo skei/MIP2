@@ -1,17 +1,17 @@
-#ifndef kode_pow2_parameter_included
-#define kode_pow2_parameter_included
+#ifndef mip_pow2_parameter_included
+#define mip_pow2_parameter_included
 //----------------------------------------------------------------------
 
-#include "kode.h"
-#include "plugin/kode_parameter.h"
-#include "plugin/parameters/kode_float_parameter.h"
+#include "mip.h"
+#include "plugin/mip_parameter.h"
+#include "plugin/parameters/mip_float_parameter.h"
 
 // 2^n
 
 // appendParameter( new KParamPow2("pow2", 4, 1, 16, 1 )); // (1..16)^2, default = 4^2
 
-class KODE_Pow2Parameter
-: public KODE_FloatParameter {
+class MIP_Pow2Parameter
+: public MIP_FloatParameter {
 
 private:
 
@@ -20,8 +20,8 @@ private:
 
 public:
 
-  KODE_Pow2Parameter(const char* AName, float AVal, /*bool APost,*/ float AMin, float AMax, float AStep)
-  : KODE_FloatParameter(AName,AVal,AMin,AMax,AStep) {
+  MIP_Pow2Parameter(const char* AName, float AVal, /*bool APost,*/ float AMin, float AMax, float AStep)
+  : MIP_FloatParameter(AName,AVal,AMin,AMax,AStep) {
     //MPost = APost;
     //if (APost) {
     //    float n = ((AVal - MMin) * MInvRange);
@@ -43,7 +43,7 @@ public:
       //}
       //else {
         AValue = powf(AValue,0.5f);
-        result = KODE_FloatParameter::to01(AValue);
+        result = MIP_FloatParameter::to01(AValue);
       //}
       return result;
     }
@@ -57,7 +57,7 @@ public:
       //    result = KParamFloat::from01(n);
       //}
       //else {
-        float n = KODE_FloatParameter::from01(AValue);
+        float n = MIP_FloatParameter::from01(AValue);
         result = powf(2.0f,n);
       //}
       return result;

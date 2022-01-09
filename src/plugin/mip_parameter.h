@@ -21,7 +21,8 @@ class MIP_Parameter {
   friend class MIP_Descriptor;
 
 //------------------------------
-private:
+//private:
+protected:
 //------------------------------
 
   int32_t     MIndex        = -1;
@@ -87,7 +88,7 @@ public:
 
   //----------
 
-  virtual const char* displayText(char* ABuffer, float AValue) {
+  virtual const char* displayText(char* ABuffer, float AValue, uint32_t ANumDigits=0) {
     sprintf(ABuffer,"%.3f",AValue);
     return ABuffer;
   }

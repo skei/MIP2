@@ -10,6 +10,7 @@
 #include "gui/mip_window.h"
 
 #include "gui/mip_widgets.h"
+#include "plugin/mip_parameters.h"
 
 int main() {
   //MIP_Print("Hello world!\n");
