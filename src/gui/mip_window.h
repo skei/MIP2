@@ -65,7 +65,7 @@ private:
   MIP_Widget*         MMouseLockedWidget      = nullptr;
   MIP_Widget*         MKeyInputWidget         = nullptr;
 
-  bool                MFillWindowBackground   = true;
+  bool                MFillWindowBackground   = false;//true;
   MIP_Color           MWindowBackgroundColor  = MIP_Color(0.5);
 
 
@@ -143,7 +143,7 @@ public:
 //------------------------------
 
 //  //void setListener(MIP_WindowListener* l) { MListener = l; }
-  void setWindowFillBackground(bool s=true)     { MFillWindowBackground = s; }
+  void setFillWindowBackground(bool s=true)     { MFillWindowBackground = s; }
   void setWindowBackgroundColor(MIP_Color c)    { MWindowBackgroundColor = c; }
 
   //----------

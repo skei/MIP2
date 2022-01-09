@@ -16,7 +16,8 @@ int main() {
   //MIP_Print("Hello world!\n");
 
   MIP_Window* window = new MIP_Window(640,480,"MIP_Window");
-  //window->setFillBackground(false);
+  window->setFillWindowBackground(true);
+  window->setWindowBackgroundColor(MIP_COLOR_DARK_GRAY);
 
   window->appendWidget( new MIP_PanelWidget(        MIP_FRect(  10, 10,   150,20  )  ));
   window->appendWidget( new MIP_TextWidget(         MIP_FRect(  10, 35,   150,20  ), "Text" ));
@@ -24,8 +25,8 @@ int main() {
   window->appendWidget( new MIP_DragValueWidget(    MIP_FRect(  10, 85,   150,20  ), "DragValue", 0.3  ));
   window->appendWidget( new MIP_SliderWidget(       MIP_FRect(  10, 110,  150,20  ), "Slider"  ));
   window->appendWidget( new MIP_ScrollBarWidget(    MIP_FRect(  10, 135,  150,20  )  ));
-  window->appendWidget( new MIP_ButtonWidget(       MIP_FRect(  10, 160,  150,20  )  ));
-  window->appendWidget( new MIP_RangeSliderWidget(  MIP_FRect(  10, 185,  150,20  )  ));
+  window->appendWidget( new MIP_RangeSliderWidget(  MIP_FRect(  10, 160,  150,20  )  ));
+  window->appendWidget( new MIP_ButtonWidget(       MIP_FRect(  10, 185,  150,20  )  ));
   window->appendWidget( new MIP_ButtonRowWidget(    MIP_FRect(  10, 210,  150,20  ), 5 ));
   window->appendWidget( new MIP_KeyboardWidget(     MIP_FRect(  10, 235,  150,35  )  ));
   window->appendWidget( new MIP_SelectorWidget(     MIP_FRect(  10, 275,  150,20  )  ));
