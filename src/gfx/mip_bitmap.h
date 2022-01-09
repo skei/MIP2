@@ -7,13 +7,14 @@
 #define MIP_NO_BITMAP_DRAW
 #define MIP_NO_BITMAP_FONT
 #define MIP_NO_BITMAP_PROC
-#define MIP_NO_BITMAP_GEN
+//#define MIP_NO_BITMAP_GEN
 
 //----------------------------------------------------------------------
 
 #include "mip.h"
 #include "base/utils/mip_bgra.h"
 #include "base/utils/mip_integer_math.h"
+#include "base/utils/mip_random.h"
 
 #ifdef MIP_USE_CAIRO
   #include "gui/cairo/mip_cairo.h"
@@ -888,8 +889,6 @@ public:
 public:
 //------------------------------
 
-  /*
-
   #ifndef MIP_NO_BITMAP_DRAW
     #include "gfx/mip_bitmap_draw.h"
   #endif
@@ -905,8 +904,6 @@ public:
   #ifndef MIP_NO_BITMAP_GEN
     #include "gfx/mip_bitmap_gen.h"
   #endif
-
-  */
 
 //------------------------------
 

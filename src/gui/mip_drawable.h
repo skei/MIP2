@@ -10,7 +10,8 @@
   #include "gui/cairo/mip_cairo.h"
 #endif
 
-#include "gui/mip_bitmap.h"
+#include "gfx/mip_bitmap.h"
+
 
 //----------------------------------------------------------------------
 
