@@ -76,8 +76,6 @@
 //#define MIP_USE_SDL
 //#define MIP_USE_XCB
 
-//#define MIP_USE_GPL
-
 //#define MIP_XCB_WAIT_FOR_MAPNOTIFY
 //#define MIP_XCB_NO_EVENT_THREAD
 

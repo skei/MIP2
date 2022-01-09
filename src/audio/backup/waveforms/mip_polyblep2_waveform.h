@@ -2,9 +2,6 @@
 #define kode_waveform_polyblep2_included
 //----------------------------------------------------------------------
 
-// https://github.com/timowest/rogue/blob/master/dsp/polyblep.h
-// GPL
-
 float KODE_PolyBlep(float t) {
   if (t > 0.0f) {
     return t - (t*t)/2.0f - 0.5f;
