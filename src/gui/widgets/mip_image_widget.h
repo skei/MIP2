@@ -21,8 +21,9 @@ private:
 public:
 //------------------------------
 
-  MIP_ImageWidget(MIP_FRect ARect)
+  MIP_ImageWidget(MIP_FRect ARect, MIP_Surface* ASurface)
   : MIP_PanelWidget(ARect) {
+    MSurface = ASurface;
     setName("MIP_ImageWidget");
     setHint("image");
     setFillBackground(false);

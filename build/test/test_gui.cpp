@@ -5,37 +5,54 @@
 //#define MIP_NO_WINDOW_BUFFERING
 
 #include "mip.h"
-#include "gui/cairo/mip_cairo.h"
+#include "gfx/mip_bitmap.h"
 #include "gui/mip_window.h"
-
+#include "gui/mip_surface.h"
 #include "gui/mip_widgets.h"
+//#include "gui/cairo/mip_cairo.h"
 #include "plugin/mip_parameters.h"
+
+//----------------------------------------------------------------------
+
+//----------------------------------------------------------------------
 
 int main() {
   //MIP_Print("Hello world!\n");
 
   MIP_Parameter* parameter1 = new MIP_Parameter( "p1", 0.5, 0.1, 0.9 );
-  MIP_Widget* widget = nullptr;
+
+  // window
 
   MIP_Window* window = new MIP_Window(640,480,"MIP_Window");
   window->setFillWindowBackground(true);
   window->setWindowBackgroundColor(MIP_COLOR_GRAY);
 
-  // left panel
+  // image
 
-  //MIP_Widget* left_panel = new MIP_PanelWidget(MIP_FRect(200));
-  //left_panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-  //left_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
-  //left_panel->layout.spacing = MIP_FPoint(5,5);
-  //window->appendWidget(left_panel);
+  MIP_Bitmap* bitmap = new MIP_Bitmap("/home/skei/Pictures/skei1_256.png");
+
+  uint32_t w = bitmap->getWidth();
+  uint32_t h = bitmap->getHeight();
+  //uint32_t d = bitmap->getDepth();
+
+  MIP_Surface* surface = new MIP_Surface(window,w,h);
+  MIP_Painter* painter = new MIP_Painter(surface);
+  painter->uploadBitmap(0,0,bitmap);
+  painter->flush();
+  //delete painter;
+  //delete bitmap;
+
+  MIP_Widget* widget = nullptr;
+
+  // left panel
 
   MIP_ScrollBoxWidget* scroll_box = new MIP_ScrollBoxWidget(200,true,false);
   scroll_box->layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
   //scroll_box->layout.innerBorder = MIP_FRect(5,5,5,5);
   //scroll_box->layout.spacing = MIP_FPoint(5,5);
-  MIP_Widget* w = scroll_box->getContentWidget();
-  w->layout.innerBorder = MIP_FRect(10,10,10,10);
-  w->layout.spacing = MIP_FPoint(5,5);
+  MIP_Widget* wdg = scroll_box->getContentWidget();
+  wdg->layout.innerBorder = MIP_FRect(10,10,10,10);
+  wdg->layout.spacing = MIP_FPoint(5,5);
   window->appendWidget(scroll_box);
 
     widget = new MIP_PanelWidget(20);
@@ -131,7 +148,7 @@ int main() {
     // tabs
 
     MIP_TabsWidget* tabs = new MIP_TabsWidget(200,3);
-    tabs->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    tabs->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;//TOP;
     tabs->setHeight(200);
     //MIP_Widget* pages = tabs->getPages();
     //pages->layout.innerBorder = MIP_FRect(10,10,10,10);
@@ -162,6 +179,10 @@ int main() {
       page2->setBackgroundColor(MIP_Color(0.5,0.6,0.5));
       tabs->appendPage("page2",page2);
 
+        MIP_ImageWidget* image = new MIP_ImageWidget(256,surface);
+        image->layout.alignment = MIP_WIDGET_ALIGN_CENTER;//FILL_CLIENT;
+        page2->appendWidget(image);
+
       // page 3
 
       MIP_PanelWidget* page3 = new MIP_PanelWidget();
@@ -176,6 +197,9 @@ int main() {
   delete window;
 
   delete parameter1;
+  delete surface;
+  delete painter;
+  delete bitmap;
 
   return 0;
 }
