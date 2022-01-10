@@ -61,15 +61,16 @@ public:
 //    setImage(ATarget,bitmap);
 //    delete bitmap;
 //  }
-//
-//  //----------
-//
-//  virtual void setupTiles(uint32_t AXcount, uint32_t AYcount) {
-//    MTileXCount = AXcount;
-//    MTileYCount = AYcount;
-//    MTileWidth  = MImageSurface->getWidth() / AXcount;
-//    MTileHeight = MImageSurface->getHeight() / AYcount;
-//  }
+
+  //----------
+
+  virtual void setup(uint32_t AXcount, uint32_t AYcount, MIP_Surface* ASurface=nullptr) {
+    if (ASurface) MSurface = ASurface;
+    MTileXCount = AXcount;
+    MTileYCount = AYcount;
+    MTileWidth  = MSurface->getWidth() / AXcount;
+    MTileHeight = MSurface->getHeight() / AYcount;
+  }
 
   MIP_FRect getTileRect(uint32_t AIndex) {
     float x = floorf(AIndex % MTileXCount) * MTileWidth;

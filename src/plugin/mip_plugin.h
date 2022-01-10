@@ -74,6 +74,7 @@ public: // editor listener
 //------------------------------
 
   void do_editor_updateParameter(uint32_t AIndex, float AValue) override {
+    MIP_Print("index %i value %.3f\n",AIndex,AValue);
   }
 
 };

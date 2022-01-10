@@ -30,17 +30,38 @@ int main() {
   // image
 
   MIP_Bitmap* bitmap = new MIP_Bitmap("/home/skei/Pictures/skei1_256.png");
-
   uint32_t w = bitmap->getWidth();
   uint32_t h = bitmap->getHeight();
-  //uint32_t d = bitmap->getDepth();
-
   MIP_Surface* surface = new MIP_Surface(window,w,h);
   MIP_Painter* painter = new MIP_Painter(surface);
   painter->uploadBitmap(0,0,bitmap);
   painter->flush();
-  //delete painter;
-  //delete bitmap;
+  delete painter;
+  delete bitmap;
+
+  // image
+
+  bitmap = new MIP_Bitmap("/DISKS/sda2/code/git/MIP2/bin/data/knob1_100x100_131.png");
+  bitmap->premultAlpha(0x999999);
+  w = bitmap->getWidth();
+  h = bitmap->getHeight();
+  MIP_Surface* knob_surface = new MIP_Surface(window,w,h);
+  painter = new MIP_Painter(knob_surface);
+  painter->uploadBitmap(0,0,bitmap);
+  painter->flush();
+  delete painter;
+  delete bitmap;
+
+  MIP_MenuWidget* selector_menu = new MIP_MenuWidget(100);
+  selector_menu->setItemWidth(100);
+  selector_menu->setItemSize(100,20);
+  selector_menu->setItemLayout(1,3);
+  selector_menu->appendMenuItem("item1");
+  selector_menu->appendMenuItem("item2");
+  selector_menu->appendMenuItem("item3");
+
+  //----------
+
 
   MIP_Widget* widget = nullptr;
 
@@ -105,13 +126,19 @@ int main() {
     widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     scroll_box->appendWidget(widget);
 
-    widget = new MIP_SelectorWidget(20);
-    widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    scroll_box->appendWidget(widget);
+    MIP_SelectorWidget* selector = new MIP_SelectorWidget(20);
+    selector->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    selector->setMenu(selector_menu);
+    scroll_box->appendWidget(selector);
 
     widget = new MIP_SliderBankWidget(30);
     widget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     scroll_box->appendWidget(widget);
+
+    MIP_GridWidget* grid = new MIP_GridWidget(60,10,6);
+    grid->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    grid->setSelectMultipleCells();
+    scroll_box->appendWidget(grid);
 
   // sizer
 
@@ -173,6 +200,11 @@ int main() {
         widget->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
         page1->appendWidget(widget);
 
+        MIP_ImageStripWidget* imagestrip = new MIP_ImageStripWidget(100);
+        imagestrip->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        imagestrip->setup(1,131,knob_surface);
+        page1->appendWidget(imagestrip);
+
       // page 2
 
       MIP_PanelWidget* page2 = new MIP_PanelWidget();
@@ -189,6 +221,9 @@ int main() {
       page3->setBackgroundColor(MIP_Color(0.5,0.5,0.6));
       tabs->appendPage("page3",page3);
 
+
+  window->appendWidget(selector_menu);
+
   tabs->selectPage(0);
 
   window->open();
@@ -198,8 +233,7 @@ int main() {
 
   delete parameter1;
   delete surface;
-  delete painter;
-  delete bitmap;
+  delete knob_surface;
 
   return 0;
 }
