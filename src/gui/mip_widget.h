@@ -74,42 +74,16 @@ protected:
   MIP_Widget*     MParent                 = nullptr;
   MIP_Widgets     MChildren               = {};
   int32_t         MWidgetIndex            = -1;
-  //int32_t         MParameterIndex         = -1;
-
+//int32_t         MParameterIndex         = -1;
   MIP_FRect       MRect                   = {};
   MIP_FRect       MInitialRect            = MIP_FRect(0,0); // starting rect (used by layout
   MIP_FRect       MContentRect            = MIP_FRect(0,0); // rect surrounding child widgets
   float           MChildrenXOffset        = 0.0f;           // offset (relative to parent rect)
   float           MChildrenYOffset        = 0.0f;           // -"-
-
   float           MModValue               = 0.0;
   float           MValue                  = 0.0;
   float           MDefaultValue           = 0.0;
-
   MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // ptrs to connected parameters
-
-//float           MMinValue               = 0.0;
-//float           MMaxValue               = 1.0;
-//uint32_t        MNumSteps               = 0.0;
-//bool            MIsActive               = true;
-//bool            MIsVisible              = true;
-
-//  bool            MFillBackground         = false;
-//  bool            MDrawBorder             = false;
-//  bool            MDrawText               = false;
-//  MIP_Color       MBackgroundColor        = MIP_COLOR_GRAY;
-//  MIP_Color       MBorderColor            = MIP_COLOR_LIGHT_GRAY;
-//  const char*     MText                   = "";
-//  MIP_Color       MTextColor              = MIP_COLOR_BLACK;
-//  uint32_t        MTextAlignment          = MIP_TEXT_ALIGN_CENTER;
-
-//MIP_Surface*    MImageSurface           = nullptr;
-//bool            MImageSurfaceAllocated  = false;
-//uint32_t        MTileCount              = 0;
-//uint32_t        MTileXCount             = 0;
-//uint32_t        MTileYCount             = 0;
-//uint32_t        MTileWidth              = 0;
-//uint32_t        MTileHeight             = 0;
 
 //------------------------------
 public:
@@ -133,7 +107,6 @@ public:
     #ifndef MIP_NO_AUTODELETE
     deleteWidgets();
     #endif
-//    if (MImageSurface && MImageSurfaceAllocated) delete MImageSurface;
   }
 
 //------------------------------
@@ -160,9 +133,6 @@ public: // set
   }
 
 
-  //void  virtual setActive(bool s=true)        { MIsActive = s; }
-  //void  virtual setVisible(bool s=true)       { MIsVisible = s; }
-
   virtual void setChildrenOffset(float AX, float AY)        { MChildrenXOffset = AX; MChildrenYOffset = AY; }
   virtual void setChildrenXOffset(float AX)                 { MChildrenXOffset = AX; }
   virtual void setChildrenYOffset(float AY)                 { MChildrenYOffset = AY; }
@@ -171,8 +141,7 @@ public: // set
   virtual void setDefaultValue(float AValue)                { MDefaultValue = AValue; }
   virtual void setHeight(float AHeight)                     { MRect.h = AHeight; }
   virtual void setHint(const char* AHint)                   { MHint = AHint; }
-//virtual void setIndex(int32_t AIndex)                     { MIndex = AIndex; }
-  virtual void  setWidgetIndex(int32_t i)                   { MWidgetIndex = i; }
+  virtual void setWidgetIndex(int32_t i)                   { MWidgetIndex = i; }
 
   virtual void setInitialHeight(float AH)                   { MInitialRect.h = AH; }
   virtual void setInitialPos(float AX, float AY)            { MInitialRect.x = AX; MInitialRect.y = AY; }
@@ -182,64 +151,49 @@ public: // set
   virtual void setModValue(float v)                         { MModValue = v; }
   virtual void setName(const char* AName)                   { MName = AName; }
   virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
-  //virtual void setParameterIndex(int32_t i)                 { MParameterIndex = i; }
   virtual void setParent(MIP_Widget* AParent)               { MParent = AParent; }
   virtual void setPos(float AXpos, float AYpos)             { MRect.x = AXpos; MRect.y = AYpos; }
   virtual void setRect(MIP_FRect ARect)                     { MRect = ARect; }
   virtual void setRect(float x, float y, float w, float h)  { MRect.x=x; MRect.y=y; MRect.w=w;MRect.h=h; }
   virtual void setSize(float AWidth, float AHeight)         { MRect.w = AWidth; MRect.h = AHeight; }
-//  virtual void setText(const char* AText)                   { MText = AText; }
   virtual void setValue(float AValue)                       { MValue = AValue; }
   virtual void setWidth(float AWidth)                       { MRect.w = AWidth; }
 
-  //virtual void setOwner(MIP_BaseWindow* AOwner)        { MOwner = AOwner; }
-  //virtual void setSelectedParameter(uint32_t AIndex)    { MSelectedParameter = AIndex; }
-  //virtual void setParameterPtr(MIP_Parameter* p)       { MParameterPtr = p; }
-
+//virtual void setOwner(MIP_BaseWindow* AOwner)             { MOwner = AOwner; }
+//virtual void setSelectedParameter(uint32_t AIndex)        { MSelectedParameter = AIndex; }
+//virtual void setParameterPtr(MIP_Parameter* p)            { MParameterPtr = p; }
 
 //------------------------------
 public:
 //------------------------------
-
 
   virtual MIP_Widget*     getChild(uint32_t AIndex)   { return MChildren[AIndex]; }
   virtual MIP_FRect       getContentRect()            { return MContentRect; }
   virtual int32_t         getCursor()                 { return MCursor; }
   virtual float           getDefaultValue()           { return MDefaultValue; }
   virtual const char*     getHint()                   { return MHint; }
-//virtual int32_t         getIndex()                  { return MIndex; }
   virtual int32_t         getWidgetIndex()            { return MWidgetIndex; }
   virtual MIP_FRect       getInitialRect()            { return MInitialRect; }
   virtual float           getModValue()               { return MModValue; }
   virtual const char*     getName()                   { return MName; }
   virtual uint32_t        getNumChildren()            { return MChildren.size(); }
   virtual MIP_Parameter*  getParameter(uint32_t i=0)  { return MParameters[i]; }
-  //virtual int32_t         getParameterIndex()         { return MParameterIndex; }
   virtual MIP_Widget*     getParent()                 { return MParent; }
   virtual MIP_FRect       getRect()                   { return MRect; }
-//  virtual const char*     getText()                   { return MText; }
   virtual float           getValue()                  { return MValue; }
-
-//virtual MIP_Surface*    getImageSurface()           { return MImageSurface; }
-//virtual uint32_t        getTileXCount()             { return MTileXCount; }
-//virtual uint32_t        getTileYCount()             { return MTileYCount; }
-
 
 //------------------------------
 public:
 //------------------------------
 
-  //virtual uint32_t appendWidget(MIP_Widget* AWidget) {
   virtual MIP_Widget* appendWidget(MIP_Widget* AWidget) {
     if (AWidget) {
       AWidget->MParent = this;
       uint32_t index = MChildren.size();
       AWidget->MWidgetIndex = index;
       MChildren.append(AWidget);
-      //return index;
       return AWidget;
     }
-    //return -1;
     return nullptr;
   }
 
@@ -255,26 +209,7 @@ public:
 
   //----------
 
-  //virtual MIP_Widget* findChild(float AXpos, float AYpos) {
-  //  int32_t num = MChildren.size();
-  //  if (num > 0) {
-  //    for (int32_t i=(num-1); i>=0; i--) {
-  //      MIP_Widget* widget = MChildren[i];
-  //      //if (widget->flags.visible) {
-  //      if (widget->flags.active) {
-  //        if ( widget->getRect().contains(AXpos,AYpos) ) {
-  //          MIP_Widget* child = widget->findChild(AXpos,AYpos);
-  //          if (child) return child;
-  //          return widget;
-  //        }
-  //      }
-  //    }
-  //  }
-  //  return MIP_NULL;
-  //}
-
   MIP_Widget* findWidget(float AXpos, float AYpos, bool ARecursive=true) {
-    //for (uint32_t i=0; i<MChildren.size(); i++) {
     if (MChildren.size() > 0) {
       for (int32_t i = MChildren.size()-1; i >= 0; i--) {
         MIP_Widget* child = MChildren[i];
@@ -327,26 +262,6 @@ public:
     if (flags.autoClip) APainter->popClip();
   }
 
-//  void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode=0) {
-//    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
-//    if (MChildren.size() > 0) {
-//      for (int32_t i = MChildren.size()-1; i >= 0; i--) {
-//        MIP_Widget* child = MChildren[i];
-//        if (child->flags.visible) {
-//          MIP_FRect rect = child->getRect();
-//          if (rect.touches(ARect)) {
-//            child->on_widget_paint(APainter,ARect,AMode);
-//          }
-//        }
-//      }
-//    }
-//  }
-
-  //----------
-
-  //void realignWidgets() {
-  //}
-
   //----------
 
   /*
@@ -372,16 +287,11 @@ public:
     MIP_FRect client   = getRect();
     MIP_FRect parent   = client;
     MIP_FRect content  = client;
-
     client.shrink(layout.innerBorder);
     parent.shrink(layout.innerBorder);
-
     if (!layout.contentBorder) content.shrink(layout.innerBorder);
-    //if (layout.contentBorder) content.grow(layout.innerBorder);
-
     //content.setPos(0,0);
     content.setSize(0,0);
-
     float stackx = 0;
     float stacky = 0;
     float stack_highest = 0;
@@ -394,8 +304,8 @@ public:
       MIP_Widget* child = MChildren[i];
       if (child->flags.visible) {
 
-        MIP_FRect  rect      = child->getInitialRect();
-        uint32_t    alignment = child->layout.alignment;
+        MIP_FRect rect      = child->getInitialRect();
+        uint32_t  alignment = child->layout.alignment;
 
         if (child->flags.sizePercent) {
           rect.w = client.w * (rect.w * 0.01f);
@@ -730,11 +640,7 @@ public:
         child->MRect.y = rect.y + MChildrenYOffset;
         child->MRect.w = rect.w;
         child->MRect.h = rect.h;
-
-//
         child->MRect.scale(child->layout.scale);
-//
-
         if (ARecursive) child->alignWidgets(ARecursive);
 
       } // child visible
@@ -796,53 +702,6 @@ public:
   virtual void redraw() {
     do_widget_redraw(this,getRect(),0);
   }
-
-  //----------
-
-//  virtual void setImage(MIP_Drawable* ATarget, MIP_Surface* ASurface) {
-//    MImageSurface = ASurface;
-//    MImageSurfaceAllocated = false;
-//  }
-//
-//  virtual void setImage(MIP_Drawable* ATarget, MIP_Bitmap* ABitmap) {
-//    MImageSurface = new MIP_Surface(ATarget,ABitmap->getWidth(),ABitmap->getHeight());
-//    MImageSurfaceAllocated = true;
-//    MIP_Painter* painter = new MIP_Painter(MImageSurface);
-//    painter->uploadBitmap(0,0,ABitmap);
-//    //painter->flush();
-//    delete painter;
-//  }
-//
-//  virtual void setImage(MIP_Drawable* ATarget, const uint8_t* ABuffer, uint32_t ASize, MIP_Color ABackground) {
-//    MIP_Bitmap* bitmap = new MIP_Bitmap(ABuffer,ASize);
-//    bitmap->premultAlpha( (uint32_t)ABackground );
-//    setImage(ATarget,bitmap);
-//    delete bitmap;
-//  }
-//
-//  virtual void setImage(MIP_Drawable* ATarget, const char* AFilename, MIP_Color ABackground) {
-//    MIP_Bitmap* bitmap = new MIP_Bitmap(AFilename);
-//    bitmap->premultAlpha( (uint32_t)ABackground );
-//    setImage(ATarget,bitmap);
-//    delete bitmap;
-//  }
-//
-//  //----------
-//
-//  virtual void setupTiles(uint32_t AXcount, uint32_t AYcount) {
-//    MTileXCount = AXcount;
-//    MTileYCount = AYcount;
-//    MTileWidth  = MImageSurface->getWidth() / AXcount;
-//    MTileHeight = MImageSurface->getHeight() / AYcount;
-//  }
-//
-//  MIP_FRect getTileRect(uint32_t AIndex) {
-//    float x = floorf(AIndex % MTileXCount) * MTileWidth;
-//    float y = floorf(AIndex / MTileXCount) * MTileHeight;
-//    float w = MTileWidth - 1;
-//    float h = MTileHeight - 1;
-//    return MIP_FRect(x,y,w,h);
-//  }
 
 //------------------------------
 public:
@@ -923,7 +782,7 @@ public:
   //virtual void on_widget_connect(int32_t AParameterIndex) {
   //  //MIP_Print("%s : i %i\n",MName,AParameterIndex);
   //  //MParameterIndex = AParameterIndex;
- // }
+  //}
 
   virtual void on_widget_timer() {
     //MIP_Print("%s\n",MName);
