@@ -15,7 +15,7 @@
 //----------------------------------------------------------------------
 
 class MIP_Plugin
-: public MIP_EditorListener {
+/*: public MIP_EditorListener*/ {
 
 //------------------------------
 protected:
@@ -65,17 +65,19 @@ public:
   virtual void        on_plugin_midi(uint8_t AMsg1,uint8_t AMsg2,uint8_t AMsg3) {}
   virtual void        on_plugin_note_expression(uint32_t AType, uint32_t ANote, uint32_t AChannel, float AValue) {}
 
-  virtual MIP_Editor* on_plugin_open_editor(void* AParent) { return nullptr; }
+  //virtual MIP_Editor* on_plugin_open_editor(void* AParent) { return nullptr; }
+
+  virtual void        on_plugin_open_editor(MIP_Editor* AEditor) {}
   virtual void        on_plugin_close_editor() {}
   virtual void        on_plugin_update_editor() {}
 
 //------------------------------
-public: // editor listener
+public:
 //------------------------------
 
-  void do_editor_updateParameter(uint32_t AIndex, float AValue) override {
-    MIP_Print("index %i value %.3f\n",AIndex,AValue);
-  }
+//  void updateEditorFromHost(uint32_t AIndex, float AValue) {
+//    MIP_Print("%i = %f\n",AIndex,AValue);
+//  }
 
 };
 

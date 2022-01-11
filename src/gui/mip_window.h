@@ -30,8 +30,8 @@ typedef MIP_ImplementedWindow MIP_BasicWindow;;
 
 class MIP_WindowListener {
 public:
-  virtual void do_window_updateWidget(MIP_Widget* AWidget) {}
-  virtual void do_window_redrawWidget(MIP_Widget* AWidget) {}
+  virtual void updateWidgetFromWindow(MIP_Widget* AWidget) {}
+  //virtual void redrawWidgetFromWindow(MIP_Widget* AWidget) {}
 };
 
 //----------------------------------------------------------------------
@@ -65,7 +65,7 @@ private:
   MIP_Widget*         MMouseLockedWidget      = nullptr;
   MIP_Widget*         MKeyInputWidget         = nullptr;
 
-  bool                MFillWindowBackground   = false;//true;
+  bool                MFillWindowBackground   = true;//false;//true;
   MIP_Color           MWindowBackgroundColor  = MIP_Color(0.5);
 
 
@@ -574,7 +574,7 @@ public: // MIP_Widget
 
   void do_widget_update(MIP_Widget* AWidget, uint32_t AMode=0) override {
     //MIP_PRINT;
-    if (MListener) MListener->do_window_updateWidget(AWidget);
+    if (MListener) MListener->updateWidgetFromWindow(AWidget);
   }
 
   //----------

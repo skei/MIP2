@@ -21,6 +21,9 @@
 //#define MIP_CLAP_VIRTUAL virtual
 #define MIP_CLAP_VIRTUAL
 
+// max 1024 events per audioblock
+typedef MIP_Queue<uint32_t,1024> MIP_HostParameterQueue;
+
 //----------
 
 #include "mip.h"
@@ -36,7 +39,8 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_ClapPlugin {
+class MIP_ClapPlugin
+: public MIP_EditorListener {
 
 //------------------------------
 private:
@@ -45,11 +49,19 @@ private:
   MIP_Plugin*                     MPlugin           = nullptr;
   MIP_Descriptor*                 MDescriptor       = nullptr;
   MIP_ClapHostProxy*              MClapHostProxy    = nullptr;
-  //const clap_host_t*              MClapHost         = nullptr;
+//const clap_host_t*              MClapHost         = nullptr;
   const clap_plugin_descriptor_t* MClapDescriptor   = nullptr;
   clap_plugin_render_mode         MClapRenderMode   = 0;//CLAP_RENDER_REALTIME;
   MIP_ProcessContext              MProcessContext   = {};
   float*                          MParameterValues  = nullptr;
+
+  #ifndef MIP_NO_GUI
+  clap_id     MTimerId      = 0;
+  MIP_Editor* MEditor       = nullptr;
+  bool        MEditorIsOpen = false;
+  #endif
+
+  MIP_HostParameterQueue  MHostParameterQueue   = {};
 
 //------------------------------
 public:
@@ -84,9 +96,71 @@ public:
     return &MClapPlugin;
   }
 
+  //----------
+
+  void queueHostParameter(uint32_t AIndex, float AValue) {
+    MParameterValues[AIndex] = AValue;
+    MHostParameterQueue.write(AIndex);
+  }
+
+  //----------
+
+  void flushHostParameters(const clap_output_events_t* events) {
+    uint32_t index;
+    while (MHostParameterQueue.read(&index)) {
+      float value = MParameterValues[index];
+      clap_event_param_value_t event;
+      event.header.size     = sizeof(clap_event_param_value_t);
+      event.header.time     = 0;
+      event.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+      event.header.type     = CLAP_EVENT_PARAM_VALUE;
+      event.header.flags    = CLAP_EVENT_BEGIN_ADJUST | CLAP_EVENT_END_ADJUST | CLAP_EVENT_SHOULD_RECORD;
+      event.cookie          = nullptr;
+      event.param_id        = index;
+      event.port_index      = -1;
+      event.key             = -1;
+      event.channel         = -1;
+      event.value           = value;
+      clap_event_header_t* event_header = (clap_event_header_t*)&event;
+      events->push_back(events,event_header);
+    }
+  }
+
+//------------------------------
+public: // editor listener
+//------------------------------
+
+//  void on_editor_parameter(uint32_t AIndex, float AValue) override {
+//    MIP_PluginParameter* parameter = MDescriptor->getParameter(AIndex);
+//    float value = parameter->from01(AValue);
+//    MInstance->setParameterValue(AIndex,value);
+//    MHostParameterQueue.write(AIndex);
+//    //if (MIsProcessing) MHost->request_process();
+//    //else MHost->params_request_flush();
+//    //if (!MIsProcessing) MHost->params_request_flush();
+//  }
+
+  //----------
+
+  // called from MIP_Editor
+
+  void updateParameterFromEditor(uint32_t AIndex, float AValue) override {
+    //MIP_Print("index %i value %.3f\n",AIndex,AValue);
+    MPlugin->on_plugin_parameter(AIndex,AValue);
+    MIP_Parameter* parameter = MDescriptor->getParameter(AIndex);
+    float value = parameter->from01(AValue);
+    //MPlugin->setParameterValue(AIndex,value);
+    //MHostParameterQueue.write(AIndex);
+    queueHostParameter(AIndex,value);
+    //if (MIsProcessing) MHost->request_process();
+    //else MHost->params_request_flush();
+//    if (!MIsProcessing) MHost->params_request_flush();
+  }
+
 //------------------------------
 public:
 //------------------------------
+
 
   void process_input_events(const clap_input_events_t* events) {
     uint32_t num_events = events->size(events);
@@ -130,9 +204,15 @@ public:
         //  break;
         //}
         case CLAP_EVENT_PARAM_VALUE: {
+          //MIP_PRINT;
           const clap_event_param_value_t* param_event = (clap_event_param_value_t*)event;
           MParameterValues[param_event->param_id] = param_event->value;
           MPlugin->on_plugin_parameter(param_event->param_id,param_event->value);
+
+          //MEditor->updateParameterFromHost(param_event->param_id,param_event->value);
+          MEditor->queueEditorParam(param_event->param_id,param_event->value);
+
+          //MIP_PRINT;
           break;
         }
         case CLAP_EVENT_PARAM_MOD: {
@@ -159,6 +239,9 @@ public:
   //----------
 
   void process_output_events(const clap_output_events_t* events) {
+    if (events) {
+      flushHostParameters(events);
+    }
   }
 
 //------------------------------
@@ -231,6 +314,7 @@ public:
     MProcessContext.outputs     = process->audio_outputs[0].data32;
     MPlugin->on_plugin_process(&MProcessContext);
     //post-process: fluahMidi to host?
+    process_output_events(process->out_events);
     return CLAP_PROCESS_CONTINUE;
   }
 
@@ -239,27 +323,28 @@ public:
   MIP_CLAP_VIRTUAL
   const void* get_extension(const char *id) {
     MIP_ClapPrint("id '%s' -> ",id);
-    if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           { MIP_ClapDPrint("%p\n",&MExtAmbisonic);        return &MExtAmbisonic; }
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { MIP_ClapDPrint("%p\n",&MExtAudioPorts);       return &MExtAudioPorts; }
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  { MIP_ClapDPrint("%p\n",&MExtAudioPortsConfig); return &MExtAudioPortsConfig; }
-    if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    { MIP_ClapDPrint("%p\n",&MExtCheckForUpdate);   return &MExtCheckForUpdate; }
-    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        { MIP_ClapDPrint("%p\n",&MExtEventFilter);      return &MExtEventFilter; }
-    if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      { MIP_ClapDPrint("%p\n",&MExtFileReference);    return &MExtFileReference; }
+    //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           { MIP_ClapDPrint("%p\n",&MExtAmbisonic);        return &MExtAmbisonic; }
+    //if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { MIP_ClapDPrint("%p\n",&MExtAudioPorts);       return &MExtAudioPorts; }
+    //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  { MIP_ClapDPrint("%p\n",&MExtAudioPortsConfig); return &MExtAudioPortsConfig; }
+    //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    { MIP_ClapDPrint("%p\n",&MExtCheckForUpdate);   return &MExtCheckForUpdate; }
+    //if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        { MIP_ClapDPrint("%p\n",&MExtEventFilter);      return &MExtEventFilter; }
+    //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      { MIP_ClapDPrint("%p\n",&MExtFileReference);    return &MExtFileReference; }
     if (strcmp(id,CLAP_EXT_GUI) == 0)                 { MIP_ClapDPrint("%p\n",&MExtGui);              return &MExtGui; }
-    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             { MIP_ClapDPrint("%p\n",&MExtLatency);          return &MExtLatency; }
-    if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       { MIP_ClapDPrint("%p\n",&MExtMidiMappings);     return &MExtMidiMappings; }
-    if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           { MIP_ClapDPrint("%p\n",&MExtNoteName);         return &MExtNoteName; }
-    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          { MIP_ClapDPrint("%p\n",&MExtNotePorts);        return &MExtNotePorts; }
+    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)                 { MIP_ClapDPrint("%p\n",&MExtGui);              return &MExtGuiX11; }
+    //if (strcmp(id,CLAP_EXT_LATENCY) == 0)             { MIP_ClapDPrint("%p\n",&MExtLatency);          return &MExtLatency; }
+    //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       { MIP_ClapDPrint("%p\n",&MExtMidiMappings);     return &MExtMidiMappings; }
+    //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           { MIP_ClapDPrint("%p\n",&MExtNoteName);         return &MExtNoteName; }
+    //if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          { MIP_ClapDPrint("%p\n",&MExtNotePorts);        return &MExtNotePorts; }
     if (strcmp(id,CLAP_EXT_PARAMS) == 0)              { MIP_ClapDPrint("%p\n",&MExtParams);           return &MExtParams; }
-    if (strcmp(id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    { MIP_ClapDPrint("%p\n",&MExtPosixFdSupport);   return &MExtPosixFdSupport; }
-    if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         { MIP_ClapDPrint("%p\n",&MExtPresetLoad);       return &MExtPresetLoad; }
-    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      { MIP_ClapDPrint("%p\n",&MExtQuickControls);    return &MExtQuickControls; }
-    if (strcmp(id,CLAP_EXT_RENDER) == 0)              { MIP_ClapDPrint("%p\n",&MExtRender);           return &MExtRender; }
-    if (strcmp(id,CLAP_EXT_STATE) == 0)               { MIP_ClapDPrint("%p\n",&MExtState);            return &MExtState; }
-    if (strcmp(id,CLAP_EXT_SURROUND) == 0)            { MIP_ClapDPrint("%p\n",&MExtSurround);         return &MExtSurround; }
-    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         { MIP_ClapDPrint("%p\n",&MExtThreadPool);       return &MExtThreadPool; }
+    //if (strcmp(id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    { MIP_ClapDPrint("%p\n",&MExtPosixFdSupport);   return &MExtPosixFdSupport; }
+    //if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         { MIP_ClapDPrint("%p\n",&MExtPresetLoad);       return &MExtPresetLoad; }
+    //if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      { MIP_ClapDPrint("%p\n",&MExtQuickControls);    return &MExtQuickControls; }
+    //if (strcmp(id,CLAP_EXT_RENDER) == 0)              { MIP_ClapDPrint("%p\n",&MExtRender);           return &MExtRender; }
+    //if (strcmp(id,CLAP_EXT_STATE) == 0)               { MIP_ClapDPrint("%p\n",&MExtState);            return &MExtState; }
+    //if (strcmp(id,CLAP_EXT_SURROUND) == 0)            { MIP_ClapDPrint("%p\n",&MExtSurround);         return &MExtSurround; }
+    //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         { MIP_ClapDPrint("%p\n",&MExtThreadPool);       return &MExtThreadPool; }
     if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       { MIP_ClapDPrint("%p\n",&MExtTimerSupport);     return &MExtTimerSupport; }
-    if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          { MIP_ClapDPrint("%p\n",&MExtTrackInfo);        return &MExtTrackInfo; }
+    //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          { MIP_ClapDPrint("%p\n",&MExtTrackInfo);        return &MExtTrackInfo; }
     MIP_ClapDPrint("null\n");
     return nullptr;
   }
@@ -379,16 +464,39 @@ public: // extensions
 
   //----------
 
+  // note: the editor doesn't have a window yet!
+
+
   MIP_CLAP_VIRTUAL
   bool gui_create() {
-    MIP_ClapPrint("-> false\n");
-    return false;
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+      //MEditor = MIP_CreateEditor(MPluginIndex,this,MDescriptor);
+
+      //MEditor = new MIP_Editor(MPlugin,MDescriptor);
+      MEditor = new MIP_Editor(this,MDescriptor);
+
+      //MEditor = _mip_create_editor(this,MDescriptor);
+      //bool result = MInstance->on_plugin_createEditor(MEditor);
+      //return result;
+      return true;
+    #else
+      return false;
+    #endif
   }
 
   //----------
 
   MIP_CLAP_VIRTUAL
   void gui_destroy() {
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+      if (MEditor) {
+        //MInstance->on_plugin_destroyEditor(MEditor);
+        delete MEditor;
+        MEditor = nullptr;
+      }
+    #endif
     MIP_CLAPPRINT;
   }
 
@@ -396,7 +504,12 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool gui_set_scale(double scale) {
-    MIP_ClapPrint("scale %.2f -> true\n",scale);
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+      if (MEditor) {
+        MEditor->setScale(scale);
+      }
+    #endif
     return true;
   }
 
@@ -404,53 +517,107 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool gui_get_size(uint32_t *width, uint32_t *height) {
-    MIP_ClapPrint("-> false\n");
-    return false;
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+      // todo: if editor open, read from editor, else:
+      *width  = MDescriptor->getEditorWidth();
+      *height = MDescriptor->getEditorHeight();
+      return true;
+    #else
+      return false;
+    #endif
   }
 
   //----------
 
   MIP_CLAP_VIRTUAL
   bool gui_can_resize() {
-    MIP_ClapPrint("-> false\n");
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+    //if (MDescriptor->canResizeEditor()) return true;
     return false;
+    #else
+      return false;
+    #endif
   }
 
   //----------
 
   MIP_CLAP_VIRTUAL
   void gui_round_size(uint32_t *width, uint32_t *height) {
-    MIP_CLAPPRINT;
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+    // todo: if editor open, read from editor, else:
+    *width  = MDescriptor->getEditorWidth();
+    *height = MDescriptor->getEditorHeight();
+    #endif
   }
 
   //----------
 
   MIP_CLAP_VIRTUAL
   bool gui_set_size(uint32_t width, uint32_t height) {
-    MIP_ClapPrint("width %i height %i -> false\n",width,height);
-    return false;
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+    if (MEditor) {
+      //MEditor->resize(width,height);
+      MEditor->setSize(width,height);
+    }
+    return true;
+    #else
+      return false;
+    #endif
   }
 
   //----------
 
   MIP_CLAP_VIRTUAL
   void gui_show() {
-    MIP_CLAPPRINT;
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+    if (MEditor && !MEditorIsOpen) {
+      MPlugin->on_plugin_open_editor(MEditor);
+//      MPlugin->updateAllEditorParameters(MEditor,false);
+      MEditorIsOpen = true;
+      MEditor->show();
+      if (MClapHostProxy->has_ext_timer_support()) {
+        MClapHostProxy->timer_support_register_timer(30,&MTimerId);
+      }
+
+    }
+    #endif
   }
 
   //----------
 
   MIP_CLAP_VIRTUAL
   void gui_hide() {
-    MIP_CLAPPRINT;
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+    if (MEditor && MEditorIsOpen) {
+
+      if (MClapHostProxy->has_ext_timer_support()) {
+        MClapHostProxy->timer_support_unregister_timer(MTimerId);
+      }
+
+      MEditor->hide();
+      MEditorIsOpen = false;
+    }
+    #endif
   }
 
   //----------
 
   MIP_CLAP_VIRTUAL
   bool gui_x11_attach(const char *display_name, unsigned long window) {
-    MIP_ClapPrint("display_name '%s' window %i -> false\n",display_name,window);
-    return false;
+    MIP_PRINT;
+    #ifndef MIP_NO_GUI
+      MEditor->attach(display_name,window);
+      MEditorIsOpen = false;
+      return true;
+    #else
+      return false;
+    #endif
   }
 
   //----------
@@ -539,7 +706,7 @@ public: // extensions
   MIP_CLAP_VIRTUAL
   bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) {
     MIP_FloatToString(display,value,3);
-    MIP_ClapPrint("param_id %i value %f-> '%s' true\n",param_id,value,display);
+//    MIP_ClapPrint("param_id %i value %f-> '%s' true\n",param_id,value,display);
     return true;
   }
 
@@ -558,7 +725,7 @@ public: // extensions
   void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {
     MIP_ClapPrint("in %p out %p\n",in,out);
     process_input_events(in);
-    //process_output_events(out);
+    process_output_events(out);
   }
 
   //----------
@@ -617,7 +784,10 @@ public: // extensions
   MIP_CLAP_VIRTUAL
   void timer_support_on_timer(clap_id timer_id) {
     MIP_ClapPrint("timer_id %i\n",timer_id);
-    MPlugin->on_plugin_update_editor();
+    if (MEditorIsOpen && MEditor) {
+      MPlugin->on_plugin_update_editor();
+      MEditor->flushEditorParams();
+    }
   }
 
 //------------------------------

@@ -19,7 +19,7 @@
 
 class MIP_EditorListener {
 public:
-  virtual void do_editor_updateParameter(uint32_t AIndex, float AValue) {}
+  virtual void updateParameterFromEditor(uint32_t AIndex, float AValue) {}
 };
 
 //----------------------------------------------------------------------
@@ -111,8 +111,8 @@ public:
       MParameterToWidget.resize(AParamIndex+1);
     }
     MParameterToWidget[AParamIndex] = AWidget;
-    AWidget->setParameterIndex(AParamIndex);
     MIP_Parameter* param = MDescriptor->getParameter(AParamIndex);
+    //AWidget->setParameterIndex(AParamIndex);
     AWidget->setParameter(param);
     AWidget->on_widget_connect(param);
   }
@@ -132,6 +132,7 @@ public:
 
   void queueEditorParam(int32_t AIndex, float AValue) {
     #ifndef MIP_NO_GUI
+    //MIP_Print("%i = %f\n",AIndex,AValue);
     MIP_Widget* widget = MParameterToWidget[AIndex];
     //MIP_Print("index %i value %.3f widget %p\n",AIndex,AValue,widget);
     if (widget) {
@@ -150,11 +151,17 @@ public:
     if (MWindow && MIsEditorOpen) {
       MIP_Widget* widget;
       while (MEditorParamQueue.read(&widget)) {
-        int32_t index = widget->getParameterIndex();
+        //int32_t index = widget->getParameterIndex();
+        MIP_Parameter* param = widget->getParameter();
+        int32_t index = param->getIndex();
+
         if (index >= 0) {
           float value = MEditorParamValues[index];
           widget->setValue(value);
-          MWindow->paintWidget(widget);
+          MIP_FRect rect = widget->getRect();
+          //MWindow->paintWidget(widget);
+          //MWindow->paint(rect);
+          MWindow->invalidate(rect.x,rect.y,rect.w,rect.h);
         }
       }
     }
@@ -170,6 +177,7 @@ public:
     MWindow = new MIP_Window(MWidth,MHeight,"Title",this,(void*)window);
     if (MWindow) {
       //MWindow->setListener(this);
+      MWindow->setFillWindowBackground();
       return true;
     }
     #endif
@@ -248,19 +256,28 @@ public: // window listener
 
   #ifndef MIP_NO_GUI
 
-  void do_window_updateWidget(MIP_Widget* AWidget) override {
-    int32_t param_index = AWidget->getParameterIndex();
-    float   param_value = AWidget->getValue();
-    if (param_index >= 0) {
-      if (MListener) MListener->do_editor_updateParameter(param_index,param_value);
+  void updateWidgetFromWindow(MIP_Widget* AWidget) override {
+    //int32_t param_index = AWidget->getParameterIndex();
+    MIP_Parameter* parameter = AWidget->getParameter();
+    if (parameter) {
+      int32_t index = parameter->getIndex();
+      if (index >= 0) {
+        float value = AWidget->getValue();
+        if (MListener) MListener->updateParameterFromEditor(index,value); // MIP_ClapPlugin
+      }
     }
   }
 
   //----------
 
-  void do_window_redrawWidget(MIP_Widget* AWidget) override {
-    MWindow->paintWidget(AWidget);
-  }
+  //void updateParameterFromHost(uint32_t AIndex, float AValue) {
+  //  //queueEditorParameter
+  //  MIP_Print("%i = %f\n",AIndex,AValue);
+  //}
+
+  //void redrawWidgetFromWindow(MIP_Widget* AWidget) override {
+  //  MWindow->paintWidget(AWidget);
+  //}
 
   #endif
 

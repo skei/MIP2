@@ -5,11 +5,11 @@
 //#define MIP_NO_GUI
 #define MIP_GUI_XCB
 
-#define MIP_DEBUG_CLAP
-
 #define MIP_PLUGIN_CLAP
 //#define MIP_PLUGIN_VST2
 //#define MIP_PLUGIN_VST3
+
+//#define MIP_DEBUG_CLAP
 
 //----------
 
@@ -18,6 +18,7 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_host_proxy.h"
 #include "plugin/mip_plugin_entry.h"
+#include "gui/mip_widgets.h"
 
 //----------------------------------------------------------------------
 //
@@ -43,6 +44,10 @@ public:
     param->setCanModulate();
     appendInputPort( new MIP_AudioPort( "Input",  2 ));
     appendOutputPort(new MIP_AudioPort( "Output", 2 ));
+    MHasEditor = true;
+    MEditorWidth = 256;
+    MEditorHeight = 256;
+
   }
 };
 
@@ -63,6 +68,7 @@ private:
   float           MGain       = 0.0;
   float           MGainMod    = 0.0;
   int32_t         MNumNotes   = 0;
+
 
 //------------------------------
 public:
@@ -98,6 +104,7 @@ public:
   }
 
   void on_plugin_parameter(uint32_t AIndex, float AValue) final {
+    MIP_Print("%i = %f\n",AIndex,AValue);
     switch(AIndex) {
       case 0: MGain = AValue; break;
     }
@@ -130,6 +137,23 @@ public:
       }
     }
   }
+
+  void on_plugin_open_editor(MIP_Editor* AEditor) final {
+    MIP_Window* window = AEditor->getWindow();
+    MIP_KnobWidget* knob = new MIP_KnobWidget(MIP_FRect(10,10,236,236));
+    AEditor->connectParameter(knob,0);
+    window->appendWidget(knob);
+    MIP_PRINT;
+  }
+
+  void on_plugin_close_editor() final {
+    //MIP_PRINT;
+  }
+
+  void on_plugin_update_editor() final {
+    //MIP_PRINT;
+  }
+
 
 };
 

@@ -337,6 +337,7 @@ private:
 //------------------------------
 
   void init_extensions() {
+    MIP_PRINT;
     ext.audio_ports        = (clap_host_audio_ports*)        get_extension(CLAP_EXT_AUDIO_PORTS);
     ext.audio_ports_config = (clap_host_audio_ports_config*) get_extension(CLAP_EXT_AUDIO_PORTS_CONFIG);
     ext.event_filter       = (clap_host_event_filter*)       get_extension(CLAP_EXT_EVENT_FILTER);
