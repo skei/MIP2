@@ -14,8 +14,7 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_Plugin
-/*: public MIP_EditorListener*/ {
+class MIP_Plugin {
 
 //------------------------------
 protected:
@@ -55,29 +54,19 @@ public:
   virtual void        on_plugin_deinit() {}
   virtual bool        on_plugin_activate(float sample_rate, uint32_t min_frames, uint32_t max_frames) { return true; }
   virtual void        on_plugin_deactivate() {}
-  virtual bool        on_plugin_start_processing() { return true; }
-  virtual void        on_plugin_stop_processing() {}
+  virtual bool        on_plugin_startProcessing() { return true; }
+  virtual void        on_plugin_stopProcessing() {}
 
   virtual void        on_plugin_process(MIP_ProcessContext* AContext) {}
 
   virtual void        on_plugin_parameter(uint32_t AIndex, float AValue) {}
   virtual void        on_plugin_modulation(uint32_t AIndex, float AValue) {}
   virtual void        on_plugin_midi(uint8_t AMsg1,uint8_t AMsg2,uint8_t AMsg3) {}
-  virtual void        on_plugin_note_expression(uint32_t AType, uint32_t ANote, uint32_t AChannel, float AValue) {}
+  virtual void        on_plugin_noteExpression(uint32_t AType, uint32_t ANote, uint32_t AChannel, float AValue) {}
 
-  //virtual MIP_Editor* on_plugin_open_editor(void* AParent) { return nullptr; }
-
-  virtual void        on_plugin_open_editor(MIP_Editor* AEditor) {}
-  virtual void        on_plugin_close_editor() {}
-  virtual void        on_plugin_update_editor() {}
-
-//------------------------------
-public:
-//------------------------------
-
-//  void updateEditorFromHost(uint32_t AIndex, float AValue) {
-//    MIP_Print("%i = %f\n",AIndex,AValue);
-//  }
+  virtual void        on_plugin_openEditor(MIP_Editor* AEditor) {}
+  virtual void        on_plugin_closeEditor() {}
+  virtual void        on_plugin_updateEditor() {}
 
 };
 

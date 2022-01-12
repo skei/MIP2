@@ -68,7 +68,6 @@ private:
   bool                MFillWindowBackground   = true;//false;//true;
   MIP_Color           MWindowBackgroundColor  = MIP_Color(0.5);
 
-
   int32_t       MMouseX                       = 0;
   int32_t       MMouseY                       = 0;
   int32_t       MMousePrevX                   = 0;
@@ -116,7 +115,6 @@ public:
 //------------------------------
 //#define MIP_USE_GPL
 
-
   //virtual bool isBuffered() {
   //  #ifdef MIP_NO_WINDOW_BUFFERING
   //  return false;
@@ -125,7 +123,6 @@ public:
   //  #endif
   //}
 
-  //virtual MIP_Painter* getPainter() {
   MIP_Painter* getPainter() override {
     #ifdef MIP_NO_WINDOW_BUFFERING
     return MWindowPainter;
@@ -144,7 +141,6 @@ public:
 public:
 //------------------------------
 
-//  //void setListener(MIP_WindowListener* l) { MListener = l; }
   void setFillWindowBackground(bool s=true)     { MFillWindowBackground = s; }
   void setWindowBackgroundColor(MIP_Color c)    { MWindowBackgroundColor = c; }
 
@@ -571,6 +567,9 @@ public: // MIP_BaseWindow
 //------------------------------
 public: // MIP_Widget
 //------------------------------
+
+  // called when a widget updates its value
+  // MListener = MIP_Editor
 
   void do_widget_update(MIP_Widget* AWidget, uint32_t AMode=0) override {
     //MIP_PRINT;

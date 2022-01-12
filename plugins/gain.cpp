@@ -1,6 +1,6 @@
 
 // nc -U -l -k /tmp/mip.socket
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 
 //#define MIP_NO_GUI
 #define MIP_GUI_XCB
@@ -16,8 +16,8 @@
 
 #include "mip.h"
 #include "plugin/mip_descriptor.h"
-#include "plugin/mip_plugin.h"
 #include "plugin/mip_host_proxy.h"
+#include "plugin/mip_plugin.h"
 #include "plugin/mip_plugin_entry.h"
 
 #ifndef MIP_NO_GUI
@@ -38,21 +38,21 @@ public:
 //------------------------------
 
   Gain_Descriptor() {
-    MName   = "Gain";
-    //MName   = "mip_debug";
-    MAuthor = "Tor-Helge Skei";
-    MEmail  = "tor.helge.skei@gmail.com";
-    MUrl    = "https://torhelgeskei.com";
+    MName           = "Gain";
+    MAuthor         = "Tor-Helge Skei";
+    MEmail          = "tor.helge.skei@gmail.com";
+    MUrl            = "https://torhelgeskei.com";
+    MVersion        = 0x00000001;
     MCanReceiveMidi = true;
+    MHasEditor      = true;
+    MEditorWidth    = 256;
+    MEditorHeight   = 256;
     MIP_Parameter* param = appendParameter( new MIP_Parameter( "Gain",   1 ));
     param->setCanModulate();
     appendInputPort( new MIP_AudioPort( "Input",  2 ));
     appendOutputPort(new MIP_AudioPort( "Output", 2 ));
-    MHasEditor = true;
-    MEditorWidth = 256;
-    MEditorHeight = 256;
-
   }
+
 };
 
 //----------------------------------------------------------------------
@@ -92,6 +92,30 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  //bool on_plugin_init() final {
+  //  return true;
+  //}
+
+  //void on_plugin_deinit() final {
+  //}
+
+  //bool on_plugin_activate(float sample_rate, uint32_t min_frames, uint32_t max_frames) final {
+  //  return true;
+  //}
+
+  //void on_plugin_deactivate() final {
+  //}
+
+  //bool on_plugin_startProcessing() final {
+  //  return true;
+  //}
+
+  //void on_plugin_stopProcessing() final {
+  //}
+
+  //void on_plugin_noteExpression(uint32_t AType, uint32_t ANote, uint32_t AChannel, float AValue) final {
+  //}
 
   void on_plugin_midi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
     //MIP_PRINT;
@@ -142,25 +166,32 @@ public:
     }
   }
 
+  //----------
+
   #ifndef MIP_NO_GUI
 
-  void on_plugin_open_editor(MIP_Editor* AEditor) final {
+  void on_plugin_openEditor(MIP_Editor* AEditor) final {
     MIP_Window* window = AEditor->getWindow();
     MIP_KnobWidget* knob = new MIP_KnobWidget(MIP_FRect(10,10,236,236));
-    AEditor->connectParameter(knob,0);
     window->appendWidget(knob);
+    AEditor->connectParameter(knob,0);
   }
 
-  void on_plugin_close_editor() final {
+  //----------
+
+  void on_plugin_closeEditor() final {
     //MIP_PRINT;
   }
 
-  void on_plugin_update_editor() final {
+  //----------
+
+  void on_plugin_updateEditor() final {
     //MIP_PRINT;
   }
 
   #endif
 
+  //----------
 
 };
 

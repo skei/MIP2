@@ -7,6 +7,13 @@
 
 //----------------------------------------------------------------------
 
+//#ifdef MIP_EXE
+//#endif
+
+//#ifdef MIP_LIB
+//  #undef MIP_PLUGIN_EXE
+//#endif
+
 #define MIP_CLAP_PLUGIN_ENTRY(DESC,PLUG)
 #define MIP_EXE_PLUGIN_ENTRY(DESC,PLUG)
 #define MIP_LV2_PLUGIN_ENTRY(DESC,PLUG)

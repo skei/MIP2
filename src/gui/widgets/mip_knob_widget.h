@@ -85,6 +85,7 @@ public:
     if (MDrawKnob) {
 
       float     value             = getValue();
+      float     modvalue          = getModValue();
       float     S                 = (float)getRect().w;
       int32_t   arc_thickness     = S * MArcThickness;
       float     step_start        = S / 2.0f - arc_thickness;
@@ -124,7 +125,6 @@ public:
         a2 =  0.8f * value;   // length
       }
 
-
       //APainter->setDrawColor(MKnobColor);
       //APainter->drawArc(r,a1,a2);
 
@@ -136,6 +136,34 @@ public:
         APainter->drawArc(r,a1,a2,MKnobColor,arc_thickness);
       }
 
+// modulation
+
+      float mvalue = MIP_Clamp(value + modvalue,0,1);
+
+      MIP_Print("mvalue %f\n",mvalue);
+
+      float m1;// = -0.4f;
+      float m2;// = mvlue * 0.8f;
+
+      if (MBipolar) {
+        float m = (mvalue * 2.0f) - 1.0f;
+        if (m < 0) {
+          m1 = 0.4f * m;
+          m2 = -m1;//0.4f * -v;
+        }
+        else {
+          m1 = 0.0f;          // start
+          m2 = 0.4f * m;      // length
+        }
+      }
+      else {
+        m1 = -0.4;            // start
+        m2 =  0.8f * mvalue;   // length
+      }
+
+      APainter->drawArc(r,m1,m2,MIP_COLOR_BRIGHT_RED,arc_thickness / 3);
+
+//
       // steps
 
       //MIP_Parameter* param;

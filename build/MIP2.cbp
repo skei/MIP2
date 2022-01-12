@@ -14,6 +14,7 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-fno-pie" />
+					<Add option="-DMIP_EXE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -43,6 +44,7 @@
 					<Add option="-fno-pie" />
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-DMIP_EXE" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
@@ -74,6 +76,7 @@
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-fsanitize=address" />
+					<Add option="-DMIP_EXE" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
@@ -104,6 +107,7 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-fPIC" />
+					<Add option="-DMIP_LIB" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -135,6 +139,7 @@
 					<Add option="-g" />
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-DMIP_LIB" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
@@ -168,6 +173,7 @@
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-fsanitize=address" />
+					<Add option="-DMIP_LIB" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
@@ -196,6 +202,7 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-fno-pie" />
+					<Add option="-DMIP_EXE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -214,6 +221,7 @@
 					<Add option="-fno-pie" />
 					<Add option="-Wl,-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-DMIP_EXE" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
@@ -234,6 +242,7 @@
 					<Add option="-Wl,-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-fsanitize=address" />
+					<Add option="-DMIP_EXE" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
@@ -253,6 +262,7 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-fPIC" />
+					<Add option="-DMIP_LIB" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -273,6 +283,7 @@
 					<Add option="-g" />
 					<Add option="-Wl,-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-DMIP_LIB" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
@@ -295,6 +306,7 @@
 					<Add option="-Wl,-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-fsanitize=address" />
+					<Add option="-DMIP_LIB" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
