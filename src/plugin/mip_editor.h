@@ -49,9 +49,9 @@ private:
   float*              MEditorModValues    = nullptr;
 
   #ifndef MIP_NO_GUI
-  MIP_WidgetQueue   MEditorParamQueue   = {};
-  MIP_WidgetQueue   MEditorModQueue     = {};
-  MIP_WidgetArray   MParameterToWidget  = {};
+  MIP_WidgetQueue     MEditorParamQueue   = {};
+  MIP_WidgetQueue     MEditorModQueue     = {};
+  MIP_WidgetArray     MParameterToWidget  = {};
   #endif
 
 //------------------------------
@@ -62,6 +62,9 @@ protected:
   uint32_t            MWidth              = 400;
   uint32_t            MHeight             = 400;
   double              MScale              = 1.0;
+
+  int32_t             MPreviousWidth      = -1;
+  int32_t             MPreviousHeight     = -1;
 
   #ifndef MIP_NO_GUI
   MIP_Window*         MWindow             = nullptr;
@@ -225,6 +228,8 @@ public:
   virtual void hide() {
     MIsEditorOpen = false;
     #ifndef MIP_NO_GUI
+    //MPreviousWidth =
+    //MPreviousHeight =
     MWindow->close();
     #endif
   }

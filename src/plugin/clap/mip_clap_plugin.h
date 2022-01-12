@@ -2,6 +2,8 @@
 #define mip_clap_plugin_included
 //----------------------------------------------------------------------
 
+//TODO: inherit from MIP_BasicClapPlugin..
+
 /*
   TODO: extreact MIP_Plugin to a class 'above' this,
         so that this stays completely clap-focused
@@ -17,6 +19,16 @@
 */
 
 //----------------------------------------------------------------------
+
+/*
+  TODO: wrap all method implementations in #ifdefs,
+  optionally:
+  a) empty virtual methods
+  b) non-virtual methods calling virtual functions in MIP_Plugin
+  if you want to use it to wrap a clap plugin directly,
+  and avoid double virtual calling ...
+  (or does it really matter?)
+*/
 
 //#define MIP_CLAP_VIRTUAL virtual
 #define MIP_CLAP_VIRTUAL
@@ -466,7 +478,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool gui_create() {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
       MEditor = new MIP_Editor(this,MDescriptor);
       return true;
@@ -479,7 +491,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   void gui_destroy() {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
       if (MEditor) {
         delete MEditor;
@@ -493,7 +505,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool gui_set_scale(double scale) {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
       if (MEditor) {
         MEditor->setScale(scale);
@@ -506,7 +518,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool gui_get_size(uint32_t *width, uint32_t *height) {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
       // todo: if editor open, read from editor, else:
       *width  = MDescriptor->getEditorWidth();
@@ -521,7 +533,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool gui_can_resize() {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
     //if (MDescriptor->canResizeEditor()) return true;
     return false;
@@ -534,7 +546,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   void gui_round_size(uint32_t *width, uint32_t *height) {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
     // todo: if editor open, read from editor, else:
     *width  = MDescriptor->getEditorWidth();
@@ -546,7 +558,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool gui_set_size(uint32_t width, uint32_t height) {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
     if (MEditor) {
       //MEditor->resize(width,height);
@@ -562,7 +574,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   void gui_show() {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
     if (MEditor && !MEditorIsOpen) {
       MPlugin->on_plugin_openEditor(MEditor);
@@ -584,7 +596,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   void gui_hide() {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
     if (MEditor && MEditorIsOpen) {
       if (MClapHostProxy->timer_support) {
@@ -600,7 +612,7 @@ public: // extensions
 
   MIP_CLAP_VIRTUAL
   bool gui_x11_attach(const char *display_name, unsigned long window) {
-    MIP_PRINT;
+    //MIP_PRINT;
     #ifndef MIP_NO_GUI
       MEditor->attach(display_name,window);
       MEditorIsOpen = false;

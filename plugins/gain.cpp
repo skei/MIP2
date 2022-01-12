@@ -1,16 +1,11 @@
 
 // nc -U -l -k /tmp/mip.socket
 #define MIP_DEBUG_PRINT_SOCKET
+//#define MIP_DEBUG_CLAP
 
 //#define MIP_NO_GUI
 #define MIP_GUI_XCB
-
-#define MIP_PLUGIN_CLAP
-//#define MIP_PLUGIN_EXE
-//#define MIP_PLUGIN_VST2
-//#define MIP_PLUGIN_VST3
-
-//#define MIP_DEBUG_CLAP
+#define MIP_PLUGIN_ALL
 
 //----------
 
@@ -23,6 +18,9 @@
 #ifndef MIP_NO_GUI
   #include "gui/mip_widgets.h"
 #endif
+
+#include "plugin/clap/mip_basic_clap_plugin.h"
+
 
 //----------------------------------------------------------------------
 //
@@ -117,6 +115,8 @@ public:
   //void on_plugin_noteExpression(uint32_t AType, uint32_t ANote, uint32_t AChannel, float AValue) final {
   //}
 
+  //----------
+
   void on_plugin_midi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
     //MIP_PRINT;
     switch (AMsg1 & 0xF0) {
@@ -130,6 +130,8 @@ public:
         break;
     }
   }
+
+  //----------
 
   void on_plugin_parameter(uint32_t AIndex, float AValue) final {
     MIP_Print("%i = %f\n",AIndex,AValue);

@@ -2,18 +2,14 @@
 // nc -U -l -k /tmp/mip.socket
 #define MIP_DEBUG_PRINT_SOCKET
 #define MIP_NO_GUI
-//#define MIP_PLUGIN_ALL
-#define MIP_PLUGIN_CLAP
-#define MIP_PLUGIN_EXE
-#define MIP_PLUGIN_VST2
-#define MIP_PLUGIN_VST3
+#define MIP_PLUGIN_ALL
 
 //----------
 
 #include "mip.h"
-#include "plugin/mip_descriptor.h"
-#include "plugin/mip_plugin.h"
-#include "plugin/mip_host_proxy.h"
+//#include "plugin/mip_descriptor.h"
+//#include "plugin/mip_plugin.h"
+//#include "plugin/mip_host_proxy.h"
 #include "plugin/mip_plugin_entry.h"
 
 //----------------------------------------------------------------------
@@ -80,25 +76,25 @@ public:
 public:
 //------------------------------
 
-  bool on_plugin_init() {
+  bool on_plugin_init() final {
     return true;
   }
 
-  void on_plugin_deinit() {
+  void on_plugin_deinit() final {
   }
 
-  bool on_plugin_activate(float sample_rate, uint32_t min_frames, uint32_t max_frames) {
+  bool on_plugin_activate(float sample_rate, uint32_t min_frames, uint32_t max_frames) final {
     return true;
   }
 
-  void on_plugin_deactivate() {
+  void on_plugin_deactivate() final {
   }
 
-  bool on_plugin_start_processing() {
+  bool on_plugin_startProcessing() final {
     return true;
   }
 
-  void on_plugin_stop_processing() {
+  void on_plugin_stopProcessing() final {
   }
 
   void on_plugin_process(MIP_ProcessContext* AContext) final {
@@ -119,23 +115,22 @@ public:
     //}
   }
 
-  void on_plugin_modulation(uint32_t AIndex, float AValue) {
+  void on_plugin_modulation(uint32_t AIndex, float AValue) final {
   }
 
-  void on_plugin_midi(uint8_t AMsg1,uint8_t AMsg2,uint8_t AMsg3) {
+  void on_plugin_midi(uint8_t AMsg1,uint8_t AMsg2,uint8_t AMsg3) final {
   }
 
-  void on_plugin_note_expression(uint32_t AType, uint32_t ANote, uint32_t AChannel, float AValue) {
+  void on_plugin_noteExpression(uint32_t AType, uint32_t ANote, uint32_t AChannel, float AValue) final {
   }
 
-  MIP_Editor* on_plugin_open_editor(void* AParent) {
-    return nullptr;
+  void on_plugin_openEditor(MIP_Editor* AEditor) final {
   }
 
-  void on_plugin_close_editor() {
+  void on_plugin_closeEditor() final {
   }
 
-  void on_plugin_update_editor() {
+  void on_plugin_updateEditor() final {
   }
 
 };

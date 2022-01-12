@@ -7,13 +7,6 @@
 
 //----------------------------------------------------------------------
 
-//#ifdef MIP_EXE
-//#endif
-
-//#ifdef MIP_LIB
-//  #undef MIP_PLUGIN_EXE
-//#endif
-
 #define MIP_CLAP_PLUGIN_ENTRY(DESC,PLUG)
 #define MIP_EXE_PLUGIN_ENTRY(DESC,PLUG)
 #define MIP_LV2_PLUGIN_ENTRY(DESC,PLUG)
@@ -24,46 +17,46 @@
 
 //----------
 
-#ifdef MIP_NO_PLUGIN
-  #define MIP_PLUGIN_DEFINED
-#endif
+//#ifdef MIP_NO_PLUGIN
+//  #define MIP_PLUGIN_DEFINED
+//#endif
 
 #ifdef MIP_PLUGIN_CLAP
-  #define MIP_PLUGIN_DEFINED
+  //#define MIP_PLUGIN_DEFINED
   #undef MIP_CLAP_PLUGIN_ENTRY
   #include "plugin/clap/mip_clap_plugin_entry.h"
 #endif
 
 #ifdef MIP_PLUGIN_EXE
-  #define MIP_PLUGIN_DEFINED
+  //#define MIP_PLUGIN_DEFINED
   #undef MIP_EXE_PLUGIN_ENTRY
   #include "plugin/exe/mip_exe_plugin_entry.h"
 #endif
 
 #ifdef MIP_PLUGIN_LV2
-  #define MIP_PLUGIN_DEFINED
+  //#define MIP_PLUGIN_DEFINED
   #undef MIP_LV2_PLUGIN_ENTRY
   #include "plugin/lv2/mip_lv2_plugin_entry.h"
 #endif
 
 #ifdef MIP_PLUGIN_VST2
-  #define MIP_PLUGIN_DEFINED
+  //#define MIP_PLUGIN_DEFINED
   #undef MIP_VST2_PLUGIN_ENTRY
   #include "plugin/vst2/mip_vst2_plugin_entry.h"
 #endif
 
 #ifdef MIP_PLUGIN_VST3
-  #define MIP_PLUGIN_DEFINED
+  //#define MIP_PLUGIN_DEFINED
   #undef MIP_VST3_PLUGIN_ENTRY
   #include "plugin/vst3/mip_vst3_plugin_entry.h"
 #endif
 
 //----------
 
-#ifndef MIP_PLUGIN_DEFINED
-  //#warning No plugin format defined
-  #error No plugin format defined
-#endif
+//#ifndef MIP_PLUGIN_DEFINED
+//  //#warning No plugin format defined
+//  #error No plugin format defined  (#define MIP_PLUGIN_***)
+//#endif
 
 //----------------------------------------------------------------------
 #endif

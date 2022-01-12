@@ -6,11 +6,16 @@
 //
 //----------------------------------------------------------------------
 
+* voice manager
+
+  new voice manager class
+
 * tick processing
 
   tick = 16 floats = 64 butes = cache-line = 4 simd
   hardcode 16-sample dsp modules/loops,
-  (with additional n-sample)
+  (with additional n-sample to fill out missed samples)
+  events inbetween, jitter max 15 samples, 0.3ms
 
 //----------------------------------------------------------------------
 //
@@ -18,8 +23,11 @@
 //
 //----------------------------------------------------------------------
 
-* better split getween os (linux/win32)
-  system/linux, system/win32 ?
+* win32 support
+
+  - plugin entry points. (dll)
+  - gui (using gdi/msimg32): window, surface, painter
+  - other: MIP_Attributes, MIP_Time, ..
 
 //----------------------------------------------------------------------
 //
@@ -27,15 +35,10 @@
 //
 //----------------------------------------------------------------------
 
-* widget
-
-  copy back all functionslity from mip3
-  and all widgets
-
 * clipping/hierarchy
 
   examine clipping and widget hierarchy
-  puash/pop clip rectangles
+  push/pop clip rectangles
 
 //----------------------------------------------------------------------
 //
@@ -44,7 +47,7 @@
 //----------------------------------------------------------------------
 
 * midi player
-  prepare midi events
+  prepare midi events for clap/vst2/vst3?
 
 //----------------------------------------------------------------------
 //
@@ -52,5 +55,4 @@
 //
 //----------------------------------------------------------------------
 
-* parameters
-* 2-way editor comm
+* resizable editor

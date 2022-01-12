@@ -297,7 +297,16 @@ enum MIP_EVoiceState {
   MIP_VOICE_FINISHED = 3
 };
 
-
+enum MIP_ENoteExpression {
+  MIP_NOTE_EXPRESSION_VOLUME      = 0,
+  MIP_NOTE_EXPRESSION_PAN         = 1,
+  MIP_NOTE_EXPRESSION_TUNING      = 2,
+  MIP_NOTE_EXPRESSION_VIBRATO     = 3,
+  MIP_NOTE_EXPRESSION_BRIGHTNESS  = 4,
+  MIP_NOTE_EXPRESSION_BREATH      = 5,
+  MIP_NOTE_EXPRESSION_PRESSURE    = 6,
+  MIP_NOTE_EXPRESSION_TIMBRE      = 7
+};
 
 //----------------------------------------------------------------------
 #endif
