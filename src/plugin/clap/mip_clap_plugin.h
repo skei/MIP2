@@ -208,11 +208,9 @@ public:
           const clap_event_param_value_t* param_event = (clap_event_param_value_t*)event;
           MParameterValues[param_event->param_id] = param_event->value;
           MPlugin->on_plugin_parameter(param_event->param_id,param_event->value);
-
-          //MEditor->updateParameterFromHost(param_event->param_id,param_event->value);
-          MEditor->queueEditorParam(param_event->param_id,param_event->value);
-
-          //MIP_PRINT;
+          #ifndef MIP_NO_GUI
+            MEditor->queueEditorParam(param_event->param_id,param_event->value);
+          #endif
           break;
         }
         case CLAP_EVENT_PARAM_MOD: {
@@ -580,8 +578,13 @@ public: // extensions
 //      MPlugin->updateAllEditorParameters(MEditor,false);
       MEditorIsOpen = true;
       MEditor->show();
-      if (MClapHostProxy->has_ext_timer_support()) {
+
+      if (MClapHostProxy->timer_support) {
         MClapHostProxy->timer_support_register_timer(30,&MTimerId);
+      }
+      else {
+        MIP_Print("no timer support\n");
+        // start timer.. ?
       }
 
     }
@@ -596,7 +599,7 @@ public: // extensions
     #ifndef MIP_NO_GUI
     if (MEditor && MEditorIsOpen) {
 
-      if (MClapHostProxy->has_ext_timer_support()) {
+      if (MClapHostProxy->timer_support) {
         MClapHostProxy->timer_support_unregister_timer(MTimerId);
       }
 
@@ -784,10 +787,12 @@ public: // extensions
   MIP_CLAP_VIRTUAL
   void timer_support_on_timer(clap_id timer_id) {
     MIP_ClapPrint("timer_id %i\n",timer_id);
+    #ifndef MIP_NO_GUI
     if (MEditorIsOpen && MEditor) {
       MPlugin->on_plugin_update_editor();
       MEditor->flushEditorParams();
     }
+    #endif
   }
 
 //------------------------------

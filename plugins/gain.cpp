@@ -1,11 +1,12 @@
 
 // nc -U -l -k /tmp/mip.socket
-#define MIP_DEBUG_PRINT_SOCKET
+//#define MIP_DEBUG_PRINT_SOCKET
 
 //#define MIP_NO_GUI
 #define MIP_GUI_XCB
 
 #define MIP_PLUGIN_CLAP
+//#define MIP_PLUGIN_EXE
 //#define MIP_PLUGIN_VST2
 //#define MIP_PLUGIN_VST3
 
@@ -18,7 +19,10 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_host_proxy.h"
 #include "plugin/mip_plugin_entry.h"
-#include "gui/mip_widgets.h"
+
+#ifndef MIP_NO_GUI
+  #include "gui/mip_widgets.h"
+#endif
 
 //----------------------------------------------------------------------
 //
@@ -138,12 +142,13 @@ public:
     }
   }
 
+  #ifndef MIP_NO_GUI
+
   void on_plugin_open_editor(MIP_Editor* AEditor) final {
     MIP_Window* window = AEditor->getWindow();
     MIP_KnobWidget* knob = new MIP_KnobWidget(MIP_FRect(10,10,236,236));
     AEditor->connectParameter(knob,0);
     window->appendWidget(knob);
-    MIP_PRINT;
   }
 
   void on_plugin_close_editor() final {
@@ -153,6 +158,8 @@ public:
   void on_plugin_update_editor() final {
     //MIP_PRINT;
   }
+
+  #endif
 
 
 };

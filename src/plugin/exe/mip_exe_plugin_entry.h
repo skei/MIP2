@@ -8,12 +8,13 @@
 
 #include "plugin/mip_descriptor.h"
 #include "plugin/mip_plugin.h"
+#include "plugin/mip_editor.h"
 #include "plugin/exe/mip_exe.h"
 #include "plugin/exe/mip_exe_host_proxy.h"
 
-//#ifndef MIP_NO_GUI
-#include "plugin/mip_editor.h"
-//#endif
+#ifndef MIP_NO_GUI
+  #include "plugin/mip_editor.h"
+#endif
 
 
 //----------------------------------------------------------------------
@@ -23,7 +24,8 @@
 //----------------------------------------------------------------------
 
 class MIP_ExePluginEntry
-: public MIP_AudioIOListener {
+: public MIP_AudioIOListener
+, public MIP_EditorListener {
 
 //------------------------------
 private:
@@ -64,22 +66,26 @@ public:
     plugin->on_plugin_activate(44100,256,256);
     plugin->on_plugin_start_processing();
 
+    #ifndef MIP_NO_GUI
     if (descriptor->hasEditor()) {
-//      MIP_Editor* editor = plugin->on_plugin_open_editor(nullptr);
-//      if (editor) {
-//        uint32_t width = descriptor->getEditorWidth();
-//        uint32_t height = descriptor->getEditorHeight();
-//        editor->attach(nullptr,0);
-//        editor->setSize(width,height);
-//        editor->show();
-//        plugin->on_plugin_update_editor();
-//        MIP_Window* window = editor->getWindow();
-//        if (window) window->eventLoop();
-//        editor->hide();
-//        //editor->detach();
-//        plugin->on_plugin_close_editor();
-//      }
+      MIP_Editor* editor = new MIP_Editor(this,descriptor);
+      if (editor) {
+        editor->attach("",0);
+        uint32_t width = descriptor->getEditorWidth()
+        uint32_t height = descriptor->getEditorHeight()
+        editor->setSize(width,height);
+        editor->setScale(1.0);
+        plugin->on_plugin_open_editor(editor);
+        editor->show();
+        plugin->on_plugin_update_editor();
+        MIP_Window* window = editor->getWindow();
+        if (window) window->eventLoop();
+        plugin->on_plugin_close_editor();
+        editor->hide();
+        delete editor;
+      }
     }
+    #endif
 
     plugin->on_plugin_stop_processing();
     plugin->on_plugin_deactivate();
