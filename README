@@ -15,31 +15,39 @@ in progress, prototype, proof of concept, pre-, ..
 * io: jack audio/midi
 * other: too much to list..
 
+
 * headers-only
 * un-modern, un-cool c++
+* (semi-) modular
 * no (minimal) dependencies
+* permissive license
 * ...
+
 
 * make it work
 * make it right
 * make it fast, small, stable, bugfree, pretty, etc..
 
+
 ----------
+
 
 https://raw.githubusercontent.com/skei/MIP2/master/screenshots/gui_old.png
-
 https://www.youtube.com/watch?v=8gMQY8lFopg
 
+
 ----------
+
 
 g++ -Wall -std=c++14 -fPIC -g -rdynamic -Wl,-Bsymbolic -DMIP_DEBUG -I../src -c build.cpp -o build.o
 g++ -shared build.o -o mip_debug.so -fPIE -lpthread -ldl -lxcb -lxcb-util -lxcb-image -lxcb-cursor -lxcb-keysyms -lcairo -lsndfile
 
+
 ----------
+
 
 see also:
 (most of this is already ported over to MIP2, or will be soon)
-
 mip:              https://github.com/skei/MIP
 claphost:         https://github.com/skei/MIP/tree/master/apps
 simple mpe synth: https://github.com/skei/MIP/tree/master/plugins/templates
