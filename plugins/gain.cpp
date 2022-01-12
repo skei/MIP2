@@ -19,8 +19,8 @@
   #include "gui/mip_widgets.h"
 #endif
 
-#include "plugin/clap/mip_basic_clap_plugin.h"
-
+//#include "plugin/clap/mip_basic_clap_plugin.h"
+#include "plugin/clap/mip_basic_clap_host.h"
 
 //----------------------------------------------------------------------
 //
