@@ -21,6 +21,14 @@ public:
   virtual ~MIP_ExeHostProxy() {
   }
 
+//------------------------------
+public:
+//------------------------------
+
+  uint32_t getPluginFormat() final {
+    return MIP_PLUGIN_FORMAT_EXE;
+  }
+
 };
 
 //----------------------------------------------------------------------

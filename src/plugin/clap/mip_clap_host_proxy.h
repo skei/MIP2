@@ -99,7 +99,13 @@ public:
 
   //
 
-  const clap_host* getClapHost() { return MHost; }
+  uint32_t getPluginFormat() final {
+    return MIP_PLUGIN_FORMAT_CLAP;
+  }
+
+  const clap_host* getClapHost() {
+    return MHost;
+  }
 
 //------------------------------
 public: // host proxy
