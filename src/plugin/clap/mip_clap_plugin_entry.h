@@ -68,30 +68,29 @@ const clap_plugin_factory GLOBAL_CLAP_PLUGIN_FACTORY = {
 
 bool clap_plugin_entry_init_callback(const char *plugin_path) {
   MIP_ClapPrint("plugin_path: '%s' -> true\n",plugin_path);
+
+  // create clap descriptors for all plugins
+
   uint32_t num = MIP_GLOBAL_PLUGIN_LIST.getNumPlugins();
   for (uint32_t i=0; i<num; i++) {
-    clap_plugin_descriptor_t* clapdesc = (clap_plugin_descriptor_t*)malloc(sizeof(clap_plugin_descriptor_t)); // not ptr to desc!
+    clap_plugin_descriptor_t* clapdesc = (clap_plugin_descriptor_t*)malloc(sizeof(clap_plugin_descriptor_t));
     if (clapdesc) {
       MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(i);
       if (info) {
-        //MIP_Descriptor* desc = MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(i);
-        MIP_Descriptor* desc    = info->descriptor;//MIP_GLOBAL_PLUGIN_LIST.getPluginDescriptor(i);
+        MIP_Descriptor* desc    = info->descriptor;
         clapdesc->clap_version  = CLAP_VERSION;
-        clapdesc->id            = desc->getStringId();      //"";
-        clapdesc->name          = desc->getName();          //"";
-        clapdesc->vendor        = desc->getAuthor();        //"";
-        clapdesc->url           = desc->getUrl();           //"";
-        clapdesc->manual_url    = desc->getManualUrl();     //"";
-        clapdesc->support_url   = desc->getSupportUrl();    //"";
-        clapdesc->version       = desc->getVersionText();   //"";
-        clapdesc->description   = desc->getDescription();   //"";
-
+        clapdesc->id            = desc->getStringId();
+        clapdesc->name          = desc->getName();
+        clapdesc->vendor        = desc->getAuthor();
+        clapdesc->url           = desc->getUrl();
+        clapdesc->manual_url    = desc->getManualUrl();
+        clapdesc->support_url   = desc->getSupportUrl();
+        clapdesc->version       = desc->getVersionText();
+        clapdesc->description   = desc->getDescription();
         if (desc->isSynth()) clapdesc->features = "instrument";
         else clapdesc->features = "audio effect";
-
         //clapdesc->plugin_type   = CLAP_PLUGIN_AUDIO_EFFECT;
         //MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(i);
-
         info->ptr = clapdesc;
       }
     }
