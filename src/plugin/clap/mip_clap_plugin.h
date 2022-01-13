@@ -12,7 +12,9 @@
 
 //----------
 
+// !!!
 // max 1024 events per audioblock
+
 typedef MIP_Queue<uint32_t,1024> MIP_HostParameterQueue;
 typedef MIP_Queue<uint32_t,1024> MIP_HostModulationQueue;
 
@@ -29,24 +31,24 @@ class MIP_ClapPlugin
 private:
 //------------------------------
 
-  MIP_Plugin*                     MPlugin           = nullptr;
-  MIP_Descriptor*                 MDescriptor       = nullptr;
-  MIP_ClapHostProxy*              MClapHostProxy    = nullptr;
-  const clap_plugin_descriptor_t* MClapDescriptor   = nullptr;
-  clap_plugin_render_mode         MClapRenderMode   = 0;
-  MIP_ProcessContext              MProcessContext   = {};
-  float*                          MParameterValues  = nullptr;
-  float*                          MModulationValues = nullptr;
-  bool                            MIsProcessing     = false;
+  MIP_Plugin*                     MPlugin               = nullptr;
+  MIP_Descriptor*                 MDescriptor           = nullptr;
+  MIP_ClapHostProxy*              MClapHostProxy        = nullptr;
+  const clap_plugin_descriptor_t* MClapDescriptor       = nullptr;
+  clap_plugin_render_mode         MClapRenderMode       = 0;
+  MIP_ProcessContext              MProcessContext       = {};
+  float*                          MParameterValues      = nullptr;
+  float*                          MModulationValues     = nullptr;
+  bool                            MIsProcessing         = false;
 
   #ifndef MIP_NO_GUI
-  clap_id     MTimerId      = 0;
-  MIP_Editor* MEditor       = nullptr;
-  bool        MEditorIsOpen = false;
+  clap_id                         MTimerId              = 0;
+  MIP_Editor*                     MEditor               = nullptr;
+  bool                            MEditorIsOpen         = false;
   #endif
 
-  MIP_HostParameterQueue  MHostParameterQueue   = {};
-  MIP_HostModulationQueue MHostModulationQueue  = {};
+  MIP_HostParameterQueue          MHostParameterQueue   = {};
+  MIP_HostModulationQueue         MHostModulationQueue  = {};
 
 //------------------------------
 public:
@@ -111,8 +113,14 @@ public:
     }
   }
 
+  //----------
+
+  //TODO: send back actually used value + mod?
+
   void queueHostModulation(uint32_t AIndex, float AValue) {
   }
+
+  //----------
 
   void flushHostModulations(const clap_output_events_t* events) {
   }
@@ -128,7 +136,10 @@ public: // editor listener
     MIP_Parameter* parameter = MDescriptor->getParameter(AIndex);
     float value = parameter->from01(AValue);
     queueHostParameter(AIndex,value);
+
+//TODO?
 //    if (!MIsProcessing) MHost->params_request_flush();
+
   }
 
 //------------------------------
@@ -140,7 +151,9 @@ public:
     uint32_t num_events = events->size(events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* event = events->get(events,i);
+
 //      if (event->space_id != CLAP_CORE_EVENT_SPACE_ID) continue;
+
       switch (event->type) {
         case CLAP_EVENT_NOTE_ON: {
           const clap_event_note_t* note_event = (clap_event_note_t*)event;
@@ -295,10 +308,10 @@ public:
   const void* get_extension(const char *id) {
     MIP_ClapPrint("id '%s' -> ",id);
   //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           { MIP_ClapDPrint("%p\n",&MExtAmbisonic);        return &MExtAmbisonic; }
-  //if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { MIP_ClapDPrint("%p\n",&MExtAudioPorts);       return &MExtAudioPorts; }
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { MIP_ClapDPrint("%p\n",&MExtAudioPorts);       return &MExtAudioPorts; }
   //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  { MIP_ClapDPrint("%p\n",&MExtAudioPortsConfig); return &MExtAudioPortsConfig; }
   //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    { MIP_ClapDPrint("%p\n",&MExtCheckForUpdate);   return &MExtCheckForUpdate; }
-  //if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        { MIP_ClapDPrint("%p\n",&MExtEventFilter);      return &MExtEventFilter; }
+    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        { MIP_ClapDPrint("%p\n",&MExtEventFilter);      return &MExtEventFilter; }
   //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      { MIP_ClapDPrint("%p\n",&MExtFileReference);    return &MExtFileReference; }
     if (strcmp(id,CLAP_EXT_GUI) == 0)                 { MIP_ClapDPrint("%p\n",&MExtGui);              return &MExtGui; }
     if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             { MIP_ClapDPrint("%p\n",&MExtGui);              return &MExtGuiX11; }

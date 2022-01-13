@@ -89,7 +89,7 @@ bool clap_plugin_entry_init_callback(const char *plugin_path) {
         clapdesc->description   = desc->getDescription();
         if (desc->isSynth()) clapdesc->features = "instrument";
         else clapdesc->features = "audio effect";
-        //clapdesc->plugin_type   = CLAP_PLUGIN_AUDIO_EFFECT;
+        //clapdesc->plugin_type = CLAP_PLUGIN_AUDIO_EFFECT;
         //MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(i);
         info->ptr = clapdesc;
       }
