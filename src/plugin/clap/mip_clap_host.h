@@ -3,14 +3,10 @@
 //----------------------------------------------------------------------
 
 /*
-  TODO:
+  TODO / may-do?:
   - inherit from MIP_BasicClapHost
   - load dll/so via MIP_LoadLibrary
 */
-
-
-#define MIP_CLAP_VIRTUAL virtual
-//#define MIP_CLAP_VIRTUAL
 
 //----------
 
@@ -19,6 +15,8 @@
 #else
   #include <windows.h>
 #endif
+
+//----------
 
 #include "mip.h"
 //#include "base/system/mip_time.h"
@@ -252,7 +250,6 @@ public: // clap plugin
     should we have a flag/bitfield for which extensions we support?
   */
 
-  MIP_CLAP_VIRTUAL
   const void* get_extension(const char *extension_id) {
     MIP_ClapPrint("extension_id: '%s' -> ",extension_id);
     if (strcmp(extension_id, CLAP_EXT_AUDIO_PORTS         ) == 0) { MIP_ClapDPrint("%p\n",&MClapHostAudioPorts);        return &MClapHostAudioPorts; }
@@ -282,21 +279,18 @@ public: // clap plugin
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void request_restart() {
     MIP_CLAPPRINT;
   }
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void request_process() {
     MIP_CLAPPRINT;
   }
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void request_callback() {
     MIP_CLAPPRINT;
   }
@@ -309,7 +303,6 @@ public: // extensions
   // ambisonic
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void ambisonic_changed() {
     MIP_CLAPPRINT;
   }
@@ -318,7 +311,6 @@ public: // extensions
   // audio-ports
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   uint32_t audio_ports_get_preferred_sample_size() {
     MIP_ClapPrint("-> 32\n");
     return 32;
@@ -326,7 +318,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void audio_ports_rescan(uint32_t flags) {
     MIP_ClapPrint("flags: %i\n",flags);
   }
@@ -335,7 +326,6 @@ public: // extensions
   // audio-ports-config
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void audio_ports_config_rescan() {
     MIP_CLAPPRINT;
   }
@@ -344,7 +334,6 @@ public: // extensions
   // check-for-update.draft/0
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void check_for_update_on_new_version(const clap_check_for_update_info *update_info) {
     MIP_CLAPPRINT;
   }
@@ -353,7 +342,6 @@ public: // extensions
   // event-filter
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void event_filter_changed() {
     MIP_CLAPPRINT;
   }
@@ -362,7 +350,6 @@ public: // extensions
   // event-registry
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   bool event_registry_query(const char* space_name, uint16_t* space_id) {
     MIP_ClapPrint("space_name '%s' -> false\n",space_name);
     return false;
@@ -372,14 +359,12 @@ public: // extensions
   // file-reference.draft/0
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void file_reference_changed() {
     MIP_CLAPPRINT;
   }
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void file_reference_set_dirty(clap_id resource_id) {
     MIP_ClapPrint("resource_id %i\n",resource_id);
   }
@@ -388,7 +373,6 @@ public: // extensions
   // gui
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   bool gui_resize(uint32_t width, uint32_t height) {
     MIP_ClapPrint("width %i height %i -> true\n",width,height);
     return true;
@@ -398,7 +382,6 @@ public: // extensions
   // latency
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void latency_changed() {
     MIP_CLAPPRINT;
   }
@@ -407,7 +390,6 @@ public: // extensions
   // log
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void log_log(clap_log_severity severity, const char *msg) {
     MIP_ClapPrint("severity: %i msg: '%s'\n",severity,msg);
   }
@@ -416,7 +398,6 @@ public: // extensions
   // midi-mappings.draft/0
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void midi_mappings_changed() {
     MIP_CLAPPRINT;
   }
@@ -425,7 +406,6 @@ public: // extensions
   // note-name
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void note_name_changed() {
     MIP_CLAPPRINT;
   }
@@ -434,7 +414,6 @@ public: // extensions
   // note-ports
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void note_ports_rescan(uint32_t flags) {
     MIP_ClapPrint("flags %i\n",flags);
   }
@@ -443,21 +422,18 @@ public: // extensions
   // params
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void params_rescan(clap_param_rescan_flags flags) {
     MIP_ClapPrint("flags %i\n",flags);
   }
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void params_clear(clap_id param_id, clap_param_clear_flags flags) {
     MIP_ClapPrint("param_id %i flags %i\n",param_id,flags);
   }
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void params_request_flush() {
     MIP_CLAPPRINT;
   }
@@ -466,7 +442,6 @@ public: // extensions
   // posix-fd-support
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   bool posix_fd_support_register_fd(int fd, int flags) {
     MIP_CLAPPRINT;
     return false;
@@ -474,7 +449,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool posix_fd_support_modify_fd(int fd, int flags) {
     MIP_CLAPPRINT;
     return false;
@@ -482,7 +456,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool posix_fd_support_unregister_fd(int fd) {
     MIP_CLAPPRINT;
     return false;
@@ -492,7 +465,6 @@ public: // extensions
   // quick-controls.draft/0
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void quick_controls_changed(clap_quick_controls_changed_flags flags) {
     MIP_ClapPrint("flags %i\n",flags);
   }
@@ -501,7 +473,6 @@ public: // extensions
   // state
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void state_mark_dirty() {
     MIP_CLAPPRINT;
   }
@@ -510,12 +481,10 @@ public: // extensions
   // surround
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   void surround_changed() {
     MIP_CLAPPRINT;
   }
 
-  MIP_CLAP_VIRTUAL
   void surround_get_preferred_channel_map(uint8_t* channel_map, uint32_t channel_map_capacity, uint32_t* channel_count) {
     MIP_CLAPPRINT;
   }
@@ -525,7 +494,6 @@ public: // extensions
   // thread-check
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   bool thread_check_is_main_thread() {
     //MIP_ClapPrint("-> true\n");
     return true;
@@ -533,7 +501,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool thread_check_is_audio_thread() {
     //MIP_ClapPrint("-> true\n");
     return true;
@@ -543,7 +510,6 @@ public: // extensions
   // thread-pool.draft/0
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   bool thread_pool_request_exec(uint32_t num_tasks) {
     MIP_ClapPrint("num_tasks %i -> false\n",num_tasks);
     return false;
@@ -553,7 +519,6 @@ public: // extensions
   // timer-support
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) {
     MIP_ClapPrint("period_ms %i -> false\n",period_ms);
     //MTimer = new MIP_Timer(this);
@@ -563,7 +528,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool timer_support_unregister_timer(clap_id timer_id) {
     MIP_ClapPrint("timer_id %i -> false\n",timer_id);
     //MTimer->stop();
@@ -576,7 +540,6 @@ public: // extensions
   // track-info.draft/0
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   bool track_info_get(clap_track_info *info) {
     MIP_ClapPrint("-> false\n");
     return false;
@@ -586,7 +549,6 @@ public: // extensions
   // tuning.draft/0
   //------------------------------
 
-  MIP_CLAP_VIRTUAL
   double tuning_get(int32_t key, int32_t channel) {
     MIP_ClapPrint("-> 0.0\n");
     return 0.0;

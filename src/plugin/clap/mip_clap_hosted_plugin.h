@@ -2,7 +2,7 @@
 #define mip_clap_hosted_plugin_included
 //----------------------------------------------------------------------
 
-// aka ClapPluginProxy
+// aka ClapPluginProxy (?)
 //TODO: extensions..
 
 #include "mip.h"
