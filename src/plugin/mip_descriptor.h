@@ -163,6 +163,16 @@ public:
 
   //----------
 
+  int32_t findParameter(const char* AName) {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      const char* name = MParameters[i]->getName();
+      if (strcmp(name,AName) == 0) return i;
+    }
+    return -1;
+  }
+
+  //----------
+
   MIP_AudioPort* appendInputPort(MIP_AudioPort* APort) {
     MAudioInputs.append(APort);
     return APort;

@@ -420,6 +420,7 @@
 		<Unit filename="../src/audio/mip_audio_jack.h" />
 		<Unit filename="../src/audio/mip_audio_math.h" />
 		<Unit filename="../src/audio/mip_audio_utils.h" />
+		<Unit filename="../src/audio/mip_voice_manager.h" />
 		<Unit filename="../src/audio/modulation/mip_envelope.h" />
 		<Unit filename="../src/audio/modulation/mip_lfo.h" />
 		<Unit filename="../src/audio/processing/mip_convolution.h" />
@@ -705,13 +706,14 @@
 		<Unit filename="../src/plugin/backup/vst3/mip_vst3_plugin_entry.h" />
 		<Unit filename="../src/plugin/backup/vst3/mip_vst3_plugin_factory.h" />
 		<Unit filename="../src/plugin/backup/vst3/mip_vst3_plugin_list.h" />
+		<Unit filename="../src/plugin/clap/mip_basic_clap_host.h" />
+		<Unit filename="../src/plugin/clap/mip_basic_clap_plugin.h" />
 		<Unit filename="../src/plugin/clap/mip_clap.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_host.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_host_proxy.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_hosted_plugin.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin.h" />
 		<Unit filename="../src/plugin/clap/mip_clap_plugin_entry.h" />
-		<Unit filename="../src/plugin/clap/mip_clap_voices.h" />
 		<Unit filename="../src/plugin/exe/mip_exe.h" />
 		<Unit filename="../src/plugin/exe/mip_exe_host_proxy.h" />
 		<Unit filename="../src/plugin/exe/mip_exe_plugin_entry.h" />
