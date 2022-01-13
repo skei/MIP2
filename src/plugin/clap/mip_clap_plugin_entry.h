@@ -103,6 +103,9 @@ bool clap_plugin_entry_init_callback(const char *plugin_path) {
 
 void clap_plugin_entry_deinit_callback() {
   MIP_CLAPPRINT;
+
+  // delete all clap descriptors
+
   uint32_t num = MIP_GLOBAL_PLUGIN_LIST.getNumPlugins();
   for (uint32_t i=0; i<num; i++) {
     MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(i);
