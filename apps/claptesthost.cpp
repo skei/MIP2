@@ -61,6 +61,8 @@
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_hosted_plugin.h"
 
+#include "plugin/clap/mip_clap_plugin.h"
+
 //----------------------------------------------------------------------
 //
 //

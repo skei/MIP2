@@ -2,49 +2,19 @@
 #define mip_clap_plugin_included
 //----------------------------------------------------------------------
 
-//TODO: inherit from MIP_BasicClapPlugin..
-
-/*
-  TODO: extreact MIP_Plugin to a class 'above' this,
-        so that this stays completely clap-focused
-
-  if we want to use this as the base for our own clap plugins,
-  we want the c++ clap functions to be virtual, so we can override them
-  on our plugin..
-  but if we are using the 'internal' plugin format, we implement them
-  ourselves, and call other virtual methods in our plugin
-  (will gcc/lto/etc get rid of much of this layering of virtual functuions?
-
-
-*/
-
-//----------------------------------------------------------------------
-
-/*
-  TODO: wrap all method implementations in #ifdefs,
-  optionally:
-  a) empty virtual methods
-  b) non-virtual methods calling virtual functions in MIP_Plugin
-  if you want to use it to wrap a clap plugin directly,
-  and avoid double virtual calling ...
-  (or does it really matter?)
-*/
-
-//#define MIP_CLAP_VIRTUAL virtual
-#define MIP_CLAP_VIRTUAL
-
-// max 1024 events per audioblock
-typedef MIP_Queue<uint32_t,1024> MIP_HostParameterQueue;
-typedef MIP_Queue<uint32_t,1024> MIP_HostModulationQueue;
-
-//----------
-
 #include "mip.h"
+#include "base/types/mip_queue.h"
 #include "base/utils/mip_convert.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_process_context.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host_proxy.h"
+
+//----------
+
+// max 1024 events per audioblock
+typedef MIP_Queue<uint32_t,1024> MIP_HostParameterQueue;
+typedef MIP_Queue<uint32_t,1024> MIP_HostModulationQueue;
 
 //----------------------------------------------------------------------
 //
@@ -256,7 +226,6 @@ public:
 public:
 //------------------------------
 
-  MIP_CLAP_VIRTUAL
   bool init() {
     bool result = MPlugin->on_plugin_init();
     MIP_ClapPrint("-> '%s'\n",result?"true":"false");
@@ -265,7 +234,6 @@ public:
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void destroy() {
     MIP_CLAPPRINT;
     MPlugin->on_plugin_deinit();
@@ -273,7 +241,6 @@ public:
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
     MProcessContext.samplerate = sample_rate;
     bool result = MPlugin->on_plugin_activate(sample_rate,min_frames_count,max_frames_count);
@@ -283,7 +250,6 @@ public:
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void deactivate() {
     MIP_CLAPPRINT;
     MPlugin->on_plugin_deactivate();
@@ -291,7 +257,6 @@ public:
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool start_processing() {
     MIsProcessing = true;
     bool result = MPlugin->on_plugin_startProcessing();
@@ -301,7 +266,6 @@ public:
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void stop_processing() {
     MIP_CLAPPRINT;
     MIsProcessing = false;
@@ -313,7 +277,6 @@ public:
   //TODO:
   // this is ugly!! fix this!! don't hardcode stuff!!
 
-  MIP_CLAP_VIRTUAL
   clap_process_status process(const clap_process_t *process) {
     //MIP_CLAPPRINT;
     process_input_events(process->in_events);
@@ -329,7 +292,6 @@ public:
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   const void* get_extension(const char *id) {
     MIP_ClapPrint("id '%s' -> ",id);
   //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           { MIP_ClapDPrint("%p\n",&MExtAmbisonic);        return &MExtAmbisonic; }
@@ -360,7 +322,6 @@ public:
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void on_main_thread() {
     MIP_CLAPPRINT;
   }
@@ -369,7 +330,6 @@ public:
 public: // extensions
 //------------------------------
 
-  MIP_CLAP_VIRTUAL
   uint32_t audio_ports_count(bool is_input) {
     if (is_input) {
       uint32_t num = MDescriptor->getNumAudioInputs();
@@ -385,7 +345,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool audio_ports_get(uint32_t index, bool is_input, clap_audio_port_info_t* info) {
     if (is_input) {
       MIP_AudioPort* port = MDescriptor->getAudioInput(index);
@@ -423,7 +382,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   uint32_t audio_ports_config_count() {
     MIP_ClapPrint("-> 0\n");
     return 0;
@@ -431,7 +389,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) {
     MIP_ClapPrint("index %i -> false\n",index);
     return false;
@@ -439,7 +396,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool audio_ports_config_select(clap_id config_id) {
     MIP_ClapPrint("config_id %i -> false\n",config_id);
     return false;
@@ -447,7 +403,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool event_filter_accepts(uint16_t space_id, uint16_t event_type) {
     MIP_ClapPrint("space_id %i event_type %i ",space_id,event_type);
     //space_id == CLAP_CORE_EVENT_SPACE_ID ?
@@ -476,7 +431,6 @@ public: // extensions
   // note: the editor doesn't have a window yet!
 
 
-  MIP_CLAP_VIRTUAL
   bool gui_create() {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -489,7 +443,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void gui_destroy() {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -503,7 +456,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool gui_set_scale(double scale) {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -516,7 +468,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool gui_get_size(uint32_t *width, uint32_t *height) {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -531,7 +482,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool gui_can_resize() {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -544,7 +494,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void gui_round_size(uint32_t *width, uint32_t *height) {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -556,7 +505,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool gui_set_size(uint32_t width, uint32_t height) {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -572,7 +520,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void gui_show() {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -594,7 +541,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void gui_hide() {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -610,7 +556,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool gui_x11_attach(const char *display_name, unsigned long window) {
     //MIP_PRINT;
     #ifndef MIP_NO_GUI
@@ -624,7 +569,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   uint32_t latency_get() {
     MIP_ClapPrint("-> 0\n");
     return 0;
@@ -632,7 +576,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   uint32_t note_name_count() {
     MIP_ClapPrint("-> 0\n");
     return 0;
@@ -640,7 +583,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool note_name_get(uint32_t index, clap_note_name_t *note_name) {
     MIP_ClapPrint("index %i -> false\n",index);
     return false;
@@ -648,7 +590,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   uint32_t note_ports_count(bool is_input) {
     MIP_ClapPrint("is_input %s -> 0\n",is_input?"true":"false");
     return 0;
@@ -656,7 +597,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t *info) {
     MIP_ClapPrint("index %i is_input %s -> false\n",index,is_input?"true":"false");
     return false;
@@ -664,7 +604,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   uint32_t params_count() {
     uint32_t num = MDescriptor->getNumParameters();
     MIP_ClapPrint("-> %i\n",num);
@@ -673,7 +612,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool params_get_info(int32_t param_index, clap_param_info_t* param_info) {
     MIP_ClapPrint("param_index %i -> ",param_index);
     MIP_Parameter* param = MDescriptor->getParameter(param_index);
@@ -696,7 +634,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool params_get_value(clap_id param_id, double *value) {
     *value = MParameterValues[param_id];
     MIP_ClapPrint("param_id %i -> %f true\n",param_id,*value);
@@ -705,7 +642,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) {
     MIP_FloatToString(display,value,3);
     //MIP_ClapPrint("param_id %i value %f-> '%s' true\n",param_id,value,display);
@@ -714,7 +650,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool params_text_to_value(clap_id param_id, const char *display, double *value) {
     *value = MIP_StringToFloat((char*)display);
     MIP_ClapPrint("param_id %i display '%s' -> %f true\n",param_id,display,*value);
@@ -723,7 +658,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {
     MIP_ClapPrint("in %p out %p\n",in,out);
     process_input_events(in);
@@ -732,7 +666,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void posix_fd_support_on_fd(int fd, int flags) {
     MIP_ClapPrint("fd %i flags %i\n",fd,flags);
     MIP_CLAPPRINT;
@@ -740,7 +673,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void render_set(clap_plugin_render_mode mode) {
     MIP_ClapPrint("mode %i\n",mode);
     MClapRenderMode = mode;
@@ -748,7 +680,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool state_save(clap_ostream_t *stream) {
     MIP_ClapPrint("-> true\n");
     //stream->write(stream,version,sizeof(float));
@@ -762,7 +693,6 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool state_load(clap_istream_t *stream) {
     MIP_ClapPrint("-> true\n");
     //stream->read(stream, version ,sizeof(float));
@@ -776,14 +706,12 @@ public: // extensions
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void thread_pool_exec(uint32_t task_index) {
     MIP_ClapPrint("task_index %i\n",task_index);
   }
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void timer_support_on_timer(clap_id timer_id) {
     MIP_ClapPrint("timer_id %i\n",timer_id);
     #ifndef MIP_NO_GUI
@@ -799,7 +727,6 @@ public: // extensions
 public: // drafts
 //------------------------------
 
-  MIP_CLAP_VIRTUAL
   bool ambisonic_get_info(bool is_input, uint32_t port_index, clap_ambisonic_info_t* info) {
     MIP_ClapPrint("is_input %s port_index %i -> false\n",is_input?"true":"false",port_index);
     return false;
@@ -807,14 +734,12 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void check_for_update_check(bool include_beta) {
     MIP_ClapPrint("include_beta '%s'\n",include_beta?"true":"false");
   }
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   uint32_t file_reference_count() {
     MIP_ClapPrint("-> 0\n");
     return 0;
@@ -822,7 +747,6 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool file_reference_get(uint32_t index, clap_file_reference_t *file_reference) {
     MIP_ClapPrint("-> false\n");
     return false;
@@ -830,7 +754,6 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool file_reference_get_hash(clap_id resource_id, clap_hash hash, uint8_t* digest, uint32_t digest_size) {
     MIP_ClapPrint("resource_id %i hash %i -> false\n",resource_id,hash);
     return false;
@@ -838,7 +761,6 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool file_reference_update_path(clap_id resource_id, const char *path) {
     MIP_ClapPrint("resource_id %i -> false\n",resource_id);
     return false;
@@ -846,7 +768,6 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool file_reference_save_resources() {
     MIP_ClapPrint("-> false\n");
     return false;
@@ -854,7 +775,6 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   uint32_t midi_mappings_count() {
     MIP_ClapPrint("-> 0\n");
     return 0;
@@ -862,7 +782,6 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool midi_mappings_get(uint32_t index, clap_midi_mapping_t *mapping) {
     MIP_ClapPrint("index %i -> false\n",index);
     return false;
@@ -870,7 +789,6 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool preset_load_from_file(const char *path) {
     MIP_ClapPrint("path '%s'-> false\n",path);
     return false;
@@ -878,7 +796,6 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   uint32_t quick_controls_count() {
     MIP_ClapPrint("-> 0\n");
     return 0;
@@ -886,7 +803,6 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   bool quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) {
     MIP_ClapPrint("page_index %i -> false\n",page_index);
     return false;
@@ -894,14 +810,12 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void quick_controls_select(clap_id page_id) {
     MIP_ClapPrint("page_id %i\n",page_id);
   }
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   clap_id quick_controls_get_selected() {
     MIP_ClapPrint("-> 0\n");
     return 0;
@@ -909,12 +823,10 @@ public: // drafts
 
   //----------
 
-  //MIP_CLAP_VIRTUAL
-  //uint32_t surround_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index) {
+  ////uint32_t surround_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index) {
   //  return 0;
   //}
 
-  MIP_CLAP_VIRTUAL
   uint32_t surround_get_channel_map(bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) {
     MIP_ClapPrint("is_input %s port_index %i -> 0\n",is_input?"true":"false",port_index);
     return 0;
@@ -922,14 +834,12 @@ public: // drafts
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void surround_changed() {
     MIP_CLAPPRINT;
   }
 
   //----------
 
-  MIP_CLAP_VIRTUAL
   void track_info_changed() {
     MIP_CLAPPRINT;
   }

@@ -31,25 +31,8 @@ private:
     const clap_plugin_entry*    MClapEntry      = nullptr;
     const clap_plugin_factory*  MClapFactory    = nullptr;
     char                        MPathOnly[512]  = {0};
-
-//  #endif
 //  const char*                 MPluginPath     = "";
-//  //MIP_Timer*                  MTimer          = nullptr;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+////MIP_Timer*                  MTimer          = nullptr;
 
 //  clap_host                     MHost
 //  clap_host_ambisonic           MAmbisonic
@@ -112,7 +95,6 @@ public:
     get_path_only(MPathOnly,path);
     MClapEntry->init(MPathOnly);
     MClapFactory = (const clap_plugin_factory*)MClapEntry->get_factory(CLAP_PLUGIN_FACTORY_ID);
-
     return true;
   }
 
@@ -144,32 +126,29 @@ public:
 private:
 //------------------------------
 
-  // these are a bit hacky..
-
-  //----------
-
   // /home/skei/test.so -> test.so
   // returns ptr to first character after last /
 
-  //const char* get_filename_from_path(const char* path) {
-  //  if (path) {
-  //    const char* slash     = strrchr(path,'/');
-  //    const char* backslash = strrchr(path,'\\');
-  //    if (slash) {
-  //      return slash + 1;
-  //    }
-  //    else if (backslash) {
-  //      return backslash + 1;
-  //    }
-  //  }
-  //  return NULL;
-  //}
+  /*
+  const char* get_filename_from_path(const char* path) {
+    if (path) {
+      const char* slash     = strrchr(path,'/');
+      const char* backslash = strrchr(path,'\\');
+      if (slash) {
+        return slash + 1;
+      }
+      else if (backslash) {
+        return backslash + 1;
+      }
+    }
+    return NULL;
+  }
+  */
 
   //----------
 
   // /home/skei/test.so -> /home/skei/
-  // makes a copy of dst
-  // inserts a 0 after the last /
+  // makes a copy of dst, inserts a 0 after the last /
 
   char* get_path_only(char* dst, const char* src) {
     if (dst && src) {

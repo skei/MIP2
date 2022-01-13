@@ -35,7 +35,7 @@ private:
   //const clap_plugin_state_t               MState {
   //const clap_plugin_thread_pool_t         MThreadPool;
   //const clap_plugin_timer_support_t       MTimerSupport;
-
+  //
   //const clap_plugin_ambisonic_t           MAmbisonic;
   //const clap_plugin_check_for_update      MCheckForUpdate;
   //const clap_plugin_file_reference_t      MFileReference;
