@@ -148,33 +148,31 @@ private:
 private:
 //------------------------------
 
- //TODO: input + output channel counts?
-
-  void prepare_audio_inputs(uint32_t channels, uint32_t latency=0) {
-    MContextAudioInputs.data32           = MAudioInputBuffers;
-    MContextAudioInputs.data64           = MAudioInputBuffers_64; //NULL;
-    MContextAudioInputs.channel_count    = channels;
-    MContextAudioInputs.latency          = latency;
-    MContextAudioInputs.constant_mask    = 0;
+  void prepare_audio_inputs(uint32_t channels, uint32_t latency) {
+    MContextAudioInputs.data32          = MAudioInputBuffers;
+    MContextAudioInputs.data64          = MAudioInputBuffers_64; // should this be null if not used/supported?
+    MContextAudioInputs.channel_count   = channels;
+    MContextAudioInputs.latency         = latency;
+    MContextAudioInputs.constant_mask   = 0;
   }
 
-  void prepare_audio_outputs(uint32_t channels, uint32_t latency=0) {
-    MContextAudioOutputs.data32          = MAudioOutputBuffers;
-    MContextAudioOutputs.data64          = MAudioOutputBuffers_64; //NULL;
-    MContextAudioOutputs.channel_count   = channels;
-    MContextAudioOutputs.latency         = latency;
-    MContextAudioOutputs.constant_mask   = 0;
+  void prepare_audio_outputs(uint32_t channels, uint32_t latency) {
+    MContextAudioOutputs.data32         = MAudioOutputBuffers;
+    MContextAudioOutputs.data64         = MAudioOutputBuffers_64; // should this be null if not used/supported?
+    MContextAudioOutputs.channel_count  = channels;
+    MContextAudioOutputs.latency        = latency;
+    MContextAudioOutputs.constant_mask  = 0;
   }
 
   void prepare_event_inputs() {
-    MContextInputEvents.ctx             = this; // NULL;                    // reserved pointer for the list
-    MContextInputEvents.size             = &process_input_events_size;
-    MContextInputEvents.get              = &process_input_events_get;        // Don't free the return event, it belongs to the list
+    MContextInputEvents.ctx             = this;
+    MContextInputEvents.size            = &process_input_events_size;
+    MContextInputEvents.get             = &process_input_events_get;
   }
 
   void prepare_event_outputs() {
-    MContextOutputEvents.ctx             = this; // NULL;
-    MContextOutputEvents.push_back       = &process_output_events_push_back;
+    MContextOutputEvents.ctx            = this;
+    MContextOutputEvents.push_back      = &process_output_events_push_back;
   }
 
   /*
@@ -213,14 +211,15 @@ private:
     MContextTransport.tsig_denom          = 4;
   }
 
-  void prepare_context(uint32_t channels, uint32_t blocksize, uint32_t latency=0) {
-    MContext.steady_time          = MCurrentSample;     // a steady sample time counter, requiered
-    MContext.frames_count         = blocksize;          // number of frame to process
+  //void prepare_context(uint32_t channels, uint32_t blocksize, uint32_t latency=0) {
+  void prepare_context(uint32_t num_in, uint32_t num_out, uint32_t blocksize, uint32_t latency) {
+    MContext.steady_time          = MCurrentSample;
+    MContext.frames_count         = blocksize;
     MContext.transport            = &MContextTransport;
     MContext.audio_inputs         = &MContextAudioInputs;
     MContext.audio_outputs        = &MContextAudioOutputs;
-    MContext.audio_inputs_count   = channels; // 0; // TODO
-    MContext.audio_outputs_count  = channels;
+    MContext.audio_inputs_count   = num_in; //channels;
+    MContext.audio_outputs_count  = num_out; //channels;
     MContext.in_events            = &MContextInputEvents;
     MContext.out_events           = &MContextOutputEvents;
   }
@@ -465,8 +464,6 @@ public:
       num_samples = 180.0 * arg_sample_rate;
     }
 
-    // remapping
-
     //if ((arg_remap_cc >= 0) && (arg_remap_param >= 0)) {
     //  MInstance->getParam(arg_remap_param,&MRemapParamInfo);
     //}
@@ -482,7 +479,7 @@ public:
     prepare_audio_outputs(arg_num_audio_outputs,0);
     prepare_event_inputs();
     prepare_event_outputs();
-    prepare_context(arg_num_audio_outputs,arg_block_size,0);
+    prepare_context(arg_num_audio_inputs,arg_num_audio_outputs,arg_block_size,0);
 
     srand(1);
     MCurrentSample = 0;   // current position (in samples)
@@ -492,6 +489,7 @@ public:
 
 //----------
 // editor
+
     const clap_plugin_gui_t*     gui     = (const clap_plugin_gui_t*    )plugin->get_extension(plugin,CLAP_EXT_GUI    );
     const clap_plugin_gui_x11_t* gui_x11 = (const clap_plugin_gui_x11_t*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);
     uint32_t width = 256;
@@ -506,6 +504,8 @@ public:
       gui_x11->attach(plugin,nullptr /*""*/,xcbwin);
       gui->show(plugin);
     }
+
+// editor
 //----------
 
   #endif
@@ -519,7 +519,7 @@ public:
       uint32_t block_size = arg_block_size;
       if (arg_fuzz_block_size) {
         //block_size = 1 + (rand() % arg_block_size); // min 16?
-        block_size = rand() % (arg_block_size+1); // (0..blocksize, incl)
+        block_size = rand() % (arg_block_size+1);     // (0..blocksize, incl)
       }
       if (block_size > num_samples) {
         block_size = num_samples;
@@ -568,16 +568,18 @@ public:
 
 //----------
 // editor
+
     gui->hide(plugin);
     gui->destroy(plugin);
     MWindow->close();
     delete MWindow;
+
+// editor
 //----------
 
   #endif
 
     printf("Finished processing\n");
-
 
     // cleanup
 
