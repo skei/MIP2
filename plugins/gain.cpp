@@ -20,7 +20,7 @@
 #endif
 
 //#include "plugin/clap/mip_basic_clap_plugin.h"
-#include "plugin/clap/mip_basic_clap_host.h"
+//#include "plugin/clap/mip_basic_clap_host.h"
 
 //----------------------------------------------------------------------
 //

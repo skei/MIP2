@@ -2,6 +2,13 @@
 #define mip_clap_host_included
 //----------------------------------------------------------------------
 
+/*
+  TODO:
+  - inherit from MIP_BasicClapHost
+  - load dll/so via MIP_LoadLibrary
+*/
+
+
 #define MIP_CLAP_VIRTUAL virtual
 //#define MIP_CLAP_VIRTUAL
 
