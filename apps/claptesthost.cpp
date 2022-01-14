@@ -61,8 +61,6 @@
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_hosted_plugin.h"
 
-#include "plugin/clap/mip_clap_plugin.h"
-
 //----------------------------------------------------------------------
 //
 //
@@ -127,6 +125,7 @@ void print_help() {
 //----------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+
   int result = 0;
   arg_parser.init(argc,argv);
   uint32_t num_args = arg_parser.count();
