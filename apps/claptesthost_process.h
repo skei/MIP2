@@ -34,8 +34,6 @@ private:
 //------------------------------
 
   MIP_ClapHostedPlugin*     MPlugin = nullptr;
-  MIP_ClapEventHeaders      MClapInputEvents  = {};     // (fill this before every block)
-  MIP_ClapEventHeaders      MClapOutputEvents = {};     // (send these to host after each block)
   MIP_AudioFile             MAudioInputFile   = {};
   MIP_AudioFile             MAudioOutputFile  = {};
   MIP_MidiFile              MMidiFile         = {};
@@ -230,7 +228,7 @@ private:
 
   /*
     free all clap_events we (potentially) appended in convertInputEvents
-    and reset both MClapInputEvents and MMidiInputEvents
+    and reset both MClapEvents and MMidiEvents
   */
 
   void clearInputEvents() {
@@ -250,7 +248,7 @@ private:
   /*
     called before processing current audiobuffer
     allocates a clap_event for each midi event in MidiInputEvents
-    initializes it, and appends it to MClapInputEvents
+    initializes it, and appends it to MClapEvents
 
   */
 

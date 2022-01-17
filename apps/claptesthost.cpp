@@ -168,19 +168,19 @@ int main(int argc, char** argv) {
   }
 
   printf("\n");
-  printf("plugin_path       %s\n",arg_plugin_path);
-  printf("plugin_index      %i\n",arg_plugin_index);
-  printf("midi_input file   %s\n",arg_midi_input_file);
-  printf("audio_input file  %s\n",arg_audio_input_file);
-  printf("audio_output file %s\n",arg_audio_output_file);
-  printf("sample_rate       %.2f\n",arg_sample_rate);
-  printf("block_size        %i\n",arg_block_size);
-  printf("channels (in:out) %i:%i\n",arg_num_audio_inputs,arg_num_audio_outputs);
-  printf("decay seconds     %.2f\n",arg_decay_seconds);
-  printf("list_plugins      %s\n",arg_list_plugins?"yes":"no");
-  printf("print_descriptor  %s\n",arg_print_descriptor?"yes":"no");
-  printf("fuzz block size   %s\n",arg_fuzz_block_size?"yes":"no");
-  printf("remap (cc:param)  %i:%i\n",arg_remap_cc,arg_remap_param);
+  printf("> plugin_path       %s\n",arg_plugin_path);
+  printf("> plugin_index      %i\n",arg_plugin_index);
+  printf("> midi_input file   %s\n",arg_midi_input_file);
+  printf("> audio_input file  %s\n",arg_audio_input_file);
+  printf("> audio_output file %s\n",arg_audio_output_file);
+  printf("> sample_rate       %.2f\n",arg_sample_rate);
+  printf("> block_size        %i\n",arg_block_size);
+  printf("> channels (in:out) %i:%i\n",arg_num_audio_inputs,arg_num_audio_outputs);
+  printf("> decay seconds     %.2f\n",arg_decay_seconds);
+  printf("> list_plugins      %s\n",arg_list_plugins?"yes":"no");
+  printf("> print_descriptor  %s\n",arg_print_descriptor?"yes":"no");
+  printf("> fuzz block size   %s\n",arg_fuzz_block_size?"yes":"no");
+  printf("> remap (cc:param)  %i:%i\n",arg_remap_cc,arg_remap_param);
   printf("\n");
 
   if (!host.loadPlugin(arg_plugin_path)) {
