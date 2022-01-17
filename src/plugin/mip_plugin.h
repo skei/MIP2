@@ -59,10 +59,10 @@ public:
 
   virtual void        on_plugin_process(MIP_ProcessContext* AContext) {}
 
-  virtual void        on_plugin_parameter(uint32_t AIndex, float AValue) {}
-  virtual void        on_plugin_modulation(uint32_t AIndex, float AValue) {}
-  virtual void        on_plugin_midi(uint8_t AMsg1,uint8_t AMsg2,uint8_t AMsg3) {}
-  virtual void        on_plugin_noteExpression(uint32_t AType, uint32_t ANote, uint32_t AChannel, float AValue) {}
+  virtual void        on_plugin_parameter(uint32_t AOffset, uint32_t AIndex, float AValue) {}
+  virtual void        on_plugin_modulation(uint32_t AOffset, uint32_t AIndex, float AValue) {}
+  virtual void        on_plugin_midi(uint32_t AOffset, uint8_t AMsg1,uint8_t AMsg2,uint8_t AMsg3) {}
+  virtual void        on_plugin_noteExpression(uint32_t AOffset, uint32_t AType, uint32_t ANote, uint32_t AChannel, float AValue) {}
 
   virtual void        on_plugin_openEditor(MIP_Editor* AEditor) {}
   virtual void        on_plugin_closeEditor() {}

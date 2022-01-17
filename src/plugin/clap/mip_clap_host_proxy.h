@@ -7,30 +7,7 @@
 
 //----------------------------------------------------------------------
 
-//struct MIP_ClapHostExt {
-//  clap_host_audio_ports*        audio_ports         = nullptr;
-//  clap_host_audio_ports_config* audio_ports_config  = nullptr;
-//  clap_host_event_filter*       event_filter        = nullptr;
-////  clap_host_fd_support*         fd_support          = nullptr;
-//  clap_host_gui*                gui                 = nullptr;
-//  clap_host_latency*            latency             = nullptr;
-//  clap_host_log*                log                 = nullptr;
-//  clap_host_note_name*          note_name           = nullptr;
-//  clap_host_note_ports*         note_ports          = nullptr;
-//  clap_host_params*             params              = nullptr;
-//  clap_host_state*              state               = nullptr;
-//  clap_host_thread_check*       thread_check        = nullptr;
-//  clap_host_thread_pool*        thread_pool         = nullptr;
-//  clap_host_timer_support*      timer_support       = nullptr;
-//  // draft
-//  clap_host_check_for_update*   check_for_update    = nullptr;
-//  clap_host_file_reference*     file_reference      = nullptr;
-//  clap_host_midi_mappings*      midi_mappings       = nullptr;
-//  clap_host_quick_controls*     quick_controls      = nullptr;
-//  clap_host_surround*           surround            = nullptr;
-//  clap_host_track_info*         track_info          = nullptr;
-//  clap_host_tuning*             tuning              = nullptr;
-//};
+typedef MIP_Queue<uint64_t,1024> MIP_HostMidiQueue;
 
 //----------------------------------------------------------------------
 //
@@ -53,11 +30,11 @@ private:
 
 public:
 
-  //MIP_ClapHostExt   ext       = {0};
+  //struct ext = {
   clap_host_audio_ports*        audio_ports         = nullptr;
   clap_host_audio_ports_config* audio_ports_config  = nullptr;
   clap_host_event_filter*       event_filter        = nullptr;
-//  clap_host_fd_support*         fd_support          = nullptr;
+  //clap_host_fd_support*         fd_support          = nullptr;
   clap_host_gui*                gui                 = nullptr;
   clap_host_latency*            latency             = nullptr;
   clap_host_log*                log                 = nullptr;
@@ -76,6 +53,7 @@ public:
   clap_host_surround*           surround            = nullptr;
   clap_host_track_info*         track_info          = nullptr;
   clap_host_tuning*             tuning              = nullptr;
+  //};
 
 //------------------------------
 public:
@@ -97,64 +75,27 @@ public:
   ~MIP_ClapHostProxy() {
   }
 
-  //
+  //----------
 
-  uint32_t getPluginFormat() final {
-    return MIP_PLUGIN_FORMAT_CLAP;
-  }
-
-  const clap_host* getClapHost() {
-    return MHost;
-  }
 
 //------------------------------
 public: // host proxy
 //------------------------------
 
-  void updateParameter(uint32_t AIndex, float AValue) final {
-    //MIP_PRINT;
-  }
-
-  void resizeEditor(uint32_t AWidth, uint32_t AHeight) final {
-    //MIP_PRINT;
-  }
-
-  void sendMidi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
-    //MIP_PRINT;
-    //queueMidi/flushMidi
+  uint32_t getPluginFormat() final {
+    return MIP_PLUGIN_FORMAT_CLAP;
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  const char* getName()             { return MName; }
-  const char* getVendor()           { return MVendor; }
-  const char* getUrl()              { return MUrl; }
-  const char* getVersion()          { return MVersion; }
+  const clap_host*  getClapHost() { return MHost; }
 
-//  bool has_ext_audio_ports()        { return (ext.audio_ports != nullptr); }
-//  bool has_ext_audio_ports_config() { return (ext.audio_ports_config != nullptr); }
-//  bool has_ext_event_filter()       { return (ext.event_filter != nullptr); }
-////  bool has_ext_fd_support()         { return (ext.fd_support != nullptr); }
-//  bool has_ext_gui()                { return (ext.gui != nullptr); }
-//  bool has_ext_latency()            { return (ext.latency != nullptr); }
-//  bool has_ext_log()                { return (ext.log != nullptr); }
-//  bool has_ext_note_name()          { return (ext.note_name != nullptr); }
-//  bool has_ext_note_ports()         { return (ext.note_ports != nullptr); }
-//  bool has_ext_params()             { return (ext.params != nullptr); }
-//  bool has_ext_state()              { return (ext.state != nullptr); }
-//  bool has_ext_thread_check()       { return (ext.thread_check != nullptr); }
-//  bool has_ext_thread_pool()        { return (ext.thread_pool != nullptr); }
-//  bool has_ext_timer_support()      { return (ext.timer_support != nullptr); }
-//  // draft
-//  bool has_ext_check_for_update()   { return (ext.check_for_update != nullptr); }
-//  bool has_ext_file_reference()     { return (ext.file_reference != nullptr); }
-//  bool has_ext_midi_mappings()      { return (ext.midi_mappings != nullptr); }
-//  bool has_ext_quick_controls()     { return (ext.quick_controls != nullptr); }
-//  bool has_ext_surround()           { return (ext.surround != nullptr); }
-//  bool has_ext_track_info()         { return (ext.track_info != nullptr); }
-//  bool has_ext_tuning()             { return (ext.tuning != nullptr); }
+  const char*       getName()     { return MName; }
+  const char*       getVendor()   { return MVendor; }
+  const char*       getUrl()      { return MUrl; }
+  const char*       getVersion()  { return MVersion; }
 
   //----------
 

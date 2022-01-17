@@ -117,12 +117,20 @@ public:
 
   //----------
 
-  void on_plugin_midi(uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
+  void on_plugin_midi(uint32_t AOffset, uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) final {
+    MIP_HostEvent event;
     //MIP_PRINT;
     switch (AMsg1 & 0xF0) {
       case MIP_MIDI_NOTE_ON:
         MNumNotes += 1;
         //MHost->sendMidi(AMsg1,AMsg2,AMsg3);
+        event.time  = 0;
+        event.type  = 0;
+        event.port  = 0;
+        event.chan  = 0;
+        event.key   = 0;
+        event.value = 0.0;;
+        MHost->writeEvent(event);
         break;
       case MIP_MIDI_NOTE_OFF: // note on
         MNumNotes -= 1;
@@ -133,7 +141,7 @@ public:
 
   //----------
 
-  void on_plugin_parameter(uint32_t AIndex, float AValue) final {
+  void on_plugin_parameter(uint32_t AOffset, uint32_t AIndex, float AValue) final {
     MIP_Print("%i = %f\n",AIndex,AValue);
     switch(AIndex) {
       case 0: MGain = AValue; break;
@@ -142,7 +150,7 @@ public:
 
   //----------
 
-  void on_plugin_modulation(uint32_t AIndex, float AValue) final {
+  void on_plugin_modulation(uint32_t AOffset, uint32_t AIndex, float AValue) final {
     switch(AIndex) {
       case 0: MGainMod = AValue; break;
     }

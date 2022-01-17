@@ -18,6 +18,9 @@
 typedef MIP_Queue<uint32_t,1024> MIP_HostParameterQueue;
 typedef MIP_Queue<uint32_t,1024> MIP_HostModulationQueue;
 
+//typedef MIP_Queue<uint64_t,1024> MIP_HostMidiQueue;
+
+
 //----------------------------------------------------------------------
 //
 //
@@ -49,6 +52,7 @@ private:
 
   MIP_HostParameterQueue          MHostParameterQueue   = {};
   MIP_HostModulationQueue         MHostModulationQueue  = {};
+  //MIP_HostMidiQueue               MHostMidiQueue        = {};
 
 //------------------------------
 public:
@@ -83,6 +87,13 @@ public:
     return &MClapPlugin;
   }
 
+//------------------------------
+private:
+//------------------------------
+
+  // parameter change -> host
+  // (gui)
+
   //----------
 
   void queueHostParameter(uint32_t AIndex, float AValue) {
@@ -113,9 +124,14 @@ public:
     }
   }
 
-  //----------
+//------------------------------
+//
+//------------------------------
 
+  // modulation -> host
   //TODO: send back actually used value + mod?
+
+  //----------
 
   void queueHostModulation(uint32_t AIndex, float AValue) {
   }
@@ -126,13 +142,40 @@ public:
   }
 
 //------------------------------
+//
+//------------------------------
+
+  void flushHostEvents(const clap_output_events_t* events) {
+    MIP_HostEvent hostevent;
+    while (MClapHostProxy->readEvent(&hostevent)) {
+      MIP_PRINT;
+      clap_event_header_t* event_header;
+      switch(hostevent.type) {
+        case CLAP_EVENT_MIDI:
+          clap_event_midi_t clapevent;
+          clapevent.header.size     = sizeof(clap_event_midi_t);
+          clapevent.header.time     = hostevent.time;
+          clapevent.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+          clapevent.header.type     = CLAP_EVENT_MIDI;
+          clapevent.header.flags    = 0;
+          clapevent.data[0]         = 0;//hostevent.msg1;
+          clapevent.data[1]         = 0;//hostevent.msg2;
+          clapevent.data[2]         = 0;//hostevent.msg3;
+          event_header = (clap_event_header_t*)&clapevent;
+          break;
+      }
+      events->push_back(events,event_header);
+    }
+  }
+
+//------------------------------
 public: // editor listener
 //------------------------------
 
   // called from MIP_Editor.updateWidgetFromWindow
 
   void updateParameterFromEditor(uint32_t AIndex, float AValue) override {
-    MPlugin->on_plugin_parameter(AIndex,AValue);
+    MPlugin->on_plugin_parameter(0,AIndex,AValue);
     MIP_Parameter* parameter = MDescriptor->getParameter(AIndex);
     float value = parameter->from01(AValue);
     queueHostParameter(AIndex,value);
@@ -161,7 +204,7 @@ public:
           int32_t key = note_event->key;
           int32_t chan = note_event->channel;
           float value = note_event->velocity;
-          MPlugin->on_plugin_midi(MIP_MIDI_NOTE_ON + chan,key,value * 127.0);
+          MPlugin->on_plugin_midi(0,MIP_MIDI_NOTE_ON + chan,key,value * 127.0);
           break;
         }
         case CLAP_EVENT_NOTE_OFF: {
@@ -170,7 +213,7 @@ public:
           int32_t key = note_event->key;
           int32_t chan = note_event->channel;
           float value = note_event->velocity;
-          MPlugin->on_plugin_midi(MIP_MIDI_NOTE_OFF + chan,key,value * 127.0);
+          MPlugin->on_plugin_midi(0,MIP_MIDI_NOTE_OFF + chan,key,value * 127.0);
           break;
         }
         case CLAP_EVENT_NOTE_END: {
@@ -191,7 +234,7 @@ public:
         case CLAP_EVENT_PARAM_VALUE: {
           const clap_event_param_value_t* param_event = (clap_event_param_value_t*)event;
           MParameterValues[param_event->param_id] = param_event->value;
-          MPlugin->on_plugin_parameter(param_event->param_id,param_event->value);
+          MPlugin->on_plugin_parameter(0,param_event->param_id,param_event->value);
           #ifndef MIP_NO_GUI
             if (MEditor && MEditorIsOpen) {
               MEditor->queueEditorParam(param_event->param_id,param_event->value);
@@ -202,7 +245,7 @@ public:
         case CLAP_EVENT_PARAM_MOD: {
           const clap_event_param_mod_t* mod_event = (clap_event_param_mod_t*)event;
           MModulationValues[mod_event->param_id] = mod_event->amount;
-          MPlugin->on_plugin_modulation(mod_event->param_id,mod_event->amount);
+          MPlugin->on_plugin_modulation(0,mod_event->param_id,mod_event->amount);
           #ifndef MIP_NO_GUI
             if (MEditor && MEditorIsOpen) {
               MEditor->queueEditorMod(mod_event->param_id,mod_event->amount);
@@ -215,7 +258,7 @@ public:
         }
         case CLAP_EVENT_MIDI: {
           const clap_event_midi_t* midi_event = (clap_event_midi_t*)event;
-          MPlugin->on_plugin_midi(midi_event->data[0],midi_event->data[1],midi_event->data[2]);
+          MPlugin->on_plugin_midi(0,midi_event->data[0],midi_event->data[1],midi_event->data[2]);
           break;
         }
         case CLAP_EVENT_MIDI_SYSEX: {
@@ -232,6 +275,7 @@ public:
     if (events) {
       flushHostParameters(events);
       flushHostModulations(events);
+      flushHostEvents(events);
     }
   }
 

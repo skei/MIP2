@@ -15,6 +15,8 @@
 //#include "../plugins/sa_botage.cpp"
 //#include "../plugins/simple_synth.cpp"                  // !!! gui
 
+//#include "../plugins/clap1.cpp"
+
 //----------------------------------------------------------------------
 //
 // bugy, error, todo, ..
