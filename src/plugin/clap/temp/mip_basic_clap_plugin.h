@@ -2,8 +2,11 @@
 #define mip_basic_clap_plugin_included
 //----------------------------------------------------------------------
 
-#include "mip.h"
-#include "plugin/clap/mip_clap.h"
+//#include <string.h> // strcmp
+#include "extern/clap/clap.h"
+//#include "extern/clap/ext/draft/ambisonic.h"
+//#include "extern/clap/ext/draft/check-for-update.h"
+
 
 //----------------------------------------------------------------------
 //
@@ -11,7 +14,7 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_BasicClapPlugin {
+class ClapPlugin {
 
 //------------------------------
 private:
@@ -49,15 +52,15 @@ private:
 public:
 //------------------------------
 
-  MIP_BasicClapPlugin(const clap_plugin_descriptor_t* ADescriptor/*, const clap_host_t* AHost*/) {
-    MDescriptor       = ADescriptor;
-    //MHost             = AHost;
+  ClapPlugin(const clap_plugin_descriptor_t* ADescriptor/*, const clap_host_t* AHost*/) {
+    MDescriptor   = ADescriptor;
+    //MHost       = AHost;
     MPlugin.desc  = ADescriptor;
   }
 
   //----------
 
-  virtual ~MIP_BasicClapPlugin() {
+  virtual ~ClapPlugin() {
   }
 
   //----------
@@ -146,47 +149,47 @@ private: // callbacks
 //------------------------------
 
   static bool clap_plugin_init_callback(const struct clap_plugin *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->init();
   }
 
   static void clap_plugin_destroy_callback(const struct clap_plugin *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     plug->destroy();
   }
 
   static bool clap_plugin_activate_callback(const struct clap_plugin *plugin, double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->activate(sample_rate,min_frames_count,max_frames_count);
   }
 
   static void clap_plugin_deactivate_callback(const struct clap_plugin *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     plug->deactivate();
   }
 
   static bool clap_plugin_start_processing_callback(const struct clap_plugin *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->start_processing();
   }
 
   static void clap_plugin_stop_processing_callback(const struct clap_plugin *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     plug->stop_processing();
   }
 
   static clap_process_status clap_plugin_process_callback(const struct clap_plugin *plugin, const clap_process_t *process) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->process(process);
   }
 
   static const void* clap_plugin_get_extension_callback(const struct clap_plugin *plugin, const char *id) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->get_extension(id);
   }
 
   static void clap_plugin_on_main_thread_callback(const struct clap_plugin *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->on_main_thread();
   }
 
@@ -214,12 +217,12 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_audio_ports_count_callback(const clap_plugin_t* plugin, bool is_input) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->audio_ports_count(is_input);
   }
 
   static bool clap_plugin_audio_ports_get_callback(const clap_plugin_t* plugin, uint32_t index, bool is_input, clap_audio_port_info_t* info) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->audio_ports_get(index,is_input,info);
   }
 
@@ -233,17 +236,17 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_audio_ports_config_count_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->audio_ports_config_count();
   }
 
   static bool clap_plugin_audio_ports_config_get_callback(const clap_plugin_t *plugin, uint32_t index, clap_audio_ports_config_t *config) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->audio_ports_config_get(index,config);
   }
 
   static bool clap_plugin_audio_ports_config_select_callback(const clap_plugin_t *plugin, clap_id config_id) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->audio_ports_config_select(config_id);
   }
 
@@ -258,7 +261,7 @@ private: // extensions
   //--------------------
 
   static bool clap_plugin_event_filter_accepts_callback(const clap_plugin_t *plugin, uint16_t space_id, uint16_t event_type) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->event_filter_accepts(space_id,event_type);
   }
 
@@ -271,47 +274,47 @@ private: // extensions
   //--------------------
 
   static bool clap_plugin_gui_create_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_create();
   }
 
   static void clap_plugin_gui_destroy_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_destroy();
   }
 
   static bool clap_plugin_gui_set_scale_callback(const clap_plugin_t *plugin, double scale) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_set_scale(scale);
   }
 
   static bool clap_plugin_gui_get_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_get_size(width,height);
   }
 
   static bool clap_plugin_gui_can_resize_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_can_resize();
   }
 
   static void clap_plugin_gui_round_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_round_size(width,height);
   }
 
   static bool clap_plugin_gui_set_size_callback(const clap_plugin_t *plugin, uint32_t width, uint32_t height) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_set_size(width,height);
   }
 
   static void clap_plugin_gui_show_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_show();
   }
 
   static void clap_plugin_gui_hide_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_hide();
   }
 
@@ -332,7 +335,7 @@ private: // extensions
   //--------------------
 
   static bool clap_plugin_gui_x11_attach_callback(const clap_plugin_t *plugin, const char *display_name, unsigned long window) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_x11_attach(display_name,window);
   }
 
@@ -345,7 +348,7 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_latency_get_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->latency_get();
   }
 
@@ -358,12 +361,12 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_note_name_count_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->note_name_count();
   }
 
   static bool clap_plugin_note_name_get_callback(const clap_plugin_t *plugin, uint32_t index, clap_note_name_t *note_name) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->note_name_get(index,note_name);
   }
 
@@ -377,12 +380,12 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_note_ports_count_callback(const clap_plugin_t *plugin, bool is_input) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->note_ports_count(is_input);
   }
 
   static bool clap_plugin_note_ports_get_callback(const clap_plugin_t* plugin, uint32_t index, bool is_input, clap_note_port_info_t *info) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->note_ports_get(index,is_input,info);
   }
 
@@ -396,32 +399,32 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_params_count_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_count();
   }
 
   static bool clap_plugin_params_get_info_callback(const clap_plugin_t *plugin, int32_t param_index, clap_param_info_t* param_info) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_get_info(param_index,param_info);
   }
 
   static bool clap_plugin_params_get_value_callback(const clap_plugin_t *plugin, clap_id param_id, double *value) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_get_value(param_id,value);
   }
 
   static bool clap_plugin_params_value_to_text_callback(const clap_plugin_t *plugin, clap_id param_id, double value, char *display, uint32_t size) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_value_to_text(param_id,value,display,size);
   }
 
   static bool clap_plugin_params_text_to_value_callback(const clap_plugin_t *plugin, clap_id param_id, const char *display, double *value) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_text_to_value(param_id,display,value);
   }
 
   static void clap_plugin_params_flush_callback(const clap_plugin_t* plugin, const clap_input_events_t* in, const clap_output_events_t* out) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_flush(in,out);
   }
 
@@ -439,7 +442,7 @@ private: // extensions
   //--------------------
 
   static void clap_plugin_posix_fd_support_on_fd_callback(const clap_plugin_t *plugin, int fd, int flags) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->posix_fd_support_on_fd(fd,flags);
   }
 
@@ -452,7 +455,7 @@ private: // extensions
   //--------------------
 
   static void clap_plugin_render_set_callback(const clap_plugin_t *plugin, clap_plugin_render_mode mode) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->render_set(mode);
   }
 
@@ -465,12 +468,12 @@ private: // extensions
   //--------------------
 
   static bool clap_plugin_state_save_callback(const clap_plugin_t *plugin, clap_ostream_t *stream) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->state_save(stream);
   }
 
   static bool clap_plugin_state_load_callback(const clap_plugin_t *plugin, clap_istream_t *stream) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->state_load(stream);
   }
 
@@ -484,7 +487,7 @@ private: // extensions
   //--------------------
 
   static void clap_plugin_thread_pool_exec_callback(const clap_plugin_t *plugin, uint32_t task_index) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->thread_pool_exec(task_index);
   }
 
@@ -497,7 +500,7 @@ private: // extensions
   //--------------------
 
   static void clap_plugin_timer_support_on_timer_callback(const clap_plugin_t *plugin, clap_id timer_id) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->timer_support_on_timer(timer_id);
   }
 
@@ -514,7 +517,7 @@ private: // extensions
   //--------------------
 
   static bool clap_plugin_ambisonic_get_info_callback(const clap_plugin_t* plugin, bool is_input, uint32_t port_index, clap_ambisonic_info_t* info) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->ambisonic_get_info(is_input,port_index,info);
   }
 
@@ -527,7 +530,7 @@ private: // extensions
   //--------------------
 
   //static void clap_plugin_check_for_update_check_callback(const clap_plugin_t *plugin, bool include_beta) {
-  //  MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+  //  ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
   //  return plug->check_for_update_check(bool include_beta);
   //}
 
@@ -543,27 +546,27 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_file_reference_count_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->file_reference_count();
   }
 
   static bool clap_plugin_file_reference_get_callback(const clap_plugin_t *plugin, uint32_t index, clap_file_reference_t *file_reference) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->file_reference_get(index,file_reference);
   }
 
   static bool clap_plugin_file_reference_get_hash_callback(const clap_plugin_t *plugin, clap_id resource_id, clap_hash hash, uint8_t* digest, uint32_t digest_size) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->file_reference_get_hash(resource_id,hash,digest,digest_size);
   }
 
   static bool clap_plugin_file_reference_update_path_callback(const clap_plugin_t *plugin, clap_id resource_id, const char *path) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->file_reference_update_path(resource_id,path);
   }
 
   static bool clap_plugin_file_reference_save_resources_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->file_reference_save_resources();
   }
 
@@ -580,11 +583,11 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_midi_mappings_count_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->midi_mappings_count();
   }
   static bool clap_plugin_midi_mappings_get_callback(const clap_plugin_t *plugin, uint32_t index, clap_midi_mapping_t *mapping) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->midi_mappings_get(index,mapping);
   }
 
@@ -598,7 +601,7 @@ private: // extensions
   //--------------------
 
   static bool clap_plugin_preset_load_from_file_callback(const clap_plugin_t *plugin, const char *path) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->preset_load_from_file(path);
   }
 
@@ -611,22 +614,22 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_quick_controls_count_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->quick_controls_count();
   }
 
   static bool clap_plugin_quick_controls_get_callback(const clap_plugin_t *plugin, uint32_t page_index, clap_quick_controls_page_t *page) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->quick_controls_get(page_index,page);
   }
 
   static void clap_plugin_quick_controls_select_callback(const clap_plugin_t *plugin, clap_id page_id) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->quick_controls_select(page_id);
   }
 
   static clap_id clap_plugin_quick_controls_get_selected_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->quick_controls_get_selected();
   }
 
@@ -642,12 +645,12 @@ private: // extensions
   //--------------------
 
   static uint32_t clap_plugin_surround_get_channel_map_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->surround_get_channel_map(is_input,port_index,channel_map,channel_map_capacity);
   }
 
   static void clap_plugin_surround_changed_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     plug->surround_changed();
   }
 
@@ -661,7 +664,7 @@ private: // extensions
   //--------------------
 
   static void clap_plugin_track_info_changed_callback(const clap_plugin_t *plugin) {
-    MIP_BasicClapPlugin* plug = (MIP_BasicClapPlugin*)plugin->plugin_data;
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->track_info_changed();
   }
 

@@ -7,10 +7,10 @@
 
 //----------
 
-#include "mip.h"
-//#include "base/system/mip_time.h"
-#include "plugin/clap/mip_clap.h"
-//#include "plugin/clap/mip_clap_hosted_plugin.h"
+//#include <string.h> // strcmp
+#include "extern/clap/clap.h"
+//#include "extern/clap/ext/draft/ambisonic.h"
+//#include "extern/clap/ext/draft/check-for-update.h"
 
 //----------------------------------------------------------------------
 //
@@ -18,7 +18,7 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_BasicClapHost {
+class ClapHost {
 
 
 //------------------------------
@@ -26,14 +26,13 @@ private:
 //------------------------------
 
   //HINSTANCE                   MLibHandle      = nullptr;
-
     void*                       MLibHandle      = nullptr;
     const clap_plugin_entry*    MClapEntry      = nullptr;
     const clap_plugin_factory*  MClapFactory    = nullptr;
     char                        MPathOnly[512]  = {0};
+
 //  const char*                 MPluginPath     = "";
 ////MIP_Timer*                  MTimer          = nullptr;
-
 //  clap_host                     MHost
 //  clap_host_ambisonic           MAmbisonic
 //  clap_host_audio_ports         MAudioPorts
@@ -63,12 +62,12 @@ private:
 public:
 //------------------------------
 
-  MIP_BasicClapHost() {
+  ClapHost() {
   }
 
   //----------
 
-  ~MIP_BasicClapHost() {
+  ~ClapHost() {
   }
 
 //------------------------------
@@ -227,22 +226,22 @@ private:
 //------------------------------
 
   static const void* clap_host_get_extension_callback(const struct clap_host *host, const char *extension_id) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->get_extension(extension_id);
   }
 
   static void clap_host_request_restart_callback(const struct clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->request_restart();
   }
 
   static void clap_host_request_process_callback(const struct clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->request_process();
   }
 
   static void clap_host_request_callback_callback(const struct clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->request_callback();
   }
 
@@ -250,7 +249,7 @@ private:
   clap_host MHost = {
     CLAP_VERSION,
     this,
-    "MIP_BasicClapHost",
+    "ClapHost",
     "Tor-Helge Skei",
     "https://torhelgeskei.com",
     "0.0.1",
@@ -267,7 +266,7 @@ private: // extensions
   // ambisonic
 
   static void clap_host_ambisonic_changed_callback(const clap_host_t *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->ambisonic_changed();
   }
 
@@ -278,12 +277,12 @@ private: // extensions
   // audio-ports
 
   static uint32_t clap_host_audio_ports_get_preferred_sample_size_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->audio_ports_get_preferred_sample_size();
   }
 
   static void clap_host_audio_ports_rescan_callback(const clap_host *host, uint32_t flags) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->audio_ports_rescan(flags);
   }
 
@@ -295,7 +294,7 @@ private: // extensions
   // audio-ports-config
 
   static void clap_host_audio_ports_config_rescan_callback(const struct clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->audio_ports_config_rescan();
   }
 
@@ -306,7 +305,7 @@ private: // extensions
   // check-for-update.draft/0
 
   static void clap_host_check_for_update_on_new_version_callback(const clap_host *host, const clap_check_for_update_info *update_info) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->check_for_update_on_new_version(update_info);
   }
 
@@ -317,7 +316,7 @@ private: // extensions
   // event-filter
 
   static void clap_host_event_filter_changed_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->event_filter_changed();
   }
 
@@ -328,7 +327,7 @@ private: // extensions
   // event-registry
 
   static bool clap_host_event_registry_query_callback(const clap_host_t *host, const char *space_name, uint16_t *space_id) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->event_registry_query(space_name,space_id);
   }
 
@@ -339,12 +338,12 @@ private: // extensions
   // file-reference.draft/0
 
   static void clap_host_file_reference_changed_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->file_reference_changed();
   }
 
   static void clap_host_file_reference_set_dirty_callback(const clap_host *host, clap_id resource_id) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->file_reference_set_dirty(resource_id);
   }
 
@@ -356,7 +355,7 @@ private: // extensions
   // gui
 
   static bool clap_host_gui_resize_callback(const clap_host *host, uint32_t width, uint32_t height) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->gui_resize(width,height);
   }
 
@@ -367,7 +366,7 @@ private: // extensions
   // latency
 
   static void clap_host_latency_changed_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->latency_changed();
   }
 
@@ -378,7 +377,7 @@ private: // extensions
   // log
 
   static void clap_host_log_log_callback(const clap_host *host, clap_log_severity severity, const char *msg) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->log_log(severity,msg);
   }
 
@@ -389,7 +388,7 @@ private: // extensions
   // midi-mappings.draft/0
 
   static void clap_host_midi_mappings_changed_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->midi_mappings_changed();
   }
 
@@ -400,7 +399,7 @@ private: // extensions
   // note-name
 
   static void clap_host_note_name_changed_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->note_name_changed();
   }
 
@@ -411,7 +410,7 @@ private: // extensions
   // note-ports
 
   static void clap_host_note_ports_rescan_callback(const clap_host *host, uint32_t flags) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->note_ports_rescan(flags);
   }
 
@@ -422,17 +421,17 @@ private: // extensions
   // params
 
   static void clap_host_params_rescan_callback(const clap_host *host, clap_param_rescan_flags flags) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->params_rescan(flags);
   }
 
   static void clap_host_params_clear_callback(const clap_host *host, clap_id param_id, clap_param_clear_flags flags) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->params_clear(param_id,flags);
   }
 
   static void clap_host_params_request_flush_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->params_request_flush();
   }
 
@@ -445,17 +444,17 @@ private: // extensions
   // posix-fd-support
 
   static bool clap_host_posix_fd_support_register_fd_callback(const clap_host *host, int fd, int flags) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->posix_fd_support_register_fd(fd,flags);
   }
 
   static bool clap_host_posix_fd_support_modify_fd_callback(const clap_host *host, int fd, int flags) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->posix_fd_support_modify_fd(fd,flags);
   }
 
   static bool clap_host_posix_fd_support_unregister_fd_callback(const clap_host *host, int fd) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->posix_fd_support_unregister_fd(fd);
   }
 
@@ -468,7 +467,7 @@ private: // extensions
   // quick-controls.draft/0
 
   static void clap_host_quick_controls_changed_callback(const clap_host *host, clap_quick_controls_changed_flags flags) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->quick_controls_changed(flags);
   }
 
@@ -479,7 +478,7 @@ private: // extensions
   // state
 
   static void clap_host_state_mark_dirty_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->state_mark_dirty();
   }
 
@@ -490,12 +489,12 @@ private: // extensions
   // surround
 
   static void clap_host_surround_changed_callback(const clap_host_t *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->surround_changed();
   }
 
   static void clap_host_surround_get_preferred_channel_map_callback(const clap_host_t *host, uint8_t* channel_map, uint32_t channel_map_capacity, uint32_t* channel_count) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     host_->surround_get_preferred_channel_map(channel_map,channel_map_capacity,channel_count);
   }
 
@@ -507,12 +506,12 @@ private: // extensions
   // thread-check
 
   static bool clap_host_thread_check_is_main_thread_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->thread_check_is_main_thread();
   }
 
   static bool clap_host_thread_check_is_audio_thread_callback(const clap_host *host) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->thread_check_is_audio_thread();
   }
 
@@ -524,7 +523,7 @@ private: // extensions
   // thread-pool.draft/0
 
   static bool clap_host_thread_pool_request_exec_callback(const clap_host *host, uint32_t num_tasks) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->thread_pool_request_exec(num_tasks);
   }
 
@@ -535,12 +534,12 @@ private: // extensions
   // timer-support
 
   static bool clap_host_timer_support_register_timer_callback(const clap_host *host, uint32_t period_ms, clap_id *timer_id) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->timer_support_register_timer(period_ms,timer_id);
   }
 
   static bool clap_host_timer_support_unregister_timer_callback(const clap_host *host, clap_id timer_id) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->timer_support_unregister_timer(timer_id);
   }
 
@@ -552,7 +551,7 @@ private: // extensions
   // track-info.draft/0
 
   static bool clap_host_track_info_get_callback(const clap_host *host, clap_track_info *info) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->track_info_get(info);
   }
 
@@ -563,7 +562,7 @@ private: // extensions
   // tuning.draft/0
 
   static double clap_host_tuning_get_callback(const clap_host *host, int32_t key, int32_t channel) {
-    MIP_BasicClapHost* host_ = (MIP_BasicClapHost*)host->host_data;
+    ClapHost* host_ = (ClapHost*)host->host_data;
     return host_->tuning_get(key,channel);
   }
 

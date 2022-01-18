@@ -2,7 +2,7 @@
 //#include "../apps/claptesthost.cpp"
 
 //#include "test/test.cpp"                                // !!!
-#include "test/test_gui.cpp"
+//#include "test/test_gui.cpp"
 //#include "test/test_plugin.cpp"                         // !!! vst3 gui
 
 
@@ -15,7 +15,7 @@
 //#include "../plugins/sa_botage.cpp"
 //#include "../plugins/simple_synth.cpp"                  // !!! gui
 
-//#include "../plugins/clap1.cpp"
+#include "../plugins/clap1.cpp"
 
 //----------------------------------------------------------------------
 //
