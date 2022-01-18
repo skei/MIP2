@@ -15,7 +15,7 @@
 //#include "../plugins/sa_botage.cpp"
 //#include "../plugins/simple_synth.cpp"                  // !!! gui
 
-#include "../plugins/gain_clap.cpp"
+#include "../plugins/clap/gain.cpp"
 
 //----------------------------------------------------------------------
 //

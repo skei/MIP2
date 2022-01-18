@@ -1,3 +1,12 @@
+
+/*
+  you might need to change these a little..
+  g++ -Wall -std=c++14 -Wl,--as-needed -O2 -fPIC -I../include -c gain_clap.cpp -o build.o
+  g++ -shared build.o -o gain.clap -s -fPIE
+*/
+
+//----------
+
 #include <string.h>   // strcmp
 #include <stdio.h>    // sprintf
 #include <stdlib.h>   // atof
@@ -291,9 +300,7 @@ private: // callbacks
 private: // extensions
 //------------------------------
 
-  //--------------------
   // clap.params
-  //--------------------
 
   static uint32_t params_count_callback(const clap_plugin_t *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
@@ -411,10 +418,3 @@ CLAP_EXPORT const clap_plugin_entry clap_entry = {
   clap_entry_get_factory_callback
 };
 
-//----------
-
-/*
-  you might need to change these a little..
-  g++ -Wall -std=c++14 -Wl,--as-needed -O2 -fPIC -I../include -c gain_clap.cpp -o build.o
-  g++ -shared build.o -o gain.clap -s -fPIE
-*/
