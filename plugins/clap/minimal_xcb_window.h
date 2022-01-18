@@ -3,11 +3,10 @@
 //----------------------------------------------------------------------
 
 #include <xcb/xcb.h>
-#include <xcb/xcb_cursor.h>
-#include <xcb/xcb_image.h>
-#include <xcb/xcb_keysyms.h>
-#include <xcb/xcb_util.h>
-#include <xcb/xproto.h>
+//#include <xcb/xcb_util.h>
+//#include <xcb/xproto.h>
+
+#include <string.h> // strlen
 
 //----------------------------------------------------------------------
 //
@@ -24,7 +23,9 @@ private:
   xcb_connection_t* MConnection = nullptr;
   xcb_window_t      MWindow     = XCB_NONE;
   xcb_screen_t*     MScreen     = nullptr;
-  //xcb_gcontext_t    MScreenGC   = XCB_NONE;
+  xcb_gcontext_t    MScreenGC   = XCB_NONE;
+
+  bool              MAttached   = false;
 
 //------------------------------
 protected:
@@ -43,10 +44,11 @@ public:
   //----------
 
   ~MinimalXcbWindow() {
-    if (MWindow != XCB_NONE) {
-//      xcb_free_gc(MConnection,MScreenGC);
-      xcb_disconnect(MConnection);
+    //if (MWindow != XCB_NONE) {
+    if (MAttached) {
+      xcb_free_gc(MConnection,MScreenGC);
       xcb_destroy_window(MConnection,MWindow);
+      xcb_disconnect(MConnection);
     }
   }
 
@@ -56,7 +58,7 @@ public:
 
   bool attach(const char *display_name, unsigned long window) {
 
-    //connect();
+    //connect
 
     int screen_num;
     MConnection = xcb_connect(nullptr,&screen_num);
@@ -68,6 +70,8 @@ public:
         break;
       }
     }
+
+    // create window
 
     uint32_t event_mask =
       XCB_EVENT_MASK_KEY_PRESS      |
@@ -106,47 +110,49 @@ public:
       window_mask_values
     );
 
-    struct WMHints {
-      uint32_t flags;
-      uint32_t functions;
-      uint32_t decorations;
-      int32_t  inputMode;
-      uint32_t state;
-    };
-
-    static const unsigned long MWM_HINTS_DECORATIONS = 1 << 1;
-
-    //removeDecorations();
-
-    xcb_atom_t prop = mip_xcb_get_intern_atom(MConnection,"_MOTIF_WM_HINTS");
-    if (prop) {
-      WMHints hints;
-      hints.flags = MWM_HINTS_DECORATIONS;
-      hints.decorations = 0;
-      const unsigned char* ptr = (const unsigned char*)(&hints);
-      xcb_change_property(
-        MConnection,
-        XCB_PROP_MODE_REPLACE,
-        MWindow,
-        prop,     // hintsAtomReply->atom,
-        prop,     // XCB_ATOM_WM_HINTS,
-        32,
-        5,        // PROP_MOTIF_WM_HINTS_ELEMENTS
-        ptr
-      );
-    }
-
-    //initGC();
-
-//    MScreenGC = xcb_generate_id(MConnection);
-//    xcb_drawable_t draw = MScreen->root;
-//    uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
-//    uint32_t values[2];
-//    values[0] = MScreen->black_pixel;
-//    values[1] = MScreen->white_pixel;
-//    xcb_create_gc(MConnection, MScreenGC, draw, mask, values);
-
     xcb_flush(MConnection);
+
+    // remove decorations
+
+//    struct WMHints {
+//      uint32_t flags;
+//      uint32_t functions;
+//      uint32_t decorations;
+//      int32_t  inputMode;
+//      uint32_t state;
+//    };
+//
+//    static const unsigned long MWM_HINTS_DECORATIONS = 1 << 1;
+//
+//    xcb_atom_t prop = mip_xcb_get_intern_atom(MConnection,"_MOTIF_WM_HINTS");
+//    if (prop) {
+//      WMHints hints;
+//      hints.flags = MWM_HINTS_DECORATIONS;
+//      hints.decorations = 0;
+//      const unsigned char* ptr = (const unsigned char*)(&hints);
+//      xcb_change_property(
+//        MConnection,
+//        XCB_PROP_MODE_REPLACE,
+//        MWindow,
+//        prop,     // hintsAtomReply->atom,
+//        prop,     // XCB_ATOM_WM_HINTS,
+//        32,
+//        5,        // PROP_MOTIF_WM_HINTS_ELEMENTS
+//        ptr
+//      );
+//    }
+
+    // init GC
+
+    MScreenGC = xcb_generate_id(MConnection);
+    xcb_drawable_t draw = MScreen->root;
+    uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
+    uint32_t values[2];
+    values[0] = MScreen->black_pixel;
+    values[1] = MScreen->white_pixel;
+    xcb_create_gc(MConnection, MScreenGC, draw, mask, values);
+
+    MAttached = true;
     return true;
   }
 
@@ -169,35 +175,35 @@ public:
 private:
 //------------------------------
 
-  xcb_atom_t mip_xcb_get_intern_atom(xcb_connection_t *conn, const char *name) {
-    xcb_intern_atom_cookie_t cookie = xcb_intern_atom(conn ,0, strlen(name), name);
-    xcb_intern_atom_reply_t *reply = xcb_intern_atom_reply(conn, cookie, NULL);
-    return reply->atom;
-  }
+//  xcb_atom_t mip_xcb_get_intern_atom(xcb_connection_t *conn, const char *name) {
+//    xcb_intern_atom_cookie_t cookie = xcb_intern_atom(conn ,0, strlen(name), name);
+//    xcb_intern_atom_reply_t *reply = xcb_intern_atom_reply(conn, cookie, NULL);
+//    return reply->atom;
+//  }
 
 //------------------------------
 public:
 //------------------------------
 
-//  void fill(uint32_t AColor) {
-//    fill(0,0,MWidth,MHeight,AColor);
-//  }
+  void fill(uint32_t AColor) {
+    fill(0,0,MWidth,MHeight,AColor);
+  }
 
   //----------
 
-//  void fill(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) {
-//    uint32_t mask = XCB_GC_FOREGROUND;
-//    uint32_t values[1];
-//    values[0] = AColor;
-//    xcb_change_gc(MConnection,MScreenGC,mask,values);
-//    xcb_rectangle_t rectangles[] = {{
-//      (int16_t)AXpos,
-//      (int16_t)AYpos,
-//      (uint16_t)AWidth,
-//      (uint16_t)AHeight,
-//    }};
-//    xcb_poly_fill_rectangle(MConnection,MWindow,MScreenGC,1,rectangles);
-//  }
+  void fill(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) {
+    uint32_t mask = XCB_GC_FOREGROUND;
+    uint32_t values[1];
+    values[0] = AColor;
+    xcb_change_gc(MConnection,MScreenGC,mask,values);
+    xcb_rectangle_t rectangles[] = {{
+      (int16_t)AXpos,
+      (int16_t)AYpos,
+      (uint16_t)AWidth,
+      (uint16_t)AHeight,
+    }};
+    xcb_poly_fill_rectangle(MConnection,MWindow,MScreenGC,1,rectangles);
+  }
 
 };
 

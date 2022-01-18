@@ -1,19 +1,28 @@
 
 /*
   you might need to change these a little..
-  g++ -Wall -std=c++14 -Wl,--as-needed -O2 -fPIC -I../include -c gain_clap.cpp -o build.o
-  g++ -shared build.o -o gain.clap -s -fPIE
+
+  g++ -Wall -std=c++14 -Wl,--as-needed -O2 -fPIC -I../clap -c gain_clap.cpp -o build.o
+  g++ -shared build.o -o gain.clap -s -fPIE -lxcb
+
 */
 
+//----------------------------------------------------------------------
+
+//#define NO_GUI
+
 //----------
+
+// change this to point to the clap headers..
+#include "extern/clap/clap.h"
+
+#ifndef NO_GUI
+  #include "minimal_xcb_window.h"
+#endif
 
 #include <string.h>   // strcmp
 #include <stdio.h>    // sprintf
 #include <stdlib.h>   // atof
-
-// change this to point to the clap headers..
-#include "extern/clap/clap.h"
-#include "minimal_xcb_window.h"
 
 //----------------------------------------------------------------------
 //
@@ -22,16 +31,20 @@
 //----------------------------------------------------------------------
 
 const clap_plugin_descriptor_t ClapDescriptor = {
-  CLAP_VERSION,                 // version
-  "torhelgeskei.gain.v0",       // id
-  "gain",                       // name
-  "tor-helge skei",             // vendor
-  "https://torhelgeskei.com",   // url
-  "",                           // manual_url
-  "",                           // support_url
-  "0.0.0",                      // version
-  "simple gain plugin",         // description
-  "audio_effect"                // features
+  CLAP_VERSION,
+  "torhelgeskei.gain.v0",
+  #ifndef NO_GUI
+    "gain_gui",
+  #else
+    "gain",
+  #endif
+  "tor-helge skei",
+  "https://torhelgeskei.com",
+  "",
+  "",
+  "0.0.0",
+  "simple gain plugin",
+  "audio_effect"
 };
 
 //----------------------------------------------------------------------
@@ -53,7 +66,10 @@ private:
 protected:
 //------------------------------
 
+  #ifndef NO_GUI
   MinimalXcbWindow* MWindow = nullptr;
+  #endif
+
   float MGain = 0.0;
 
 //------------------------------
@@ -159,8 +175,10 @@ public:
 
   const void* get_extension(const char *id) {
     if (strcmp(id,CLAP_EXT_PARAMS) == 0) { return &MParams; }
-    if (strcmp(id,CLAP_EXT_GUI) == 0) { return &MGui; }
-    if (strcmp(id,CLAP_EXT_GUI_X11) == 0) { return &MGuiX11; }
+    #ifndef NO_GUI
+      if (strcmp(id,CLAP_EXT_GUI) == 0) { return &MGui; }
+      if (strcmp(id,CLAP_EXT_GUI_X11) == 0) { return &MGuiX11; }
+    #endif
     return nullptr;
   }
 
@@ -234,6 +252,8 @@ public: // clap.params
 public: // clap.gui
 //------------------------------
 
+#ifndef NO_GUI
+
   bool gui_create() {
     MWindow = new MinimalXcbWindow();
     return true;
@@ -296,6 +316,8 @@ public: // clap.gui-x11
     MWindow->attach(display_name,window);
     return true;
   }
+
+#endif // NO_GUI
 
 //------------------------------
 private: // callbacks
@@ -410,6 +432,8 @@ private: // clap.params
 private: // clap.gui
 //------------------------------
 
+#ifndef NO_GUI
+
   static bool gui_create_callback(const clap_plugin_t *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->gui_create();
@@ -480,6 +504,7 @@ private: // clap.gui-x11
     gui_x11_attach_callback
   };
 
+#endif // NO_GUI
 
 };
 
