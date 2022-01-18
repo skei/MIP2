@@ -1,6 +1,6 @@
 
 /*
-  TODO, consider, nloltes, etc..
+  TODO, consider, notes-to-self, etc..
 
   * find a proper name for this..
     (and not confuse it with regular clap names/structs,
@@ -11,7 +11,7 @@
     do we want more than one at a time?
 
   * audio processing (audio effect)
-    (should more or less work, already?)
+    (should more or less work, i think?)
 
   * load preset from file
     (use clap.preset-load)
@@ -29,7 +29,7 @@
   * notify pklugin about offline rendering?
     or 'simulare' realtime, like we do now?
 
-  * is there problems with using libsndfile on win/mac?
+  * could there problems with using libsndfile on win/mac?
     do we want to make our own wav import/exporter?
     (not too hard, but tedious..)
 

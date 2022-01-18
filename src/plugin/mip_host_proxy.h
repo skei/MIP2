@@ -7,12 +7,22 @@
 
 //----------------------------------------------------------------------
 
+#define MIP_EVENT_NONE    0
+#define MIP_EVENT_PARAM   1
+#define MIP_EVENT_MOD     2
+#define MIP_EVENT_MIDI    3
+#define MIP_EVENT_NOTE    4
+
+//----------
+
 struct MIP_HostEvent {
   uint32_t  time;
-  uint8_t   type;
-  uint8_t   port;
-  uint8_t   chan;   // msg2
-  uint8_t   key;    // msg3
+  uint32_t  type;
+  int32_t   port;
+  int32_t   chan;
+  int32_t   key;
+  uint8_t   data[4];
+  uint32_t  index;
   float     value;
 };
 
