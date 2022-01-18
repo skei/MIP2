@@ -2,6 +2,7 @@
 #include <stdio.h>    // sprintf
 #include <stdlib.h>   // atof
 
+// change this to point to the clap headers..
 #include "extern/clap/clap.h"
 
 //----------------------------------------------------------------------
@@ -11,16 +12,16 @@
 //----------------------------------------------------------------------
 
 const clap_plugin_descriptor_t ClapDescriptor = {
-  CLAP_VERSION,
-  "skei.gain_clap.v0",
-  "Gain (clap)",
-  "Tor-Helge Skei",
-  "https://torhelgeskei.com",
-  "",
-  "",
-  "0.0.0",
-  "Simple Gain plugin (CLAP version)",
-  "audio_effect"
+  CLAP_VERSION,                 // version
+  "torhelgeskei.gain.v0",       // id
+  "gain",                       // name
+  "tor-helge skei",             // vendor
+  "https://torhelgeskei.com",   // url
+  "",                           // manual_url
+  "",                           // support_url
+  "0.0.0",                      // version
+  "simple gain plugin",         // description
+  "audio_effect"                // features
 };
 
 //----------------------------------------------------------------------
@@ -38,7 +39,9 @@ private:
   const clap_plugin_descriptor_t* MDescriptor = nullptr;
   const clap_host_t* MHost = nullptr;
 
-  //----------
+//------------------------------
+protected:
+//------------------------------
 
   float MGain = 0.0;
 
@@ -46,27 +49,27 @@ private:
 public:
 //------------------------------
 
-  ClapPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-    MDescriptor   = ADescriptor;
-    MHost         = AHost;
-    MPlugin.desc  = ADescriptor;
+  ClapPlugin(const clap_plugin_descriptor_t* descriptor, const clap_host_t* host) {
+    MPlugin.desc  = descriptor;
+    MDescriptor   = descriptor;
+    MHost         = host;
   }
 
   //----------
 
-  virtual ~ClapPlugin() {
+  ~ClapPlugin() {
   }
 
   //----------
 
-  const clap_plugin_t* getPtr() {
-    return &MPlugin;
-  }
+  // called by clap_factory.create_plugin
+  const clap_plugin_t* getPtr() { return &MPlugin; }
 
 //------------------------------
 private:
 //------------------------------
 
+  // TODO: sample accurate
 
   void handle_events(const clap_input_events_t* events) {
     uint32_t num_events = events->size(events);
@@ -171,7 +174,7 @@ public: // extensions
     param_info->id            = 0;
     param_info->flags         = 0;
     param_info->cookie        = nullptr;
-    strncpy(param_info->name,"Gain",CLAP_NAME_SIZE);
+    strncpy(param_info->name,"gain",CLAP_NAME_SIZE);
     strncpy(param_info->module,"",CLAP_MODULE_SIZE);
     param_info->min_value     = 0.0;
     param_info->max_value     = 1.0;
@@ -222,47 +225,47 @@ public: // extensions
 private: // callbacks
 //------------------------------
 
-  static bool clap_plugin_init_callback(const struct clap_plugin *plugin) {
+  static bool init_callback(const struct clap_plugin *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->init();
   }
 
-  static void clap_plugin_destroy_callback(const struct clap_plugin *plugin) {
+  static void destroy_callback(const struct clap_plugin *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     plug->destroy();
   }
 
-  static bool clap_plugin_activate_callback(const struct clap_plugin *plugin, double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
+  static bool activate_callback(const struct clap_plugin *plugin, double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->activate(sample_rate,min_frames_count,max_frames_count);
   }
 
-  static void clap_plugin_deactivate_callback(const struct clap_plugin *plugin) {
+  static void deactivate_callback(const struct clap_plugin *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     plug->deactivate();
   }
 
-  static bool clap_plugin_start_processing_callback(const struct clap_plugin *plugin) {
+  static bool start_processing_callback(const struct clap_plugin *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->start_processing();
   }
 
-  static void clap_plugin_stop_processing_callback(const struct clap_plugin *plugin) {
+  static void stop_processing_callback(const struct clap_plugin *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     plug->stop_processing();
   }
 
-  static clap_process_status clap_plugin_process_callback(const struct clap_plugin *plugin, const clap_process_t *process) {
+  static clap_process_status process_callback(const struct clap_plugin *plugin, const clap_process_t *process) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->process(process);
   }
 
-  static const void* clap_plugin_get_extension_callback(const struct clap_plugin *plugin, const char *id) {
+  static const void* get_extension_callback(const struct clap_plugin *plugin, const char *id) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->get_extension(id);
   }
 
-  static void clap_plugin_on_main_thread_callback(const struct clap_plugin *plugin) {
+  static void on_main_thread_callback(const struct clap_plugin *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->on_main_thread();
   }
@@ -273,15 +276,15 @@ private: // callbacks
   clap_plugin_t MPlugin = {
     nullptr, // set in ClapPlugin constructor
     this,
-    clap_plugin_init_callback,
-    clap_plugin_destroy_callback,
-    clap_plugin_activate_callback,
-    clap_plugin_deactivate_callback,
-    clap_plugin_start_processing_callback,
-    clap_plugin_stop_processing_callback,
-    clap_plugin_process_callback,
-    clap_plugin_get_extension_callback,
-    clap_plugin_on_main_thread_callback
+    init_callback,
+    destroy_callback,
+    activate_callback,
+    deactivate_callback,
+    start_processing_callback,
+    stop_processing_callback,
+    process_callback,
+    get_extension_callback,
+    on_main_thread_callback
   };
 
 //------------------------------
@@ -292,43 +295,43 @@ private: // extensions
   // clap.params
   //--------------------
 
-  static uint32_t clap_plugin_params_count_callback(const clap_plugin_t *plugin) {
+  static uint32_t params_count_callback(const clap_plugin_t *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_count();
   }
 
-  static bool clap_plugin_params_get_info_callback(const clap_plugin_t *plugin, int32_t param_index, clap_param_info_t* param_info) {
+  static bool params_get_info_callback(const clap_plugin_t *plugin, int32_t param_index, clap_param_info_t* param_info) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_get_info(param_index,param_info);
   }
 
-  static bool clap_plugin_params_get_value_callback(const clap_plugin_t *plugin, clap_id param_id, double *value) {
+  static bool params_get_value_callback(const clap_plugin_t *plugin, clap_id param_id, double *value) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_get_value(param_id,value);
   }
 
-  static bool clap_plugin_params_value_to_text_callback(const clap_plugin_t *plugin, clap_id param_id, double value, char *display, uint32_t size) {
+  static bool params_value_to_text_callback(const clap_plugin_t *plugin, clap_id param_id, double value, char *display, uint32_t size) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_value_to_text(param_id,value,display,size);
   }
 
-  static bool clap_plugin_params_text_to_value_callback(const clap_plugin_t *plugin, clap_id param_id, const char *display, double *value) {
+  static bool params_text_to_value_callback(const clap_plugin_t *plugin, clap_id param_id, const char *display, double *value) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_text_to_value(param_id,display,value);
   }
 
-  static void clap_plugin_params_flush_callback(const clap_plugin_t* plugin, const clap_input_events_t* in, const clap_output_events_t* out) {
+  static void params_flush_callback(const clap_plugin_t* plugin, const clap_input_events_t* in, const clap_output_events_t* out) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
     return plug->params_flush(in,out);
   }
 
   clap_plugin_params_t MParams = {
-    clap_plugin_params_count_callback,
-    clap_plugin_params_get_info_callback,
-    clap_plugin_params_get_value_callback,
-    clap_plugin_params_value_to_text_callback,
-    clap_plugin_params_text_to_value_callback,
-    clap_plugin_params_flush_callback
+    params_count_callback,
+    params_get_info_callback,
+    params_get_value_callback,
+    params_value_to_text_callback,
+    params_text_to_value_callback,
+    params_flush_callback
   };
 
 };
