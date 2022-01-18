@@ -1,9 +1,12 @@
-
 #include <string.h> // strcmp
 
 #include "extern/clap/clap.h"
 #include "extern/clap/ext/draft/ambisonic.h"
 #include "extern/clap/ext/draft/check-for-update.h"
+
+#define MIP_NO_PLUGIN
+#define MIP_NO_GUI
+#include "mip.h"
 
 //----------------------------------------------------------------------
 //
@@ -56,7 +59,7 @@ public:
 
   //----------
 
-  const clap_plugin_t* getPlugin() {
+  const clap_plugin_t* getPtr() {
     return &MPlugin;
   }
 
@@ -64,15 +67,37 @@ public:
 public:
 //------------------------------
 
-  bool init() { return false; }
-  void destroy() {}
-  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) { return false; }
-  void deactivate() {}
-  bool start_processing() { return false; }
-  void stop_processing() {}
-  clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_CONTINUE; }
-  const void* get_extension(const char *id) { return nullptr; }
-  void on_main_thread() {}
+  bool init() {
+    return true;
+  }
+
+  void destroy() {
+  }
+
+  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
+    return true;
+  }
+
+  void deactivate() {
+  }
+
+  bool start_processing() {
+    return true;
+  }
+
+  void stop_processing() {
+  }
+
+  clap_process_status process(const clap_process_t *process) {
+    return CLAP_PROCESS_CONTINUE;
+  }
+
+  const void* get_extension(const char *id) {
+    return nullptr;
+  }
+
+  void on_main_thread() {
+  }
 
 //------------------------------
 public: // extensions
@@ -665,11 +690,22 @@ private: // extensions
 
 };
 
+
+
 //----------------------------------------------------------------------
 //
 // factory
 //
 //----------------------------------------------------------------------
+
+  /*
+    factories:
+      CLAP_PLUGIN_FACTORY_ID
+      CLAP_CLAP_CONVERTER_FACTORY_ID
+      CLAP_VST2_CONVERTER_FACTORY_ID
+      CLAP_VST3_CONVERTER_FACTORY_ID
+  */
+
 
 class ClapFactory {
 
@@ -679,6 +715,7 @@ public:
 
   static
   uint32_t get_plugin_count(const struct clap_plugin_factory *factory) {
+    MIP_Print("\n");
     return 1;
   }
 
@@ -686,15 +723,23 @@ public:
 
   static
   const clap_plugin_descriptor_t* get_plugin_descriptor(const struct clap_plugin_factory *factory, uint32_t index) {
-    return &ClapDescriptor;
+    MIP_Print("index: %i\n",index);
+    if (index == 0) {
+      return &ClapDescriptor;
+    }
+    return nullptr;
   }
 
   //----------
 
   static
   const clap_plugin_t* create_plugin(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-    ClapPlugin* plugin = new ClapPlugin(&ClapDescriptor,host);
-    return plugin->getPlugin();
+    MIP_Print("plugin_id: '%s'\n",plugin_id);
+    if (strcmp(plugin_id,ClapDescriptor.id) == 0) {
+      ClapPlugin* plugin = new ClapPlugin(&ClapDescriptor,host);
+      return plugin->getPtr();
+    }
+    return nullptr;
   }
 
 };
@@ -726,6 +771,7 @@ public:
 
   static
   bool init(const char *plugin_path) {
+    MIP_Print("plugin:path: '%s'\n",plugin_path);
     return true;
   }
 
@@ -733,12 +779,14 @@ public:
 
   static
   void deinit() {
+    MIP_Print("\n");
   }
 
   //----------
 
   static
   const void* get_factory(const char *factory_id) {
+    MIP_Print("factory_id: '%s'\n",factory_id);
     if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
       return &CLAP_FACTORY;
     }
@@ -766,3 +814,9 @@ CLAP_EXPORT const clap_plugin_entry clap_entry = {
 
 #pragma GCC diagnostic pop
 
+
+
+/*
+
+
+*/
