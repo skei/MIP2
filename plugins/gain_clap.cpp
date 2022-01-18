@@ -342,50 +342,38 @@ private: // extensions
 //
 //----------------------------------------------------------------------
 
-class ClapFactory {
+static
+uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
+  return 1;
+}
 
-//------------------------------
-public:
-//------------------------------
+//----------
 
-  static
-  uint32_t get_plugin_count(const struct clap_plugin_factory *factory) {
-    return 1;
+static
+const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
+  if (index == 0) {
+    return &ClapDescriptor;
   }
+  return nullptr;
+}
 
-  //----------
+//----------
 
-  static
-  const clap_plugin_descriptor_t* get_plugin_descriptor(const struct clap_plugin_factory *factory, uint32_t index) {
-    if (index == 0) {
-      return &ClapDescriptor;
-    }
-    return nullptr;
+static
+const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
+  if (strcmp(plugin_id,ClapDescriptor.id) == 0) {
+    ClapPlugin* plugin = new ClapPlugin(&ClapDescriptor,host);
+    return plugin->getPtr();
   }
-
-  //----------
-
-  static
-  const clap_plugin_t* create_plugin(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-    if (strcmp(plugin_id,ClapDescriptor.id) == 0) {
-      ClapPlugin* plugin = new ClapPlugin(&ClapDescriptor,host);
-      return plugin->getPtr();
-    }
-    return nullptr;
-  }
-
-};
-
-//----------------------------------------------------------------------
-
-const ClapFactory clap_factory;
+  return nullptr;
+}
 
 //----------
 
 const clap_plugin_factory CLAP_FACTORY = {
-  clap_factory.get_plugin_count,
-  clap_factory.get_plugin_descriptor,
-  clap_factory.create_plugin
+  clap_factory_get_plugin_count_callback,
+  clap_factory_get_plugin_descriptor_callback,
+  clap_factory_create_plugin_callback
 };
 
 
@@ -395,45 +383,38 @@ const clap_plugin_factory CLAP_FACTORY = {
 //
 //----------------------------------------------------------------------
 
-class ClapEntry {
 
-//------------------------------
-public:
-//------------------------------
+static bool clap_entry_init_callback(const char *plugin_path) {
+  return true;
+}
 
-  static
-  bool init(const char *plugin_path) {
-    return true;
+//----------
+
+static void clap_entry_deinit_callback() {
+}
+
+//----------
+
+static const void* clap_entry_get_factory_callback(const char *factory_id) {
+  if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
+    return &CLAP_FACTORY;
   }
-
-  //----------
-
-  static
-  void deinit() {
-  }
-
-  //----------
-
-  static
-  const void* get_factory(const char *factory_id) {
-    if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
-      return &CLAP_FACTORY;
-    }
-    return nullptr;
-  }
-
-};
-
-//----------------------------------------------------------------------
-
-const ClapEntry CLAP_ENTRY;
+  return nullptr;
+}
 
 //----------
 
 CLAP_EXPORT const clap_plugin_entry clap_entry = {
   CLAP_VERSION,
-  CLAP_ENTRY.init,
-  CLAP_ENTRY.deinit,
-  CLAP_ENTRY.get_factory
+  clap_entry_init_callback,
+  clap_entry_deinit_callback,
+  clap_entry_get_factory_callback
 };
 
+//----------
+
+/*
+  you might need to change these a little..
+  g++ -Wall -std=c++14 -Wl,--as-needed -O2 -fPIC -I../include -c gain_clap.cpp -o build.o
+  g++ -shared build.o -o gain.clap -s -fPIE
+*/
