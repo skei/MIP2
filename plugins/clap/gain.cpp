@@ -13,6 +13,7 @@
 
 // change this to point to the clap headers..
 #include "extern/clap/clap.h"
+#include "minimal_xcb_window.h"
 
 //----------------------------------------------------------------------
 //
@@ -52,6 +53,7 @@ private:
 protected:
 //------------------------------
 
+  MinimalXcbWindow* MWindow = nullptr;
   float MGain = 0.0;
 
 //------------------------------
@@ -157,6 +159,8 @@ public:
 
   const void* get_extension(const char *id) {
     if (strcmp(id,CLAP_EXT_PARAMS) == 0) { return &MParams; }
+    if (strcmp(id,CLAP_EXT_GUI) == 0) { return &MGui; }
+    if (strcmp(id,CLAP_EXT_GUI_X11) == 0) { return &MGuiX11; }
     return nullptr;
   }
 
@@ -166,12 +170,8 @@ public:
   }
 
 //------------------------------
-public: // extensions
+public: // clap.params
 //------------------------------
-
-  // parameters
-
-  //----------
 
   uint32_t params_count() {
     return 1;
@@ -228,6 +228,73 @@ public: // extensions
 
   void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {
     handle_events(in);
+  }
+
+//------------------------------
+public: // clap.gui
+//------------------------------
+
+  bool gui_create() {
+    MWindow = new MinimalXcbWindow();
+    return true;
+  }
+
+  //----------
+
+  void gui_destroy() {
+    delete MWindow;
+  }
+
+  //----------
+
+  bool gui_set_scale(double scale) {
+    return true;
+  }
+
+  //----------
+
+  bool gui_get_size(uint32_t *width, uint32_t *height) {
+    *width = 600;
+    *height = 400;
+    return true;
+  }
+
+  //----------
+
+  bool gui_can_resize() {
+    return false;
+  }
+
+  //----------
+
+  void gui_round_size(uint32_t *width, uint32_t *height) {
+  }
+
+  //----------
+
+  bool gui_set_size(uint32_t width, uint32_t height) {
+    return true;
+  }
+
+  //----------
+
+  void gui_show() {
+    MWindow->show();
+  }
+
+  //----------
+
+  void gui_hide() {
+    MWindow->hide();
+  }
+
+//------------------------------
+public: // clap.gui-x11
+//------------------------------
+
+  bool gui_x11_attach(const char *display_name, unsigned long window) {
+    MWindow->attach(display_name,window);
+    return true;
   }
 
 //------------------------------
@@ -297,10 +364,8 @@ private: // callbacks
   };
 
 //------------------------------
-private: // extensions
+private: // clap.params
 //------------------------------
-
-  // clap.params
 
   static uint32_t params_count_callback(const clap_plugin_t *plugin) {
     ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
@@ -340,6 +405,81 @@ private: // extensions
     params_text_to_value_callback,
     params_flush_callback
   };
+
+//------------------------------
+private: // clap.gui
+//------------------------------
+
+  static bool gui_create_callback(const clap_plugin_t *plugin) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_create();
+  }
+
+  static void gui_destroy_callback(const clap_plugin_t *plugin) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_destroy();
+  }
+
+  static bool gui_set_scale_callback(const clap_plugin_t *plugin, double scale) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_set_scale(scale);
+  }
+
+  static bool gui_get_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_get_size(width,height);
+  }
+
+  static bool gui_can_resize_callback(const clap_plugin_t *plugin) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_can_resize();
+  }
+
+  static void gui_round_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_round_size(width,height);
+  }
+
+  static bool gui_set_size_callback(const clap_plugin_t *plugin, uint32_t width, uint32_t height) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_set_size(width,height);
+  }
+
+  static void gui_show_callback(const clap_plugin_t *plugin) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_show();
+  }
+
+  static void gui_hide_callback(const clap_plugin_t *plugin) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_hide();
+  }
+
+  clap_plugin_gui_t MGui = {
+    gui_create_callback,
+    gui_destroy_callback,
+    gui_set_scale_callback,
+    gui_get_size_callback,
+    gui_can_resize_callback,
+    gui_round_size_callback,
+    gui_set_size_callback,
+    gui_show_callback,
+    gui_hide_callback
+  };
+
+//------------------------------
+private: // clap.gui-x11
+//------------------------------
+
+  static bool gui_x11_attach_callback(const clap_plugin_t *plugin, const char *display_name, unsigned long window) {
+    ClapPlugin* plug = (ClapPlugin*)plugin->plugin_data;
+    return plug->gui_x11_attach(display_name,window);
+  }
+
+  clap_plugin_gui_x11_t MGuiX11 = {
+    gui_x11_attach_callback
+  };
+
 
 };
 
