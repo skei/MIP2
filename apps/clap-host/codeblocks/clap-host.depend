@@ -1,0 +1,270 @@
+# depslib dependency file v1.0
+1642698501 source:/DISKS/sda2/code/clap-host/main.cpp
+	"clap/clap.h"
+	"audio_file.hpp"
+	"midi_file.hpp"
+	"midi_player.hpp"
+	"arguments.hpp"
+	"host.hpp"
+	"plugin.hpp"
+	"process.hpp"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/clap.h
+	"entry.h"
+	"plugin-factory.h"
+	"plugin-invalidation.h"
+	"plugin.h"
+	"host.h"
+	"ext/audio-ports.h"
+	"ext/audio-ports-config.h"
+	"ext/gui.h"
+	"ext/gui-x11.h"
+	"ext/gui-win32.h"
+	"ext/gui-cocoa.h"
+	"ext/gui-free-standing.h"
+	"ext/log.h"
+	"ext/params.h"
+	"ext/render.h"
+	"ext/state.h"
+	"ext/latency.h"
+	"ext/thread-check.h"
+	"ext/timer-support.h"
+	"ext/posix-fd-support.h"
+	"ext/note-name.h"
+	"ext/note-ports.h"
+	"ext/event-filter.h"
+	"ext/thread-pool.h"
+	"ext/event-registry.h"
+	"ext/draft/preset-load.h"
+	"ext/draft/quick-controls.h"
+	"ext/draft/track-info.h"
+	"ext/draft/tuning.h"
+	"ext/draft/file-reference.h"
+	"ext/draft/midi-mappings.h"
+	"ext/draft/surround.h"
+	"converters/vst2-converter.h"
+	"converters/vst3-converter.h"
+	"converters/clap-converter.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/entry.h
+	"version.h"
+	"private/macros.h"
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/version.h
+	"private/macros.h"
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/private/macros.h
+
+1641375276 /DISKS/sda2/code/clap-host/clap/private/align.h
+	"std.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/private/std.h
+	<cstdint>
+	<cstddef>
+	<stddef.h>
+	<stdbool.h>
+	<stdint.h>
+	<stdalign.h>
+
+1641375276 /DISKS/sda2/code/clap-host/clap/plugin-factory.h
+	"plugin.h"
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/plugin.h
+	"private/macros.h"
+	"host.h"
+	"process.h"
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/host.h
+	"version.h"
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/process.h
+	"events.h"
+	"audio-buffer.h"
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/events.h
+	"private/std.h"
+	"fixedpoint.h"
+	"id.h"
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/fixedpoint.h
+	"private/std.h"
+	"private/macros.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/id.h
+	"private/std.h"
+	"private/macros.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/audio-buffer.h
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/plugin-invalidation.h
+	"private/macros.h"
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/audio-ports.h
+	"../plugin.h"
+	"../chmap.h"
+	"../string-sizes.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/chmap.h
+	"private/std.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/string-sizes.h
+	"private/std.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/audio-ports-config.h
+	"../chmap.h"
+	"../string-sizes.h"
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/gui.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/gui-x11.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/gui-win32.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/gui-cocoa.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/gui-free-standing.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/log.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/params.h
+	"../plugin.h"
+	"../string-sizes.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/render.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/state.h
+	"../plugin.h"
+	"../stream.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/stream.h
+	"private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/latency.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/thread-check.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/timer-support.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/posix-fd-support.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/note-name.h
+	"../plugin.h"
+	"../string-sizes.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/note-ports.h
+	"../plugin.h"
+	"../string-sizes.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/event-filter.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/thread-pool.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/event-registry.h
+	"../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/draft/preset-load.h
+	"../../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/draft/quick-controls.h
+	"../../plugin.h"
+	"../../string-sizes.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/draft/track-info.h
+	"../../plugin.h"
+	"../../chmap.h"
+	"../../color.h"
+	"../../string-sizes.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/color.h
+	"private/std.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/draft/tuning.h
+	"../../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/draft/file-reference.h
+	"../../plugin.h"
+	"../../hash.h"
+	"../../string-sizes.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/hash.h
+	"clap.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/draft/midi-mappings.h
+	"../../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/draft/surround.h
+	"../../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/converters/vst2-converter.h
+	"../clap.h"
+	"../stream.h"
+	"../private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/converters/vst3-converter.h
+	"../clap.h"
+	"../stream.h"
+	"../private/align.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/converters/clap-converter.h
+	"../clap.h"
+	"../stream.h"
+	"../private/align.h"
+
+1642680597 /DISKS/sda2/code/clap-host/audio_file.hpp
+	<sndfile.h>
+
+1642679291 /DISKS/sda2/code/clap-host/midi_file.hpp
+	<memory.h>
+	<stdio.h>
+	<stdlib.h>
+	<vector>
+
+1642679436 /DISKS/sda2/code/clap-host/midi_player.hpp
+	"midi_file.hpp"
+
+1642679416 /DISKS/sda2/code/clap-host/arguments.hpp
+
+1642697521 /DISKS/sda2/code/clap-host/host.hpp
+	<dlfcn.h>
+	"clap/clap.h"
+	"clap/ext/draft/ambisonic.h"
+	"clap/ext/draft/check-for-update.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/draft/ambisonic.h
+	"../../plugin.h"
+
+1641375276 /DISKS/sda2/code/clap-host/clap/ext/draft/check-for-update.h
+	"../../plugin.h"
+
+1642698306 /DISKS/sda2/code/clap-host/plugin.hpp
+	"clap/clap.h"
+
+1642698394 /DISKS/sda2/code/clap-host/process.hpp
+	<math.h>
+	"audio_file.hpp"
+	"midi_file.hpp"
+	"midi_player.hpp"
+

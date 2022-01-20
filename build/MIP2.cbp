@@ -355,7 +355,15 @@
 		<Unit filename="../plugins/backup/clap-experiments/voices.h" />
 		<Unit filename="../plugins/backup/simple/simple.h" />
 		<Unit filename="../plugins/backup/simple/simple_synth.h" />
-		<Unit filename="../plugins/cclap.cpp">
+		<Unit filename="../plugins/clap/cclap.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../plugins/clap/gain.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../plugins/clap/gain_clap (copy).cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

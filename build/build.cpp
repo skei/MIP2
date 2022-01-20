@@ -1,5 +1,6 @@
 
 //#include "../apps/claptesthost.cpp"
+#include "../apps/clap-host/main.cpp"
 
 //#include "test/test.cpp"                                // !!!
 //#include "test/test_gui.cpp"
@@ -15,7 +16,7 @@
 //#include "../plugins/sa_botage.cpp"
 //#include "../plugins/simple_synth.cpp"                  // !!! gui
 
-#include "../plugins/clap/gain.cpp"
+//#include "../plugins/clap/gain.cpp"
 
 //----------------------------------------------------------------------
 //
