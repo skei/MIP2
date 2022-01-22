@@ -59,7 +59,8 @@ public:
   }
 
   clap_process_status process(const clap_process_t *process) final {
-    return CLAP_PROCESS_CONTINUE; }
+    return CLAP_PROCESS_CONTINUE;
+  }
 
   void on_main_thread() final {
   }

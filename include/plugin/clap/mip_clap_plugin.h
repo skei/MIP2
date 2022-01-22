@@ -156,6 +156,7 @@ private: // callbacks
   static void clap_plugin_destroy_callback(const struct clap_plugin *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     plug->destroy();
+    delete plug;
   }
 
   static bool clap_plugin_activate_callback(const struct clap_plugin *plugin, double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {

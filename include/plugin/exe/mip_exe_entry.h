@@ -96,6 +96,7 @@ public:
 //    plugin->on_plugin_deinit();
 
     delete exeplugin;
+    plugin->destroy(plugin);
 
     #ifndef MIP_NO_EXE_AUDIO
       MAudio.stop();
