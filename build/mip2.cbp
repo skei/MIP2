@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="mip3" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="exe debug">
+				<Option output="../bin/mip_debug" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fno-pie" />
+					<Add option="-rdynamic" />
+					<Add option="-Wl,-Bsymbolic" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-no-pie" />
+				</Linker>
+			</Target>
+			<Target title="exe release">
+				<Option output="../bin/mip_release" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fno-pie" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-no-pie" />
+				</Linker>
+			</Target>
+			<Target title="plugin debug">
+				<Option output="../bin/mip_debug.so" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-fPIC" />
+					<Add option="-g" />
+					<Add option="-rdynamic" />
+					<Add option="-Wl,-Bsymbolic" />
+				</Compiler>
+			</Target>
+			<Target title="plugin release">
+				<Option output="../bin/mip_release.so" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-fPIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-std=c++14" />
+			<Add option="-Wl,--as-needed" />
+			<Add directory="../include" />
+			<Add directory="../include/extern/vst3" />
+		</Compiler>
+		<Unit filename="../doc/compile.txt" />
+		<Unit filename="../include/extern/clap/audio-buffer.h" />
+		<Unit filename="../include/extern/clap/chmap.h" />
+		<Unit filename="../include/extern/clap/clap.h" />
+		<Unit filename="../include/extern/clap/color.h" />
+		<Unit filename="../include/extern/clap/converters/clap-converter.h" />
+		<Unit filename="../include/extern/clap/converters/vst2-converter.h" />
+		<Unit filename="../include/extern/clap/converters/vst3-converter.h" />
+		<Unit filename="../include/extern/clap/entry.h" />
+		<Unit filename="../include/extern/clap/events.h" />
+		<Unit filename="../include/extern/clap/ext/audio-ports-config.h" />
+		<Unit filename="../include/extern/clap/ext/audio-ports.h" />
+		<Unit filename="../include/extern/clap/ext/draft/ambisonic.h" />
+		<Unit filename="../include/extern/clap/ext/draft/check-for-update.h" />
+		<Unit filename="../include/extern/clap/ext/draft/file-reference.h" />
+		<Unit filename="../include/extern/clap/ext/draft/midi-mappings.h" />
+		<Unit filename="../include/extern/clap/ext/draft/preset-load.h" />
+		<Unit filename="../include/extern/clap/ext/draft/quick-controls.h" />
+		<Unit filename="../include/extern/clap/ext/draft/surround.h" />
+		<Unit filename="../include/extern/clap/ext/draft/track-info.h" />
+		<Unit filename="../include/extern/clap/ext/draft/tuning.h" />
+		<Unit filename="../include/extern/clap/ext/event-filter.h" />
+		<Unit filename="../include/extern/clap/ext/event-registry.h" />
+		<Unit filename="../include/extern/clap/ext/gui-cocoa.h" />
+		<Unit filename="../include/extern/clap/ext/gui-free-standing.h" />
+		<Unit filename="../include/extern/clap/ext/gui-win32.h" />
+		<Unit filename="../include/extern/clap/ext/gui-x11.h" />
+		<Unit filename="../include/extern/clap/ext/gui.h" />
+		<Unit filename="../include/extern/clap/ext/latency.h" />
+		<Unit filename="../include/extern/clap/ext/log.h" />
+		<Unit filename="../include/extern/clap/ext/note-name.h" />
+		<Unit filename="../include/extern/clap/ext/note-ports.h" />
+		<Unit filename="../include/extern/clap/ext/params.h" />
+		<Unit filename="../include/extern/clap/ext/posix-fd-support.h" />
+		<Unit filename="../include/extern/clap/ext/render.h" />
+		<Unit filename="../include/extern/clap/ext/state.h" />
+		<Unit filename="../include/extern/clap/ext/thread-check.h" />
+		<Unit filename="../include/extern/clap/ext/thread-pool.h" />
+		<Unit filename="../include/extern/clap/ext/timer-support.h" />
+		<Unit filename="../include/extern/clap/fixedpoint.h" />
+		<Unit filename="../include/extern/clap/hash.h" />
+		<Unit filename="../include/extern/clap/host.h" />
+		<Unit filename="../include/extern/clap/id.h" />
+		<Unit filename="../include/extern/clap/plugin-factory.h" />
+		<Unit filename="../include/extern/clap/plugin-invalidation.h" />
+		<Unit filename="../include/extern/clap/plugin.h" />
+		<Unit filename="../include/extern/clap/private/align.h" />
+		<Unit filename="../include/extern/clap/private/macros.h" />
+		<Unit filename="../include/extern/clap/private/std.h" />
+		<Unit filename="../include/extern/clap/process.h" />
+		<Unit filename="../include/extern/clap/stream.h" />
+		<Unit filename="../include/extern/clap/string-sizes.h" />
+		<Unit filename="../include/extern/clap/version.h" />
+		<Unit filename="../include/extern/stb/stb_image.h" />
+		<Unit filename="../include/extern/vst2/aeffect.h" />
+		<Unit filename="../include/extern/vst2/aeffectx.h" />
+		<Unit filename="../include/extern/vst2/fst.h" />
+		<Unit filename="../include/extern/vst2/vestige.h" />
+		<Unit filename="../include/extern/vst2/vstfxstore.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/conststringtable.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/conststringtable.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/coreiids.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/doc.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/falignpop.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/falignpush.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/fplatform.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/fstrdefs.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/ftypes.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/funknown.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/funknown.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/futils.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/fvariant.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/geoconstants.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/ibstream.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/icloneable.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/ierrorcontext.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/ipersistent.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/ipluginbase.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/istringresult.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/iupdatehandler.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/keycodes.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/pluginbasefwd.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/smartpointer.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/ucolorspec.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/ustring.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../include/extern/vst3/pluginterfaces/base/ustring.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/gui/iplugview.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/gui/iplugviewcontentscalesupport.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/test/itest.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstattributes.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstaudioprocessor.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstautomationstate.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstchannelcontextinfo.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstcomponent.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstcontextmenu.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivsteditcontroller.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstevents.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivsthostapplication.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstinterappaudio.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstmessage.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstmidicontrollers.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstnoteexpression.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstparameterchanges.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstplugview.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstprefetchablesupport.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstprocesscontext.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstrepresentation.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/ivstunits.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/vstpresetkeys.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/vstpshpack4.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/vstspeaker.h" />
+		<Unit filename="../include/extern/vst3/pluginterfaces/vst/vsttypes.h" />
+		<Unit filename="../include/mip.h" />
+		<Unit filename="../include/plugin/clap/mip_clap.h" />
+		<Unit filename="../include/plugin/clap/mip_clap_editor.h" />
+		<Unit filename="../include/plugin/clap/mip_clap_entry.h" />
+		<Unit filename="../include/plugin/clap/mip_clap_host.h" />
+		<Unit filename="../include/plugin/clap/mip_clap_plugin.h" />
+		<Unit filename="../include/plugin/exe/mip_exe.h" />
+		<Unit filename="../include/plugin/exe/mip_exe_entry.h" />
+		<Unit filename="../include/plugin/exe/mip_exe_plugin.h" />
+		<Unit filename="../include/plugin/lv2/mip_lv2.h" />
+		<Unit filename="../include/plugin/lv2/mip_lv2_entry.h" />
+		<Unit filename="../include/plugin/lv2/mip_lv2_plugin.h" />
+		<Unit filename="../include/plugin/mip_plugin.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2_entry.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2_plugin.h" />
+		<Unit filename="../include/plugin/vst3/mip_vst3.h" />
+		<Unit filename="../include/plugin/vst3/mip_vst3_entry.h" />
+		<Unit filename="../include/plugin/vst3/mip_vst3_plugin.h" />
+		<Unit filename="../include/plugin/vst3/mip_vst3_utils.h" />
+		<Unit filename="../source/apps/clap-host/arguments.hpp" />
+		<Unit filename="../source/apps/clap-host/audio_file.hpp" />
+		<Unit filename="../source/apps/clap-host/clap/audio-buffer.h" />
+		<Unit filename="../source/apps/clap-host/clap/chmap.h" />
+		<Unit filename="../source/apps/clap-host/clap/clap.h" />
+		<Unit filename="../source/apps/clap-host/clap/color.h" />
+		<Unit filename="../source/apps/clap-host/clap/converters/clap-converter.h" />
+		<Unit filename="../source/apps/clap-host/clap/converters/vst2-converter.h" />
+		<Unit filename="../source/apps/clap-host/clap/converters/vst3-converter.h" />
+		<Unit filename="../source/apps/clap-host/clap/entry.h" />
+		<Unit filename="../source/apps/clap-host/clap/events.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/audio-ports-config.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/audio-ports.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/draft/ambisonic.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/draft/check-for-update.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/draft/file-reference.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/draft/midi-mappings.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/draft/preset-load.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/draft/quick-controls.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/draft/surround.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/draft/track-info.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/draft/tuning.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/event-filter.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/event-registry.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/gui-cocoa.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/gui-free-standing.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/gui-win32.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/gui-x11.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/gui.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/latency.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/log.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/note-name.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/note-ports.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/params.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/posix-fd-support.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/render.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/state.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/thread-check.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/thread-pool.h" />
+		<Unit filename="../source/apps/clap-host/clap/ext/timer-support.h" />
+		<Unit filename="../source/apps/clap-host/clap/fixedpoint.h" />
+		<Unit filename="../source/apps/clap-host/clap/hash.h" />
+		<Unit filename="../source/apps/clap-host/clap/host.h" />
+		<Unit filename="../source/apps/clap-host/clap/id.h" />
+		<Unit filename="../source/apps/clap-host/clap/plugin-factory.h" />
+		<Unit filename="../source/apps/clap-host/clap/plugin-invalidation.h" />
+		<Unit filename="../source/apps/clap-host/clap/plugin.h" />
+		<Unit filename="../source/apps/clap-host/clap/private/align.h" />
+		<Unit filename="../source/apps/clap-host/clap/private/macros.h" />
+		<Unit filename="../source/apps/clap-host/clap/private/std.h" />
+		<Unit filename="../source/apps/clap-host/clap/process.h" />
+		<Unit filename="../source/apps/clap-host/clap/stream.h" />
+		<Unit filename="../source/apps/clap-host/clap/string-sizes.h" />
+		<Unit filename="../source/apps/clap-host/clap/version.h" />
+		<Unit filename="../source/apps/clap-host/host.hpp" />
+		<Unit filename="../source/apps/clap-host/main.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/apps/clap-host/midi_file.hpp" />
+		<Unit filename="../source/apps/clap-host/midi_player.hpp" />
+		<Unit filename="../source/apps/clap-host/plugin.hpp" />
+		<Unit filename="../source/apps/clap-host/process.hpp" />
+		<Unit filename="../source/plugins/gain.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/simple_synth.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/templates/minimal.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/templates/plugin.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/templates/synth.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_gui.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_plugin.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_synth.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_win32.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="build.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

@@ -1,0 +1,29 @@
+
+
+all:
+C -Wall
+  -std=c++14
+  -Wl,--as-needed
+
+-I../include/extern/clap
+
+exe:
+C -fno-pie
+L -no-pie -s
+
+plugin:
+C -fPIC
+L -fPIE
+
+debug:
+C -g
+  -rdynamic
+  -Wl,-Bsymbolic
+
+release:
+C -O2
+
+libs:
+  pthread, m, rt, dl
+  sndfile, jack, cairo
+  xcb, xcb-util, xcb-image, xcb-cursor, xcb-keysyms
