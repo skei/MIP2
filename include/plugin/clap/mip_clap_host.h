@@ -2,13 +2,17 @@
 #define mip_clap_host_included
 //----------------------------------------------------------------------
 
-#define MIP_NO_PLUGIN_HOSTING
+//#define MIP_NO_PLUGIN_LOADING
 
 //----------------------------------------------------------------------
 
-#ifndef MIP_NO_PLUGIN_HOSTING
+#ifndef MIP_NO_PLUGIN_LOADING
+
   //#include <windows.h>
+
+  // -ldl
   #include <dlfcn.h>
+
 #endif
 
 //----------
@@ -30,42 +34,16 @@ class MIP_ClapHost {
 private:
 //------------------------------
 
-  #ifndef MIP_NO_PLUGIN_HOSTING
-  //HINSTANCE                   MLibHandle      = nullptr;
-    void*                       MLibHandle      = nullptr;
+  #ifndef MIP_NO_PLUGIN_LOADING
+    //HINSTANCE MLibHandle  = nullptr;
+    void*       MLibHandle  = nullptr;
   #endif
 
     const clap_plugin_entry*    MClapEntry      = nullptr;
     const clap_plugin_factory*  MClapFactory    = nullptr;
+    const char*                 MPluginPath     = "";
     char                        MPathOnly[512]  = {0};
-
-//  const char*                 MPluginPath     = "";
-////MIP_Timer*                  MTimer          = nullptr;
-
-//  clap_host                     MHost
-//  clap_host_ambisonic           MAmbisonic
-//  clap_host_audio_ports         MAudioPorts
-//  clap_host_audio_ports_config  MAudioPortsConfig
-//  clap_host_check_for_update    MChekForUpdate
-//  clap_host_event_filter        MEventFilter
-//  clap_host_event_registry      MEventRegistry
-//  clap_host_file_reference      MFileReference
-//  clap_host_gui                 MGui
-//  clap_host_latency             MLatency
-//  clap_host_log                 MLog
-//  clap_host_midi_mappings       MMidiMappings
-//  clap_host_note_name           MNoteName
-//  clap_host_note_ports          MNotePorts
-//  clap_host_params              MParams
-//  clap_host_posix_fd_support    MPosixFdSupport
-//  clap_host_quick_controls      MQuickControls
-//  clap_host_state               MState
-//  clap_host_surround            MSurround
-//  clap_host_thread_check        MThreadCheck
-//  clap_host_thread_pool         MThreadPool
-//  clap_host_timer_support       MTimerSupport
-//  clap_host_track_info          MTrackInfo
-//  clap_host_tuning              MTuning
+    //MIP_Timer*                MTimer          = nullptr;
 
 //------------------------------
 public:
@@ -94,10 +72,10 @@ public:
 public:
 //------------------------------
 
-  #ifndef MIP_NO_PLUGIN_HOSTING
+  #ifndef MIP_NO_PLUGIN_LOADING
 
   bool loadPlugin(const char* path) {
-    //MPluginPath = path;
+    MPluginPath = path;
     //MLibHandle = LoadLibrary(path);
     //MClapEntry = (struct clap_plugin_entry*)GetProcAddress(MLibHandle,"clap_entry");
     MLibHandle = dlopen(path,RTLD_LAZY|RTLD_LOCAL); // RTLD_NOW

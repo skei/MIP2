@@ -19,13 +19,13 @@ public:
 //------------------------------
 
   MIP_Lv2PluginEntry() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //----------
 
   ~MIP_Lv2PluginEntry() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
 //------------------------------
@@ -33,7 +33,7 @@ public:
 //------------------------------
 
   const LV2_Descriptor* entry(unsigned long Index) {
-    MIP_PRINT;
+    //MIP_PRINT;
     return nullptr;
   }
 

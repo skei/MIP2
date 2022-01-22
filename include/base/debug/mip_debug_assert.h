@@ -27,6 +27,9 @@
 
 #if 0
 
+// parts by lubomir i ivanon, for axonlib
+// used with permission
+
 /*
  * This file is part of Axonlib.
  *

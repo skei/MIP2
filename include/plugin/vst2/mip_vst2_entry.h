@@ -27,13 +27,13 @@ public:
 //------------------------------
 
   MIP_Vst2Entry() {
-    MIP_Print("MIP_Vst2Entry\n");
+    //MIP_Print("MIP_Vst2Entry\n");
   }
 
   //----------
 
   ~MIP_Vst2Entry() {
-    MIP_Print("~MIP_Vst2Entry\n");
+    //MIP_Print("~MIP_Vst2Entry\n");
   }
 
 //------------------------------
@@ -41,7 +41,7 @@ public:
 //------------------------------
 
   AEffect* entry(audioMasterCallback audioMaster) {
-    MIP_Print("MIP_Vst2Entry.entry\n");
+    //MIP_Print("MIP_Vst2Entry.entry\n");
 
     const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
     const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.getHost(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
@@ -149,6 +149,8 @@ private: // vst2 callbacks
 //
 //----------------------------------------------------------------------
 
+//TODO: wrap this in ifdef, in case we don't want vst2..
+
 #define MIP_VST2_ENTRY_SYMBOL asm ("VSTPluginMain");
 AEffect* mip_vst2_entry(audioMasterCallback audioMaster) MIP_VST2_ENTRY_SYMBOL
 
@@ -161,7 +163,7 @@ MIP_Vst2Entry GLOBAL_VST2_PLUGIN_ENTRY;
 //__MIP_EXPORT
 __attribute__ ((visibility ("default")))
 AEffect* mip_vst2_entry(audioMasterCallback audioMaster) {
-  MIP_Print("VSTPluginMain\n");
+  //MIP_Print("VSTPluginMain\n");
   if (!audioMaster(0,audioMasterVersion,0,0,0,0)) return 0;
   return GLOBAL_VST2_PLUGIN_ENTRY.entry(audioMaster);
 }

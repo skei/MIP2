@@ -4,8 +4,6 @@
 #include "mip.h"
 #include "plugin/mip_plugin.h"
 
-#include "base/debug/mip_debug_print.h"
-
 //----------------------------------------------------------------------
 //
 //
@@ -67,8 +65,7 @@ public:
   }
 
   //const void* get_extension(const char *id) final {
-  //  //MIP_ClapPlugin::get_extension(id);
-  //  return nullptr;
+  //  return MIP_ClapPlugin::get_extension(id);
   //}
 
 //------------------------------
@@ -170,12 +167,3 @@ const clap_plugin_t* MIP_CreatePlugin(const clap_host_t *host, const char *plugi
   return  plugin->getPlugin();
 }
 
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-//int main(int argc, char** argv) {
-//  return 0;
-//}
