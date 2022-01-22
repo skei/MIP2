@@ -33,6 +33,7 @@ private:
 
 //  const char*                 MPluginPath     = "";
 ////MIP_Timer*                  MTimer          = nullptr;
+
 //  clap_host                     MHost
 //  clap_host_ambisonic           MAmbisonic
 //  clap_host_audio_ports         MAudioPorts

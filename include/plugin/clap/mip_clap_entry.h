@@ -3,56 +3,12 @@
 //----------------------------------------------------------------------
 
 #include <string.h> // strcmp
+
 #include "extern/clap/clap.h"
 #include "extern/clap/ext/draft/ambisonic.h"
 #include "extern/clap/ext/draft/check-for-update.h"
 
 #include "mip_clap_plugin.h"
-
-//extern uint32_t                         MIP_GetNumPlugins();
-//extern const clap_plugin_descriptor_t*  MIP_GetDescriptor(uint32_t index);
-//extern const clap_plugin_t*             MIP_CreatePlugin(const clap_host_t *host, const char *plugin_id);
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-//const clap_plugin_descriptor_t myDescriptor = {
-//  CLAP_VERSION,
-//  "plugin_id",
-//  "name",
-//  "vendor",
-//  "url",
-//  "manual_url",
-//  "support_url",
-//  "0.0.0",
-//  "description",
-//  "instrument" // "audio_effect"
-//};
-
-//extern const clap_plugin_descriptor_t myDescriptor;
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-//class myPlugin
-//: public MIP_ClapPlugin {
-//
-//public:
-//
-//  myPlugin(const clap_plugin_descriptor_t* ADescriptor)
-//  : MIP_ClapPlugin(ADescriptor) {
-//  }
-//
-//  virtual ~myPlugin() {
-//  }
-//
-//};
 
 //----------------------------------------------------------------------
 //
@@ -68,7 +24,6 @@ public:
 
   static
   uint32_t get_plugin_count(const struct clap_plugin_factory *factory) {
-    //return 1;
     return MIP_GetNumPlugins();
   }
 
@@ -76,7 +31,6 @@ public:
 
   static
   const clap_plugin_descriptor_t* get_plugin_descriptor(const struct clap_plugin_factory *factory, uint32_t index) {
-    //return &myDescriptor;
     return MIP_GetDescriptor(index);
 
   }
@@ -85,8 +39,6 @@ public:
 
   static
   const clap_plugin_t* create_plugin(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-    //myPlugin* plugin = new myPlugin(&myDescriptor);
-    //return plugin->getPlugin();
     return MIP_CreatePlugin(host,plugin_id);
   }
 
@@ -111,7 +63,6 @@ const clap_plugin_factory CLAP_FACTORY = {
 //
 //----------------------------------------------------------------------
 
-//template <class FACTORY>
 class MIP_ClapEntry {
 
 //------------------------------
