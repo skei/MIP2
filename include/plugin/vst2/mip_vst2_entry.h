@@ -42,17 +42,14 @@ public:
   AEffect* entry(audioMasterCallback audioMaster) {
     MIP_Print("MIP_Vst2Entry.entry\n");
 
-    //MIP_Vst2ClapHost*               host        = new MIP_Vst2ClapHost();
-//    MIP_ClapHost*                   host        = new MIP_ClapHost();                               // who deletes this? (static?)
-
     const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
     const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.getHost(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
     MIP_Vst2Plugin*                 vst2plugin  = new MIP_Vst2Plugin(plugin,audioMaster);           // deleted in vst2_dispatcher_callback(effClose)
 
-    int32_t   flags       = effFlagsCanReplacing;
     uint32_t  num_inputs  = 2;
     uint32_t  num_outputs = 2;
     uint32_t  num_params  = 0;
+    int32_t   flags       = effFlagsCanReplacing;
 
     if (strstr(descriptor->id,"instrument")) {
       flags |= effFlagsIsSynth;
@@ -86,7 +83,7 @@ public:
     effect->version                   = 0x00000000;
     effect->initialDelay              = 0;
     effect->object                    = vst2plugin;
-    effect->user                      = nullptr;//instance;
+    effect->user                      = nullptr;//this;
     effect->dispatcher                = vst2_dispatcher_callback;
     effect->setParameter              = vst2_setParameter_callback;
     effect->getParameter              = vst2_getParameter_callback;

@@ -39,15 +39,17 @@ private:
   const clap_plugin_gui_t*        MGui              = nullptr;
   const clap_plugin_params_t*     MParams           = nullptr;
 
-  bool          MIsProcessing         = false;
-  bool          MIsEditorOpen         = false;
 
-  float*        MParameterValues      = nullptr;
-  MIP_IntQueue  MProcessMessageQueue  = {};
-  MIP_IntQueue  MGuiMessageQueue      = {};
-
+  float*        MParameterValues                            = nullptr;
+  MIP_IntQueue  MProcessMessageQueue                        = {};
+  MIP_IntQueue  MGuiMessageQueue                            = {};
   MIP_VstEvents MVstEvents                                  = {0};
   VstMidiEvent  MVstMidiSendEvents[MIP_VST2_MAX_MIDI_SEND]  = {0};
+
+  bool      MIsProcessing = false;
+  bool      MIsEditorOpen = false;
+  float     MSampleRate   = 0.0f;
+  uint32_t  MMaxBlockSize = 0;
 
 //  MIP_Vst2Host*       MVst2Host             = nullptr;
 //  AEffect             MAEffect              = {0};
@@ -56,8 +58,6 @@ private:
 //  MIP_Instance*       MInstance             = nullptr;
 
 //  uint32_t            MCurrentProgram       = 0;
-//  float               MSampleRate           = 0.0f;
-//  uint32_t            MMaxBlockSize         = 0;
 
 //  ERect               MVstRect              = {0};
 //  uint32_t            MKnobMode             = 0;
@@ -314,8 +314,6 @@ public: // vst2
       case effOpen: // 0
         //MIP_Vst2Trace("vst2: dispatcher/effOpen\n");
 //        MIsOpen = true;
-        //updateHostInfo();
-        //MInstance->on_open();
 //        MInstance->on_plugin_init();
 //        MInstance->setDefaultParameterValues();
 //        MInstance->updateAllParameters();
@@ -406,9 +404,9 @@ public: // vst2
       case effGetParamLabel: { // 6
         //MIP_Vst2Trace("vst2: dispatcher/effGetParamLabel %i\n",index);
 //        MIP_Parameter* pa = MDescriptor->getParameter(index);
-//        strcpy((char*)ptr,pa->getLabel());
-//        return 1;
-        break;
+        strcpy((char*)ptr,"");
+        return 1;
+//        break;
       }
 
       //----------
@@ -421,13 +419,10 @@ public: // vst2
 
       case effGetParamDisplay: { // 7
         //MIP_Vst2Trace("vst2: dispatcher/effGetParamDisplay %i\n",index);
-//        MIP_Parameter* pa = MDescriptor->getParameter(index);
-//        float v = MInstance->getParameterValue(index);
-//        v = pa->from01(v);
-//        char str[32];
-//        pa->getDisplayText(v,str);
-//        strcpy((char*)ptr,(char*)str);
-//        return 1;
+        float value = MParameterValues[index];
+        if (MParams->value_to_text(MPlugin,index,value,cptr,strlen(cptr))) {
+          return 1;
+        }
         break;
       }
 
@@ -441,9 +436,11 @@ public: // vst2
 
       case effGetParamName: { // 8
         //MIP_Vst2Trace("vst2: dispatcher/effGetParamName %i\n",index);
-//        MIP_Parameter* pa = MDescriptor->getParameter(index);
-//        strcpy((char*)ptr,pa->getName());
-//        return 1;
+        clap_param_info_t info;
+        if (MParams->get_info(MPlugin,index,&info)) {
+          strcpy((char*)ptr,info.name);
+          return 1;
+        }
         break;
       }
 
@@ -458,7 +455,7 @@ public: // vst2
 
       case effSetSampleRate: // 10
         //MIP_Vst2Trace("vst2: dispatcher/effSetSampleRate %.3f\n",opt);
-//        MSampleRate = opt;
+        MSampleRate = opt;
 //        MInstance->on_sampleRate(MSampleRate);
         break;
 
@@ -472,7 +469,7 @@ public: // vst2
 
       case effSetBlockSize: // 11
         //MIP_Vst2Trace("vst2: dispatcher/effSetBlockSize %i\n",(int)value);
-//        MMaxBlockSize = (VstInt32)value;
+        MMaxBlockSize = (VstInt32)value;
         break;
 
       //----------
@@ -766,19 +763,19 @@ public: // vst2
       case effProcessEvents: { // 25
         //MIP_Vst2Trace("vst2: dispatcher/effProcessEvents\n");
 //        if ((MDescriptor->isSynth()) || (MDescriptor->canReceiveMidi())) {
-//          VstEvents* ev = (VstEvents*)ptr;
-//          int num_events = ev->numEvents;
-//          for (int32_t i=0; i<num_events; i++) {
-//            VstMidiEvent* event = (VstMidiEvent*)ev->events[i];
-//            if (event->type == kVstMidiType) {
-//
-//              // todo: buffer, handle all in process..
+          VstEvents* ev = (VstEvents*)ptr;
+          int num_events = ev->numEvents;
+          for (int32_t i=0; i<num_events; i++) {
+            VstMidiEvent* event = (VstMidiEvent*)ev->events[i];
+            if (event->type == kVstMidiType) {
+
+              // todo: buffer, handle all in process..
 //              MInstance->on_plugin_midi(event->deltaFrames,event->midiData[0],event->midiData[1],event->midiData[2]);
-//
-//            }
-//          }
+
+            }
+          }
 //        }
-//        // todo: sort?
+        // todo: sort?
         return 1;
       }
 
@@ -793,10 +790,12 @@ public: // vst2
 
       case effCanBeAutomated: { // 26
         //MIP_Vst2Trace("vst2: dispatcher/effCanBeAutomated %i\n",index);
-//        uint32_t res = 0;
-//        MIP_Parameter* param = MDescriptor->getParameter(index);
-//        if (param->canAutomate()) res = 1;
-//        return res;
+        //if (MParams) {
+        //  clap_param_info_t info;
+        //  MParams->get_info(MPlugin,index,&info);
+        //  if (info.flags & CLAP_PARAM_IS_MODULATABLE) {}
+        //}
+        return 1;
         break;
       }
 
@@ -915,11 +914,8 @@ public: // vst2
       case effGetPlugCategory: { // 35
         //MIP_Vst2Trace("vst2: dispatcher/effGetPlugCategory\n");
         uint32_t res = 0;
-//        res = (MDescriptor->isSynth()) ? kPlugCategSynth : kPlugCategEffect;
-
         if (strstr(MDescriptor->id,"instrument")) { res = kPlugCategSynth; }
         else if (strstr(MDescriptor->id,"audio_effect")) { res = kPlugCategEffect; }
-
         //if (MPlugin->hasFlag(kpf_tool)) res = kPlugCategGenerator;
         return res;
       }
@@ -1011,10 +1007,7 @@ public: // vst2
 
       case effGetEffectName: // 45
         //MIP_Vst2Trace("vst2: dispatcher/effGetEffectName\n");
-
-//        strcpy(str,MDescriptor->getName());
         strcpy(str,MDescriptor->name);
-
         //#ifdef MIP_32BIT
         //  str += "_32";
         //#endif
@@ -1036,7 +1029,6 @@ public: // vst2
 
       case effGetVendorString: // 47
         //MIP_Vst2Trace("vst2: dispatcher/effGetVendorString\n");
-//        strcpy((char*)ptr,(char*)MDescriptor->getAuthor());
         strcpy((char*)ptr,(char*)MDescriptor->vendor);
         break;
 
@@ -1049,7 +1041,6 @@ public: // vst2
 
       case effGetProductString: // 48
         //MIP_Vst2Trace("vst2: dispatcher/effGetProductString\n");
-//        strcpy((char*)ptr,(char*)MDescriptor->getDescription());
         strcpy((char*)ptr,(char*)MDescriptor->description);
         break;
 

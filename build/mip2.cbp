@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="mip3" />
+		<Option title="mip2" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -73,6 +73,10 @@
 			<Add directory="../include" />
 			<Add directory="../include/extern/vst3" />
 		</Compiler>
+		<Linker>
+			<Add library="dl" />
+			<Add library="sndfile" />
+		</Linker>
 		<Unit filename="../doc/compile.txt" />
 		<Unit filename="../include/extern/clap/audio-buffer.h" />
 		<Unit filename="../include/extern/clap/chmap.h" />
