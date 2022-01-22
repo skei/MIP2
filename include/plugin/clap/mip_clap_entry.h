@@ -42,14 +42,15 @@ public:
 
 //----------------------------------------------------------------------
 
-const MIP_ClapFactory clap_factory;
+const MIP_ClapFactory GLOBAL_CLAP_FACTORY;
 
 //----------
 
-const clap_plugin_factory CLAP_FACTORY = {
-  clap_factory.get_plugin_count,
-  clap_factory.get_plugin_descriptor,
-  clap_factory.create_plugin
+//const clap_plugin_factory CLAP_FACTORY = {
+const clap_plugin_factory clap_factory = {
+  GLOBAL_CLAP_FACTORY.get_plugin_count,
+  GLOBAL_CLAP_FACTORY.get_plugin_descriptor,
+  GLOBAL_CLAP_FACTORY.create_plugin
 };
 
 
@@ -81,7 +82,7 @@ public:
   static
   const void* get_factory(const char *factory_id) {
     if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
-      return &CLAP_FACTORY;
+      return &clap_factory;
     }
     return nullptr;
   }
@@ -90,7 +91,7 @@ public:
 
 //----------------------------------------------------------------------
 
-const MIP_ClapEntry CLAP_ENTRY;
+const MIP_ClapEntry GLOBAL_CLAP_ENTRY;
 
 //----------
 
@@ -100,9 +101,9 @@ const MIP_ClapEntry CLAP_ENTRY;
 
 CLAP_EXPORT const clap_plugin_entry clap_entry = {
   CLAP_VERSION,
-  CLAP_ENTRY.init,
-  CLAP_ENTRY.deinit,
-  CLAP_ENTRY.get_factory
+  GLOBAL_CLAP_ENTRY.init,
+  GLOBAL_CLAP_ENTRY.deinit,
+  GLOBAL_CLAP_ENTRY.get_factory
 };
 
 #pragma GCC diagnostic pop

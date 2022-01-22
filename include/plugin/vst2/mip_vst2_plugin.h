@@ -52,18 +52,19 @@ private:
   float     MSampleRate   = 0.0f;
   uint32_t  MMaxBlockSize = 0;
 
+  #ifndef MIP_NO_GUI
+    MIP_Editor*         MEditor             = nullptr;
+  #endif // MIP_NO_GUI
+
+
 //  MIP_Vst2Host*       MVst2Host             = nullptr;
 //  AEffect             MAEffect              = {0};
 //  audioMasterCallback MAudioMaster          = nullptr;
 //  MIP_Descriptor*     MDescriptor           = nullptr;
 //  MIP_Instance*       MInstance             = nullptr;
-
 //  uint32_t            MCurrentProgram       = 0;
-
 //  ERect               MVstRect              = {0};
 //  uint32_t            MKnobMode             = 0;
-
-
 //  float               MTempo                = 0.0f;
 //  uint32_t            MTimeSigNum           = 0;
 //  uint32_t            MTimeSigDenom         = 0;
@@ -71,17 +72,10 @@ private:
 //  uint32_t            MPlayState            = 0;
 //  uint32_t            MPrevPlayState        = 0;
 //  float               MBeatPos              = 0.0f;
-
 //  bool                MIsOpen               = false;
 //  bool                MIsSuspended          = false;
 ////bool                MIsInitialized        = false;
-
 ////bool                MNeedToInitializeParameters = true;
-
-  #ifndef MIP_NO_GUI
-    MIP_Editor*         MEditor             = nullptr;
-  #endif // MIP_NO_GUI
-
 //  MIP_ProcessContext MProcessContext       = {0};
 
 
@@ -98,11 +92,6 @@ public:
 
     MGui          = (const clap_plugin_gui_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_GUI);
     MParams       = (const clap_plugin_params_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_PARAMS);
-
-//    MInstance = AInstance;
-//    MDescriptor = MInstance->getDescriptor();
-//    initParameters();
-//    MVst2Host = new MIP_Vst2Host(&MAEffect,AAudioMaster);
 
     uint32_t num_params = MParams->count(MPlugin);
     MParameterValues = (float*)malloc(num_params * sizeof(float));

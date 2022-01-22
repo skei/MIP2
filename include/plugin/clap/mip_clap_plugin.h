@@ -14,7 +14,7 @@
 class MIP_ClapPlugin {
 
 //------------------------------
-private:
+protected:
 //------------------------------
 
   const clap_plugin_descriptor_t* MDescriptor = nullptr;
@@ -52,8 +52,33 @@ public:
   virtual bool start_processing() { return true; }
   virtual void stop_processing() {}
   virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_CONTINUE; }
-  virtual const void* get_extension(const char *id) { return nullptr; }
   virtual void on_main_thread() {}
+
+  virtual const void* get_extension(const char *id) {
+    //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
+    //if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
+    //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MAudioPortsConfig;
+    //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MCheckForUpdate;
+    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MEventFilter;
+    //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MFileReference;
+    //if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MGui;
+    //if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MGuiX11;
+    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MLatency;
+    //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MMidiMappings;
+    //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MNoteName;
+    //if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MNotePorts;
+    if (strcmp(id,CLAP_EXT_PARAMS) == 0)              return &MParams;
+    //if (strcmp(id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    return &MPosixFdSupport;
+    //if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MPresetLoad;
+    //if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MQuickControls;
+    if (strcmp(id,CLAP_EXT_RENDER) == 0)              return &MRender;
+    if (strcmp(id,CLAP_EXT_STATE) == 0)               return &MState;
+    //if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MSurround;
+    //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MThreadPool;
+    //if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MTimerSupport;
+    //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
+    return nullptr;
+  }
 
 //------------------------------
 public: // extensions
@@ -88,8 +113,8 @@ public: // extensions
   virtual void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {}
   virtual void posix_fd_support_on_fd(int fd, int flags) {}
   virtual void render_set(clap_plugin_render_mode mode) {}
-  virtual bool state_save(clap_ostream_t *stream) { return false; }
-  virtual bool state_load(clap_istream_t *stream) { return false; }
+  virtual bool state_save(clap_ostream_t *stream) { return true; }
+  virtual bool state_load(clap_istream_t *stream) { return true; }
   virtual void thread_pool_exec(uint32_t task_index) {}
   virtual void timer_support_on_timer(clap_id timer_id) {}
 
@@ -167,7 +192,7 @@ private: // callbacks
 
   //const
   clap_plugin_t MPlugin = {
-    nullptr,
+    nullptr, //descriptor
     this,
     clap_plugin_init_callback,
     clap_plugin_destroy_callback,

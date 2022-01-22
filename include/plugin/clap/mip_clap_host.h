@@ -2,12 +2,19 @@
 #define mip_clap_host_included
 //----------------------------------------------------------------------
 
-//#include <windows.h>
-#include <dlfcn.h>
+#define MIP_NO_PLUGIN_HOSTING
+
+//----------------------------------------------------------------------
+
+#ifndef MIP_NO_PLUGIN_HOSTING
+  //#include <windows.h>
+  #include <dlfcn.h>
+#endif
 
 //----------
 
 #include "mip.h"
+#include "base/utils/mip_str_utils.h"
 #include "plugin/clap/mip_clap.h"
 
 //----------------------------------------------------------------------
@@ -23,8 +30,11 @@ class MIP_ClapHost {
 private:
 //------------------------------
 
+  #ifndef MIP_NO_PLUGIN_HOSTING
   //HINSTANCE                   MLibHandle      = nullptr;
     void*                       MLibHandle      = nullptr;
+  #endif
+
     const clap_plugin_entry*    MClapEntry      = nullptr;
     const clap_plugin_factory*  MClapFactory    = nullptr;
     char                        MPathOnly[512]  = {0};
@@ -84,13 +94,15 @@ public:
 public:
 //------------------------------
 
+  #ifndef MIP_NO_PLUGIN_HOSTING
+
   bool loadPlugin(const char* path) {
     //MPluginPath = path;
     //MLibHandle = LoadLibrary(path);
     //MClapEntry = (struct clap_plugin_entry*)GetProcAddress(MLibHandle,"clap_entry");
     MLibHandle = dlopen(path,RTLD_LAZY|RTLD_LOCAL); // RTLD_NOW
     MClapEntry = (struct clap_plugin_entry*)dlsym(MLibHandle,"clap_entry");
-    get_path_only(MPathOnly,path);
+    MIP_GetPathOnly(MPathOnly,path);
     MClapEntry->init(MPathOnly);
     MClapFactory = (const clap_plugin_factory*)MClapEntry->get_factory(CLAP_PLUGIN_FACTORY_ID);
     return true;
@@ -120,50 +132,7 @@ public:
   //  plugin->destroy(plugin);
   //}
 
-//------------------------------
-private:
-//------------------------------
-
-  // /home/skei/test.so -> test.so
-  // returns ptr to first character after last /
-
-  /*
-  const char* get_filename_from_path(const char* path) {
-    if (path) {
-      const char* slash     = strrchr(path,'/');
-      const char* backslash = strrchr(path,'\\');
-      if (slash) {
-        return slash + 1;
-      }
-      else if (backslash) {
-        return backslash + 1;
-      }
-    }
-    return NULL;
-  }
-  */
-
-  //----------
-
-  // /home/skei/test.so -> /home/skei/
-  // makes a copy of dst, inserts a 0 after the last /
-
-  char* get_path_only(char* dst, const char* src) {
-    if (dst && src) {
-      strcpy(dst,src);
-      char* slash     = strrchr(dst,'/');
-      char* backslash = strrchr(dst,'\\');
-      if (slash) {
-        slash[1] = 0;
-        return dst;
-      }
-      else if (backslash) {
-        backslash[1] = 0;
-        return dst;
-      }
-    }
-    return nullptr;
-  }
+  #endif
 
 //------------------------------
 public: // timer listener

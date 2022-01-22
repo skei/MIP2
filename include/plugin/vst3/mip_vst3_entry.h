@@ -18,13 +18,13 @@
 
 //----------------------------------------------------------------------
 
-const char test_long_id[16] = {
-  0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00
-};
+//const char test_long_id[16] = {
+//  0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00
+//};
 
-const char test_editor_id[16] = {
-  0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00
-};
+//const char test_editor_id[16] = {
+//  0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00
+//};
 
 //----------------------------------------------------------------------
 //
@@ -87,6 +87,7 @@ private:
 
   const char* getLongId(const clap_plugin_descriptor_t* descriptor) {
     uint32_t* id = (uint32_t*)MPluginId;
+    id[0] = 0x00000000; // "MIP2" ?
     id[1] = MIP_HashString(descriptor->name);
     id[2] = MIP_HashString(descriptor->vendor);
     id[3] = MIP_HashString(descriptor->version);
@@ -120,7 +121,6 @@ public:
 
   tresult PLUGIN_API queryInterface(const TUID _iid, void** obj) override {
     MIP_Print("MIP_Vst3Entry.queryInterface\n");
-    //if (FUnknownPrivate::iidEqual(IPluginFactory2_iid,_iid)) {
     if (VST3_iidEqual(_iid,IPluginFactory2_iid)) {
       //MIP_Print("queryInterface\n");
       //VST3_PrintIID(_iid);
@@ -129,7 +129,6 @@ public:
       addRef();
       return kResultOk;
     }
-    //if (FUnknownPrivate::iidEqual(IPluginFactory3_iid,_iid)) {
     if (VST3_iidEqual(_iid,IPluginFactory3_iid)) {
       //MIP_Print("\n");
       //VST3_PrintIID(_iid);
@@ -162,6 +161,7 @@ public:
 
   tresult PLUGIN_API getFactoryInfo(PFactoryInfo* info) override {
     MIP_Print("MIP_Vst3Entry.getFactoryInfo\n");
+
     strcpy(info->vendor,"<factory author>");
     strcpy(info->url,"<factory url>");
     strcpy(info->email,"<factory email>");
@@ -174,9 +174,6 @@ public:
 
   int32   PLUGIN_API countClasses() override {
     MIP_Print("MIP_Vst3Entry.countClasses\n");
-//    uint32_t num = MIP_GLOBAL_PLUGIN_LIST.getNumPlugins();
-//    MIP_Print("-> %i\n",num);
-//    return num;
     return MIP_GetNumPlugins();
   }
 
@@ -186,8 +183,9 @@ public:
     MIP_Print("MIP_Vst3Entry.getClassInfo\n");
 //    MIP_PluginInfo* plugin_info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(index);
 //    MIP_Descriptor* plugin_desc = plugin_info->descriptor;
-    const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(0);
-    memcpy(info->cid,test_long_id,16);
+    const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(index);
+    const char* long_id = getLongId(descriptor);
+    memcpy(info->cid,long_id,16);
     info->cardinality = PClassInfo::kManyInstances;
     strncpy(info->category,kVstAudioEffectClass,PClassInfo::kCategorySize);
     strncpy(info->name,descriptor->name,PClassInfo::kNameSize);
@@ -241,7 +239,8 @@ public:
 //      MIP_Descriptor* plugin_desc = plugin_info->descriptor;
 //      memcpy(info->cid,(const char*)plugin_desc->getLongId(),16);
     const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(0);
-    memcpy(info->cid,test_long_id,16);
+    const char* long_id = getLongId(descriptor);
+    memcpy(info->cid,long_id,16);
     info->cardinality = PClassInfo::kManyInstances;
     strcpy(info->category,kVstAudioEffectClass);
     strcpy(info->name,descriptor->name);

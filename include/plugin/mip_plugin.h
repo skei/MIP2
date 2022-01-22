@@ -15,4 +15,24 @@ extern const clap_plugin_t*             MIP_CreatePlugin(const clap_host_t *host
 #include "plugin/exe/mip_exe_entry.h"
 
 //----------------------------------------------------------------------
+//
+// plugin
+//
+//----------------------------------------------------------------------
+
+class MIP_Plugin
+: public MIP_ClapPlugin {
+
+public:
+
+  MIP_Plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
+  : MIP_ClapPlugin(ADescriptor,AHost) {
+  }
+
+  virtual ~MIP_Plugin() {
+  }
+
+};
+
+//----------------------------------------------------------------------
 #endif
