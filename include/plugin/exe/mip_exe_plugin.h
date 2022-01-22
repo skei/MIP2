@@ -3,6 +3,20 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "plugin/clap/mip_clap.h"
+
+
+class MIP_ExePlugin {
+
+public:
+
+  MIP_ExePlugin(const clap_plugin_t* APlugin) {
+  }
+
+  ~MIP_ExePlugin() {
+  }
+
+};
 
 //----------------------------------------------------------------------
 #endif

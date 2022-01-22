@@ -3,13 +3,14 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "plugin/clap/mip_clap.h"
+#include "plugin/vst3/mip_vst3.h"
+#include "plugin/vst3/mip_vst3_plugin.h"
+#include "plugin/vst3/mip_vst3_utils.h"
 
 //#include "plugin/mip_descriptor.h"
 //#include "plugin/mip_plugin.h"
-#include "plugin/vst3/mip_vst3.h"
 //#include "plugin/vst3/mip_vst3_host_proxy.h"
-#include "plugin/vst3/mip_vst3_plugin.h"
-#include "plugin/vst3/mip_vst3_utils.h"
 
 //#ifndef MIP_NO_GUI
 //#include "plugin/mip_editor.h"

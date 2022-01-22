@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/vst2/mip_vst2.h"
 #include "plugin/vst2/mip_vst2_plugin.h"
@@ -31,7 +32,7 @@ public:
 
   //----------
 
-  virtual ~MIP_Vst2Entry() {
+  ~MIP_Vst2Entry() {
     MIP_Print("~MIP_Vst2Entry\n");
   }
 

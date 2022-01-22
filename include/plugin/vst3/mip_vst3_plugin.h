@@ -9,6 +9,7 @@
 */
 
 #include "mip.h"
+#include "plugin/clap/mip_clap.h"
 #include "plugin/vst2/mip_vst2.h"
 
 //#include "base/types/mip_queue.h"

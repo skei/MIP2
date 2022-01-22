@@ -2,13 +2,9 @@
 #define mip_clap_entry_included
 //----------------------------------------------------------------------
 
-#include <string.h> // strcmp
-
-#include "extern/clap/clap.h"
-#include "extern/clap/ext/draft/ambisonic.h"
-#include "extern/clap/ext/draft/check-for-update.h"
-
-#include "mip_clap_plugin.h"
+#include "mip.h"
+#include "plugin/clap/mip_clap.h"
+#include "plugin/clap/mip_clap_plugin.h"
 
 //----------------------------------------------------------------------
 //

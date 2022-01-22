@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "plugin/clap/mip_clap.h"
 #include "plugin/lv2/mip_lv2.h"
 
 //----------------------------------------------------------------------
@@ -23,7 +24,7 @@ public:
 
   //----------
 
-  virtual ~MIP_Lv2PluginEntry() {
+  ~MIP_Lv2PluginEntry() {
     MIP_PRINT;
   }
 

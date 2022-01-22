@@ -7,10 +7,8 @@
 
 //----------
 
-//#include <string.h> // strcmp
-#include "extern/clap/clap.h"
-//#include "extern/clap/ext/draft/ambisonic.h"
-//#include "extern/clap/ext/draft/check-for-update.h"
+#include "mip.h"
+#include "plugin/clap/mip_clap.h"
 
 //----------------------------------------------------------------------
 //

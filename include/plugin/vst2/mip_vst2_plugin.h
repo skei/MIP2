@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "base/types/mip_queue.h"
+#include "plugin/clap/mip_clap.h"
 #include "plugin/vst2/mip_vst2.h"
 
 //----------------------------------------------------------------------
@@ -115,7 +116,7 @@ public:
 
   //----------
 
-  virtual ~MIP_Vst2Plugin() {
+  ~MIP_Vst2Plugin() {
     //MIP_Print("~MIP_Vst2Plugin()\n");
     free(MParameterValues);
     if (MPlugin) MPlugin->destroy(MPlugin);

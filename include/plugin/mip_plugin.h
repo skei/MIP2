@@ -14,8 +14,5 @@ extern const clap_plugin_t*             MIP_CreatePlugin(const clap_host_t *host
 #include "plugin/lv2/mip_lv2_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
 
-
-
-
 //----------------------------------------------------------------------
 #endif
