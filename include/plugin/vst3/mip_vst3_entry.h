@@ -82,12 +82,12 @@ private:
 
   //----------
 
-  #define MIP_MAGIC_M_PL   0x4d5f504c    // M_PL   // plugin
-  #define MIP_MAGIC_M_ED   0x4d5f4544    // M_ED   // editor
+//  #define MIP_MAGIC_M_PL   0x4d5f504c    // M_PL   // plugin
+//  #define MIP_MAGIC_M_ED   0x4d5f4544    // M_ED   // editor
 
   const char* getLongId(const clap_plugin_descriptor_t* descriptor) {
     uint32_t* id = (uint32_t*)MPluginId;
-    id[0] = 0x00000000; // "MIP2" ?
+    id[0] = MIP_MAGIC_M_PL;
     id[1] = MIP_HashString(descriptor->name);
     id[2] = MIP_HashString(descriptor->vendor);
     id[3] = MIP_HashString(descriptor->version);

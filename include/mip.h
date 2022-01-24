@@ -2,7 +2,6 @@
 #define mip_included
 //----------------------------------------------------------------------
 
-
 #include <math.h>
 #include <memory.h>
 #include <stdint.h>
@@ -11,16 +10,16 @@
 #include <string.h>
 #include <vector>
 
-#include "base/debug/mip_debug.h"
 
 //----------
 
 #include "base/mip_config.h"
 #include "base/mip_defines.h"
-
 #include "base/mip_const.h"
 #include "base/mip_enums.h"
 #include "base/mip_attributes.h"
+
+#include "base/debug/mip_debug.h"
 
 //#ifndef MIP_NO_PLUGIN
 //  #include "plugin/mip_plugin.h"
@@ -34,13 +33,6 @@
 //#define MIP_MIDI_CHANNEL_AFTERTOUCH  0xD0
 //#define MIP_MIDI_PITCHBEND           0xE0
 //#define MIP_MIDI_SYS                 0xF0
-
-//#include "base/mip_config.h"
-//#include "base/mip_defines.h"
-//#include "base/mip_attributes.h"
-//#include "base/mip_enums.h"
-//#include "base/mip_debug.h"
-//include "base/mip_stdlib.h"
 
 //----------------------------------------------------------------------
 #endif
