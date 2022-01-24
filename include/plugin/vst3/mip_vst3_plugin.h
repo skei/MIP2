@@ -53,9 +53,9 @@ private:
   const clap_plugin_t*            MPlugin     = nullptr;
   const clap_plugin_descriptor_t* MDescriptor = nullptr;
 
-  #ifndef MIP_NO_GUI
-  MIP_Editor*         MEditor             = nullptr;
-  #endif // MIP_NO_GUI
+  //#ifndef MIP_NO_GUI
+  //MIP_Editor*         MEditor             = nullptr;
+  //#endif
 
   uint32_t            MRefCount           = 1;
   IComponentHandler*  MComponentHandler   = nullptr;
@@ -2101,28 +2101,27 @@ public:
 
   tresult PLUGIN_API attached(void* parent, FIDString type) override {
     MIP_PRINT;
-
-    #ifndef MIP_NO_GUI
-      if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
-        if (MPlugFrame) {
-          uint32_t w = MDescriptor->getEditorDefaultWidth();
-          uint32_t h = MDescriptor->getEditorDefaultHeight();
-          //if (w == 0) w = MPlugin->getDefaultEditorWidth();
-          //if (h == 0) h = MPlugin->getDefaultEditorHeight();
-          ViewRect r;
-          r.left    = 0;
-          r.top     = 0;
-          r.right   = w;
-          r.bottom  = h;
-          MPlugFrame->resizeView(this,&r);
-        }
-        MEditor = MPlugin->openEditor(parent);
-        MEditor->open();
-        //if (MRunLoop)
-        MRunLoop->registerTimer(this,MIP_PLUGIN_VST3_TIMER_MS);
-        return kResultOk;
-      }
-    #endif // MIP_NO_GUI
+//    #ifndef MIP_NO_GUI
+//      if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
+//        if (MPlugFrame) {
+//          uint32_t w = MDescriptor->getEditorDefaultWidth();
+//          uint32_t h = MDescriptor->getEditorDefaultHeight();
+//          //if (w == 0) w = MPlugin->getDefaultEditorWidth();
+//          //if (h == 0) h = MPlugin->getDefaultEditorHeight();
+//          ViewRect r;
+//          r.left    = 0;
+//          r.top     = 0;
+//          r.right   = w;
+//          r.bottom  = h;
+//          MPlugFrame->resizeView(this,&r);
+//        }
+//        MEditor = MPlugin->openEditor(parent);
+//        MEditor->open();
+//        //if (MRunLoop)
+//        MRunLoop->registerTimer(this,MIP_PLUGIN_VST3_TIMER_MS);
+//        return kResultOk;
+//      }
+//    #endif // MIP_NO_GUI
     return kResultFalse;
   }
 
@@ -2135,17 +2134,16 @@ public:
 
   tresult PLUGIN_API removed() override {
     MIP_PRINT;
-
-      #ifndef MIP_NO_GUI
-      if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
-        //if (MRunLoop)
-        MRunLoop->unregisterTimer(this);
-        MEditor->close();
-        MPlugin->closeEditor(MEditor);
-        MEditor = nullptr;
-        return kResultOk;
-      }
-      #endif // MIP_NO_GUI
+//    #ifndef MIP_NO_GUI
+//    if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
+//      //if (MRunLoop)
+//      MRunLoop->unregisterTimer(this);
+//      MEditor->close();
+//      MPlugin->closeEditor(MEditor);
+//      MEditor = nullptr;
+//      return kResultOk;
+//    }
+//    #endif // MIP_NO_GUI
     return kResultFalse;
   }
 
@@ -2278,11 +2276,10 @@ public:
 
   void onTimer() override {
     //MIP_PRINT;
-
-    #ifndef MIP_NO_GUI
-      MPlugin->on_updateEditor(MEditor);
-      MPlugin->flushParamsToHost();
-    #endif // MIP_NO_GUI
+//    #ifndef MIP_NO_GUI
+//      MPlugin->on_updateEditor(MEditor);
+//      MPlugin->flushParamsToHost();
+//    #endif // MIP_NO_GUI
   }
 
 };

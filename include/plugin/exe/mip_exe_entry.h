@@ -16,9 +16,9 @@
 #include "audio/mip_audio_jack.h"
 #endif
 
-#ifndef MIP_NO_GUI
-  #include "plugin/mip_editor.h"
-#endif
+//#ifndef MIP_NO_GUI
+//  #include "plugin/mip_editor.h"
+//#endif
 
 //----------------------------------------------------------------------
 //

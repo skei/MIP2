@@ -10,7 +10,7 @@
 #include "base/types/mip_rect.h"
 #include "gui/mip_painter.h"
 #include "gui/base/mip_base_window.h"
-#include "plugin/mip_parameter.h"
+//#include "plugin/mip_parameter.h"
 
 //----------------------------------------------------------------------
 
@@ -83,7 +83,7 @@ protected:
   float           MModValue               = 0.0;
   float           MValue                  = 0.0;
   float           MDefaultValue           = 0.0;
-  MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // ptrs to connected parameters
+//  MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // ptrs to connected parameters
 
 //------------------------------
 public:
@@ -150,7 +150,7 @@ public: // set
   virtual void setInitialWidth(float AW)                    { MInitialRect.w = AW; }
   virtual void setModValue(float v)                         { MModValue = v; }
   virtual void setName(const char* AName)                   { MName = AName; }
-  virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
+//  virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
   virtual void setParent(MIP_Widget* AParent)               { MParent = AParent; }
   virtual void setPos(float AXpos, float AYpos)             { MRect.x = AXpos; MRect.y = AYpos; }
   virtual void setRect(MIP_FRect ARect)                     { MRect = ARect; }
@@ -177,7 +177,7 @@ public:
   virtual float           getModValue()               { return MModValue; }
   virtual const char*     getName()                   { return MName; }
   virtual uint32_t        getNumChildren()            { return MChildren.size(); }
-  virtual MIP_Parameter*  getParameter(uint32_t i=0)  { return MParameters[i]; }
+//  virtual MIP_Parameter*  getParameter(uint32_t i=0)  { return MParameters[i]; }
   virtual MIP_Widget*     getParent()                 { return MParent; }
   virtual MIP_FRect       getRect()                   { return MRect; }
   virtual float           getValue()                  { return MValue; }

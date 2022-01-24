@@ -47,6 +47,12 @@ public:
     const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.getHost(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
     MIP_Vst2Plugin*                 vst2plugin  = new MIP_Vst2Plugin(plugin,audioMaster);           // deleted in vst2_dispatcher_callback(effClose)
 
+    /*
+      assumes stereo in & out
+      TODO: check clap.audio-ports
+      use number of channels in port with 'is_main'
+    */
+
     uint32_t  num_inputs  = 2;
     uint32_t  num_outputs = 2;
     uint32_t  num_params  = 0;
@@ -148,8 +154,6 @@ private: // vst2 callbacks
 // entrypoint
 //
 //----------------------------------------------------------------------
-
-//TODO: wrap this in ifdef, in case we don't want vst2..
 
 #define MIP_VST2_ENTRY_SYMBOL asm ("VSTPluginMain");
 AEffect* mip_vst2_entry(audioMasterCallback audioMaster) MIP_VST2_ENTRY_SYMBOL

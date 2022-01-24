@@ -16,7 +16,7 @@
 #include "base/system/mip_time.h"
 #include "base/types/mip_color.h"
 #include "gui/mip_drawable.h"
-#include "gui/mip_widget.h"
+//#include "gui/mip_widget.h"
 #include "gui/xcb/mip_xcb.h"
 #include "gui/xcb/mip_xcb_utils.h"
 

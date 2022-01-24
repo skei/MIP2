@@ -37,7 +37,9 @@ private:
 
   const clap_plugin_t*            MPlugin           = nullptr;
   const clap_plugin_descriptor_t* MDescriptor       = nullptr;
+
   const clap_plugin_gui_t*        MGui              = nullptr;
+  const clap_plugin_gui_x11_t*    MGuiX11           = nullptr;
   const clap_plugin_params_t*     MParams           = nullptr;
 
 
@@ -52,9 +54,9 @@ private:
   float     MSampleRate   = 0.0f;
   uint32_t  MMaxBlockSize = 0;
 
-  #ifndef MIP_NO_GUI
-    MIP_Editor*         MEditor             = nullptr;
-  #endif // MIP_NO_GUI
+  //#ifndef MIP_NO_GUI
+  //  MIP_Editor*         MEditor             = nullptr;
+  //#endif // MIP_NO_GUI
 
 
 //  MIP_Vst2Host*       MVst2Host             = nullptr;
@@ -63,7 +65,6 @@ private:
 //  MIP_Descriptor*     MDescriptor           = nullptr;
 //  MIP_Instance*       MInstance             = nullptr;
 //  uint32_t            MCurrentProgram       = 0;
-//  ERect               MVstRect              = {0};
 //  uint32_t            MKnobMode             = 0;
 //  float               MTempo                = 0.0f;
 //  uint32_t            MTimeSigNum           = 0;
@@ -76,8 +77,9 @@ private:
 //  bool                MIsSuspended          = false;
 ////bool                MIsInitialized        = false;
 ////bool                MNeedToInitializeParameters = true;
-//  MIP_ProcessContext MProcessContext       = {0};
+//  MIP_ProcessContext MProcessContext        = {0};
 
+  ERect               MVstRect              = {0};
 
 //------------------------------
 public:
@@ -91,6 +93,7 @@ public:
     MAudioMaster  = audioMaster;
 
     MGui          = (const clap_plugin_gui_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_GUI);
+    MGuiX11       = (const clap_plugin_gui_x11_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_GUI_X11);
     MParams       = (const clap_plugin_params_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_PARAMS);
 
     uint32_t num_params = MParams->count(MPlugin);
@@ -526,18 +529,19 @@ public: // vst2
 
       case effEditGetRect: // 13
         //MIP_Vst2Trace("vst2: dispatcher/effEditGetRect\n");
-//        if (MDescriptor->hasEditor()) {
-//          uint32_t w = MDescriptor->getEditorWidth();
-//          uint32_t h = MDescriptor->getEditorHeight();
-//          //if (w == 0) w = MInstance->getDefaultEditorWidth();
-//          //if (h == 0) h = MInstance->getDefaultEditorHeight();
-//          MVstRect.left     = 0;
-//          MVstRect.top      = 0;
-//          MVstRect.right    = w;
-//          MVstRect.bottom   = h;
-//          *(ERect**)ptr     = &MVstRect;
-//          return 1;
-//        }
+        if (MGui) {
+          uint32_t width  = 0;
+          uint32_t height = 0;
+          MGui->get_size(MPlugin,&width,&height);
+          //if (w == 0) w = MInstance->getDefaultEditorWidth();
+          //if (h == 0) h = MInstance->getDefaultEditorHeight();
+          MVstRect.left     = 0;
+          MVstRect.top      = 0;
+          MVstRect.right    = width;
+          MVstRect.bottom   = height;
+          *(ERect**)ptr     = &MVstRect;
+          return 1;
+        }
         break;
 
       //----------
@@ -551,25 +555,18 @@ public: // vst2
       case effEditOpen: // 14
         //MIP_Vst2Trace("vst2: dispatcher/effEditOpen\n");
         #ifndef MIP_NO_GUI
-//        if (MDescriptor->hasEditor()) {
-//          if (!MIsEditorOpen) {
-//            MIsEditorOpen = true;
-//            //MEditor = (MIP_Editor*)MInstance->on_openEditor(ptr);
-////            MEditor = MInstance->on_plugin_openEditor(/*ptr*/);
-////            //MInstance->copyParameterValuesToEditor(MEditor);
-////            // MEditor->on_realign(true);
-////            uint32_t width = MDescriptor->editorWidth;
-////            uint32_t height = MDescriptor->editorHeight;
-////            MEditor->open(width,height,ptr);
-//            MEditor = _mip_create_editor(this,MDescriptor);
-//            MInstance->on_plugin_createEditor(MEditor);
-//            MEditor->attach("",ptr);
-//            MInstance->on_plugin_openEditor(MEditor);
-//            MInstance->updateAllEditorParameters(MEditor,false);
-//            MEditor->show();
-//            return 1;
-//          }
-//        }
+          if (MGui) {
+            if (!MIsEditorOpen) {
+              MIsEditorOpen = true;
+              MGui->create(MPlugin);
+              MGui->set_scale(MPlugin,1.0);
+              MGui->set_size(MPlugin,640,480);
+              MGuiX11->attach(MPlugin,"",(unsigned long)ptr);
+              //updateAllEditorParameters(MEditor,false);
+              MGui->show(MPlugin);
+              return 1;
+            }
+          }
         #endif // MIP_NO_GUI
         break;
 
@@ -581,23 +578,14 @@ public: // vst2
       case effEditClose: // 15
         //MIP_Vst2Trace("vst2: dispatcher/effEditClose\n");
         #ifndef MIP_NO_GUI
-//        if (MDescriptor->hasEditor()) {
-//          if (MIsEditorOpen) {
-//            MIsEditorOpen = false;
-//            if (MEditor) {
-////              MEditor->close();
-////              //MInstance->on_closeEditor(MEditor);
-////              MInstance->on_plugin_closeEditor();
-//              MInstance->on_plugin_closeEditor(MEditor);
-//              MEditor->hide();
-//              MEditor->detach();
-//              MInstance->on_plugin_destroyEditor(MEditor);
-//              delete MEditor;
-//              MEditor = nullptr;
-//              return 1;
-//            }
-//          }
-//        }
+          if (MGui) {
+            if (MIsEditorOpen) {
+              MIsEditorOpen = false;
+              MGui->hide(MPlugin);
+              MGui->destroy(MPlugin);
+              return 1;
+            }
+          }
         #endif // MIP_NO_GUI
         break;
 
@@ -617,13 +605,13 @@ public: // vst2
       case effEditIdle: // 19
         //MIP_Vst2Trace("vst2: dispatcher/effEditIdle\n");
         #ifndef MIP_NO_GUI
-//        if (MDescriptor->hasEditor()) {
-//          if (MIsEditorOpen) {
-//            //MIP_Assert(MEditor);
-//            MInstance->on_plugin_updateEditor(MEditor);
-//            updateEditorInIdle();
-//          }
-//        }
+          if (MGui) {
+            if (MIsEditorOpen) {
+              //MIP_Assert(MEditor);
+//              MInstance->on_plugin_updateEditor(MEditor);
+//              updateEditorInIdle();
+            }
+          }
         #endif // MIP_NO_GUI
         break;
 

@@ -1,8 +1,13 @@
 
-#define MIP_NO_GUI
+//#define MIP_NO_GUI
+
+#define MIP_USE_XCB
+#define MIP_GUI_XCB
 
 #include "mip.h"
 #include "plugin/mip_plugin.h"
+
+#include "gui/xcb/mip_xcb_window.h"
 
 //----------------------------------------------------------------------
 //
@@ -17,6 +22,7 @@ class Plugin
 private:
 //------------------------------
 
+  MIP_XcbWindow*  MWindow = nullptr;
   double MParam1 = 0.0;
 
 //------------------------------
@@ -124,6 +130,53 @@ public:
   void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) final {
     //TODO
   }
+
+//------------------------------
+public:
+//------------------------------
+
+  bool gui_create() final {
+    return true;
+  }
+
+  void gui_destroy() final {
+    if (MWindow) delete MWindow;
+  }
+
+  bool gui_set_scale(double scale) final {
+    return true;
+  }
+
+  bool gui_get_size(uint32_t *width, uint32_t *height) final {
+    *width = 640;
+    *height = 480;
+    return true;
+  }
+
+  bool gui_can_resize() final {
+    return false;
+  }
+
+  void gui_round_size(uint32_t *width, uint32_t *height) final {
+  }
+
+  bool gui_set_size(uint32_t width, uint32_t height) final {
+    return true;
+  }
+
+  void gui_show() final {
+    MWindow->open();
+  }
+
+  void gui_hide() final {
+    MWindow->close();
+  }
+
+  bool gui_x11_attach(const char *display_name, unsigned long window) final {
+    MWindow = new MIP_XcbWindow(640,480,"",(void*)window);
+    return true;
+  }
+
 
 };
 

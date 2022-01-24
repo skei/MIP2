@@ -5,7 +5,7 @@
 #include "mip.h"
 #include "base/types/mip_color.h"
 #include "gui/mip_drawable.h"
-#include "gui/mip_widget.h"
+//#include "gui/mip_widget.h"
 
 //----------------------------------------------------------------------
 
@@ -27,7 +27,7 @@ public:
 public:
 //------------------------------
 
-  virtual MIP_Painter* getPainter() { return nullptr; }
+  //virtual MIP_Painter* getPainter() { return nullptr; }
 
   virtual void setWindowPos(uint32_t AXpos, uint32_t AYpos) {}
   virtual void setWindowSize(uint32_t AWidth, uint32_t AHeight) {}

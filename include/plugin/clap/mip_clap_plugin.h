@@ -64,8 +64,8 @@ public:
     //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MCheckForUpdate;
     if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MEventFilter;
     //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MFileReference;
-    //if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MGui;
-    //if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MGuiX11;
+    if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MGui;
+    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MGuiX11;
     if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MLatency;
     //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MMidiMappings;
     //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MNoteName;
