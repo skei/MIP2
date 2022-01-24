@@ -35,6 +35,8 @@ private:
   AEffect                         MAEffect          = {0};
   audioMasterCallback             MAudioMaster      = nullptr;
 
+  MIP_ClapHost*                   MHost             = nullptr;
+
   const clap_plugin_t*            MPlugin           = nullptr;
   const clap_plugin_descriptor_t* MDescriptor       = nullptr;
 
@@ -49,10 +51,17 @@ private:
   MIP_VstEvents MVstEvents                                  = {0};
   VstMidiEvent  MVstMidiSendEvents[MIP_VST2_MAX_MIDI_SEND]  = {0};
 
-  bool      MIsProcessing = false;
-  bool      MIsEditorOpen = false;
-  float     MSampleRate   = 0.0f;
-  uint32_t  MMaxBlockSize = 0;
+  bool      MIsOpen         = false;
+  bool      MIsProcessing   = false;
+  bool      MIsEditorOpen   = false;
+  bool      MIsSuspended    = false;
+//  bool      MIsInitialized  = false;
+
+  uint32_t  MCurrentProgram = 0;
+  uint32_t  MKnobMode       = 0;
+
+  float     MSampleRate     = 0.0f;
+  uint32_t  MMaxBlockSize   = 0;
 
   //#ifndef MIP_NO_GUI
   //  MIP_Editor*         MEditor             = nullptr;
@@ -64,8 +73,6 @@ private:
 //  audioMasterCallback MAudioMaster          = nullptr;
 //  MIP_Descriptor*     MDescriptor           = nullptr;
 //  MIP_Instance*       MInstance             = nullptr;
-//  uint32_t            MCurrentProgram       = 0;
-//  uint32_t            MKnobMode             = 0;
 //  float               MTempo                = 0.0f;
 //  uint32_t            MTimeSigNum           = 0;
 //  uint32_t            MTimeSigDenom         = 0;
@@ -73,9 +80,6 @@ private:
 //  uint32_t            MPlayState            = 0;
 //  uint32_t            MPrevPlayState        = 0;
 //  float               MBeatPos              = 0.0f;
-//  bool                MIsOpen               = false;
-//  bool                MIsSuspended          = false;
-////bool                MIsInitialized        = false;
 ////bool                MNeedToInitializeParameters = true;
 //  MIP_ProcessContext MProcessContext        = {0};
 
@@ -85,9 +89,17 @@ private:
 public:
 //------------------------------
 
-  MIP_Vst2Plugin(const clap_plugin_t* APlugin, audioMasterCallback audioMaster) {
+  /*
+    TODO:
+    cache often used things.. parameters, descriptor, etc..
+    audio/note ports (main, can_receive_midi, etc)
+    (is synth, has editor, ..)..
+  */
+
+  MIP_Vst2Plugin(MIP_ClapHost* AHost, const clap_plugin_t* APlugin, audioMasterCallback audioMaster) {
     //MIP_Print("MIP_Vst2Plugin()\n");
 
+    MHost         = AHost;
     MPlugin       = APlugin;
     MDescriptor   = MPlugin->desc;
     MAudioMaster  = audioMaster;
@@ -112,6 +124,7 @@ public:
     //MIP_Print("~MIP_Vst2Plugin()\n");
     free(MParameterValues);
     if (MPlugin) MPlugin->destroy(MPlugin);
+    if (MHost) delete MHost;
   }
 
 //------------------------------
@@ -160,23 +173,29 @@ public: // editor listener
 private:
 //------------------------------
 
-  void initParameters() {
-    uint32_t num = MParams->count(MPlugin);
-    for (uint32_t i=0; i<num; i++) {
+//  void initParameters() {
+//    uint32_t num = MParams->count(MPlugin);
+//    for (uint32_t i=0; i<num; i++) {
 //      MIP_Parameter* parameter = MDescriptor->getParameter(i);
 //      parameter->setDefValue(parameter->to01( parameter->getDefValue() ));
 //      parameter->setMinValue(parameter->to01( parameter->getMinValue() ));
 //      parameter->setMaxValue(parameter->to01( parameter->getMaxValue() ));
-    }
-  }
+//    }
+//  }
 
   //----------
+
+  // called from: vst2_setParameter
 
   void queueProcessMessage(uint32_t AMessage) {
     MProcessMessageQueue.write(AMessage);
   }
 
   //----------
+
+  // called from process()
+  // via updateParametersInProcess()
+  // TODO: setup for process->in_events
 
   void flushProcessMessages() {
     uint32_t message = 0;
@@ -189,11 +208,15 @@ private:
 
   //----------
 
+  // called from: vst2_setParameter
+
   void queueGuiMessage(uint32_t AMessage) {
     MGuiMessageQueue.write(AMessage);
   }
 
   //----------
+
+  // called from: updateEditorInIdle
 
   void flushGuiMessages() {
     uint32_t message = 0;
@@ -205,7 +228,8 @@ private:
 
   //----------
 
-  // see flushMidi
+  // see vst2_host->flushMidi
+
   void queueMidiOut(uint32_t AOffset, uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) {
     int32_t       num   = MVstEvents.numEvents;
     VstMidiEvent* event = &MVstMidiSendEvents[num];
@@ -253,14 +277,13 @@ public: // vst2
   //----------
 
   float vst2_getParameter(VstInt32 index) {
-    return 0.0;
     return MParameterValues[index];
   }
 
   //----------
 
   void vst2_process(float** inputs, float** outputs, VstInt32 sampleFrames) {
-//    updateParametersInProcess();
+    updateParametersInProcess();
 //    //MHost->updateTime();
 //    uint32_t i;
 //    for (i=0; i<MDescriptor->getNumInputs(); i++)  { MProcessContext.inputs[i]  = inputs[i]; }
@@ -285,7 +308,6 @@ public: // vst2
   //----------
 
   void vst2_processDouble(double** inputs, double** outputs, VstInt32 sampleFrames) {
-    //MIP_PRINT;
   }
 
   //----------
@@ -306,7 +328,7 @@ public: // vst2
 
       case effOpen: // 0
         //MIP_Vst2Trace("vst2: dispatcher/effOpen\n");
-//        MIsOpen = true;
+        MIsOpen = true;
 //        MInstance->on_plugin_init();
 //        MInstance->setDefaultParameterValues();
 //        MInstance->updateAllParameters();
@@ -321,7 +343,7 @@ public: // vst2
 
       case effClose: // 1
         //MIP_Vst2Trace("vst2: dispatcher/effClose\n");
-//        MIsOpen = false;
+        MIsOpen = false;
 //        MInstance->on_plugin_destroy();
         break;
 
@@ -329,11 +351,11 @@ public: // vst2
 
       case effSetProgram: { // 2
         //MIP_Vst2Trace("vst2: dispatcher/effSetProgram %i\n",(int)value);
-//        uint32_t program = (uint32_t)value;
-//        //if (program != MCurrentProgram) {
-//        //  on_programChange(program);
-//          MCurrentProgram = program;
-        //}
+        uint32_t program = (uint32_t)value;
+        if (program != MCurrentProgram) {
+//          on_programChange(program);
+          MCurrentProgram = program;
+        }
         break;
       }
 
@@ -348,7 +370,7 @@ public: // vst2
 
       case effGetProgram: // 3
         ////MIP_Vst2Trace("vst2: dispatcher/effGetProgram\n");
-//        return MCurrentProgram;
+        return MCurrentProgram;
         break;
 
       //----------
@@ -503,7 +525,7 @@ public: // vst2
         //MIP_Vst2Trace("vst2: dispatcher/effMainsChanged %i\n",(int)value);
         if (value == 0) { // suspend
           MIsProcessing = false;
-//          MIsSuspended = true;
+          MIsSuspended = true;
 //          MInstance->on_plugin_deactivate();
         }
         else { // resume
@@ -512,7 +534,7 @@ public: // vst2
           //  MIsInitialized = true;
           //}
           MIsProcessing = true;
-//          MIsSuspended = false;
+          MIsSuspended = false;
 //          MInstance->on_plugin_activate(MSampleRate,0,MMaxBlockSize);
         }
         break;
@@ -609,7 +631,7 @@ public: // vst2
             if (MIsEditorOpen) {
               //MIP_Assert(MEditor);
 //              MInstance->on_plugin_updateEditor(MEditor);
-//              updateEditorInIdle();
+              updateEditorInIdle();
             }
           }
         #endif // MIP_NO_GUI
@@ -740,19 +762,18 @@ public: // vst2
 
       case effProcessEvents: { // 25
         //MIP_Vst2Trace("vst2: dispatcher/effProcessEvents\n");
-//        if ((MDescriptor->isSynth()) || (MDescriptor->canReceiveMidi())) {
+        //if ((MDescriptor->isSynth()) || (MDescriptor->canReceiveMidi())) {
+        //if (strstr(MDescriptor->features,"instrument")) {
           VstEvents* ev = (VstEvents*)ptr;
           int num_events = ev->numEvents;
           for (int32_t i=0; i<num_events; i++) {
             VstMidiEvent* event = (VstMidiEvent*)ev->events[i];
             if (event->type == kVstMidiType) {
-
               // todo: buffer, handle all in process..
 //              MInstance->on_plugin_midi(event->deltaFrames,event->midiData[0],event->midiData[1],event->midiData[2]);
-
             }
           }
-//        }
+        //}
         // todo: sort?
         return 1;
       }
@@ -773,8 +794,10 @@ public: // vst2
         //  MParams->get_info(MPlugin,index,&info);
         //  if (info.flags & CLAP_PARAM_IS_MODULATABLE) {}
         //}
+
+        // assume all parameters can be automated,
+        // TODO: not if hidden?
         return 1;
-        break;
       }
 
       //----------
@@ -797,6 +820,7 @@ public: // vst2
 
       case effString2Parameter: // 27
         //MIP_Vst2Trace("vst2: dispatcher/effString2Parameter %i\n",index);
+        //TODO
         break;
 
       //----------
@@ -842,6 +866,7 @@ public: // vst2
         };
       */
 
+      //TODO
       case effGetInputProperties: { // 33
         //MIP_Vst2Trace("vst2: dispatcher/effGetInputProperties %i\n",index);
         VstPinProperties* pin = (VstPinProperties*)ptr;
@@ -858,6 +883,7 @@ public: // vst2
       /*
       */
 
+      //TODO
       case effGetOutputProperties: { // 34
         //MIP_Vst2Trace("vst2: dispatcher/effGetOutputProperties %i\n",index);
         VstPinProperties* pin = (VstPinProperties*)ptr;
@@ -993,7 +1019,7 @@ public: // vst2
         //  str += "_64";
         //#endif
         #ifdef MIP_DEBUG
-          strcat(str,"_debug");
+          strcat(str,"_debug"); // 32-6 = max 26....
         #endif
         strcpy((char*)ptr,(char*)str);
         return 1;
@@ -1026,6 +1052,9 @@ public: // vst2
 
       /*
         return: vendor-specific version
+        hmm.. clap has version string, vst2 wants uint32
+        a) parse clap version string :-/
+        b) hash version string
       */
 
       case effGetVendorVersion: // 49
@@ -1085,75 +1114,32 @@ public: // vst2
       */
 
       case effCanDo: { // 51
-//        char* p = (char*)ptr;
-//        // plug-in will send Vst/MIDI events to Host
-//        if (MDescriptor->canSendMidi()) {
-//          if (!strcmp(p,"sendVstEvents"))    {} //MIP_Vst2Trace(" -> 1\n"); return 1; }
-//          if (!strcmp(p,"sendVstMidiEvent")) {} //MIP_Vst2Trace(" -> 1\n"); return 1; }
-//        }
-//        // plug-in can receive Vst/MIDI events to Host
-//        if (MDescriptor->canReceiveMidi()) {
-//          if (!strcmp(p,"receiveVstEvents"))     {} //MIP_Vst2Trace(" -> 1\n"); return 1; }
-//          if (!strcmp(p,"receiveVstMidiEvent"))  {} //MIP_Vst2Trace(" -> 1\n"); return 1; }
-//        }
-//        // plug-in can receive Time info from Host
-//        if (!strcmp(p,"receiveVstTimeInfo")) {
-//          //MIP_Vst2Trace(" -> 1\n");
-//          return 1;
-//        }
-//        // plug-in supports offline functions (#offlineNotify, #offlinePrepare, #offlineRun)
-//        if (!strcmp(p,"offline")) {
-//          //MIP_Vst2Trace("-> 0\n");
-//          return 0;
-//        }
-//        // plug-in supports function #getMidiProgramName ()
-//        if (!strcmp(p,"midiProgramNames")) {
-//          //MIP_Vst2Trace("-> 0\n");
-//          return 0;
-//        }
-//        // plug-in supports function setBypass()
-//        if (!strcmp(p,"bypass")) {
-//          //MIP_Vst2Trace(" -> 1\n");
-//          return 1;
-//        }
-//        if (!strcmp(p,"MPE")) {
-//          //#ifdef MIP_DEBUG_VST
-//        //  #ifdef MIP_PLUGIN_MPE
-//        //    //MIP_Vst2Trace("-> 1\n");
-//        //    return 1;
-//          //if (MDescriptor->hasFlag(kpf_mpe)) return 1;
-//          //#else
-//          //VST_TRACE("vst dispatcher: effCanDo '%s' >> 0",(char*)ptr);
-//        //  #endif
-//          //#endif // MIP_PLUGIN_MPE
-//          //#ifdef MIP_PLUGIN_MPE
-//          //MHostMPE = true;
-//          //// MVoices.setMPE(true);
-//          //on_setMode(kpm_mpe,MHostMPE);
-//          //return 1; // 0
-//          //#else
-//          //return 0;
-//          //#endif
-//        }
-//        /*
-//          http://www.reaper.fm/sdk/vst/vst_ext.php
-//          A REAPER aware VST plug-in can respond to effCanDo "hasCockosExtensions",
-//          with 0xbeef0000 (returning this value), which will inform the host that
-//          it can call certain extended calls. A plug-in that responds to
-//          "hasCockosExtensions" may choose to implement any subset of the extended
-//          calls.
-//        */
-//        //#ifdef MIP_PLUGIN_REAPER_EXT
-//        //if (MFlags&kpf_reaper) {
-//        //  // Warning: range check error while evaluating constants
-//        //  //and (Pos(ptr,'hasCockosExtensions') <> 0) then result := {%H-}$beef0000;
-//        //  if (!SStrcmp(p,"hasCockosExtensions")) return 0xbeef0000;
-//        //}
-//        //#endif // MIP_PLUGIN_REAPER_EXT
-//        if (!strcmp(p,"hasCockosExtensions")) {
-//          //MIP_Vst2Trace("-> 0\n"); return 0;
-//        }
-//       //MIP_Vst2Trace("-> 0\n");
+
+        char* p = (char*)ptr;
+        // plug-in will send Vst/MIDI events to Host
+        if (strcmp(p,"sendVstEvents")) { return 0; }
+        if (strcmp(p,"sendVstMidiEvent")) { return 0; }
+        // plug-in can receive Vst/MIDI events to Host
+        if (strcmp(p,"receiveVstEvents")) { return 1; }
+        if (strcmp(p,"receiveVstMidiEvent")) { return 1; }
+        // plug-in can receive Time info from Host
+        if (strcmp(p,"receiveVstTimeInfo")) { return 1; }
+        // plug-in supports offline functions (#offlineNotify, #offlinePrepare, #offlineRun)
+        if (strcmp(p,"offline")) { return 0; }
+        // plug-in supports function #getMidiProgramName ()
+        if (strcmp(p,"midiProgramNames")) { return 0; }
+        // plug-in supports function setBypass()
+        if (strcmp(p,"bypass")) { return 0; }
+        if (strcmp(p,"MPE")) { return 0; }
+        /*
+          http://www.reaper.fm/sdk/vst/vst_ext.php
+          A REAPER aware VST plug-in can respond to effCanDo "hasCockosExtensions",
+          with 0xbeef0000 (returning this value), which will inform the host that
+          it can call certain extended calls. A plug-in that responds to
+          "hasCockosExtensions" may choose to implement any subset of the extended
+          calls.
+        */
+        if (strcmp(p,"hasCockosExtensions")) { return 0xbeef0000; }
         return 0;
       }
 
@@ -1167,7 +1153,7 @@ public: // vst2
       case effGetTailSize: // 52
         //MIP_Vst2Trace("vst2: dispatcher/effGetTailSize\n");
         //if (MTail == -1) return 1;
-        return -1;//0;
+        return 0;
         //break;
 
       //----------
@@ -1248,7 +1234,7 @@ public: // vst2
 
       case effSetEditKnobMode: // 61
         //MIP_Vst2Trace("vst2: dispatcher/effSetEditKnobMode %i\n",(int)value);
-//        MKnobMode = (uint32_t)value;
+        MKnobMode = (uint32_t)value;
         //return 1;
         break;
 

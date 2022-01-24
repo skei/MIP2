@@ -20,7 +20,7 @@ class MIP_Vst2Entry {
 private:
 //------------------------------
 
-  MIP_ClapHost  MHost = {};
+  //MIP_ClapHost* MHost = nullptr;
 
 //------------------------------
 public:
@@ -43,9 +43,10 @@ public:
   AEffect* entry(audioMasterCallback audioMaster) {
     //MIP_Print("MIP_Vst2Entry.entry\n");
 
+    MIP_ClapHost*                   host        = new MIP_ClapHost();                               // deleted in MIP_Vst2Plugin destructor
     const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
-    const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.getHost(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
-    MIP_Vst2Plugin*                 vst2plugin  = new MIP_Vst2Plugin(plugin,audioMaster);           // deleted in vst2_dispatcher_callback(effClose)
+    const clap_plugin_t*            plugin      = MIP_CreatePlugin(host->getHost(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
+    MIP_Vst2Plugin*                 vst2plugin  = new MIP_Vst2Plugin(host,plugin,audioMaster);      // deleted in vst2_dispatcher_callback(effClose)
 
     /*
       assumes stereo in & out
@@ -58,7 +59,7 @@ public:
     uint32_t  num_params  = 0;
     int32_t   flags       = effFlagsCanReplacing;
 
-    if (strstr(descriptor->id,"instrument")) {
+    if (strstr(descriptor->features,"instrument")) {
       flags |= effFlagsIsSynth;
       num_inputs = 0;
     }
@@ -87,7 +88,7 @@ public:
     effect->numOutputs                = num_outputs;
     effect->numParams                 = num_params;
     effect->numPrograms               = 0;
-    effect->version                   = 0x00000000;
+    effect->version                   = 0x00000000; // TODO
     effect->initialDelay              = 0;
     effect->object                    = vst2plugin;
     effect->user                      = nullptr;//this;

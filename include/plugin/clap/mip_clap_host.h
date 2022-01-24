@@ -54,7 +54,7 @@ public:
 
   //----------
 
-  ~MIP_ClapHost() {
+  virtual ~MIP_ClapHost() {
   }
 
 //------------------------------
