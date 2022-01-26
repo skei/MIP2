@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "gui/xcb/mip_xcb.h"
+#include "gui/xcb/mip_xcb_utils.h"
 
 //----------------------------------------------------------------------
 

@@ -6,7 +6,7 @@
 //
 //----------------------------------------------------------------------
 
-#include "../source/apps/clap-host/main.cpp"
+//#include "../source/apps/clap-host/main.cpp"
 
 //----------------------------------------------------------------------
 //
@@ -14,8 +14,8 @@
 //
 //----------------------------------------------------------------------
 
-//#include "../source/plugins/gain.cpp
-//#include "../source/plugins/simple_synth.cpp
+#include "../source/plugins/clap-gain.cpp"
+//#include "../source/plugins/simple_synth.cpp"
 
 //----------------------------------------------------------------------
 //

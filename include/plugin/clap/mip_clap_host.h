@@ -2,6 +2,17 @@
 #define mip_clap_host_included
 //----------------------------------------------------------------------
 
+/*
+  implement = hosting
+  adapters:
+  MIP_ClapClapHost : public MIP_ClapHost
+  MIP_ExeClapHost : public MIP_ClapHost
+  MIP_Lv2ClapHost : public MIP_ClapHost
+  MIP_Vst2ClapHost : public MIP_ClapHost
+  MIP_Vst3ClapHost : public MIP_ClapHost
+
+*/
+
 //#define MIP_NO_PLUGIN_LOADING
 
 //----------------------------------------------------------------------
@@ -57,20 +68,32 @@ public:
   virtual ~MIP_ClapHost() {
   }
 
-//------------------------------
-public:
-//------------------------------
+  //----------
 
-  const clap_host*  getHost()                       { return &MHost; }
-  void              setHostData(void* data)         { MHost.host_data = data; }
-  void              setHostName(const char* txt)    { MHost.name      = txt; }
-  void              setHostVendor(const char* txt)  { MHost.vendor    = txt; }
-  void              setHostUrl(const char* txt)     { MHost.url       = txt; }
-  void              setHostVersion(const char* txt) { MHost.version   = txt; }
+  const clap_host* getPtr() {
+    return &MHost;
+  }
 
 //------------------------------
 public:
 //------------------------------
+
+  void setHostData(void* data)          { MHost.host_data = data; }
+  void setHostName(const char* txt)     { MHost.name      = txt; }
+  void setHostVendor(const char* txt)   { MHost.vendor    = txt; }
+  void setHostUrl(const char* txt)      { MHost.url       = txt; }
+  void setHostVersion(const char* txt)  { MHost.version   = txt; }
+
+//------------------------------
+public:
+//------------------------------
+
+  //void initialize(const clap_plugin_entry* entry, const clap_plugin_factory* factory) {
+  //  MClapEntry = entry;
+  //  MClapFactory = factory;
+  //}
+
+  //----------
 
   #ifndef MIP_NO_PLUGIN_LOADING
 
@@ -125,10 +148,39 @@ public: // timer listener
 public: // clap plugin
 //------------------------------
 
-  virtual const void* get_extension(const char *extension_id) { return nullptr; }
   virtual void request_restart() {}
   virtual void request_process() {}
   virtual void request_callback() {}
+
+  virtual const void* get_extension(const char *extension_id) {
+    //if (strcmp(extension_id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
+    //if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
+    //if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MAudioPortsConfig;
+    //if (strcmp(extension_id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MChekForUpdate;
+    //if (strcmp(extension_id,CLAP_EXT_EVENT_FILTER) == 0)        return &MEventFilter;
+    //if (strcmp(extension_id,CLAP_EXT_EVENT_REGISTRY) == 0)      return &MEventRegistry;
+    //if (strcmp(extension_id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MFileReference;
+    //if (strcmp(extension_id,CLAP_EXT_GUI) == 0)                 return &MGui;
+    //if (strcmp(extension_id,CLAP_EXT_LATENCY) == 0)             return &MLatency;
+    //if (strcmp(extension_id,CLAP_EXT_LOG) == 0)                 return &MLog;
+    //if (strcmp(extension_id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MMidiMappings;
+    //if (strcmp(extension_id,CLAP_EXT_NOTE_NAME) == 0)           return &MNoteName;
+    //if (strcmp(extension_id,CLAP_EXT_NOTE_PORTS) == 0)          return &MNotePorts;
+    //if (strcmp(extension_id,CLAP_EXT_PARAMS) == 0)              return &MParams;
+    //if (strcmp(extension_id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    return &MPosixFdSupport;
+    //if (strcmp(extension_id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MQuickControls;
+    //if (strcmp(extension_id,CLAP_EXT_STATE) == 0)               return &MState;
+    //if (strcmp(extension_id,CLAP_EXT_SURROUND) == 0)            return &MSurround;
+    //if (strcmp(extension_id,CLAP_EXT_THREAD_CHECK) == 0)        return &MThreadCheck;
+    //if (strcmp(extension_id,CLAP_EXT_THREAD_POOL) == 0)         return &MThreadPool;
+    //if (strcmp(extension_id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MTimerSupport;
+    //if (strcmp(extension_id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
+    //if (strcmp(extension_id,CLAP_EXT_TUNING) == 0)              return &MTuning;
+    //if (strcmp(extension_id,CLAP_EXT_TUNING) == 0)              return &MTuning;
+    return nullptr;
+  }
+
+
 
 //------------------------------
 public: // extensions
@@ -148,7 +200,6 @@ public: // extensions
   virtual void log_log(clap_log_severity severity, const char *msg) {}
   virtual void midi_mappings_changed() {}
   virtual void note_name_changed() {}
-
   virtual uint32_t note_ports_supported_dialects() { return 0; }
   virtual void note_ports_rescan(uint32_t flags) {}
   virtual void params_rescan(clap_param_rescan_flags flags) {}

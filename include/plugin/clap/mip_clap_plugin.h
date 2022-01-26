@@ -14,12 +14,26 @@
 class MIP_ClapPlugin {
 
 //------------------------------
+private:
+//------------------------------
+
+//  clap_audio_port_info_t**
+//  clap_audio_ports_config_t**
+//  clap_note_name_t**
+//  clap_note_port_info_t**
+//  clap_param_info_t**
+//
+//  clap_ambisonic_info_t*
+//  clap_file_reference_t**
+//  clap_midi_mapping_t**
+//  clap_quick_controls_page_t**
+
+//------------------------------
 protected:
 //------------------------------
 
   const clap_plugin_descriptor_t* MDescriptor = nullptr;
   const clap_host_t*              MHost       = nullptr;
-  //MIP_ClapHostProxy*            MHostProxy  = nullptr;
 
 //------------------------------
 public:
@@ -28,19 +42,17 @@ public:
   MIP_ClapPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
     MDescriptor   = ADescriptor;
     MHost         = AHost;
-    //MHostProxy  = new MIP_ClapHostProxy(AHost);
     MPlugin.desc  = ADescriptor;
   }
 
   //----------
 
   virtual ~MIP_ClapPlugin() {
-    //delete MHostProxy;
   }
 
   //----------
 
-  const clap_plugin_t* getPlugin() {
+  const clap_plugin_t* getPtr() {
     return &MPlugin;
   }
 
@@ -62,11 +74,11 @@ public:
     //if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
     //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MAudioPortsConfig;
     //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MCheckForUpdate;
-    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MEventFilter;
+    //if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MEventFilter;
     //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MFileReference;
-    if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MGui;
-    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MGuiX11;
-    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MLatency;
+    //if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MGui;
+    //if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MGuiX11;
+    //if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MLatency;
     //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MMidiMappings;
     //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MNoteName;
     //if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MNotePorts;
@@ -74,8 +86,8 @@ public:
     //if (strcmp(id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    return &MPosixFdSupport;
     //if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MPresetLoad;
     //if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MQuickControls;
-    if (strcmp(id,CLAP_EXT_RENDER) == 0)              return &MRender;
-    if (strcmp(id,CLAP_EXT_STATE) == 0)               return &MState;
+    //if (strcmp(id,CLAP_EXT_RENDER) == 0)              return &MRender;
+    //if (strcmp(id,CLAP_EXT_STATE) == 0)               return &MState;
     //if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MSurround;
     //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MThreadPool;
     //if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MTimerSupport;
@@ -92,7 +104,7 @@ public: // extensions
   virtual uint32_t  audio_ports_config_count() { return 0; }
   virtual bool      audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) { return false; }
   virtual bool      audio_ports_config_select(clap_id config_id) { return false; }
-  virtual bool      event_filter_accepts(uint16_t space_id, uint16_t event_type) { return false; }
+  virtual bool      event_filter_accepts(uint16_t space_id, uint16_t event_type) { return true; }
   virtual bool      gui_create() { return false; }
   virtual void      gui_destroy() {}
   virtual bool      gui_set_scale(double scale) { return false; }

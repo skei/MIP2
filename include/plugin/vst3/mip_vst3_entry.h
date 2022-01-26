@@ -210,7 +210,7 @@ public:
     //TODO: cid -> index
 
     const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
-    const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.getHost(),descriptor->id); // deleted in ? (MIP_Vst3Plugin destructor)
+    const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.getPtr(),descriptor->id); // deleted in ? (MIP_Vst3Plugin destructor)
     MIP_Vst3Plugin*                 vst3plugin  = new MIP_Vst3Plugin(plugin);                       // deleted in ?
 
 ////      plugin->setListener(vst3_instance);
