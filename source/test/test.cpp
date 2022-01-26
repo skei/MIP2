@@ -83,7 +83,7 @@ public:
     return 1;
   }
 
-  bool params_get_info(int32_t param_index, clap_param_info_t* param_info) final {
+  bool params_get_info(uint32_t param_index, clap_param_info_t* param_info) final {
     switch (param_index) {
       case 0:
         param_info->id              = 0;
@@ -186,6 +186,8 @@ public:
 //
 //----------------------------------------------------------------------
 
+const char* features[] = { "audio_effect", nullptr };
+
 const clap_plugin_descriptor_t Descriptor = {
   CLAP_VERSION,
   "plugin_id",
@@ -196,7 +198,7 @@ const clap_plugin_descriptor_t Descriptor = {
   "support_url",
   "0.0.0",
   "description",
-  "audio_effect"
+  features
 };
 
 //----------------------------------------------------------------------

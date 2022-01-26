@@ -2,6 +2,10 @@
 #define mip_vst2_plugin_included
 //----------------------------------------------------------------------
 
+/*
+  clap.audio-ports
+*/
+
 #include "mip.h"
 #include "base/types/mip_queue.h"
 #include "plugin/clap/mip_clap.h"

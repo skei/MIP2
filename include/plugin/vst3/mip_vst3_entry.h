@@ -245,8 +245,10 @@ public:
     strcpy(info->category,kVstAudioEffectClass);
     strcpy(info->name,descriptor->name);
     info->classFlags = 0;
-    if (strstr(descriptor->features,"instrument")) strcpy(info->subCategories,Vst::PlugType::kInstrument);
-    else if (strstr(descriptor->features,"audio_effect")) strcpy(info->subCategories,Vst::PlugType::kFx);
+
+//    if (strstr(descriptor->features,"instrument")) strcpy(info->subCategories,Vst::PlugType::kInstrument);
+//    else if (strstr(descriptor->features,"audio_effect")) strcpy(info->subCategories,Vst::PlugType::kFx);
+
     strcpy(info->vendor,descriptor->vendor);
     strcpy(info->version,descriptor->version);
     strcpy(info->sdkVersion,kVstVersionString);

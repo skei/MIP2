@@ -148,6 +148,8 @@ public: // extensions
   virtual void log_log(clap_log_severity severity, const char *msg) {}
   virtual void midi_mappings_changed() {}
   virtual void note_name_changed() {}
+
+  virtual uint32_t note_ports_supported_dialects() { return 0; }
   virtual void note_ports_rescan(uint32_t flags) {}
   virtual void params_rescan(clap_param_rescan_flags flags) {}
   virtual void params_clear(clap_id param_id, clap_param_clear_flags flags) {}
@@ -222,10 +224,10 @@ private: // extensions
 
   // audio-ports
 
-  static uint32_t clap_host_audio_ports_get_preferred_sample_size_callback(const clap_host *host) {
-    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
-    return host_->audio_ports_get_preferred_sample_size();
-  }
+  //static uint32_t clap_host_audio_ports_get_preferred_sample_size_callback(const clap_host *host) {
+  //  MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+  //  return host_->audio_ports_get_preferred_sample_size();
+  //}
 
   static void clap_host_audio_ports_rescan_callback(const clap_host *host, uint32_t flags) {
     MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
@@ -233,7 +235,7 @@ private: // extensions
   }
 
   clap_host_audio_ports MAudioPorts = {
-    clap_host_audio_ports_get_preferred_sample_size_callback,
+    //clap_host_audio_ports_get_preferred_sample_size_callback,
     clap_host_audio_ports_rescan_callback
   };
 
@@ -355,12 +357,18 @@ private: // extensions
 
   // note-ports
 
+  static uint32_t clap_host_supported_dialects_callback(const clap_host_t *host) {
+    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+    return host_->note_ports_supported_dialects();
+  }
+
   static void clap_host_note_ports_rescan_callback(const clap_host *host, uint32_t flags) {
     MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
     host_->note_ports_rescan(flags);
   }
 
   clap_host_note_ports MNotePorts = {
+    clap_host_supported_dialects_callback,
     clap_host_note_ports_rescan_callback
   };
 

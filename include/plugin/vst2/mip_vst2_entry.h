@@ -59,10 +59,10 @@ public:
     uint32_t  num_params  = 0;
     int32_t   flags       = effFlagsCanReplacing;
 
-    if (strstr(descriptor->features,"instrument")) {
-      flags |= effFlagsIsSynth;
-      num_inputs = 0;
-    }
+//    if (strstr(descriptor->features,"instrument")) {
+//      flags |= effFlagsIsSynth;
+//      num_inputs = 0;
+//    }
 
     const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(plugin,CLAP_EXT_GUI);
     if (gui) {
