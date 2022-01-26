@@ -107,13 +107,14 @@ public: // extensions
   virtual uint32_t note_ports_count(bool is_input) { return 0; }
   virtual bool note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t *info) { return false; }
   virtual uint32_t params_count() { return 0; }
-  virtual bool params_get_info(int32_t param_index, clap_param_info_t* param_info) { return false; }
+  virtual bool params_get_info(uint32_t param_index, clap_param_info_t* param_info) { return false; }
   virtual bool params_get_value(clap_id param_id, double *value) { return false; }
   virtual bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) { return false; }
   virtual bool params_text_to_value(clap_id param_id, const char *display, double *value) { return false; }
   virtual void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {}
   virtual void posix_fd_support_on_fd(int fd, int flags) {}
-  virtual void render_set(clap_plugin_render_mode mode) {}
+  virtual bool render_has_hard_realtime_requirement() { return false; }
+  virtual bool render_set(clap_plugin_render_mode mode) { return false; }
   virtual bool state_save(clap_ostream_t *stream) { return false; }
   virtual bool state_load(clap_istream_t *stream) { return false; }
   virtual void thread_pool_exec(uint32_t task_index) {}
@@ -401,7 +402,7 @@ private: // extensions
     return plug->params_count();
   }
 
-  static bool clap_plugin_params_get_info_callback(const clap_plugin_t *plugin, int32_t param_index, clap_param_info_t* param_info) {
+  static bool clap_plugin_params_get_info_callback(const clap_plugin_t *plugin, uint32_t param_index, clap_param_info_t* param_info) {
     Plugin* plug = (Plugin*)plugin->plugin_data;
     return plug->params_get_info(param_index,param_info);
   }
@@ -452,12 +453,18 @@ private: // extensions
   // clap.render
   //--------------------
 
-  static void clap_plugin_render_set_callback(const clap_plugin_t *plugin, clap_plugin_render_mode mode) {
+  static bool clap_plugin_render_has_hard_realtime_requirement_callback(const clap_plugin_t *plugin) {
+    Plugin* plug = (Plugin*)plugin->plugin_data;
+    return plug->render_has_hard_realtime_requirement();
+  }
+
+  static bool clap_plugin_render_set_callback(const clap_plugin_t *plugin, clap_plugin_render_mode mode) {
     Plugin* plug = (Plugin*)plugin->plugin_data;
     return plug->render_set(mode);
   }
 
   clap_plugin_render_t MRender = {
+    clap_plugin_render_has_hard_realtime_requirement_callback,
     clap_plugin_render_set_callback
   };
 

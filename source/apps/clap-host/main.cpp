@@ -223,7 +223,13 @@ int main(int argc, char** argv) {
     printf("  support_url:  %s\n",descriptor->support_url);
     printf("  version:      %s\n",descriptor->version);
     printf("  description:  %s\n",descriptor->description);
-    printf("  features:     %s\n",descriptor->features);
+    //printf("  features:     %s\n",descriptor->features);
+    printf("  features:     ");
+    int i = 0;
+    while ( descriptor->features[i] ) {
+      printf("%s ",descriptor->features[i]);
+      i++;
+    }
     return 0;
   }
 
