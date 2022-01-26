@@ -3,6 +3,8 @@
 // in console: nc -U -l -k /tmp/mip.socket
 //#define MIP_NO_GUI
 
+//----------
+
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_plugin.h"
@@ -14,7 +16,6 @@
 //----------------------------------------------------------------------
 
 class Gain_Plugin
-//: public MIP_Plugin {
 : public MIP_ClapPlugin {
 
 //------------------------------
@@ -28,51 +29,12 @@ public:
 //------------------------------
 
   Gain_Plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
-  //: MIP_Plugin(ADescriptor,AHost) {
   : MIP_ClapPlugin(ADescriptor,AHost) {
   }
-
-  //----------
-
-  //virtual ~Gain_Plugin() {
-  //}
 
 //------------------------------
 public:
 //------------------------------
-
-  //bool init() final {
-  //  return true;
-  //}
-
-  //----------
-
-  //void destroy() final {
-  //}
-
-  //----------
-
-  //bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
-  //  return true;
-  //}
-
-  //----------
-
-  //void deactivate() final {
-  //}
-
-  //----------
-
-  //bool start_processing() final {
-  //  return true;
-  //}
-
-  //----------
-
-  //void stop_processing() final {
-  //}
-
-  //----------
 
   clap_process_status process(const clap_process_t *process) final {
     handle_input_events(process->in_events);
@@ -80,17 +42,6 @@ public:
     handle_output_events(process->out_events);
     return CLAP_PROCESS_CONTINUE;
   }
-
-  //----------
-
-  //void on_main_thread() final {
-  //}
-
-  //----------
-
-  //const void* get_extension(const char *id) final {
-  //  return MIP_ClapPlugin::get_extension(id);
-  //}
 
 //------------------------------
 public:
@@ -168,19 +119,11 @@ private:
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
       switch (header->type) {
-        case CLAP_EVENT_PARAM_VALUE:        handle_param_value(header);   break;
-          //case CLAP_EVENT_NOTE_ON:          handleNoteOn(event);          break;
-          //case CLAP_EVENT_NOTE_OFF:         handleNoteOff(event);         break;
-          //case CLAP_EVENT_NOTE_END:         handleNoteEnd(event);         break;
-          //case CLAP_EVENT_NOTE_CHOKE:       handleNoteChoke(event);       break;
-          //case CLAP_EVENT_NOTE_EXPRESSION:  handleNoteExpression(event);  break;
-          //case CLAP_EVENT_NOTE_MASK:        handleNoteMask(event);        break;
-          //case CLAP_EVENT_PARAM_MOD:        handleParamMod(event);        break;
-          //case CLAP_EVENT_TRANSPORT:        handleTransport(event);       break;
-          //case CLAP_EVENT_MIDI:             handleMidi(event);            break;
-          //case CLAP_EVENT_MIDI_SYSEX:       handleMidiSysex(event);       break;
-      } // switch
-    } // for all events
+        case CLAP_EVENT_PARAM_VALUE:
+          handle_param_value(header);
+          break;
+      }
+    }
   }
 
   //----------
