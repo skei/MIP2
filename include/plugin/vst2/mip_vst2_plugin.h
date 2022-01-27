@@ -10,6 +10,7 @@
 #include "base/types/mip_queue.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/vst2/mip_vst2.h"
+#include "plugin/vst2/mip_vst2_host.h"
 
 //----------------------------------------------------------------------
 
@@ -39,7 +40,8 @@ private:
   AEffect                         MAEffect          = {0};
   audioMasterCallback             MAudioMaster      = nullptr;
 
-  MIP_ClapHost*                   MHost             = nullptr;
+//  MIP_ClapHost*                   MHost             = nullptr;
+  MIP_Vst2Host*                   MHost             = nullptr;
 
   const clap_plugin_t*            MPlugin           = nullptr;
   const clap_plugin_descriptor_t* MDescriptor       = nullptr;
@@ -100,10 +102,13 @@ public:
     (is synth, has editor, ..)..
   */
 
-  MIP_Vst2Plugin(MIP_ClapHost* AHost, const clap_plugin_t* APlugin, audioMasterCallback audioMaster) {
+//  MIP_Vst2Plugin(MIP_ClapHost* AHost, const clap_plugin_t* APlugin, audioMasterCallback audioMaster) {
+  MIP_Vst2Plugin(MIP_Vst2Host* AHost, const clap_plugin_t* APlugin, audioMasterCallback audioMaster) {
+
     //MIP_Print("MIP_Vst2Plugin()\n");
 
     MHost         = AHost;
+
     MPlugin       = APlugin;
     MDescriptor   = MPlugin->desc;
     MAudioMaster  = audioMaster;

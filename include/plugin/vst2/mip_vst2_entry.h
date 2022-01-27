@@ -4,9 +4,10 @@
 
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
-#include "plugin/clap/mip_clap_host.h"
+//#include "plugin/clap/mip_clap_host.h"
 #include "plugin/vst2/mip_vst2.h"
 #include "plugin/vst2/mip_vst2_plugin.h"
+#include "plugin/vst2/mip_vst2_host.h"
 
 //----------------------------------------------------------------------
 //
@@ -43,10 +44,10 @@ public:
   AEffect* entry(audioMasterCallback audioMaster) {
     //MIP_Print("MIP_Vst2Entry.entry\n");
 
-    MIP_ClapHost*                   host        = new MIP_ClapHost();                               // deleted in MIP_Vst2Plugin destructor
+    MIP_Vst2Host*                   host        = new MIP_Vst2Host(audioMaster); // deleted in MIP_Vst2Plugin destructor
     const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
     const clap_plugin_t*            plugin      = MIP_CreatePlugin(host->getPtr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
-    MIP_Vst2Plugin*                 vst2plugin  = new MIP_Vst2Plugin(host,plugin,audioMaster);      // deleted in vst2_dispatcher_callback(effClose)
+    MIP_Vst2Plugin*                 vst2plugin  = new MIP_Vst2Plugin(host,plugin,audioMaster); // deleted in vst2_dispatcher_callback(effClose)
 
     /*
       assumes stereo in & out
@@ -59,10 +60,12 @@ public:
     uint32_t  num_params  = 0;
     int32_t   flags       = effFlagsCanReplacing;
 
-//    if (strstr(descriptor->features,"instrument")) {
-//      flags |= effFlagsIsSynth;
-//      num_inputs = 0;
-//    }
+    /*
+    if (strstr(descriptor->features,"instrument")) {
+      flags |= effFlagsIsSynth;
+      num_inputs = 0;
+    }
+    */
 
     const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(plugin,CLAP_EXT_GUI);
     if (gui) {
@@ -79,6 +82,7 @@ public:
     // flags |= effFlagsCanDoubleReplacing;
 
     AEffect* effect = vst2plugin->getAEffect();
+    host->setAEffect(effect);
     memset(effect,0,sizeof(AEffect));
 
     effect->magic                     = kEffectMagic;
