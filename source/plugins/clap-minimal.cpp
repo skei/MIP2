@@ -58,7 +58,6 @@ public:
 //------------------------------
 
   myPlugin(const clap_host_t *host) {
-    MPlugin.plugin_data = this;
   }
 
   //----------
@@ -288,7 +287,7 @@ public: // callbacks
 
   //----------
 
-  //const
+  const
   clap_plugin_t MPlugin = {
     &myDescriptor,
     this,
