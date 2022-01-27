@@ -67,7 +67,6 @@ public:
   virtual bool start_processing() { return true; }
   virtual void stop_processing() {}
   virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_CONTINUE; }
-  virtual void on_main_thread() {}
 
   virtual const void* get_extension(const char *id) {
     //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
@@ -94,6 +93,8 @@ public:
     //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
     return nullptr;
   }
+
+  virtual void on_main_thread() {}
 
 //------------------------------
 public: // extensions

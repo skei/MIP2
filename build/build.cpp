@@ -15,6 +15,7 @@
 //----------------------------------------------------------------------
 
 #include "../source/plugins/clap-gain.cpp"
+//#include "../source/plugins/clap-wrap.cpp"
 //#include "../source/plugins/simple_synth.cpp"
 
 //----------------------------------------------------------------------

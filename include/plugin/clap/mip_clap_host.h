@@ -118,11 +118,17 @@ public:
 
   //----------
 
-  const clap_plugin_t* createPlugin(const char* path, uint32_t index) {
+  const clap_plugin_t* createPlugin(const char* path, uint32_t index, const clap_host_t* host=nullptr) {
     if (!MClapFactory) return nullptr;
     if (index >= MClapFactory->get_plugin_count(MClapFactory)) return nullptr;
     const clap_plugin_descriptor* descriptor = MClapFactory->get_plugin_descriptor(MClapFactory,index);
-    const clap_plugin* plugin = MClapFactory->create_plugin(MClapFactory,&MHost,descriptor->id);
+    const clap_plugin* plugin = nullptr;
+    if (host) {
+      plugin = MClapFactory->create_plugin(MClapFactory,host,descriptor->id);
+    }
+    else {
+      plugin = MClapFactory->create_plugin(MClapFactory,&MHost,descriptor->id);
+    }
     plugin->init(plugin);
     return plugin;
   }
