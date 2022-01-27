@@ -69,7 +69,7 @@ public: // clap plugin
     //if (strcmp(extension_id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
     //if (strcmp(extension_id,CLAP_EXT_TUNING) == 0)              return &MTuning;
     //if (strcmp(extension_id,CLAP_EXT_TUNING) == 0)              return &MTuning;
-    return nullptr;
+    //return nullptr;
   //}
 
 
