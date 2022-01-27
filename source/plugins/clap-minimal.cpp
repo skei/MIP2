@@ -4,7 +4,8 @@
 #include <stdio.h>  // sprintf
 #include <math.h>   // atof
 
-#include "extern/clap/clap.h"
+// change this to point to clap.h
+#include "../../include/extern/clap/clap.h"
 
 //----------------------------------------------------------------------
 //
@@ -400,7 +401,6 @@ const void* clap_entry_get_factory_callback(const char *factory_id) {
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wattributes"
 
-
   CLAP_EXPORT
   const clap_plugin_entry clap_entry = {
     CLAP_VERSION,
@@ -410,4 +410,3 @@ const void* clap_entry_get_factory_callback(const char *factory_id) {
   };
 
   #pragma GCC diagnostic pop
-
