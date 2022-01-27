@@ -62,47 +62,47 @@ public:
 
   //----------
 
-  virtual ~myPlugin() {
+  ~myPlugin() {
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  virtual bool init() {
+  bool init() {
     return true;
   }
 
   //----------
 
-  virtual void destroy() {
+  void destroy() {
   }
 
   //----------
 
-  virtual bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
+  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
     return true;
   }
 
   //----------
 
-  virtual void deactivate() {
+  void deactivate() {
   }
 
   //----------
 
-  virtual bool start_processing() {
+  bool start_processing() {
     return true;
   }
 
   //----------
 
-  virtual void stop_processing() {
+  void stop_processing() {
   }
 
   //----------
 
-  virtual clap_process_status process(const clap_process_t *process) {
+  clap_process_status process(const clap_process_t *process) {
     handle_input_events(process->in_events);
     process_audio(process);
     handle_output_events(process->out_events);
@@ -111,27 +111,27 @@ public:
 
   //----------
 
-  virtual const void* get_extension(const char *id) {
+  const void* get_extension(const char *id) {
     if (strcmp(id,CLAP_EXT_PARAMS) == 0) return &MParams;
     return nullptr;
   }
 
   //----------
 
-  virtual void on_main_thread() {
+  void on_main_thread() {
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  virtual uint32_t params_count() {
+  uint32_t params_count() {
     return 1;
   }
 
   //----------
 
-  virtual bool params_get_info(uint32_t param_index, clap_param_info_t* param_info) {
+  bool params_get_info(uint32_t param_index, clap_param_info_t* param_info) {
     switch (param_index) {
       case 0:
         param_info->id              = 0;
@@ -149,7 +149,7 @@ public:
 
   //----------
 
-  virtual bool params_get_value(clap_id param_id, double *value) {
+  bool params_get_value(clap_id param_id, double *value) {
     switch (param_id) {
       case 0:
         *value = gain;
@@ -160,7 +160,7 @@ public:
 
   //----------
 
-  virtual bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) {
+  bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) {
     switch (param_id) {
       case 0:
         sprintf(display,"%.3f",value);
@@ -171,7 +171,7 @@ public:
 
   //----------
 
-  virtual bool params_text_to_value(clap_id param_id, const char *display, double *value) {
+  bool params_text_to_value(clap_id param_id, const char *display, double *value) {
     switch (param_id) {
       case 0:
         float f = atof(display);
@@ -183,7 +183,7 @@ public:
 
   //----------
 
-  virtual void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {
+  void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {
     handle_input_events(in);
     handle_output_events(out);
   }
