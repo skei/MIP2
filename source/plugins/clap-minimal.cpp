@@ -122,7 +122,7 @@ public:
   }
 
 //------------------------------
-public: // params
+public:
 //------------------------------
 
   virtual uint32_t params_count() {
@@ -236,7 +236,7 @@ private:
   }
 
 //------------------------------
-public: // callbacks
+public: // plugin
 //------------------------------
 
   static bool clap_plugin_init_callback(const struct clap_plugin *plugin) {
@@ -362,12 +362,18 @@ uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory
 }
 
 const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
-  return &myDescriptor;
+  if (index == 0) {
+    return &myDescriptor;
+  }
+  return nullptr;
 }
 
 const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-  myPlugin* plugin = new myPlugin(host); // deleted in myPlugin.clap_plugin_destroy_callback()
-  return &plugin->MPlugin;
+  if (strcmp(plugin_id,myDescriptor.id) == 0) {
+    myPlugin* plugin = new myPlugin(host);
+    return &plugin->MPlugin;
+  }
+  return nullptr;
 }
 
 //----------
