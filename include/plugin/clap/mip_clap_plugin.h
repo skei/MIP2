@@ -39,10 +39,14 @@ protected:
 public:
 //------------------------------
 
+  MIP_ClapPlugin() {
+  }
+
   MIP_ClapPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-    MDescriptor   = ADescriptor;
-    MHost         = AHost;
-    MPlugin.desc  = ADescriptor;
+    //MDescriptor   = ADescriptor;
+    //MHost         = AHost;
+    //MPlugin.desc  = ADescriptor;
+    set(ADescriptor,AHost);
   }
 
   //----------
@@ -54,6 +58,12 @@ public:
 
   const clap_plugin_t* getPtr() {
     return &MPlugin;
+  }
+
+  void set(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
+    MDescriptor   = ADescriptor;
+    MHost         = AHost;
+    MPlugin.desc  = ADescriptor;
   }
 
 //------------------------------

@@ -4,10 +4,22 @@
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
 
+#define MIP_DEBUG_PRINT_SOCKET
+//nc -U -l -k /tmp/mip.socket
+
 #include "mip.h"
-#include "plugin/mip_plugin.h"
+#include "plugin/clap/mip_clap_factory.h"
+#include "plugin/clap/mip_clap_entry.h"
+#include "plugin/clap/mip_clap_plugin.h"
 
 #include "gui/xcb/mip_xcb_window.h"
+
+// adapters:
+//#include "plugin/vst2/mip_vst2_entry.h"
+//#include "plugin/vst3/mip_vst3_entry.h"
+//#include "plugin/lv2/mip_lv2_entry.h"
+//#include "plugin/exe/mip_exe_entry.h"
+
 
 //----------------------------------------------------------------------
 //
@@ -65,6 +77,14 @@ public:
   }
 
   clap_process_status process(const clap_process_t *process) final {
+    float* in0 = process->audio_inputs[0].data32[0];
+    float* in1 = process->audio_inputs[0].data32[1];
+    float* out0 = process->audio_outputs[0].data32[0];
+    float* out1 = process->audio_outputs[0].data32[1];
+    for (uint32_t i=0; i<process->frames_count; i++) {
+      *out0++ = *in0++;// * MGain;
+      *out1++ = *in1++;// * MGain;
+    }
     return CLAP_PROCESS_CONTINUE;
   }
 
@@ -219,7 +239,6 @@ const clap_plugin_descriptor_t* MIP_GetDescriptor(uint32_t index) {
 
 const clap_plugin_t* MIP_CreatePlugin(const clap_host_t *host, const char *plugin_id) {
   MIP_Print("MIP_CreatePlugin(\"%s\")\n",plugin_id);
-  MIP_ClapPlugin* plugin = new Plugin(&Descriptor,host);
-  return  plugin->getPlugin();
+  MIP_ClapPlugin* plugin = new Plugin(&Descriptor,host);  // who deletes this?
+  return  plugin->getPtr();
 }
-

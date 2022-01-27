@@ -9,7 +9,7 @@
 
 extern uint32_t MIP_GetNumPlugins();
 extern const clap_plugin_descriptor_t* MIP_GetDescriptor(uint32_t index);
-extern const clap_plugin_t* MIP_createPlugin(const clap_host_t *host, const char *plugin_id);
+extern const clap_plugin_t* MIP_CreatePlugin(const clap_host_t *host, const char *plugin_id);
 
 //----------------------------------------------------------------------
 //

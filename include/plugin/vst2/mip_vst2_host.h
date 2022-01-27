@@ -14,7 +14,6 @@ private:
   audioMasterCallback   MAudioMaster  = nullptr;
   AEffect*              MAEffect      = nullptr;
 
-
 //------------------------------
 public:
 //------------------------------
@@ -44,7 +43,7 @@ public: // clap plugin
   void request_process() override {}
   void request_callback() override {}
 
-  //const void* get_extension(const char *extension_id) override {
+  const void* get_extension(const char *extension_id) override {
     //if (strcmp(extension_id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
     //if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
     //if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MAudioPortsConfig;
@@ -69,10 +68,8 @@ public: // clap plugin
     //if (strcmp(extension_id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
     //if (strcmp(extension_id,CLAP_EXT_TUNING) == 0)              return &MTuning;
     //if (strcmp(extension_id,CLAP_EXT_TUNING) == 0)              return &MTuning;
-    //return nullptr;
-  //}
-
-
+    return nullptr;
+  }
 
 //------------------------------
 public: // extensions
@@ -111,7 +108,6 @@ public: // extensions
   bool timer_support_unregister_timer(clap_id timer_id) override { return false; }
   bool track_info_get(clap_track_info *info) override { return false; }
   double tuning_get(int32_t key, int32_t channel) override { return 0.0; }
-
 
 };
 

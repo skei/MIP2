@@ -14,7 +14,8 @@
 //
 //----------------------------------------------------------------------
 
-#include "../source/plugins/clap-gain.cpp"
+#include "../source/plugins/clap-minimal.cpp"
+//#include "../source/plugins/clap-gain.cpp"
 //#include "../source/plugins/clap-wrap.cpp"
 //#include "../source/plugins/simple_synth.cpp"
 
@@ -35,6 +36,7 @@
 //----------------------------------------------------------------------
 
 //#include "../source/test/test.cpp"
+//#include "../source/test/test2.cpp"
 //#include "../source/test/test_gui.cpp"
 //#include "../source/test/test_plugin.cpp"
 //#include "../source/test/test_synth.cpp"

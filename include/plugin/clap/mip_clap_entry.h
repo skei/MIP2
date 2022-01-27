@@ -4,7 +4,7 @@
 
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
-#include "plugin/clap/mip_clap_factory.h"
+//#include "plugin/clap/mip_clap_factory.h"
 
 //----------------------------------------------------------------------
 //

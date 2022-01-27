@@ -16,6 +16,7 @@
 					<Add option="-fno-pie" />
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -48,6 +49,7 @@
 					<Add option="-g" />
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 			</Target>
 			<Target title="plugin release">
@@ -76,6 +78,12 @@
 		<Linker>
 			<Add library="dl" />
 			<Add library="sndfile" />
+			<Add library="xcb" />
+			<Add library="xcb-image" />
+			<Add library="xcb-cursor" />
+			<Add library="xcb-keysyms" />
+			<Add library="xcb-util" />
+			<Add library="pthread" />
 		</Linker>
 		<Unit filename="../doc/compile.txt" />
 		<Unit filename="../include/audio/analysis/mip_beat_detector.h" />
@@ -427,22 +435,34 @@
 		<Unit filename="../include/plugin/clap/mip_clap.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_editor.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_entry.h" />
+		<Unit filename="../include/plugin/clap/mip_clap_factory.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_host.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_plugin.h" />
+		<Unit filename="../include/plugin/clap/mip_clap_plugin_list.h" />
+		<Unit filename="../include/plugin/clap/mip_hosted_clap_host.h" />
+		<Unit filename="../include/plugin/clap/mip_hosted_clap_plugin.h" />
 		<Unit filename="../include/plugin/exe/mip_exe.h" />
 		<Unit filename="../include/plugin/exe/mip_exe_entry.h" />
+		<Unit filename="../include/plugin/exe/mip_exe_host.h" />
 		<Unit filename="../include/plugin/exe/mip_exe_plugin.h" />
+		<Unit filename="../include/plugin/exe/mip_exe_wrapper.h" />
 		<Unit filename="../include/plugin/lv2/mip_lv2.h" />
 		<Unit filename="../include/plugin/lv2/mip_lv2_entry.h" />
+		<Unit filename="../include/plugin/lv2/mip_lv2_host.h" />
 		<Unit filename="../include/plugin/lv2/mip_lv2_plugin.h" />
+		<Unit filename="../include/plugin/lv2/mip_lv2_wrapper.h" />
 		<Unit filename="../include/plugin/mip_plugin.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2_entry.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2_host.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2_plugin.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2_wrapper.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_entry.h" />
+		<Unit filename="../include/plugin/vst3/mip_vst3_host.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_plugin.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_utils.h" />
+		<Unit filename="../include/plugin/vst3/mip_vst3_wrapper.h" />
 		<Unit filename="../source/apps/clap-host/arguments.hpp" />
 		<Unit filename="../source/apps/clap-host/audio_file.hpp" />
 		<Unit filename="../source/apps/clap-host/clap/audio-buffer.h" />
@@ -506,7 +526,15 @@
 		<Unit filename="../source/apps/clap-host/midi_player.hpp" />
 		<Unit filename="../source/apps/clap-host/plugin.hpp" />
 		<Unit filename="../source/apps/clap-host/process.hpp" />
-		<Unit filename="../source/plugins/gain.cpp">
+		<Unit filename="../source/plugins/clap-gain.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/clap-minimal.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/clap-wrap.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
@@ -527,6 +555,10 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/test/test.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test2.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
