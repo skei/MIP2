@@ -71,8 +71,8 @@ private:
 //------------------------------
 
   clap_param_info_t MParameterInfos[3] = {
-    { 0, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param1", "", 0.0, 1.0, 0.5 },
-    { 1, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param2", "", 0.0, 1.0, 0.5 },
+    { 0,     CLAP_PARAM_IS_MODULATABLE,   nullptr, "param1", "", 0.0, 1.0, 0.5 },
+    { 1,     CLAP_PARAM_IS_MODULATABLE,   nullptr, "param2", "", 0.0, 1.0, 0.5 },
     { 2, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param3", "", 0.0, 5.0, 1.0 }
   };
 
@@ -131,7 +131,7 @@ private:
   //----------
 
   void handle_output_events(const clap_output_events_t* out_events) {
-    //send_param_mod(out_events);
+    send_param_mod(out_events);
   }
 
   //----------
