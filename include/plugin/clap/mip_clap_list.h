@@ -4,7 +4,6 @@
 
 #include "mip.h"
 #include "extern/clap/clap.h"
-#include "plugin/clap/mip_clap_host_proxy.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include <vector>
 
@@ -14,7 +13,7 @@ typedef std::vector<const clap_plugin_descriptor_t*> clap_descriptors;
 class MIP_ClapList;
 
 extern void MIP_RegisterPlugins(MIP_ClapList* AList);
-MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost);
+extern MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost);
 
 //----------------------------------------------------------------------
 //
@@ -50,17 +49,27 @@ public:
 public:
 //------------------------------
 
-  void appendPlugin(const clap_plugin_descriptor_t* ADescriptor) {
+  uint32_t appendPlugin(const clap_plugin_descriptor_t* ADescriptor) {
+    uint32_t index = MDescriptors.size();
     MDescriptors.push_back(ADescriptor);
+    return index;
   }
+
+  //----------
 
   uint32_t getNumPlugins() {
     return MDescriptors.size();
   }
 
+  //----------
+
   const clap_plugin_descriptor_t* getPlugin(uint32_t AIndex) {
     return MDescriptors[AIndex];
   }
+
+  //----------
+
+  // returns index of plugin with plugin_id, or -1 if not found
 
   int32_t findPluginById(const char *plugin_id) {
     for (uint32_t i=0; i<MDescriptors.size(); i++) {

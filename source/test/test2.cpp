@@ -6,7 +6,6 @@
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
-
 //----------
 
 #include "mip.h"
@@ -22,6 +21,8 @@
 #include "plugin/wrapper/mip_lv2_wrapper.h"
 #include "plugin/wrapper/mip_vst2_wrapper.h"
 #include "plugin/wrapper/mip_vst3_wrapper.h"
+
+#include "plugin/mip_plugin.h"
 
 #include "gui/xcb/mip_xcb_window.h"
 
@@ -63,25 +64,26 @@ const clap_plugin_descriptor_t myDescriptor = {
 //----------------------------------------------------------------------
 
 class myPlugin
-: public MIP_ClapPlugin {
+//: public MIP_ClapPlugin {
+: public MIP_Plugin {
 
 //------------------------------
 private:
 //------------------------------
 
-  clap_param_info_t MParameterInfos[4] = {
+  clap_param_info_t MParameters[4] = {
     { 0,     CLAP_PARAM_IS_MODULATABLE,   nullptr, "param1", "", 0.0, 1.0, 0.5 },
     { 1,     CLAP_PARAM_IS_MODULATABLE,   nullptr, "param2", "", 0.0, 1.0, 0.5 },
     { 2, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param3", "", 0.0, 5.0, 1.0 },
     { 3, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param4", "", 0.0, 5.0, 1.0 }
   };
 
-  clap_audio_port_info_t MAudioInputInfos[2] = {
+  clap_audio_port_info_t MAudioInputs[2] = {
     { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
     { 1, "input2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
-  clap_audio_port_info_t MAudioOutputInfos[2] = {
+  clap_audio_port_info_t MAudioOutputs[2] = {
     { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
     { 1, "output2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
@@ -89,13 +91,12 @@ private:
   //----------
 
   #define ARRAY_SIZE(x)     ( sizeof( x ) / sizeof( (x)[0] ))
-  #define NUM_PARAMS        ARRAY_SIZE(MParameterInfos)
-  #define NUM_AUDIO_INPUTS  ARRAY_SIZE(MAudioInputInfos)
-  #define NUM_AUDIO_OUTPUTS ARRAY_SIZE(MAudioOutputInfos)
+  #define NUM_PARAMS        ARRAY_SIZE(MParameters)
+  #define NUM_AUDIO_INPUTS  ARRAY_SIZE(MAudioInputs)
+  #define NUM_AUDIO_OUTPUTS ARRAY_SIZE(MAudioOutputs)
 
   float           MParamVal[NUM_PARAMS] = {0};
   float           MParamMod[NUM_PARAMS] = {0};
-
   bool            MIsProcessing = false;
   MIP_XcbWindow*  MWindow       = nullptr;
 
@@ -104,7 +105,8 @@ public:
 //------------------------------
 
   myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
-  : MIP_ClapPlugin(ADescriptor,AHost) {
+  //: MIP_ClapPlugin(ADescriptor,AHost) {
+  : MIP_Plugin(ADescriptor,AHost) {
   }
 
   //----------
@@ -132,8 +134,10 @@ private:
   //----------
 
   void handle_output_events(const clap_output_events_t* out_events) {
-    send_param_mod(0,out_events);
-    send_param_mod(2,out_events);
+    float v0 = MIP_Clamp( (MParamVal[0] + MParamMod[0]), 0,1);
+    float v2 = MIP_Clamp( (MParamVal[2] + MParamMod[2]), 0,1);
+    send_param_mod(0,v0,out_events);
+    send_param_mod(2,v2,out_events);
   }
 
   //----------
@@ -175,9 +179,7 @@ private:
 //
 //------------------------------
 
-  void send_param_mod(uint32_t index, const clap_output_events_t* out_events) {
-    float v = MParamVal[index] + MParamMod[index];
-    v = MIP_Clamp(v,0,1);
+  void send_param_mod(uint32_t index, float value, const clap_output_events_t* out_events) {
     clap_event_param_mod_t param_mod;
     param_mod.header.size     = sizeof (clap_event_param_mod_t);
     param_mod.header.time     = 0;
@@ -189,7 +191,7 @@ private:
     param_mod.port_index      = -1;
     param_mod.key             = -1;
     param_mod.channel         = -1;
-    param_mod.amount          = v;  // modulation amount
+    param_mod.amount          = value;
     clap_event_header_t* header = (clap_event_header_t*)&param_mod;
     out_events->push_back(out_events,header);
   }
@@ -200,7 +202,7 @@ public: // plugin
 
   bool init() final {
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
-      MParamVal[i] = MParameterInfos[i].default_value;
+      MParamVal[i] = MParameters[i].default_value;
     }
     return true;
   }
@@ -264,19 +266,19 @@ public: // audio-ports
 //------------------------------
 
   uint32_t audio_ports_count(bool is_input) final {
-    if (is_input) return ARRAY_SIZE(MAudioInputInfos);// 2;
-    else return ARRAY_SIZE(MAudioOutputInfos); //2;
+    if (is_input) return ARRAY_SIZE(MAudioInputs);// 2;
+    else return ARRAY_SIZE(MAudioOutputs); //2;
   }
 
   //----------
 
   bool audio_ports_get(uint32_t index, bool is_input, clap_audio_port_info_t* info) final {
     if (is_input) {
-      memcpy(info,&MAudioInputInfos[index],sizeof(clap_audio_port_info_t));
+      memcpy(info,&MAudioInputs[index],sizeof(clap_audio_port_info_t));
       return true;
     }
     else {
-      memcpy(info,&MAudioOutputInfos[index],sizeof(clap_audio_port_info_t));
+      memcpy(info,&MAudioOutputs[index],sizeof(clap_audio_port_info_t));
       return true;
     }
     return false;
@@ -377,13 +379,13 @@ public: // params
 //------------------------------
 
   uint32_t params_count() final {
-    return ARRAY_SIZE(MParameterInfos); // 3;
+    return ARRAY_SIZE(MParameters); // 3;
   }
 
   //----------
 
   bool params_get_info(uint32_t param_index, clap_param_info_t* param_info) final {
-    memcpy(param_info,&MParameterInfos[param_index],sizeof(clap_param_info_t));
+    memcpy(param_info,&MParameters[param_index],sizeof(clap_param_info_t));
     return true;
   }
 
