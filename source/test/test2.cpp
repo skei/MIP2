@@ -6,6 +6,8 @@
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
+#define ARRAY_SIZE(x) ( sizeof( x ) / sizeof( (x)[0] ) )
+
 //----------
 
 #include "mip.h"
@@ -68,25 +70,33 @@ class myPlugin
 private:
 //------------------------------
 
-  clap_param_info_t MParameterInfos[1] = {
-    { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "param1", "", 0.0, 1.0, 0.5 }
+  clap_param_info_t MParameterInfos[3] = {
+    { 0, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param1", "", 0.0, 1.0, 0.5 },
+    { 1, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param2", "", 0.0, 1.0, 0.5 },
+    { 2, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param3", "", 0.0, 5.0, 1.0 }
   };
 
-  clap_audio_port_info_t MAudioInputInfos[1] = {
-    { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  clap_audio_port_info_t MAudioInputInfos[2] = {
+    { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
+    { 1, "input2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
-  clap_audio_port_info_t MAudioOutputInfos[1] = {
-    { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  clap_audio_port_info_t MAudioOutputInfos[2] = {
+    { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
+    { 1, "output2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
   //----------
 
-  float MParam1       = 0.0;
-  float MParamMod1    = 0.0;
-  bool  MIsProcessing = false;
+  #define NUM_PARAMS ARRAY_SIZE(MParameterInfos)
+  #define NUM_AUDIO_INPUTS ARRAY_SIZE(MAudioInputInfos)
+  #define NUM_AUDIO_OUTPUTS ARRAY_SIZE(MAudioOutputInfos)
 
-  MIP_XcbWindow*  MWindow = nullptr;
+  float           MParamVal[NUM_PARAMS] = {0};
+  float           MParamMod[NUM_PARAMS] = {0};
+
+  bool            MIsProcessing = false;
+  MIP_XcbWindow*  MWindow       = nullptr;
 
 //------------------------------
 public:
@@ -109,9 +119,11 @@ private:
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
-      switch (header->type) {
-        case CLAP_EVENT_PARAM_VALUE:  handle_param_value(header); break;
-        case CLAP_EVENT_PARAM_MOD:    handle_param_mod(header); break;
+      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+        switch (header->type) {
+          case CLAP_EVENT_PARAM_VALUE:  handle_param_value(header); break;
+          case CLAP_EVENT_PARAM_MOD:    handle_param_mod(header); break;
+        }
       }
     }
   }
@@ -119,7 +131,7 @@ private:
   //----------
 
   void handle_output_events(const clap_output_events_t* out_events) {
-    send_param_mod(out_events);
+    //send_param_mod(out_events);
   }
 
   //----------
@@ -130,7 +142,7 @@ private:
     float* out0 = process->audio_outputs[0].data32[0];
     float* out1 = process->audio_outputs[0].data32[1];
     for (uint32_t i=0; i<process->frames_count; i++) {
-      float v = MParam1 + MParamMod1;
+      float v = MParamVal[0] + MParamMod[0];
       v = MIP_Clamp(v,0,1);
       *out0++ = *in0++ * v;
       *out1++ = *in1++ * v;
@@ -145,11 +157,7 @@ private:
     const clap_event_param_value_t* param_value = (const clap_event_param_value_t*)header;
     uint32_t i = param_value->param_id;
     float v = param_value->value;
-    switch (i) {
-      case 0:
-        MParam1 = v;
-        break;
-    }
+    MParamVal[i] = v;
   }
 
   //----------
@@ -158,11 +166,7 @@ private:
     const clap_event_param_mod_t* param_mod = (const clap_event_param_mod_t*)header;
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
-    switch (i) {
-      case 0:
-        MParamMod1 = v;
-        break;
-    }
+    MParamMod[i] = v;
   }
 
 //------------------------------
@@ -170,14 +174,14 @@ private:
 //------------------------------
 
   void send_param_mod(const clap_output_events_t* out_events) {
-    float v = MParam1 + MParamMod1;
+    float v = MParamVal[0] + MParamMod[0];
     v = MIP_Clamp(v,0,1);
     clap_event_param_mod_t param_mod;
-    param_mod.header.size     = sizeof (clap_event_param_mod);
+    param_mod.header.size     = sizeof (clap_event_param_mod_t);
     param_mod.header.time     = 0;
     param_mod.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
     param_mod.header.type     = CLAP_EVENT_PARAM_MOD;
-    param_mod.header.flags    = 0;
+    param_mod.header.flags    = 0;//CLAP_EVENT_BEGIN_ADJUST | CLAP_EVENT_END_ADJUST | CLAP_EVENT_SHOULD_RECORD;// | CLAP_EVENT_IS_LIVE;
     param_mod.param_id        = 0;
     param_mod.cookie          = nullptr;
     param_mod.port_index      = -1;
@@ -194,7 +198,9 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    MParam1 = MParameterInfos[0].default_value;
+    for (uint32_t i=0; i<NUM_PARAMS; i++) {
+      MParamVal[i] = MParameterInfos[i].default_value;
+    }
     return true;
   }
 
@@ -257,8 +263,8 @@ public: // audio-ports
 //------------------------------
 
   uint32_t audio_ports_count(bool is_input) final {
-    if (is_input) return 1;
-    else return 1;
+    if (is_input) return ARRAY_SIZE(MAudioInputInfos);// 2;
+    else return ARRAY_SIZE(MAudioOutputInfos); //2;
   }
 
   //----------
@@ -370,7 +376,7 @@ public: // params
 //------------------------------
 
   uint32_t params_count() final {
-    return 1;
+    return ARRAY_SIZE(MParameterInfos); // 3;
   }
 
   //----------
@@ -383,7 +389,7 @@ public: // params
   //----------
 
   bool params_get_value(clap_id param_id, double *value) final {
-    *value = MParam1;
+    *value = MParamVal[param_id];
     return true;
   }
 
