@@ -10,11 +10,11 @@
 
 //----------
 
-typedef std::vector<clap_plugin_descriptor_t*> clap_descriptors;
+typedef std::vector<const clap_plugin_descriptor_t*> clap_descriptors;
 class MIP_ClapList;
 
 extern void MIP_RegisterPlugins(MIP_ClapList* AList);
-MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex,const clap_host_t* AHost);
+MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost);
 
 //----------------------------------------------------------------------
 //
@@ -50,7 +50,7 @@ public:
 public:
 //------------------------------
 
-  void appendPlugin(clap_plugin_descriptor_t* ADescriptor) {
+  void appendPlugin(const clap_plugin_descriptor_t* ADescriptor) {
     MDescriptors.push_back(ADescriptor);
   }
 
@@ -58,7 +58,7 @@ public:
     return MDescriptors.size();
   }
 
-  clap_plugin_descriptor_t* getPlugin(uint32_t AIndex) {
+  const clap_plugin_descriptor_t* getPlugin(uint32_t AIndex) {
     return MDescriptors[AIndex];
   }
 

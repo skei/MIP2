@@ -1,15 +1,25 @@
 
-#include "mip.h"
-#include "plugin/clap/mip_clap.h"
+//#define MIP_NO_GUI
+//#define MIP_USE_XCB
+//#define MIP_GUI_XCB
 
+#define MIP_DEBUG_PRINT_SOCKET
+//nc -U -l -k /tmp/mip.socket
+
+//----------
+
+#include "mip.h"
+
+#include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_list.h"
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/clap/mip_clap_factory.h"
 #include "plugin/clap/mip_clap_plugin.h"
 
-int main() {
-  return 0;
-}
+#include "plugin/wrapper/mip_exe_wrapper.h"
+#include "plugin/wrapper/mip_lv2_wrapper.h"
+#include "plugin/wrapper/mip_vst2_wrapper.h"
+#include "plugin/wrapper/mip_vst3_wrapper.h"
 
 //----------------------------------------------------------------------
 //
@@ -17,15 +27,347 @@ int main() {
 //
 //----------------------------------------------------------------------
 
-clap_plugin_descriptor descriptor1 = {};
+const char* myFeatures[] = {
+  "audio_effect",
+  nullptr
+};
+
+//----------
+
+const clap_plugin_descriptor_t myDescriptor = {
+  CLAP_VERSION,
+  "torhelgeskei/test2/v0.0.0",
+  #ifdef MIP_DEBUG
+  "mip_debug",
+  #else
+  "mip_release",
+  #endif
+  "torhelgeskei",
+  "https://torhelgeskei.com",
+  "",
+  "",
+  "0.0.0",
+  "simple MIP2 test plugin",
+  myFeatures
+};
+
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
 class myPlugin
 : public MIP_ClapPlugin {
 
-public:
+//------------------------------
+private:
+//------------------------------
 
-  myPlugin(const clap_host_t* AHost)
-  : MIP_ClapPlugin(AHost) {
+  clap_param_info_t MParameterInfos[1] = {
+    { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "param1", "", 0.0, 1.0, 0.5 }
+  };
+
+  clap_audio_port_info_t MAudioInputInfos[1] = {
+    { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  clap_audio_port_info_t MAudioOutputInfos[1] = {
+    { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  //----------
+
+  float MParam1       = 0.0;
+  float MParamMod1    = 0.0;
+  bool  MIsProcessing = false;
+
+//------------------------------
+public:
+//------------------------------
+
+  myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
+  : MIP_ClapPlugin(ADescriptor,AHost) {
+  }
+
+  //----------
+
+  virtual ~myPlugin() {
+  }
+
+//------------------------------
+private:
+//------------------------------
+
+  void handle_input_events(const clap_input_events_t* in_events) {
+    uint32_t num_events = in_events->size(in_events);
+    for (uint32_t i=0; i<num_events; i++) {
+      const clap_event_header_t* header = in_events->get(in_events,i);
+      switch (header->type) {
+        case CLAP_EVENT_PARAM_VALUE:  handle_param_value(header); break;
+        case CLAP_EVENT_PARAM_MOD:    handle_param_mod(header); break;
+      }
+    }
+  }
+
+  //----------
+
+  void handle_output_events(const clap_output_events_t* out_events) {
+  }
+
+  //----------
+
+  void handle_param_value(const clap_event_header_t* header) {
+    const clap_event_param_value_t* param_value = (const clap_event_param_value_t*)header;
+    uint32_t i = param_value->param_id;
+    float v = param_value->value;
+    switch (i) {
+      case 0:
+        MParam1 = v;
+        break;
+    }
+  }
+
+  //----------
+
+  void handle_param_mod(const clap_event_header_t* header) {
+    const clap_event_param_mod_t* param_mod = (const clap_event_param_mod_t*)header;
+    uint32_t i = param_mod->param_id;
+    float v = param_mod->amount;
+    switch (i) {
+      case 0:
+        MParamMod1 = v;
+        break;
+    }
+  }
+
+  //----------
+
+  void process_audio(const clap_process_t *process) {
+    float* in0 = process->audio_inputs[0].data32[0];
+    float* in1 = process->audio_inputs[0].data32[1];
+    float* out0 = process->audio_outputs[0].data32[0];
+    float* out1 = process->audio_outputs[0].data32[1];
+    for (uint32_t i=0; i<process->frames_count; i++) {
+      *out0++ = *in0++; // * MParam1;
+      *out1++ = *in1++; // * MParam1;
+    }
+  }
+
+//------------------------------
+public: // plugin
+//------------------------------
+
+  bool init() final {
+    MParam1 = MParameterInfos[0].default_value;
+    return true;
+  }
+
+  //----------
+
+  void destroy() final {
+  }
+
+  //----------
+
+  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
+    return true;
+  }
+
+  //----------
+
+  void deactivate() final {
+  }
+
+  //----------
+
+  bool start_processing() final {
+    MIsProcessing = true;
+    return true;
+  }
+
+  //----------
+
+  void stop_processing() final {
+    MIsProcessing = false;
+  }
+
+  //----------
+
+  clap_process_status process(const clap_process_t *process) final {
+    handle_input_events(process->in_events);
+    process_audio(process);
+    handle_output_events(process->out_events);
+    return CLAP_PROCESS_CONTINUE;
+  }
+
+  //----------
+
+  const void* get_extension(const char *id) final {
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)   return &MAudioPorts;
+    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)  return &MEventFilter;
+    if (strcmp(id,CLAP_EXT_GUI) == 0)           return &MGui;
+    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)       return &MGuiX11;
+    if (strcmp(id,CLAP_EXT_PARAMS) == 0)        return &MParams;
+    return nullptr;
+  }
+
+  //----------
+
+  void on_main_thread() final {
+  }
+
+//------------------------------
+public: // audio-ports
+//------------------------------
+
+  uint32_t audio_ports_count(bool is_input) final {
+    if (is_input) return 1;
+    else return 1;
+  }
+
+  //----------
+
+  bool audio_ports_get(uint32_t index, bool is_input, clap_audio_port_info_t* info) final {
+    if (is_input) {
+      memcpy(info,&MAudioInputInfos[index],sizeof(clap_audio_port_info_t));
+      return true;
+    }
+    else {
+      memcpy(info,&MAudioOutputInfos[index],sizeof(clap_audio_port_info_t));
+      return true;
+    }
+    return false;
+  }
+
+//------------------------------
+public: // event-filter
+//------------------------------
+
+  bool event_filter_accepts(uint16_t space_id, uint16_t event_type) final {
+    if (space_id == CLAP_CORE_EVENT_SPACE_ID) {
+      switch (event_type) {
+        //case CLAP_EVENT_NOTE_ON:          return true;
+        //case CLAP_EVENT_NOTE_OFF:         return true;
+        //case CLAP_EVENT_NOTE_CHOKE:       return true;
+        //case CLAP_EVENT_NOTE_END:         return true;
+        //case CLAP_EVENT_NOTE_EXPRESSION:  return true;
+        case CLAP_EVENT_PARAM_VALUE:      return true;
+        case CLAP_EVENT_PARAM_MOD:        return true;
+        //case CLAP_EVENT_TRANSPORT:        return true;
+        //case CLAP_EVENT_MIDI:             return true;
+        //case CLAP_EVENT_MIDI_SYSEX:       return true;
+        //case CLAP_EVENT_MIDI2:            return true;
+      }
+    }
+    return false;
+  }
+
+//------------------------------
+public: // gui
+//------------------------------
+
+  bool gui_create() final {
+    return true;
+  }
+
+  //----------
+
+  void gui_destroy() final {
+  }
+
+  //----------
+
+  bool gui_set_scale(double scale) final {
+    return true;
+  }
+
+  //----------
+
+  bool gui_get_size(uint32_t *width, uint32_t *height) final {
+    *width = 256;
+    *height = 256;
+    return true;
+  }
+
+  //----------
+
+  bool gui_can_resize() final {
+    return false;
+  }
+
+  //----------
+
+  void gui_round_size(uint32_t *width, uint32_t *height) final {
+  }
+
+  //----------
+
+  bool gui_set_size(uint32_t width, uint32_t height) final {
+    return true;
+  }
+
+  //----------
+
+  void gui_show() final {
+  }
+
+  //----------
+
+  void gui_hide() final {
+  }
+
+//------------------------------
+public: // params
+//------------------------------
+
+  bool gui_x11_attach(const char *display_name, unsigned long window) final {
+    return true;
+  }
+
+//------------------------------
+public: // params
+//------------------------------
+
+  uint32_t params_count() final {
+    return 1;
+  }
+
+  //----------
+
+  bool params_get_info(uint32_t param_index, clap_param_info_t* param_info) final {
+    memcpy(param_info,&MParameterInfos[param_index],sizeof(clap_param_info_t));
+    return true;
+  }
+
+  //----------
+
+  bool params_get_value(clap_id param_id, double *value) final {
+    *value = MParam1;
+    return true;
+  }
+
+  //----------
+
+  bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) final {
+    sprintf(display,"%.3f",value);
+    return true;
+  }
+
+  //----------
+
+  bool params_text_to_value(clap_id param_id, const char *display, double *value) final {
+    float f = atof(display);
+    *value = f;
+    return true;
+  }
+
+  //----------
+
+  void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) final {
+    handle_input_events(in);
+    handle_output_events(out);
   }
 
 };
@@ -38,10 +380,12 @@ public:
 
 
 void MIP_RegisterPlugins(MIP_ClapList* AList) {
-  AList->appendPlugin(&descriptor1);
+  AList->appendPlugin(&myDescriptor);
 }
 
-MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_host_t* AHost) {
-  return new myPlugin(AHost);
+//----------
+
+MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
+  return new myPlugin(ADescriptor,AHost);
 }
 

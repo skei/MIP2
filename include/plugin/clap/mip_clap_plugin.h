@@ -6,6 +6,15 @@
 #include "plugin/clap/mip_clap.h"
 //#include "extern/clap/clap.h"
 
+//  typedef std::vector<clap_audio_ports_config_t*>   audio_ports;
+//  typedef std::vector<clap_audio_port_info_t*>      audio_port_infos;
+//  typedef std::vector<clap_note_name_t*>            note_names;
+//  typedef std::vector<clap_note_port_info_t*>       note_port_infos;
+//  typedef std::vector<clap_param_info_t*>           param_infos;
+//  typedef std::vector<clap_file_reference_t*>       file_references;
+//  typedef std::vector<clap_midi_mapping_t*>         midi_mappings;
+//  typedef std::vector<clap_quick_controls_page_t*>  quick_control_pages;
+
 //----------------------------------------------------------------------
 //
 //
@@ -15,14 +24,23 @@
 class MIP_ClapPlugin {
 
 //------------------------------
+protected:
+//------------------------------
+
+//------------------------------
 public:
 //------------------------------
 
-  MIP_ClapPlugin(const clap_host_t* AHost) {
+  MIP_ClapPlugin(const clap_plugin_descriptor_t* descriptor, const clap_host_t* AHost) {
+    MPlugin.desc = descriptor;
   }
 
   virtual ~MIP_ClapPlugin() {
   }
+
+//------------------------------
+public:
+//------------------------------
 
   const clap_plugin_t* getPtr() {
     return &MPlugin;
@@ -54,7 +72,7 @@ public:
     //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MMidiMappings;
     //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MNoteName;
     //if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MNotePorts;
-    if (strcmp(id,CLAP_EXT_PARAMS) == 0)              return &MParams;
+    //if (strcmp(id,CLAP_EXT_PARAMS) == 0)              return &MParams;
     //if (strcmp(id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    return &MPosixFdSupport;
     //if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MPresetLoad;
     //if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MQuickControls;
@@ -131,8 +149,10 @@ public: // drafts
   virtual void      track_info_changed() {}
 
 //------------------------------
-private: // callbacks
+// callbacks
 //------------------------------
+
+private:
 
   static bool clap_plugin_init_callback(const struct clap_plugin *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -180,6 +200,8 @@ private: // callbacks
     return plug->on_main_thread();
   }
 
+protected:
+
   //const
   clap_plugin_t MPlugin = {
     nullptr, //descriptor
@@ -196,12 +218,14 @@ private: // callbacks
   };
 
 //------------------------------
-private: // extensions
+// extensions
 //------------------------------
 
   //--------------------
   // clap.audio-ports
   //--------------------
+
+private:
 
   static uint32_t clap_plugin_audio_ports_count_callback(const clap_plugin_t* plugin, bool is_input) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -213,6 +237,8 @@ private: // extensions
     return plug->audio_ports_get(index,is_input,info);
   }
 
+protected:
+
   clap_plugin_audio_ports_t MAudioPorts = {
     clap_plugin_audio_ports_count_callback,
     clap_plugin_audio_ports_get_callback
@@ -221,6 +247,8 @@ private: // extensions
   //--------------------
   // clap.audio-ports-config
   //--------------------
+
+private:
 
   static uint32_t clap_plugin_audio_ports_config_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -237,6 +265,8 @@ private: // extensions
     return plug->audio_ports_config_select(config_id);
   }
 
+protected:
+
   clap_plugin_audio_ports_config_t MAudioPortsConfig = {
     clap_plugin_audio_ports_config_count_callback,
     clap_plugin_audio_ports_config_get_callback,
@@ -247,10 +277,14 @@ private: // extensions
   // clap.event-filter
   //--------------------
 
+private:
+
   static bool clap_plugin_event_filter_accepts_callback(const clap_plugin_t *plugin, uint16_t space_id, uint16_t event_type) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->event_filter_accepts(space_id,event_type);
   }
+
+protected:
 
   clap_plugin_event_filter_t MEventFilter = {
     clap_plugin_event_filter_accepts_callback
@@ -259,6 +293,8 @@ private: // extensions
   //--------------------
   // clap.gui
   //--------------------
+
+private:
 
   static bool clap_plugin_gui_create_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -305,6 +341,8 @@ private: // extensions
     return plug->gui_hide();
   }
 
+protected:
+
   clap_plugin_gui_t MGui = {
     clap_plugin_gui_create_callback,
     clap_plugin_gui_destroy_callback,
@@ -321,10 +359,14 @@ private: // extensions
   // clap.gui-x11
   //--------------------
 
+private:
+
   static bool clap_plugin_gui_x11_attach_callback(const clap_plugin_t *plugin, const char *display_name, unsigned long window) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_x11_attach(display_name,window);
   }
+
+protected:
 
   clap_plugin_gui_x11_t MGuiX11 = {
     clap_plugin_gui_x11_attach_callback
@@ -334,10 +376,14 @@ private: // extensions
   // clap.latency
   //--------------------
 
+private:
+
   static uint32_t clap_plugin_latency_get_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->latency_get();
   }
+
+protected:
 
   clap_plugin_latency_t MLatency = {
     clap_plugin_latency_get_callback
@@ -346,6 +392,8 @@ private: // extensions
   //--------------------
   // clap.note_name
   //--------------------
+
+private:
 
   static uint32_t clap_plugin_note_name_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -357,6 +405,8 @@ private: // extensions
     return plug->note_name_get(index,note_name);
   }
 
+protected:
+
   clap_plugin_note_name MNoteName = {
     clap_plugin_note_name_count_callback,
     clap_plugin_note_name_get_callback
@@ -365,6 +415,8 @@ private: // extensions
   //--------------------
   // clap.note_ports
   //--------------------
+
+private:
 
   static uint32_t clap_plugin_note_ports_count_callback(const clap_plugin_t *plugin, bool is_input) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -376,6 +428,8 @@ private: // extensions
     return plug->note_ports_get(index,is_input,info);
   }
 
+protected:
+
   clap_plugin_note_ports_t MNotePorts = {
     clap_plugin_note_ports_count_callback,
     clap_plugin_note_ports_get_callback
@@ -384,6 +438,8 @@ private: // extensions
   //--------------------
   // clap.params
   //--------------------
+
+private:
 
   static uint32_t clap_plugin_params_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -415,6 +471,8 @@ private: // extensions
     return plug->params_flush(in,out);
   }
 
+protected:
+
   clap_plugin_params_t MParams = {
     clap_plugin_params_count_callback,
     clap_plugin_params_get_info_callback,
@@ -428,10 +486,14 @@ private: // extensions
   // clap.posix-fd-support
   //--------------------
 
+private:
+
   static void clap_plugin_posix_fd_support_on_fd_callback(const clap_plugin_t *plugin, int fd, int flags) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->posix_fd_support_on_fd(fd,flags);
   }
+
+protected:
 
   clap_plugin_posix_fd_support MPosixFdSupport = {
     clap_plugin_posix_fd_support_on_fd_callback
@@ -440,6 +502,8 @@ private: // extensions
   //--------------------
   // clap.render
   //--------------------
+
+private:
 
   static bool clap_plugin_has_hard_realtime_requirement(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -451,8 +515,7 @@ private: // extensions
     return plug->render_set(mode);
   }
 
-
-
+protected:
 
   clap_plugin_render_t MRender = {
     clap_plugin_has_hard_realtime_requirement,
@@ -462,6 +525,8 @@ private: // extensions
   //--------------------
   // clap.state
   //--------------------
+
+private:
 
   static bool clap_plugin_state_save_callback(const clap_plugin_t *plugin, clap_ostream_t *stream) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -473,6 +538,8 @@ private: // extensions
     return plug->state_load(stream);
   }
 
+protected:
+
   clap_plugin_state_t MState {
     clap_plugin_state_save_callback,
     clap_plugin_state_load_callback
@@ -482,10 +549,14 @@ private: // extensions
   // clap.thread-pool
   //--------------------
 
+private:
+
   static void clap_plugin_thread_pool_exec_callback(const clap_plugin_t *plugin, uint32_t task_index) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->thread_pool_exec(task_index);
   }
+
+protected:
 
   clap_plugin_thread_pool_t MThreadPool = {
     clap_plugin_thread_pool_exec_callback
@@ -495,10 +566,14 @@ private: // extensions
   // clap.timer-support
   //--------------------
 
+private:
+
   static void clap_plugin_timer_support_on_timer_callback(const clap_plugin_t *plugin, clap_id timer_id) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->timer_support_on_timer(timer_id);
   }
+
+protected:
 
   clap_plugin_timer_support_t MTimerSupport = {
     clap_plugin_timer_support_on_timer_callback
@@ -512,10 +587,14 @@ private: // extensions
   // clap.ambisonic
   //--------------------
 
+private:
+
   static bool clap_plugin_ambisonic_get_info_callback(const clap_plugin_t* plugin, bool is_input, uint32_t port_index, clap_ambisonic_info_t* info) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->ambisonic_get_info(is_input,port_index,info);
   }
+
+protected:
 
   clap_plugin_ambisonic_t MAmbisonic = {
     clap_plugin_ambisonic_get_info_callback
@@ -525,6 +604,8 @@ private: // extensions
   // clap.check-for-update.draft/0
   //--------------------
 
+private:
+
   //static void clap_plugin_check_for_update_check_callback(const clap_plugin_t *plugin, bool include_beta) {
   //  MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
   //  return plug->check_for_update_check(bool include_beta);
@@ -533,6 +614,8 @@ private: // extensions
   static void clap_plugin_check_for_update_check_callback(const clap_host_t *host, bool include_beta) {
   }
 
+protected:
+
   clap_plugin_check_for_update MCheckForUpdate = {
     clap_plugin_check_for_update_check_callback
   };
@@ -540,6 +623,8 @@ private: // extensions
   //--------------------
   // clap.file-reference.draft/0
   //--------------------
+
+private:
 
   static uint32_t clap_plugin_file_reference_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -566,6 +651,8 @@ private: // extensions
     return plug->file_reference_save_resources();
   }
 
+protected:
+
   clap_plugin_file_reference_t MFileReference = {
     clap_plugin_file_reference_count_callback,
     clap_plugin_file_reference_get_callback,
@@ -578,6 +665,8 @@ private: // extensions
   // clap.midi-mappings.draft/0
   //--------------------
 
+private:
+
   static uint32_t clap_plugin_midi_mappings_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->midi_mappings_count();
@@ -586,6 +675,8 @@ private: // extensions
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->midi_mappings_get(index,mapping);
   }
+
+protected:
 
   clap_plugin_midi_mappings_t MMidiMappings = {
     clap_plugin_midi_mappings_count_callback,
@@ -596,10 +687,14 @@ private: // extensions
   // clap.preset-load.draft/0
   //--------------------
 
+private:
+
   static bool clap_plugin_preset_load_from_file_callback(const clap_plugin_t *plugin, const char *path) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->preset_load_from_file(path);
   }
+
+protected:
 
   clap_plugin_preset_load_t MPresetLoad = {
     clap_plugin_preset_load_from_file_callback
@@ -608,6 +703,8 @@ private: // extensions
   //--------------------
   // clap.quick-controls.draft/0
   //--------------------
+
+private:
 
   static uint32_t clap_plugin_quick_controls_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -629,6 +726,8 @@ private: // extensions
     return plug->quick_controls_get_selected();
   }
 
+protected:
+
   clap_plugin_quick_controls_t MQuickControls = {
     clap_plugin_quick_controls_count_callback,
     clap_plugin_quick_controls_get_callback,
@@ -640,6 +739,8 @@ private: // extensions
   // clap.surround.draft/0
   //--------------------
 
+private:
+
   static uint32_t clap_plugin_surround_get_channel_map_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->surround_get_channel_map(is_input,port_index,channel_map,channel_map_capacity);
@@ -650,6 +751,8 @@ private: // extensions
     plug->surround_changed();
   }
 
+protected:
+
   clap_plugin_surround_t MSurround = {
     clap_plugin_surround_get_channel_map_callback,
     clap_plugin_surround_changed_callback
@@ -659,10 +762,14 @@ private: // extensions
   // clap.track-info.draft/0
   //--------------------
 
+private:
+
   static void clap_plugin_track_info_changed_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->track_info_changed();
   }
+
+protected:
 
   clap_plugin_track_info_t MTrackInfo = {
     clap_plugin_track_info_changed_callback
