@@ -26,7 +26,7 @@ const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(cons
 //----------
 
 const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-  int32_t index = MIP_GLOBAL_CLAP_LIST.findPlugin(plugin_id);
+  int32_t index = MIP_GLOBAL_CLAP_LIST.findPluginById(plugin_id);
   //MIP_ClapHostProxy* hostproxy = new MIP_ClapHostProxy(host);
   const clap_plugin_descriptor_t* descriptor = MIP_GLOBAL_CLAP_LIST.getPlugin(index);
   MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,host); // deleted in MIP_ClapPlugin.clap_plugin_destroy_callback()

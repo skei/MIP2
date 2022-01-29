@@ -88,6 +88,9 @@ private:
   bool                        MQuitEventLoop                = false;
   bool                        MUseEventThread               = false;
 
+  bool      MFillBackground   = false;//true;
+  MIP_Color MBackgroundColor  = MIP_Color(0.5);
+
 //------------------------------
 private:
 //------------------------------
@@ -142,6 +145,13 @@ public:
     cleanupGC();
     disconnect();
   }
+
+//------------------------------
+public:
+//------------------------------
+
+  void setFillBackground(bool f=true) { MFillBackground = f; }
+  void setBackgroundColor(MIP_Color c) { MBackgroundColor = c; }
 
 //------------------------------
 public: // drawable
@@ -1169,9 +1179,9 @@ public:
   void paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
     //on_paint(MWindowPainter,ARect);
-    //    if (MFillBackground) {
-    //      fill(MBackgroundColor);
-    //    }
+    if (MFillBackground) {
+      fill(MBackgroundColor);
+    }
     on_window_paint(AXpos,AYpos,AWidth,AHeight);
   }
 

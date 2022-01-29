@@ -1,6 +1,6 @@
 
 //#define MIP_NO_GUI
-//#define MIP_USE_XCB
+#define MIP_USE_XCB
 //#define MIP_GUI_XCB
 
 #define MIP_DEBUG_PRINT_SOCKET
@@ -9,6 +9,7 @@
 //----------
 
 #include "mip.h"
+#include "base/utils/mip_math.h"
 
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_list.h"
@@ -20,6 +21,8 @@
 #include "plugin/wrapper/mip_lv2_wrapper.h"
 #include "plugin/wrapper/mip_vst2_wrapper.h"
 #include "plugin/wrapper/mip_vst3_wrapper.h"
+
+#include "gui/xcb/mip_xcb_window.h"
 
 //----------------------------------------------------------------------
 //
@@ -83,6 +86,8 @@ private:
   float MParamMod1    = 0.0;
   bool  MIsProcessing = false;
 
+  MIP_XcbWindow*  MWindow = nullptr;
+
 //------------------------------
 public:
 //------------------------------
@@ -114,9 +119,27 @@ private:
   //----------
 
   void handle_output_events(const clap_output_events_t* out_events) {
+    send_param_mod(out_events);
   }
 
   //----------
+
+  void process_audio(const clap_process_t *process) {
+    float* in0 = process->audio_inputs[0].data32[0];
+    float* in1 = process->audio_inputs[0].data32[1];
+    float* out0 = process->audio_outputs[0].data32[0];
+    float* out1 = process->audio_outputs[0].data32[1];
+    for (uint32_t i=0; i<process->frames_count; i++) {
+      float v = MParam1 + MParamMod1;
+      v = MIP_Clamp(v,0,1);
+      *out0++ = *in0++ * v;
+      *out1++ = *in1++ * v;
+    }
+  }
+
+//------------------------------
+private:
+//------------------------------
 
   void handle_param_value(const clap_event_header_t* header) {
     const clap_event_param_value_t* param_value = (const clap_event_param_value_t*)header;
@@ -142,18 +165,29 @@ private:
     }
   }
 
-  //----------
+//------------------------------
+//
+//------------------------------
 
-  void process_audio(const clap_process_t *process) {
-    float* in0 = process->audio_inputs[0].data32[0];
-    float* in1 = process->audio_inputs[0].data32[1];
-    float* out0 = process->audio_outputs[0].data32[0];
-    float* out1 = process->audio_outputs[0].data32[1];
-    for (uint32_t i=0; i<process->frames_count; i++) {
-      *out0++ = *in0++; // * MParam1;
-      *out1++ = *in1++; // * MParam1;
-    }
+  void send_param_mod(const clap_output_events_t* out_events) {
+    float v = MParam1 + MParamMod1;
+    v = MIP_Clamp(v,0,1);
+    clap_event_param_mod_t param_mod;
+    param_mod.header.size     = sizeof (clap_event_param_mod);
+    param_mod.header.time     = 0;
+    param_mod.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+    param_mod.header.type     = CLAP_EVENT_PARAM_MOD;
+    param_mod.header.flags    = 0;
+    param_mod.param_id        = 0;
+    param_mod.cookie          = nullptr;
+    param_mod.port_index      = -1;
+    param_mod.key             = -1;
+    param_mod.channel         = -1;
+    param_mod.amount          = v;  // modulation amount
+    clap_event_header_t* header = (clap_event_header_t*)&param_mod;
+    out_events->push_back(out_events,header);
   }
+
 
 //------------------------------
 public: // plugin
@@ -311,18 +345,23 @@ public: // gui
   //----------
 
   void gui_show() final {
+    MWindow->open();
   }
 
   //----------
 
   void gui_hide() final {
+    MWindow->close();
   }
 
 //------------------------------
-public: // params
+public: // gui-x11
 //------------------------------
 
   bool gui_x11_attach(const char *display_name, unsigned long window) final {
+    MWindow = new MIP_XcbWindow(256,256,"",(void*)window);
+    MWindow->setFillBackground();
+    MWindow->setBackgroundColor(0.4);
     return true;
   }
 
@@ -378,7 +417,6 @@ public: // params
 //
 //----------------------------------------------------------------------
 
-
 void MIP_RegisterPlugins(MIP_ClapList* AList) {
   AList->appendPlugin(&myDescriptor);
 }
@@ -386,6 +424,8 @@ void MIP_RegisterPlugins(MIP_ClapList* AList) {
 //----------
 
 MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-  return new myPlugin(ADescriptor,AHost);
+  if (AIndex == 0) {
+    return new myPlugin(ADescriptor,AHost);
+  }
+  return nullptr;
 }
-

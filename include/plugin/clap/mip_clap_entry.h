@@ -13,7 +13,6 @@
 //----------------------------------------------------------------------
 
 bool clap_entry_init_callback(const char *plugin_path) {
-  MIP_Print("\n");
   return true;
 }
 
@@ -25,7 +24,6 @@ void clap_entry_deinit_callback() {
 //----------
 
 const void* clap_entry_get_factory_callback(const char *factory_id) {
-  MIP_Print("\n");
   if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
     return &MIP_GLOBAL_CLAP_FACTORY;
   }
@@ -42,6 +40,7 @@ const void* clap_entry_get_factory_callback(const char *factory_id) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
 
+// MIP_GLOBAL_CLAP_ENTRY
 CLAP_EXPORT const clap_plugin_entry clap_entry = {
   CLAP_VERSION,
   clap_entry_init_callback,

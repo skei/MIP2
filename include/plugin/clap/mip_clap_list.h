@@ -62,7 +62,7 @@ public:
     return MDescriptors[AIndex];
   }
 
-  int32_t findPlugin(const char *plugin_id) {
+  int32_t findPluginById(const char *plugin_id) {
     for (uint32_t i=0; i<MDescriptors.size(); i++) {
       if (strcmp(plugin_id,MDescriptors[i]->id) == 0) return i;
     }
