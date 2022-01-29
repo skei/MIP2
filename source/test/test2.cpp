@@ -6,7 +6,6 @@
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
-#define ARRAY_SIZE(x) ( sizeof( x ) / sizeof( (x)[0] ) )
 
 //----------
 
@@ -70,10 +69,11 @@ class myPlugin
 private:
 //------------------------------
 
-  clap_param_info_t MParameterInfos[3] = {
+  clap_param_info_t MParameterInfos[4] = {
     { 0,     CLAP_PARAM_IS_MODULATABLE,   nullptr, "param1", "", 0.0, 1.0, 0.5 },
     { 1,     CLAP_PARAM_IS_MODULATABLE,   nullptr, "param2", "", 0.0, 1.0, 0.5 },
-    { 2, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param3", "", 0.0, 5.0, 1.0 }
+    { 2, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param3", "", 0.0, 5.0, 1.0 },
+    { 3, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param4", "", 0.0, 5.0, 1.0 }
   };
 
   clap_audio_port_info_t MAudioInputInfos[2] = {
@@ -88,8 +88,9 @@ private:
 
   //----------
 
-  #define NUM_PARAMS ARRAY_SIZE(MParameterInfos)
-  #define NUM_AUDIO_INPUTS ARRAY_SIZE(MAudioInputInfos)
+  #define ARRAY_SIZE(x)     ( sizeof( x ) / sizeof( (x)[0] ))
+  #define NUM_PARAMS        ARRAY_SIZE(MParameterInfos)
+  #define NUM_AUDIO_INPUTS  ARRAY_SIZE(MAudioInputInfos)
   #define NUM_AUDIO_OUTPUTS ARRAY_SIZE(MAudioOutputInfos)
 
   float           MParamVal[NUM_PARAMS] = {0};
@@ -131,7 +132,8 @@ private:
   //----------
 
   void handle_output_events(const clap_output_events_t* out_events) {
-    send_param_mod(out_events);
+    send_param_mod(0,out_events);
+    send_param_mod(2,out_events);
   }
 
   //----------
@@ -173,8 +175,8 @@ private:
 //
 //------------------------------
 
-  void send_param_mod(const clap_output_events_t* out_events) {
-    float v = MParamVal[0] + MParamMod[0];
+  void send_param_mod(uint32_t index, const clap_output_events_t* out_events) {
+    float v = MParamVal[index] + MParamMod[index];
     v = MIP_Clamp(v,0,1);
     clap_event_param_mod_t param_mod;
     param_mod.header.size     = sizeof (clap_event_param_mod_t);
@@ -182,7 +184,7 @@ private:
     param_mod.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
     param_mod.header.type     = CLAP_EVENT_PARAM_MOD;
     param_mod.header.flags    = 0;//CLAP_EVENT_BEGIN_ADJUST | CLAP_EVENT_END_ADJUST | CLAP_EVENT_SHOULD_RECORD;// | CLAP_EVENT_IS_LIVE;
-    param_mod.param_id        = 0;
+    param_mod.param_id        = index;
     param_mod.cookie          = nullptr;
     param_mod.port_index      = -1;
     param_mod.key             = -1;
@@ -191,7 +193,6 @@ private:
     clap_event_header_t* header = (clap_event_header_t*)&param_mod;
     out_events->push_back(out_events,header);
   }
-
 
 //------------------------------
 public: // plugin
