@@ -3,33 +3,34 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "extern/clap/clap.h"
-#include "plugin/clap/mip_clap_list.h"
-#include "plugin/clap/mip_clap_plugin.h"
+#include "plugin/clap/mip_clap.h"
+
+//----------
+
+extern uint32_t MIP_GetNumPlugins();
+extern const clap_plugin_descriptor_t* MIP_GetDescriptor(uint32_t index);
+extern const clap_plugin_t* MIP_CreatePlugin(const clap_host_t *host, const char *plugin_id);
 
 //----------------------------------------------------------------------
 //
-//
+// factory
 //
 //----------------------------------------------------------------------
 
 uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
-  return MIP_GLOBAL_CLAP_LIST.getNumPlugins();
+  return MIP_GetNumPlugins();
 }
 
 //----------
 
 const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
-  return MIP_GLOBAL_CLAP_LIST.getPlugin(index);
+  return MIP_GetDescriptor(index);
 }
 
 //----------
 
 const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-  int32_t index = MIP_GLOBAL_CLAP_LIST.findPlugin(plugin_id);
-  //MIP_ClapHostProxy* hostproxy = new MIP_ClapHostProxy(host);
-  MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,host); // deleted in MIP_ClapPlugin.clap_plugin_destroy_callback()
-  return plugin->getPtr();
+  return MIP_CreatePlugin(host,plugin_id);
 }
 
 //----------------------------------------------------------------------

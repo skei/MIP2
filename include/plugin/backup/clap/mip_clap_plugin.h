@@ -4,7 +4,6 @@
 
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
-//#include "extern/clap/clap.h"
 
 //----------------------------------------------------------------------
 //
@@ -15,17 +14,58 @@
 class MIP_ClapPlugin {
 
 //------------------------------
+private:
+//------------------------------
+
+//  clap_audio_port_info_t**
+//  clap_audio_ports_config_t**
+//  clap_note_name_t**
+//  clap_note_port_info_t**
+//  clap_param_info_t**
+//
+//  clap_ambisonic_info_t*
+//  clap_file_reference_t**
+//  clap_midi_mapping_t**
+//  clap_quick_controls_page_t**
+
+//------------------------------
+protected:
+//------------------------------
+
+  const clap_plugin_descriptor_t* MDescriptor = nullptr;
+  const clap_host_t*              MHost       = nullptr;
+
+//------------------------------
 public:
 //------------------------------
 
-  MIP_ClapPlugin(const clap_host_t* AHost) {
+  MIP_ClapPlugin() {
   }
+
+  //----------
+
+  MIP_ClapPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
+    //MDescriptor   = ADescriptor;
+    //MHost         = AHost;
+    //MPlugin.desc  = ADescriptor;
+    set(ADescriptor,AHost);
+  }
+
+  //----------
 
   virtual ~MIP_ClapPlugin() {
   }
 
+  //----------
+
   const clap_plugin_t* getPtr() {
     return &MPlugin;
+  }
+
+  void set(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
+    MDescriptor   = ADescriptor;
+    MHost         = AHost;
+    MPlugin.desc  = ADescriptor;
   }
 
 //------------------------------
@@ -39,7 +79,6 @@ public:
   virtual bool start_processing() { return true; }
   virtual void stop_processing() {}
   virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_CONTINUE; }
-  virtual void on_main_thread() {}
 
   virtual const void* get_extension(const char *id) {
     //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
@@ -67,6 +106,7 @@ public:
     return nullptr;
   }
 
+  virtual void on_main_thread() {}
 
 //------------------------------
 public: // extensions
@@ -672,3 +712,5 @@ private: // extensions
 
 //----------------------------------------------------------------------
 #endif
+
+

@@ -1,12 +1,11 @@
 
 #include "mip.h"
-#include "plugin/clap/mip_clap_entry.h"
-#include "plugin/clap/mip_clap_plugin.h"
+#include "plugin/clap/mip_clap.h"
 
-//#include "plugin/exe/mip_exe_wrapper.h"
-//#include "plugin/lv2/mip_lv2_wrapper.h"
-//#include "plugin/vst2/mip_vst2_wrapper.h"
-//#include "plugin/vst3/mip_vst3_wrapper.h"
+#include "plugin/clap/mip_clap_list.h"
+#include "plugin/clap/mip_clap_entry.h"
+#include "plugin/clap/mip_clap_factory.h"
+#include "plugin/clap/mip_clap_plugin.h"
 
 int main() {
   return 0;
@@ -18,61 +17,31 @@ int main() {
 //
 //----------------------------------------------------------------------
 
-const char* myFeatures[] = {
-  "audio_effect",
-  nullptr
-};
-
-//----------
-
-const clap_plugin_descriptor_t myDescriptor = {
-  CLAP_VERSION,
-  "plugin_id",
-  "name",
-  "vendor",
-  "url",
-  "manual_url",
-  "support_url",
-  "0.0.0",
-  "description",
-  myFeatures
-};
-
-//----------
+clap_plugin_descriptor descriptor1 = {};
 
 class myPlugin
 : public MIP_ClapPlugin {
+
 public:
-  myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
-  : MIP_ClapPlugin(ADescriptor,AHost) {}
-  //myPlugin() : MIP_ClapPlugin() {}
-  virtual ~myPlugin() {}
+
+  myPlugin(const clap_host_t* AHost)
+  : MIP_ClapPlugin(AHost) {
+  }
+
 };
 
-//myPlugin MY_PLUGIN;
-
-
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
 
-uint32_t MIP_GetNumPlugins() {
-  return 1;
+
+void MIP_RegisterPlugins(MIP_ClapList* AList) {
+  AList->appendPlugin(&descriptor1);
 }
 
-//----------
-
-const clap_plugin_descriptor_t* MIP_GetDescriptor(uint32_t index) {
-  return &myDescriptor;
+MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_host_t* AHost) {
+  return new myPlugin(AHost);
 }
 
-//----------
-
-const clap_plugin_t* MIP_CreatePlugin(const clap_host_t *host, const char *plugin_id) {
-  myPlugin* plugin = new myPlugin(&myDescriptor,host); // who deletes this?
-  //MY_PLUGIN.set(&myDescriptor,host);
-  //return MY_PLUGIN.getPtr();
-  return plugin->getPtr();
-}
