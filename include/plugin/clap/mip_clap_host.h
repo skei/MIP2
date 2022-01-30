@@ -105,9 +105,6 @@ public:
 public: // clap plugin
 //------------------------------
 
-  virtual void request_restart() {}
-  virtual void request_process() {}
-  virtual void request_callback() {}
 
   virtual const void* get_extension(const char *extension_id) {
     //if (strcmp(extension_id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
@@ -137,7 +134,9 @@ public: // clap plugin
     return nullptr;
   }
 
-
+  virtual void request_restart() {}
+  virtual void request_process() {}
+  virtual void request_callback() {}
 
 //------------------------------
 public: // extensions
@@ -178,7 +177,7 @@ public: // extensions
   virtual double tuning_get(int32_t key, int32_t channel) { return 0.0; }
 
 //------------------------------
-private: // hostin
+private: // host
 //------------------------------
 
   static const void* clap_host_get_extension_callback(const struct clap_host *host, const char *extension_id) {
