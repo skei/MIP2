@@ -2,13 +2,17 @@
 #define mip_strutils_included
 //----------------------------------------------------------------------
 
+// TODO: sort by category
+
 #include "mip.h"
 #include "base/utils/mip_random.h"
 
 #include <iconv.h>
 
 //----------------------------------------------------------------------
+//
 // private:
+//
 //----------------------------------------------------------------------
 
 bool _mip_str_match(char* wildcards, char* str);
@@ -65,7 +69,9 @@ bool _mip_str_scan(char*& wildcards, char*& str) {
 }
 
 //----------------------------------------------------------------------
+//
 // public:
+//
 //----------------------------------------------------------------------
 
 // modifies length
@@ -147,6 +153,26 @@ char* MIP_FindString(char* buffer, char* str) {
 
 //----------
 
+// /home/skei/test.so -> test.so
+// returns ptr to first character after last /
+
+const char* MIP_GetFilenameFromPath(const char* APath) {
+  if (APath) {
+    const char* slash     = strrchr(APath,'/');
+    const char* backslash = strrchr(APath,'\\');
+    if (slash) {
+      return slash + 1;
+    }
+    else if (backslash) {
+      return backslash + 1;
+    }
+  }
+  return nullptr;
+}
+
+//----------
+
+
 // returns 'exe', not '.exe'
 
 //const char* MIP_GetFileExt(/*const*/ char* APath) {
@@ -227,6 +253,55 @@ void MIP_MakeValidSymbol(char* buffer) {
     if ((c<32) || (c>127)) buffer[i] = '_';
     else buffer[i] = MIP_CSYMBOLS[c];
   }
+}
+
+//----------
+
+// /home/skei/test.so -> /home/skei/
+// copies src to dst, inserts a 0 after the last /
+
+char* MIP_GetPathOnly(char* ADst, const char* ASrc) {
+  if (ADst && ASrc) {
+    strcpy(ADst,ASrc);
+    char* slash     = strrchr(ADst,'/');
+    char* backslash = strrchr(ADst,'\\');
+    if (slash) {
+      slash[1] = 0;
+      return ADst;
+    }
+    else if (backslash) {
+      backslash[1] = 0;
+      return ADst;
+    }
+  }
+  return nullptr;
+}
+
+//----------
+
+// https://stackoverflow.com/questions/7666509/hash-function-for-string
+
+uint32_t MIP_HashString(const char* buffer) {
+  char* ptr = (char*)buffer;
+  unsigned long h = 5381;
+  int c;
+  while ((c = *ptr++)) {
+    h = ((h << 5) + h) + c; // h * 33 + c
+  }
+  return h;
+}
+
+//----------
+
+uint32_t MIP_ParseVersionString(const char* version) {
+  int major = 0;
+  int minor = 0;
+  int revision = 0;
+  sscanf(version,"%d.%d.%d",&major,&minor,&revision);
+  major &= 0xff;
+  minor &= 0xff;
+  revision &= 0xffff;
+  return (najor << 24) + (minor << 16) + revision;
 }
 
 //----------

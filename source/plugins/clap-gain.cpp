@@ -1,4 +1,6 @@
 
+// TODO: does this still work? redo?
+
 #define MIP_DEBUG_PRINT_SOCKET
 // in console: nc -U -l -k /tmp/mip.socket
 //#define MIP_NO_GUI
@@ -208,7 +210,7 @@ const clap_plugin_descriptor_t* MIP_GetDescriptor(uint32_t index) {
 const clap_plugin_t* MIP_CreatePlugin(const clap_host_t *host, const char *plugin_id) {
   MIP_Print("MIP_CreatePlugin(\"%s\")\n",plugin_id);
   MIP_ClapPlugin* plugin = new Gain_Plugin(&Gain_Descriptor,host);
-  return plugin->getPtr();
+  return plugin->ptr();
 }
 
 //----------------------------------------------------------------------

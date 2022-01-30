@@ -5,12 +5,9 @@
 #include "mip.h"
 
 #include "plugin/clap/mip_clap.h"
-#include "plugin/clap/mip_clap_plugin.h"
-
-//
-
 #include "plugin/clap/mip_clap_entry.h"
-#include "plugin/clap/mip_clap_factory.h"
+//#include "plugin/clap/mip_clap_factory.h"
+#include "plugin/clap/mip_clap_plugin.h"
 //#include "plugin/clap/mip_clap_host_proxy.h"
 
 #include "plugin/wrapper/mip_exe_wrapper.h"

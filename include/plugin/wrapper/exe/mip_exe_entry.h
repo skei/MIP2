@@ -63,7 +63,7 @@ public:
     #endif
 
     const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
-    const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.getPtr(),descriptor->id); // deleted in MIP_ExePlugin destructor
+    const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.ptr(),descriptor->id); // deleted in MIP_ExePlugin destructor
     MIP_ExePlugin*                  exeplugin   = new MIP_ExePlugin(plugin);
 
 //    plugin->on_plugin_init();

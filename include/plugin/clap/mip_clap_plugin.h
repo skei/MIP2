@@ -4,16 +4,6 @@
 
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
-//#include "extern/clap/clap.h"
-
-//  typedef std::vector<clap_audio_ports_config_t*>   audio_ports;
-//  typedef std::vector<clap_audio_port_info_t*>      audio_port_infos;
-//  typedef std::vector<clap_note_name_t*>            note_names;
-//  typedef std::vector<clap_note_port_info_t*>       note_port_infos;
-//  typedef std::vector<clap_param_info_t*>           param_infos;
-//  typedef std::vector<clap_file_reference_t*>       file_references;
-//  typedef std::vector<clap_midi_mapping_t*>         midi_mappings;
-//  typedef std::vector<clap_quick_controls_page_t*>  quick_control_pages;
 
 //----------------------------------------------------------------------
 //
@@ -42,9 +32,7 @@ public:
 public:
 //------------------------------
 
-  const clap_plugin_t* getPtr() {
-    return &MPlugin;
-  }
+  const clap_plugin_t* ptr() { return &MPlugin; }
 
 //------------------------------
 public:

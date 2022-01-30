@@ -2,9 +2,6 @@
 #define mip_clap_host_included
 //----------------------------------------------------------------------
 
-//#define MIP_NO_PLUGIN_LOADING
-
-
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 
@@ -26,80 +23,22 @@ public:
   virtual ~MIP_ClapHost() {
   }
 
-  const clap_host_t* getPtr() {
-    return &MHost;
-  }
-
 //------------------------------
 public:
 //------------------------------
+
+  const clap_host_t*  ptr()     { return &MHost; }
+
+  const char*         name()    { return MHost.name; }
+  const char*         vendor()  { return MHost.vendor; }
+  const char*         url()     { return MHost.url; }
+  const char*         version() { return MHost.version; }
 
   void setData(void* data)          { MHost.host_data = data; }
   void setName(const char* txt)     { MHost.name      = txt; }
   void setVendor(const char* txt)   { MHost.vendor    = txt; }
   void setUrl(const char* txt)      { MHost.url       = txt; }
   void setVersion(const char* txt)  { MHost.version   = txt; }
-
-//------------------------------
-public:
-//------------------------------
-
-  /*
-
-  //void initialize(const clap_plugin_entry* entry, const clap_plugin_factory* factory) {
-  //  MClapEntry = entry;
-  //  MClapFactory = factory;
-  //}
-
-  //----------
-
-  #ifndef MIP_NO_PLUGIN_LOADING
-
-  bool loadPlugin(const char* path) {
-    MPluginPath = path;
-    //MLibHandle = LoadLibrary(path);
-    //MClapEntry = (struct clap_plugin_entry*)GetProcAddress(MLibHandle,"clap_entry");
-    MLibHandle = dlopen(path,RTLD_LAZY|RTLD_LOCAL); // RTLD_NOW
-    MClapEntry = (struct clap_plugin_entry*)dlsym(MLibHandle,"clap_entry");
-    MIP_GetPathOnly(MPathOnly,path);
-    MClapEntry->init(MPathOnly);
-    MClapFactory = (const clap_plugin_factory*)MClapEntry->get_factory(CLAP_PLUGIN_FACTORY_ID);
-    return true;
-  }
-
-  //----------
-
-  void unloadPlugin() {
-    //if (MClapEntry) MClapEntry->deinit();
-    if (MLibHandle) dlclose(MLibHandle);
-  }
-
-  //----------
-
-  const clap_plugin_t* createPlugin(const char* path, uint32_t index, const clap_host_t* host=nullptr) {
-    if (!MClapFactory) return nullptr;
-    if (index >= MClapFactory->get_plugin_count(MClapFactory)) return nullptr;
-    const clap_plugin_descriptor* descriptor = MClapFactory->get_plugin_descriptor(MClapFactory,index);
-    const clap_plugin* plugin = nullptr;
-    if (host) {
-      plugin = MClapFactory->create_plugin(MClapFactory,host,descriptor->id);
-    }
-    else {
-      plugin = MClapFactory->create_plugin(MClapFactory,&MHost,descriptor->id);
-    }
-    plugin->init(plugin);
-    return plugin;
-  }
-
-  //----------
-
-  //void destroyPlugin(const clap_plugin* plugin) {
-  //  plugin->destroy(plugin);
-  //}
-
-  #endif
-
-  */
 
 //------------------------------
 public: // clap plugin
