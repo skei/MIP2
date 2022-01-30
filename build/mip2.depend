@@ -1,13 +1,12 @@
 # depslib dependency file v1.0
-1643317488 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+1643568527 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
 	"../source/test/test.cpp"
 
-1643317602 /DISKS/sda2/code/git/MIP2/source/test/test.cpp
+1643568391 /DISKS/sda2/code/git/MIP2/source/test/test.cpp
 	"mip.h"
-	"plugin/clap/mip_clap_entry.h"
-	"plugin/clap/mip_clap_plugin.h"
+	"base/utils/mip_math.h"
+	"plugin/mip_plugin.h"
 	"gui/xcb/mip_xcb_window.h"
-	"plugin/exe/mip_exe_entry.h"
 
 1642934546 /DISKS/sda2/code/git/MIP2/include/mip.h
 	<math.h>
@@ -24,15 +23,18 @@
 	"base/mip_attributes.h"
 	"base/debug/mip_debug.h"
 
-1642878633 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
+1643567914 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
+	"mip.h"
 	"plugin/clap/mip_clap.h"
+	"plugin/clap/mip_clap_plugin.h"
 	"plugin/clap/mip_clap_entry.h"
-	"plugin/vst2/mip_vst2_entry.h"
-	"plugin/vst3/mip_vst3_entry.h"
-	"plugin/lv2/mip_lv2_entry.h"
-	"plugin/exe/mip_exe_entry.h"
+	"plugin/clap/mip_clap_factory.h"
+	"plugin/wrapper/mip_exe_wrapper.h"
+	"plugin/wrapper/mip_lv2_wrapper.h"
+	"plugin/wrapper/mip_vst2_wrapper.h"
+	"plugin/wrapper/mip_vst3_wrapper.h"
 
-1643238094 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap.h
+1643567883 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap.h
 	"extern/clap/clap.h"
 	"extern/clap/ext/draft/check-for-update.h"
 
@@ -259,9 +261,9 @@
 	"../stream.h"
 	"../private/align.h"
 
-1643313745 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_entry.h
+1643481439 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_entry.h
 	"mip.h"
-	"plugin/clap/mip_clap.h"
+	"extern/clap/clap.h"
 	"plugin/clap/mip_clap_factory.h"
 
 1643106689 /DISKS/sda2/code/git/MIP2/include/extern/clap/ext/draft/ambisonic.h
@@ -270,7 +272,7 @@
 1643106689 /DISKS/sda2/code/git/MIP2/include/extern/clap/ext/draft/check-for-update.h
 	"../../plugin.h"
 
-1643317225 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_plugin.h
+1643474572 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_plugin.h
 	"mip.h"
 	"plugin/clap/mip_clap.h"
 
@@ -528,10 +530,9 @@
 	"base/debug/mip_debug_callstack.h"
 	"base/debug/mip_debug_crash_handler.h"
 
-1639492363 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_print.h
+1643568399 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_print.h
 	<stdarg.h>
 	"mip.h"
-	"base/utils/mip_utils.h"
 	<sys/time.h>
 	<unistd.h>
 	<sys/socket.h>
@@ -576,9 +577,11 @@
 1643106689 /DISKS/sda2/code/git/MIP2/include/extern/clap/ext/draft/cv.h
 	"../../plugin.h"
 
-1643313842 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_factory.h
+1643479962 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_factory.h
 	"mip.h"
-	"plugin/clap/mip_clap.h"
+	"extern/clap/clap.h"
+	"plugin/clap/mip_clap_list.h"
+	"plugin/clap/mip_clap_plugin.h"
 
 1643314979 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe_wrapper.h
 	"mip.h"
@@ -589,7 +592,7 @@
 1643299809 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe_host.h
 	"plugin/clap/mip_clap_host.h"
 
-1643031185 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1643481389 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"mip.h"
 	"base/system/mip_time.h"
 	"base/types/mip_color.h"
@@ -605,7 +608,7 @@
 	"base/system/linux/mip_linux_time.h"
 	"base/system/win32/mip_win32_time.h"
 
-1641606550 /DISKS/sda2/code/git/MIP2/include/base/system/linux/mip_linux_time.h
+1643568350 /DISKS/sda2/code/git/MIP2/include/base/system/linux/mip_linux_time.h
 	<time.h>
 	<sys/time.h>
 	<signal.h>
@@ -709,4 +712,18 @@
 1641510703 /DISKS/sda2/code/git/MIP2/include/audio/mip_audio_jack.h
 	<jack/jack.h>
 	<jack/midiport.h>
+
+1643490741 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_list.h
+	"mip.h"
+	"extern/clap/clap.h"
+	"plugin/clap/mip_clap_plugin.h"
+	<vector>
+
+1643479691 /DISKS/sda2/code/git/MIP2/include/plugin/wrapper/mip_exe_wrapper.h
+
+1643479691 /DISKS/sda2/code/git/MIP2/include/plugin/wrapper/mip_lv2_wrapper.h
+
+1643479691 /DISKS/sda2/code/git/MIP2/include/plugin/wrapper/mip_vst2_wrapper.h
+
+1643479691 /DISKS/sda2/code/git/MIP2/include/plugin/wrapper/mip_vst3_wrapper.h
 

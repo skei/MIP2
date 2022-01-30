@@ -23,8 +23,7 @@
 //
 //----------------------------------------------------------------------
 
-//#include "../source/test/test.cpp"
-#include "../source/test/test2.cpp"
+#include "../source/test/test.cpp"
 
 //#include "../source/test/test_gui.cpp"
 //#include "../source/test/test_plugin.cpp"

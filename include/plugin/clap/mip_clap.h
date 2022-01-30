@@ -5,5 +5,7 @@
 #include "extern/clap/clap.h"
 #include "extern/clap/ext/draft/check-for-update.h"
 
+//#include "plugin/clap/mip_clap_entry.h"
+
 //----------------------------------------------------------------------
 #endif
