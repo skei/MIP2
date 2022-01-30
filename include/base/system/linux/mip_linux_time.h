@@ -9,14 +9,40 @@
 #include <signal.h>     // sigval
 #include <errno.h>      // errno
 
-
-
 #include "base/mip_const.h"
 #include "base/utils/mip_math.h"
 
 //----------------------------------------------------------------------
+
+struct MIP_CurrentTime {
+  int32_t year;
+  int32_t month;
+  int32_t day;
+  int32_t hour;
+  int32_t minutes;
+  int32_t seconds;
+};
+
+//----------------------------------------------------------------------
+//
+//
 //
 //----------------------------------------------------------------------
+
+void MIP_GetLocalTime(MIP_CurrentTime* ATime) {
+  time_t t       = time(nullptr);
+  struct tm tm   = *localtime(&t); // cppcheck recommends localtime_r
+  ATime->year    = tm.tm_year + 1900;
+  ATime->month   = tm.tm_mon + 1;
+  ATime->day     = tm.tm_mday;
+  ATime->hour    = tm.tm_hour;
+  ATime->minutes = tm.tm_min;
+  ATime->seconds = tm.tm_sec;
+  //MIP_Print("now: %d-%d-%d %d:%d:%d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+  //return &CODE_CURRENT_TIME;
+}
+
+//----------
 
 /*
   The C library function clock_t clock(void) returns the number of clock ticks
@@ -37,32 +63,6 @@ double MIP_GetTimeMS(void) {
   gettimeofday(&time,NULL);
   double t = (double)time.tv_sec + (double)time.tv_usec * .000001;
   return t * 1000.0;
-}
-
-//----------
-
-struct MIP_CurrentTime {
-  int32_t year;
-  int32_t month;
-  int32_t day;
-  int32_t hour;
-  int32_t minutes;
-  int32_t seconds;
-};
-
-//----------
-
-void MIP_GetLocalTime(MIP_CurrentTime* ATime) {
-  time_t t       = time(nullptr);
-  struct tm tm   = *localtime(&t); // cppcheck recommends localtime_r
-  ATime->year    = tm.tm_year + 1900;
-  ATime->month   = tm.tm_mon + 1;
-  ATime->day     = tm.tm_mday;
-  ATime->hour    = tm.tm_hour;
-  ATime->minutes = tm.tm_min;
-  ATime->seconds = tm.tm_sec;
-  //MIP_Print("now: %d-%d-%d %d:%d:%d\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-  //return &CODE_CURRENT_TIME;
 }
 
 //----------
@@ -89,7 +89,9 @@ int MIP_Sleep(long ms) {
 //----------
 
 //----------------------------------------------------------------------
+//
 // timer
+//
 //----------------------------------------------------------------------
 
 class MIP_TimerListener {
@@ -207,6 +209,8 @@ public:
 };
 
 //----------------------------------------------------------------------
+//
+//
 //
 //----------------------------------------------------------------------
 

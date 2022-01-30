@@ -7,6 +7,37 @@
 
 #include "base/system/mip_time.h"
 
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+#include <sys/syscall.h>
+#include <sys/unistd.h>
+#define gettid() syscall(SYS_gettid)
+
+//----------
+
+// uint32_t thread_id = MIP_GetThreadId();
+
+pid_t MIP_GetProcessId() {
+  return getpid();
+}
+
+//----------
+
+pid_t MIP_GetThreadId() {
+  return gettid();
+}
+
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
 class MIP_Thread {
 
 private:
