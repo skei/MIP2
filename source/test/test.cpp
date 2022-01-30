@@ -257,7 +257,7 @@ public: // audio-ports
 
   uint32_t audio_ports_count(bool is_input) final {
     if (is_input) return MNumAudioInputs;
-    else return MNumAudioInputs;
+    else return MNumAudioOutputs;
   }
 
   //----------
