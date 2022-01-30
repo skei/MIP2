@@ -11,6 +11,7 @@
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/clap/mip_clap_factory.h"
+//#include "plugin/clap/mip_clap_host_proxy.h"
 
 #include "plugin/wrapper/mip_exe_wrapper.h"
 #include "plugin/wrapper/mip_lv2_wrapper.h"
@@ -23,7 +24,7 @@ class MIP_Plugin
 : public MIP_ClapPlugin {
 
 //------------------------------
-private:
+protected:
 //------------------------------
 
   //MIP_Editor* MEditor = nullptr;
