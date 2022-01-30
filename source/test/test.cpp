@@ -1,15 +1,11 @@
 
-//#define MIP_NO_GUI
 #define MIP_USE_XCB
-//#define MIP_GUI_XCB
-
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 //----------
 
 #include "mip.h"
-#include "base/utils/mip_math.h"
 #include "plugin/mip_plugin.h"
 #include "gui/xcb/mip_xcb_window.h"
 
@@ -28,18 +24,18 @@ const char* myFeatures[] = {
 
 const clap_plugin_descriptor_t myDescriptor = {
   CLAP_VERSION,
-  "torhelgeskei/test2/v0.0.0",
+  "torhelgeskei/test/v0.0.0",
   #ifdef MIP_DEBUG
-  "mip_debug",
+  "test_debug",
   #else
-  "mip_release",
+  "test",
   #endif
   "torhelgeskei",
   "https://torhelgeskei.com",
   "",
   "",
   "0.0.0",
-  "simple MIP2 test plugin",
+  "simple mip2 test plugin",
   myFeatures
 };
 
@@ -51,7 +47,6 @@ const clap_plugin_descriptor_t myDescriptor = {
 //----------------------------------------------------------------------
 
 class myPlugin
-//: public MIP_ClapPlugin {
 : public MIP_Plugin {
 
 //------------------------------
@@ -77,28 +72,36 @@ private:
 
   //----------
 
-  #define ARRAY_SIZE(x)     ( sizeof( x ) / sizeof( (x)[0] ))
-  #define NUM_PARAMS        ARRAY_SIZE(MParameters)
-  #define NUM_AUDIO_INPUTS  ARRAY_SIZE(MAudioInputs)
-  #define NUM_AUDIO_OUTPUTS ARRAY_SIZE(MAudioOutputs)
-
-  float           MParamVal[NUM_PARAMS] = {0};
-  float           MParamMod[NUM_PARAMS] = {0};
-  bool            MIsProcessing = false;
-  MIP_XcbWindow*  MWindow       = nullptr;
+  uint32_t        MNumParams        = 0;
+  uint32_t        MNumAudioInputs   = 0;
+  uint32_t        MNumAudioOutputs  = 0;
+  float*          MParamVal         = nullptr;
+  float*          MParamMod         = nullptr;
+  bool            MIsProcessing     = false;
+  MIP_XcbWindow*  MWindow           = nullptr;
 
 //------------------------------
 public:
 //------------------------------
 
+  #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+
   myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
-  //: MIP_ClapPlugin(ADescriptor,AHost) {
   : MIP_Plugin(ADescriptor,AHost) {
+    MNumParams        = ARRAY_SIZE(MParameters);
+    MNumAudioInputs   = ARRAY_SIZE(MAudioInputs);
+    MNumAudioOutputs  = ARRAY_SIZE(MAudioOutputs);
+    MParamVal         = (float*)malloc(MNumParams * sizeof(float));
+    MParamMod         = (float*)malloc(MNumParams * sizeof(float));
   }
+
+  #undef ARRAY_SIZE
 
   //----------
 
   virtual ~myPlugin() {
+    free(MParamVal);
+    free(MParamMod);
   }
 
 //------------------------------
@@ -188,7 +191,7 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    for (uint32_t i=0; i<NUM_PARAMS; i++) {
+    for (uint32_t i=0; i<MNumParams; i++) {
       MParamVal[i] = MParameters[i].default_value;
     }
     return true;
@@ -253,8 +256,8 @@ public: // audio-ports
 //------------------------------
 
   uint32_t audio_ports_count(bool is_input) final {
-    if (is_input) return ARRAY_SIZE(MAudioInputs);// 2;
-    else return ARRAY_SIZE(MAudioOutputs); //2;
+    if (is_input) return MNumAudioInputs;
+    else return MNumAudioInputs;
   }
 
   //----------
@@ -278,17 +281,22 @@ public: // event-filter
   bool event_filter_accepts(uint16_t space_id, uint16_t event_type) final {
     if (space_id == CLAP_CORE_EVENT_SPACE_ID) {
       switch (event_type) {
+
         //case CLAP_EVENT_NOTE_ON:          return true;
         //case CLAP_EVENT_NOTE_OFF:         return true;
         //case CLAP_EVENT_NOTE_CHOKE:       return true;
         //case CLAP_EVENT_NOTE_END:         return true;
         //case CLAP_EVENT_NOTE_EXPRESSION:  return true;
+
         case CLAP_EVENT_PARAM_VALUE:      return true;
         case CLAP_EVENT_PARAM_MOD:        return true;
+
         //case CLAP_EVENT_TRANSPORT:        return true;
+
         //case CLAP_EVENT_MIDI:             return true;
         //case CLAP_EVENT_MIDI_SYSEX:       return true;
         //case CLAP_EVENT_MIDI2:            return true;
+
       }
     }
     return false;
@@ -366,7 +374,7 @@ public: // params
 //------------------------------
 
   uint32_t params_count() final {
-    return ARRAY_SIZE(MParameters); // 3;
+    return MNumParams;
   }
 
   //----------
