@@ -68,17 +68,17 @@ private:
   bool                MFillWindowBackground   = false;
   MIP_Color           MWindowBackgroundColor  = MIP_Color(0.5);
 
-  int32_t       MMouseX                       = 0;
-  int32_t       MMouseY                       = 0;
-  int32_t       MMousePrevX                   = 0;
-  int32_t       MMousePrevY                   = 0;
-  int32_t       MMouseClickedX                = 0;
-  int32_t       MMouseClickedY                = 0;
-  uint32_t      MMouseClickedB                = 0;
-  uint32_t      MMouseClickedS                = 0;
-  int32_t       MMouseDragX                   = 0;
-  int32_t       MMouseDragY                   = 0;
-  uint32_t      MPrevClickTime                = 0;
+  int32_t             MMouseX                 = 0;
+  int32_t             MMouseY                 = 0;
+  int32_t             MMousePrevX             = 0;
+  int32_t             MMousePrevY             = 0;
+  int32_t             MMouseClickedX          = 0;
+  int32_t             MMouseClickedY          = 0;
+  uint32_t            MMouseClickedB          = 0;
+  uint32_t            MMouseClickedS          = 0;
+  int32_t             MMouseDragX             = 0;
+  int32_t             MMouseDragY             = 0;
+  uint32_t            MPrevClickTime          = 0;
 
 //------------------------------
 public:
@@ -115,21 +115,20 @@ public:
 //------------------------------
 public:
 //------------------------------
-//#define MIP_USE_GPL
-
-  //virtual bool isBuffered() {
-  //  #ifdef MIP_NO_WINDOW_BUFFERING
-  //  return false;
-  //  #else
-  //  return true;
-  //  #endif
-  //}
 
   MIP_Painter* getPainter() {
     #ifdef MIP_NO_WINDOW_BUFFERING
     return MWindowPainter;
     #else
     return MBufferPainter;
+    #endif
+  }
+
+  virtual bool isBuffered() {
+    #ifdef MIP_NO_WINDOW_BUFFERING
+    return false;
+    #else
+    return true;
     #endif
   }
 
@@ -161,7 +160,6 @@ public:
 //------------------------------
 
   void paintWidget(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) {
-
     #ifdef MIP_NO_WINDOW_BUFFERING
       //if (flags.autoClip) MWindowPainter->pushClip(ARect);
       AWidget->on_widget_paint(MWindowPainter,ARect,AMode);
@@ -665,29 +663,22 @@ public: // MIP_Widget
 
   //----------
 
-  //void do_widget_grabMouseCursor(MIP_Widget* ASender) override {
-  //  //if (ASender) grabMouseCursor();
-  //  //else releaseMouseCursor();
-  //  MMouseLockedWidget = ASender;
-  //}
+  void do_widget_setModal(MIP_Widget* AWidget, bool AModal=true) override {
+    MMouseModalWidget = AWidget;
+    updateHoverWidget(MMouseX,MMouseY);
+  }
 
   //----------
 
-  //void do_widget_grabKeyboard(MIP_Widget* AWidget) override {
-  //  //MIP_Print("%p\n",AWidget);
-  //  MKeyInputWidget = AWidget;
-  //}
+  void do_widget_captureMouse(MIP_Widget* AWidget, bool ACapture=true) override {
+    MMouseLockedWidget = AWidget;
+  }
 
   //----------
 
-  //void do_widget_grabModal(MIP_Widget* AWidget) override {
-  //  //MIP_Print("%p\n",AWidget);
-  //  MMouseModalWidget = AWidget;
-  //  //if (AWidget)
-  //    updateHoverWidget(MMouseX,MMouseY);
-  //  //else
-  //  //  releaseHoverWidget(MMouseClickedWidget,MMouseX,MMouseY,0);
-  //}
+  void do_widget_captureKeyboard(MIP_Widget* AWidget, bool ACapture=true) override {
+    MKeyInputWidget = AWidget;
+  }
 
 };
 

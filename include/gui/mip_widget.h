@@ -9,8 +9,6 @@
 #include "base/types/mip_point.h"
 #include "base/types/mip_rect.h"
 #include "gui/mip_painter.h"
-//#include "gui/base/mip_base_window.h"
-//#include "plugin/mip_parameter.h"
 
 //----------------------------------------------------------------------
 
@@ -20,12 +18,14 @@ typedef MIP_Array<MIP_Widget*> MIP_Widgets;
 //----------------------------------------------------------------------
 
 struct MIP_WidgetFlags {
+
   //bool autoMouseCursor  = false;
   //bool autoMouseHide    = false;
   //bool autoMouseLock    = false;
   //bool autoSendHint     = false;
   ////bool canMove          = false;
   ////bool canResize        = false;
+
   bool active           = true;
   bool visible          = true;
   bool opaque           = false;
@@ -42,9 +42,6 @@ struct MIP_WidgetFlags {
   bool canDrag          = false;
   bool canDrop          = false;
 };
-
-//struct MIP_WidgetState {
-//};
 
 //----------
 
@@ -71,6 +68,7 @@ protected:
   const char*     MName                   = "MIP_Widget";
   const char*     MHint                   = "widget";
   int32_t         MCursor                 = MIP_CURSOR_DEFAULT;
+  MIP_Widget*     MOwnerWindow            = nullptr;        // = MIP_Window;
   MIP_Widget*     MParent                 = nullptr;
   MIP_Widgets     MChildren               = {};
   int32_t         MWidgetIndex            = -1;
@@ -82,11 +80,10 @@ protected:
   float           MModValue               = 0.0;
   float           MValue                  = 0.0;
   float           MDefaultValue           = 0.0;
-
-//  MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // ptrs to connected parameters
-
   int32_t         MParamIndex             = -1;
-  int32_t         MSubParamIndex          = -1;
+  char            MParamName[256]         = {0};
+
+//MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // ptrs to connected parameters
 
 //------------------------------
 public:
@@ -100,7 +97,6 @@ public:
 //------------------------------
 
   MIP_Widget(MIP_FRect ARect) {
-    //MRect = ARect;
     init(ARect);
   }
 
@@ -135,7 +131,6 @@ public: // set
     }
   }
 
-
   virtual void setChildrenOffset(float AX, float AY)        { MChildrenXOffset = AX; MChildrenYOffset = AY; }
   virtual void setChildrenXOffset(float AX)                 { MChildrenXOffset = AX; }
   virtual void setChildrenYOffset(float AY)                 { MChildrenYOffset = AY; }
@@ -167,7 +162,12 @@ public: // set
 //virtual void setParameterPtr(MIP_Parameter* p)            { MParameterPtr = p; }
 
   virtual void setParamIndex(uint32_t AIndex)               { MParamIndex = AIndex; }
-  virtual void setSubParamIndex(uint32_t AIndex)            { MSubParamIndex = AIndex; }
+  //virtual void setSubParamIndex(uint32_t AIndex)            { MSubParamIndex = AIndex; }
+
+  virtual void setParamName(const char* AName) {
+    //strncpy(MParamName,AName,256);
+    strcpy(MParamName,AName);
+  }
 
 //------------------------------
 public:
@@ -188,7 +188,7 @@ public:
   virtual float           getValue()                  { return MValue; }
 
   virtual int32_t         getParamIndex()             { return MParamIndex; }
-  virtual int32_t         getSubParamIndex()          { return MSubParamIndex; }
+  //virtual int32_t         getSubParamIndex()          { return MSubParamIndex; }
 
 //------------------------------
 public:
@@ -688,14 +688,23 @@ public:
 
   //----------
 
-//  virtual void attachWindow(MIP_BaseWindow* AWindow) {
-//    //MOwner = AWindow;
-//    uint32_t num = MChildren.size();
-//    for (uint32_t i=0; i<num; i++) {
-//      MIP_Widget* child = MChildren[i];
-//      child->attachWindow(AWindow);
-//    }
-//  }
+  //virtual void attachWindow(MIP_BaseWindow* AWindow) {
+  //  //MOwner = AWindow;
+  //  uint32_t num = MChildren.size();
+  //  for (uint32_t i=0; i<num; i++) {
+  //    MIP_Widget* child = MChildren[i];
+  //    child->attachWindow(AWindow);
+  //  }
+  //}
+
+  virtual void setOwnerWindow(MIP_Widget* AWindow, bool ARecursive=true) {
+    MOwnerWindow = AWindow;
+    uint32_t num = MChildren.size();
+    for (uint32_t i=0; i<num; i++) {
+      MIP_Widget* child = MChildren[i];
+      child->setOwnerWindow(AWindow,ARecursive);
+    }
+  }
 
 //------------------------------
 public:
@@ -797,7 +806,6 @@ public:
     //MIP_Print("%s\n",MName);
   }
 
-
 //------------------------------
 public:
 //------------------------------
@@ -807,6 +815,8 @@ public:
   virtual void do_widget_update(MIP_Widget* AWidget, uint32_t AMode=0) {
     if (MParent) MParent->do_widget_update(AWidget);
   }
+
+  //----------
 
   // widget needs to be redrawn
 
@@ -824,6 +834,8 @@ public:
     if (MParent) MParent->do_widget_redraw(AWidget,ARect,AMode);
   }
 
+  //----------
+
   // widget has changed position or size..
   // parent might need to realign its ch8ld widgets
 
@@ -831,13 +843,15 @@ public:
     if (MParent) MParent->do_widget_realign(AWidget,ARecursive);
   }
 
+  //----------
+
   /*
     called by MIP_WidgetSizer (etc?)
     resize ourselves, and tell parent to realign all its children
     also set initial-rect, since alignment is starting from that
   */
 
-  virtual void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) {
+  virtual void do_widget_resized(MIP_Widget* AWidget, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) {
     //if (MParent) MParent->do_widget_resized(ASender,ADeltaX,ADeltaY);
     MRect.w += ADeltaX;
     MRect.h += ADeltaY;
@@ -850,37 +864,48 @@ public:
     }
   }
 
+  //----------
+
   virtual void do_widget_setMouseCursor(MIP_Widget* AWidget, int32_t ACursor) {
     if (MParent) MParent->do_widget_setMouseCursor(AWidget,ACursor);
   }
+
+  //----------
 
   virtual void do_widget_setMouseCursorPos(MIP_Widget* AWidget, float AXpos, float AYpos) {
     if (MParent) MParent->do_widget_setMouseCursorPos(AWidget,AXpos,AYpos);
   }
 
+  //----------
+
   virtual void do_widget_setHint(MIP_Widget* AWidget, const char* AHint) {
     if (MParent) MParent->do_widget_setHint(AWidget,AHint);
   }
 
-  virtual void do_widget_notify(MIP_Widget* ASender, uint32_t AValue=0) {
-    if (MParent) MParent->do_widget_notify(ASender,AValue);
+  //----------
+
+  virtual void do_widget_notify(MIP_Widget* AWidget, uint32_t AValue=0) {
+    if (MParent) MParent->do_widget_notify(AWidget,AValue);
   }
 
-//  virtual void do_widget_grabMouseCursor(MIP_Widget* ASender) {
-//    if (MParent) MParent->do_widget_grabMouseCursor(ASender);
-//  }
-//
-//  virtual void do_widget_grabKeyboard(MIP_Widget* ASender) {
-//    if (MParent) MParent->do_widget_grabKeyboard(ASender);
-//  }
-//
-//  virtual void do_widget_grabModal(MIP_Widget* ASender) {
-//    if (MParent) MParent->do_widget_grabModal(ASender);
-//  }
+  //----------
 
-  //virtual void do_widget_setModal(MIP_Widget* AWidget, bool AModal=true) {}
-  //virtual void do_widget_captureMouse(MIP_Widget* AWidget, bool ACapture=true) {}
-  //virtual void do_widget_captureKeyboard(MIP_Widget* AWidget, bool ACapture=true) {}
+  virtual void do_widget_setModal(MIP_Widget* AWidget, bool AModal=true) {
+    if (MParent) MParent->do_widget_setModal(AWidget,AModal);
+  }
+
+  //----------
+
+  virtual void do_widget_captureMouse(MIP_Widget* AWidget, bool ACapture=true) {
+    if (MParent) MParent->do_widget_captureMouse(AWidget,ACapture);
+  }
+
+  //----------
+
+  virtual void do_widget_captureKeyboard(MIP_Widget* AWidget, bool ACapture=true) {
+    if (MParent) MParent->do_widget_captureKeyboard(AWidget,ACapture);
+  }
+
 
 };
 

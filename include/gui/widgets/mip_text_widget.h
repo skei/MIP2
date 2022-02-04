@@ -3,7 +3,6 @@
 //----------------------------------------------------------------------
 
 #include "gui/widgets/mip_panel_widget.h"
-//#include "plugin/mip_parameter.h"
 
 //----------------------------------------------------------------------
 
@@ -20,13 +19,13 @@ protected:
   MIP_Color   MTextColor      = MIP_COLOR_BLACK;
   MIP_FRect   MTextOffset     = MIP_FRect(2,2,2,2);
   bool        MDrawText       = true;
-  bool        MDrawParamText  = true;
+  bool        MDrawParamName  = true;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_TextWidget(MIP_FRect ARect/*=MIP_FRect()*/, const char* AText="")
+  MIP_TextWidget(MIP_FRect ARect, const char* AText="")
   : MIP_PanelWidget(ARect) {
     setName("MIP_TextWidget");
     setHint("text");
@@ -34,7 +33,6 @@ public:
     MDrawBorder = false;
     MFillBackground = false;//true;
     //MBackgroundColor = MIP_COLOR_RED;
-
   }
 
   virtual ~MIP_TextWidget() {
@@ -46,7 +44,7 @@ public:
 
   virtual void setText(const char* AText)             { MText = AText; }
   virtual void setDrawText(bool ADraw)                { MDrawText = ADraw; }
-  virtual void setDrawParamText(bool ADraw)           { MDrawParamText = ADraw; }
+  virtual void setDrawParamName(bool ADraw)           { MDrawParamName = ADraw; }
   virtual void setTextAlignment(uint32_t AAlignment)  { MTextAlignment = AAlignment; }
   virtual void setTextColor(MIP_Color AColor)         { MTextColor = AColor; }
   virtual void setTextOffset(MIP_FRect AOffset)       { MTextOffset = AOffset; }
@@ -61,17 +59,7 @@ public:
     rect.shrink(MTextOffset);
     if (MDrawText) {
       const char* txt = MText;
-//      if (MDrawParamText) {
-//        MIP_Parameter* param = getParameter();
-//        if (param) {
-//          //APainter->drawText(rect,param->getName(),MTextAlignment,MTextColor);
-//          txt = param->getName();
-//        }
-//      }
-      //else {
-      //  //APainter->drawText(rect,MText,MTextAlignment,MTextColor);
-      //  txt = MText;
-      //}
+      if (MDrawParamName && (MParamIndex >= 0)) txt = MParamName;
       APainter->drawText(rect,txt,MTextAlignment,MTextColor);
     }
   }

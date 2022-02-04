@@ -24,20 +24,17 @@ private:
   //MIP_FPoint MValueOffset  = MIP_FPoint(0,0);
 
   bool        MDrawKnob             = true;
-  MIP_Color  MKnobColor            = MIP_COLOR_LIGHT_GRAY;
-  MIP_Color  MInteractiveKnobColor = MIP_COLOR_WHITE;
-  MIP_Color  MKnobBack             = MIP_COLOR_DARK_GRAY;
-  //uint32_t    MKnobSize             = 5.0f;
-
+  MIP_Color   MKnobColor            = MIP_COLOR_LIGHT_GRAY;
+  MIP_Color   MInteractiveKnobColor = MIP_COLOR_WHITE;
+  MIP_Color   MKnobBack             = MIP_COLOR_DARK_GRAY;
+  //uint32_t  MKnobSize             = 5.0f;
   bool        MBipolar              = false;
-
   float       MArcThickness         = 0.20;
   float       MNeedleLength         = 0.25;
   float       MNeedleThickness      = 0.10;
-  MIP_Color  MNeedleColor          = MIP_COLOR_LIGHT_GRAY;
-
+  MIP_Color   MNeedleColor          = MIP_COLOR_LIGHT_GRAY;
   bool        MDrawSteppedArc       = false;
-  MIP_Color  MStepColor            = MIP_COLOR_GRAY;
+  MIP_Color   MStepColor            = MIP_COLOR_GRAY;
 
 //------------------------------
 public:

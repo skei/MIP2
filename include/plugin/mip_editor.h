@@ -94,10 +94,26 @@ public:
 
   //----------
 
-  void connect(MIP_Widget* AWidget, int32_t AParamIndex, int32_t ASubParamIndex=-1) {
+  void connect(MIP_Widget* AWidget, int32_t AParamIndex/*, int32_t ASubParamIndex=-1*/) {
     AWidget->setParamIndex(AParamIndex);
-    AWidget->setSubParamIndex(ASubParamIndex);
+    //AWidget->setSubParamIndex(ASubParamIndex);
     MParamToWidget[AParamIndex] = AWidget;
+    //AWidget->on_widget_connect(AParamIndex,ASubParamIndex);
+
+    clap_param_info_t info;
+    MPlugin->params_get_info(AParamIndex,&info);
+
+    const char* name = info.name;
+    float def_value = info.default_value;
+    //float min_value = info.min_value;
+    //float max_value = info.max_value;
+    AWidget->setDefaultValue(def_value);
+    AWidget->setValue(def_value);
+    AWidget->setParamName(name);
+    //AWidget->setParamDefValue(name);
+
+
+
   }
 
   //----------
@@ -256,6 +272,7 @@ public: // clap.gui
   //----------
 
   virtual void show() {
+    MWindow->setOwnerWindow(MWindow);
     MWindow->alignWidgets();
     MWindow->open();
     MTimer->start(30);

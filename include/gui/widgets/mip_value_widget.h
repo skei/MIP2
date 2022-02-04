@@ -26,14 +26,14 @@ protected:
 
   // value text
   bool        MDrawValueText      = true;
-  MIP_Color  MValueTextColor     = MIP_COLOR_WHITE;
+  MIP_Color   MValueTextColor     = MIP_COLOR_WHITE;
   uint32_t    MValueTextAlignment = MIP_TEXT_ALIGN_RIGHT;
-  MIP_FRect  MValueTextOffset    = MIP_FRect(2,2,2,2);
+  MIP_FRect   MValueTextOffset    = MIP_FRect(2,2,2,2);
 
   // label
   bool        MDrawLabel          = false;
   const char* MLabel              = "";
-  MIP_Color  MLabelColor         = MIP_Color(0.7f);
+  MIP_Color   MLabelColor         = MIP_Color(0.7f);
 
 //------------------------------
 public:
