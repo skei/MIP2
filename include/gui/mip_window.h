@@ -30,8 +30,8 @@ typedef MIP_ImplementedWindow MIP_BasicWindow;;
 
 class MIP_WindowListener {
 public:
-  virtual void updateWidgetFromWindow(MIP_Widget* AWidget) {}
-  //virtual void redrawWidgetFromWindow(MIP_Widget* AWidget) {}
+  virtual void on_updateWidgetFromWindow(MIP_Widget* AWidget) {}
+  //virtual void on_redrawWidgetFromWindow(MIP_Widget* AWidget) {}
 };
 
 //----------------------------------------------------------------------
@@ -582,7 +582,7 @@ public: // MIP_Widget
 
   void do_widget_update(MIP_Widget* AWidget, uint32_t AMode=0) override {
     //MIP_PRINT;
-    if (MListener) MListener->updateWidgetFromWindow(AWidget);
+    if (MListener) MListener->on_updateWidgetFromWindow(AWidget);
   }
 
   //----------
@@ -592,7 +592,7 @@ public: // MIP_Widget
 
   void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
     //MIP_PRINT;
-//    if (MListener) MListener->do_window_redrawWidget(AWidget);
+    //if (MListener) MListener->do_window_redrawWidget(AWidget);
     invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
   }
 

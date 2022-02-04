@@ -2,8 +2,6 @@
 #define mip_editor_included
 //----------------------------------------------------------------------
 
-//#define MIP_NO_WINDOW_BUFFERING
-
 #include "mip.h"
 #include "base/system/mip_timer.h"
 #include "base/types/mip_queue.h"
@@ -11,21 +9,13 @@
 #include "plugin/clap/mip_clap_plugin.h"
 #include "gui/mip_window.h"
 
-#define MIP_CLAP_MESSAGE_QUEUE_SIZE   32
+#define MIP_CLAP_MESSAGE_QUEUE_SIZE 1024
 typedef MIP_Queue<uint32_t,MIP_CLAP_MESSAGE_QUEUE_SIZE> MIP_ClapIntQueue;
 
 //----------------------------------------------------------------------
 //
 //
 //
-//----------------------------------------------------------------------
-
-class MIP_EditorListener {
-public:
-  virtual void timerFromEditor() {}
-  virtual void updateParameterFromEditor(uint32_t AIndex, float AValue) {}
-};
-
 //----------------------------------------------------------------------
 
 class MIP_Editor
@@ -36,7 +26,9 @@ class MIP_Editor
 private:
 //------------------------------
 
-  MIP_EditorListener* MListener         = nullptr;
+  MIP_ClapPlugin*     MPlugin           = nullptr;
+  uint32_t            MNumParams        = 0;
+
   uint32_t            MWidth            = 250;
   uint32_t            MHeight           = 70;
   double              MScale            = 1.0;
@@ -54,34 +46,38 @@ private:
   float*              MGuiParamMod      = nullptr;
 
   bool                MEditorIsOpen     = true;
-  uint32_t MNumParams = 0;
 
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Editor(MIP_EditorListener* AListener, uint32_t ANumParams) {
-    MNumParams = ANumParams;
-    MListener = AListener;
-    uint32_t size = ANumParams * sizeof(MIP_Widget*);
+  MIP_Editor(MIP_ClapPlugin* APlugin) {
+    MPlugin = APlugin;
+    MNumParams = APlugin->params_count();
+    uint32_t size = MNumParams * sizeof(MIP_Widget*);
     MParamToWidget = (MIP_Widget**)malloc(size);
     memset(MParamToWidget,0,size);
+    size = MNumParams * sizeof(float);
+    MHostParamVal = (float*)malloc(size);
+    MHostParamMod = (float*)malloc(size);
+    MGuiParamVal  = (float*)malloc(size);
+    MGuiParamMod  = (float*)malloc(size);
+    memset(MHostParamVal,0,size);
+    memset(MHostParamMod,0,size);
+    memset(MGuiParamVal,0,size);
+    memset(MGuiParamMod,0,size);
     MTimer = new MIP_Timer(this);
-    MHostParamVal = (float*)malloc(ANumParams * sizeof(float));
-    MHostParamMod = (float*)malloc(ANumParams * sizeof(float));
-    MGuiParamVal = (float*)malloc(ANumParams * sizeof(float));
-    MGuiParamMod = (float*)malloc(ANumParams * sizeof(float));
   }
 
   //----------
 
   virtual ~MIP_Editor() {
+    delete MTimer;
     free(MParamToWidget);
     if (MWindow) {
       delete MWindow;
     }
-    delete MTimer;
     free(MHostParamVal);
     free(MHostParamMod);
     free(MGuiParamVal);
@@ -99,7 +95,6 @@ public:
   //----------
 
   void connect(MIP_Widget* AWidget, int32_t AParamIndex, int32_t ASubParamIndex=-1) {
-    //MIP_Print("widget: %p index: %i\n",AWidget,AParamIndex);
     AWidget->setParamIndex(AParamIndex);
     AWidget->setSubParamIndex(ASubParamIndex);
     MParamToWidget[AParamIndex] = AWidget;
@@ -118,43 +113,22 @@ public:
 private: // window listener
 //------------------------------
 
-  // gui thread
+  // [gui]
 
-  void updateWidgetFromWindow(MIP_Widget* AWidget) final {
+  void on_updateWidgetFromWindow(MIP_Widget* AWidget) final {
     uint32_t index = AWidget->getParamIndex();
     if (index >= 0) {
       float value = AWidget->getValue();
-      //MIP_Print("index: %i value: %.3f\n",index,value);
-      //if (MListener) MListener->updateParameterFromEditor(index,value);
       MHostParamVal[index] = value;
       queueHostParam(index);
     }
   }
 
 //------------------------------
-public:
+private: // timer listener
 //------------------------------
 
-  // process thread
-
-  void updateParameterFromHost(uint32_t AIndex, float AValue) {
-    //MIP_Print("%i = %.3f\n",AIndex,AValue);
-    if (MWindow) {
-      MGuiParamVal[AIndex] = AValue;
-      queueGuiParam(AIndex);
-    }
-  }
-
-  void updateModulationFromHost(uint32_t AIndex, float AValue) {
-    if (MWindow) {
-      MGuiParamMod[AIndex] = AValue;
-      queueGuiParam(AIndex);
-    }
-  }
-
-//------------------------------
-private: // timer
-//------------------------------
+  // [timer]
 
   void on_timerCallback(void) final {
     //MIP_PRINT;
@@ -165,29 +139,56 @@ private: // timer
 public:
 //------------------------------
 
+  // [audio thread]
+
+  void updateParameterFromHost(uint32_t AIndex, float AValue) {
+    if (MWindow) {
+      MGuiParamVal[AIndex] = AValue;
+      queueGuiParam(AIndex);
+    }
+  }
+
+  //----------
+
+  // [audio thread]
+  // called from handle_param_mod()
+
+  void updateModulationFromHost(uint32_t AIndex, float AValue) {
+//    if (MWindow) {
+//      MGuiParamMod[AIndex] = AValue;
+//      queueGuiParam(AIndex);
+//    }
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  // called from updateParameterFromHost()
+
   void queueGuiParam(uint32_t AIndex) {
     MGuiParamQueue.write(AIndex);
   }
 
   //----------
 
+  // [gui]
+
   void flushGuiParams() {
     if (MEditorIsOpen) {
       uint32_t index = 0;
       while (MGuiParamQueue.read(&index)) {
         float value = MGuiParamVal[index];
-        //send_param_value(index,value,out_events);
         MIP_Widget* widget = MParamToWidget[index];
         if (widget) {
-          //MIP_Print("redraw widget (%i,%.3f)\n",index,value);
           widget->setValue(value);
-          //MIP_FRect rect = widget->getRect();
-          //widget->redraw();
           MWindow->paintWidget(widget);
         }
       }
     }
   }
+
+  //----------
 
   void queueHostParam(uint32_t AIndex) {
     MHostParamQueue.write(AIndex);

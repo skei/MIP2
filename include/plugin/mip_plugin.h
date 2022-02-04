@@ -19,8 +19,7 @@
 //----------------------------------------------------------------------
 
 class MIP_Plugin
-: public MIP_ClapPlugin
-, public MIP_EditorListener {
+: public MIP_ClapPlugin {
 
 //------------------------------
 protected:
@@ -31,7 +30,6 @@ protected:
   uint32_t                        MNumParams        = 0;
   float*                          MParamVal         = nullptr;
   float*                          MParamMod         = nullptr;
-//  MIP_Timer*                      MTimer            = nullptr;
 
 //------------------------------
 public:
@@ -44,7 +42,6 @@ public:
     MNumParams        = ANumParams;
     MParamVal         = (float*)malloc(ANumParams * sizeof(float));
     MParamMod         = (float*)malloc(ANumParams * sizeof(float));
-//    MTimer            = new MIP_Timer(this);
   }
 
   //----------
@@ -52,7 +49,6 @@ public:
   virtual ~MIP_Plugin() {
     free(MParamVal);
     free(MParamMod);
-//    delete MTimer;
   }
 
 //------------------------------
@@ -69,38 +65,6 @@ public:
 private:
 //------------------------------
 
-  // MIP_TimerListener
-
-//  void on_timerCallback(void) final {
-//    //MIP_Print("timer\n");
-//    //if (MEditor) MEditor->refresh();
-//    //flushHostParams();
-//  }
-
-//------------------------------
-private:
-//------------------------------
-
-  // editor listener
-
-  void updateParameterFromEditor(uint32_t AIndex, float AValue) final {
-    MIP_Print("index: %i value: %.3f\n",AIndex,AValue);
-  }
-
-  //----------
-
-  void timerFromEditor() final {
-    //MIP_PRINT;
-  }
-
-  //----------
-
-//  void setEditorWidgetValues() {
-//    for (uint32_t i=0; i<MNumParams; i++) {
-//      float v = MParamVal[i];
-//      MEditor->setParameterValue(i,v);
-//    }
-//  }
 
 };
 

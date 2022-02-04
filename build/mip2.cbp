@@ -169,6 +169,7 @@
 		<Unit filename="../include/base/system/linux/mip_linux_shm.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_thread.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_time.h" />
+		<Unit filename="../include/base/system/linux/mip_linux_timer.h" />
 		<Unit filename="../include/base/system/mip_atomic.h" />
 		<Unit filename="../include/base/system/mip_cpu.h" />
 		<Unit filename="../include/base/system/mip_dialogs.h" />
@@ -182,6 +183,7 @@
 		<Unit filename="../include/base/system/mip_system.h" />
 		<Unit filename="../include/base/system/mip_thread.h" />
 		<Unit filename="../include/base/system/mip_time.h" />
+		<Unit filename="../include/base/system/mip_timer.h" />
 		<Unit filename="../include/base/system/win32/mip_win32.h" />
 		<Unit filename="../include/base/system/win32/mip_win32_dialogs.h" />
 		<Unit filename="../include/base/system/win32/mip_win32_library.h" />
@@ -609,10 +611,6 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/test/test.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/test/test2.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

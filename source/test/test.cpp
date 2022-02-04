@@ -1,9 +1,7 @@
 
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
-
-//#define MIP_NO_WINDOW_BUFFERED
-
+//#define MIP_NO_WINDOW_BUFFERING
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
@@ -71,7 +69,6 @@ private:
     { 1, "input2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
-
   clap_audio_port_info_t
   MAudioOutputs[2] = {
     { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
@@ -83,6 +80,7 @@ private:
   uint32_t    MNumParams        = 0;
   uint32_t    MNumAudioInputs   = 0;
   uint32_t    MNumAudioOutputs  = 0;
+
   bool        MIsProcessing     = false;
   MIP_Editor* MEditor           = nullptr;
 
@@ -100,6 +98,7 @@ public:
     MNumParams        = NUM_PARAMS;
     MNumAudioInputs   = NUM_AUDIO_INPUTS;
     MNumAudioOutputs  = NUM_AUDIO_OUTPUTS;
+    //MIP_Assert(MNumAudioOutputs > 0);
   }
 
   #undef ARRAY_SIZE
@@ -129,7 +128,7 @@ private:
   //----------
 
   void handle_output_events(const clap_output_events_t* out_events) {
-    MEditor->flushHostParams(out_events);
+    if (MEditor) MEditor->flushHostParams(out_events);
   }
 
   //----------
@@ -139,7 +138,8 @@ private:
     uint32_t i = param_value->param_id;
     float v = param_value->value;
     setParamVal(i,v);
-    MEditor->updateParameterFromHost(i,v);
+    //MIP_Assert(MEditor != nullptr);
+    if (MEditor) MEditor->updateParameterFromHost(i,v);
   }
 
   //----------
@@ -149,7 +149,8 @@ private:
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
     setParamMod(i,v);
-    MEditor->updateModulationFromHost(i,v);
+    //MIP_Assert(MEditor != nullptr);
+    if (MEditor) MEditor->updateModulationFromHost(i,v);
   }
 
   //----------
@@ -215,14 +216,16 @@ public: // plugin
     handle_input_events(process->in_events);
     process_audio(process);
 
-    float v0 = MIP_Clamp( (MParamVal[0] + MParamMod[0]), 0,1);
-    float v1 = MIP_Clamp( (MParamVal[1] + MParamMod[1]), 0,1);
-    float v2 = MIP_Clamp( (MParamVal[2] + MParamMod[2]), 0,1);
-    float v3 = MIP_Clamp( (MParamVal[3] + MParamMod[3]), 0,1);
-    MEditor->send_param_mod(0,v0,process->out_events);
-    MEditor->send_param_mod(1,v1,process->out_events);
-    MEditor->send_param_mod(2,v2,process->out_events);
-    MEditor->send_param_mod(3,v3,process->out_events);
+    if (MEditor) {
+      float v0 = MIP_Clamp( (MParamVal[0] + MParamMod[0]), 0,1);
+      float v1 = MIP_Clamp( (MParamVal[1] + MParamMod[1]), 0,1);
+      float v2 = MIP_Clamp( (MParamVal[2] + MParamMod[2]), 0,1);
+      float v3 = MIP_Clamp( (MParamVal[3] + MParamMod[3]), 0,1);
+      MEditor->send_param_mod(0,v0,process->out_events);
+      MEditor->send_param_mod(1,v1,process->out_events);
+      MEditor->send_param_mod(2,v2,process->out_events);
+      MEditor->send_param_mod(3,v3,process->out_events);
+    }
 
     handle_output_events(process->out_events);
     return CLAP_PROCESS_CONTINUE;
@@ -296,7 +299,7 @@ public: // gui
 //------------------------------
 
   bool gui_create() final {
-    MEditor = new MIP_Editor(this,MNumParams);
+    MEditor = new MIP_Editor(this);
     return true;
   }
 
@@ -348,30 +351,30 @@ public: // gui
     panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     win->appendWidget(panel);
 
-    MIP_KnobWidget* knob1 = new MIP_KnobWidget(MIP_FRect( 10,   10, 50,50 ));
-    MIP_KnobWidget* knob2 = new MIP_KnobWidget(MIP_FRect( 70,   10, 50,50 ));
-    MIP_KnobWidget* knob3 = new MIP_KnobWidget(MIP_FRect( 130,  10, 50,50 ));
-    MIP_KnobWidget* knob4 = new MIP_KnobWidget(MIP_FRect( 190,  10, 50,50 ));
+      MIP_KnobWidget* knob1 = new MIP_KnobWidget(MIP_FRect( 10,   10, 50,50 ));
+      //knob1->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      knob1->setValue(getParamVal(0));
+      panel->appendWidget(knob1);
 
-    //knob1->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-    //knob2->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-    //knob3->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-    //knob4->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      MIP_KnobWidget* knob2 = new MIP_KnobWidget(MIP_FRect( 70,   10, 50,50 ));
+      //knob2->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      knob2->setValue(getParamVal(1));
+      panel->appendWidget(knob2);
 
-    panel->appendWidget(knob1);
-    panel->appendWidget(knob2);
-    panel->appendWidget(knob3);
-    panel->appendWidget(knob4);
+      MIP_KnobWidget* knob3 = new MIP_KnobWidget(MIP_FRect( 130,  10, 50,50 ));
+      //knob3->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      knob3->setValue(getParamVal(2));
+      panel->appendWidget(knob3);
+
+      MIP_KnobWidget* knob4 = new MIP_KnobWidget(MIP_FRect( 190,  10, 50,50 ));
+      //knob4->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      knob4->setValue(getParamVal(3));
+      panel->appendWidget(knob4);
 
     MEditor->connect(knob1,0);
     MEditor->connect(knob2,1);
     MEditor->connect(knob3,2);
     MEditor->connect(knob4,3);
-
-    knob1->setValue(getParamVal(0));
-    knob2->setValue(getParamVal(1));
-    knob3->setValue(getParamVal(2));
-    knob4->setValue(getParamVal(3));
 
     MEditor->show();
 
