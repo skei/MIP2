@@ -5,17 +5,20 @@
 #include "mip.h"
 #include "base/types/mip_color.h"
 #include "gui/mip_drawable.h"
-//#include "gui/mip_widget.h"
+#include "gui/mip_widget.h"
 
 //----------------------------------------------------------------------
 
-class MIP_BaseWindow {
+class MIP_BaseWindow
+: public MIP_Widget {
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, void* AParentPtr) {
+  //MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, void* AParentPtr)
+  MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, uint32_t AParent)
+  : MIP_Widget( MIP_FRect(AWidth,AHeight)) {
   }
 
   //----------

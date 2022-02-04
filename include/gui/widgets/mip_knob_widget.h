@@ -47,7 +47,7 @@ public:
   : MIP_DragValueWidget(ARect) {
     setName("MIP_KnobWidget");
     setHint("knob");
-    setFillBackground(false);
+    setFillBackground(true);
     setDrawBorder(false);
     //MKnobSize = ARect.w * 0.2f;
   }
@@ -140,7 +140,7 @@ public:
 
       float mvalue = MIP_Clamp(value + modvalue,0,1);
 
-      MIP_Print("mvalue %f\n",mvalue);
+//      MIP_Print("mvalue %f\n",mvalue);
 
       float m1;// = -0.4f;
       float m2;// = mvlue * 0.8f;
@@ -161,7 +161,7 @@ public:
         m2 =  0.8f * mvalue;   // length
       }
 
-      APainter->drawArc(r,m1,m2,MIP_COLOR_BRIGHT_RED,arc_thickness / 3);
+      APainter->drawArc(r,m1,m2,MIP_COLOR_RED,arc_thickness / 3);
 
 //
       // steps

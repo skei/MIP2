@@ -198,15 +198,15 @@ public:
     MDragValue = getValue();
 
     if (AButton == MIP_BUTTON_LEFT) {
-      if (MDblClickReset) {
-        if ((ATimeStamp - MPrevClickTime) < MIP_GUI_DBLCLICK_MS) {
-          if (getParameter()) setValue( getParameter()->getDefValue() );
-          else setValue( getDefaultValue() );
-          update();
-          redraw();
-        }
-      } // dbl click
-      MPrevClickTime = ATimeStamp;
+//      if (MDblClickReset) {
+//        if ((ATimeStamp - MPrevClickTime) < MIP_GUI_DBLCLICK_MS) {
+//          if (getParameter()) setValue( getParameter()->getDefValue() );
+//          else setValue( getDefaultValue() );
+//          update();
+//          redraw();
+//        }
+//      } // dbl click
+//      MPrevClickTime = ATimeStamp;
 
       if (MCanDragValue) {
         if (flags.autoMouseLock)    do_widget_setMouseCursor(this,MIP_CURSOR_GRAB);

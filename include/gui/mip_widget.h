@@ -9,7 +9,7 @@
 #include "base/types/mip_point.h"
 #include "base/types/mip_rect.h"
 #include "gui/mip_painter.h"
-#include "gui/base/mip_base_window.h"
+//#include "gui/base/mip_base_window.h"
 //#include "plugin/mip_parameter.h"
 
 //----------------------------------------------------------------------
@@ -49,7 +49,7 @@ struct MIP_WidgetFlags {
 //----------
 
 struct MIP_WidgetLayout {
-  uint32_t    alignment     = MIP_WIDGET_ALIGN_CLIENT;
+  uint32_t    alignment     = MIP_WIDGET_ALIGN_PARENT;
   MIP_FRect   innerBorder   = MIP_FRect(0,0);   // space between widgets and parent edges
   MIP_FPoint  spacing       = MIP_FPoint(0,0);  // space inbetween widgets
   MIP_FRect   extraBorder   = MIP_FRect(0,0);   // extra space/border for each widget
@@ -74,7 +74,6 @@ protected:
   MIP_Widget*     MParent                 = nullptr;
   MIP_Widgets     MChildren               = {};
   int32_t         MWidgetIndex            = -1;
-//int32_t         MParameterIndex         = -1;
   MIP_FRect       MRect                   = {};
   MIP_FRect       MInitialRect            = MIP_FRect(0,0); // starting rect (used by layout
   MIP_FRect       MContentRect            = MIP_FRect(0,0); // rect surrounding child widgets
@@ -83,7 +82,11 @@ protected:
   float           MModValue               = 0.0;
   float           MValue                  = 0.0;
   float           MDefaultValue           = 0.0;
+
 //  MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // ptrs to connected parameters
+
+  int32_t         MParamIndex             = -1;
+  int32_t         MSubParamIndex          = -1;
 
 //------------------------------
 public:
@@ -150,7 +153,6 @@ public: // set
   virtual void setInitialWidth(float AW)                    { MInitialRect.w = AW; }
   virtual void setModValue(float v)                         { MModValue = v; }
   virtual void setName(const char* AName)                   { MName = AName; }
-//  virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
   virtual void setParent(MIP_Widget* AParent)               { MParent = AParent; }
   virtual void setPos(float AXpos, float AYpos)             { MRect.x = AXpos; MRect.y = AYpos; }
   virtual void setRect(MIP_FRect ARect)                     { MRect = ARect; }
@@ -159,9 +161,13 @@ public: // set
   virtual void setValue(float AValue)                       { MValue = AValue; }
   virtual void setWidth(float AWidth)                       { MRect.w = AWidth; }
 
+//virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
 //virtual void setOwner(MIP_BaseWindow* AOwner)             { MOwner = AOwner; }
 //virtual void setSelectedParameter(uint32_t AIndex)        { MSelectedParameter = AIndex; }
 //virtual void setParameterPtr(MIP_Parameter* p)            { MParameterPtr = p; }
+
+  virtual void setParamIndex(uint32_t AIndex)               { MParamIndex = AIndex; }
+  virtual void setSubParamIndex(uint32_t AIndex)            { MSubParamIndex = AIndex; }
 
 //------------------------------
 public:
@@ -177,10 +183,12 @@ public:
   virtual float           getModValue()               { return MModValue; }
   virtual const char*     getName()                   { return MName; }
   virtual uint32_t        getNumChildren()            { return MChildren.size(); }
-//  virtual MIP_Parameter*  getParameter(uint32_t i=0)  { return MParameters[i]; }
   virtual MIP_Widget*     getParent()                 { return MParent; }
   virtual MIP_FRect       getRect()                   { return MRect; }
   virtual float           getValue()                  { return MValue; }
+
+  virtual int32_t         getParamIndex()             { return MParamIndex; }
+  virtual int32_t         getSubParamIndex()          { return MSubParamIndex; }
 
 //------------------------------
 public:
@@ -680,14 +688,14 @@ public:
 
   //----------
 
-  virtual void attachWindow(MIP_BaseWindow* AWindow) {
-    //MOwner = AWindow;
-    uint32_t num = MChildren.size();
-    for (uint32_t i=0; i<num; i++) {
-      MIP_Widget* child = MChildren[i];
-      child->attachWindow(AWindow);
-    }
-  }
+//  virtual void attachWindow(MIP_BaseWindow* AWindow) {
+//    //MOwner = AWindow;
+//    uint32_t num = MChildren.size();
+//    for (uint32_t i=0; i<num; i++) {
+//      MIP_Widget* child = MChildren[i];
+//      child->attachWindow(AWindow);
+//    }
+//  }
 
 //------------------------------
 public:
@@ -774,7 +782,8 @@ public:
     //MIP_Print("%s : k %i s %i\n",MName,AKey,AState);
   }
 
-  virtual void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex=0) {
+//  virtual void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex=0) {
+  virtual void on_widget_connect(uint32_t AParamIndex, uint32_t ASubIndex=0) {
     //MIP_Print("%s : i %i\n",MName,AParameterIndex);
     //MParameters[ASubIndex] = AParameter;
   }

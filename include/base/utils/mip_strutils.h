@@ -204,6 +204,28 @@ const char* MIP_GetFilenameFromPath(const char* APath) {
 
 //----------
 
+// /home/skei/test.so -> /home/skei/
+// copies src to dst, inserts a 0 after the last /
+
+char* MIP_GetPathOnly(char* ADst, const char* ASrc) {
+  if (ADst && ASrc) {
+    strcpy(ADst,ASrc);
+    char* slash     = strrchr(ADst,'/');
+    char* backslash = strrchr(ADst,'\\');
+    if (slash) {
+      slash[1] = 0;
+      return ADst;
+    }
+    else if (backslash) {
+      backslash[1] = 0;
+      return ADst;
+    }
+  }
+  return nullptr;
+}
+
+//----------
+
 // https://stackoverflow.com/questions/7666509/hash-function-for-string
 
 uint32_t MIP_HashString(const char* buffer) {
@@ -257,42 +279,6 @@ void MIP_MakeValidSymbol(char* buffer) {
 
 //----------
 
-// /home/skei/test.so -> /home/skei/
-// copies src to dst, inserts a 0 after the last /
-
-char* MIP_GetPathOnly(char* ADst, const char* ASrc) {
-  if (ADst && ASrc) {
-    strcpy(ADst,ASrc);
-    char* slash     = strrchr(ADst,'/');
-    char* backslash = strrchr(ADst,'\\');
-    if (slash) {
-      slash[1] = 0;
-      return ADst;
-    }
-    else if (backslash) {
-      backslash[1] = 0;
-      return ADst;
-    }
-  }
-  return nullptr;
-}
-
-//----------
-
-// https://stackoverflow.com/questions/7666509/hash-function-for-string
-
-uint32_t MIP_HashString(const char* buffer) {
-  char* ptr = (char*)buffer;
-  unsigned long h = 5381;
-  int c;
-  while ((c = *ptr++)) {
-    h = ((h << 5) + h) + c; // h * 33 + c
-  }
-  return h;
-}
-
-//----------
-
 uint32_t MIP_ParseVersionString(const char* version) {
   int major = 0;
   int minor = 0;
@@ -301,7 +287,7 @@ uint32_t MIP_ParseVersionString(const char* version) {
   major &= 0xff;
   minor &= 0xff;
   revision &= 0xffff;
-  return (najor << 24) + (minor << 16) + revision;
+  return (major << 24) + (minor << 16) + revision;
 }
 
 //----------

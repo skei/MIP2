@@ -17,6 +17,7 @@ class MIP_ClapPlugin {
 protected:
 //------------------------------
 
+
 //------------------------------
 public:
 //------------------------------
@@ -285,46 +286,55 @@ protected:
 private:
 
   static bool clap_plugin_gui_create_callback(const clap_plugin_t *plugin) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_create();
   }
 
   static void clap_plugin_gui_destroy_callback(const clap_plugin_t *plugin) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_destroy();
   }
 
   static bool clap_plugin_gui_set_scale_callback(const clap_plugin_t *plugin, double scale) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_set_scale(scale);
   }
 
   static bool clap_plugin_gui_get_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_get_size(width,height);
   }
 
   static bool clap_plugin_gui_can_resize_callback(const clap_plugin_t *plugin) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_can_resize();
   }
 
   static void clap_plugin_gui_round_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_round_size(width,height);
   }
 
   static bool clap_plugin_gui_set_size_callback(const clap_plugin_t *plugin, uint32_t width, uint32_t height) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_set_size(width,height);
   }
 
   static void clap_plugin_gui_show_callback(const clap_plugin_t *plugin) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_show();
   }
 
   static void clap_plugin_gui_hide_callback(const clap_plugin_t *plugin) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_hide();
   }
@@ -350,6 +360,7 @@ protected:
 private:
 
   static bool clap_plugin_gui_x11_attach_callback(const clap_plugin_t *plugin, const char *display_name, unsigned long window) {
+    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_x11_attach(display_name,window);
   }

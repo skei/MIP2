@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "gui/widgets/mip_panel_widget.h"
-#include "plugin/mip_parameter.h"
+//#include "plugin/mip_parameter.h"
 
 //----------------------------------------------------------------------
 
@@ -61,13 +61,13 @@ public:
     rect.shrink(MTextOffset);
     if (MDrawText) {
       const char* txt = MText;
-      if (MDrawParamText) {
-        MIP_Parameter* param = getParameter();
-        if (param) {
-          //APainter->drawText(rect,param->getName(),MTextAlignment,MTextColor);
-          txt = param->getName();
-        }
-      }
+//      if (MDrawParamText) {
+//        MIP_Parameter* param = getParameter();
+//        if (param) {
+//          //APainter->drawText(rect,param->getName(),MTextAlignment,MTextColor);
+//          txt = param->getName();
+//        }
+//      }
       //else {
       //  //APainter->drawText(rect,MText,MTextAlignment,MTextColor);
       //  txt = MText;
@@ -80,19 +80,18 @@ public:
 public:
 //------------------------------
 
-  void attachWindow(MIP_BaseWindow* AWindow) override {
-    if (AWindow) {
-      if (flags.autoSize) {
-        MIP_BasePainter* painter = AWindow->getPainter();
-        if (painter) {
-          float w = painter->getTextWidth(MText) + 2;
-          float h = painter->getTextHeight(MText);// + 1;
-          setInitialSize(w,h);
-        }
-      }
-    }
-  }
-
+//  void attachWindow(MIP_BaseWindow* AWindow) override {
+//    if (AWindow) {
+//      if (flags.autoSize) {
+//        MIP_BasePainter* painter = AWindow->getPainter();
+//        if (painter) {
+//          float w = painter->getTextWidth(MText) + 2;
+//          float h = painter->getTextHeight(MText);// + 1;
+//          setInitialSize(w,h);
+//        }
+//      }
+//    }
+//  }
 
 //------------------------------
 public:

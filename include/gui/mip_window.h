@@ -41,8 +41,8 @@ public:
 //----------------------------------------------------------------------
 
 class MIP_Window
-: public MIP_ImplementedWindow
-, public MIP_Widget {
+: public MIP_ImplementedWindow {
+//, public MIP_Widget {
 
 //------------------------------
 private:
@@ -65,7 +65,7 @@ private:
   MIP_Widget*         MMouseLockedWidget      = nullptr;
   MIP_Widget*         MKeyInputWidget         = nullptr;
 
-  bool                MFillWindowBackground   = true;//false;//true;
+  bool                MFillWindowBackground   = false;
   MIP_Color           MWindowBackgroundColor  = MIP_Color(0.5);
 
   int32_t       MMouseX                       = 0;
@@ -84,9 +84,11 @@ private:
 public:
 //------------------------------
 
-  MIP_Window(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", MIP_WindowListener* AListener=nullptr, void* AParentPtr=nullptr)
-  : MIP_ImplementedWindow(AWidth,AHeight,ATitle,AParentPtr)
-  , MIP_Widget(MIP_FRect(AWidth,AHeight)) {
+  //MIP_Window(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", MIP_WindowListener* AListener=nullptr, void* AParentPtr=nullptr)
+  MIP_Window(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", MIP_WindowListener* AListener=nullptr, uint32_t AParent=0)
+  //: MIP_ImplementedWindow(AWidth,AHeight,ATitle,AParentPtr)
+  : MIP_ImplementedWindow(AWidth,AHeight,ATitle,AParent)
+  /*, MIP_Widget(MIP_FRect(AWidth,AHeight))*/ {
     MName = "MIP_Window";
     MListener = AListener;
     //MOwner = this;
@@ -123,7 +125,7 @@ public:
   //  #endif
   //}
 
-  MIP_Painter* getPainter() override {
+  MIP_Painter* getPainter() {
     #ifdef MIP_NO_WINDOW_BUFFERING
     return MWindowPainter;
     #else
@@ -158,19 +160,19 @@ public:
 public:
 //------------------------------
 
-//  void paintWidget(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) {
-//
-//    #ifdef MIP_NO_WINDOW_BUFFERING
-//      //if (flags.autoClip) MWindowPainter->pushClip(ARect);
-//      AWidget->on_widget_paint(MWindowPainter,ARect,AMode);
-//      //if (flags.autoClip) MWindowPainter->popClip();
-//    #else
-//      //if (flags.autoClip) MBufferPainter->pushClip(ARect);
-//      AWidget->on_widget_paint(MBufferPainter,ARect,AMode);
-//      //if (flags.autoClip) MBufferPainter->popClip();
-//      MWindowPainter->drawBitmap(ARect.x,ARect.y,MBufferSurface,ARect);
-//    #endif
-//  }
+  void paintWidget(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) {
+
+    #ifdef MIP_NO_WINDOW_BUFFERING
+      //if (flags.autoClip) MWindowPainter->pushClip(ARect);
+      AWidget->on_widget_paint(MWindowPainter,ARect,AMode);
+      //if (flags.autoClip) MWindowPainter->popClip();
+    #else
+      //if (flags.autoClip) MBufferPainter->pushClip(ARect);
+      AWidget->on_widget_paint(MBufferPainter,ARect,AMode);
+      //if (flags.autoClip) MBufferPainter->popClip();
+      MWindowPainter->drawBitmap(ARect.x,ARect.y,MBufferSurface,ARect);
+    #endif
+  }
 
   //----------
 
@@ -276,7 +278,9 @@ public: // window
 
   void paintWindow(MIP_FRect ARect) {
     //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
+    //MWindowPainter->pushClip(ARect);
     paintWidgets(MWindowPainter,ARect);
+    //MWindowPainter->popClip();
   }
 
 //------------------------------
@@ -324,8 +328,10 @@ public: // buffer
     //if (MFillBackground) {
     //  MBufferPainter->fillRectangle(ARect,MBackgroundColor);
     //}
+    //MBufferPainter->pushClip(ARect);
     paintWidgets(MBufferPainter,ARect);
     blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
+    //MBufferPainter->popClip();
   }
 
   #endif
@@ -335,7 +341,7 @@ public: // window
 //------------------------------
 
   void open() override {
-    attachWindow(this);
+    //attachWindow(this);
     alignWidgets();
     MIP_ImplementedWindow::open();
     //#ifndef MIP_PLUGIN_EXE
@@ -388,6 +394,9 @@ public: // window
     #endif
   }
 
+  void paint() {
+    paint(MRect);
+  }
 
 //------------------------------
 public: // MIP_BaseWindow

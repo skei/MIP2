@@ -96,17 +96,16 @@ public:
       float value = getValue();
       const char*     label = "";
 
-      MIP_Parameter* param = getParameter();
-
-      if (param) {
-        label = param->getLabel();
-        value = param->from01(value);
-        param->displayText(MValueText,value);
-      }
-      else {
+//      MIP_Parameter* param = getParameter();
+//      if (param) {
+//        label = param->getLabel();
+//        value = param->from01(value);
+//        param->displayText(MValueText,value);
+//      }
+//      else {
         label = MLabel;
         MIP_FloatToString(MValueText,value,MDigits);
-      }
+//      }
 
       MIP_FRect value_rect = getRect();
       MIP_FRect label_rect = getRect();

@@ -48,6 +48,7 @@ public:
     audio_ports         = (clap_plugin_audio_ports_t*)APlugin->get_extension(APlugin,CLAP_EXT_AUDIO_PORTS);
     event_filter        = (clap_plugin_event_filter_t*)APlugin->get_extension(APlugin,CLAP_EXT_EVENT_FILTER);
     gui                 = (clap_plugin_gui_t*)APlugin->get_extension(APlugin,CLAP_EXT_GUI);
+    gui_x11             = (clap_plugin_gui_x11_t*)APlugin->get_extension(APlugin,CLAP_EXT_GUI_X11);
     latency             = (clap_plugin_latency_t*)APlugin->get_extension(APlugin,CLAP_EXT_LATENCY);
     note_ports          = (clap_plugin_note_ports_t*)APlugin->get_extension(APlugin,CLAP_EXT_NOTE_PORTS);
     params              = (clap_plugin_params_t*)APlugin->get_extension(APlugin,CLAP_EXT_PARAMS);
@@ -87,6 +88,7 @@ public:
 
   bool start_processing() {
     plugin->start_processing(plugin);
+    return true;
   }
 
   void stop_processing() {

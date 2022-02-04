@@ -122,7 +122,8 @@ private:
 public:
 //------------------------------
 
-  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", void* AParent=nullptr)
+  //MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", void* AParent=nullptr)
+  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", uint32_t AParent=0)
   : MIP_BaseWindow(AWidth,AHeight,ATitle,AParent) {
     //MName = "MIP_XcbWindow";
     MUseEventThread = AParent ? true : false;
@@ -241,8 +242,10 @@ private:
 
   //----------
 
-  void createWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle, void* AParent=nullptr) {
-    if (AParent) MWindowParent = (xcb_window_t)(intptr_t)AParent;
+  //void createWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle, void* AParent=nullptr) {
+  void createWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle, uint32_t AParent=XCB_NONE) {
+    //if (AParent) MWindowParent = (xcb_window_t)(intptr_t)AParent;
+    if (AParent) MWindowParent = (xcb_window_t)AParent;
     else MWindowParent = MScreen->root;
     uint32_t event_mask =
       XCB_EVENT_MASK_KEY_PRESS      |
@@ -1180,7 +1183,7 @@ public:
     //MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
     //on_paint(MWindowPainter,ARect);
     if (MFillBackground) {
-      fill(MBackgroundColor);
+      fill(AXpos,AYpos,AWidth,AHeight,MBackgroundColor);
     }
     on_window_paint(AXpos,AYpos,AWidth,AHeight);
   }

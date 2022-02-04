@@ -99,18 +99,18 @@ public:
       //if (MParameter) {
       //  MIP_Parameter* par = (MIP_Parameter*)MParameter;
 
-      MIP_Parameter* par = (MIP_Parameter*)getParameter();
-      if (par) {
-        //MIP_String txt = par->getDisplayText(AValue);
-        //wdg_value->setText(txt);
-        par->displayText(value_text,AValue);
-        wdg_value->setText(value_text);
-      }
-      else {
+//      MIP_Parameter* par = (MIP_Parameter*)getParameter();
+//      if (par) {
+//        //MIP_String txt = par->getDisplayText(AValue);
+//        //wdg_value->setText(txt);
+//        par->displayText(value_text,AValue);
+//        wdg_value->setText(value_text);
+//      }
+//      else {
         //MIP_FloatToString(value_text,AValue);
         sprintf(value_text,"%.3f",AValue);
         wdg_value->setText(value_text);
-      }
+//      }
     }
   }
 
@@ -118,17 +118,17 @@ public:
 public:
 //------------------------------
 
-  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex=0) override {
-    wdg_knob->setParameter(AParameter);
-    if (AParameter) {
-      wdg_label->setText( AParameter->getName() );
-      float value = 0.0f;
-      //const char* txt = AParameter->getDisplayText(value);
-      //MIP_FloatToString(value_text,AValue);
-      sprintf(value_text,"%.3f",value);
-      wdg_value->setText(value_text);
-    }
-  }
+//  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex=0) override {
+//    wdg_knob->setParameter(AParameter);
+//    if (AParameter) {
+//      wdg_label->setText( AParameter->getName() );
+//      float value = 0.0f;
+//      //const char* txt = AParameter->getDisplayText(value);
+//      //MIP_FloatToString(value_text,AValue);
+//      sprintf(value_text,"%.3f",value);
+//      wdg_value->setText(value_text);
+//    }
+//  }
 
 //------------------------------
 public:
@@ -139,11 +139,11 @@ public:
     //if (MParent) MParent->do_widget_update(this);
     if (ASender == wdg_knob) {
       setValue( ASender->getValue() );
-      MIP_Parameter* par = (MIP_Parameter*)getParameter();
-      if (par) {
-        par->displayText(value_text,getValue());
-        wdg_value->setText(value_text);
-      }
+//      MIP_Parameter* par = (MIP_Parameter*)getParameter();
+//      if (par) {
+//        par->displayText(value_text,getValue());
+//        wdg_value->setText(value_text);
+//      }
       do_widget_redraw(wdg_value,wdg_value->getRect(),0);
     }
     else {

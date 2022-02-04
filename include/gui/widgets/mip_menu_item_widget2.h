@@ -98,12 +98,12 @@ public:
 
   //----------
 
-  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) final {
-    //MIsHovering = false;
-    setBackgroundColor(MIP_COLOR_DARK_GRAY);
-    setTextColor(MIP_COLOR_LIGHT_GRAY);
-    do_widget_redraw(this,getRect(),0);
-  }
+//  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) final {
+//    //MIsHovering = false;
+//    setBackgroundColor(MIP_COLOR_DARK_GRAY);
+//    setTextColor(MIP_COLOR_LIGHT_GRAY);
+//    do_widget_redraw(this,getRect(),0);
+//  }
 
 };
 

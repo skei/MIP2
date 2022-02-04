@@ -125,17 +125,17 @@ private:
       float value1 = getValue();
       float value2 = getValue2();
       const char* label = "";
-      MIP_Parameter* param = getParameter();
-      if (param) {
-        label = param->getLabel();
-        param->displayText(MValue1Text,value1);
-        param->displayText(MValue2Text,value2);
-      }
-      else {
+//      MIP_Parameter* param = getParameter();
+//      if (param) {
+//        label = param->getLabel();
+//        param->displayText(MValue1Text,value1);
+//        param->displayText(MValue2Text,value2);
+//      }
+//      else {
         label = MLabel;
         MIP_FloatToString(MValue1Text,value1);
         MIP_FloatToString(MValue2Text,value2);
-      }
+//      }
       MIP_FRect value1_rect = getRect();
       MIP_FRect value2_rect = getRect();
       MIP_FRect label_rect = getRect();
