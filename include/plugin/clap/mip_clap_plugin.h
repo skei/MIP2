@@ -53,6 +53,7 @@ public:
     //if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
     //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MAudioPortsConfig;
     //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MCheckForUpdate;
+    //if (strcmp(id,CLAP_EXT_CV) == 0)                  return &MCV;
     //if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MEventFilter;
     //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MFileReference;
     //if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MGui;
@@ -120,6 +121,7 @@ public: // drafts
 
   virtual bool      ambisonic_get_info(bool is_input, uint32_t port_index, clap_ambisonic_info_t* info) { return false; }
   virtual void      check_for_update_check(bool include_beta) {}
+  virtual uint32_t  cv_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index) { return CLAP_CV_VALUE; }
   virtual uint32_t  file_reference_count() { return 0; }
   virtual bool      file_reference_get(uint32_t index, clap_file_reference_t *file_reference) { return false; }
   virtual bool      file_reference_get_hash(clap_id resource_id, clap_hash hash, uint8_t* digest, uint32_t digest_size) { return false; }
@@ -617,6 +619,23 @@ protected:
 
   clap_plugin_check_for_update MCheckForUpdate = {
     clap_plugin_check_for_update_check_callback
+  };
+
+  //--------------------
+  // clap.cv.draft/0
+  //--------------------
+
+private:
+
+  static uint32_t clap_plugin_cv_get_channel_type_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint32_t channel_index) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->cv_get_channel_type(is_input,port_index,channel_index);
+  }
+
+protected:
+
+  clap_plugin_cv_t MCV = {
+    clap_plugin_cv_get_channel_type_callback
   };
 
   //--------------------

@@ -7,6 +7,8 @@
 #include "plugin/mip_editor.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_entry.h"
+#include "plugin/clap/mip_clap_host.h"
+#include "plugin/clap/mip_clap_plugin.h"
 
 #include "plugin/wrapper/mip_exe_wrapper.h"
 #include "plugin/wrapper/mip_lv2_wrapper.h"
@@ -38,7 +40,9 @@ protected:
 //------------------------------
 
   const clap_plugin_descriptor_t* MDescriptor       = nullptr;
-  const clap_host_t*              MHost             = nullptr;
+  //const clap_host_t*              MHost             = nullptr;
+
+  MIP_ClapHost* MHost = nullptr;
 
   MIP_Parameters    MParameters     = {};
   MIP_AudioPorts    MAudioInputs    = {};
@@ -59,13 +63,15 @@ public:
 
   MIP_Plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_ClapPlugin(ADescriptor,AHost) {
-    MDescriptor       = ADescriptor;
-    MHost             = AHost;
+    MDescriptor = ADescriptor;
+    //MHost = AHost;
+    MHost = new MIP_ClapHost(AHost);
   }
 
   //----------
 
   virtual ~MIP_Plugin() {
+    delete MHost;
   }
 
 //------------------------------
@@ -252,17 +258,29 @@ public: // plugin
   //----------
 
   const void* get_extension(const char *id) override {
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)     return &MAudioPorts;
-    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)      return &MNotePorts;
-    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)  return &MQuickControls;
-    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)    return &MEventFilter;
-    if (strcmp(id,CLAP_EXT_GUI) == 0)             return &MGui;
-    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)         return &MGuiX11;
-    if (strcmp(id,CLAP_EXT_PARAMS) == 0)          return &MParams;
-    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)   return &MTimerSupport;
-    if (strcmp(id,CLAP_EXT_STATE) == 0)           return &MState;
-    if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)     return &MPresetLoad;
-    if (strcmp(id,CLAP_EXT_LATENCY) == 0)         return &MLatency;
+  //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
+  //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MCheckForUpdate;
+  //if (strcmp(id,CLAP_EXT_CV) == 0)                  return &MCV;
+  //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MAudioPortsConfig;
+    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MEventFilter;
+  //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MFileReference;
+    if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MGui;
+    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MGuiX11;
+    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MLatency;
+  //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MMidiMappings;
+  //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MNoteName;
+    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MNotePorts;
+    if (strcmp(id,CLAP_EXT_PARAMS) == 0)              return &MParams;
+  //if (strcmp(id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    return &MPosixFdSupport;
+    if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MPresetLoad;
+    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MQuickControls;
+  //if (strcmp(id,CLAP_EXT_RENDER) == 0)              return &MRender;
+    if (strcmp(id,CLAP_EXT_STATE) == 0)               return &MState;
+  //if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MSurround;
+  //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MThreadPool;
+    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MTimerSupport;
+  //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
     return nullptr;
   }
 
@@ -464,12 +482,14 @@ public: // quick-controls
 //------------------------------
 
   uint32_t quick_controls_count() override {
+    //MIP_PRINT;
     return MQuickControls.size();
   }
 
   //----------
 
   bool quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) override {
+    //MIP_PRINT;
     memcpy(page,MQuickControls[page_index],sizeof(clap_quick_controls_page_t));
     return true;
   }
@@ -477,11 +497,13 @@ public: // quick-controls
   //----------
 
   //void quick_controls_select(clap_id page_id) override {
+  //  //MIP_PRINT;
   //}
 
   //----------
 
   //clap_id quick_controls_get_selected() override {
+  //  //MIP_PRINT;
   //  return 0;
   //}
 

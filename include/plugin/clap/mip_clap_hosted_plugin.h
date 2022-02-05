@@ -1,5 +1,5 @@
-#ifndef mip_clap_plugin_proxy_included
-#define mip_clap_plugin_proxy_included
+#ifndef mip_clap_hosted_plugin_included
+#define mip_clap_hosted_plugin_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
@@ -11,7 +11,7 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_ClapPluginProxy {
+class MIP_ClapHostedPlugin {
 
 //------------------------------
 public:
@@ -42,7 +42,7 @@ public:
 public:
 //------------------------------
 
-  MIP_ClapPluginProxy(const clap_plugin_t* APlugin) {
+  MIP_ClapHostedPlugin(const clap_plugin_t* APlugin) {
     plugin              = APlugin;
     audio_ports_config  = (clap_plugin_audio_ports_config_t*)APlugin->get_extension(APlugin,CLAP_EXT_AUDIO_PORTS_CONFIG);
     audio_ports         = (clap_plugin_audio_ports_t*)APlugin->get_extension(APlugin,CLAP_EXT_AUDIO_PORTS);
@@ -63,7 +63,7 @@ public:
     track_info          = (clap_plugin_track_info_t*)APlugin->get_extension(APlugin,CLAP_EXT_TRACK_INFO);
   }
 
-  virtual ~MIP_ClapPluginProxy() {
+  virtual ~MIP_ClapHostedPlugin() {
   }
 
 //------------------------------
