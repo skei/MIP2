@@ -56,8 +56,12 @@ class myPlugin
 private:
 //------------------------------
 
+  #define NUM_PARAMS    4
+  #define NUM_INPUTS    2
+  #define NUM_OUTPUTS   2
+
   clap_param_info_t
-  myParameters[4] = {
+  myParameters[NUM_PARAMS] = {
     { 0, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param1", "", 0.0, 1.0, 0.5 },
     { 1, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param2", "", 0.0, 1.0, 0.5 },
     { 2, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param3", "", 0.0, 1.0, 0.5 },
@@ -65,13 +69,13 @@ private:
   };
 
   clap_audio_port_info_t
-  myAudioInputs[2] = {
+  myAudioInputs[NUM_INPUTS] = {
     { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
     { 1, "input2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
   clap_audio_port_info_t
-  myAudioOutputs[2] = {
+  myAudioOutputs[NUM_OUTPUTS] = {
     { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
     { 1, "output2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
@@ -119,20 +123,38 @@ private:
     }
   }
 
+  //----------
+
+  void handle_output_events(const clap_output_events_t* out_events) override {
+    if (MEditor) {
+      float v0 = MParamVal[0] + MParamMod[0];
+      MEditor->send_param_mod(0,v0,out_events);
+    }
+    MIP_Plugin::handle_output_events(out_events);
+  }
+
 //------------------------------
 public: // plugin
 //------------------------------
 
-  #define ARRAY_SIZE(x) ( sizeof(x) / sizeof((x)[0]) )
+//  #define ARRAY_SIZE(x) ( sizeof(x) / sizeof((x)[0]) )
+//  #define NUM_PARAMS    ARRAY_SIZE(myParameters)
+//  #define NUM_INPUTS    ARRAY_SIZE(myAudioInputs)
+//  #define NUM_OUTPUTS   ARRAY_SIZE(myAudioOutputs)
 
   bool init() override {
-    setupParameters(myParameters,ARRAY_SIZE(myParameters));
-    setupAudioInputs(myAudioInputs,ARRAY_SIZE(myAudioInputs));
-    setupAudioOutputs(myAudioOutputs,ARRAY_SIZE(myAudioOutputs));
-    return MIP_Plugin::init();
+    setupParameters(myParameters,NUM_PARAMS);
+    setupAudioInputs(myAudioInputs,NUM_INPUTS);
+    setupAudioOutputs(myAudioOutputs,NUM_OUTPUTS);
+    bool result = MIP_Plugin::init();
+    setDefaultParameterValues(myParameters,NUM_PARAMS);
+    return result;
   }
 
-  #undef ARRAY_SIZE
+//  #undef ARRAY_SIZE
+//  #undef NUM_PARAMS
+//  #undef NUM_INPUTS
+//  #undef NUM_OUTPUTS
 
   //----------
 
@@ -141,25 +163,13 @@ public: // plugin
     window->setFillBackground();
     window->setBackgroundColor(0.6);
       MIP_PanelWidget* panel = new MIP_PanelWidget(MIP_FRect(0));
+      window->appendWidget(panel);
       panel->setBackgroundColor(0.6);
       panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-      window->appendWidget(panel);
-        MIP_KnobWidget* knob1 = new MIP_KnobWidget(MIP_FRect( 10,  10, 50,50 ));
-        //knob1->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-        knob1->setValue(getParamVal(0));
-        panel->appendWidget(knob1);
-        MIP_KnobWidget* knob2 = new MIP_KnobWidget(MIP_FRect( 70,  10, 50,50 ));
-        //knob2->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-        knob2->setValue(getParamVal(1));
-        panel->appendWidget(knob2);
-        MIP_KnobWidget* knob3 = new MIP_KnobWidget(MIP_FRect( 130, 10, 50,50 ));
-        //knob3->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-        knob3->setValue(getParamVal(2));
-        panel->appendWidget(knob3);
-        MIP_KnobWidget* knob4 = new MIP_KnobWidget(MIP_FRect( 190, 10, 50,50 ));
-        //knob4->layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-        knob4->setValue(getParamVal(3));
-        panel->appendWidget(knob4);
+        MIP_KnobWidget* knob1 = (MIP_KnobWidget*)panel->appendWidget(new MIP_KnobWidget(MIP_FRect( 10,10, 50,50)));
+        MIP_KnobWidget* knob2 = (MIP_KnobWidget*)panel->appendWidget(new MIP_KnobWidget(MIP_FRect( 70,10, 50,50)));
+        MIP_KnobWidget* knob3 = (MIP_KnobWidget*)panel->appendWidget(new MIP_KnobWidget(MIP_FRect(130,10, 50,50)));
+        MIP_KnobWidget* knob4 = (MIP_KnobWidget*)panel->appendWidget(new MIP_KnobWidget(MIP_FRect(190,10, 50,50)));
     MEditor->connect(knob1,0);
     MEditor->connect(knob2,1);
     MEditor->connect(knob3,2);

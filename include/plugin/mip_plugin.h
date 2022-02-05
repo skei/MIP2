@@ -44,8 +44,9 @@ protected:
 
   float*          MParamVal     = nullptr;
   float*          MParamMod     = nullptr;
-  bool            MIsProcessing = false;
   MIP_Editor*     MEditor       = nullptr;
+  bool            MIsProcessing = false;
+  bool            MIsEditorOpen = false;
 
 //------------------------------
 public:
@@ -101,18 +102,16 @@ public:
     float* out1 = process->audio_outputs[0].data32[1];
     uint32_t num = process->frames_count;
     for (uint32_t i=0; i<num; i++) {
-      float v = getParamVal(0) + getParamMod(0);
-      v = MIP_Clamp(v,0,1);
-      *out0++ = *in0++ * v;
-      *out1++ = *in1++ * v;
+      *out0++ = *in0++;
+      *out1++ = *in1++;
     }
   }
 
 //------------------------------
-private:
+protected:
 //------------------------------
 
-  void handle_input_events(const clap_input_events_t* in_events) {
+  virtual void handle_input_events(const clap_input_events_t* in_events) {
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
@@ -127,18 +126,24 @@ private:
 
   //----------
 
-  void handle_output_events(const clap_output_events_t* out_events) {
-    if (MEditor) MEditor->flushHostParams(out_events);
+  virtual void handle_output_events(const clap_output_events_t* out_events) {
+    if (MEditor && MIsEditorOpen) MEditor->flushHostParams(out_events);
   }
 
-//------------------------------
-protected:
-//------------------------------
+  //----------
 
   void setupParameters(clap_param_info_t* params, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
       const clap_param_info_t* info = &params[i];
       MParameters.append(info);
+    }
+  }
+
+  void setDefaultParameterValues(clap_param_info_t* params, uint32_t num) {
+    for (uint32_t i=0; i<num; i++) {
+      const clap_param_info_t* info = &params[i];
+      MParamVal[i] = info->default_value;
+      MParamMod[i] = 0.0;
     }
   }
 
@@ -312,12 +317,14 @@ public: // gui
 
   bool gui_create() override {
     MEditor = new MIP_Editor(this);
+    MIsEditorOpen = false;
     return true;
   }
 
   //----------
 
   void gui_destroy() override {
+    MIsEditorOpen = false;
     delete MEditor;
   }
 
@@ -354,11 +361,13 @@ public: // gui
 
   void gui_show() override {
     MEditor->show();
+    MIsEditorOpen = true;
   }
 
   //----------
 
   void gui_hide() override {
+    MIsEditorOpen = false;
     MEditor->hide();
   }
 
