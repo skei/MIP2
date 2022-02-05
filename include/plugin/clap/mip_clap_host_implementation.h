@@ -2,6 +2,8 @@
 #define mip_clap_host_implementation_included
 //----------------------------------------------------------------------
 
+//TODO:
+
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 
@@ -50,6 +52,7 @@ public: // clap plugin
     //if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
     //if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MAudioPortsConfig;
     //if (strcmp(extension_id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MChekForUpdate;
+    //if (strcmp(extension_id,CLAP_EXT_CV) == 0)                  return &MCV;
     //if (strcmp(extension_id,CLAP_EXT_EVENT_FILTER) == 0)        return &MEventFilter;
     //if (strcmp(extension_id,CLAP_EXT_EVENT_REGISTRY) == 0)      return &MEventRegistry;
     //if (strcmp(extension_id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MFileReference;
@@ -86,6 +89,7 @@ public: // extensions
   virtual void audio_ports_rescan(uint32_t flags) {}
   virtual void audio_ports_config_rescan() {}
   virtual void check_for_update_on_new_version(const clap_check_for_update_info *update_info) {}
+  virtual void cv_changed() {}
   virtual void event_filter_changed() {}
   virtual bool event_registry_query(const char* space_name, uint16_t* space_id) { return false; }
   virtual void file_reference_changed() {}
@@ -231,6 +235,23 @@ public:
 
   clap_host_check_for_update MChekForUpdate = {
     clap_host_check_for_update_on_new_version_callback
+  };
+
+  //--------------------
+  // cv.draft/0
+  //--------------------
+
+private:
+
+  static void clap_host_cv_changed_callback(const clap_host *host) {
+    MIP_ClapHost* host_ = (MIP_ClapHost*)host->host_data;
+    host_->cv_changed();
+  }
+
+public:
+
+  clap_host_cv_t MCV = {
+    void clap_host_cv_changed_callback
   };
 
   //--------------------
