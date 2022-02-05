@@ -97,19 +97,19 @@ public:
 private:
 //------------------------------
 
-  void handle_parameter_event(const clap_event_param_value_t* param_value) override {
+  void handle_parameter_event(const clap_event_param_value_t* param_value) final {
     MIP_Plugin::handle_parameter_event(param_value);
   }
 
   //----------
 
-  void handle_modulation_event(const clap_event_param_mod_t* param_mod) override {
+  void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
     MIP_Plugin::handle_modulation_event(param_mod);
   }
 
   //----------
 
-  void handle_process(const clap_process_t *process) override {
+  void handle_process(const clap_process_t *process) final {
     float* in0 = process->audio_inputs[0].data32[0];
     float* in1 = process->audio_inputs[0].data32[1];
     float* out0 = process->audio_outputs[0].data32[0];
@@ -125,9 +125,10 @@ private:
 
   //----------
 
-  void handle_output_events(const clap_output_events_t* out_events) override {
+  void handle_output_events(const clap_output_events_t* out_events) final {
     if (MEditor) {
       float v0 = MParamVal[0] + MParamMod[0];
+      v0 = MIP_Clamp(v0,0,1);
       MEditor->send_param_mod(0,v0,out_events);
     }
     MIP_Plugin::handle_output_events(out_events);
@@ -137,12 +138,7 @@ private:
 public: // plugin
 //------------------------------
 
-//  #define ARRAY_SIZE(x) ( sizeof(x) / sizeof((x)[0]) )
-//  #define NUM_PARAMS    ARRAY_SIZE(myParameters)
-//  #define NUM_INPUTS    ARRAY_SIZE(myAudioInputs)
-//  #define NUM_OUTPUTS   ARRAY_SIZE(myAudioOutputs)
-
-  bool init() override {
+  bool init() final {
     setupParameters(myParameters,NUM_PARAMS);
     setupAudioInputs(myAudioInputs,NUM_INPUTS);
     setupAudioOutputs(myAudioOutputs,NUM_OUTPUTS);
@@ -151,19 +147,15 @@ public: // plugin
     return result;
   }
 
-//  #undef ARRAY_SIZE
-//  #undef NUM_PARAMS
-//  #undef NUM_INPUTS
-//  #undef NUM_OUTPUTS
-
   //----------
 
-  void gui_show() override {
-    MIP_Window* window = MEditor->getWindow();
-    window->setFillBackground();
-    window->setBackgroundColor(0.6);
+  bool gui_x11_attach(const char *display_name, unsigned long window) final {
+    bool result = MIP_Plugin::gui_x11_attach(display_name,window);
+    MIP_Window* win = MEditor->getWindow();
+    win->setFillBackground();
+    win->setBackgroundColor(0.6);
       MIP_PanelWidget* panel = new MIP_PanelWidget(MIP_FRect(0));
-      window->appendWidget(panel);
+      win->appendWidget(panel);
       panel->setBackgroundColor(0.6);
       panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
         MIP_KnobWidget* knob1 = (MIP_KnobWidget*)panel->appendWidget(new MIP_KnobWidget(MIP_FRect( 10,10, 50,50)));
@@ -174,7 +166,7 @@ public: // plugin
     MEditor->connect(knob2,1);
     MEditor->connect(knob3,2);
     MEditor->connect(knob4,3);
-    MIP_Plugin::gui_show();
+    return result;
   }
 
 };
