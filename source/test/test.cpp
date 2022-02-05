@@ -128,7 +128,7 @@ private:
   //----------
 
   void handle_output_events(const clap_output_events_t* out_events) final {
-    if (MEditor) {
+    if (MEditor && MIsEditorOpen) {
       float v0 = MParamVal[0] + MParamMod[0];
       v0 = MIP_Clamp(v0,0,1);
       MEditor->send_param_mod(0,v0,out_events);
@@ -167,12 +167,19 @@ public: // plugin
       MEditorPanel->appendWidget(knob2);
       MEditorPanel->appendWidget(knob3);
       MEditorPanel->appendWidget(knob4);
-      MEditor->connect(knob1,0);
-      MEditor->connect(knob2,1);
-      MEditor->connect(knob3,2);
-      MEditor->connect(knob4,3);
+      if (MEditor) {
+        MEditor->connect(knob1,0);
+        MEditor->connect(knob2,1);
+        MEditor->connect(knob3,2);
+        MEditor->connect(knob4,3);
+      }
     }
     return result;
+  }
+
+  void gui_show() final {
+    setEditorParameterValues(myParameters,NUM_PARAMS);
+    MIP_Plugin::gui_show();
   }
 
   //----------
@@ -180,8 +187,10 @@ public: // plugin
   bool gui_x11_attach(const char *display_name, unsigned long window) final {
     bool result = MIP_Plugin::gui_x11_attach(display_name,window);
     if (result) {
-      MIP_Window* win = MEditor->getWindow();
-      win->appendWidget(MEditorPanel);
+      if (MEditor) {
+        MIP_Window* win = MEditor->getWindow();
+        win->appendWidget(MEditorPanel);
+      }
     }
     return result;
   }

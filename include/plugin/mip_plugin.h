@@ -81,7 +81,7 @@ public:
     uint32_t i = param_value->param_id;
     float v = param_value->value;
     setParamVal(i,v);
-    if (MEditor) MEditor->updateParameterFromHost(i,v);
+    if (MEditor && MIsEditorOpen) MEditor->updateParameterFromHost(i,v);
   }
 
   //----------
@@ -90,7 +90,7 @@ public:
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
     setParamMod(i,v);
-    if (MEditor) MEditor->updateModulationFromHost(i,v);
+    if (MEditor && MIsEditorOpen) MEditor->updateModulationFromHost(i,v);
   }
 
   //----------
@@ -146,6 +146,16 @@ protected:
       MParamMod[i] = 0.0;
     }
   }
+
+  void setEditorParameterValues(clap_param_info_t* params, uint32_t num) {
+    for (uint32_t i=0; i<num; i++) {
+      //const clap_param_info_t* info = &params[i];
+      //MParamVal[i] = info->default_value;
+      //MParamMod[i] = 0.0;
+      if (MEditor) MEditor->setParameterValue(i,MParamVal[i]);
+    }
+  }
+
 
   void setupAudioInputs(clap_audio_port_info_t* inputs, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
@@ -307,7 +317,7 @@ public: // gui-x11
 //------------------------------
 
   bool gui_x11_attach(const char *display_name, unsigned long window) override {
-    MEditor->attach(display_name,window);
+    if (MEditor) MEditor->attach(display_name,window);
     return true;
   }
 
@@ -326,6 +336,7 @@ public: // gui
   void gui_destroy() override {
     MIsEditorOpen = false;
     delete MEditor;
+    MEditor = nullptr;
   }
 
   //----------
@@ -337,7 +348,8 @@ public: // gui
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
-    return MEditor->getSize(width,height);
+    if (MEditor) return MEditor->getSize(width,height);
+    return false;
   }
 
   //----------
@@ -360,15 +372,19 @@ public: // gui
   //----------
 
   void gui_show() override {
-    MEditor->show();
-    MIsEditorOpen = true;
+    if (MEditor) {
+      MEditor->show();
+      MIsEditorOpen = true;
+    }
   }
 
   //----------
 
   void gui_hide() override {
-    MIsEditorOpen = false;
-    MEditor->hide();
+    if (MEditor) {
+      MIsEditorOpen = false;
+      MEditor->hide();
+    }
   }
 
 //------------------------------
