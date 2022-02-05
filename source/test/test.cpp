@@ -56,9 +56,12 @@ class myPlugin
 private:
 //------------------------------
 
-  #define NUM_PARAMS    4
-  #define NUM_INPUTS    2
-  #define NUM_OUTPUTS   2
+  #define NUM_PARAMS          4
+  #define NUM_AUDIO_INPUTS    2
+  #define NUM_AUDIO_OUTPUTS   2
+  #define NUM_NOTE_INPUTS     2
+  #define NUM_NOTE_OUTPUTS    2
+  #define NUM_QUICK_CONTROLS  2
 
   clap_param_info_t
   myParameters[NUM_PARAMS] = {
@@ -68,17 +71,34 @@ private:
     { 3, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param4", "", 0.0, 1.0, 0.5 }
   };
 
-  clap_audio_port_info_t
-  myAudioInputs[NUM_INPUTS] = {
+  clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
     { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
     { 1, "input2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
-  clap_audio_port_info_t
-  myAudioOutputs[NUM_OUTPUTS] = {
+  clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
     { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
     { 1, "output2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
+
+  #define ALL_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
+
+  clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
+   { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "notes1" },
+   { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "notes2" }
+  };
+
+  clap_note_port_info_t myNoteOutputs[NUM_NOTE_OUTPUTS] = {
+   { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "notes1" },
+   { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "notes2" }
+  };
+
+  clap_quick_controls_page_t myQuickControls[NUM_QUICK_CONTROLS] = {
+    { 0, "quick1", "preset", {0,1,2,3,0,1,2,3} },
+    { 1, "quick2", "device", {0,1,2,3,0,1,2,3} }
+  };
+
+  //----------
 
   MIP_PanelWidget* MEditorPanel = nullptr;
 
@@ -99,15 +119,15 @@ public:
 private:
 //------------------------------
 
-  void handle_parameter_event(const clap_event_param_value_t* param_value) final {
-    MIP_Plugin::handle_parameter_event(param_value);
-  }
+  //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
+  //  MIP_Plugin::handle_parameter_event(param_value);
+  //}
 
   //----------
 
-  void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
-    MIP_Plugin::handle_modulation_event(param_mod);
-  }
+  //void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
+  //  MIP_Plugin::handle_modulation_event(param_mod);
+  //}
 
   //----------
 
@@ -142,8 +162,11 @@ public: // plugin
 
   bool init() final {
     setupParameters(myParameters,NUM_PARAMS);
-    setupAudioInputs(myAudioInputs,NUM_INPUTS);
-    setupAudioOutputs(myAudioOutputs,NUM_OUTPUTS);
+    setupAudioInputs(myAudioInputs,NUM_AUDIO_INPUTS);
+    setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
+    setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
+    setupNoteOutputs(myNoteOutputs,NUM_NOTE_OUTPUTS);
+    setupQuickControls(myQuickControls,NUM_QUICK_CONTROLS);
     bool result = MIP_Plugin::init();
     if (result) {
       setDefaultParameterValues(myParameters,NUM_PARAMS);

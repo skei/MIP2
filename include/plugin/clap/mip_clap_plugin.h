@@ -83,18 +83,18 @@ public: // extensions
   virtual bool      audio_ports_get(uint32_t index, bool is_input, clap_audio_port_info_t* info) { return false; }
   virtual uint32_t  audio_ports_config_count() { return 0; }
   virtual bool      audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) { return false; }
-  virtual bool      audio_ports_config_select(clap_id config_id) { return false; }
+  virtual bool      audio_ports_config_select(clap_id config_id) { return true; }
   virtual bool      event_filter_accepts(uint16_t space_id, uint16_t event_type) { return true; }
-  virtual bool      gui_create() { return false; }
+  virtual bool      gui_create() { return true; }
   virtual void      gui_destroy() {}
-  virtual bool      gui_set_scale(double scale) { return false; }
+  virtual bool      gui_set_scale(double scale) { return true; }
   virtual bool      gui_get_size(uint32_t *width, uint32_t *height) { return false; }
   virtual bool      gui_can_resize() { return false; }
   virtual void      gui_round_size(uint32_t *width, uint32_t *height) {}
-  virtual bool      gui_set_size(uint32_t width, uint32_t height) { return false; }
+  virtual bool      gui_set_size(uint32_t width, uint32_t height) { return true; }
   virtual void      gui_show() {}
   virtual void      gui_hide() {}
-  virtual bool      gui_x11_attach(const char *display_name, unsigned long window) { return false; }
+  virtual bool      gui_x11_attach(const char *display_name, unsigned long window) { return true; }
   virtual uint32_t  latency_get() { return 0; }
   virtual uint32_t  note_name_count() { return 0; }
   virtual bool      note_name_get(uint32_t index, clap_note_name_t *note_name) { return false; }
@@ -127,7 +127,7 @@ public: // drafts
   virtual bool      file_reference_save_resources() { return false; }
   virtual uint32_t  midi_mappings_count() { return 0; }
   virtual bool      midi_mappings_get(uint32_t index, clap_midi_mapping_t *mapping) { return false; }
-  virtual bool      preset_load_from_file(const char *path) { return false; }
+  virtual bool      preset_load_from_file(const char *path) { return true; }
   virtual uint32_t  quick_controls_count() { return 0; }
   virtual bool      quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) { return false; }
   virtual void      quick_controls_select(clap_id page_id) {}

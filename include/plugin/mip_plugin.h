@@ -19,8 +19,10 @@
 //
 //----------------------------------------------------------------------
 
-typedef MIP_Array<const clap_param_info_t*>       MIP_Parameters;
-typedef MIP_Array<const clap_audio_port_info_t*>  MIP_AudioPorts;
+typedef MIP_Array<const clap_param_info_t*>           MIP_Parameters;
+typedef MIP_Array<const clap_audio_port_info_t*>      MIP_AudioPorts;
+typedef MIP_Array<const clap_note_port_info_t*>       MIP_NotePorts;
+typedef MIP_Array<const clap_quick_controls_page_t*>  MIP_QuickControls;
 
 //----------------------------------------------------------------------
 //
@@ -38,14 +40,17 @@ protected:
   const clap_plugin_descriptor_t* MDescriptor       = nullptr;
   const clap_host_t*              MHost             = nullptr;
 
-  MIP_Parameters  MParameters   = {};
-  MIP_AudioPorts  MAudioInputs  = {};
-  MIP_AudioPorts  MAudioOutputs = {};
+  MIP_Parameters    MParameters     = {};
+  MIP_AudioPorts    MAudioInputs    = {};
+  MIP_AudioPorts    MAudioOutputs   = {};
+  MIP_NotePorts     MNoteInputs     = {};
+  MIP_NotePorts     MNoteOutputs    = {};
+  MIP_QuickControls MQuickControls  = {};
 
   float*          MParamVal     = nullptr;
   float*          MParamMod     = nullptr;
   MIP_Editor*     MEditor       = nullptr;
-  bool            MIsProcessing = false;
+  //bool            MIsProcessing = false;
   bool            MIsEditorOpen = false;
 
 //------------------------------
@@ -149,13 +154,9 @@ protected:
 
   void setEditorParameterValues(clap_param_info_t* params, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
-      //const clap_param_info_t* info = &params[i];
-      //MParamVal[i] = info->default_value;
-      //MParamMod[i] = 0.0;
       if (MEditor) MEditor->setParameterValue(i,MParamVal[i]);
     }
   }
-
 
   void setupAudioInputs(clap_audio_port_info_t* inputs, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
@@ -171,6 +172,26 @@ protected:
     }
   }
 
+  void setupNoteInputs(clap_note_port_info_t* inputs, uint32_t num) {
+    for (uint32_t i=0; i<num; i++) {
+      const clap_note_port_info_t* info = &inputs[i];
+      MNoteInputs.append(info);
+    }
+  }
+
+  void setupNoteOutputs(clap_note_port_info_t* outputs, uint32_t num) {
+    for (uint32_t i=0; i<num; i++) {
+      const clap_note_port_info_t* info = &outputs[i];
+      MNoteOutputs.append(info);
+    }
+  }
+
+  void setupQuickControls(clap_quick_controls_page_t* page, uint32_t num) {
+    for (uint32_t i=0; i<num; i++) {
+      const clap_quick_controls_page_t* info = &page[i];
+      MQuickControls.append(info);
+    }
+  }
 
 //------------------------------
 public: // plugin
@@ -197,31 +218,31 @@ public: // plugin
 
   //----------
 
-  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) override {
-    return true;
-  }
+  //bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) override {
+  //  return true;
+  //}
 
   //----------
 
-  void deactivate() override {
-  }
+  //void deactivate() override {
+  //}
 
   //----------
 
-  bool start_processing() override {
-    MIsProcessing = true;
-    return true;
-  }
+  //bool start_processing() override {
+  //  MIsProcessing = true;
+  //  return true;
+  //}
 
   //----------
 
-  void stop_processing() override {
-    MIsProcessing = false;
-  }
+  //void stop_processing() override {
+  //  MIsProcessing = false;
+  //}
 
   //----------
 
-  clap_process_status process(const clap_process_t *process) final {
+  clap_process_status process(const clap_process_t *process) override {
     handle_input_events(process->in_events);
     handle_process(process);
     handle_output_events(process->out_events);
@@ -231,42 +252,47 @@ public: // plugin
   //----------
 
   const void* get_extension(const char *id) override {
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)   return &MAudioPorts;
-    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)  return &MEventFilter;
-    if (strcmp(id,CLAP_EXT_GUI) == 0)           return &MGui;
-    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)       return &MGuiX11;
-    if (strcmp(id,CLAP_EXT_PARAMS) == 0)        return &MParams;
-    //if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0) return &MTimerSupport;
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)     return &MAudioPorts;
+    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)      return &MNotePorts;
+    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)  return &MQuickControls;
+    if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)    return &MEventFilter;
+    if (strcmp(id,CLAP_EXT_GUI) == 0)             return &MGui;
+    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)         return &MGuiX11;
+    if (strcmp(id,CLAP_EXT_PARAMS) == 0)          return &MParams;
+    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)   return &MTimerSupport;
+    if (strcmp(id,CLAP_EXT_STATE) == 0)           return &MState;
+    if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)     return &MPresetLoad;
+    if (strcmp(id,CLAP_EXT_LATENCY) == 0)         return &MLatency;
     return nullptr;
   }
 
   //----------
 
-  void on_main_thread() override {
-  }
+  //void on_main_thread() override {
+  //}
 
 //------------------------------
 public: // event-filter
 //------------------------------
 
-  bool event_filter_accepts(uint16_t space_id, uint16_t event_type) override {
-    if (space_id == CLAP_CORE_EVENT_SPACE_ID) {
-      switch (event_type) {
-        //case CLAP_EVENT_NOTE_ON:          return true;
-        //case CLAP_EVENT_NOTE_OFF:         return true;
-        //case CLAP_EVENT_NOTE_CHOKE:       return true;
-        //case CLAP_EVENT_NOTE_END:         return true;
-        //case CLAP_EVENT_NOTE_EXPRESSION:  return true;
-        case CLAP_EVENT_PARAM_VALUE:      return true;
-        case CLAP_EVENT_PARAM_MOD:        return true;
-        //case CLAP_EVENT_TRANSPORT:        return true;
-        //case CLAP_EVENT_MIDI:             return true;
-        //case CLAP_EVENT_MIDI_SYSEX:       return true;
-        //case CLAP_EVENT_MIDI2:            return true;
-      }
-    }
-    return false;
-  }
+  //bool event_filter_accepts(uint16_t space_id, uint16_t event_type) override {
+  //  if (space_id == CLAP_CORE_EVENT_SPACE_ID) {
+  //    switch (event_type) {
+  //      case CLAP_EVENT_NOTE_ON:          return true;
+  //      case CLAP_EVENT_NOTE_OFF:         return true;
+  //      case CLAP_EVENT_NOTE_CHOKE:       return true;
+  //      case CLAP_EVENT_NOTE_END:         return true;
+  //      case CLAP_EVENT_NOTE_EXPRESSION:  return true;
+  //      case CLAP_EVENT_PARAM_VALUE:      return true;
+  //      case CLAP_EVENT_PARAM_MOD:        return true;
+  //      case CLAP_EVENT_TRANSPORT:        return true;
+  //      case CLAP_EVENT_MIDI:             return true;
+  //      case CLAP_EVENT_MIDI_SYSEX:       return true;
+  //      case CLAP_EVENT_MIDI2:            return true;
+  //    }
+  //  }
+  //  return false;
+  //}
 
 //------------------------------
 public: // params
@@ -341,9 +367,9 @@ public: // gui
 
   //----------
 
-  bool gui_set_scale(double scale) override {
-    return true;
-  }
+  //bool gui_set_scale(double scale) override {
+  //  return true;
+  //}
 
   //----------
 
@@ -354,20 +380,20 @@ public: // gui
 
   //----------
 
-  bool gui_can_resize() override {
-    return false;
-  }
+  //bool gui_can_resize() override {
+  //  return false;
+  //}
 
   //----------
 
-  void gui_round_size(uint32_t *width, uint32_t *height) override {
-  }
+  //void gui_round_size(uint32_t *width, uint32_t *height) override {
+  //}
 
   //----------
 
-  bool gui_set_size(uint32_t width, uint32_t height) override {
-    return true;
-  }
+  //bool gui_set_size(uint32_t width, uint32_t height) override {
+  //  return true;
+  //}
 
   //----------
 
@@ -409,6 +435,92 @@ public: // audio-ports
     }
     return false;
   }
+
+//------------------------------
+public: // note-ports
+//------------------------------
+
+  uint32_t note_ports_count(bool is_input) override {
+    if (is_input) return MNoteInputs.size();
+    else return MNoteOutputs.size();
+  }
+
+  //----------
+
+  bool note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t* info) override {
+    if (is_input) {
+      memcpy(info,MNoteInputs[index],sizeof(clap_note_port_info_t));
+      return true;
+    }
+    else {
+      memcpy(info,MNoteOutputs[index],sizeof(clap_note_port_info_t));
+      return true;
+    }
+    return false;
+  }
+
+//------------------------------
+public: // quick-controls
+//------------------------------
+
+  uint32_t quick_controls_count() override {
+    return MQuickControls.size();
+  }
+
+  //----------
+
+  bool quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) override {
+    memcpy(page,MQuickControls[page_index],sizeof(clap_quick_controls_page_t));
+    return true;
+  }
+
+  //----------
+
+  //void quick_controls_select(clap_id page_id) override {
+  //}
+
+  //----------
+
+  //clap_id quick_controls_get_selected() override {
+  //  return 0;
+  //}
+
+//------------------------------
+public: // timer-support
+//------------------------------
+
+  //void timer_support_on_timer(clap_id timer_id) override {
+  //};
+
+//------------------------------
+public: // state
+//------------------------------
+
+  //bool state_save(clap_ostream_t *stream) override {
+  //  return true;
+  //}
+
+  //----------
+
+  //bool state_load(clap_istream_t *stream) override {
+  //  return true;
+  //};
+
+//------------------------------
+public: // preset-load
+//------------------------------
+
+  //bool preset_load_from_file(const char *path) override {
+  //  return true;
+  //}
+
+//------------------------------
+public: // latency
+//------------------------------
+
+  //uint32_t latency_get() override {
+  //  return 0;
+  //};
 
 };
 
