@@ -80,6 +80,8 @@ private:
     { 1, "output2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
+  MIP_PanelWidget* MEditorPanel = nullptr;
+
 //------------------------------
 public:
 //------------------------------
@@ -149,23 +151,32 @@ public: // plugin
 
   //----------
 
-  bool gui_x11_attach(const char *display_name, unsigned long window) final {
-    bool result = MIP_Plugin::gui_x11_attach(display_name,window);
-    MIP_Window* win = MEditor->getWindow();
-    win->setFillBackground();
-    win->setBackgroundColor(0.6);
-      MIP_PanelWidget* panel = new MIP_PanelWidget(MIP_FRect(0));
-      win->appendWidget(panel);
-      panel->setBackgroundColor(0.6);
-      panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-        MIP_KnobWidget* knob1 = (MIP_KnobWidget*)panel->appendWidget(new MIP_KnobWidget(MIP_FRect( 10,10, 50,50)));
-        MIP_KnobWidget* knob2 = (MIP_KnobWidget*)panel->appendWidget(new MIP_KnobWidget(MIP_FRect( 70,10, 50,50)));
-        MIP_KnobWidget* knob3 = (MIP_KnobWidget*)panel->appendWidget(new MIP_KnobWidget(MIP_FRect(130,10, 50,50)));
-        MIP_KnobWidget* knob4 = (MIP_KnobWidget*)panel->appendWidget(new MIP_KnobWidget(MIP_FRect(190,10, 50,50)));
+  bool gui_create() final {
+    bool result = MIP_Plugin::gui_create();
+    MEditorPanel = new MIP_PanelWidget(MIP_FRect(0));
+    MEditorPanel->setBackgroundColor(0.6);
+    MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    MIP_KnobWidget* knob1 = new MIP_KnobWidget(MIP_FRect( 10,10, 50,50));
+    MIP_KnobWidget* knob2 = new MIP_KnobWidget(MIP_FRect( 70,10, 50,50));
+    MIP_KnobWidget* knob3 = new MIP_KnobWidget(MIP_FRect(130,10, 50,50));
+    MIP_KnobWidget* knob4 = new MIP_KnobWidget(MIP_FRect(190,10, 50,50));
+    MEditorPanel->appendWidget(knob1);
+    MEditorPanel->appendWidget(knob2);
+    MEditorPanel->appendWidget(knob3);
+    MEditorPanel->appendWidget(knob4);
     MEditor->connect(knob1,0);
     MEditor->connect(knob2,1);
     MEditor->connect(knob3,2);
     MEditor->connect(knob4,3);
+    return result;
+  }
+
+  //----------
+
+  bool gui_x11_attach(const char *display_name, unsigned long window) final {
+    bool result = MIP_Plugin::gui_x11_attach(display_name,window);
+    MIP_Window* win = MEditor->getWindow();
+    win->appendWidget(MEditorPanel);
     return result;
   }
 
