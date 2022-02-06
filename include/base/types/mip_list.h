@@ -38,7 +38,7 @@ private:
 
   MIP_ListNode*  MHead = nullptr;
   MIP_ListNode*  MTail = nullptr;
-  uint32_t        MSize = 0;
+  uint32_t       MSize = 0;
 
 //------------------------------
 public:
@@ -65,7 +65,6 @@ public:
     MIP_ListNode* node = MHead;
     while (node) {
       MIP_ListNode* next = node->next();
-      //KTimeline_Segment* segment = (KTimeline_Segment*)node;
       delete node;
       node = next;
     }

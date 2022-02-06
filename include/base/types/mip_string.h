@@ -4,16 +4,11 @@
 
 #include "mip.h"
 #include "base/types/mip_buffer.h"
-#include "base/utils/mip_strutils.h"
-
-#include "mip.h"
-#include "base/types/mip_buffer.h"
 #include "base/utils/mip_convert.h"
 #include "base/utils/mip_strutils.h"
 
-#define MIP_String MIP_DynamicString
+//#define MIP_String MIP_DynamicString
 //#define MIP_String MIP_StaticString
-
 
 //----------------------------------------------------------------------
 //
@@ -23,7 +18,8 @@
 
 template <int SIZE>
 class MIP_StaticString
-: public MIP_StaticBuffer<char,SIZE> {
+//: public MIP_StaticBuffer<char,SIZE> {
+: public MIP_StaticBuffer<char,SIZE=256> {
 };
 
 //
@@ -301,6 +297,30 @@ MIP_DynamicString operator + (T var, const MIP_DynamicString& str)  {
 
 //----------------------------------------------------------------------
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
