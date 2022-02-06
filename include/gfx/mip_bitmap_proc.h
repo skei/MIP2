@@ -75,7 +75,7 @@
 //          //k64_assert( rsum < MMaxKernelIndex );
 //          //k64_assert( gsum < MMaxKernelIndex );
 //          //k64_assert( bsum < MMaxKernelIndex );
-//          ADst->setPixel(x,y,bgra(MKernel[rsum], MKernel[gsum], MKernel[bsum]) );
+//          ADst->setPixel(x,y,rgba(MKernel[rsum], MKernel[gsum], MKernel[bsum]) );
 //          if (y==0) {
 //            vmin[x] = min( x + MKernelRadius + 1, WM );
 //            vmax[x] = max( x - MKernelRadius,     0  );
@@ -112,7 +112,7 @@
 //          bsum +=  p & 0x0000ff;
 //        }
 //        for (uint32 y=0;y<H;y++){
-//          ADst->setPixel(x ,y, bgra(MKernel[rsum], MKernel[gsum], MKernel[bsum] ));
+//          ADst->setPixel(x ,y, rgba(MKernel[rsum], MKernel[gsum], MKernel[bsum] ));
 //          if (x==0) {
 //            vmin[y] = min(y + MKernelRadius + 1, HM );
 //            vmax[y] = max(y - MKernelRadius,     0  );
@@ -593,7 +593,7 @@
 //          result[y * w + x].b = min(abs(int(factor * blue + bias)), 255);
 //          */
 //
-//          uint32 color = bgra(r,g,b);
+//          uint32 color = rgba(r,g,b);
 //
 //          *dst_ptr++ = color;
 //

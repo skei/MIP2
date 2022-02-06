@@ -81,7 +81,7 @@ public:
     for (uint32_t i=0; i<ANumPoints; i++) {
       gen_voronoi_areas[i].x = MIP_RandomRangeInt(0,width-1);
       gen_voronoi_areas[i].y = MIP_RandomRangeInt(0,height-1);
-      //voronoi_areas[i].c = bgra (rnd(255), rnd(255),rnd(255));
+      //voronoi_areas[i].c = rgba (rnd(255), rnd(255),rnd(255));
       gen_voronoi_areas[i].c = MIP_RandomRangeInt(0,255);
     }
     for (uint32_t y=0; y<height; y++) {

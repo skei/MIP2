@@ -1,9 +1,9 @@
-#ifndef mip_bgra_included
-#define mip_bgra_included
+#ifndef mip_rgba_included
+#define mip_rgba_included
 //----------------------------------------------------------------------
 
 #include "base/utils/mip_math.h"
-//typedef uint32_t MIP_BGRA;
+//typedef uint32_t MIP_RGBA;
 
 //----------------------------------------------------------------------
 //
@@ -11,7 +11,7 @@
 //
 //----------------------------------------------------------------------
 
-uint32_t MIP_BGRA(uint8_t r, uint8_t g, uint8_t b, uint8_t a=255) {
+uint32_t MIP_RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a=255) {
   return
       ((uint32_t)a << 24)
     + ((uint32_t)r << 16)
@@ -20,7 +20,7 @@ uint32_t MIP_BGRA(uint8_t r, uint8_t g, uint8_t b, uint8_t a=255) {
 }
 
 /*
-uint32_t MIP_BGRA(float r, float g, float b, float a=1.0f) {
+uint32_t MIP_RGBA(float r, float g, float b, float a=1.0f) {
   uint8_t R = 255.0f * r;
   uint8_t G = 255.0f * g;
   uint8_t B = 255.0f * b;
@@ -47,14 +47,14 @@ uint32_t MIP_BGRA(float r, float g, float b, float a=1.0f) {
   filtering because overflow shouldn't occur anyways.
 */
 
-uint32_t MIP_BGRA_Add4(uint32_t c1, uint32_t c2, uint32_t c3, uint32_t c4) {
+uint32_t MIP_RGBA_Add4(uint32_t c1, uint32_t c2, uint32_t c3, uint32_t c4) {
   int sum = (c1 & 0xfefeff) + (c2 & 0xfefeff) + (c3 & 0xfefeff) + (c4 & 0xfefeff);
   return sum | (-(sum & 0x100) >> 24);
 }
 
 //----------
 
-uint32_t MIP_BGRA_Average(uint32_t c1, uint32_t c2) {
+uint32_t MIP_RGBA_Average(uint32_t c1, uint32_t c2) {
   //uint32_t a =  c1 & 0xff000000;
   return ((c1>>1) & 0x7f7f7f) + ((c2>>1) & 0x7f7f7f);
 }
@@ -65,7 +65,7 @@ uint32_t MIP_BGRA_Average(uint32_t c1, uint32_t c2) {
   http://www.java-gaming.org/topics/fastest-rgb-24bit-color-blend-and-others/21434/view.html
 */
 
-uint32_t MIP_BGRA_Average2(uint32_t c1, uint32_t c2) {
+uint32_t MIP_RGBA_Average2(uint32_t c1, uint32_t c2) {
   return ((c1 & 0xfefeff) + (c2 & 0xfefeff)) >> 1;
 }
 
@@ -75,7 +75,7 @@ uint32_t MIP_BGRA_Average2(uint32_t c1, uint32_t c2) {
 //
 //----------------------------------------------------------------------
 
-uint32_t MIP_BGRA_ScaleAlpha(uint32_t c) {
+uint32_t MIP_RGBA_ScaleAlpha(uint32_t c) {
   uint8_t a = (c & 0xff000000) >> 24;
   //a = 255 - a;
   uint32_t r = (c & 0xff0000) >> 16;
@@ -84,12 +84,12 @@ uint32_t MIP_BGRA_ScaleAlpha(uint32_t c) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  return MIP_BGRA(r,g,b,a);
+  return MIP_RGBA(r,g,b,a);
 }
 
 //----------
 
-uint32_t MIP_BGRA_Scale(uint32_t c, uint8_t a) {
+uint32_t MIP_RGBA_Scale(uint32_t c, uint8_t a) {
   uint8_t alpha = (c & 0xff000000) >> 24;
   //a = 255 - a;
   uint32_t r = (c & 0xff0000) >> 16;
@@ -98,12 +98,12 @@ uint32_t MIP_BGRA_Scale(uint32_t c, uint8_t a) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  return MIP_BGRA(r,g,b,alpha);
+  return MIP_RGBA(r,g,b,alpha);
 }
 
 //----------
 
-uint32_t MIP_BGRA_Scale0(uint32_t c, uint8_t a) {
+uint32_t MIP_RGBA_Scale0(uint32_t c, uint8_t a) {
   //uint8_t alpha = (c & 0xff000000) >> 24;
   //a = 255 - a;
   uint32_t r = (c & 0xff0000) >> 16;
@@ -112,12 +112,12 @@ uint32_t MIP_BGRA_Scale0(uint32_t c, uint8_t a) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  return MIP_BGRA(r,g,b,255);
+  return MIP_RGBA(r,g,b,255);
 }
 
 //----------
 
-uint32_t MIP_BGRA_Scale2(uint32_t c, uint8_t a) {
+uint32_t MIP_RGBA_Scale2(uint32_t c, uint8_t a) {
   uint8_t alpha = (c & 0xff000000) >> 24;
   a = (a*alpha) >> 8;
   //a = 255 - a;
@@ -127,18 +127,18 @@ uint32_t MIP_BGRA_Scale2(uint32_t c, uint8_t a) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  return MIP_BGRA(r,g,b,alpha);
+  return MIP_RGBA(r,g,b,alpha);
 }
 
 //----------
 
 /*
-  used in (MIP_BGRA_Alpha):
+  used in (MIP_RGBA_Alpha):
     MIP_Bitmap.blendPixel
     MIP_Bitmap.premultAlpha
 */
 
-//uint8_t MIP_BGRA_ScaleElement(uint32_t c, uint32_t a) {
+//uint8_t MIP_RGBA_ScaleElement(uint32_t c, uint32_t a) {
 //  uint32_t ret = (c*a) >> 8;
 //  return ret & 0xff;
 //}
@@ -146,18 +146,18 @@ uint32_t MIP_BGRA_Scale2(uint32_t c, uint8_t a) {
 //----------
 
 /*
-  used in  (MIP_BGRA_Scale):
+  used in  (MIP_RGBA_Scale):
     MIP_Bitmap.colorMatrix
 */
 
-//uint8_t MIP_BGRA_ScaleF(uint8_t c, float n ) {
+//uint8_t MIP_RGBA_ScaleF(uint8_t c, float n ) {
 //  float nc = n * (float)c;
 //  return MIP_MinI((uint8_t)255,(uint8_t)nc);
 //}
 
 //----------
 
-//uint32_t MIP_BGRA_ScaleF2(uint32_t c, float a) {
+//uint32_t MIP_RGBA_ScaleF2(uint32_t c, float a) {
 //  uint8_t alpha = (c & 0xff000000) >> 24;
 //  //a = 255 - a;
 //  uint32_t r = (c & 0xff0000) >> 16;
@@ -166,7 +166,7 @@ uint32_t MIP_BGRA_Scale2(uint32_t c, uint8_t a) {
 //  r = ((float)r*a);
 //  g = ((float)g*a);
 //  b = ((float)b*a);
-//  return MIP_BGRA(r,g,b,alpha);
+//  return MIP_RGBA(r,g,b,alpha);
 //}
 
 //----------------------------------------------------------------------
@@ -181,7 +181,7 @@ uint32_t MIP_BGRA_Scale2(uint32_t c, uint8_t a) {
   blend with c2.alpha
 */
 
-uint32_t MIP_BGRA_AlphaBlend(uint32_t c1, uint32_t c2) {
+uint32_t MIP_RGBA_AlphaBlend(uint32_t c1, uint32_t c2) {
   //uint8_t a = (c1 & 0xff000000) >> 24;
   uint8_t a = (c2 & 0xff000000) >> 24;
   //a = 255 - a;
@@ -191,7 +191,7 @@ uint32_t MIP_BGRA_AlphaBlend(uint32_t c1, uint32_t c2) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  c2 = MIP_BGRA(r,g,b,a); // was RGB
+  c2 = MIP_RGBA(r,g,b,a); // was RGB
   a = 255-a;
   r = (c1 & 0x00ff0000) >> 16;
   g = (c1 & 0x0000ff00) >> 8;
@@ -199,13 +199,13 @@ uint32_t MIP_BGRA_AlphaBlend(uint32_t c1, uint32_t c2) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  c1 = MIP_BGRA(r,g,b,a); // was BGR
+  c1 = MIP_RGBA(r,g,b,a); // was BGR
   return c1+c2;
 }
 
 //----------
 
-uint32_t MIP_BGRA_AlphaBlend(uint32_t c1, uint32_t c2, uint8_t a) {
+uint32_t MIP_RGBA_AlphaBlend(uint32_t c1, uint32_t c2, uint8_t a) {
   a = 255 - a;
   uint32_t r = (c1 & 0x00ff0000) >> 16;
   uint32_t g = (c1 & 0x0000ff00) >> 8;
@@ -213,7 +213,7 @@ uint32_t MIP_BGRA_AlphaBlend(uint32_t c1, uint32_t c2, uint8_t a) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  c1 = MIP_BGRA(r,g,b); // was RGB
+  c1 = MIP_RGBA(r,g,b); // was RGB
   a = 255-a;
   r = (c2 & 0x00ff0000) >> 16;
   g = (c2 & 0x0000ff00) >> 8;
@@ -221,13 +221,13 @@ uint32_t MIP_BGRA_AlphaBlend(uint32_t c1, uint32_t c2, uint8_t a) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  c2 = MIP_BGRA(r,g,b); // was BGR
+  c2 = MIP_RGBA(r,g,b); // was BGR
   return c1 + c2;
 }
 
 //----------
 
-uint32_t MIP_BGRA_AlphaBlend2(uint32_t c1, uint32_t c2, uint8_t a) {
+uint32_t MIP_RGBA_AlphaBlend2(uint32_t c1, uint32_t c2, uint8_t a) {
   uint8_t alpha = (c1 & 0xff000000) >> 24;
   a = 255 - a;
   uint32_t r = (c1 & 0xff0000) >> 16;
@@ -236,7 +236,7 @@ uint32_t MIP_BGRA_AlphaBlend2(uint32_t c1, uint32_t c2, uint8_t a) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  c1 = MIP_BGRA(r,g,b,alpha); // was RGB
+  c1 = MIP_RGBA(r,g,b,alpha); // was RGB
   a = 255-a;
   r = (c2 & 0xff0000) >> 16;
   g = (c2 & 0x00ff00) >> 8;
@@ -244,13 +244,13 @@ uint32_t MIP_BGRA_AlphaBlend2(uint32_t c1, uint32_t c2, uint8_t a) {
   r = (r*a) >> 8;
   g = (g*a) >> 8;
   b = (b*a) >> 8;
-  c2 = MIP_BGRA(r,g,b,alpha); // was BGR
+  c2 = MIP_RGBA(r,g,b,alpha); // was BGR
   return c1+c2;
 }
 
 //----------
 
-uint32_t MIP_BGRA_AlphaBlend3(uint32_t c1, uint32_t c2, uint8_t alpha) {
+uint32_t MIP_RGBA_AlphaBlend3(uint32_t c1, uint32_t c2, uint8_t alpha) {
   alpha = 255-alpha;
   uint32_t a =  c1 & 0xff000000;
   uint32_t rb = ((c2 & 0xFF00FF) + ((c1 & 0xFF00FF) - (c2 & 0xFF00FF)) * alpha) >> 8;
@@ -264,7 +264,7 @@ uint32_t MIP_BGRA_AlphaBlend3(uint32_t c1, uint32_t c2, uint8_t alpha) {
 
 // alpha is multiplied by c1's alpha..
 
-uint32_t MIP_BGRA_AlphaBlend4(uint32_t c1, uint32_t c2, uint8_t alpha) {
+uint32_t MIP_RGBA_AlphaBlend4(uint32_t c1, uint32_t c2, uint8_t alpha) {
   uint8_t a = (c2 & 0xff000000) >> 24;
   alpha = (alpha*a) >> 8;
   //a = 255 - a;
@@ -274,7 +274,7 @@ uint32_t MIP_BGRA_AlphaBlend4(uint32_t c1, uint32_t c2, uint8_t alpha) {
   r = (r*alpha) >> 8;
   g = (g*alpha) >> 8;
   b = (b*alpha) >> 8;
-  c2 = MIP_BGRA(r,g,b,a); // was RGB
+  c2 = MIP_RGBA(r,g,b,a); // was RGB
   alpha = 255 - alpha;
   r = (c1 & 0xff0000) >> 16;
   g = (c1 & 0x00ff00) >> 8;
@@ -282,7 +282,7 @@ uint32_t MIP_BGRA_AlphaBlend4(uint32_t c1, uint32_t c2, uint8_t alpha) {
   r = (r*alpha) >> 8;
   g = (g*alpha) >> 8;
   b = (b*alpha) >> 8;
-  c1 = MIP_BGRA(r,g,b,a); // was BGR
+  c1 = MIP_RGBA(r,g,b,a); // was BGR
   return c1+c2;
 }
 
@@ -290,7 +290,7 @@ uint32_t MIP_BGRA_AlphaBlend4(uint32_t c1, uint32_t c2, uint8_t alpha) {
 
 // alpha replaces c1's alpha..
 
-uint32_t MIP_BGRA_AlphaBlend5(uint32_t c1, uint32_t c2, uint8_t alpha) {
+uint32_t MIP_RGBA_AlphaBlend5(uint32_t c1, uint32_t c2, uint8_t alpha) {
   uint8_t a = (c2 & 0xff000000) >> 24;
   //alpha = (alpha*a) >> 8;
   //a = 255 - a;
@@ -300,7 +300,7 @@ uint32_t MIP_BGRA_AlphaBlend5(uint32_t c1, uint32_t c2, uint8_t alpha) {
   r = (r*alpha) >> 8;
   g = (g*alpha) >> 8;
   b = (b*alpha) >> 8;
-  c2 = MIP_BGRA(r,g,b,a); // was RGB
+  c2 = MIP_RGBA(r,g,b,a); // was RGB
   alpha = 255 - alpha;
   r = (c1 & 0xff0000) >> 16;
   g = (c1 & 0x00ff00) >> 8;
@@ -308,7 +308,7 @@ uint32_t MIP_BGRA_AlphaBlend5(uint32_t c1, uint32_t c2, uint8_t alpha) {
   r = (r*alpha) >> 8;
   g = (g*alpha) >> 8;
   b = (b*alpha) >> 8;
-  c1 = MIP_BGRA(r,g,b,a); // was BGR
+  c1 = MIP_RGBA(r,g,b,a); // was BGR
   return c1+c2;
 }
 
@@ -325,7 +325,7 @@ uint32_t MIP_BGRA_AlphaBlend5(uint32_t c1, uint32_t c2, uint8_t alpha) {
   second color to blend.
 */
 
-uint32_t MIP_BGRA_AlphaBlend6(uint32_t c1, uint32_t c2, uint32_t a) {
+uint32_t MIP_RGBA_AlphaBlend6(uint32_t c1, uint32_t c2, uint32_t a) {
   uint32_t r = (c1 & 0xFF0000) >> 16;
   uint32_t g = (c1 & 0x00FF00) >> 8;
   uint32_t b = c1 & 0x0000FF;
@@ -341,7 +341,7 @@ uint32_t MIP_BGRA_AlphaBlend6(uint32_t c1, uint32_t c2, uint32_t a) {
   http://www.java-gaming.org/topics/fastest-rgb-blend-24-bits/24198/view.html
 */
 
-uint32_t MIP_BGRA_AlphaBlend7(uint32_t c1, uint32_t c2, uint32_t factor) {
+uint32_t MIP_RGBA_AlphaBlend7(uint32_t c1, uint32_t c2, uint32_t factor) {
   uint32_t f1 = 256 - factor;
   return ((((c1 & 0xFF00FF) * f1 + (c2 & 0xFF00FF) * factor ) & 0xFF00FF00) |
           (((c1 & 0x00FF00) * f1 + (c2 & 0x00FF00) * factor ) & 0x00FF0000)) >> 8;
@@ -374,7 +374,7 @@ uint32_t MIP_BGRA_AlphaBlend7(uint32_t c1, uint32_t c2, uint32_t factor) {
   @author Bruno Augier http://dzzd.net/
 */
 
-uint32_t MIP_BGRA_BilinearAlphaBlend(uint32_t c1, uint32_t c2, uint32_t c3, uint32_t c4, int32_t bX, int32_t bY) {
+uint32_t MIP_RGBA_BilinearAlphaBlend(uint32_t c1, uint32_t c2, uint32_t c3, uint32_t c4, int32_t bX, int32_t bY) {
   uint32_t f24 = (bX * bY) >> 8;
   uint32_t f23 = bX - f24;
   uint32_t f14 = bY - f24;
@@ -406,7 +406,7 @@ uint32_t MIP_BGRA_BilinearAlphaBlend(uint32_t c1, uint32_t c2, uint32_t c3, uint
   https://cboard.cprogramming.com/game-programming/19926-super-fast-bilinear-interpolation.html
 */
 
-uint32_t MIP_BGRA_BilinearAlphaBlend2(uint32_t c1, uint32_t c2, uint32_t c3, uint32_t c4, int32_t bX, int32_t bY) {
+uint32_t MIP_RGBA_BilinearAlphaBlend2(uint32_t c1, uint32_t c2, uint32_t c3, uint32_t c4, int32_t bX, int32_t bY) {
   int h = (bX & 0xff);
 	int i = (bY & 0xff);
 	bX = bX >> 8;
@@ -427,7 +427,7 @@ uint32_t MIP_BGRA_BilinearAlphaBlend2(uint32_t c1, uint32_t c2, uint32_t c3, uin
 //
 //----------------------------------------------------------------------
 
-uint32_t MIP_BGRA_AddSaturate(uint32_t c1, uint32_t c2) {
+uint32_t MIP_RGBA_AddSaturate(uint32_t c1, uint32_t c2) {
   uint32_t r1 = (c1 & 0xff0000) >> 16;
   uint32_t g1 = (c1 & 0x00ff00) >> 8;
   uint32_t b1 = (c1 & 0x0000ff);
@@ -437,7 +437,7 @@ uint32_t MIP_BGRA_AddSaturate(uint32_t c1, uint32_t c2) {
   uint32_t r = (r1+r2); if (r>255) r = 255;
   uint32_t g = (g1+g2); if (g>255) g = 255;
   uint32_t b = (b1+b2); if (b>255) b = 255;
-  return MIP_BGRA(r,g,b);
+  return MIP_RGBA(r,g,b);
 }
 
 //----------
@@ -446,7 +446,7 @@ uint32_t MIP_BGRA_AddSaturate(uint32_t c1, uint32_t c2) {
   http://www.hugi.scene.org/online/coding/hugi%2021%20-%20co32bcol.htm
 */
 
-uint32_t MIP_BGRA_AddSaturate2(uint32_t c1, uint32_t c2) {
+uint32_t MIP_RGBA_AddSaturate2(uint32_t c1, uint32_t c2) {
   //uint32_t a =  c1 & 0xff000000;
   uint32_t a =  c2 & 0xff000000;
   uint32_t b = (c1 & 0xff)     + (c2 & 0xff);
@@ -464,7 +464,7 @@ uint32_t MIP_BGRA_AddSaturate2(uint32_t c1, uint32_t c2) {
   http://www.java-gaming.org/topics/fastest-rgb-24-color-addition/24199/view.html
 */
 
-uint32_t MIP_BGRA_AddSaturate3(uint32_t color1, uint32_t color2) {
+uint32_t MIP_RGBA_AddSaturate3(uint32_t color1, uint32_t color2) {
   color1 &= 0xFEFEFE; //set some lsb to 0
   color2 &= 0xFEFEFE; //set some lsb to 0
   //add color
@@ -476,7 +476,7 @@ uint32_t MIP_BGRA_AddSaturate3(uint32_t color1, uint32_t color2) {
 
 //----------
 
-uint32_t MIP_BGRA_SubSaturate(uint32_t c1, uint32_t c2) {
+uint32_t MIP_RGBA_SubSaturate(uint32_t c1, uint32_t c2) {
   uint32_t a =  c2 & 0xff000000;
   int32_t b = (c1 & 0xff)     - (c2 & 0xff);
   int32_t g = (c1 & 0xff00)   - (c2 & 0xff00);
@@ -489,7 +489,7 @@ uint32_t MIP_BGRA_SubSaturate(uint32_t c1, uint32_t c2) {
 
 //----------
 
-uint32_t MIP_BGRA_MulSaturate(uint32_t c1, uint32_t c2) {
+uint32_t MIP_RGBA_MulSaturate(uint32_t c1, uint32_t c2) {
   uint32_t a =  c2 & 0xff000000;
   //c1 &= 0xffffff;
   //c2 &= 0xffffff;
@@ -505,7 +505,7 @@ uint32_t MIP_BGRA_MulSaturate(uint32_t c1, uint32_t c2) {
 //
 //----------------------------------------------------------------------
 
-uint32_t MIP_BGRA_Grey(uint32_t c) {
+uint32_t MIP_RGBA_Grey(uint32_t c) {
   uint32_t a = (c & 0xff000000) >> 24;
   uint32_t r = (c & 0xff0000) >> 16;
   uint32_t g = (c & 0x00ff00) >> 8;
@@ -514,7 +514,7 @@ uint32_t MIP_BGRA_Grey(uint32_t c) {
   float fg = (float)g * 0.587f;
   float fb = (float)b * 0.114f;
   float n = fr + fg + fb / 3.0f;
-  return MIP_BGRA(n,n,n,a);
+  return MIP_RGBA(n,n,n,a);
 }
 
 //----------
@@ -527,7 +527,7 @@ uint32_t MIP_BGRA_Grey(uint32_t c) {
   s by sqrt(2) to get it in a range between 0 and 1.
 */
 
-uint32_t MIP_BGRA_RgbToHsl(uint32_t color) {
+uint32_t MIP_RGBA_RgbToHsl(uint32_t color) {
   float r = (float)((color & 0xff0000) >> 16) * MIP_INV255F;
   float g = (float)((color & 0xff00  ) >> 8 ) * MIP_INV255F;
   float b = (float)((color & 0xff    )      ) * MIP_INV255F;
@@ -541,7 +541,7 @@ uint32_t MIP_BGRA_RgbToHsl(uint32_t color) {
   float s = sqrtf( u*u + v*v );
   s *= MIP_SQRT2;
   //printf("hsl: %.2f, %.2f, %.2f\n",h,s,l);
-  return MIP_BGRA(h*256,s*256,v*256);
+  return MIP_RGBA(h*256,s*256,v*256);
 }
 
 //----------
@@ -552,7 +552,7 @@ uint32_t MIP_BGRA_RgbToHsl(uint32_t color) {
   luminance is in the range 0...1
 */
 
-uint32_t MIP_BGRA_HslToRgb(uint32_t color) {
+uint32_t MIP_RGBA_HslToRgb(uint32_t color) {
   float h = (float)((color & 0xff )) * MIP_INV255F;  // 0..1
   h *= MIP_PI2;                                               // 0..PI2
   h -= MIP_PI;                                                // -PI..PI
@@ -565,12 +565,12 @@ uint32_t MIP_BGRA_HslToRgb(uint32_t color) {
   float g = l - 0.3946517043589703515 * u - 0.5805986066674976801 * v;
   float b = l + 2.03211091743119266   * u;
   //printf("rgb: %.2f, %.2f, %.2f\n",r,g,b);
-  return MIP_BGRA(r*256,g*256,b*256);
+  return MIP_RGBA(r*256,g*256,b*256);
 }
 
 //----------
 
-uint32_t MIP_BGRA_RgbToHsv(uint32_t color) {
+uint32_t MIP_RGBA_RgbToHsv(uint32_t color) {
   uint32_t a_ = (color & 0xff000000) >> 24;
   uint32_t r_ = (color & 0x00ff0000) >> 16;
   uint32_t g_ = (color & 0x0000ff00) >> 8;
@@ -582,7 +582,7 @@ uint32_t MIP_BGRA_RgbToHsv(uint32_t color) {
   uint32_t c = r + g + b;
   //if c<1e-4 then return 0,2/3,0
   if (c < 0.001) { // 1e-4
-    return MIP_BGRA(0,(2.0f/3.0f)*255,0,a_);
+    return MIP_RGBA(0,(2.0f/3.0f)*255,0,a_);
   }
   else {
     //float p = 2.0f * (b*b+g*g+r*r-g*r-b*g-b*r) ^ 0.5f;
@@ -593,13 +593,13 @@ uint32_t MIP_BGRA_RgbToHsv(uint32_t color) {
     h /= MIP_PI2;//360.0f;
     float s = p / (c+p);
     float v = (c+p) / 3.0f;
-    return MIP_BGRA(h*255,s*255,v*255,a_);
+    return MIP_RGBA(h*255,s*255,v*255,a_);
   }
 }
 
 //----------
 
-uint32_t MIP_BGRA_HsvToRgb(uint32_t color) {
+uint32_t MIP_RGBA_HsvToRgb(uint32_t color) {
   uint32_t a_ = (color & 0xff000000) >> 24;
   uint32_t h_ = (color & 0x00ff0000) >> 16;
   uint32_t s_ = (color & 0x0000ff00) >> 8;
@@ -611,12 +611,12 @@ uint32_t MIP_BGRA_HsvToRgb(uint32_t color) {
   float r = v * (1 + s * (cosf(h) - 1));
   float g = v * (1 + s * (cosf(h - 2.09439) - 1));
   float b = v * (1 + s * (cosf(h + 2.09439) - 1));
-  return MIP_BGRA(r*255,g*255,b*255,a_);
+  return MIP_RGBA(r*255,g*255,b*255,a_);
 }
 
 //----------
 
-//function MIP_BGRA_HsvTween(h0,s0,v0,h1,s1,v1,t)
+//function MIP_RGBA_HsvTween(h0,s0,v0,h1,s1,v1,t)
 //  local dh=(h1-h0+3.14159)%6.28318-3.14159
 //  local h=h0+t*dh
 //  local s=s0+t*(s1-s0)

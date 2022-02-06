@@ -12,7 +12,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "base/utils/mip_bgra.h"
+#include "base/utils/mip_rgba.h"
 #include "base/utils/mip_integer_math.h"
 #include "base/utils/mip_random.h"
 
@@ -354,7 +354,7 @@ public:
           //*ptr++ = _alpha(r,a);
           //*ptr++ = a;
           uint32_t c = *ptr;
-          *ptr++ = MIP_BGRA_AlphaBlend(AColor,c);
+          *ptr++ = MIP_RGBA_AlphaBlend(AColor,c);
         } //for x
       } //for y
     } //mBuffer
@@ -674,7 +674,7 @@ public: // blend
         uint32_t  c1 = *dst;
         uint32_t  c2 = *src++;
         uint8_t   a  = c2 >> 24;
-        uint32_t  c  = MIP_BGRA_AlphaBlend(c1,c2,a);
+        uint32_t  c  = MIP_RGBA_AlphaBlend(c1,c2,a);
         *dst++ = c;
       }
     }
@@ -689,7 +689,7 @@ public: // blend
       uint32_t  c1 = *dst;
       uint32_t  c2 = *src++;
       uint8_t   a  = c2 >> 24;
-      uint32_t  c  = MIP_BGRA_AlphaBlend(c1,c2,a);
+      uint32_t  c  = MIP_RGBA_AlphaBlend(c1,c2,a);
       *dst++ = c;
     }
   }
@@ -708,7 +708,7 @@ public: // blend
       for (int32_t x=0; x<L; x++) {
         uint32_t  c1 = *dst;
         uint32_t  c2 = *src++;
-        uint32_t  c  = MIP_BGRA_AlphaBlend(c1,c2,AAlpha);
+        uint32_t  c  = MIP_RGBA_AlphaBlend(c1,c2,AAlpha);
         *dst++ = c;
       }
     }
@@ -722,7 +722,7 @@ public: // blend
     for (int32_t x=0; x<ALength; x++) {
       uint32_t  c1 = *dst;
       uint32_t  c2 = *src++;
-      uint32_t  c  = MIP_BGRA_AlphaBlend(c1,c2,AAlpha);
+      uint32_t  c  = MIP_RGBA_AlphaBlend(c1,c2,AAlpha);
       *dst++ = c;
     }
   }
@@ -851,7 +851,7 @@ public:
   //}
 
   //void setPaletteEntry(uint32_t AIndex, MIP_Color AColor) {
-  //  MPalette[AIndex] = MIP_BGRA(AColor);
+  //  MPalette[AIndex] = MIP_RGBA(AColor);
   //}
 
   // todo: clipping
