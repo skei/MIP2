@@ -13,6 +13,7 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
+#include "gui/cairo/mip_cairo_painter.h"
 
 //----------------------------------------------------------------------
 //
