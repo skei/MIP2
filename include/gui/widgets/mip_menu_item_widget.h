@@ -62,7 +62,7 @@ public:
     setTextColor(MHoverTextColor);
     do_widget_redraw(this,getRect(),0);
     do_widget_setMouseCursor(this,MIP_CURSOR_FINGER);
-    if (flags.autoHint) do_widget_setHint(this,getHint());
+    if (flags.autoHint) do_widget_setHint(this,getHint(),0);
   }
 
   //----------
@@ -73,7 +73,7 @@ public:
     setTextColor(MNormalTextColor);
     do_widget_redraw(this,getRect(),0);
     do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
-    if (flags.autoHint) do_widget_setHint(this,"");
+    if (flags.autoHint) do_widget_setHint(this,"",0);
   }
 
   //----------

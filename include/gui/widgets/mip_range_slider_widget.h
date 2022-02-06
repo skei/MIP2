@@ -293,7 +293,7 @@ public:
 
   void on_widget_mouseEnter(float AXpos, float AYpos, MIP_Widget* AFrom/*, uint32_t ATimeStamp=0*/) final {
     findHoverEdge(AXpos);
-    if (flags.autoHint) do_widget_setHint(this,getHint());
+    if (flags.autoHint) do_widget_setHint(this,getHint(),0);
   }
 
   //----------
@@ -304,7 +304,7 @@ public:
       do_widget_redraw(this,getRect(),0);
       do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
     }
-    if (flags.autoHint) do_widget_setHint(this,"");
+    if (flags.autoHint) do_widget_setHint(this,"",0);
   }
 
 };

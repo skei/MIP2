@@ -652,7 +652,7 @@ public: // MIP_Widget
 
   //----------
 
-  void do_widget_setHint(MIP_Widget* AWidget, const char* AHint) override {
+  void do_widget_setHint(MIP_Widget* AWidget, const char* AHint, uint32_t AType) override {
     //MIP_Print("%s\n",AHint);
   }
 

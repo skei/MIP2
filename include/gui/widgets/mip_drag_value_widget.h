@@ -316,7 +316,7 @@ public:
           break;
       }
     }
-    if (flags.autoHint) do_widget_setHint(this,getHint());
+    if (flags.autoHint) do_widget_setHint(this,getHint(),0);
   }
 
   //----------
