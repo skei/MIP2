@@ -766,13 +766,13 @@ public:
   virtual void on_widget_mouseEnter(float AXpos, float AYpos, MIP_Widget* AFrom) {
     //MIP_Print("%s : x %.2f y %.2f from %s\n",MName,AXpos,AYpos,(AFrom)?AFrom->getName():"?");
     if (flags.autoCursor) do_widget_setMouseCursor(this,MCursor);
-    if (flags.autoHint) do_widget_setHint(this,MHint);
+    if (flags.autoHint) do_widget_setHint(this,MHint,0);
   }
 
   virtual void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo) {
     //MIP_Print("%s : x %.2f y %.2f to %s\n",MName,AXpos,AYpos,(ATo)?ATo->getName():"?");
     if (flags.autoCursor) do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
-    if (flags.autoHint) do_widget_setHint(this,"");
+    if (flags.autoHint) do_widget_setHint(this,"",0);
   }
 
   virtual void on_widget_mouseDragEnter(float AXpos, float AYpos, MIP_Widget* AFrom) {
@@ -878,8 +878,8 @@ public:
 
   //----------
 
-  virtual void do_widget_setHint(MIP_Widget* AWidget, const char* AHint) {
-    if (MParent) MParent->do_widget_setHint(AWidget,AHint);
+  virtual void do_widget_setHint(MIP_Widget* AWidget, const char* AHint, uint32_t AType=0) {
+    if (MParent) MParent->do_widget_setHint(AWidget,AHint,AType);
   }
 
   //----------
