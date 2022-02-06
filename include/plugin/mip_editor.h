@@ -18,6 +18,13 @@ typedef MIP_Queue<uint32_t,MIP_CLAP_MESSAGE_QUEUE_SIZE> MIP_ClapIntQueue;
 //
 //----------------------------------------------------------------------
 
+class MIP_EditorListener{
+public:
+  virtual void on_editor_updateParameter(uint32_t AIndex, float AValue) {}
+};
+
+//----------------------------------------------------------------------
+
 class MIP_Editor
 : public MIP_WindowListener
 , public MIP_TimerListener {
@@ -26,33 +33,30 @@ class MIP_Editor
 private:
 //------------------------------
 
+  MIP_EditorListener* MListener = nullptr;
   MIP_ClapPlugin*     MPlugin           = nullptr;
   uint32_t            MNumParams        = 0;
-
-  uint32_t            MWidth            = 250;
-  uint32_t            MHeight           = 70;
+  uint32_t            MWidth            = 256;//250;
+  uint32_t            MHeight           = 256;//70;
   double              MScale            = 1.0;
-  bool                MCanResize        = false;
+  bool                MCanResize        = true;//false;
   MIP_Window*         MWindow           = nullptr;
   MIP_Timer*          MTimer            = nullptr;
   MIP_Widget**        MParamToWidget    = nullptr;
-
   MIP_ClapIntQueue    MHostParamQueue   = {};
   float*              MHostParamVal     = nullptr;
   float*              MHostParamMod     = nullptr;
-
   MIP_ClapIntQueue    MGuiParamQueue    = {};
   float*              MGuiParamVal      = nullptr;
   float*              MGuiParamMod      = nullptr;
-
   bool                MEditorIsOpen     = true;
-
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Editor(MIP_ClapPlugin* APlugin) {
+  MIP_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin) {
+    MListener = AListener;
     MPlugin = APlugin;
     MNumParams = APlugin->params_count();
     uint32_t size = MNumParams * sizeof(MIP_Widget*);
@@ -75,9 +79,7 @@ public:
   virtual ~MIP_Editor() {
     delete MTimer;
     free(MParamToWidget);
-    if (MWindow) {
-      delete MWindow;
-    }
+    if (MWindow) delete MWindow;
     free(MHostParamVal);
     free(MHostParamMod);
     free(MGuiParamVal);
@@ -99,10 +101,8 @@ public:
     //AWidget->setSubParamIndex(ASubParamIndex);
     MParamToWidget[AParamIndex] = AWidget;
     //AWidget->on_widget_connect(AParamIndex,ASubParamIndex);
-
     clap_param_info_t info;
     MPlugin->params_get_info(AParamIndex,&info);
-
     const char* name = info.name;
     float def_value = info.default_value;
     //float min_value = info.min_value;
@@ -111,9 +111,6 @@ public:
     AWidget->setValue(def_value);
     AWidget->setParamName(name);
     //AWidget->setParamDefValue(name);
-
-
-
   }
 
   //----------
@@ -137,6 +134,7 @@ private: // window listener
       float value = AWidget->getValue();
       MHostParamVal[index] = value;
       queueHostParam(index);
+      if (MListener) MListener->on_editor_updateParameter(index,value);
     }
   }
 
@@ -194,9 +192,11 @@ public:
     if (MEditorIsOpen) {
       uint32_t index = 0;
       while (MGuiParamQueue.read(&index)) {
+//MIP_PRINT;
         float value = MGuiParamVal[index];
         MIP_Widget* widget = MParamToWidget[index];
         if (widget) {
+          //if (widget->getValue() != value)
           widget->setValue(value);
           MWindow->paintWidget(widget);
         }
@@ -216,6 +216,7 @@ public:
     uint32_t index = 0;
     while (MHostParamQueue.read(&index)) {
       float value = MHostParamVal[index];
+      //todo: check if value reallyt changed (if multiple events)
       send_param_value(index,value,out_events);
     }
   }

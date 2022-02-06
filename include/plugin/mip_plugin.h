@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "base/types/mip_array.h"
+#include "audio/mip_audio_utils.h"
 #include "plugin/mip_editor.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_entry.h"
@@ -33,7 +34,8 @@ typedef MIP_Array<const clap_quick_controls_page_t*>  MIP_QuickControls;
 //----------------------------------------------------------------------
 
 class MIP_Plugin
-: public MIP_ClapPlugin {
+: public MIP_ClapPlugin
+, public MIP_EditorListener {
 
 //------------------------------
 protected:
@@ -42,20 +44,24 @@ protected:
   const clap_plugin_descriptor_t* MDescriptor       = nullptr;
   //const clap_host_t*              MHost             = nullptr;
 
-  MIP_ClapHost* MHost = nullptr;
+  MIP_ClapHost*     MHost             = nullptr;
 
-  MIP_Parameters    MParameters     = {};
-  MIP_AudioPorts    MAudioInputs    = {};
-  MIP_AudioPorts    MAudioOutputs   = {};
-  MIP_NotePorts     MNoteInputs     = {};
-  MIP_NotePorts     MNoteOutputs    = {};
-  MIP_QuickControls MQuickControls  = {};
+  MIP_Parameters    MParameters       = {};
+  MIP_AudioPorts    MAudioInputs      = {};
+  MIP_AudioPorts    MAudioOutputs     = {};
+  MIP_NotePorts     MNoteInputs       = {};
+  MIP_NotePorts     MNoteOutputs      = {};
+  MIP_QuickControls MQuickControls    = {};
 
-  float*          MParamVal     = nullptr;
-  float*          MParamMod     = nullptr;
-  MIP_Editor*     MEditor       = nullptr;
-  //bool            MIsProcessing = false;
-  bool            MIsEditorOpen = false;
+  float*            MParamVal         = nullptr;
+  float*            MParamMod         = nullptr;
+  MIP_Editor*       MEditor           = nullptr;
+  bool              MIsProcessing     = false;
+  bool              MIsActivated      = false;
+  bool              MIsEditorOpen     = false;
+
+  MIP_ClapIntQueue  MAudioParamQueue  = {};
+  float*            MAudioParamVal    = nullptr;
 
 //------------------------------
 public:
@@ -66,12 +72,18 @@ public:
     MDescriptor = ADescriptor;
     //MHost = AHost;
     MHost = new MIP_ClapHost(AHost);
+
+    uint32_t num = params_count();
+    uint32_t size = num * sizeof(float);
+    MAudioParamVal = (float*)malloc(size);
+    memset(MAudioParamVal,0,size);
   }
 
   //----------
 
   virtual ~MIP_Plugin() {
     delete MHost;
+    free (MAudioParamVal);
   }
 
 //------------------------------
@@ -84,14 +96,53 @@ public:
   void  setParamMod(uint32_t AIndex, float AValue) { MParamMod[AIndex] = AValue; }
   void  setParamVal(uint32_t AIndex, float AValue) { MParamVal[AIndex] = AValue; }
 
+  //----------
+
+  void queueAudioParam(uint32_t AIndex) {
+    MAudioParamQueue.write(AIndex);
+  }
+
+  //----------
+
+  void flushAudioParams() {
+    uint32_t index = 0;
+    while (MAudioParamQueue.read(&index)) {
+      float value = MAudioParamVal[index];
+      //todo: check if value reallyt changed (if multiple events)
+      MParamVal[index] = value;
+    }
+  }
+
+
+//------------------------------
+public: // editor listener
+//------------------------------
+
+  // todo: queue, and flush in process?
+
+  void on_editor_updateParameter(uint32_t AIndex, float AValue) final {
+    //MIP_Print("%i = %.3f\n",AIndex,AValue);
+    MAudioParamVal[AIndex] = AValue;
+    queueAudioParam(AIndex);
+  }
+
 //------------------------------
 public:
 //------------------------------
+
+  virtual void handle_note_on_event(clap_event_note_t* event) {}
+  virtual void handle_note_off_event(clap_event_note_t* event) {}
+  virtual void handle_note_end_event(clap_event_note_t* event) {}
+  virtual void handle_note_choke_event(clap_event_note_t* event) {}
+  virtual void handle_note_expression_event(clap_event_note_expression_t* event) {}
+
+  //----------
 
   virtual void handle_parameter_event(const clap_event_param_value_t* param_value) {
     uint32_t i = param_value->param_id;
     float v = param_value->value;
     setParamVal(i,v);
+//MIP_PRINT;
     if (MEditor && MIsEditorOpen) MEditor->updateParameterFromHost(i,v);
   }
 
@@ -106,16 +157,27 @@ public:
 
   //----------
 
+  virtual void handle_midi_event(clap_event_midi_t* event) {}
+  virtual void handle_midi_event(clap_event_midi2_t* event) {}
+  virtual void handle_midi_event(clap_event_midi_sysex_t* event) {}
+  virtual void handle_transport_event(clap_event_transport_t* event) {}
+
+  //----------
+
   virtual void handle_process(const clap_process_t *process) {
-    float* in0 = process->audio_inputs[0].data32[0];
-    float* in1 = process->audio_inputs[0].data32[1];
-    float* out0 = process->audio_outputs[0].data32[0];
-    float* out1 = process->audio_outputs[0].data32[1];
-    uint32_t num = process->frames_count;
-    for (uint32_t i=0; i<num; i++) {
-      *out0++ = *in0++;
-      *out1++ = *in1++;
-    }
+    //float* in0 = process->audio_inputs[0].data32[0];
+    //float* in1 = process->audio_inputs[0].data32[1];
+    //float* out0 = process->audio_outputs[0].data32[0];
+    //float* out1 = process->audio_outputs[0].data32[1];
+    //uint32_t num = process->frames_count;
+    //for (uint32_t i=0; i<num; i++) {
+    //  *out0++ = *in0++;
+    //  *out1++ = *in1++;
+    //}
+    float** inputs = process->audio_inputs[0].data32;
+    float** outputs = process->audio_outputs[0].data32;
+    uint32_t length = process->frames_count;
+    MIP_CopyStereoBuffer(outputs,inputs,length);
   }
 
 //------------------------------
@@ -128,8 +190,17 @@ protected:
       const clap_event_header_t* header = in_events->get(in_events,i);
       if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
         switch (header->type) {
-          case CLAP_EVENT_PARAM_VALUE:  handle_parameter_event((clap_event_param_value_t*)header); break;
-          case CLAP_EVENT_PARAM_MOD:    handle_modulation_event((clap_event_param_mod_t*)header); break;
+          case CLAP_EVENT_NOTE_ON:          handle_note_on_event((clap_event_note_t*)header); break;
+          case CLAP_EVENT_NOTE_OFF:         handle_note_off_event((clap_event_note_t*)header); break;
+          case CLAP_EVENT_NOTE_END:         handle_note_end_event((clap_event_note_t*)header); break;
+          case CLAP_EVENT_NOTE_CHOKE:       handle_note_choke_event((clap_event_note_t*)header); break;
+          case CLAP_EVENT_NOTE_EXPRESSION:  handle_note_expression_event((clap_event_note_expression_t*)header); break;
+          case CLAP_EVENT_PARAM_VALUE:      handle_parameter_event((clap_event_param_value_t*)header); break;
+          case CLAP_EVENT_PARAM_MOD:        handle_modulation_event((clap_event_param_mod_t*)header); break;
+          case CLAP_EVENT_MIDI:             handle_midi_event((clap_event_midi_t*)header); break;
+          case CLAP_EVENT_MIDI2:            handle_midi_event((clap_event_midi2_t*)header); break;
+          case CLAP_EVENT_MIDI_SYSEX:       handle_midi_event((clap_event_midi_sysex_t*)header); break;
+          case CLAP_EVENT_TRANSPORT:        handle_transport_event((clap_event_transport_t*)header); break;
         }
       }
     }
@@ -141,7 +212,9 @@ protected:
     if (MEditor && MIsEditorOpen) MEditor->flushHostParams(out_events);
   }
 
-  //----------
+//------------------------------
+protected:
+//------------------------------
 
   void setupParameters(clap_param_info_t* params, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
@@ -149,6 +222,8 @@ protected:
       MParameters.append(info);
     }
   }
+
+  //----------
 
   void setDefaultParameterValues(clap_param_info_t* params, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
@@ -158,11 +233,17 @@ protected:
     }
   }
 
+  //----------
+
   void setEditorParameterValues(clap_param_info_t* params, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
       if (MEditor) MEditor->setParameterValue(i,MParamVal[i]);
     }
   }
+
+//------------------------------
+protected:
+//------------------------------
 
   void setupAudioInputs(clap_audio_port_info_t* inputs, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
@@ -171,12 +252,16 @@ protected:
     }
   }
 
+  //----------
+
   void setupAudioOutputs(clap_audio_port_info_t* outputs, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
       const clap_audio_port_info_t* info = &outputs[i];
       MAudioOutputs.append(info);
     }
   }
+
+  //----------
 
   void setupNoteInputs(clap_note_port_info_t* inputs, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
@@ -185,12 +270,16 @@ protected:
     }
   }
 
+  //----------
+
   void setupNoteOutputs(clap_note_port_info_t* outputs, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
       const clap_note_port_info_t* info = &outputs[i];
       MNoteOutputs.append(info);
     }
   }
+
+  //----------
 
   void setupQuickControls(clap_quick_controls_page_t* page, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
@@ -224,31 +313,34 @@ public: // plugin
 
   //----------
 
-  //bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) override {
-  //  return true;
-  //}
+  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) override {
+    MIsActivated = true;
+    return true;
+  }
 
   //----------
 
-  //void deactivate() override {
-  //}
+  void deactivate() override {
+    MIsActivated = false;
+  }
 
   //----------
 
-  //bool start_processing() override {
-  //  MIsProcessing = true;
-  //  return true;
-  //}
+  bool start_processing() override {
+    MIsProcessing = true;
+    return true;
+  }
 
   //----------
 
-  //void stop_processing() override {
-  //  MIsProcessing = false;
-  //}
+  void stop_processing() override {
+    MIsProcessing = false;
+  }
 
   //----------
 
   clap_process_status process(const clap_process_t *process) override {
+    flushAudioParams();
     handle_input_events(process->in_events);
     handle_process(process);
     handle_output_events(process->out_events);
@@ -293,24 +385,24 @@ public: // plugin
 public: // event-filter
 //------------------------------
 
-  //bool event_filter_accepts(uint16_t space_id, uint16_t event_type) override {
-  //  if (space_id == CLAP_CORE_EVENT_SPACE_ID) {
-  //    switch (event_type) {
-  //      case CLAP_EVENT_NOTE_ON:          return true;
-  //      case CLAP_EVENT_NOTE_OFF:         return true;
-  //      case CLAP_EVENT_NOTE_CHOKE:       return true;
-  //      case CLAP_EVENT_NOTE_END:         return true;
-  //      case CLAP_EVENT_NOTE_EXPRESSION:  return true;
-  //      case CLAP_EVENT_PARAM_VALUE:      return true;
-  //      case CLAP_EVENT_PARAM_MOD:        return true;
-  //      case CLAP_EVENT_TRANSPORT:        return true;
-  //      case CLAP_EVENT_MIDI:             return true;
-  //      case CLAP_EVENT_MIDI_SYSEX:       return true;
-  //      case CLAP_EVENT_MIDI2:            return true;
-  //    }
-  //  }
-  //  return false;
-  //}
+  bool event_filter_accepts(uint16_t space_id, uint16_t event_type) override {
+    if (space_id == CLAP_CORE_EVENT_SPACE_ID) {
+      switch (event_type) {
+        case CLAP_EVENT_NOTE_ON:          return true;
+        case CLAP_EVENT_NOTE_OFF:         return true;
+        case CLAP_EVENT_NOTE_CHOKE:       return true;
+        case CLAP_EVENT_NOTE_END:         return true;
+        case CLAP_EVENT_NOTE_EXPRESSION:  return true;
+        case CLAP_EVENT_PARAM_VALUE:      return true;
+        case CLAP_EVENT_PARAM_MOD:        return true;
+        case CLAP_EVENT_TRANSPORT:        return true;
+        case CLAP_EVENT_MIDI:             return true;
+        case CLAP_EVENT_MIDI_SYSEX:       return true;
+        case CLAP_EVENT_MIDI2:            return true;
+      }
+    }
+    return false;
+  }
 
 //------------------------------
 public: // params
@@ -370,7 +462,7 @@ public: // gui
 //------------------------------
 
   bool gui_create() override {
-    MEditor = new MIP_Editor(this);
+    MEditor = new MIP_Editor(this,this);
     MIsEditorOpen = false;
     return true;
   }
@@ -385,9 +477,10 @@ public: // gui
 
   //----------
 
-  //bool gui_set_scale(double scale) override {
-  //  return true;
-  //}
+  bool gui_set_scale(double scale) override {
+    if (MEditor) MEditor->setScale(scale);
+    return true;
+  }
 
   //----------
 
@@ -398,20 +491,24 @@ public: // gui
 
   //----------
 
-  //bool gui_can_resize() override {
-  //  return false;
-  //}
+  bool gui_can_resize() override {
+    if (MEditor) return MEditor->canResize();
+    return false;
+  }
 
   //----------
 
-  //void gui_round_size(uint32_t *width, uint32_t *height) override {
-  //}
+  void gui_round_size(uint32_t *width, uint32_t *height) override {
+    if (MEditor) MEditor->roundSize(width,height);
+
+  }
 
   //----------
 
-  //bool gui_set_size(uint32_t width, uint32_t height) override {
-  //  return true;
-  //}
+  bool gui_set_size(uint32_t width, uint32_t height) override {
+    if (MEditor) return MEditor->setSize(width,height);
+    return true;
+  }
 
   //----------
 

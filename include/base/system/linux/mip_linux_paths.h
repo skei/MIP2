@@ -18,17 +18,6 @@
 
 //----------------------------------------------------------------------
 
-char* MIP_GetHomePath(char* ABuffer) {
-  ABuffer[0] = '\0';
-  char* env = getenv("HOME");
-  if (env) MIP_Strcat(ABuffer,env);
-  //KStrcat(ABuffer, (char*)"\\");
-  MIP_Strcat(ABuffer, (char*)"/");
-  return ABuffer;
-}
-
-//----------
-
 const char* MIP_GetExeFilename(char* ABuffer) {
   ABuffer[0] = '\0';
   int32_t len = readlink("/proc/self/exe",ABuffer,MIP_MAX_PATH_LENGTH-1);
@@ -54,6 +43,17 @@ const char* MIP_GetExePath(char* ABuffer) {
       //SStrcat(ABuffer, (char*)"/"); // -> "/" -> root :-/
     }
   }
+  return ABuffer;
+}
+
+//----------
+
+char* MIP_GetHomePath(char* ABuffer) {
+  ABuffer[0] = '\0';
+  char* env = getenv("HOME");
+  if (env) MIP_Strcat(ABuffer,env);
+  //KStrcat(ABuffer, (char*)"\\");
+  MIP_Strcat(ABuffer, (char*)"/");
   return ABuffer;
 }
 

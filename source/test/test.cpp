@@ -1,4 +1,5 @@
 
+//#define MIP_USE_CAIRO
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
 
@@ -43,6 +44,8 @@ const clap_plugin_descriptor_t myDescriptor = {
   myFeatures
 };
 
+#define ALL_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
+
 //----------------------------------------------------------------------
 //
 //
@@ -81,7 +84,6 @@ private:
     { 1, "output2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
-  #define ALL_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
 
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
    { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "notes1" },
@@ -132,17 +134,23 @@ private:
   //----------
 
   void handle_process(const clap_process_t *process) final {
-    float* in0 = process->audio_inputs[0].data32[0];
-    float* in1 = process->audio_inputs[0].data32[1];
-    float* out0 = process->audio_outputs[0].data32[0];
-    float* out1 = process->audio_outputs[0].data32[1];
-    uint32_t num = process->frames_count;
-    for (uint32_t i=0; i<num; i++) {
-      float v = getParamVal(0) + getParamMod(0);
-      v = MIP_Clamp(v,0,1);
-      *out0++ = *in0++ * v;
-      *out1++ = *in1++ * v;
-    }
+    //float* in0 = process->audio_inputs[0].data32[0];
+    //float* in1 = process->audio_inputs[0].data32[1];
+    //float* out0 = process->audio_outputs[0].data32[0];
+    //float* out1 = process->audio_outputs[0].data32[1];
+    //uint32_t num = process->frames_count;
+    //for (uint32_t i=0; i<num; i++) {
+    //  float v = getParamVal(0) + getParamMod(0);
+    //  v = MIP_Clamp(v,0,1);
+    //  *out0++ = *in0++ * v;
+    //  *out1++ = *in1++ * v;
+    //}
+    float** inputs = process->audio_inputs[0].data32;
+    float** outputs = process->audio_outputs[0].data32;
+    uint32_t length = process->frames_count;
+    float scale = getParamVal(0) + getParamMod(0);
+    MIP_CopyStereoBuffer(outputs,inputs,length);
+    MIP_ScaleStereoBuffer(outputs,scale,length);
   }
 
   //----------

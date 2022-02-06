@@ -46,7 +46,6 @@ public:
 public: // clap plugin
 //------------------------------
 
-
   virtual const void* get_extension(const char *extension_id) {
     //if (strcmp(extension_id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
     //if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;

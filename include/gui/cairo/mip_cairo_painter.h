@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "gui/cairo/mip_cairo.h"
 
 //----------------------------------------------------------------------
 
@@ -12,7 +13,7 @@ class MIP_CairoPainter {
 public:
 //------------------------------
 
-  MIP_CairoPainter(MIP_Surface* ATarget) {
+  MIP_CairoPainter(cairo_surface_t* ASurface) {
   }
 
   //----------
