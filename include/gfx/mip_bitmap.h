@@ -74,8 +74,6 @@ public:
 
   //----------
 
-  //----------
-
   // Clones/copies a part of another bitmap..
   // new memory is allocated, and bitmap is copied into it.
 

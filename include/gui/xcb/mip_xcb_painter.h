@@ -549,7 +549,7 @@ public:
 public:
 //------------------------------
 
-  void drawBitmap(float AXpos, float AYpos, MIP_Drawable* ASource) override {
+  void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource) override {
     if (ASource->isImage()) {
       xcb_image_put(
         MConnection,            // xcb_connection_t*  conn,
@@ -590,7 +590,7 @@ public:
 
   //----------
 
-  void drawBitmap(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) override {
+  void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) override {
     if (ASource->isImage()) {
       MIP_Bitmap* bitmap = ASource->getBitmap();
       mip_xcb_put_image(
@@ -638,7 +638,7 @@ public:
 
   //----------
 
-  void drawBitmap(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) override {
+  void drawImage(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) override {
   }
 
   //----------

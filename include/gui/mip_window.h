@@ -168,7 +168,7 @@ public:
       //if (flags.autoClip) MBufferPainter->pushClip(ARect);
       AWidget->on_widget_paint(MBufferPainter,ARect,AMode);
       //if (flags.autoClip) MBufferPainter->popClip();
-      MWindowPainter->drawBitmap(ARect.x,ARect.y,MBufferSurface,ARect);
+      MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
     #endif
   }
 

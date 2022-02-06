@@ -38,7 +38,7 @@ public:
     //MIP_Surface* surface = getImageSurface();
     if (MSurface) {
       MIP_FRect rect = MIP_FRect(0,0,MSurface->getWidth(),MSurface->getHeight());
-      APainter->drawBitmap(getRect().x,getRect().y,MSurface,rect);
+      APainter->drawImage(getRect().x,getRect().y,MSurface,rect);
     }
   }
 
