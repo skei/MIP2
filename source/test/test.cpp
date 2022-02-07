@@ -69,10 +69,6 @@ private:
 
   clap_param_info_t
   myParameters[NUM_PARAMS] = {
-    //{ 0, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param1", "", 0.0, 1.0, 0.5 },
-    //{ 1, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param2", "", 0.0, 1.0, 0.5 },
-    //{ 2, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param3", "", 0.0, 1.0, 0.5 },
-    //{ 3, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param4", "", 0.0, 1.0, 0.5 }
     { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",     "Params",   0.0, 1.0, 0.5 },
     { 1, 0,                         nullptr, "(param2)", "(unused)", 0.0, 1.0, 0.5 },
     { 2, 0,                         nullptr, "(param3)", "(unused)", 0.0, 1.0, 0.5 },
@@ -139,21 +135,10 @@ private:
   //----------
 
   void handle_process(const clap_process_t *process) final {
-    //float* in0 = process->audio_inputs[0].data32[0];
-    //float* in1 = process->audio_inputs[0].data32[1];
-    //float* out0 = process->audio_outputs[0].data32[0];
-    //float* out1 = process->audio_outputs[0].data32[1];
-    //uint32_t num = process->frames_count;
-    //for (uint32_t i=0; i<num; i++) {
-    //  float v = getParamVal(0) + getParamMod(0);
-    //  v = MIP_Clamp(v,0,1);
-    //  *out0++ = *in0++ * v;
-    //  *out1++ = *in1++ * v;
-    //}
-    float** inputs = process->audio_inputs[0].data32;
-    float** outputs = process->audio_outputs[0].data32;
-    uint32_t length = process->frames_count;
-    float scale = getParamVal(0) + getParamMod(0);
+    float**  inputs  = process->audio_inputs[0].data32;
+    float**  outputs = process->audio_outputs[0].data32;
+    uint32_t length  = process->frames_count;
+    float    scale   = getParamVal(0) + getParamMod(0);
     MIP_CopyStereoBuffer(outputs,inputs,length);
     MIP_ScaleStereoBuffer(outputs,scale,length);
   }
