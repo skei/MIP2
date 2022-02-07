@@ -211,7 +211,6 @@
 		<Unit filename="../include/base/types/mip_types.h" />
 		<Unit filename="../include/base/types/mip_vector.h" />
 		<Unit filename="../include/base/utils/mip_arguments.h" />
-		<Unit filename="../include/base/utils/mip_bgra.h" />
 		<Unit filename="../include/base/utils/mip_convert.h" />
 		<Unit filename="../include/base/utils/mip_dmc.h" />
 		<Unit filename="../include/base/utils/mip_easing.h" />
@@ -226,6 +225,7 @@
 		<Unit filename="../include/base/utils/mip_parser.h" />
 		<Unit filename="../include/base/utils/mip_pattern.h" />
 		<Unit filename="../include/base/utils/mip_random.h" />
+		<Unit filename="../include/base/utils/mip_rgba.h" />
 		<Unit filename="../include/base/utils/mip_sort.h" />
 		<Unit filename="../include/base/utils/mip_strutils.h" />
 		<Unit filename="../include/base/utils/mip_tcc.h" />

@@ -2,6 +2,9 @@
 #define mip_enums_included
 //----------------------------------------------------------------------
 
+// hex = ored bitflags
+// dec = select one
+
 //----------------------------------------------------------------------
 //
 // general
@@ -18,20 +21,20 @@ enum MIP_EDirections {
 };
 
 enum MIP_EEdges {
-  MIP_EDGE_NONE                  = 0,
-  MIP_EDGE_TOP                   = 1,
-  MIP_EDGE_BOTTOM                = 2,
-  MIP_EDGE_LEFT                  = 4,
-  MIP_EDGE_RIGHT                 = 8,
-  MIP_EDGES_ALL                  = 15
+  MIP_EDGE_NONE                  = 0x00,
+  MIP_EDGE_TOP                   = 0x01,
+  MIP_EDGE_BOTTOM                = 0x02,
+  MIP_EDGE_LEFT                  = 0x04,
+  MIP_EDGE_RIGHT                 = 0x08,
+  MIP_EDGES_ALL                  = 0x0f
 };
 
 enum MIP_ECorners {
-  MIP_CORNER_NONE                = 0,
-  MIP_CORNER_LEFT_TOP            = 1,
-  MIP_CORNER_LEFT_BOTTOM         = 2,
-  MIP_CORNER_RIGHT_TOP           = 4,
-  MIP_CORNER_RIGHT_BOTTOM        = 8
+  MIP_CORNER_NONE                = 0x00,
+  MIP_CORNER_LEFT_TOP            = 0x01,
+  MIP_CORNER_LEFT_BOTTOM         = 0x02,
+  MIP_CORNER_RIGHT_TOP           = 0x04,
+  MIP_CORNER_RIGHT_BOTTOM        = 0x08
 };
 
 //----------------------------------------------------------------------
@@ -78,10 +81,10 @@ enum MIP_EPluginFormat {
 
 
 enum MIP_EPluginPlayStates {
-  MIP_PLUGIN_PLAYSTATE_NONE      = 0,
-  MIP_PLUGIN_PLAYSTATE_PLAYING   = 1,
-  MIP_PLUGIN_PLAYSTATE_RECORDING = 2,
-  MIP_PLUGIN_PLAYSTATE_LOOPING   = 4
+  MIP_PLUGIN_PLAYSTATE_NONE      = 0x00,
+  MIP_PLUGIN_PLAYSTATE_PLAYING   = 0x01,
+  MIP_PLUGIN_PLAYSTATE_RECORDING = 0x02,
+  MIP_PLUGIN_PLAYSTATE_LOOPING   = 0x04
 };
 
 enum MIP_EPluginStates {
@@ -139,12 +142,12 @@ enum MIP_EMouseButtons {
 };
 
 enum MIP_EKeyState {
-  MIP_KEY_NONE                   = 0,
-  MIP_KEY_SHIFT                  = 1,
-  MIP_KEY_CAPS                   = 2,
-  MIP_KEY_CTRL                   = 4,
-  MIP_KEY_ALT                    = 8,
-  MIP_KEY_ALTGR                  = 16
+  MIP_KEY_NONE                   = 0x00,
+  MIP_KEY_SHIFT                  = 0x01,
+  MIP_KEY_CAPS                   = 0x02,
+  MIP_KEY_CTRL                   = 0x04,
+  MIP_KEY_ALT                    = 0x08,
+  MIP_KEY_ALTGR                  = 0x10
 };
 
 enum MIP_EKeyChar {
@@ -159,8 +162,10 @@ enum MIP_EKeyChar {
 };
 
 enum MIP_EWidgetPaintModes {
-  MIP_WIDGET_PAINT_NORMAL        = 0,
-  MIP_WIDGET_PAINT_VALUE         = 1
+  MIP_WIDGET_PAINT_NORMAL        = 0x00,
+  MIP_WIDGET_PAINT_FULL          = 0x00,
+  MIP_WIDGET_PAINT_VALUE         = 0x01,
+  MIP_WIDGET_PAINT_MODULATION    = 0x02
 };
 
 
@@ -210,11 +215,11 @@ enum MIP_EWidgetAlignment {
 };
 
 //enum MIP_EWidgetAnchors {
-//  MIP_WIDGET_ANCHOR_NONE         = 0,
-//  MIP_WIDGET_ANCHOR_LEFT         = 1,
-//  MIP_WIDGET_ANCHOR_TOP          = 2,
-//  MIP_WIDGET_ANCHOR_RIGHT        = 4,
-//  MIP_WIDGET_ANCHOR_BOTTOM       = 8
+//  MIP_WIDGET_ANCHOR_NONE         = 0x00,
+//  MIP_WIDGET_ANCHOR_LEFT         = 0x01,
+//  MIP_WIDGET_ANCHOR_TOP          = 0x02,
+//  MIP_WIDGET_ANCHOR_RIGHT        = 0x04,
+//  MIP_WIDGET_ANCHOR_BOTTOM       = 0x08
 //};
 
 //enum MIP_EWidgetTypes {
@@ -266,11 +271,11 @@ enum MIP_ESymbols {
 };
 
 enum MIP_ETextAlignment {
-  MIP_TEXT_ALIGN_NONE            = 0,
-  MIP_TEXT_ALIGN_TOP             = 1,
-  MIP_TEXT_ALIGN_BOTTOM          = 2,
-  MIP_TEXT_ALIGN_LEFT            = 4,
-  MIP_TEXT_ALIGN_RIGHT           = 8,
+  MIP_TEXT_ALIGN_NONE            = 0x00,
+  MIP_TEXT_ALIGN_TOP             = 0x01,
+  MIP_TEXT_ALIGN_BOTTOM          = 0x02,
+  MIP_TEXT_ALIGN_LEFT            = 0x04,
+  MIP_TEXT_ALIGN_RIGHT           = 0x08,
   MIP_TEXT_ALIGN_CENTER          = 0
 };
 

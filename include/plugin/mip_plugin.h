@@ -350,6 +350,7 @@ public: // plugin
   //----------
 
   const void* get_extension(const char *id) override {
+    //MIP_Print("id: %s\n",id);
   //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
   //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MCheckForUpdate;
@@ -579,14 +580,14 @@ public: // quick-controls
 //------------------------------
 
   uint32_t quick_controls_count() override {
-    //MIP_PRINT;
+    MIP_PRINT;
     return MQuickControls.size();
   }
 
   //----------
 
   bool quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) override {
-    //MIP_PRINT;
+    MIP_PRINT;
     memcpy(page,MQuickControls[page_index],sizeof(clap_quick_controls_page_t));
     return true;
   }

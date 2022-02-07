@@ -47,6 +47,7 @@ private:
   float*              MHostParamVal     = nullptr;
   float*              MHostParamMod     = nullptr;
   MIP_ClapIntQueue    MGuiParamQueue    = {};
+  MIP_ClapIntQueue    MGuiModQueue      = {};
   float*              MGuiParamVal      = nullptr;
   float*              MGuiParamMod      = nullptr;
   bool                MEditorIsOpen     = true;
@@ -144,9 +145,21 @@ private: // timer listener
 
   // [timer]
 
+  //TODO:
+  //check if widget is updated multiple times,
+  //or if both mod & value is changed..
+
+  // list = getQueuedGuiParams
+  // list += getQueuedGuiMods
+  // list.removeDuplicates
+  // paint.list
+  // (also, paintmode = full, value/mod changed)
+  // (queued values = parameter indices)
+
+
   void on_timerCallback(void) final {
-    //MIP_PRINT;
     flushGuiParams();
+    flushGuiMods();
   }
 
 //------------------------------
@@ -168,10 +181,10 @@ public:
   // called from handle_param_mod()
 
   void updateModulationFromHost(uint32_t AIndex, float AValue) {
-//    if (MWindow) {
-//      MGuiParamMod[AIndex] = AValue;
-//      queueGuiParam(AIndex);
-//    }
+    if (MWindow) {
+      MGuiParamMod[AIndex] = AValue;
+      queueGuiMod(AIndex);
+    }
   }
 
 //------------------------------
@@ -184,6 +197,10 @@ public:
     MGuiParamQueue.write(AIndex);
   }
 
+  void queueGuiMod(uint32_t AIndex) {
+    MGuiModQueue.write(AIndex);
+  }
+
   //----------
 
   // [gui]
@@ -192,12 +209,26 @@ public:
     if (MEditorIsOpen) {
       uint32_t index = 0;
       while (MGuiParamQueue.read(&index)) {
-//MIP_PRINT;
         float value = MGuiParamVal[index];
         MIP_Widget* widget = MParamToWidget[index];
         if (widget) {
           //if (widget->getValue() != value)
           widget->setValue(value);
+          MWindow->paintWidget(widget);
+        }
+      }
+    }
+  }
+
+  void flushGuiMods() {
+    if (MEditorIsOpen) {
+      uint32_t index = 0;
+      while (MGuiModQueue.read(&index)) {
+        float value = MGuiParamMod[index];
+        MIP_Widget* widget = MParamToWidget[index];
+        if (widget) {
+          //if (widget->getValue() != value)
+          widget->setModValue(value);
           MWindow->paintWidget(widget);
         }
       }

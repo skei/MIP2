@@ -69,36 +69,40 @@ private:
 
   clap_param_info_t
   myParameters[NUM_PARAMS] = {
-    { 0, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param1", "", 0.0, 1.0, 0.5 },
-    { 1, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param2", "", 0.0, 1.0, 0.5 },
-    { 2, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param3", "", 0.0, 1.0, 0.5 },
-    { 3, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param4", "", 0.0, 1.0, 0.5 }
+    //{ 0, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param1", "", 0.0, 1.0, 0.5 },
+    //{ 1, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param2", "", 0.0, 1.0, 0.5 },
+    //{ 2, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param3", "", 0.0, 1.0, 0.5 },
+    //{ 3, 0 /*CLAP_PARAM_IS_MODULATABLE*/, nullptr, "param4", "", 0.0, 1.0, 0.5 }
+    { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",     "Params",   0.0, 1.0, 0.5 },
+    { 1, 0,                         nullptr, "(param2)", "(unused)", 0.0, 1.0, 0.5 },
+    { 2, 0,                         nullptr, "(param3)", "(unused)", 0.0, 1.0, 0.5 },
+    { 3, 0,                         nullptr, "(param4)", "(unused)", 0.0, 1.0, 0.5 }
   };
 
   clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
-    { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
-    { 1, "input2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+    { 0, "Input 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
+    { 1, "Input 2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
   clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
-    { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
-    { 1, "output2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+    { 0, "Output 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
+    { 1, "Output 2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
 
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
-   { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "notes1" },
-   { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "notes2" }
+   { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
+   { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
   };
 
   clap_note_port_info_t myNoteOutputs[NUM_NOTE_OUTPUTS] = {
-   { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "notes1" },
-   { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "notes2" }
+   { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
+   { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
   };
 
   clap_quick_controls_page_t myQuickControls[NUM_QUICK_CONTROLS] = {
-    { 0, "quick1", "preset", {0,1,2,3,0,1,2,3} },
-    { 1, "quick2", "device", {0,1,2,3,0,1,2,3} }
+    { 0, "Quick 1", "preset", {0,1,2,3,0,1,2,3} },
+    { 1, "Quick 2", "device", {0,1,2,3,0,1,2,3} }
   };
 
   //----------
