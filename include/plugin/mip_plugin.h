@@ -41,10 +41,8 @@ class MIP_Plugin
 protected:
 //------------------------------
 
-  const clap_plugin_descriptor_t* MDescriptor       = nullptr;
-  //const clap_host_t*              MHost             = nullptr;
-
-  MIP_ClapHost*     MHost             = nullptr;
+  const clap_plugin_descriptor_t* MDescriptor = nullptr;
+  MIP_ClapHost*                   MHost       = nullptr;
 
   MIP_Parameters    MParameters       = {};
   MIP_AudioPorts    MAudioInputs      = {};
@@ -70,9 +68,7 @@ public:
   MIP_Plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_ClapPlugin(ADescriptor,AHost) {
     MDescriptor = ADescriptor;
-    //MHost = AHost;
     MHost = new MIP_ClapHost(AHost);
-
     uint32_t num = params_count();
     uint32_t size = num * sizeof(float);
     MAudioParamVal = (float*)malloc(size);
@@ -98,21 +94,27 @@ public:
 
   //----------
 
+private: // ??
+
   void queueAudioParam(uint32_t AIndex) {
     MAudioParamQueue.write(AIndex);
   }
 
   //----------
 
+  //todo: check if value really changed (if multiple events)
+
   void flushAudioParams() {
     uint32_t index = 0;
     while (MAudioParamQueue.read(&index)) {
       float value = MAudioParamVal[index];
-      //todo: check if value reallyt changed (if multiple events)
-      MParamVal[index] = value;
+      // if we already set this, it should be (bit) identical?
+      if (value != MParamVal[index]) {
+        MParamVal[index] = value;
+        //...
+      }
     }
   }
-
 
 //------------------------------
 public: // editor listener
@@ -142,7 +144,6 @@ public:
     uint32_t i = param_value->param_id;
     float v = param_value->value;
     setParamVal(i,v);
-//MIP_PRINT;
     if (MEditor && MIsEditorOpen) MEditor->updateParameterFromHost(i,v);
   }
 
@@ -174,10 +175,10 @@ public:
     //  *out0++ = *in0++;
     //  *out1++ = *in1++;
     //}
-    float** inputs = process->audio_inputs[0].data32;
-    float** outputs = process->audio_outputs[0].data32;
-    uint32_t length = process->frames_count;
-    MIP_CopyStereoBuffer(outputs,inputs,length);
+//    float** inputs = process->audio_inputs[0].data32;
+//    float** outputs = process->audio_outputs[0].data32;
+//    uint32_t length = process->frames_count;
+//    MIP_CopyStereoBuffer(outputs,inputs,length);
   }
 
 //------------------------------
@@ -351,29 +352,29 @@ public: // plugin
 
   const void* get_extension(const char *id) override {
     //MIP_Print("id: %s\n",id);
-  //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
-  //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MCheckForUpdate;
-  //if (strcmp(id,CLAP_EXT_CV) == 0)                  return &MCV;
-  //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MAudioPortsConfig;
+    //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
+    //if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
+    //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MCheckForUpdate;
+    //if (strcmp(id,CLAP_EXT_CV) == 0)                  return &MCV;
+    //if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG) == 0)  return &MAudioPortsConfig;
     if (strcmp(id,CLAP_EXT_EVENT_FILTER) == 0)        return &MEventFilter;
-  //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MFileReference;
-    if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MGui;
-    if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MGuiX11;
-    if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MLatency;
-  //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MMidiMappings;
-  //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MNoteName;
-    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MNotePorts;
+    //if (strcmp(id,CLAP_EXT_FILE_REFERENCE) == 0)      return &MFileReference;
+    //if (strcmp(id,CLAP_EXT_GUI) == 0)                 return &MGui;
+    //if (strcmp(id,CLAP_EXT_GUI_X11) == 0)             return &MGuiX11;
+    //if (strcmp(id,CLAP_EXT_LATENCY) == 0)             return &MLatency;
+    //if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS) == 0)       return &MMidiMappings;
+    //if (strcmp(id,CLAP_EXT_NOTE_NAME) == 0)           return &MNoteName;
+    //if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MNotePorts;
     if (strcmp(id,CLAP_EXT_PARAMS) == 0)              return &MParams;
-  //if (strcmp(id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    return &MPosixFdSupport;
+    //if (strcmp(id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    return &MPosixFdSupport;
     if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MPresetLoad;
-    if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MQuickControls;
-  //if (strcmp(id,CLAP_EXT_RENDER) == 0)              return &MRender;
+    //if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MQuickControls;
+    //if (strcmp(id,CLAP_EXT_RENDER) == 0)              return &MRender;
     if (strcmp(id,CLAP_EXT_STATE) == 0)               return &MState;
-  //if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MSurround;
-  //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MThreadPool;
+    //if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MSurround;
+    //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MThreadPool;
     if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MTimerSupport;
-  //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
+    //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
     return nullptr;
   }
 

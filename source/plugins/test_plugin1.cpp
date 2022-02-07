@@ -31,11 +31,7 @@ const char* myFeatures[] = {
 const clap_plugin_descriptor_t myDescriptor = {
   CLAP_VERSION,
   "torhelgeskei/test_plugin1/v0.0.0",
-  #ifdef MIP_DEBUG
-    "test_plugin1 (debug)",
-  #else
-    "test_plugin1",
-  #endif
+  "test_plugin1",
   "torhelgeskei",
   "https://torhelgeskei.com",
   "",
@@ -46,6 +42,21 @@ const clap_plugin_descriptor_t myDescriptor = {
 };
 
 #define ALL_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
+
+//test
+const clap_plugin_descriptor_t myDescriptor2 = {
+  CLAP_VERSION,
+  "torhelgeskei/test_plugin2/v0.0.0",
+  "test_plugin2",
+  "torhelgeskei",
+  "https://torhelgeskei.com",
+  "",
+  "",
+  "0.0.0",
+  "simple mip2 test plugin 2",
+  myFeatures
+};
+
 
 //----------------------------------------------------------------------
 //
@@ -67,8 +78,7 @@ private:
   #define NUM_NOTE_OUTPUTS    2
   #define NUM_QUICK_CONTROLS  2
 
-  clap_param_info_t
-  myParameters[NUM_PARAMS] = {
+  clap_param_info_t myParameters[NUM_PARAMS] = {
     { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",     "Params",   0.0, 1.0, 0.5 },
     { 1, 0,                         nullptr, "(param2)", "(unused)", 0.0, 1.0, 0.5 },
     { 2, 0,                         nullptr, "(param3)", "(unused)", 0.0, 1.0, 0.5 },
@@ -174,9 +184,26 @@ public: // plugin
 
   //----------
 
+  const void* get_extension(const char *id) final {
+    const void* ext = MIP_Plugin::get_extension(id);
+    if (!ext) {
+      if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)     return &MAudioPorts;
+      if (strcmp(id,CLAP_EXT_GUI) == 0)             return &MGui;
+      if (strcmp(id,CLAP_EXT_GUI_X11) == 0)         return &MGuiX11;
+      if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)      return &MNotePorts;
+      if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)  return &MQuickControls;
+    }
+    return ext;
+    //return nullptr;
+  }
+
+
+  //----------
+
   bool gui_create() final {
     bool result = MIP_Plugin::gui_create();
     if (result) {
+      // setup gui
       MEditorPanel = new MIP_PanelWidget(MIP_FRect(0));
       MEditorPanel->setBackgroundColor(0.6);
       MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
@@ -188,6 +215,7 @@ public: // plugin
       MEditorPanel->appendWidget(knob2);
       MEditorPanel->appendWidget(knob3);
       MEditorPanel->appendWidget(knob4);
+      // connect widgets/parameters
       if (MEditor) {
         MEditor->connect(knob1,0);
         MEditor->connect(knob2,1);
@@ -224,15 +252,33 @@ public: // plugin
 //
 //----------------------------------------------------------------------
 
+// test
+
+class myPlugin2
+: public MIP_Plugin {
+public:
+  myPlugin2(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) : MIP_Plugin(ADescriptor,AHost) {}
+  virtual ~myPlugin2() {}
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
 void MIP_RegisterPlugins(MIP_ClapList* AList) {
   AList->appendPlugin(&myDescriptor);
+  AList->appendPlugin(&myDescriptor2);
 }
 
 //----------
 
 MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-  if (AIndex == 0) {
-    return new myPlugin(ADescriptor,AHost);
+  switch (AIndex) {
+    case 0: return new myPlugin(ADescriptor,AHost);
+    case 1: return new myPlugin2(ADescriptor,AHost);
   }
+  //else return new myPlugin2(ADescriptor,AHost);
   return nullptr;
 }
