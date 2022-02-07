@@ -30,11 +30,11 @@ const char* myFeatures[] = {
 
 const clap_plugin_descriptor_t myDescriptor = {
   CLAP_VERSION,
-  "torhelgeskei/test/v0.0.0",
+  "torhelgeskei/test_plugin1/v0.0.0",
   #ifdef MIP_DEBUG
-    "mip_debug",
+    "test_plugin1 (debug)",
   #else
-    "mip_release",
+    "test_plugin1",
   #endif
   "torhelgeskei",
   "https://torhelgeskei.com",
