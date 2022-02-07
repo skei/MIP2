@@ -256,7 +256,7 @@ public:
 
   //----------
 
-  //TODO: should probably be in MIP_Plugin
+  //TODO: MIP_EditorListener -> MIP_Plugin
 
   void send_param_mod(uint32_t index, float value, const clap_output_events_t* out_events) {
     clap_event_param_mod_t param_mod;
@@ -277,7 +277,7 @@ public:
 
   //----------
 
-  //TODO: should probably be in MIP_Plugin
+  //TODO: MIP_EditorListener -> MIP_Plugin
 
   void send_param_value(uint32_t index, float value, const clap_output_events_t* out_events) {
     clap_event_param_value_t param_value;
