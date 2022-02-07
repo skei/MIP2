@@ -214,6 +214,7 @@ public:
         if (widget) {
           //if (widget->getValue() != value)
           widget->setValue(value);
+          //MWindow->paintWidget(widget,widget->getRect(),MIP_WIDGET_PAINT_VALUE);
           MWindow->paintWidget(widget);
         }
       }
@@ -229,6 +230,7 @@ public:
         if (widget) {
           //if (widget->getValue() != value)
           widget->setModValue(value);
+          //MWindow->paintWidget(widget,widget->getRect(),MIP_WIDGET_PAINT_MODULATION);
           MWindow->paintWidget(widget);
         }
       }

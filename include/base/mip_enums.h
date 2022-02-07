@@ -162,12 +162,11 @@ enum MIP_EKeyChar {
 };
 
 enum MIP_EWidgetPaintModes {
-  MIP_WIDGET_PAINT_NORMAL        = 0x00,
-  MIP_WIDGET_PAINT_FULL          = 0x00,
-  MIP_WIDGET_PAINT_VALUE         = 0x01,
-  MIP_WIDGET_PAINT_MODULATION    = 0x02
+  MIP_WIDGET_PAINT_NORMAL        = 0,
+  MIP_WIDGET_PAINT_FULL          = 0,
+  MIP_WIDGET_PAINT_VALUE         = 1,
+  MIP_WIDGET_PAINT_MODULATION    = 2
 };
-
 
 enum MIP_EWidgetAlignment {
   MIP_WIDGET_ALIGN_NONE                = 0,  // relative to window
