@@ -150,7 +150,7 @@ private:
 
   //----------
 
-  void thread_pool_exec(uint32_t task_index) {
+  void thread_pool_exec(uint32_t task_index) final {
     float f = 0.0;
     for (uint32_t i=0; i<NUM_RANDOM; i++) {
       f += (MIP_Random() * 0.00001);
@@ -166,8 +166,8 @@ private:
     uint32_t length  = process->frames_count;
     float    scale   = getParamVal(0) + getParamMod(0);
 
-//    // test thread pool
-//
+    // test thread pool
+
 //    MSum = 0.0;
 //    if (MHost->thread_pool) {
 //      bool didComputeVoices = false;
