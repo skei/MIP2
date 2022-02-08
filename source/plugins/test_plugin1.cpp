@@ -168,7 +168,7 @@ private:
     if (MHost->thread_pool) {
       MSum = 0.0;
       bool didComputeVoices = false;
-      didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
+      //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
       if (!didComputeVoices) {
         for (uint32_t i=0; i<NUM_THREADS;i++) {
           thread_pool_exec(i);
