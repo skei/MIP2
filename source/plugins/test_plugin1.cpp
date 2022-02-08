@@ -22,6 +22,10 @@
 //----------------------------------------------------------------------
 
 
+  #define NUM_THREADS   16
+  #define NUM_RANDOM    256
+
+
 const char* myFeatures[] = {
   "audio_effect",
   nullptr
@@ -78,9 +82,6 @@ private:
   #define NUM_NOTE_INPUTS     2
   #define NUM_NOTE_OUTPUTS    2
   #define NUM_QUICK_CONTROLS  2
-
-  #define NUM_THREADS         16
-  #define NUM_RANDOM          1024
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
     { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",     "Params",   0.0, 1.0, 0.5 },
@@ -151,8 +152,10 @@ private:
 
   void thread_pool_exec(uint32_t task_index) {
     float f = 0.0;
-    for (uint32_t i=0; i<NUM_RANDOM; i++) f = MIP_RandomRange(-1.0,1.0);
-     f *= (task_index * 0.00001);
+    for (uint32_t i=0; i<NUM_RANDOM; i++) {
+      f = MIP_RandomRange(-1.0,1.0);
+    }
+    f *= (task_index * 0.00001);
     MSum += (1.0 / NUM_THREADS) + f;
   }
 
