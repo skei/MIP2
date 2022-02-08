@@ -80,7 +80,7 @@ private:
   #define NUM_QUICK_CONTROLS  2
 
   #define NUM_THREADS         16
-  #define NUM_RANDOM          128
+  #define NUM_RANDOM          1024
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
     { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",     "Params",   0.0, 1.0, 0.5 },
@@ -137,14 +137,6 @@ public:
 private:
 //------------------------------
 
-  void thread_pool_exec(uint32_t task_index) {
-    float f = 0.0;
-    for (uint32_t i=0; i<NUM_RANDOM; i++) f = MIP_RandomRange(-1.0,1.0);
-    MSum += (1.0 / NUM_THREADS) + (f * 0.00001 * task_index);
-  }
-
-  //----------
-
   //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
   //  MIP_Plugin::handle_parameter_event(param_value);
   //}
@@ -154,6 +146,15 @@ private:
   //void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
   //  MIP_Plugin::handle_modulation_event(param_mod);
   //}
+
+  //----------
+
+  void thread_pool_exec(uint32_t task_index) {
+    float f = 0.0;
+    for (uint32_t i=0; i<NUM_RANDOM; i++) f = MIP_RandomRange(-1.0,1.0);
+     f *= (task_index * 0.00001);
+    MSum += (1.0 / NUM_THREADS) + f;
+  }
 
   //----------
 
@@ -167,7 +168,7 @@ private:
     if (MHost->thread_pool) {
       MSum = 0.0;
       bool didComputeVoices = false;
-      //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
+      didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
       if (!didComputeVoices) {
         for (uint32_t i=0; i<NUM_THREADS;i++) {
           thread_pool_exec(i);
