@@ -23,7 +23,7 @@
 
 
   #define NUM_THREADS   16
-  #define NUM_RANDOM    256
+  #define NUM_RANDOM    1024
 
 
 const char* myFeatures[] = {
@@ -168,8 +168,8 @@ private:
     float    scale   = getParamVal(0) + getParamMod(0);
 
     // test thread pool
+    MSum = 0.0;
     if (MHost->thread_pool) {
-      MSum = 0.0;
       bool didComputeVoices = false;
       //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
       if (!didComputeVoices) {
@@ -177,8 +177,9 @@ private:
           thread_pool_exec(i);
         }
       }
-      scale *= MSum;
     }
+    scale *= MSum;
+
     MIP_CopyStereoBuffer(outputs,inputs,length);
     MIP_ScaleStereoBuffer(outputs,scale,length);
   }
