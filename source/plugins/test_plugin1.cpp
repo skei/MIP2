@@ -23,7 +23,7 @@
 
 
   #define NUM_THREADS   16
-  #define NUM_RANDOM    1024
+  #define NUM_RANDOM    512
 
 
 const char* myFeatures[] = {
@@ -153,9 +153,8 @@ private:
   void thread_pool_exec(uint32_t task_index) {
     float f = 0.0;
     for (uint32_t i=0; i<NUM_RANDOM; i++) {
-      f = MIP_RandomRange(-1.0,1.0);
+      f += (MIP_Random() * 0.00001);
     }
-    f *= (task_index * 0.00001);
     MSum += (1.0 / NUM_THREADS) + f;
   }
 
@@ -167,18 +166,20 @@ private:
     uint32_t length  = process->frames_count;
     float    scale   = getParamVal(0) + getParamMod(0);
 
-    // test thread pool
-    MSum = 0.0;
-    if (MHost->thread_pool) {
-      bool didComputeVoices = false;
-      //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
-      if (!didComputeVoices) {
-        for (uint32_t i=0; i<NUM_THREADS;i++) {
-          thread_pool_exec(i);
-        }
-      }
-    }
-    scale *= MSum;
+//    // test thread pool
+//
+//    MSum = 0.0;
+//    if (MHost->thread_pool) {
+//      bool didComputeVoices = false;
+//      //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
+//      if (!didComputeVoices) {
+//        for (uint32_t i=0; i<NUM_THREADS;i++) {
+//          thread_pool_exec(i);
+//          //MThreadPool.exec(&MPlugin,i);
+//        }
+//      }
+//    }
+//    scale *= MSum;
 
     MIP_CopyStereoBuffer(outputs,inputs,length);
     MIP_ScaleStereoBuffer(outputs,scale,length);
