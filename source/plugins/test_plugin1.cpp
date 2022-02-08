@@ -21,6 +21,7 @@
 //
 //----------------------------------------------------------------------
 
+
 const char* myFeatures[] = {
   "audio_effect",
   nullptr
@@ -78,6 +79,9 @@ private:
   #define NUM_NOTE_OUTPUTS    2
   #define NUM_QUICK_CONTROLS  2
 
+  #define NUM_THREADS         16
+  #define NUM_RANDOM          128
+
   clap_param_info_t myParameters[NUM_PARAMS] = {
     { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",     "Params",   0.0, 1.0, 0.5 },
     { 1, 0,                         nullptr, "(param2)", "(unused)", 0.0, 1.0, 0.5 },
@@ -114,6 +118,7 @@ private:
   //----------
 
   MIP_PanelWidget* MEditorPanel = nullptr;
+  float MSum = 0.0;
 
 //------------------------------
 public:
@@ -132,6 +137,14 @@ public:
 private:
 //------------------------------
 
+  void thread_pool_exec(uint32_t task_index) {
+    float f = 0.0;
+    for (uint32_t i=0; i<NUM_RANDOM; i++) f = MIP_RandomRange(-1.0,1.0);
+    MSum += (1.0 / NUM_THREADS) + (f * 0.00001 * task_index);
+  }
+
+  //----------
+
   //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
   //  MIP_Plugin::handle_parameter_event(param_value);
   //}
@@ -149,6 +162,19 @@ private:
     float**  outputs = process->audio_outputs[0].data32;
     uint32_t length  = process->frames_count;
     float    scale   = getParamVal(0) + getParamMod(0);
+
+    // test thread pool
+    if (MHost->thread_pool) {
+      MSum = 0.0;
+      bool didComputeVoices = false;
+      //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
+      if (!didComputeVoices) {
+        for (uint32_t i=0; i<NUM_THREADS;i++) {
+          thread_pool_exec(i);
+        }
+      }
+      scale *= MSum;
+    }
     MIP_CopyStereoBuffer(outputs,inputs,length);
     MIP_ScaleStereoBuffer(outputs,scale,length);
   }
@@ -192,6 +218,7 @@ public: // plugin
       if (strcmp(id,CLAP_EXT_GUI_X11) == 0)         return &MGuiX11;
       if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)      return &MNotePorts;
       if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)  return &MQuickControls;
+      if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)     return &MThreadPool;
     }
     return ext;
     //return nullptr;
