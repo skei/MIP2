@@ -15,14 +15,15 @@
 //----------------------------------------------------------------------
 
 //#include "../source/plugins/clap-minimal.cpp"
-#include "../source/plugins/test_plugin1.cpp"
-
+//#include "../source/plugins/test_plugin1.cpp"
 
 //----------------------------------------------------------------------
 //
 // test (aka templates)
 //
 //----------------------------------------------------------------------
+
+#include "../source/test/test_json.cpp"
 
 //TODO
 
