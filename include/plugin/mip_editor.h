@@ -4,13 +4,13 @@
 
 #include "mip.h"
 #include "base/system/mip_timer.h"
-#include "base/types/mip_queue.h"
+//#include "base/types/mip_queue.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include "gui/mip_window.h"
 
-#define MIP_CLAP_MESSAGE_QUEUE_SIZE 1024
-typedef MIP_Queue<uint32_t,MIP_CLAP_MESSAGE_QUEUE_SIZE> MIP_ClapIntQueue;
+//#define MIP_CLAP_MESSAGE_QUEUE_SIZE 1024
+//typedef MIP_Queue<uint32_t,MIP_CLAP_MESSAGE_QUEUE_SIZE> MIP_ClapIntQueue;
 
 //----------------------------------------------------------------------
 //

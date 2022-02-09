@@ -13,7 +13,6 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
-#include "gui/cairo/mip_cairo_painter.h"
 
 //----------------------------------------------------------------------
 //
@@ -100,15 +99,14 @@ private:
     { 1, "Output 2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
-
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
-   { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
-   { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
+    { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
+    { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
   };
 
   clap_note_port_info_t myNoteOutputs[NUM_NOTE_OUTPUTS] = {
-   { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
-   { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
+    { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
+    { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
   };
 
   clap_quick_controls_page_t myQuickControls[NUM_QUICK_CONTROLS] = {
@@ -229,7 +227,6 @@ public: // plugin
     return ext;
     //return nullptr;
   }
-
 
   //----------
 

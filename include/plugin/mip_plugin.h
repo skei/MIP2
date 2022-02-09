@@ -4,23 +4,31 @@
 
 #include "mip.h"
 #include "base/types/mip_array.h"
+#include "base/types/mip_queue.h"
 #include "audio/mip_audio_utils.h"
-#include "plugin/mip_editor.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_plugin.h"
+
+#ifndef MIP_NO_GUI
+#include "plugin/mip_editor.h"
+#endif
 
 #include "plugin/wrapper/mip_exe_wrapper.h"
 #include "plugin/wrapper/mip_lv2_wrapper.h"
 #include "plugin/wrapper/mip_vst2_wrapper.h"
 #include "plugin/wrapper/mip_vst3_wrapper.h"
 
+
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
+
+//#define MIP_CLAP_MESSAGE_QUEUE_SIZE 1024
+//typedef MIP_Queue<uint32_t,MIP_CLAP_MESSAGE_QUEUE_SIZE> MIP_ClapIntQueue;
 
 typedef MIP_Array<const clap_param_info_t*>           MIP_Parameters;
 typedef MIP_Array<const clap_audio_port_info_t*>      MIP_AudioPorts;
@@ -35,7 +43,11 @@ typedef MIP_Array<const clap_quick_controls_page_t*>  MIP_QuickControls;
 
 class MIP_Plugin
 : public MIP_ClapPlugin
+#ifndef MIP_NO_GUI
 , public MIP_EditorListener {
+#else
+{
+  #endif
 
 //------------------------------
 protected:
@@ -53,13 +65,17 @@ protected:
 
   float*            MParamVal         = nullptr;
   float*            MParamMod         = nullptr;
-  MIP_Editor*       MEditor           = nullptr;
   bool              MIsProcessing     = false;
   bool              MIsActivated      = false;
-  bool              MIsEditorOpen     = false;
 
   MIP_ClapIntQueue  MAudioParamQueue  = {};
   float*            MAudioParamVal    = nullptr;
+
+  #ifndef MIP_NO_GUI
+  MIP_Editor*       MEditor           = nullptr;
+  bool              MIsEditorOpen     = false;
+  #endif
+
 
 //------------------------------
 public:
@@ -120,6 +136,8 @@ private: // ??
 public: // editor listener
 //------------------------------
 
+  #ifndef MIP_NO_GUI
+
   // todo: queue, and flush in process?
 
   void on_editor_updateParameter(uint32_t AIndex, float AValue) final {
@@ -127,6 +145,8 @@ public: // editor listener
     MAudioParamVal[AIndex] = AValue;
     queueAudioParam(AIndex);
   }
+
+  #endif
 
 //------------------------------
 public:
@@ -144,7 +164,9 @@ public:
     uint32_t i = param_value->param_id;
     float v = param_value->value;
     setParamVal(i,v);
+    #ifndef MIP_NO_GUI
     if (MEditor && MIsEditorOpen) MEditor->updateParameterFromHost(i,v);
+    #endif
   }
 
   //----------
@@ -153,7 +175,9 @@ public:
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
     setParamMod(i,v);
+    #ifndef MIP_NO_GUI
     if (MEditor && MIsEditorOpen) MEditor->updateModulationFromHost(i,v);
+    #endif
   }
 
   //----------
@@ -210,7 +234,9 @@ protected:
   //----------
 
   virtual void handle_output_events(const clap_output_events_t* out_events) {
+    #ifndef MIP_NO_GUI
     if (MEditor && MIsEditorOpen) MEditor->flushHostParams(out_events);
+    #endif
   }
 
 //------------------------------
@@ -238,7 +264,9 @@ protected:
 
   void setEditorParameterValues(clap_param_info_t* params, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
+      #ifndef MIP_NO_GUI
       if (MEditor) MEditor->setParameterValue(i,MParamVal[i]);
+      #endif
     }
   }
 
@@ -454,14 +482,20 @@ public: // params
 public: // gui-x11
 //------------------------------
 
+  #ifndef MIP_NO_GUI
+
   bool gui_x11_attach(const char *display_name, unsigned long window) override {
     if (MEditor) MEditor->attach(display_name,window);
     return true;
   }
 
+  #endif
+
 //------------------------------
 public: // gui
 //------------------------------
+
+  #ifndef MIP_NO_GUI
 
   bool gui_create() override {
     MEditor = new MIP_Editor(this,this);
@@ -529,6 +563,8 @@ public: // gui
       MEditor->hide();
     }
   }
+
+  #endif
 
 //------------------------------
 public: // audio-ports
