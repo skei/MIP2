@@ -2,9 +2,29 @@
 #define mip_midi_included
 //----------------------------------------------------------------------
 
+/*
+  TODO:
+    MIP_MdiEvent -> MIP_MidiEventExt (and other structs..)
+    MIP_MdiMsg -> Midi_Event
+    MIP_Array<MIP_Event,1024> MIP_MidiEvents
+*/
+
 //#include <vector>
 #include "mip.h"
 #include "base/types/mip_array.h"
+
+//----------------------------------------------------------------------
+//
+// midi_msg (small)
+//
+//----------------------------------------------------------------------
+
+struct MIP_MidiMsg {
+  uint32_t  time    = 0;
+  uint8_t   data[4] = {0};
+};
+
+
 
 //----------------------------------------------------------------------
 //
