@@ -208,6 +208,10 @@ public:
     insertTail(AItem);
   }
 
+  void push_back(_T& AItem) {
+    insertTail(AItem);
+  }
+
   //----------
 
   _T& head(void) {

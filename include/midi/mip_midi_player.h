@@ -45,6 +45,9 @@ public:
 
   //----------
 
+  //void initialize(MIP_MidiSequence* ASequence, float ASampleRate=44100.0, float AStartPos=0.0) {
+  //}
+
   void initialize(MIP_MidiFile* AMidiFile, float ASampleRate=44100.0, float AStartPos=0.0) {
     MMidiFile       = AMidiFile;
     MSequence       = AMidiFile->getMidiSequence();

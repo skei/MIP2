@@ -535,6 +535,7 @@ public: // gui
   //----------
 
   void gui_round_size(uint32_t *width, uint32_t *height) override {
+    //MIP_Print("%i,%i\n",*width,*height);
     if (MEditor) MEditor->roundSize(width,height);
 
   }

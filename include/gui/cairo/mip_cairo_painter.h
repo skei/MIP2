@@ -10,6 +10,7 @@
 */
 
 #include "mip.h"
+//#include "gui/base/mip_base_painter.h"
 #include "gui/cairo/mip_cairo.h"
 
 //----------------------------------------------------------------------
@@ -51,7 +52,8 @@ cairo_line_join_t mip_line_join[3] = {
 //
 //----------------------------------------------------------------------
 
-class MIP_CairoPainter {
+class MIP_CairoPainter
+/*: public MIP_BasePainter*/ {
 
 //------------------------------
 private:
@@ -78,6 +80,12 @@ public:
     If drawable is a Window, then the function cairo_xcb_surface_set_size()
     must be called whenever the size of the window changes.
   */
+
+  MIP_CairoPainter(MIP_Drawable* ADrawable) {
+    //TODO
+  }
+
+  //----------
 
   MIP_CairoPainter(cairo_surface_t* ASurface) {
     MSurface = ASurface;

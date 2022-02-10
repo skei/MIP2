@@ -22,6 +22,12 @@ typedef MIP_Stack<MIP_FRect,16> MIP_RectStack;
   typedef MIP_XcbPainter MIP_ImplementedPainter;
 #endif
 
+#ifdef MIP_GUI_CAIRO
+  // ???
+  //#include "gui/xcb/mip_xcb_painter.h"
+  //typedef MIP_XcbPainter MIP_ImplementedPainter;
+#endif
+
 //----------------------------------------------------------------------
 
 class MIP_Painter

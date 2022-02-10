@@ -4,10 +4,10 @@
 
 /*
   TODO:
-    invalidate:
-    send user/client message, with rect and widget, so we can optimize
-    redrawing.. draw only from widget and downwards, so we don't have to
-    draw everything from the window/background and up..
+    invalidate: send user/client message somehow, with rect and widget,
+    so we can optimize redrawing.. draw only from widget and downwards
+    (skipping opaque widgets that fill the entire update rect), so we
+    don't have to draw everything from the window/background and up..
 */
 
 //----------------------------------------------------------------------

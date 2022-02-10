@@ -62,7 +62,10 @@ public:
         uint8_t msg1 = event.buffer[0];
         uint8_t msg2 = event.buffer[1];
         uint8_t msg3 = event.buffer[2];
+
+        //TODO: insert into MIP_MidiTrack
         MIP_Print("midi: %02x %02x %02x\n",msg1,msg2,msg3);
+
         uint32_t offset = i;
         jack_midi_data_t* buffer = jack_midi_event_reserve(midi_out_port,offset,3);
         buffer[0] = msg1;

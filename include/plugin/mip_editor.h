@@ -347,6 +347,8 @@ public: // clap.gui
   //----------
 
   virtual void roundSize(uint32_t *width, uint32_t *height) {
+    *width = MWidth;
+    *height = MHeight;
   }
 
   //----------
