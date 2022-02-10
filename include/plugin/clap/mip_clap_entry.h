@@ -4,7 +4,8 @@
 
 #include "mip.h"
 #include "extern/clap/clap.h"
-//#include "plugin/clap/mip_clap_factory.h"
+
+#include "plugin/clap/mip_clap_factory.h"
 
 //----------------------------------------------------------------------
 //
@@ -24,9 +25,11 @@ void clap_entry_deinit_callback() {
 //----------
 
 const void* clap_entry_get_factory_callback(const char *factory_id) {
+  #ifdef MIP_PLUGIN_USE_INVALIDATION
   if (strcmp(factory_id,CLAP_PLUGIN_INVALIDATION_FACTORY_ID) == 0) {
     return &MIP_GLOBAL_CLAP_INVALIDATION;
   }
+  #endif
   if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
     return &MIP_GLOBAL_CLAP_FACTORY;
   }

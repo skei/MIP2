@@ -12,6 +12,8 @@
 //
 //----------------------------------------------------------------------
 
+#ifdef MIP_PLUGIN_USE_INVALIDATION
+
 uint32_t clap_invalidation_count_callback(const struct clap_plugin_invalidation_factory *factory) {
   return MIP_GLOBAL_CLAP_LIST.getNumInvalidationSources();
 }
@@ -24,11 +26,15 @@ bool clap_invalidation_refresh_callback(const struct clap_plugin_invalidation_fa
   return false;
 }
 
+#endif // MIP_PLUGIN_USE_INVALIDATION
+
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
+
+#ifdef MIP_PLUGIN_USE_INVALIDATION
 
 //static
 //constexpr
@@ -37,6 +43,8 @@ const clap_plugin_invalidation_factory MIP_GLOBAL_CLAP_INVALIDATION = {
   clap_invalidation_get_callback,
   clap_invalidation_refresh_callback
 };
+
+#endif // MIP_PLUGIN_USE_INVALIDATION
 
 //----------------------------------------------------------------------
 #endif

@@ -4,13 +4,10 @@
 
 #include "mip.h"
 #include "base/system/mip_timer.h"
-//#include "base/types/mip_queue.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_plugin.h"
+#include "plugin/clap/mip_clap_utils.h"
 #include "gui/mip_window.h"
-
-//#define MIP_CLAP_MESSAGE_QUEUE_SIZE 1024
-//typedef MIP_Queue<uint32_t,MIP_CLAP_MESSAGE_QUEUE_SIZE> MIP_ClapIntQueue;
 
 //----------------------------------------------------------------------
 //
@@ -43,9 +40,6 @@ private:
   MIP_Window*         MWindow           = nullptr;
   MIP_Timer*          MTimer            = nullptr;
   MIP_Widget**        MParamToWidget    = nullptr;
-  MIP_ClapIntQueue    MHostParamQueue   = {};
-  float*              MHostParamVal     = nullptr;
-  float*              MHostParamMod     = nullptr;
   MIP_ClapIntQueue    MGuiParamQueue    = {};
   MIP_ClapIntQueue    MGuiModQueue      = {};
   float*              MGuiParamVal      = nullptr;
@@ -64,12 +58,8 @@ public:
     MParamToWidget = (MIP_Widget**)malloc(size);
     memset(MParamToWidget,0,size);
     size = MNumParams * sizeof(float);
-    MHostParamVal = (float*)malloc(size);
-    MHostParamMod = (float*)malloc(size);
     MGuiParamVal  = (float*)malloc(size);
     MGuiParamMod  = (float*)malloc(size);
-    memset(MHostParamVal,0,size);
-    memset(MHostParamMod,0,size);
     memset(MGuiParamVal,0,size);
     memset(MGuiParamMod,0,size);
     MTimer = new MIP_Timer(this);
@@ -81,8 +71,6 @@ public:
     delete MTimer;
     free(MParamToWidget);
     if (MWindow) delete MWindow;
-    free(MHostParamVal);
-    free(MHostParamMod);
     free(MGuiParamVal);
     free(MGuiParamMod);
   }
@@ -133,8 +121,6 @@ private: // window listener
     uint32_t index = AWidget->getParamIndex();
     if (index >= 0) {
       float value = AWidget->getValue();
-      MHostParamVal[index] = value;
-      queueHostParam(index);
       if (MListener) MListener->on_editor_updateParameter(index,value);
     }
   }
@@ -168,7 +154,7 @@ public:
 
   // [audio thread]
 
-  void updateParameterFromHost(uint32_t AIndex, float AValue) {
+  void updateParameterInProcess(uint32_t AIndex, float AValue) {
     if (MWindow) {
       MGuiParamVal[AIndex] = AValue;
       queueGuiParam(AIndex);
@@ -197,10 +183,6 @@ public:
     MGuiParamQueue.write(AIndex);
   }
 
-  void queueGuiMod(uint32_t AIndex) {
-    MGuiModQueue.write(AIndex);
-  }
-
   //----------
 
   // [gui]
@@ -221,6 +203,14 @@ public:
     }
   }
 
+  //----------
+
+  void queueGuiMod(uint32_t AIndex) {
+    MGuiModQueue.write(AIndex);
+  }
+
+  //----------
+
   void flushGuiMods() {
     if (MEditorIsOpen) {
       uint32_t index = 0;
@@ -236,67 +226,6 @@ public:
       }
     }
   }
-
-  //----------
-
-  void queueHostParam(uint32_t AIndex) {
-    MHostParamQueue.write(AIndex);
-  }
-
-  //----------
-
-  void flushHostParams(const clap_output_events_t* out_events) {
-    uint32_t index = 0;
-    while (MHostParamQueue.read(&index)) {
-      float value = MHostParamVal[index];
-      //todo: check if value reallyt changed (if multiple events)
-      send_param_value(index,value,out_events);
-    }
-  }
-
-  //----------
-
-  //TODO: MIP_EditorListener -> MIP_Plugin
-
-  void send_param_mod(uint32_t index, float value, const clap_output_events_t* out_events) {
-    clap_event_param_mod_t param_mod;
-    param_mod.header.size     = sizeof (clap_event_param_mod_t);
-    param_mod.header.time     = 0;
-    param_mod.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
-    param_mod.header.type     = CLAP_EVENT_PARAM_MOD;
-    param_mod.header.flags    = 0;//CLAP_EVENT_BEGIN_ADJUST | CLAP_EVENT_END_ADJUST | CLAP_EVENT_SHOULD_RECORD;// | CLAP_EVENT_IS_LIVE;
-    param_mod.param_id        = index;
-    param_mod.cookie          = nullptr;
-    param_mod.port_index      = -1;
-    param_mod.key             = -1;
-    param_mod.channel         = -1;
-    param_mod.amount          = value;
-    clap_event_header_t* header = (clap_event_header_t*)&param_mod;
-    out_events->push_back(out_events,header);
-  }
-
-  //----------
-
-  //TODO: MIP_EditorListener -> MIP_Plugin
-
-  void send_param_value(uint32_t index, float value, const clap_output_events_t* out_events) {
-    clap_event_param_value_t param_value;
-    param_value.header.size     = sizeof (clap_event_param_value_t);
-    param_value.header.time     = 0;
-    param_value.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
-    param_value.header.type     = CLAP_EVENT_PARAM_VALUE;
-    param_value.header.flags    = CLAP_EVENT_BEGIN_ADJUST | CLAP_EVENT_END_ADJUST | CLAP_EVENT_SHOULD_RECORD;// | CLAP_EVENT_IS_LIVE;
-    param_value.param_id        = index;
-    param_value.cookie          = nullptr;
-    param_value.port_index      = -1;
-    param_value.key             = -1;
-    param_value.channel         = -1;
-    param_value.value           = value;
-    clap_event_header_t* header = (clap_event_header_t*)&param_value;
-    out_events->push_back(out_events,header);
-  }
-
-  //----------
 
 //------------------------------
 public: // clap.gui

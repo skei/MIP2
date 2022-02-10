@@ -19,8 +19,12 @@
 //
 //----------------------------------------------------------------------
 
+#ifdef MIP_PLUGIN_USE_INVALIDATION
 #include "plugin/clap/mip_clap_invalidation.h"
-#include "plugin/clap/mip_clap_factory.h"
+#endif
+
+//#include "plugin/clap/mip_clap_factory.h"
+
 #include "plugin/clap/mip_clap_entry.h"
 
 //#include "plugin/wrapper/mip_exe_wrapper.h"
@@ -34,9 +38,6 @@
 //
 //
 //----------------------------------------------------------------------
-
-//#define MIP_CLAP_MESSAGE_QUEUE_SIZE 1024
-//typedef MIP_Queue<uint32_t,MIP_CLAP_MESSAGE_QUEUE_SIZE> MIP_ClapIntQueue;
 
 typedef MIP_Array<const clap_param_info_t*>           MIP_Parameters;
 typedef MIP_Array<const clap_audio_port_info_t*>      MIP_AudioPorts;
@@ -64,24 +65,29 @@ protected:
   const clap_plugin_descriptor_t* MDescriptor = nullptr;
   MIP_ClapHost*                   MHost       = nullptr;
 
-  MIP_Parameters    MParameters       = {};
-  MIP_AudioPorts    MAudioInputs      = {};
-  MIP_AudioPorts    MAudioOutputs     = {};
-  MIP_NotePorts     MNoteInputs       = {};
-  MIP_NotePorts     MNoteOutputs      = {};
-  MIP_QuickControls MQuickControls    = {};
+  MIP_Parameters    MParameters           = {};
+  MIP_AudioPorts    MAudioInputs          = {};
+  MIP_AudioPorts    MAudioOutputs         = {};
+  MIP_NotePorts     MNoteInputs           = {};
+  MIP_NotePorts     MNoteOutputs          = {};
+  MIP_QuickControls MQuickControls        = {};
 
-  float*            MParamVal         = nullptr;
-  float*            MParamMod         = nullptr;
-  bool              MIsProcessing     = false;
-  bool              MIsActivated      = false;
+  float*            MParameterValues      = nullptr;
+  float*            MParameterModulations = nullptr;
+  bool              MIsProcessing         = false;
+  bool              MIsActivated          = false;
 
-  MIP_ClapIntQueue  MAudioParamQueue  = {};
-  float*            MAudioParamVal    = nullptr;
+  MIP_ClapIntQueue  MAudioParamQueue      = {};
+  float*            MAudioParamVal        = nullptr;
+
+  MIP_ClapIntQueue  MHostParamQueue       = {};
+  float*            MHostParamVal         = nullptr;
+  float*            MHostParamMod         = nullptr;
+
 
   #ifndef MIP_NO_GUI
-  MIP_Editor*       MEditor           = nullptr;
-  bool              MIsEditorOpen     = false;
+  MIP_Editor*       MEditor               = nullptr;
+  bool              MIsEditorOpen         = false;
   #endif
 
 
@@ -96,7 +102,11 @@ public:
     uint32_t num = params_count();
     uint32_t size = num * sizeof(float);
     MAudioParamVal = (float*)malloc(size);
+    MHostParamVal = (float*)malloc(size);
+    MHostParamMod = (float*)malloc(size);
     memset(MAudioParamVal,0,size);
+    memset(MHostParamVal,0,size);
+    memset(MHostParamMod,0,size);
   }
 
   //----------
@@ -104,21 +114,30 @@ public:
   virtual ~MIP_Plugin() {
     delete MHost;
     free (MAudioParamVal);
+    free (MHostParamVal);
+    free (MHostParamMod);
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  float getParamMod(uint32_t AIndex) { return MParamMod[AIndex]; }
-  float getParamVal(uint32_t AIndex) { return MParamVal[AIndex]; }
+  float getParameterModulation(uint32_t AIndex) { return MParameterModulations[AIndex]; }
+  float getParameterValue(uint32_t AIndex)      { return MParameterValues[AIndex]; }
 
-  void  setParamMod(uint32_t AIndex, float AValue) { MParamMod[AIndex] = AValue; }
-  void  setParamVal(uint32_t AIndex, float AValue) { MParamVal[AIndex] = AValue; }
+  void  setParameterModulation(uint32_t AIndex, float AValue) { MParameterModulations[AIndex] = AValue; }
+  void  setParameterValue(uint32_t AIndex, float AValue)      { MParameterValues[AIndex] = AValue; }
 
   //----------
 
 private: // ??
+
+  /*
+    called from editor when widget changes (gui thread)
+    editor.on_updateWidgetFromWindow
+    editor_listener->on_editor_updateParameter
+    flush queue in process (audio thread)
+  */
 
   void queueAudioParam(uint32_t AIndex) {
     MAudioParamQueue.write(AIndex);
@@ -126,17 +145,40 @@ private: // ??
 
   //----------
 
-  //todo: check if value really changed (if multiple events)
+  /*
+    called from start of process()
+    flush all parameters queued from gui
+    todo: check if value really changed (if multiple events)
+  */
 
   void flushAudioParams() {
     uint32_t index = 0;
     while (MAudioParamQueue.read(&index)) {
       float value = MAudioParamVal[index];
       // if we already set this, it should be (bit) identical?
-      if (value != MParamVal[index]) {
-        MParamVal[index] = value;
-        //...
+      if (value != MParameterValues[index]) {
+        MParameterValues[index] = value;
+
+        //.on_plugin_parameter(index,value);
+
       }
+    }
+  }
+
+  //----------
+
+  void queueHostParam(uint32_t AIndex) {
+    MHostParamQueue.write(AIndex);
+  }
+
+  //----------
+
+  void flushHostParams(const clap_output_events_t* out_events) {
+    uint32_t index = 0;
+    while (MHostParamQueue.read(&index)) {
+      float value = MHostParamVal[index];
+      //todo: check if value reallyt changed (if multiple events)
+      send_param_value_event(index,value,out_events);
     }
   }
 
@@ -146,49 +188,38 @@ public: // editor listener
 
   #ifndef MIP_NO_GUI
 
-  // todo: queue, and flush in process?
+  /*
+    called from editor when widget changes (gui thread)
+    - editor.on_updateWidgetFromWindow
+    - editor_listener->on_editor_updateParameter
+    flushed in start of process() (audio thread)
+  */
 
   void on_editor_updateParameter(uint32_t AIndex, float AValue) final {
     //MIP_Print("%i = %.3f\n",AIndex,AValue);
     MAudioParamVal[AIndex] = AValue;
     queueAudioParam(AIndex);
+
+    MHostParamVal[AIndex] = AValue;
+    queueHostParam(AIndex);
+
   }
 
   #endif
 
 //------------------------------
-public:
+public: // handle
 //------------------------------
+
+  /*
+    called from process (audio thread)
+  */
 
   virtual void handle_note_on_event(clap_event_note_t* event) {}
   virtual void handle_note_off_event(clap_event_note_t* event) {}
   virtual void handle_note_end_event(clap_event_note_t* event) {}
   virtual void handle_note_choke_event(clap_event_note_t* event) {}
   virtual void handle_note_expression_event(clap_event_note_expression_t* event) {}
-
-  //----------
-
-  virtual void handle_parameter_event(const clap_event_param_value_t* param_value) {
-    uint32_t i = param_value->param_id;
-    float v = param_value->value;
-    setParamVal(i,v);
-    #ifndef MIP_NO_GUI
-    if (MEditor && MIsEditorOpen) MEditor->updateParameterFromHost(i,v);
-    #endif
-  }
-
-  //----------
-
-  virtual void handle_modulation_event(const clap_event_param_mod_t* param_mod) {
-    uint32_t i = param_mod->param_id;
-    float v = param_mod->amount;
-    setParamMod(i,v);
-    #ifndef MIP_NO_GUI
-    if (MEditor && MIsEditorOpen) MEditor->updateModulationFromHost(i,v);
-    #endif
-  }
-
-  //----------
 
   virtual void handle_midi_event(clap_event_midi_t* event) {}
   virtual void handle_midi_event(clap_event_midi2_t* event) {}
@@ -197,7 +228,30 @@ public:
 
   //----------
 
+  virtual void handle_parameter_event(const clap_event_param_value_t* param_value) {
+    uint32_t i = param_value->param_id;
+    float v = param_value->value;
+    setParameterValue(i,v);
+    #ifndef MIP_NO_GUI
+    if (MEditor && MIsEditorOpen) MEditor->updateParameterInProcess(i,v);
+    #endif
+  }
+
+  //----------
+
+  virtual void handle_modulation_event(const clap_event_param_mod_t* param_mod) {
+    uint32_t i = param_mod->param_id;
+    float v = param_mod->amount;
+    setParameterModulation(i,v);
+    #ifndef MIP_NO_GUI
+    if (MEditor && MIsEditorOpen) MEditor->updateModulationFromHost(i,v);
+    #endif
+  }
+
+  //----------
+
   virtual void handle_process(const clap_process_t *process) {
+
     //float* in0 = process->audio_inputs[0].data32[0];
     //float* in1 = process->audio_inputs[0].data32[1];
     //float* out0 = process->audio_outputs[0].data32[0];
@@ -207,17 +261,19 @@ public:
     //  *out0++ = *in0++;
     //  *out1++ = *in1++;
     //}
-//    float** inputs = process->audio_inputs[0].data32;
-//    float** outputs = process->audio_outputs[0].data32;
-//    uint32_t length = process->frames_count;
-//    MIP_CopyStereoBuffer(outputs,inputs,length);
+
+    //float** inputs = process->audio_inputs[0].data32;
+    //float** outputs = process->audio_outputs[0].data32;
+    //uint32_t length = process->frames_count;
+    //MIP_CopyStereoBuffer(outputs,inputs,length);
+
   }
 
 //------------------------------
-protected:
+protected: // handle
 //------------------------------
 
-  virtual void handle_input_events(const clap_input_events_t* in_events) {
+  virtual void handle_events_input(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
@@ -241,14 +297,17 @@ protected:
 
   //----------
 
-  virtual void handle_output_events(const clap_output_events_t* out_events) {
+  virtual void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
     #ifndef MIP_NO_GUI
-    if (MEditor && MIsEditorOpen) MEditor->flushHostParams(out_events);
+    if (MEditor && MIsEditorOpen) {
+      //MEditor->flushHostParams(out_events);
+      flushHostParams(out_events);
+    }
     #endif
   }
 
 //------------------------------
-protected:
+protected: // setup
 //------------------------------
 
   void setupParameters(clap_param_info_t* params, uint32_t num) {
@@ -263,8 +322,8 @@ protected:
   void setDefaultParameterValues(clap_param_info_t* params, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
       const clap_param_info_t* info = &params[i];
-      MParamVal[i] = info->default_value;
-      MParamMod[i] = 0.0;
+      MParameterValues[i] = info->default_value;
+      MParameterModulations[i] = 0.0;
     }
   }
 
@@ -273,13 +332,13 @@ protected:
   void setEditorParameterValues(clap_param_info_t* params, uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
       #ifndef MIP_NO_GUI
-      if (MEditor) MEditor->setParameterValue(i,MParamVal[i]);
+      if (MEditor) MEditor->setParameterValue(i,MParameterValues[i]);
       #endif
     }
   }
 
 //------------------------------
-protected:
+protected: // setup
 //------------------------------
 
   void setupAudioInputs(clap_audio_port_info_t* inputs, uint32_t num) {
@@ -329,14 +388,56 @@ protected:
 public: // plugin
 //------------------------------
 
+  void send_param_mod_event(uint32_t index, float value, const clap_output_events_t* out_events) {
+    clap_event_param_mod_t param_mod;
+    param_mod.header.size     = sizeof (clap_event_param_mod_t);
+    param_mod.header.time     = 0;
+    param_mod.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+    param_mod.header.type     = CLAP_EVENT_PARAM_MOD;
+    param_mod.header.flags    = 0;//CLAP_EVENT_BEGIN_ADJUST | CLAP_EVENT_END_ADJUST | CLAP_EVENT_SHOULD_RECORD;// | CLAP_EVENT_IS_LIVE;
+    param_mod.param_id        = index;
+    param_mod.cookie          = nullptr;
+    param_mod.port_index      = -1;
+    param_mod.key             = -1;
+    param_mod.channel         = -1;
+    param_mod.amount          = value;
+    clap_event_header_t* header = (clap_event_header_t*)&param_mod;
+    out_events->push_back(out_events,header);
+  }
+
+  //----------
+
+  //TODO: MIP_EditorListener -> MIP_Plugin
+
+  void send_param_value_event(uint32_t index, float value, const clap_output_events_t* out_events) {
+    clap_event_param_value_t param_value;
+    param_value.header.size     = sizeof (clap_event_param_value_t);
+    param_value.header.time     = 0;
+    param_value.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+    param_value.header.type     = CLAP_EVENT_PARAM_VALUE;
+    param_value.header.flags    = CLAP_EVENT_BEGIN_ADJUST | CLAP_EVENT_END_ADJUST | CLAP_EVENT_SHOULD_RECORD;// | CLAP_EVENT_IS_LIVE;
+    param_value.param_id        = index;
+    param_value.cookie          = nullptr;
+    param_value.port_index      = -1;
+    param_value.key             = -1;
+    param_value.channel         = -1;
+    param_value.value           = value;
+    clap_event_header_t* header = (clap_event_header_t*)&param_value;
+    out_events->push_back(out_events,header);
+  }
+
+//------------------------------
+public: // plugin
+//------------------------------
+
   bool init() override {
     uint32_t num = MParameters.size();
-    MParamVal    = (float*)malloc(num * sizeof(float));
-    MParamMod    = (float*)malloc(num * sizeof(float));
+    MParameterValues    = (float*)malloc(num * sizeof(float));
+    MParameterModulations    = (float*)malloc(num * sizeof(float));
     for (uint32_t i=0; i<num; i++) {
       float v = MParameters[i]->default_value;
-      setParamVal(i,v);
-      setParamMod(i,0);
+      setParameterValue(i,v);
+      setParameterModulation(i,0);
     }
     return true;
   }
@@ -344,8 +445,8 @@ public: // plugin
   //----------
 
   void destroy() override {
-    free(MParamVal);
-    free(MParamMod);
+    free(MParameterValues);
+    free(MParameterModulations);
   }
 
   //----------
@@ -378,9 +479,9 @@ public: // plugin
 
   clap_process_status process(const clap_process_t *process) override {
     flushAudioParams();
-    handle_input_events(process->in_events);
+    handle_events_input(process->in_events,process->out_events);
     handle_process(process);
-    handle_output_events(process->out_events);
+    handle_events_output(process->in_events,process->out_events);
     return CLAP_PROCESS_CONTINUE;
   }
 
@@ -460,7 +561,7 @@ public: // params
   //----------
 
   bool params_get_value(clap_id param_id, double *value) override {
-    *value = getParamVal(param_id);
+    *value = getParameterValue(param_id);
     return true;
   }
 
@@ -482,8 +583,8 @@ public: // params
   //----------
 
   void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) override {
-    handle_input_events(in);
-    handle_output_events(out);
+    handle_events_input(in,out);
+    handle_events_output(in,out);
   }
 
 //------------------------------

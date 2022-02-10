@@ -8,6 +8,8 @@
 
 //----------
 
+//#define MIP_PLUGIN_USE_INVALIDATION
+
 #include "mip.h"
 
 #include "plugin/mip_plugin.h"
@@ -162,7 +164,7 @@ private:
     float**  inputs  = process->audio_inputs[0].data32;
     float**  outputs = process->audio_outputs[0].data32;
     uint32_t length  = process->frames_count;
-    float    scale   = getParamVal(0) + getParamMod(0);
+    float    scale   = getParameterValue(0) + getParameterModulation(0);
 
     // test thread pool
 
@@ -185,13 +187,14 @@ private:
 
   //----------
 
-  void handle_output_events(const clap_output_events_t* out_events) final {
+  void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
     if (MEditor && MIsEditorOpen) {
-      float v0 = MParamVal[0] + MParamMod[0];
+      float v0 = MParameterValues[0] + MParameterModulations[0];
       v0 = MIP_Clamp(v0,0,1);
-      MEditor->send_param_mod(0,v0,out_events);
+      //MEditor->send_param_mod(0,v0,out_events);
+      send_param_value_event(0,v0,out_events);
     }
-    MIP_Plugin::handle_output_events(out_events);
+    MIP_Plugin::handle_events_output(in_events,out_events);
   }
 
 //------------------------------
@@ -297,20 +300,25 @@ public:
 //
 //----------------------------------------------------------------------
 
-//#define NUM_INVALIDATION_SOURCES 2
-//
-//const clap_plugin_invalidation_source_t myInvalidationSources[NUM_INVALIDATION_SOURCES] = {
-//  { "/usr/lib/ladspa/", ".so", true },
-//  { "~/.ladspa",        ".so", true }
-//};
+#ifdef MIP_PLUGIN_USE_INVALIDATION
+
+  #define NUM_INVALIDATION_SOURCES 2
+  const clap_plugin_invalidation_source_t myInvalidationSources[NUM_INVALIDATION_SOURCES] = {
+    { "/usr/lib/ladspa/", ".so", true },
+    { "~/.ladspa",        ".so", true }
+  };
+
+#endif
 
 //----------
 
 void MIP_RegisterPlugins(MIP_ClapList* AList) {
   AList->appendPlugin(&myDescriptor);
   AList->appendPlugin(&myDescriptor2);
-  //AList->appendInvalidationSource( &myInvalidationSources[0] );
-  //AList->appendInvalidationSource( &myInvalidationSources[1] );
+  #ifdef MIP_PLUGIN_USE_INVALIDATION
+    AList->appendInvalidationSource( &myInvalidationSources[0] );
+    AList->appendInvalidationSource( &myInvalidationSources[1] );
+  #endif
 }
 
 //----------------------------------------------------------------------

@@ -11,8 +11,12 @@
 //----------
 
 typedef MIP_Array<const clap_plugin_descriptor_t*> clap_descriptors;
-typedef MIP_Array<const clap_plugin_invalidation_source_t*> clap_invalidation_sources;
 typedef MIP_Array<MIP_ClapPlugin*> mip_clap_plugins;
+
+#ifdef MIP_PLUGIN_USE_INVALIDATION
+typedef MIP_Array<const clap_plugin_invalidation_source_t*> clap_invalidation_sources;
+#endif
+
 
 class MIP_ClapList;
 extern void MIP_RegisterPlugins(MIP_ClapList* AList);
@@ -31,8 +35,12 @@ private:
 //------------------------------
 
     clap_descriptors          MDescriptors;
+    #ifdef MIP_PLUGIN_USE_INVALIDATION
     clap_invalidation_sources MInvalidationSources;
+    #endif
     mip_clap_plugins          MPluginInstances;
+
+
 
 //------------------------------
 public:
@@ -82,6 +90,8 @@ public:
 public:
 //------------------------------
 
+  #ifdef MIP_PLUGIN_USE_INVALIDATION
+
   void appendInvalidationSource(const clap_plugin_invalidation_source_t* ASource) {
     MInvalidationSources.push_back(ASource);
   }
@@ -97,6 +107,8 @@ public:
   const clap_plugin_invalidation_source_t* getInvalidationSource(uint32_t AIndex) {
     return MInvalidationSources[AIndex];
   }
+
+  #endif // MIP_PLUGIN_USE_INVALIDATION
 
 //------------------------------
 public:
