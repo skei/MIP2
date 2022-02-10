@@ -15,6 +15,7 @@
 //----------------------------------------------------------------------
 
 //#include "../source/plugins/clap-minimal.cpp"
+//#include "../source/plugins/ladspa_wrapper.cpp"
 #include "../source/plugins/test_plugin1.cpp"
 
 //----------------------------------------------------------------------

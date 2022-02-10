@@ -7,7 +7,7 @@
 #include "base/types/mip_queue.h"
 #include "audio/mip_audio_utils.h"
 #include "plugin/clap/mip_clap.h"
-#include "plugin/clap/mip_clap_entry.h"
+//#include "plugin/clap/mip_clap_entry.h"
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_plugin.h"
 
@@ -15,10 +15,18 @@
 #include "plugin/mip_editor.h"
 #endif
 
-#include "plugin/wrapper/mip_exe_wrapper.h"
-#include "plugin/wrapper/mip_lv2_wrapper.h"
-#include "plugin/wrapper/mip_vst2_wrapper.h"
-#include "plugin/wrapper/mip_vst3_wrapper.h"
+//----------------------------------------------------------------------
+//
+//----------------------------------------------------------------------
+
+#include "plugin/clap/mip_clap_invalidation.h"
+#include "plugin/clap/mip_clap_factory.h"
+#include "plugin/clap/mip_clap_entry.h"
+
+//#include "plugin/wrapper/mip_exe_wrapper.h"
+//#include "plugin/wrapper/mip_lv2_wrapper.h"
+//#include "plugin/wrapper/mip_vst2_wrapper.h"
+//#include "plugin/wrapper/mip_vst3_wrapper.h"
 
 
 //----------------------------------------------------------------------
