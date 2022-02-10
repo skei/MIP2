@@ -3,15 +3,18 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "base/types/mip_array.h"
 #include "extern/clap/clap.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include <vector>
 
 //----------
 
-typedef std::vector<const clap_plugin_descriptor_t*> clap_descriptors;
-class MIP_ClapList;
+typedef MIP_Array<const clap_plugin_descriptor_t*> clap_descriptors;
+typedef MIP_Array<const clap_plugin_invalidation_source_t*> clap_invalidation_sources;
+typedef MIP_Array<MIP_ClapPlugin*> mip_clap_plugins;
 
+class MIP_ClapList;
 extern void MIP_RegisterPlugins(MIP_ClapList* AList);
 extern MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost);
 
@@ -27,7 +30,9 @@ class MIP_ClapList {
 private:
 //------------------------------
 
-    clap_descriptors  MDescriptors;
+    clap_descriptors          MDescriptors;
+    clap_invalidation_sources MInvalidationSources;
+    mip_clap_plugins          MPluginInstances;
 
 //------------------------------
 public:
@@ -40,19 +45,14 @@ public:
   //----------
 
   ~MIP_ClapList() {
-    //for (uint32_t i=0; i<MDescriptors.size(); i++) {
-    //  free(MDescriptors[i]);
-    //}
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  uint32_t appendPlugin(const clap_plugin_descriptor_t* ADescriptor) {
-    uint32_t index = MDescriptors.size();
+  void appendPlugin(const clap_plugin_descriptor_t* ADescriptor) {
     MDescriptors.push_back(ADescriptor);
-    return index;
   }
 
   //----------
@@ -76,6 +76,52 @@ public:
       if (strcmp(plugin_id,MDescriptors[i]->id) == 0) return i;
     }
     return -1;
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  void appendInvalidationSource(const clap_plugin_invalidation_source_t* ASource) {
+    MInvalidationSources.push_back(ASource);
+  }
+
+  //----------
+
+  uint32_t getNumInvalidationSources() {
+    return MInvalidationSources.size();
+  }
+
+  //----------
+
+  const clap_plugin_invalidation_source_t* getInvalidationSource(uint32_t AIndex) {
+    return MInvalidationSources[AIndex];
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  void appendInstance(MIP_ClapPlugin* AInstance) {
+    MPluginInstances.push_back(AInstance);
+  }
+
+  //----------
+
+  int32_t findInstance(MIP_ClapPlugin* AInstance) {
+    for (uint32_t i=0; i<MPluginInstances.size(); i++) {
+      if (AInstance == MPluginInstances[i]) return i;
+    }
+    return -1;
+  }
+
+  //----------
+
+  void removeInstance(MIP_ClapPlugin* AInstance) {
+    int32_t index = findInstance(AInstance);
+    if (index >= 0) {
+      MPluginInstances.remove(index);
+    }
   }
 
 };

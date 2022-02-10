@@ -30,6 +30,9 @@ const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugi
   //MIP_ClapHostProxy* hostproxy = new MIP_ClapHostProxy(host);
   const clap_plugin_descriptor_t* descriptor = MIP_GLOBAL_CLAP_LIST.getPlugin(index);
   MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,host); // deleted in MIP_ClapPlugin.clap_plugin_destroy_callback()
+
+//  MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
+
   return plugin->ptr();
 }
 

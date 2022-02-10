@@ -297,12 +297,23 @@ public:
 //
 //----------------------------------------------------------------------
 
+//#define NUM_INVALIDATION_SOURCES 2
+//
+//const clap_plugin_invalidation_source_t myInvalidationSources[NUM_INVALIDATION_SOURCES] = {
+//  { "/usr/lib/ladspa/", ".so", true },
+//  { "~/.ladspa",        ".so", true }
+//};
+
+//----------
+
 void MIP_RegisterPlugins(MIP_ClapList* AList) {
   AList->appendPlugin(&myDescriptor);
   AList->appendPlugin(&myDescriptor2);
+  //AList->appendInvalidationSource( &myInvalidationSources[0] );
+  //AList->appendInvalidationSource( &myInvalidationSources[1] );
 }
 
-//----------
+//----------------------------------------------------------------------
 
 MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
   switch (AIndex) {

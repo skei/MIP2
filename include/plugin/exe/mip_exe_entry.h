@@ -76,12 +76,19 @@ public:
 //    MIP_ExePlugin*                  exeplugin   = new MIP_ExePlugin(plugin);
 
 
+
+
     uint32_t index = 0;
     const clap_plugin_descriptor_t* desc = MIP_GLOBAL_CLAP_LIST.getPlugin(index);
     MIP_ClapHost* host = new MIP_ClapHost();  // TODO: MIP_ExeClapHost : public MIP_ClapHost
     MIP_ClapPlugin* mipplugin = MIP_CreatePlugin(0,desc,host->ptr());
+
+//    MIP_GLOBAL_CLAP_LIST.appendInstance(mipplugin);
+
     const clap_plugin_t* plugin = mipplugin->ptr();
     plugin->init(plugin);
+
+
 
     const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(plugin,CLAP_EXT_GUI);
     const clap_plugin_gui_x11_t* gui_x11 = (const clap_plugin_gui_x11_t*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);

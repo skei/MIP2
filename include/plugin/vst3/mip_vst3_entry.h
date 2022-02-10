@@ -211,6 +211,9 @@ public:
 
     const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
     const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.ptr(),descriptor->id); // deleted in ? (MIP_Vst3Plugin destructor)
+
+//    MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
+
     MIP_Vst3Plugin*                 vst3plugin  = new MIP_Vst3Plugin(plugin);                       // deleted in ?
 
 ////      plugin->setListener(vst3_instance);

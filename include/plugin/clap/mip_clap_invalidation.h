@@ -4,14 +4,7 @@
 
 #include "mip.h"
 #include "extern/clap/clap.h"
-
-//----------------------------------------------------------------------
-
-//#define NUM_CLAP_INVALIDATION_SOURCES 2
-//const clap_plugin_invalidation_source_t MIP_CLAP_INVALIDATION_SOURCES[NUM_CLAP_INVALIDATION_SOURCES] = {
-//  { "/usr/lib/ladspa/", ".so", true },
-//  { "~/.ladspa",        ".so", true }
-//};
+#include "plugin/clap/mip_clap_list.h"
 
 //----------------------------------------------------------------------
 //
@@ -20,19 +13,16 @@
 //----------------------------------------------------------------------
 
 uint32_t clap_invalidation_count_callback(const struct clap_plugin_invalidation_factory *factory) {
-  //return NUM_CLAP_INVALIDATION_SOURCES;
-  return 0;
+  return MIP_GLOBAL_CLAP_LIST.getNumInvalidationSources();
 }
 
 const clap_plugin_invalidation_source_t* clap_invalidation_get_callback(const struct clap_plugin_invalidation_factory *factory, uint32_t index) {
-  //return &MIP_CLAP_INVALIDATION_SOURCES[index];
-  return nullptr;
+  return MIP_GLOBAL_CLAP_LIST.getInvalidationSource(index);
 }
 
 bool clap_invalidation_refresh_callback(const struct clap_plugin_invalidation_factory *factory) {
   return false;
 }
-
 
 //----------------------------------------------------------------------
 //

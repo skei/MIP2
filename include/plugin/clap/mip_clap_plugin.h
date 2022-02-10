@@ -24,9 +24,11 @@ public:
 
   MIP_ClapPlugin(const clap_plugin_descriptor_t* descriptor, const clap_host_t* AHost) {
     MPlugin.desc = descriptor;
+    //MIP_GLOBAL_CLAP_LIST.appendInstance(this);
   }
 
   virtual ~MIP_ClapPlugin() {
+    //MIP_GLOBAL_CLAP_LIST.removeInstance(this);
   }
 
 //------------------------------
@@ -34,6 +36,10 @@ public:
 //------------------------------
 
   const clap_plugin_t* ptr() { return &MPlugin; }
+
+  virtual void invalidate() {
+    MIP_Print("\n");
+  }
 
 //------------------------------
 public:

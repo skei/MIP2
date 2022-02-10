@@ -47,6 +47,9 @@ public:
     MIP_Vst2Host*                   host        = new MIP_Vst2Host(audioMaster); // deleted in MIP_Vst2Plugin destructor
     const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
     const clap_plugin_t*            plugin      = MIP_CreatePlugin(host->ptr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
+
+//    MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
+
     MIP_Vst2Plugin*                 vst2plugin  = new MIP_Vst2Plugin(host,plugin,audioMaster); // deleted in vst2_dispatcher_callback(effClose)
 
     /*
