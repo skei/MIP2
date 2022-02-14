@@ -8,6 +8,9 @@
 
 //----------
 
+#include <dirent.h>
+#include <sys/stat.h>
+
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 
@@ -220,10 +223,38 @@ bool HaveEnumeratedLadspaPlugins = false;
 
 //----------
 
+void enumLadspaPlugins(const char* path/*, int depth */) {
+  DIR *dp;
+  struct dirent *entry;
+  //if ((dp = opendir(dir)) == NULL) {
+  //  MIP_Print("Can`t open directory %s\n", dir);
+  //  return;
+  //}
+  //chdir(dir);
+  dp = opendir(path);
+  if (dp) {
+    while ((entry = readdir(dp)) != NULL) {
+      //struct stat statbuf;
+      //stat(entry->d_name, &statbuf);
+      //if (S_ISDIR(statbuf.st_mode)) {
+      if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0 ) continue;
+      //  MIP_Print("DIR %s\n",entry->d_name);
+      //  //printdir(entry->d_name, depth+4);
+      //} else {
+      //  //printf("%*s%s\n", depth, "", entry->d_name);
+      MIP_Print("FILE %s\n",entry->d_name);
+      //}
+    }
+    //chdir("..");
+    closedir(dp);
+  }
+}
+
+//----------
+
 uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
   if (!HaveEnumeratedLadspaPlugins) {
-    // /usr/lib/ladspa
-    // ~/.ladspa
+    enumLadspaPlugins("/usr/lib/ladspa");
     HaveEnumeratedLadspaPlugins = true;
   }
   return MIP_GLOBAL_CLAP_LIST.getNumPlugins();
