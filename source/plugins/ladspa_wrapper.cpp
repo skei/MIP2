@@ -4,22 +4,23 @@
 //nc -U -l -k /tmp/mip.socket
 
 
+//#define MIP_USE_INVALIDATION
+
 //----------
 
-// hack to define our own custom entry/factory
-// TODO: find a better way to do this
-
+#include "mip.h"
 #include "plugin/clap/mip_clap.h"
+
+// hack to define our own custom entry/factory
 
 //#define MIP_NO_DEFAULT_PLUGIN_ENTRY
 //extern CLAP_EXPORT const clap_plugin_entry clap_entry;
-
 #define MIP_NO_DEFAULT_PLUGIN_FACTORY
 extern const clap_plugin_factory MIP_GLOBAL_CLAP_FACTORY;
 
 //----------
 
-#include "mip.h"
+//#include "mip.h"
 #include "plugin/mip_plugin.h"
 
 #include "plugin/ladspa/mip_ladspa.h"
@@ -70,17 +71,27 @@ private:
     { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain", "Params", 0.0, 1.0, 0.5 }
   };
 
+  MIP_Library             MLibrary = {};
+  MIP_LadspaHostedPlugin* MLadspa = nullptr;
+
 //------------------------------
 public:
 //------------------------------
 
   myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
+
+    MLadspa = new MIP_LadspaHostedPlugin();
+    MLadspa->load("/usr/lib/ladspa/guitarix.so");
+    MLadspa->initDescriptor(0);
+    MLadspa->initPorts();
+    MLadspa->dumpLadspaDescriptor();
   }
 
   //----------
 
   virtual ~myPlugin() {
+    MLadspa->unload();
   }
 
 //------------------------------
@@ -139,6 +150,10 @@ public: // plugin
     }
     return result;
   }
+
+  //activate() {
+  //  MLadspa->instantiate(44100);
+  //}
 
   //----------
 
@@ -201,14 +216,15 @@ public: // plugin
 //
 //----------------------------------------------------------------------
 
-bool GEnumeratedLadspaPlugins = false;
+bool HaveEnumeratedLadspaPlugins = false;
 
 //----------
 
 uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
-  if (!GEnumeratedLadspaPlugins) {
-    // enumerate ladspa plugins..
-    GEnumeratedLadspaPlugins = true;
+  if (!HaveEnumeratedLadspaPlugins) {
+    // /usr/lib/ladspa
+    // ~/.ladspa
+    HaveEnumeratedLadspaPlugins = true;
   }
   return MIP_GLOBAL_CLAP_LIST.getNumPlugins();
 }
