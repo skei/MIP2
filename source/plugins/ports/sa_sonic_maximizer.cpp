@@ -50,6 +50,7 @@ const clap_plugin_descriptor_t sonic_maximizer_descriptor = {
   sonic_maximizer_features
 };
 
+
 //----------
 
 //#define cDenorm   10e-30
@@ -69,6 +70,8 @@ private:
 //------------------------------
 
   #define NUM_PARAMS 3
+
+  // id, flags, cookie, name, module, min, max, def
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
     { 0, 0, nullptr, "Low Cont", "Params",   0.0, 10.0,  1.0 },
