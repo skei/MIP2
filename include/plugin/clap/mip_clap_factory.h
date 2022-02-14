@@ -13,6 +13,8 @@
 //
 //----------------------------------------------------------------------
 
+#ifndef MIP_NO_DEFAULT_PLUGIN_FACTORY
+
 uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
   return MIP_GLOBAL_CLAP_LIST.getNumPlugins();
 }
@@ -49,6 +51,8 @@ const clap_plugin_factory MIP_GLOBAL_CLAP_FACTORY = {
   clap_factory_get_plugin_descriptor_callback,
   clap_factory_create_plugin_callback
 };
+
+#endif // MIP_NO_DEFAULT_PLUGIN_FACTORY
 
 //----------------------------------------------------------------------
 #endif

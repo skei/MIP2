@@ -13,6 +13,8 @@
 //
 //----------------------------------------------------------------------
 
+#ifndef MIP_NO_DEFAULT_PLUGIN_ENTRY
+
 bool clap_entry_init_callback(const char *plugin_path) {
   return true;
 }
@@ -55,6 +57,8 @@ CLAP_EXPORT const clap_plugin_entry clap_entry = {
 };
 
 #pragma GCC diagnostic pop
+
+#endif // MIP_NO_DEFAULT_PLUGIN_ENTRY
 
 //----------------------------------------------------------------------
 #endif

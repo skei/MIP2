@@ -130,7 +130,11 @@ public:
 
   //----------
 
+  virtual bool getParameterValueText(char* ABuffer, uint32_t AIndex, float AValue) { return false; }
+
+//------------------------------
 private: // ??
+//------------------------------
 
   /*
     called from editor when widget changes (gui thread)

@@ -16,12 +16,12 @@
 
 //#include "../source/plugins/clap-minimal.cpp"
 //#include "../source/plugins/gain.cpp"
-//#include "../source/plugins/ladspa_wrapper.cpp"
+#include "../source/plugins/ladspa_wrapper.cpp"
 //#include "../source/plugins/test_plugin1.cpp"
 
 // ports
 
-#include "../source/plugins/ports/sa_sonic_maximizer.cpp"
+//#include "../source/plugins/ports/sa_sonic_maximizer.cpp"
 
 
 //----------------------------------------------------------------------

@@ -3,11 +3,25 @@
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
+
+//----------
+
+// hack to define our own custom entry/factory
+// TODO: find a better way to do this
+
+#include "plugin/clap/mip_clap.h"
+
+//#define MIP_NO_DEFAULT_PLUGIN_ENTRY
+//extern CLAP_EXPORT const clap_plugin_entry clap_entry;
+
+#define MIP_NO_DEFAULT_PLUGIN_FACTORY
+extern const clap_plugin_factory MIP_GLOBAL_CLAP_FACTORY;
+
 //----------
 
 #include "mip.h"
-
 #include "plugin/mip_plugin.h"
+
 #include "plugin/ladspa/mip_ladspa.h"
 #include "plugin/ladspa/mip_ladspa_hosted_plugin.h"
 
@@ -134,6 +148,98 @@ public: // plugin
 //    //return nullptr;
 //  }
 
+};
+
+//----------------------------------------------------------------------
+//
+// entry
+//
+//----------------------------------------------------------------------
+
+//bool clap_entry_init_callback(const char *plugin_path) {
+//  return true;
+//}
+//
+////----------
+//
+//void clap_entry_deinit_callback() {
+//}
+//
+////----------
+//
+//const void* clap_entry_get_factory_callback(const char *factory_id) {
+//  #ifdef MIP_PLUGIN_USE_INVALIDATION
+//  if (strcmp(factory_id,CLAP_PLUGIN_INVALIDATION_FACTORY_ID) == 0) {
+//    return &MIP_GLOBAL_CLAP_INVALIDATION;
+//  }
+//  #endif
+//  if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
+//    return &MIP_GLOBAL_CLAP_FACTORY;
+//  }
+//  return nullptr;
+//}
+//
+////----------------------------------------------------------------------
+//
+//// get rid of "warning: ‘visibility’ attribute ignored [-Wattributes]"
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic ignored "-Wattributes"
+//
+//// MIP_GLOBAL_CLAP_ENTRY
+//CLAP_EXPORT const clap_plugin_entry clap_entry = {
+//  CLAP_VERSION,
+//  clap_entry_init_callback,
+//  clap_entry_deinit_callback,
+//  clap_entry_get_factory_callback,
+//};
+//
+//#pragma GCC diagnostic pop
+
+//----------------------------------------------------------------------
+//
+// factory
+//
+//----------------------------------------------------------------------
+
+bool GEnumeratedLadspaPlugins = false;
+
+//----------
+
+uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
+  if (!GEnumeratedLadspaPlugins) {
+    // enumerate ladspa plugins..
+    GEnumeratedLadspaPlugins = true;
+  }
+  return MIP_GLOBAL_CLAP_LIST.getNumPlugins();
+}
+
+//----------
+
+const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
+  return MIP_GLOBAL_CLAP_LIST.getPlugin(index);
+}
+
+//----------
+
+const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
+  int32_t index = MIP_GLOBAL_CLAP_LIST.findPluginById(plugin_id);
+  //MIP_ClapHostProxy* hostproxy = new MIP_ClapHostProxy(host);
+  const clap_plugin_descriptor_t* descriptor = MIP_GLOBAL_CLAP_LIST.getPlugin(index);
+  MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,host); // deleted in MIP_ClapPlugin.clap_plugin_destroy_callback()
+
+//  MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
+
+  return plugin->ptr();
+}
+
+//----------------------------------------------------------------------
+
+//static
+//constexpr
+const clap_plugin_factory MIP_GLOBAL_CLAP_FACTORY = {
+  clap_factory_get_plugin_count_callback,
+  clap_factory_get_plugin_descriptor_callback,
+  clap_factory_create_plugin_callback
 };
 
 //----------------------------------------------------------------------
