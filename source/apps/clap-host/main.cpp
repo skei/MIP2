@@ -211,7 +211,7 @@ int main(int argc, char** argv) {
   }
 
   if (arg_list_plugins) {
-    print_plugin_list(&host);
+    print_plugin_list(&host,arg_json_file);
 //    printf("plugins:\n");
 //    const clap_plugin_factory* factory = host.getClapFactory();
 //    uint32_t num = factory->get_plugin_count(factory);
@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
   }
 
   else if (arg_print_descriptor) {
-    print_plugin_descriptor(&host,arg_plugin_index);
+    print_plugin_descriptor(&host,/*plugin,*/arg_plugin_index,arg_json_file);
 //    printf("descriptor (%i):\n",arg_plugin_index);
 //    const clap_plugin_factory* factory = host.getClapFactory();
 //    const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,arg_plugin_index);
