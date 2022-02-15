@@ -546,6 +546,7 @@
 		<Unit filename="../source/apps/clap-host/clap/string-sizes.h" />
 		<Unit filename="../source/apps/clap-host/clap/version.h" />
 		<Unit filename="../source/apps/clap-host/host.hpp" />
+		<Unit filename="../source/apps/clap-host/json.hpp" />
 		<Unit filename="../source/apps/clap-host/main.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -553,7 +554,10 @@
 		<Unit filename="../source/apps/clap-host/midi_file.hpp" />
 		<Unit filename="../source/apps/clap-host/midi_player.hpp" />
 		<Unit filename="../source/apps/clap-host/plugin.hpp" />
+		<Unit filename="../source/apps/clap-host/preset.hpp" />
+		<Unit filename="../source/apps/clap-host/print.hpp" />
 		<Unit filename="../source/apps/clap-host/process.hpp" />
+		<Unit filename="../source/apps/clap-host/xjson.h" />
 		<Unit filename="../source/plugins/clap-minimal.cpp">
 			<Option compile="0" />
 			<Option link="0" />
