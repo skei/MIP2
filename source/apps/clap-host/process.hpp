@@ -37,20 +37,20 @@ class Process {
 private:
 //------------------------------
 
-  //MIP_ClapHostedPlugin*     MPlugin = nullptr;
-  const clap_plugin_t*  MPlugin = nullptr;
+//MIP_ClapHostedPlugin* MPlugin           = nullptr;
+  const clap_plugin_t*  MPlugin           = nullptr;
 
-  AudioFile       MAudioInputFile   = {};
-  AudioFile       MAudioOutputFile  = {};
-  MidiFile        MMidiFile         = {};
-  MidiPlayer      MMidiPlayer       = {};
-  float           MSampleRate       = 0.0;
-  uint32_t        MCurrentSample    = 0;
-  float           MCurrentTime      = 0.0;
-  MidiSequence*   MMidiSequence     = nullptr;
-  MidiEvents      MMidiEvents       = {};
-  EventHeaders    MClapEvents       = {};
-  clap_param_info MRemapParamInfo   = {0};
+  AudioFile             MAudioInputFile   = {};
+  AudioFile             MAudioOutputFile  = {};
+  MidiFile              MMidiFile         = {};
+  MidiPlayer            MMidiPlayer       = {};
+  float                 MSampleRate       = 0.0;
+  uint32_t              MCurrentSample    = 0;
+  float                 MCurrentTime      = 0.0;
+  MidiSequence*         MMidiSequence     = nullptr;
+  MidiEvents            MMidiEvents       = {};
+  EventHeaders          MClapEvents       = {};
+  clap_param_info       MRemapParamInfo   = {0};
 
 //------------------------------
 private:
@@ -402,9 +402,7 @@ private:
 public:
 //------------------------------
 
-
   //int process(const clap_plugin_t* plugin) {
-
   int process() {
     //const clap_plugin* plugin = APlugin->getClapPlugin();
 
@@ -453,6 +451,8 @@ public:
     }
 
     // length
+
+    num_samples += (arg_decay_seconds * arg_sample_rate);
 
     printf("> length = %f seconds\n",num_samples / arg_sample_rate);
 

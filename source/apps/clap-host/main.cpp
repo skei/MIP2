@@ -76,14 +76,14 @@
 #include "arguments.hpp"
 #include "host.hpp"
 #include "plugin.hpp"
+#include "print.hpp"
+#include "preset.hpp"
 
 //----------------------------------------------------------------------
 
-Arguments arg_parser  = {};
-Host      host        = {};
-
-//Plugin*   plugin      = nullptr;
-const clap_plugin_t*  plugin = nullptr;
+Arguments             arg_parser  = {};
+Host                  host        = {};
+const clap_plugin_t*  plugin      = nullptr;
 
 const char* arg_plugin_path       = "";
 uint32_t    arg_plugin_index      = 0;
@@ -101,6 +101,9 @@ bool        arg_fuzz_block_size   = false;
 float       arg_decay_seconds     = 0.0;
 int32_t     arg_remap_cc          = -1;
 int32_t     arg_remap_param       = -1;
+
+const char* arg_json_file         = "";
+const char* arg_preset_file       = "";
 
 //----------------------------------------------------------------------
 
@@ -125,9 +128,13 @@ void print_help() {
   printf("  -d  --decay-seconds <seconds>        (default 0.0)\n");
   printf("  -r  --remap         <cc:param_id>\n");
 
+  printf("  -J  --json          <file>\n");
+  printf("  -P  --preset        <file>\n");
+
   printf("  -l  --list-plugins\n");
   printf("  -p  --print-descriptor\n");
   printf("  -f  --fuzz-block-size\n");
+
 }
 
 //----------------------------------------------------------------------
@@ -162,6 +169,10 @@ int main(int argc, char** argv) {
   arg_midi_input_file   = arg_parser.getArgStr(                  "-m",   "--midi-input");
   arg_audio_input_file  = arg_parser.getArgStr(                  "-a",   "--audio-input");
   arg_audio_output_file = arg_parser.getArgStr(                  "-o",   "--audio-output");
+
+  arg_json_file         = arg_parser.getArgStr(                  "-J",   "--json");
+  arg_preset_file       = arg_parser.getArgStr(                  "-P",   "--preset");
+
 
   arg_sample_rate       = arg_parser.getArgFloat(                "-s",   "--sample_rate");
   arg_block_size        = arg_parser.getArgInt(                  "-b",   "--block_size");
@@ -200,46 +211,52 @@ int main(int argc, char** argv) {
   }
 
   if (arg_list_plugins) {
-    printf("plugins:\n");
-    const clap_plugin_factory* factory = host.getClapFactory();
-    uint32_t num = factory->get_plugin_count(factory);
-    for (uint32_t i=0; i<num; i++) {
-      const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,i);
-      printf("  %i. %s (%s)\n",i,descriptor->name,descriptor->description);
-    }
+    print_plugin_list(&host);
+//    printf("plugins:\n");
+//    const clap_plugin_factory* factory = host.getClapFactory();
+//    uint32_t num = factory->get_plugin_count(factory);
+//    for (uint32_t i=0; i<num; i++) {
+//      const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,i);
+//      printf("  %i. %s (%s)\n",i,descriptor->name,descriptor->description);
+//    }
     return 0;
   }
 
   else if (arg_print_descriptor) {
-    printf("descriptor (%i):\n",arg_plugin_index);
-    const clap_plugin_factory* factory = host.getClapFactory();
-    const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,arg_plugin_index);
-    printf("  clap_version: %i.%i.%i\n",descriptor->clap_version.major,descriptor->clap_version.minor,descriptor->clap_version.revision);
-    printf("  id:           %s\n",descriptor->id);
-    printf("  name:         %s\n",descriptor->name);
-    printf("  vendor:       %s\n",descriptor->vendor);
-    printf("  url:          %s\n",descriptor->url);
-    printf("  manual_url:   %s\n",descriptor->manual_url);
-    printf("  support_url:  %s\n",descriptor->support_url);
-    printf("  version:      %s\n",descriptor->version);
-    printf("  description:  %s\n",descriptor->description);
-    //printf("  features:     %s\n",descriptor->features);
-    printf("  features:     ");
-    int i = 0;
-    while ( descriptor->features[i] ) {
-      printf("%s ",descriptor->features[i]);
-      i++;
-    }
+    print_plugin_descriptor(&host,arg_plugin_index);
+//    printf("descriptor (%i):\n",arg_plugin_index);
+//    const clap_plugin_factory* factory = host.getClapFactory();
+//    const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,arg_plugin_index);
+//    printf("  clap_version: %i.%i.%i\n",descriptor->clap_version.major,descriptor->clap_version.minor,descriptor->clap_version.revision);
+//    printf("  id:           %s\n",descriptor->id);
+//    printf("  name:         %s\n",descriptor->name);
+//    printf("  vendor:       %s\n",descriptor->vendor);
+//    printf("  url:          %s\n",descriptor->url);
+//    printf("  manual_url:   %s\n",descriptor->manual_url);
+//    printf("  support_url:  %s\n",descriptor->support_url);
+//    printf("  version:      %s\n",descriptor->version);
+//    printf("  description:  %s\n",descriptor->description);
+//    //printf("  features:     %s\n",descriptor->features);
+//    printf("  features:     ");
+//    int i = 0;
+//    while ( descriptor->features[i] ) {
+//      printf("%s ",descriptor->features[i]);
+//      i++;
+//    }
     return 0;
   }
 
   else {
-    printf("process\n");
+    //printf("process\n");
     plugin = host.createPlugin(arg_plugin_path,arg_plugin_index);
     //plugin->init();
+
+    if (arg_preset_file) {
+      load_preset(plugin,arg_preset_file);
+    }
+
     plugin->activate(plugin,arg_sample_rate,1,arg_block_size);
     plugin->start_processing(plugin);
-
     Process proc = Process(plugin);
     result = proc.process();
 
