@@ -1,3 +1,10 @@
+/*
+  Look at this later..
+  needs more preparations (hosting)..
+*/
+
+
+#if 0
 
 #define MIP_NO_GUI
 #define MIP_DEBUG_PRINT_SOCKET
@@ -170,6 +177,88 @@ public: // plugin
 
 //----------------------------------------------------------------------
 //
+// ladspa
+//
+//----------------------------------------------------------------------
+
+bool HaveEnumeratedLadspaPlugins = false;
+
+//----------
+
+//void enumLadspaPlugins(const char* path/*, int depth */) {
+//  DIR *dp;
+//  struct dirent *entry;
+//  //if ((dp = opendir(dir)) == NULL) {
+//  //  MIP_Print("Can`t open directory %s\n", dir);
+//  //  return;
+//  //}
+//  //chdir(dir);
+//  dp = opendir(path);
+//  if (dp) {
+//    while ((entry = readdir(dp)) != NULL) {
+//      //struct stat statbuf;
+//      //stat(entry->d_name, &statbuf);
+//      //if (S_ISDIR(statbuf.st_mode)) {
+//      if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0 ) continue;
+//      //  MIP_Print("DIR %s\n",entry->d_name);
+//      //  //printdir(entry->d_name, depth+4);
+//      //} else {
+//      //  //printf("%*s%s\n", depth, "", entry->d_name);
+//      MIP_Print("FILE %s\n",entry->d_name);
+//      //}
+//    }
+//    //chdir("..");
+//    closedir(dp);
+//  }
+//}
+
+const char* ladspa_features[] = {
+  "audio_effect",
+  nullptr
+};
+
+//----------
+
+void appendLadspaPlugin(const char* name) {
+  clap_plugin_descriptor_t* desc = (clap_plugin_descriptor_t*)malloc(sizeof(clap_plugin_descriptor_t));
+  desc->clap_version  = CLAP_VERSION;
+  desc->id            = "";
+  desc->name          = "";
+  desc->vendor        = "";
+  desc->url           = "";
+  desc->manual_url    = "";
+  desc->support_url   = "";
+  desc->version       = "";
+  desc->description   = "";
+  desc->features      = ladspa_features;;
+  //MIP_GLOBAL_CLAP_LIST.appendPlugin(desc);
+}
+
+void cleanupLadspaPlugins() {
+}
+
+//----------
+
+void enumLadspaPlugins(const char* path/*, int depth */) {
+  DIR *dp;
+  struct dirent *entry;
+  dp = opendir(path);
+  if (dp) {
+    while ((entry = readdir(dp))) {
+      MIP_Print("FILE %s\n",entry->d_name);
+      appendLadspaPlugin(const char* name);
+    }
+    closedir(dp);
+  }
+}
+
+
+//----------
+
+
+
+//----------------------------------------------------------------------
+//
 // entry
 //
 //----------------------------------------------------------------------
@@ -219,44 +308,11 @@ public: // plugin
 //
 //----------------------------------------------------------------------
 
-bool HaveEnumeratedLadspaPlugins = false;
-
-//----------
-
-void enumLadspaPlugins(const char* path/*, int depth */) {
-  DIR *dp;
-  struct dirent *entry;
-  //if ((dp = opendir(dir)) == NULL) {
-  //  MIP_Print("Can`t open directory %s\n", dir);
-  //  return;
-  //}
-  //chdir(dir);
-  dp = opendir(path);
-  if (dp) {
-    while ((entry = readdir(dp)) != NULL) {
-      //struct stat statbuf;
-      //stat(entry->d_name, &statbuf);
-      //if (S_ISDIR(statbuf.st_mode)) {
-      if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0 ) continue;
-      //  MIP_Print("DIR %s\n",entry->d_name);
-      //  //printdir(entry->d_name, depth+4);
-      //} else {
-      //  //printf("%*s%s\n", depth, "", entry->d_name);
-      MIP_Print("FILE %s\n",entry->d_name);
-      //}
-    }
-    //chdir("..");
-    closedir(dp);
-  }
-}
-
-//----------
-
 uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
-  if (!HaveEnumeratedLadspaPlugins) {
-    enumLadspaPlugins("/usr/lib/ladspa");
-    HaveEnumeratedLadspaPlugins = true;
-  }
+  //if (!HaveEnumeratedLadspaPlugins) {
+  //  enumLadspaPlugins("/usr/lib/ladspa");
+  //  HaveEnumeratedLadspaPlugins = true;
+  //}
   return MIP_GLOBAL_CLAP_LIST.getNumPlugins();
 }
 
@@ -307,3 +363,5 @@ MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t
   }
   return nullptr;
 }
+
+#endif // 0

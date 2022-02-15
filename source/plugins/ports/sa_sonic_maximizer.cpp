@@ -211,18 +211,17 @@ public: // plugin
     bool result = MIP_Plugin::init();
     if (result) {
       setDefaultParameterValues(myParameters,NUM_PARAMS);
-
       precalc();
-
     }
     return result;
   }
+
+  //----------
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
     MSampleRate = sample_rate;
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
   }
-
 
 };
 
@@ -243,6 +242,11 @@ public: // plugin
 
 void MIP_RegisterPlugins(MIP_ClapList* AList) {
   AList->appendPlugin(&sonic_maximizer_descriptor);
+}
+
+//----------
+
+void MIP_UnregisterPlugins(MIP_ClapList* AList) {
 }
 
 //----------------------------------------------------------------------
