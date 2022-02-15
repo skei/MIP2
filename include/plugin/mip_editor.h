@@ -30,7 +30,7 @@ class MIP_Editor
 private:
 //------------------------------
 
-  MIP_EditorListener* MListener = nullptr;
+  MIP_EditorListener* MListener         = nullptr;
   MIP_ClapPlugin*     MPlugin           = nullptr;
   uint32_t            MNumParams        = 0;
   uint32_t            MWidth            = 256;//250;

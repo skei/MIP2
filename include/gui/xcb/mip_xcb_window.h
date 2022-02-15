@@ -276,7 +276,7 @@ private:
       MWindowParent,                  // parent window
       0, 0,                           // x, y
       AWidth, AHeight,                // width, height
-      0,                              // border_width
+      1,                              // border_width
       XCB_WINDOW_CLASS_INPUT_OUTPUT,  // class
       MScreen->root_visual,           // visual
       window_mask,
@@ -284,7 +284,7 @@ private:
     );
     if (AParent) {
       //reparent(AParent);
-      removeDecorations();
+//      removeDecorations();
     }
     else {
       setWindowTitle(ATitle);

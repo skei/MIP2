@@ -17,9 +17,13 @@ typedef MIP_Array<MIP_ClapPlugin*> mip_clap_plugins;
 typedef MIP_Array<const clap_plugin_invalidation_source_t*> clap_invalidation_sources;
 #endif
 
-//class MIP_ClapList;
-//extern void MIP_RegisterPlugins(MIP_ClapList* AList);
+class MIP_ClapList;
+extern void MIP_RegisterPlugins(MIP_ClapList* AList);
+//extern void MIP_UnregisterPlugins(MIP_ClapList* AList);
+
 //extern MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost);
+
+
 
 //----------------------------------------------------------------------
 //
@@ -46,7 +50,7 @@ public:
 //------------------------------
 
   MIP_ClapList() {
-    //MIP_RegisterPlugins(this);
+    MIP_RegisterPlugins(this);
   }
 
   //----------

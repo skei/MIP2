@@ -611,6 +611,7 @@ public: // gui
   #ifndef MIP_NO_GUI
 
   bool gui_create() override {
+    MIP_Print("\n");
     MEditor = new MIP_Editor(this,this);
     MIsEditorOpen = false;
     return true;
@@ -619,6 +620,7 @@ public: // gui
   //----------
 
   void gui_destroy() override {
+    MIP_Print("\n");
     MIsEditorOpen = false;
     delete MEditor;
     MEditor = nullptr;
@@ -627,6 +629,7 @@ public: // gui
   //----------
 
   bool gui_set_scale(double scale) override {
+    MIP_Print("\n");
     if (MEditor) MEditor->setScale(scale);
     return true;
   }
@@ -634,6 +637,7 @@ public: // gui
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
+    MIP_Print("\n");
     if (MEditor) return MEditor->getSize(width,height);
     return false;
   }
@@ -641,6 +645,7 @@ public: // gui
   //----------
 
   bool gui_can_resize() override {
+    MIP_Print("\n");
     if (MEditor) return MEditor->canResize();
     return false;
   }
@@ -648,14 +653,15 @@ public: // gui
   //----------
 
   void gui_round_size(uint32_t *width, uint32_t *height) override {
+    MIP_Print("\n");
     //MIP_Print("%i,%i\n",*width,*height);
-    if (MEditor) MEditor->roundSize(width,height);
-
+//    if (MEditor) MEditor->roundSize(width,height);
   }
 
   //----------
 
   bool gui_set_size(uint32_t width, uint32_t height) override {
+    MIP_Print("\n");
     if (MEditor) return MEditor->setSize(width,height);
     return true;
   }
@@ -663,6 +669,7 @@ public: // gui
   //----------
 
   void gui_show() override {
+    MIP_Print("\n");
     if (MEditor) {
       MEditor->show();
       MIsEditorOpen = true;
@@ -672,6 +679,7 @@ public: // gui
   //----------
 
   void gui_hide() override {
+    MIP_Print("\n");
     if (MEditor) {
       MIsEditorOpen = false;
       MEditor->hide();

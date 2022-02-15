@@ -7,8 +7,8 @@
 #include "plugin/clap/mip_clap_list.h"
 #include "plugin/clap/mip_clap_factory.h"
 
-extern void MIP_RegisterPlugins(MIP_ClapList* AList);
-extern void MIP_UnregisterPlugins(MIP_ClapList* AList);
+//extern void MIP_RegisterPlugins(MIP_ClapList* AList);
+//extern void MIP_UnregisterPlugins(MIP_ClapList* AList);
 
 //----------
 
@@ -33,12 +33,13 @@ extern void MIP_UnregisterPlugins(MIP_ClapList* AList);
 */
 
 bool clap_entry_init_callback(const char *plugin_path) {
+  //MIP_PRINT;
   //if (entry_init_has_already_been_called) {
   //  MIP_Print("entry.init has already been called..\n");
   //}
   //else {
   //  MIP_Print("entry.init..\n");
-    MIP_RegisterPlugins(&MIP_GLOBAL_CLAP_LIST);
+  //  MIP_RegisterPlugins(&MIP_GLOBAL_CLAP_LIST);
   //  entry_init_has_already_been_called = true;
   //}
   return true;
@@ -51,8 +52,8 @@ bool clap_entry_init_callback(const char *plugin_path) {
 */
 
 void clap_entry_deinit_callback() {
-  MIP_PRINT;
-  MIP_UnregisterPlugins(&MIP_GLOBAL_CLAP_LIST);
+  //MIP_PRINT;
+  //MIP_UnregisterPlugins(&MIP_GLOBAL_CLAP_LIST);
 }
 
 //----------
