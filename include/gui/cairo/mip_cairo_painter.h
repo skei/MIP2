@@ -12,6 +12,7 @@
 #include "mip.h"
 #include "gui/base/mip_base_painter.h"
 #include "gui/cairo/mip_cairo.h"
+#include "gui/cairo/mip_cairo_utils.h"
 
 //----------------------------------------------------------------------
 
@@ -86,11 +87,15 @@ public:
   //: MIP_BasePainter(/*ADrawable*/) {
     if (ADrawable->isCairo()) {
       MSurface = ADrawable->createCairoSurface();
+      MIP_Assert(MSurface);
       MSurfaceAllocated = true;
       MCairo = cairo_create(MSurface);
-      //check_cairo_errors(MCairo);
+      MIP_PRINT; check_cairo_errors(MCairo);
       cairo_set_line_width(MCairo,1);
       //setFontSize(11);
+    }
+    else {
+      MIP_Print("! ADrawable->isCairo()\n");
     }
   }
 
@@ -99,9 +104,10 @@ public:
   MIP_CairoPainter(cairo_surface_t* ASurface) {
   //: MIP_BasePainter() {
     MSurface = ASurface;
+    MIP_Assert(MSurface);
     MSurfaceAllocated = false;
     MCairo = cairo_create(MSurface);
-    //check_cairo_errors(MCairo);
+    MIP_PRINT; check_cairo_errors(MCairo);
     cairo_set_line_width(MCairo,1);
     //setFontSize(11);
   }
@@ -109,7 +115,8 @@ public:
   //----------
 
   virtual ~MIP_CairoPainter() {
-    //check_cairo_errors(MCairo);
+    MIP_PRINT;
+    check_cairo_errors(MCairo);
     cairo_destroy(MCairo);
     if (MSurface && MSurfaceAllocated) cairo_surface_destroy(MSurface);
   }
@@ -145,6 +152,7 @@ public: // surface
   */
 
   void resize(uint32_t AWidth, uint32_t AHeight) override {
+    MIP_Print("%i,%i\n",AWidth,AHeight);
     cairo_xcb_surface_set_size(MSurface,AWidth,AHeight);
   }
 
@@ -160,6 +168,7 @@ public: // surface
   */
 
   void flush() override {
+    MIP_PRINT;
     cairo_surface_flush(MSurface);
   }
 

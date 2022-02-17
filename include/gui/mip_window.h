@@ -102,6 +102,8 @@ public:
     //setRect(MIP_FRect(AWidth,AHeight));
     //flags.autoClip = true;
     MWindowPainter = new MIP_Painter(this);
+    MWindowPainter->flush();
+    MIP_Assert(MWindowPainter);
     #ifndef MIP_NO_WINDOW_BUFFERING
     createBuffer(AWidth,AHeight);
     #endif
@@ -156,8 +158,10 @@ public:
   void fillWindowBackground(MIP_FRect ARect) {
     #ifdef MIP_NO_WINDOW_BUFFERING
       MWindowPainter->fillRectangle(ARect,MWindowBackgroundColor);
+      MWindowPainter->flush();
     #else
       MBufferPainter->fillRectangle(ARect,MWindowBackgroundColor);
+      MBufferPainter->flush();
     #endif
   }
 
@@ -169,12 +173,15 @@ public:
     #ifdef MIP_NO_WINDOW_BUFFERING
       //if (flags.autoClip) MWindowPainter->pushClip(ARect);
       AWidget->on_widget_paint(MWindowPainter,ARect,AMode);
+      MWindowPainter->flush();
       //if (flags.autoClip) MWindowPainter->popClip();
     #else
       //if (flags.autoClip) MBufferPainter->pushClip(ARect);
       AWidget->on_widget_paint(MBufferPainter,ARect,AMode);
       //if (flags.autoClip) MBufferPainter->popClip();
+      MBufferPainter->flush();
       MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+      MWindowPainter->flush();
     #endif
   }
 
@@ -187,7 +194,10 @@ public:
     MRect.w = AWidth;
     MRect.h = AHeight;
     alignWidgets();
-    if (MWindowPainter) MWindowPainter->resize(AWidth,AHeight);
+    if (MWindowPainter) {
+      MWindowPainter->resize(AWidth,AHeight);
+      MWindowPainter->flush();
+    }
   }
 
   //----------
@@ -296,7 +306,9 @@ public: // buffer
 
   bool createBuffer(uint32_t AWidth, uint32_t AHeight) {
     MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+    MIP_Assert(MBufferSurface);
     MBufferPainter = new MIP_Painter(MBufferSurface);
+    MIP_Assert(MBufferPainter);
     MBufferWidth = AWidth;
     MBufferHeight = AHeight;
     return true;
@@ -334,10 +346,15 @@ public: // buffer
     //  MBufferPainter->fillRectangle(ARect,MBackgroundColor);
     //}
     //MBufferPainter->pushClip(ARect);
+
+    //MBufferPainter->flush();
     paintWidgets(MBufferPainter,ARect);
     MBufferPainter->flush();
+    //MBufferPainter->dirty(ARect);
+
     //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
     MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+    MWindowPainter->flush();
 
     //MBufferPainter->popClip();
   }
