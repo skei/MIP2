@@ -1,7 +1,9 @@
 
-//#define MIP_USE_CAIRO
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
+
+#define MIP_USE_CAIRO
+#define MIP_PAINTER_CAIRO
 
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
@@ -241,7 +243,6 @@ public: // plugin
   bool gui_create() final {
     bool result = MIP_Plugin::gui_create();
     if (result) {
-      // setup gui
       MEditorPanel = new MIP_PanelWidget(MIP_FRect(0));
       MEditorPanel->setBackgroundColor(0.6);
       MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
@@ -256,7 +257,6 @@ public: // plugin
       MEditorPanel->appendWidget(knob3);
       MEditorPanel->appendWidget(knob4);
       MEditorPanel->appendWidget(MSizer);
-      // connect widgets/parameters
       if (MEditor) {
         MEditor->connect(knob1,0);
         MEditor->connect(knob2,1);
@@ -271,7 +271,6 @@ public: // plugin
 
   void gui_show() final {
     setEditorParameterValues(myParameters,NUM_PARAMS);
-    //MSizer->setTarget( MEditor->getWindow() );
     MIP_Plugin::gui_show();
   }
 

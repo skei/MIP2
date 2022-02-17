@@ -36,8 +36,8 @@ private:
 public:
 //------------------------------
 
-  MIP_XcbSurface(MIP_Drawable* ATarget)
-  : MIP_BaseSurface(ATarget) {
+  MIP_XcbSurface(MIP_Drawable* ATarget) {
+  //: MIP_BaseSurface(/*ATarget*/) {
     // window
     MConnection     = ATarget->getXcbConnection();
     MTargetDrawable = ATarget->getXcbDrawable();
@@ -52,8 +52,8 @@ public:
 
   //----------
 
-  MIP_XcbSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0)
-  : MIP_BaseSurface(ATarget,AWidth,AHeight,ADepth) {
+  MIP_XcbSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
+  //: MIP_BaseSurface(/*ATarget,AWidth,AHeight,ADepth*/) {
     // pixmap
     MConnection     = ATarget->getXcbConnection();
     MTargetDrawable = ATarget->getXcbDrawable();

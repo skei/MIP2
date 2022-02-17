@@ -285,6 +285,7 @@ public: // window
     //MWindowPainter->pushClip(ARect);
     paintWidgets(MWindowPainter,ARect);
     //MWindowPainter->popClip();
+    MWindowPainter->flush();
   }
 
 //------------------------------
@@ -334,6 +335,7 @@ public: // buffer
     //}
     //MBufferPainter->pushClip(ARect);
     paintWidgets(MBufferPainter,ARect);
+    MBufferPainter->flush();
     blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
     //MBufferPainter->popClip();
   }

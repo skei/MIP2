@@ -15,7 +15,7 @@ class MIP_BasePainter {
 public:
 //------------------------------
 
-  MIP_BasePainter(MIP_Drawable* ATarget) {
+  MIP_BasePainter(/*MIP_Drawable* ATarget*/) {
   }
 
   //----------

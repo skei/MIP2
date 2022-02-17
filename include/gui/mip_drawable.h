@@ -48,7 +48,7 @@ struct MIP_Drawable {
 
   //#ifdef MIP_USE_SDL
   //virtual SDL_Window*       getSdlWindow()      { return nullptr; }
-  //irtual SDL_Renderer*     getSdlRenderer()    { return nullptr; }
+  //irtual SDL_Renderer*      getSdlRenderer()    { return nullptr; }
   //virtual SDL_Texture*      getSdlTexture()     { return nullptr; }
   //#endif
 

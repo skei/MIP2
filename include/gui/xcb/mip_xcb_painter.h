@@ -47,8 +47,8 @@ private:
 public:
 //------------------------------
 
-  MIP_XcbPainter(MIP_Drawable* ATarget)
-  : MIP_BasePainter(ATarget) {
+  MIP_XcbPainter(MIP_Drawable* ATarget) {
+  //: MIP_BasePainter(/*ATarget*/) {
     if (ATarget->isDrawable()) {
       MTarget     = ATarget;
       MConnection = ATarget->getXcbConnection();

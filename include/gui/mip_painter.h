@@ -17,15 +17,14 @@ typedef MIP_Stack<MIP_FRect,16> MIP_RectStack;
   typedef MIP_BasePainter MIP_ImplementedPainter;
 #endif
 
-#ifdef MIP_GUI_XCB
+#ifdef MIP_PAINTER_XCB
   #include "gui/xcb/mip_xcb_painter.h"
   typedef MIP_XcbPainter MIP_ImplementedPainter;
 #endif
 
-#ifdef MIP_GUI_CAIRO
-  // ???
-  //#include "gui/xcb/mip_xcb_painter.h"
-  //typedef MIP_XcbPainter MIP_ImplementedPainter;
+#ifdef MIP_PAINTER_CAIRO
+  #include "gui/cairo/mip_cairo_painter.h"
+  typedef MIP_CairoPainter MIP_ImplementedPainter;
 #endif
 
 //----------------------------------------------------------------------

@@ -10,7 +10,7 @@
 */
 
 #include "mip.h"
-//#include "gui/base/mip_base_painter.h"
+#include "gui/base/mip_base_painter.h"
 #include "gui/cairo/mip_cairo.h"
 
 //----------------------------------------------------------------------
@@ -53,14 +53,15 @@ cairo_line_join_t mip_line_join[3] = {
 //----------------------------------------------------------------------
 
 class MIP_CairoPainter
-/*: public MIP_BasePainter*/ {
+: public MIP_BasePainter {
 
 //------------------------------
 private:
 //------------------------------
 
-  cairo_surface_t*  MSurface  = nullptr;
-  cairo_t*          MCairo    = nullptr;
+  bool              MSurfaceAllocated = false;
+  cairo_surface_t*  MSurface          = nullptr;
+  cairo_t*          MCairo            = nullptr;
 
 //------------------------------
 public:
@@ -82,13 +83,20 @@ public:
   */
 
   MIP_CairoPainter(MIP_Drawable* ADrawable) {
-    //TODO
+  //: MIP_BasePainter(/*ADrawable*/) {
+    if (ADrawable->isCairo()) {
+      MSurface = ADrawable->createCairoSurface();
+      MSurfaceAllocated = true;
+      MCairo = cairo_create(MSurface);
+    }
   }
 
   //----------
 
   MIP_CairoPainter(cairo_surface_t* ASurface) {
+  //: MIP_BasePainter() {
     MSurface = ASurface;
+    MSurfaceAllocated = false;
     MCairo = cairo_create(MSurface);
     //check_cairo_errors(MCairo);
     cairo_set_line_width(MCairo,1);
@@ -100,17 +108,27 @@ public:
   virtual ~MIP_CairoPainter() {
     //check_cairo_errors(MCairo);
     cairo_destroy(MCairo);
-    cairo_surface_destroy(MSurface);
+    if (MSurface && MSurfaceAllocated) cairo_surface_destroy(MSurface);
   }
 
 //------------------------------
-public: // xcb surface
+public: // cairo surface
 //------------------------------
 
   cairo_surface_t*  getSurface() { return MSurface; }
   cairo_t*          getCairo()   { return MCairo; }
 
   //----------
+
+//------------------------------
+public:
+//------------------------------
+
+  MIP_Drawable* getTarget() override { return nullptr; }
+
+//------------------------------
+public: // surface
+//------------------------------
 
   /*
     Informs cairo of the new size of the XCB drawable underlying the surface.
@@ -123,13 +141,11 @@ public: // xcb surface
     function on a surface created for a pixmap.
   */
 
-  void resize(uint32_t AWidth, uint32_t AHeight) {
+  void resize(uint32_t AWidth, uint32_t AHeight) override {
     cairo_xcb_surface_set_size(MSurface,AWidth,AHeight);
   }
 
-//------------------------------
-public: // surface
-//------------------------------
+  //----------
 
   /*
     Do any pending drawing for the surface and also restore any temporary
@@ -140,7 +156,7 @@ public: // surface
     nothing.
   */
 
-  void flush() {
+  void flush() override {
     cairo_surface_flush(MSurface);
   }
 
@@ -152,7 +168,7 @@ public: // surface
     call cairo_surface_flush() before doing such drawing.
   */
 
-  void dirty() {
+  void dirty() override {
     cairo_surface_mark_dirty(MSurface);
   }
 
@@ -160,7 +176,7 @@ public: // surface
   //  cairo_surface_mark_dirty_rectangle(MCairoSurface,AX1,AY1,AX2,AY2);
   //}
 
-  void dirty(MIP_FRect ARect) {
+  void dirty(MIP_FRect ARect) override {
     //cairo_surface_mark_dirty_rectangle(MCairoSurface,ARect.x,ARect.y,ARect.x2(),ARect.y2());
     cairo_surface_mark_dirty_rectangle(MSurface,ARect.x,ARect.y,ARect.w,ARect.h);
   }
@@ -182,7 +198,7 @@ public: // surface
 
   //----------
 
-  void finish() {
+  void finish() override {
     cairo_surface_finish(MSurface);
   }
 
@@ -198,7 +214,7 @@ public: // clip
   - Calling cairo_clip() can only make the clip region smaller, never larger
   */
 
-  void setClip(MIP_FRect ARect) {
+  void setClip(MIP_FRect ARect) override {
     //MIP_Trace("CLIP x %.0f y %.0f w %.0f h %.0f\n",AX1,AY1,AX2-AX1,AY2-AY1);
     cairo_reset_clip(MCairo);
     cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w+1,ARect.h+1);
@@ -208,7 +224,7 @@ public: // clip
 
   //----------
 
-  void resetClip() {
+  void resetClip() override {
     //MIP_Trace("RESET CLIP\n");
     cairo_reset_clip(MCairo);
   }
@@ -217,7 +233,7 @@ public: // clip
 public: // get
 //------------------------------
 
-  float getTextWidth(const char* AText) {
+  float getTextWidth(const char* AText) override {
     cairo_text_extents_t e;
     cairo_text_extents(MCairo,AText,&e);
     return e.width;
@@ -225,7 +241,7 @@ public: // get
 
   //----------
 
-  float getTextHeight(const char* AText) {
+  float getTextHeight(const char* AText) override {
     cairo_text_extents_t e;
     cairo_text_extents(MCairo,AText,&e);
     return e.height;
@@ -440,7 +456,7 @@ public: // draw
 
   //----------
 
-  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, uint32_t AWidth=1) {
+  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     moveTo(AXpos1,AYpos1);
@@ -460,7 +476,7 @@ public: // draw
 
   //----------
 
-  void drawRectangle(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) {
+  void drawRectangle(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     rectangle(ARect);
@@ -469,7 +485,18 @@ public: // draw
 
   //----------
 
-  void drawArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor, uint32_t AWidth=1) {
+  //void drawRoundedRectangle(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t AC) {
+  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor, uint32_t AWidth=1) override {
+    setColor(AColor);
+    setLineWidth(AWidth);
+    //roundedRectangle(AX1,AY1,AX2,AY2,AR,AC);
+    roundedRectangle(ARect,ARadius,ACorners);
+    strokePath();
+  }
+
+  //----------
+
+  void drawArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     arc(ARect.x,ARect.y,ARect.x2(),ARect.y2(),AAngle1,AAngle2);
@@ -478,7 +505,7 @@ public: // draw
 
   //----------
 
-  void drawEllipse(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) {
+  void drawEllipse(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     ellipse(ARect);
@@ -487,7 +514,7 @@ public: // draw
 
   //----------
 
-  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor, uint32_t AWidth=1) {
+  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor, uint32_t AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     triangle(AX1,AY1,AX2,AY2,AX3,AY3);
@@ -506,20 +533,12 @@ public: // draw
 
   //----------
 
-  //void drawRoundedRectangle(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t AC) {
-  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor, uint32_t AWidth=1) {
-    setColor(AColor);
-    setLineWidth(AWidth);
-    //roundedRectangle(AX1,AY1,AX2,AY2,AR,AC);
-    roundedRectangle(ARect,ARadius,ACorners);
-    strokePath();
-  }
 
 //------------------------------
 public: // fill
 //------------------------------
 
-  void fillRectangle(MIP_FRect ARect, MIP_Color AColor) {
+  void fillRectangle(MIP_FRect ARect, MIP_Color AColor) override {
     setColor(AColor);
     rectangle(ARect);
     fillPath();
@@ -527,7 +546,15 @@ public: // fill
 
   //----------
 
-  void fillArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor) {
+  void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor) override {
+    setColor(AColor);
+    roundedRectangle(ARect,ARadius,ACorners);
+    fillPath();
+  }
+
+  //----------
+
+  void fillArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor) override {
     setColor(AColor);
     //float x = AX1 + ((AX2-AX1)*0.5f);
     //float y = AY1 + ((AY2-AY1)*0.5f);
@@ -538,15 +565,7 @@ public: // fill
 
   //----------
 
-  void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor) {
-    setColor(AColor);
-    roundedRectangle(ARect,ARadius,ACorners);
-    fillPath();
-  }
-
-  //----------
-
-  void fillEllipse(MIP_FRect ARect, MIP_Color AColor) {
+  void fillEllipse(MIP_FRect ARect, MIP_Color AColor) override {
     setColor(AColor);
     ellipse(ARect);
     fillPath();
@@ -554,7 +573,7 @@ public: // fill
 
   //----------
 
-  void fillTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor) {
+  void fillTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor) override {
     setColor(AColor);
     triangle(AX1,AY1,AX2,AY2,AX3,AY3);
     fillPath();
@@ -598,7 +617,7 @@ public: // fill
 public: // text
 //------------------------------
 
-  void drawText(float AXpos, float AYpos, const char* AText, MIP_Color AColor) {
+  void drawText(float AXpos, float AYpos, const char* AText, MIP_Color AColor) override {
     setColor(AColor);
     cairo_move_to(MCairo,AXpos,AYpos);
     cairo_show_text(MCairo,AText);
@@ -606,7 +625,7 @@ public: // text
 
   //----------
 
-  void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) {
+  void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {
     setColor(AColor);
     //MIP_Assert(AText);
     cairo_text_extents_t e;
@@ -649,40 +668,40 @@ public: // text
 public: // image
 //------------------------------
 
-  //void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) {
-  //}
+  void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
+  }
 
   //----------
 
-  //void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource) {
-  //  drawImage(AXpos,AYpos,ASource,MIP_FRect(0,0,ASource->getWidth(),ASource->getHeight()));
-  //}
+  void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource) override {
+    drawImage(AXpos,AYpos,ASource,MIP_FRect(0,0,ASource->getWidth(),ASource->getHeight()));
+  }
 
   //----------
 
-  //void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) {
-  //  cairo_surface_t* srf = ASource->createCairoSurface();
-  //  cairo_set_source_surface(MCairo,srf,/*0,0*/AXpos-ASrc.x,AYpos-ASrc.y);
-  //  cairo_surface_destroy(srf);
-  //  cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
-  //  cairo_fill(MCairo);
-  //}
+  void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) override {
+    cairo_surface_t* srf = ASource->createCairoSurface();
+    cairo_set_source_surface(MCairo,srf,/*0,0*/AXpos-ASrc.x,AYpos-ASrc.y);
+    cairo_surface_destroy(srf);
+    cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
+    cairo_fill(MCairo);
+  }
 
   //----------
 
-  //void drawImage(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) {
-  //  float xscale = (float)ADst.w / (float)ASrc.w;
-  //  float yscale = (float)ADst.h / (float)ASrc.h;
-  //  cairo_rectangle(MCairo,ADst.x,ADst.y,ADst.w,ADst.h);
-  //  cairo_save(MCairo);
-  //  cairo_translate(MCairo,ADst.x,ADst.y);
-  //  cairo_scale(MCairo,xscale,yscale);
-  //  cairo_surface_t* srf = ASource->createCairoSurface();
-  //  cairo_set_source_surface(MCairo,srf,0,0/*ASrcX,ASrcY*/);
-  //  cairo_surface_destroy(srf);
-  //  cairo_fill(MCairo);
-  //  cairo_restore(MCairo);
-  //}
+  void drawImage(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) override {
+    float xscale = (float)ADst.w / (float)ASrc.w;
+    float yscale = (float)ADst.h / (float)ASrc.h;
+    cairo_rectangle(MCairo,ADst.x,ADst.y,ADst.w,ADst.h);
+    cairo_save(MCairo);
+    cairo_translate(MCairo,ADst.x,ADst.y);
+    cairo_scale(MCairo,xscale,yscale);
+    cairo_surface_t* srf = ASource->createCairoSurface();
+    cairo_set_source_surface(MCairo,srf,0,0/*ASrcX,ASrcY*/);
+    cairo_surface_destroy(srf);
+    cairo_fill(MCairo);
+    cairo_restore(MCairo);
+  }
 
 
 };

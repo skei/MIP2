@@ -13,15 +13,15 @@ class MIP_BaseSurface {
 public:
 //------------------------------
 
-  MIP_BaseSurface(MIP_Drawable* ATarget) {
+  MIP_BaseSurface(/*MIP_Drawable* ATarget*/) {
     // window
   }
 
   //----------
 
-  MIP_BaseSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
-    // pixmap
-  }
+  //MIP_BaseSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
+  //  // pixmap
+  //}
 
   //----------
 
