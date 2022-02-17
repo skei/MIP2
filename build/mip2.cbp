@@ -86,6 +86,7 @@
 			<Add library="xcb-keysyms" />
 			<Add library="xcb-util" />
 			<Add library="pthread" />
+			<Add library="cairo" />
 		</Linker>
 		<Unit filename="../doc/compile.txt" />
 		<Unit filename="../include/audio/analysis/mip_beat_detector.h" />

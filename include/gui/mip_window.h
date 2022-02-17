@@ -142,7 +142,7 @@ public:
   MIP_Widget* getMouseModalWidget()        { return MMouseModalWidget; }
   MIP_Widget* getMouseClickedWidget()      { return MMouseClickedWidget; }
   MIP_Widget* getMouseMouseLockedWidget()  { return MMouseLockedWidget; }
-  MIP_Widget* getKeyInputWidget()         { return MKeyInputWidget; }
+  MIP_Widget* getKeyInputWidget()          { return MKeyInputWidget; }
 
 //------------------------------
 public:
@@ -336,7 +336,9 @@ public: // buffer
     //MBufferPainter->pushClip(ARect);
     paintWidgets(MBufferPainter,ARect);
     MBufferPainter->flush();
-    blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
+    //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
+    MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+
     //MBufferPainter->popClip();
   }
 

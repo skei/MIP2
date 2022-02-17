@@ -94,6 +94,7 @@ public:
       MIP_FRect rr = r;
       //r.shrink(0.5f + MKnobSize * 0.5f);
       r.shrink((arc_thickness / 2.0f) + 1.0f);
+      rr.shrink(2);
 
       float x = getRect().x + ((float)getRect().w * 0.5f);
       float y = getRect().y + ((float)getRect().h * 0.5f);

@@ -1,9 +1,12 @@
 
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
+//#define MIP_PAINTER_XCB
 
 #define MIP_USE_CAIRO
 #define MIP_PAINTER_CAIRO
+
+//#define MIP_NO_WINDOW_BUFFERING
 
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket

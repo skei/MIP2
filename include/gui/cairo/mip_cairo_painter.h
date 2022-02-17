@@ -88,6 +88,9 @@ public:
       MSurface = ADrawable->createCairoSurface();
       MSurfaceAllocated = true;
       MCairo = cairo_create(MSurface);
+      //check_cairo_errors(MCairo);
+      cairo_set_line_width(MCairo,1);
+      //setFontSize(11);
     }
   }
 
