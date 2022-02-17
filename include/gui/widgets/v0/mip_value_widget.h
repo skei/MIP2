@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "base/utils/mip_convert.h"
-#include "gui/widgets/mip_text_widget.h"
+#include "gui/widgets/v0/mip_text_widget.h"
 
 #define MIP_VALUE_WIDGET_LABEL_SPACE 4.0f
 

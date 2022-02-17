@@ -2,7 +2,7 @@
 #define mip_button_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/mip_text_widget.h"
+#include "gui/widgets/v0/mip_text_widget.h"
 
 //----------------------------------------------------------------------
 

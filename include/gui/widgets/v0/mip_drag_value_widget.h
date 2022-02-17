@@ -2,7 +2,7 @@
 #define mip_drag_value_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/mip_value_widget.h"
+#include "gui/widgets/v0/mip_value_widget.h"
 
 #define MIP_VALUE_WIDGET_LABEL_SPACE 4.0f
 

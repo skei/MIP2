@@ -19,7 +19,7 @@
 */
 
 
-#include "gui/widgets/mip_panel_widget.h"
+#include "gui/widgets/v0/mip_panel_widget.h"
 
 //----------------------------------------------------------------------
 

@@ -2,8 +2,8 @@
 #define mip_selector_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/mip_menu_widget.h"
-#include "gui/widgets/mip_text_widget.h"
+#include "gui/widgets/v0/mip_menu_widget.h"
+#include "gui/widgets/v0/mip_text_widget.h"
 
 class MIP_SelectorWidget
 : public MIP_TextWidget

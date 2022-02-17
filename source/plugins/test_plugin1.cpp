@@ -271,7 +271,7 @@ public: // plugin
 
   void gui_show() final {
     setEditorParameterValues(myParameters,NUM_PARAMS);
-    MSizer->setTarget( MEditor->getWindow() );
+    //MSizer->setTarget( MEditor->getWindow() );
     MIP_Plugin::gui_show();
   }
 
@@ -282,6 +282,7 @@ public: // plugin
     if (result) {
       if (MEditor) {
         MIP_Window* win = MEditor->getWindow();
+        MSizer->setTarget(win);
         win->appendWidget(MEditorPanel);
       }
     }

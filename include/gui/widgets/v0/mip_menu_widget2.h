@@ -2,8 +2,8 @@
 #define mip_menu_widget2_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/mip_panel_widget.h"
-#include "gui/widgets/mip_menu_item_widget2.h"
+#include "gui/widgets/v0/mip_panel_widget.h"
+#include "gui/widgets/v0/mip_menu_item_widget2.h"
 
 #define MIP_MENU_MAIN      0
 #define MIP_MENU_DROPDOWN  1

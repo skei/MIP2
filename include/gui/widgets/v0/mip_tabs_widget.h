@@ -2,8 +2,8 @@
 #define mip_tabs_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/mip_button_row_widget.h"
-#include "gui/widgets/mip_pages_widget.h"
+#include "gui/widgets/v0/mip_button_row_widget.h"
+#include "gui/widgets/v0/mip_pages_widget.h"
 
 #define MAX_PAGES 32
 
