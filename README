@@ -7,10 +7,11 @@ plugin wrappers, abstractions, simplifications, helpers, ..
 
 v0.0.0
 in progress, prototype, proof of concept, pre-, ..
+changes are frequent, code will break..
 
 
 * os: linux (windows considered)
-* plugin: clap (with wrappers for exe, vst2, vst3, (maybe lv2))
+* plugin: clap (with wrappers for exe, vst2, vst3, [ladspa, lv2])
 * host: clap, ladspa (other formats considered)
 * gui: xcb (cairo coming)
 * io: jack audio/midi
