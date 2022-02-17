@@ -11,7 +11,7 @@ in progress, prototype, proof of concept, pre-, ..
 
 * os: linux (windows considered)
 * plugin: clap (with wrappers for exe, vst2, vst3, (maybe lv2))
-* host: clap (other formats considered, ladspa/dssi dropped)
+* host: clap, ladspa (other formats considered)
 * gui: xcb (cairo coming)
 * io: jack audio/midi
 * other: too much to list..
