@@ -26,7 +26,7 @@ private:
   bool        MDrawKnob             = true;
   MIP_Color   MKnobColor            = MIP_COLOR_LIGHT_GRAY;
   MIP_Color   MInteractiveKnobColor = MIP_COLOR_WHITE;
-  MIP_Color   MKnobBack             = MIP_COLOR_DARK_GRAY;
+  MIP_Color   MKnobBack             = MIP_Color(0.4);//MIP_COLOR_DARK_GRAY;
   //uint32_t  MKnobSize             = 5.0f;
   bool        MBipolar              = false;
   float       MArcThickness         = 0.20;
@@ -91,6 +91,7 @@ public:
       float     needle_thickness  = S * MNeedleThickness; // arc_thickness * 0.33f;
 
       MIP_FRect r = getRect();
+      MIP_FRect rr = r;
       //r.shrink(0.5f + MKnobSize * 0.5f);
       r.shrink((arc_thickness / 2.0f) + 1.0f);
 
@@ -158,7 +159,7 @@ public:
         m2 =  0.8f * mvalue;   // length
       }
 
-      APainter->drawArc(r,m1,m2,MIP_COLOR_RED,arc_thickness / 3);
+      APainter->drawArc(rr,m1,m2,MIP_COLOR_BLACK,2);//arc_thickness / 3);
 
 //
       // steps

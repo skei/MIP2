@@ -25,6 +25,7 @@ extern MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descr
 */
 
 uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
+  //MIP_PRINT;
   return MIP_GLOBAL_CLAP_LIST.getNumPlugins();
 }
 
@@ -38,6 +39,7 @@ uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory
 */
 
 const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
+  //MIP_Print("index: %i\n",index);
   return MIP_GLOBAL_CLAP_LIST.getPlugin(index);
 }
 
@@ -52,6 +54,7 @@ const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(cons
 */
 
 const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
+  //MIP_Print("plugin_id: %s\n",plugin_id);
   int32_t index = MIP_GLOBAL_CLAP_LIST.findPluginById(plugin_id);
   //MIP_ClapHostProxy* hostproxy = new MIP_ClapHostProxy(host);
   const clap_plugin_descriptor_t* descriptor = MIP_GLOBAL_CLAP_LIST.getPlugin(index);

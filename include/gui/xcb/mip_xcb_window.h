@@ -104,8 +104,8 @@ private:
     "sb_right_arrow",     // MIP_CURSOR_ARROWRIGHT
     "sb_v_double_arrow",  // MIP_CURSOR_ARROWUPDOWN
     "sb_h_double_arrow",  // MIP_CURSOR_ARROWLEFTRIGHT
-    "top_left_corner",    // MIP_CURSOR_ARROWDIAGLEFT
-    "top_right_corner",   // MIP_CURSOR_ARROWDIAGRIGHT
+    "bottom_left_corner",    // MIP_CURSOR_ARROWDIAGLEFT
+    "bottom_right_corner",   // MIP_CURSOR_ARROWDIAGRIGHT
     "fleur",              // MIP_CURSOR_MOVE
     "watch",              // MIP_CURSOR_WAIT
     "clock",              // MIP_CURSOR_ARROWWAIT
@@ -123,8 +123,8 @@ public:
 //------------------------------
 
   //MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", void* AParent=nullptr)
-  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", uint32_t AParent=0)
-  : MIP_BaseWindow(AWidth,AHeight,ATitle,AParent) {
+  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", intptr_t AParent=0)
+  : MIP_BaseWindow(AWidth,AHeight/*,ATitle,AParent*/) {
     //MName = "MIP_XcbWindow";
     MUseEventThread = AParent ? true : false;
     connect();
@@ -276,7 +276,7 @@ private:
       MWindowParent,                  // parent window
       0, 0,                           // x, y
       AWidth, AHeight,                // width, height
-      1,                              // border_width
+      0,                              // border_width
       XCB_WINDOW_CLASS_INPUT_OUTPUT,  // class
       MScreen->root_visual,           // visual
       window_mask,
@@ -284,7 +284,7 @@ private:
     );
     if (AParent) {
       //reparent(AParent);
-//      removeDecorations();
+      removeDecorations();
     }
     else {
       setWindowTitle(ATitle);
@@ -1073,7 +1073,7 @@ public:
 
   //----------
 
-  void reparent(void* AParent) override {
+  void reparent(intptr_t AParent) override {
     MWindowParent = (intptr_t)AParent;
     xcb_reparent_window(MConnection,MWindow,MWindowParent,0,0);
     xcb_flush(MConnection);

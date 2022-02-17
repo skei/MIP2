@@ -17,7 +17,7 @@ public:
 //------------------------------
 
   //MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, void* AParentPtr)
-  MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, uint32_t AParent)
+  MIP_BaseWindow(int32_t AWidth, int32_t AHeight/*, const char* ATitle, uint32_t AParent*/)
   : MIP_Widget( MIP_FRect(AWidth,AHeight)) {
   }
 
@@ -59,7 +59,7 @@ public:
   virtual void open() {}
   virtual void close() {}
   virtual void eventLoop() {}
-  virtual void reparent(void* AParent) {}
+  virtual void reparent(intptr_t AParent) {}
   virtual void startTimer(uint32_t ms) {}
   virtual void stopTimer(void) {}
   virtual void setMouseCursor(uint32_t ACursor) {}

@@ -2,6 +2,8 @@
 #define mip_clap_list_included
 //----------------------------------------------------------------------
 
+// todo: rename to MIP_ClapGlobal or something similar?
+
 #include "mip.h"
 #include "base/types/mip_array.h"
 #include "extern/clap/clap.h"
@@ -20,7 +22,6 @@ typedef MIP_Array<const clap_plugin_invalidation_source_t*> clap_invalidation_so
 class MIP_ClapList;
 extern void MIP_RegisterPlugins(MIP_ClapList* AList);
 //extern void MIP_UnregisterPlugins(MIP_ClapList* AList);
-
 //extern MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost);
 
 
@@ -50,12 +51,14 @@ public:
 //------------------------------
 
   MIP_ClapList() {
+    //MIP_PRINT;
     MIP_RegisterPlugins(this);
   }
 
   //----------
 
   ~MIP_ClapList() {
+    //MIP_PRINT;
   }
 
 //------------------------------
@@ -64,17 +67,20 @@ public: // plugin descriptors
 
   void appendPlugin(const clap_plugin_descriptor_t* ADescriptor) {
     MDescriptors.push_back(ADescriptor);
+    //MIP_Print("%s\n",ADescriptor->name);
   }
 
   //----------
 
   uint32_t getNumPlugins() {
+    //MIP_Print("-> %i\n",MDescriptors.size());
     return MDescriptors.size();
   }
 
   //----------
 
   const clap_plugin_descriptor_t* getPlugin(uint32_t AIndex) {
+    //MIP_Print("%i\n",AIndex);
     return MDescriptors[AIndex];
   }
 

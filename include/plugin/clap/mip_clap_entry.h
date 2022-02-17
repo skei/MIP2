@@ -10,8 +10,6 @@
 //extern void MIP_RegisterPlugins(MIP_ClapList* AList);
 //extern void MIP_UnregisterPlugins(MIP_ClapList* AList);
 
-//----------
-
 #ifndef MIP_NO_DEFAULT_PLUGIN_ENTRY
 
 //----------------------------------------------------------------------
@@ -20,36 +18,13 @@
 //
 //----------------------------------------------------------------------
 
-//bool entry_init_has_already_been_called = false;
-
-/*
-  This function must be called fist, and can only be called once.
-  It should be as fast as possible, in order to perform very quick scan of the
-  plugin descriptors.
-  It is forbidden to display graphical user interface in this call.
-  It is forbidden to perform user inter-action in this call.
-  If the initialization depends upon expensive computation, maybe try to do
-  them ahead of time and cache the result.
-*/
-
 bool clap_entry_init_callback(const char *plugin_path) {
-  //MIP_PRINT;
-  //if (entry_init_has_already_been_called) {
-  //  MIP_Print("entry.init has already been called..\n");
-  //}
-  //else {
-  //  MIP_Print("entry.init..\n");
-  //  MIP_RegisterPlugins(&MIP_GLOBAL_CLAP_LIST);
-  //  entry_init_has_already_been_called = true;
-  //}
+  //MIP_Print("plugin_path: %s\n",plugin_path);
+  //MIP_RegisterPlugins(&MIP_GLOBAL_CLAP_LIST);
   return true;
 }
 
 //----------
-
-/*
-  No more calls into the DSO must be made after calling deinit().
-*/
 
 void clap_entry_deinit_callback() {
   //MIP_PRINT;
@@ -58,12 +33,7 @@ void clap_entry_deinit_callback() {
 
 //----------
 
-/*
-  Get the pointer to a factory.
-  See plugin-factory.h, vst2-converter.h ...
-  Returns null if the factory is not provided.
-  The returned pointer must *not* be freed by the caller.
-*/
+// MIP_ClapList->registerFactory( CLAP_PLUGIN_INVALIDATION_FACTORY_ID, &MIP_GLOBAL_CLAP_INVALIDATION );
 
 const void* clap_entry_get_factory_callback(const char *factory_id) {
   #ifdef MIP_PLUGIN_USE_INVALIDATION
@@ -87,6 +57,7 @@ const void* clap_entry_get_factory_callback(const char *factory_id) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
 
+
 // MIP_GLOBAL_CLAP_ENTRY
 CLAP_EXPORT const clap_plugin_entry clap_entry = {
   CLAP_VERSION,
@@ -95,7 +66,136 @@ CLAP_EXPORT const clap_plugin_entry clap_entry = {
   clap_entry_get_factory_callback,
 };
 
+
 #pragma GCC diagnostic pop
+
+//----------------------------------------------------------------------
+//
+// test 1
+//
+//----------------------------------------------------------------------
+
+#if 0
+
+template <class E>
+class MIP_ClapEntry {
+
+public:
+
+  static
+  bool init_callback(const char *plugin_path) {
+    MIP_PRINT;
+    return E::init(plugin_path);
+  }
+
+  static
+  void deinit_callback() {
+    MIP_PRINT;
+    E::deinit();
+  }
+
+  static
+  const void* get_factory_callback(const char *factory_id) {
+    MIP_PRINT;
+    return E::get_factory(factory_id);
+  }
+
+public:
+
+  // get rid of "warning: ‘visibility’ attribute ignored [-Wattributes]"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wattributes"
+
+  static constexpr
+  CLAP_EXPORT const clap_plugin_entry clap_entry asm("clap_entry") = {
+    CLAP_VERSION,
+    init_callback,
+    deinit_callback,
+    get_factory_callback,
+  };
+
+  #pragma GCC diagnostic pop
+
+};
+
+//----------------------------------------------------------------------
+
+MIP_ClapEntry<myEntry> MIP_GLOBAL_CLAP_ENTRY = {};
+
+#endif // 0
+
+//----------------------------------------------------------------------
+//
+// test 2
+//
+//----------------------------------------------------------------------
+
+#if 0
+
+class myPluginEntry {
+
+//public:
+//
+//  myPluginEntry() { MIP_PRINT; }
+//  ~myPluginEntry() { MIP_PRINT; }
+
+public:
+
+  static
+  bool init(const char *plugin_path) {
+    //MIP_PRINT;
+    return true;
+  }
+
+  static
+  void deinit() {
+    //MIP_PRINT;
+  }
+
+  static
+  const void* get_factory(const char *factory_id) {
+    //MIP_PRINT;
+    if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) return &MIP_GLOBAL_CLAP_FACTORY;
+    else return nullptr;
+  }
+
+public:
+
+  //static constexpr
+  //CLAP_EXPORT const clap_plugin_entry clap_entry2 asm("clap_entry2") = {
+  //  CLAP_VERSION,
+  //  init,
+  //  deinit,
+  //  get_factory,
+  //};
+
+};
+
+//----------------------------------------------------------------------
+
+myPluginEntry MIP_GLOBAL_CLAP_ENTRY = {};
+
+// get rid of "warning: ‘visibility’ attribute ignored [-Wattributes]"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+
+//static constexpr
+CLAP_EXPORT const clap_plugin_entry clap_entry /*asm("clap_entry")*/ = {
+  CLAP_VERSION,
+  MIP_GLOBAL_CLAP_ENTRY.init,
+  MIP_GLOBAL_CLAP_ENTRY.deinit,
+  MIP_GLOBAL_CLAP_ENTRY.get_factory,
+};
+
+#pragma GCC diagnostic pop
+
+#endif // 0
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
 #endif // MIP_NO_DEFAULT_PLUGIN_ENTRY
 

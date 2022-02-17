@@ -72,7 +72,7 @@ public:
       case MIP_SIZER_RIGHT:    setCursor(MIP_CURSOR_ARROWLEFTRIGHT);  break;
       case MIP_SIZER_TOP:      setCursor(MIP_CURSOR_ARROWUPDOWN);     break;
       case MIP_SIZER_BOTTOM:   setCursor(MIP_CURSOR_ARROWUPDOWN);     break;
-      case MIP_SIZER_WINDOW:   setCursor(MIP_CURSOR_ARROWDIAGLEFT);   break;
+      case MIP_SIZER_WINDOW:   setCursor(MIP_CURSOR_ARROWDIAGRIGHT);   break;
     }
   }
 
@@ -114,6 +114,7 @@ public:
   }
 
   //----------
+
   void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp=0) final {
     if (MIsDragging) {
       float deltax = AXpos - prevx;
@@ -147,19 +148,23 @@ public:
 
         if (MTarget) {
 
-
-          float tw = MTarget->getRect().w;
-          float th = MTarget->getRect().h;
-          // todo: check flags.sizePercent
-          tw += deltax;
-          th += deltay;
-          MIP_FPoint tmin = MTarget->layout.minSize;
-          MIP_FPoint tmax = MTarget->layout.maxSize;
-          if ( (tw > tmin.w) && (tw < tmax.w)
-            && (th > tmin.h) && (th < tmax.h) ) {
+          if (MMode == MIP_SIZER_WINDOW) {
             MTarget->do_widget_resized(this,deltax,deltay);
           }
-        }
+          else {
+            float tw = MTarget->getRect().w;
+            float th = MTarget->getRect().h;
+            // todo: check flags.sizePercent
+            tw += deltax;
+            th += deltay;
+            MIP_FPoint tmin = MTarget->layout.minSize;
+            MIP_FPoint tmax = MTarget->layout.maxSize;
+            if ( (tw > tmin.w) && (tw < tmax.w)
+              && (th > tmin.h) && (th < tmax.h) ) {
+              MTarget->do_widget_resized(this,deltax,deltay);
+            }
+          }
+        } // sizer
       //  else self.do_widget_resized(self,deltax,deltay,FMode);
       //}
       prevx = AXpos;

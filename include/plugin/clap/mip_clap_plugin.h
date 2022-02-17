@@ -96,7 +96,7 @@ public: // extensions
   virtual void      gui_destroy() {}
   virtual bool      gui_set_scale(double scale) { return true; }
   virtual bool      gui_get_size(uint32_t *width, uint32_t *height) { return false; }
-  virtual bool      gui_can_resize() { return false; }
+  virtual bool      gui_can_resize() { return true; }
   virtual void      gui_round_size(uint32_t *width, uint32_t *height) {}
   virtual bool      gui_set_size(uint32_t width, uint32_t height) { return true; }
   virtual void      gui_show() {}

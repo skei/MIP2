@@ -31,7 +31,7 @@ typedef MIP_ImplementedWindow MIP_BasicWindow;;
 class MIP_WindowListener {
 public:
   virtual void on_updateWidgetFromWindow(MIP_Widget* AWidget) {}
-  //virtual void on_redrawWidgetFromWindow(MIP_Widget* AWidget) {}
+  virtual void on_resizeFromWindow(uint32_t AWidth, uint32_t AHeight) {}
 };
 
 //----------------------------------------------------------------------
@@ -79,6 +79,12 @@ private:
   int32_t             MMouseDragX             = 0;
   int32_t             MMouseDragY             = 0;
   uint32_t            MPrevClickTime          = 0;
+
+  uint32_t MClickedWidth = 0;
+  uint32_t MClickedHeight = 0;
+
+  uint32_t MResizingWidth = 0;
+  uint32_t MResizingHeight = 0;
 
 //------------------------------
 public:
@@ -453,6 +459,10 @@ public: // MIP_BaseWindow
     //  double_click = true;
     //}
     //MPrevClickTime = ATimeStamp;
+    //MClickedWidth   = MRect.w;
+    //MClickedHeight  = MRect.h;
+    MResizingWidth   = MRect.w;
+    MResizingHeight  = MRect.h;
     MMouseClickedX  = AXpos;
     MMouseClickedY  = AYpos;
     MMousePrevX     = AXpos;
@@ -607,15 +617,20 @@ public: // MIP_Widget
     notify parent of widget, and realign/redraw
   */
 
-//  void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f) override {
-//    //MIP_Widget* parent = ASender->getParent();
-//    //if (parent) {
-//    //  parent->alignChildren();
-//    //  do_widget_redraw(parent,parent->getRect(),0);
-//    //}
-//    alignChildren();
-//    redraw();
-//  }
+  void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) override {
+    //MIP_Widget* parent = ASender->getParent();
+    //if (parent) {
+    //  parent->alignChildren();
+    //  do_widget_redraw(parent,parent->getRect(),0);
+    //}
+
+    //MIP_Print("%.2f, %.2f\n",ADeltaX,ADeltaY);
+    MResizingWidth += ADeltaX;
+    MResizingHeight += ADeltaY;
+    MListener->on_resizeFromWindow(MResizingWidth,MResizingHeight);
+    //alignWidgets();
+    //redraw();
+  }
 
   //----------
 

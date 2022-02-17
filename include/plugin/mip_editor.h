@@ -18,6 +18,7 @@
 class MIP_EditorListener{
 public:
   virtual void on_editor_updateParameter(uint32_t AIndex, float AValue) {}
+  virtual void on_editor_resize(uint32_t AWidth, uint32_t AHeight) {}
 };
 
 //----------------------------------------------------------------------
@@ -125,23 +126,33 @@ private: // window listener
     }
   }
 
+  //----------
+
+  void on_resizeFromWindow(uint32_t AWidth, uint32_t AHeight) final {
+    if (MListener) MListener->on_editor_resize(AWidth,AHeight);
+  }
+
+
 //------------------------------
 private: // timer listener
 //------------------------------
 
+  /*
+
+    * avoid drawing widget multiple times
+      (param & mod changed)
+      - create list (getQueuedGuiParams)
+      - add to list : getQueuedGuiMods
+      - remove duplicates from list
+          just sort the ints queued values = parameter indices,
+          duplicates should be easy to spot?
+      - paint list
+
+   * paintmode = default, value, mod
+
+  */
+
   // [timer]
-
-  //TODO:
-  //check if widget is updated multiple times,
-  //or if both mod & value is changed..
-
-  // list = getQueuedGuiParams
-  // list += getQueuedGuiMods
-  // list.removeDuplicates
-  // paint.list
-  // (also, paintmode = full, value/mod changed)
-  // (queued values = parameter indices)
-
 
   void on_timerCallback(void) final {
     flushGuiParams();
@@ -196,7 +207,6 @@ public:
         if (widget) {
           //if (widget->getValue() != value)
           widget->setValue(value);
-          //MWindow->paintWidget(widget,widget->getRect(),MIP_WIDGET_PAINT_VALUE);
           MWindow->paintWidget(widget);
         }
       }
@@ -220,7 +230,6 @@ public:
         if (widget) {
           //if (widget->getValue() != value)
           widget->setModValue(value);
-          //MWindow->paintWidget(widget,widget->getRect(),MIP_WIDGET_PAINT_MODULATION);
           MWindow->paintWidget(widget);
         }
       }
@@ -232,6 +241,7 @@ public: // clap.gui
 //------------------------------
 
   virtual bool attach(const char* ADisplay, uint32_t AWindow) {
+    //MWindow->reparent(AWindow);
     MWindow = new MIP_Window(256,256,"",this,AWindow);
     return true;
   }

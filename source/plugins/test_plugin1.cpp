@@ -6,12 +6,11 @@
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
-//----------
-
 //#define MIP_PLUGIN_USE_INVALIDATION
 
-#include "mip.h"
+//----------
 
+#include "mip.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
@@ -22,10 +21,19 @@
 //
 //----------------------------------------------------------------------
 
+//#define NUM_THREADS 16
+//#define NUM_RANDOM  512
 
-  #define NUM_THREADS   16
-  #define NUM_RANDOM    512
+#define NUM_PARAMS          4
+#define NUM_AUDIO_INPUTS    2
+#define NUM_AUDIO_OUTPUTS   2
+#define NUM_NOTE_INPUTS     2
+#define NUM_NOTE_OUTPUTS    2
+#define NUM_QUICK_CONTROLS  2
 
+#define ALL_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
+
+//----------
 
 const char* myFeatures[] = {
   "audio_effect",
@@ -47,8 +55,6 @@ const clap_plugin_descriptor_t myDescriptor = {
   myFeatures
 };
 
-#define ALL_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
-
 //test
 const clap_plugin_descriptor_t myDescriptor2 = {
   CLAP_VERSION,
@@ -63,7 +69,6 @@ const clap_plugin_descriptor_t myDescriptor2 = {
   myFeatures
 };
 
-
 //----------------------------------------------------------------------
 //
 //
@@ -77,18 +82,11 @@ class myPlugin
 private:
 //------------------------------
 
-  #define NUM_PARAMS          4
-  #define NUM_AUDIO_INPUTS    2
-  #define NUM_AUDIO_OUTPUTS   2
-  #define NUM_NOTE_INPUTS     2
-  #define NUM_NOTE_OUTPUTS    2
-  #define NUM_QUICK_CONTROLS  2
-
   clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",     "Params",   0.0, 1.0, 0.5 },
-    { 1, 0,                         nullptr, "(param2)", "(unused)", 0.0, 1.0, 0.5 },
-    { 2, 0,                         nullptr, "(param3)", "(unused)", 0.0, 1.0, 0.5 },
-    { 3, 0,                         nullptr, "(param4)", "(unused)", 0.0, 1.0, 0.5 }
+    { 0, CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",   "Params", 0.0, 1.0, 0.5 },
+    { 1, 0,                         nullptr, "param2", "Params", 0.0, 1.0, 0.5 },
+    { 2, 0,                         nullptr, "param3", "Params", 0.0, 1.0, 0.5 },
+    { 3, 0,                         nullptr, "param4", "Params", 0.0, 1.0, 0.5 }
   };
 
   clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
@@ -100,6 +98,7 @@ private:
     { 0, "Output 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
     { 1, "Output 2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
+
 
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
     { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
@@ -118,8 +117,10 @@ private:
 
   //----------
 
-  MIP_PanelWidget* MEditorPanel = nullptr;
-  float MSum = 0.0;
+  MIP_PanelWidget*  MEditorPanel  = nullptr;
+  MIP_SizerWidget*  MSizer        = nullptr;
+
+  //float MSum = 0.0;
 
 //------------------------------
 public:
@@ -150,13 +151,13 @@ private:
 
   //----------
 
-  void thread_pool_exec(uint32_t task_index) final {
-    float f = 0.0;
-    for (uint32_t i=0; i<NUM_RANDOM; i++) {
-      f += (MIP_Random() * 0.00001);
-    }
-    MSum += (1.0 / NUM_THREADS) + f;
-  }
+  //void thread_pool_exec(uint32_t task_index) final {
+  //  float f = 0.0;
+  //  for (uint32_t i=0; i<NUM_RANDOM; i++) {
+  //    f += (MIP_Random() * 0.00001);
+  //  }
+  //  MSum += (1.0 / NUM_THREADS) + f;
+  //}
 
   //----------
 
@@ -167,19 +168,19 @@ private:
     float    scale   = getParameterValue(0) + getParameterModulation(0);
 
     // test thread pool
-
-//    MSum = 0.0;
-//    if (MHost->thread_pool) {
-//      bool didComputeVoices = false;
-//      //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
-//      if (!didComputeVoices) {
-//        for (uint32_t i=0; i<NUM_THREADS;i++) {
-//          thread_pool_exec(i);
-//          //MThreadPool.exec(&MPlugin,i);
-//        }
-//      }
-//    }
-//    scale *= MSum;
+    //
+    //MSum = 0.0;
+    //if (MHost->thread_pool) {
+    //  bool didComputeVoices = false;
+    //  //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
+    //  if (!didComputeVoices) {
+    //    for (uint32_t i=0; i<NUM_THREADS;i++) {
+    //      thread_pool_exec(i);
+    //      //MThreadPool.exec(&MPlugin,i);
+    //    }
+    //  }
+    //}
+    //scale *= MSum;
 
     MIP_CopyStereoBuffer(outputs,inputs,length);
     MIP_ScaleStereoBuffer(outputs,scale,length);
@@ -187,12 +188,17 @@ private:
 
   //----------
 
+  // called from end of process()
+
   void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
-    if (MEditor && MIsEditorOpen) {
-      float v0 = MParameterValues[0] + MParameterModulations[0];
-      v0 = MIP_Clamp(v0,0,1);
-      //MEditor->send_param_mod(0,v0,out_events);
-      send_param_value_event(0,v0,out_events);
+    { // send modulation value for parameter 0 to host
+      //float v0 = MParameterValues[0] + MParameterModulations[0];
+      //v0 = MIP_Clamp(v0,0,1);
+      //send_param_mod_event(0,v0,out_events);
+      //
+      //float v1 = MParameterValues[1] + MParameterModulations[1];
+      //v0 = MIP_Clamp(v1,0,1);
+      //send_param_mod_event(1,v1,out_events);
     }
     MIP_Plugin::handle_events_output(in_events,out_events);
   }
@@ -228,7 +234,6 @@ public: // plugin
       if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)     return &MThreadPool;
     }
     return ext;
-    //return nullptr;
   }
 
   //----------
@@ -240,14 +245,17 @@ public: // plugin
       MEditorPanel = new MIP_PanelWidget(MIP_FRect(0));
       MEditorPanel->setBackgroundColor(0.6);
       MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-      MIP_KnobWidget* knob1 = new MIP_KnobWidget(MIP_FRect( 10,10, 50,50));
-      MIP_KnobWidget* knob2 = new MIP_KnobWidget(MIP_FRect( 70,10, 50,50));
-      MIP_KnobWidget* knob3 = new MIP_KnobWidget(MIP_FRect(130,10, 50,50));
-      MIP_KnobWidget* knob4 = new MIP_KnobWidget(MIP_FRect(190,10, 50,50));
+      MIP_KnobWidget*   knob1 = new MIP_KnobWidget(MIP_FRect( 10,10, 50,50));
+      MIP_KnobWidget*   knob2 = new MIP_KnobWidget(MIP_FRect( 70,10, 50,50));
+      MIP_KnobWidget*   knob3 = new MIP_KnobWidget(MIP_FRect(130,10, 50,50));
+      MIP_KnobWidget*   knob4 = new MIP_KnobWidget(MIP_FRect(190,10, 50,50));
+      MSizer = new MIP_SizerWidget(MIP_FRect(10,10),MIP_SIZER_WINDOW);//MEditor->getWindow());
+      MSizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
       MEditorPanel->appendWidget(knob1);
       MEditorPanel->appendWidget(knob2);
       MEditorPanel->appendWidget(knob3);
       MEditorPanel->appendWidget(knob4);
+      MEditorPanel->appendWidget(MSizer);
       // connect widgets/parameters
       if (MEditor) {
         MEditor->connect(knob1,0);
@@ -259,8 +267,11 @@ public: // plugin
     return result;
   }
 
+  //----------
+
   void gui_show() final {
     setEditorParameterValues(myParameters,NUM_PARAMS);
+    MSizer->setTarget( MEditor->getWindow() );
     MIP_Plugin::gui_show();
   }
 
@@ -280,12 +291,24 @@ public: // plugin
 };
 
 //----------------------------------------------------------------------
+
+//#undef NUM_THREADS
+//#undef NUM_RANDOM
+
+#undef NUM_PARAMS
+#undef NUM_AUDIO_INPUTS
+#undef NUM_AUDIO_OUTPUTS
+#undef NUM_NOTE_INPUTS
+#undef NUM_NOTE_OUTPUTS
+#undef NUM_QUICK_CONTROLS
+
+#undef ALL_DIALECTS
+
+//----------------------------------------------------------------------
 //
-//
+// plugin 2
 //
 //----------------------------------------------------------------------
-
-// test
 
 class myPlugin2
 : public MIP_Plugin {
@@ -300,25 +323,25 @@ public:
 //
 //----------------------------------------------------------------------
 
-#ifdef MIP_PLUGIN_USE_INVALIDATION
-
-  #define NUM_INVALIDATION_SOURCES 2
-  const clap_plugin_invalidation_source_t myInvalidationSources[NUM_INVALIDATION_SOURCES] = {
-    { "/usr/lib/ladspa/", ".so", true },
-    { "~/.ladspa",        ".so", true }
-  };
-
-#endif
+//#ifdef MIP_PLUGIN_USE_INVALIDATION
+//
+//  #define NUM_INVALIDATION_SOURCES 2
+//  const clap_plugin_invalidation_source_t myInvalidationSources[NUM_INVALIDATION_SOURCES] = {
+//    { "/usr/lib/ladspa/", ".so", true },
+//    { "~/.ladspa",        ".so", true }
+//  };
+//
+//#endif
 
 //----------
 
 void MIP_RegisterPlugins(MIP_ClapList* AList) {
   AList->appendPlugin(&myDescriptor);
   AList->appendPlugin(&myDescriptor2);
-  #ifdef MIP_PLUGIN_USE_INVALIDATION
-    AList->appendInvalidationSource( &myInvalidationSources[0] );
-    AList->appendInvalidationSource( &myInvalidationSources[1] );
-  #endif
+  //#ifdef MIP_PLUGIN_USE_INVALIDATION
+  //AList->appendInvalidationSource( &myInvalidationSources[0] );
+  //AList->appendInvalidationSource( &myInvalidationSources[1] );
+  //#endif
 }
 
 //----------------------------------------------------------------------
@@ -328,6 +351,5 @@ MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t
     case 0: return new myPlugin(ADescriptor,AHost);
     case 1: return new myPlugin2(ADescriptor,AHost);
   }
-  //else return new myPlugin2(ADescriptor,AHost);
   return nullptr;
 }
