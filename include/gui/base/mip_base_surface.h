@@ -13,17 +13,13 @@ class MIP_BaseSurface {
 public:
 //------------------------------
 
-  MIP_BaseSurface(/*MIP_Drawable* ATarget*/) {
-    // window
+   // window
+  MIP_BaseSurface() {
   }
 
-  //----------
-
+   // pixmap
   //MIP_BaseSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
-  //  // pixmap
   //}
-
-  //----------
 
   virtual ~MIP_BaseSurface() {
   }
@@ -32,8 +28,7 @@ public:
 public:
 //------------------------------
 
-  virtual void resize(uint32_t AWidth, uint32_t AHeight) {
-  }
+  //virtual void resize(uint32_t AWidth, uint32_t AHeight) {}
 
 //------------------------------
 public:

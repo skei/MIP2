@@ -92,9 +92,9 @@ public:
 public: // base surface
 //------------------------------
 
-  void resize(uint32_t AWidth, uint32_t AHeight) override {
-    MIP_Print("TODO\n");
-  }
+  //void resize(uint32_t AWidth, uint32_t AHeight) override {
+  //  MIP_Print("TODO\n");
+  //}
 
 //------------------------------
 public: // drawable

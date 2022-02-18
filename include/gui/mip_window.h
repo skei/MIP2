@@ -51,6 +51,7 @@ private:
   MIP_WindowListener* MListener               = nullptr;
 
   MIP_Painter*        MWindowPainter          = nullptr;
+
   #ifndef MIP_NO_WINDOW_BUFFERING
   uint32_t            MBufferWidth            = 0;
   uint32_t            MBufferHeight           = 0;
@@ -80,11 +81,10 @@ private:
   int32_t             MMouseDragY             = 0;
   uint32_t            MPrevClickTime          = 0;
 
-  uint32_t MClickedWidth = 0;
-  uint32_t MClickedHeight = 0;
-
-  uint32_t MResizingWidth = 0;
-  uint32_t MResizingHeight = 0;
+  uint32_t            MClickedWidth           = 0;
+  uint32_t            MClickedHeight          = 0;
+  uint32_t            MResizingWidth          = 0;
+  uint32_t            MResizingHeight         = 0;
 
 //------------------------------
 public:
@@ -100,8 +100,6 @@ public:
     #ifndef MIP_NO_WINDOW_BUFFERING
     createBuffer(AWidth,AHeight);
     #endif
-
-
   }
 
   //----------
@@ -125,6 +123,8 @@ public:
     #endif
   }
 
+  //----------
+
   virtual bool isBuffered() {
     #ifdef MIP_NO_WINDOW_BUFFERING
     return false;
@@ -139,91 +139,14 @@ public:
   MIP_Widget* getMouseMouseLockedWidget()  { return MMouseLockedWidget; }
   MIP_Widget* getKeyInputWidget()          { return MKeyInputWidget; }
 
-//------------------------------
-public:
-//------------------------------
+  //----------
 
   void setFillWindowBackground(bool s=true)     { MFillWindowBackground = s; }
   void setWindowBackgroundColor(MIP_Color c)    { MWindowBackgroundColor = c; }
 
-  //----------
-
-  void fillWindowBackground(MIP_FRect ARect) {
-    #ifdef MIP_NO_WINDOW_BUFFERING
-      MWindowPainter->fillRectangle(ARect,MWindowBackgroundColor);
-      //MWindowPainter->flush();
-    #else
-      MBufferPainter->fillRectangle(ARect,MWindowBackgroundColor);
-      //MBufferPainter->flush();
-    #endif
-  }
-
 //------------------------------
 public:
 //------------------------------
-
-  void paintWidget(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) {
-    #ifdef MIP_NO_WINDOW_BUFFERING
-      //if (flags.autoClip) MWindowPainter->pushClip(ARect);
-      AWidget->on_widget_paint(MWindowPainter,ARect,AMode);
-      MWindowPainter->flush();
-      //if (flags.autoClip) MWindowPainter->popClip();
-    #else
-      //if (flags.autoClip) MBufferPainter->pushClip(ARect);
-      AWidget->on_widget_paint(MBufferPainter,ARect,AMode);
-      //if (flags.autoClip) MBufferPainter->popClip();
-      MBufferPainter->flush();
-      MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
-      MWindowPainter->flush();
-    #endif
-  }
-
-  //----------
-
-  void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
-    #ifndef MIP_NO_WINDOW_BUFFERING
-      resizeBuffer(AWidth,AHeight);
-    #endif
-    MRect.w = AWidth;
-    MRect.h = AHeight;
-    alignWidgets();
-    if (MWindowPainter) {
-      MWindowPainter->resize(AWidth,AHeight);
-      MWindowPainter->flush();
-    }
-  }
-
-  //----------
-
-//  void updateHoverWidget(int32_t AXpos, int32_t AYpos) {
-//    bool is_dragging = (MMouseClickedWidget != nullptr);
-//    MIP_Widget* hover = findWidget(AXpos,AYpos);
-//    if (hover != MMouseHoverWidget) {
-//      if (is_dragging) {
-//        if (MMouseHoverWidget) MMouseHoverWidget->on_widget_mouseDragLeave(AXpos,AYpos,hover);
-//        hover->on_widget_mouseDragEnter(AXpos,AYpos,MMouseHoverWidget);
-//        MMouseHoverWidget = hover;
-//      }
-//      else {
-//        if (MMouseHoverWidget) MMouseHoverWidget->on_widget_mouseLeave(AXpos,AYpos,hover);
-//        hover->on_widget_mouseEnter(AXpos,AYpos,MMouseHoverWidget);
-//        MMouseHoverWidget = hover;
-//      }
-//    }
-//  }
-//
-//  //----------
-//
-//  void releaseHoverWidget(int32_t AXpos, int32_t AYpos) {
-//    MIP_Widget* hover = findWidget(AXpos,AYpos);
-//    if (hover != MMouseClickedWidget) {
-//      if (MMouseClickedWidget) MMouseClickedWidget->on_widget_mouseLeave(AXpos,AYpos,hover);
-//      hover->on_widget_mouseEnter(AXpos,AYpos,MMouseHoverWidget);
-//    }
-//    MMouseHoverWidget = hover;
-//  }
-
-  //----------
 
   void updateHoverWidget(uint32_t AXpos, uint32_t AYpos, uint32_t ATimeStamp=0) {
     MIP_Widget* hover = nullptr;
@@ -283,8 +206,34 @@ public:
 public: // window
 //------------------------------
 
+  void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
+    #ifndef MIP_NO_WINDOW_BUFFERING
+      resizeBuffer(AWidth,AHeight);
+    #endif
+    MRect.w = AWidth;
+    MRect.h = AHeight;
+    alignWidgets();
+    if (MWindowPainter) {
+      MWindowPainter->resize(AWidth,AHeight);
+      MWindowPainter->flush();
+    }
+  }
+
+  //----------
+
+  void fillWindowBackground(MIP_FRect ARect) {
+    #ifdef MIP_NO_WINDOW_BUFFERING
+      MWindowPainter->fillRectangle(ARect,MWindowBackgroundColor);
+      //MWindowPainter->flush();
+    #else
+      MBufferPainter->fillRectangle(ARect,MWindowBackgroundColor);
+      //MBufferPainter->flush();
+    #endif
+  }
+
+  //----------
+
   void paintWindow(MIP_FRect ARect) {
-    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
     //MWindowPainter->pushClip(ARect);
     paintWidgets(MWindowPainter,ARect);
     //MWindowPainter->popClip();
@@ -292,88 +241,36 @@ public: // window
   }
 
 //------------------------------
-public: // buffer
+public: // widget
 //------------------------------
 
-  #ifndef MIP_NO_WINDOW_BUFFERING
-
-  bool createBuffer(uint32_t AWidth, uint32_t AHeight) {
-    //MIP_Print("creating buffer surface\n");
-    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
-    MIP_Assert(MBufferSurface);
-    //MIP_Print("creating buffer painter\n");
-    MBufferPainter = new MIP_Painter(MBufferSurface);
-    MIP_Assert(MBufferPainter);
-    MBufferWidth = AWidth;
-    MBufferHeight = AHeight;
-    return true;
-  }
+//  void paintWidget(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) {
+//    #ifdef MIP_NO_WINDOW_BUFFERING
+//      //if (flags.autoClip) MWindowPainter->pushClip(ARect);
+//      AWidget->on_widget_paint(MWindowPainter,ARect,AMode);
+//      MWindowPainter->flush();
+//      //if (flags.autoClip) MWindowPainter->popClip();
+//    #else
+//      //if (flags.autoClip) MBufferPainter->pushClip(ARect);
+//      AWidget->on_widget_paint(MBufferPainter,ARect,AMode);
+//      //if (flags.autoClip) MBufferPainter->popClip();
+//      MBufferPainter->flush();
+//      MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+//      MWindowPainter->flush();
+//    #endif
+//  }
 
   //----------
 
-  void deleteBuffer() {
-    //MIP_Print("deleting buffer painter\n");
-    delete MBufferPainter;
-    //MIP_Print("deleting buffer surface\n");
-    delete MBufferSurface;
-    MBufferPainter = nullptr;
-    MBufferSurface = nullptr;
-  }
-
-  //----------
-
-  bool resizeBuffer(uint32_t AWidth, uint32_t AHeight) {
-    //deleteBuffer();
-    //createBuffer(AWidth,AHeight);
-    //return true;
-    uint32_t w = MIP_NextPowerOfTwo(AWidth);
-    uint32_t h = MIP_NextPowerOfTwo(AHeight);
-    if ((w != MBufferWidth) || (h != MBufferHeight)) {
-      deleteBuffer();
-      createBuffer(AWidth,AHeight);
-    }
-    return true;
-  }
-
-  //----------
-
-  void paintBuffer(MIP_FRect ARect) {
-    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);;
-    //if (MFillBackground) {
-    //  MBufferPainter->fillRectangle(ARect,MBackgroundColor);
-    //}
-    //MBufferPainter->pushClip(ARect);
-
-    paintWidgets(MBufferPainter,ARect);
-    MBufferPainter->flush();
-
-    //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
-    MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
-    MWindowPainter->flush();
-
-    //MBufferPainter->popClip();
-  }
-
-  #endif
-
-//------------------------------
-public: // window
-//------------------------------
-
-  void open() override {
-    //attachWindow(this);
-    alignWidgets();
-    MIP_ImplementedWindow::open();
-    //#ifndef MIP_PLUGIN_EXE
-    //  //on_window_paint(0,0,MRect.w,MRect.h);
-    //  paintWidget(this,MRect,0);
-    //#endif
-  }
-
-  //void close() override {
-  //  attachWindow(nullptr);
-  //  MIP_ImplementedWindow::close();
-  //}
+  void paintWidget(MIP_Widget* AWidget) {
+    MIP_FRect rect = AWidget->getRect();
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",rect.x,rect.y,rect.w,rect.h);
+    #ifdef MIP_NO_WINDOW_BUFFERING
+    paintWindow(rect);
+    #else
+    paintBuffer(rect);
+    #endif
+  };
 
   // -> MIP_Widget
 
@@ -391,32 +288,97 @@ public: // window
 //    }
 //  }
 
-  //----------
+//------------------------------
+public: // buffer
+//------------------------------
 
-  void paintWidget(MIP_Widget* AWidget) {
-    MIP_FRect rect = AWidget->getRect();
-    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",rect.x,rect.y,rect.w,rect.h);
-    #ifdef MIP_NO_WINDOW_BUFFERING
-    paintWindow(rect);
-    #else
-    paintBuffer(rect);
-    #endif
-  };
+  #ifndef MIP_NO_WINDOW_BUFFERING
 
-  //----------
-
-  void paint(MIP_FRect ARect) {
-    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
-    #ifdef MIP_NO_WINDOW_BUFFERING
-    paintWindow(ARect);
-    #else
-    paintBuffer(ARect);
-    #endif
+  bool createBuffer(uint32_t AWidth, uint32_t AHeight) {
+    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+    MIP_Assert(MBufferSurface);
+    MBufferPainter = new MIP_Painter(MBufferSurface);
+    MIP_Assert(MBufferPainter);
+    MBufferWidth = AWidth;
+    MBufferHeight = AHeight;
+    return true;
   }
 
-  void paint() {
-    paint(MRect);
+  //----------
+
+  void deleteBuffer() {
+    delete MBufferPainter;
+    delete MBufferSurface;
+    MBufferPainter = nullptr;
+    MBufferSurface = nullptr;
   }
+
+  //----------
+
+  bool resizeBuffer(uint32_t AWidth, uint32_t AHeight) {
+    uint32_t w = MIP_NextPowerOfTwo(AWidth);
+    uint32_t h = MIP_NextPowerOfTwo(AHeight);
+    if ((w != MBufferWidth) || (h != MBufferHeight)) {
+      deleteBuffer();
+      createBuffer(AWidth,AHeight);
+    }
+    return true;
+  }
+
+  //----------
+
+  void paintBuffer(MIP_FRect ARect) {
+    //if (MFillBackground) {
+    //  MBufferPainter->fillRectangle(ARect,MBackgroundColor);
+    //}
+    //MBufferPainter->pushClip(ARect);
+    paintWidgets(MBufferPainter,ARect);
+    MBufferPainter->flush();
+    //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
+    MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+    MWindowPainter->flush();
+    //MBufferPainter->popClip();
+  }
+
+  #endif
+
+//------------------------------
+public:
+//------------------------------
+
+  void open() override {
+    //attachWindow(this);
+    alignWidgets();
+    MIP_ImplementedWindow::open();
+    //#ifndef MIP_PLUGIN_EXE
+    //  //on_window_paint(0,0,MRect.w,MRect.h);
+    //  paintWidget(this,MRect,0);
+    //#endif
+  }
+
+  //----------
+
+  //void close() override {
+  //  attachWindow(nullptr);
+  //  MIP_ImplementedWindow::close();
+  //}
+
+  //----------
+
+//  void paint(MIP_FRect ARect) {
+//    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
+//    #ifdef MIP_NO_WINDOW_BUFFERING
+//    paintWindow(ARect);
+//    #else
+//    paintBuffer(ARect);
+//    #endif
+//  }
+//
+//  //----------
+//
+//  void paint() {
+//    paint(MRect);
+//  }
 
 //------------------------------
 public: // MIP_BaseWindow

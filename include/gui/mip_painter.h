@@ -39,14 +39,12 @@ private:
   MIP_FRect      MClipRect;
   MIP_RectStack  MClipStack;
 
-
 //------------------------------
 public:
 //------------------------------
 
   MIP_Painter(MIP_Drawable* ATarget)
   : MIP_ImplementedPainter(ATarget) {
-    //MIP_PRINT;
     MClipRect = MIP_FRect( ATarget->getWidth()-1, ATarget->getHeight()-1 );
     //MClipStack.push(MClipRect);
   }
@@ -54,7 +52,6 @@ public:
   //----------
 
   virtual ~MIP_Painter() {
-    //MIP_PRINT;
   }
 
 //------------------------------
@@ -66,11 +63,10 @@ public:
     - set new clip rect
   */
 
-  void pushClip(MIP_FRect ARect) { // override {
-    //MIP_Trace("pushing x %.0f y %.0f w %.0f h %.0f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
+  void pushClip(MIP_FRect ARect) {
     MClipStack.push(MClipRect);
     MClipRect = ARect;
-//    resetClip();
+    //resetClip();
     setClip(MClipRect);
   }
 
@@ -81,29 +77,28 @@ public:
     - set clip rect to popped rect
   */
 
-  MIP_FRect popClip() { // override {
-    //MIP_FRect prev_rect = MClipRect;
+  MIP_FRect popClip() {
     MClipRect = MClipStack.pop();
-//    resetClip();
+    //resetClip();
     setClip(MClipRect);
     return MClipRect;
   }
 
   //----------
 
-  void resetClipStack() { // override {
+  void resetClipStack() {
     MClipStack.reset();
   }
 
   //----------
 
-  void setClipRect(MIP_FRect ARect) { // override {
+  void setClipRect(MIP_FRect ARect) {
     MClipRect = ARect;
   }
 
   //----------
 
-  MIP_FRect getClipRect() { // override {
+  MIP_FRect getClipRect() {
     return MClipRect;
   }
 

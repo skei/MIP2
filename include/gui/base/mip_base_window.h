@@ -20,8 +20,6 @@ public:
   : MIP_Widget( MIP_FRect(AWidth,AHeight)) {
   }
 
-  //----------
-
   virtual ~MIP_BaseWindow() {
   }
 
