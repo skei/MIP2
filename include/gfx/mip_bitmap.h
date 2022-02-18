@@ -168,6 +168,31 @@ public:
 
   #ifdef MIP_USE_CAIRO
 
+  /*
+    cairo_image_surface_create_for_data()
+
+    Creates an image surface for the provided pixel data. The output buffer
+    must be kept around until the cairo_surface_t is destroyed or
+    cairo_surface_finish() is called on the surface. The initial contents of
+    data will be used as the initial image contents; you must explicitly clear
+    the buffer, using, for example, cairo_rectangle() and cairo_fill() if you
+    want it cleared.
+
+    Note that the stride may be larger than width*bytes_per_pixel to provide
+    proper alignment for each pixel and row. This alignment is required to
+    allow high-performance rendering within cairo. The correct way to obtain a
+    legal stride value is to call cairo_format_stride_for_width() with the
+    desired format and maximum image width value, and then use the resulting
+    stride value to allocate the data and to create the image surface. See
+    cairo_format_stride_for_width() for example code.
+
+    Returns a pointer to the newly created surface. The caller owns the surface
+    and should call cairo_surface_destroy() when done with it.
+
+    See cairo_surface_set_user_data() for a means of attaching a destroy-
+    notification fallback to the surface if necessary.
+  */
+
   cairo_surface_t* createCairoSurface() {
     cairo_surface_t* surface = cairo_image_surface_create_for_data(
       (uint8_t*)MBuffer,    // unsigned char *data,

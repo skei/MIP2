@@ -93,6 +93,7 @@ public: // base surface
 //------------------------------
 
   void resize(uint32_t AWidth, uint32_t AHeight) override {
+    MIP_Print("TODO\n");
   }
 
 //------------------------------
@@ -116,6 +117,27 @@ public: // drawable
   bool isCairo() final {
     return true;
   }
+
+  /*
+    cairo_xcb_surface_create()
+
+    Creates an XCB surface that draws to the given drawable. The way that
+    colors are represented in the drawable is specified by the provided visual.
+
+    Note: If drawable is a Window, then the function cairo_xcb_surface_set_size()
+    must be called whenever the size of the window changes.
+
+    When drawable is a Window containing child windows then drawing to the
+    created surface will be clipped by those child windows. When the created
+    surface is used as a source, the contents of the children will be included.
+
+    Returns a pointer to the newly created surface. The caller owns the surface
+    and should call cairo_surface_destroy() when done with it.
+
+    This function always returns a valid pointer, but it will return a pointer
+    to a "nil" surface if an error such as out of memory occurs. You can use
+    cairo_surface_status() to check for this.
+  */
 
   cairo_surface_t* createCairoSurface() final {
     cairo_surface_t* surface = cairo_xcb_surface_create(

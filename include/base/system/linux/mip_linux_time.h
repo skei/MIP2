@@ -4,7 +4,7 @@
 
 // -lrt
 
-//#include <time.h>     // timer
+#include <time.h>     // timer
 #include <sys/time.h>
 #include <signal.h>     // sigval
 #include <errno.h>      // errno

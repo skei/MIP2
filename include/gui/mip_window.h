@@ -90,19 +90,12 @@ private:
 public:
 //------------------------------
 
-  //MIP_Window(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", MIP_WindowListener* AListener=nullptr, void* AParentPtr=nullptr)
-  MIP_Window(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", MIP_WindowListener* AListener=nullptr, uint32_t AParent=0)
-  //: MIP_ImplementedWindow(AWidth,AHeight,ATitle,AParentPtr)
-  : MIP_ImplementedWindow(AWidth,AHeight,ATitle,AParent)
-  /*, MIP_Widget(MIP_FRect(AWidth,AHeight))*/ {
+  MIP_Window(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener=nullptr, bool AEmbedded=false)
+  : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded) {
     MName = "MIP_Window";
     MListener = AListener;
-    //MOwner = this;
-    //setName("MIP_Window");
-    //setRect(MIP_FRect(AWidth,AHeight));
     //flags.autoClip = true;
     MWindowPainter = new MIP_Painter(this);
-    MWindowPainter->flush();
     MIP_Assert(MWindowPainter);
     #ifndef MIP_NO_WINDOW_BUFFERING
     createBuffer(AWidth,AHeight);
@@ -158,10 +151,10 @@ public:
   void fillWindowBackground(MIP_FRect ARect) {
     #ifdef MIP_NO_WINDOW_BUFFERING
       MWindowPainter->fillRectangle(ARect,MWindowBackgroundColor);
-      MWindowPainter->flush();
+      //MWindowPainter->flush();
     #else
       MBufferPainter->fillRectangle(ARect,MWindowBackgroundColor);
-      MBufferPainter->flush();
+      //MBufferPainter->flush();
     #endif
   }
 
@@ -305,8 +298,10 @@ public: // buffer
   #ifndef MIP_NO_WINDOW_BUFFERING
 
   bool createBuffer(uint32_t AWidth, uint32_t AHeight) {
+    //MIP_Print("creating buffer surface\n");
     MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
     MIP_Assert(MBufferSurface);
+    //MIP_Print("creating buffer painter\n");
     MBufferPainter = new MIP_Painter(MBufferSurface);
     MIP_Assert(MBufferPainter);
     MBufferWidth = AWidth;
@@ -317,7 +312,9 @@ public: // buffer
   //----------
 
   void deleteBuffer() {
+    //MIP_Print("deleting buffer painter\n");
     delete MBufferPainter;
+    //MIP_Print("deleting buffer surface\n");
     delete MBufferSurface;
     MBufferPainter = nullptr;
     MBufferSurface = nullptr;
@@ -347,10 +344,8 @@ public: // buffer
     //}
     //MBufferPainter->pushClip(ARect);
 
-    //MBufferPainter->flush();
     paintWidgets(MBufferPainter,ARect);
     MBufferPainter->flush();
-    //MBufferPainter->dirty(ARect);
 
     //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
     MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);

@@ -64,6 +64,9 @@ public:
     memset(MGuiParamVal,0,size);
     memset(MGuiParamMod,0,size);
     MTimer = new MIP_Timer(this);
+
+    MWindow = new MIP_Window(256,256,this,true);
+
   }
 
   //----------
@@ -241,8 +244,8 @@ public: // clap.gui
 //------------------------------
 
   virtual bool attach(const char* ADisplay, uint32_t AWindow) {
-    //MWindow->reparent(AWindow);
-    MWindow = new MIP_Window(256,256,"",this,AWindow);
+    //MWindow = new MIP_Window(256,256,this,true);
+    MWindow->reparent(AWindow);
     return true;
   }
 
@@ -252,6 +255,7 @@ public: // clap.gui
     MWindow->setOwnerWindow(MWindow);
     MWindow->alignWidgets();
     MWindow->open();
+    //
     MTimer->start(30);
     MEditorIsOpen = true;
   }

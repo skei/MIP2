@@ -57,7 +57,7 @@ private:
   xcb_colormap_t              MScreenColormap               = XCB_NONE;
 
   xcb_window_t                MWindow                       = XCB_NONE;
-  xcb_window_t                MWindowParent                 = XCB_NONE;
+  //xcb_window_t                MWindowParent                 = XCB_NONE;
   int32_t                     MWindowXpos                   = 0;
   int32_t                     MWindowYpos                   = 0;
   int32_t                     MWindowWidth                  = 0;
@@ -86,7 +86,8 @@ private:
   pthread_t                   MEventThread                  = 0;
   bool                        MEventThreadActive            = false;
   bool                        MQuitEventLoop                = false;
-  bool                        MUseEventThread               = false;
+  //bool                        MUseEventThread               = false;
+  bool                        MEmbedded                     = false;
 
   bool      MFillBackground   = false;//true;
   MIP_Color MBackgroundColor  = MIP_Color(0.5);
@@ -122,14 +123,13 @@ private:
 public:
 //------------------------------
 
-  //MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", void* AParent=nullptr)
-  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle="", intptr_t AParent=0)
-  : MIP_BaseWindow(AWidth,AHeight/*,ATitle,AParent*/) {
-    //MName = "MIP_XcbWindow";
-    MUseEventThread = AParent ? true : false;
+  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  : MIP_BaseWindow(AWidth,AHeight) {
+    MName = "MIP_XcbWindow";
+    MEmbedded = AEmbedded;// ? true : false;
     connect();
     initGC();
-    createWindow(AWidth,AHeight,ATitle,AParent);
+    createWindow(AWidth,AHeight,AEmbedded);
     initMouseCursor();
     initKeyboard();
     initThreads();
@@ -242,11 +242,7 @@ private:
 
   //----------
 
-  //void createWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle, void* AParent=nullptr) {
-  void createWindow(uint32_t AWidth, uint32_t AHeight, const char* ATitle, uint32_t AParent=XCB_NONE) {
-    //if (AParent) MWindowParent = (xcb_window_t)(intptr_t)AParent;
-    if (AParent) MWindowParent = (xcb_window_t)AParent;
-    else MWindowParent = MScreen->root;
+  void createWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
     uint32_t event_mask =
       XCB_EVENT_MASK_KEY_PRESS      |
       XCB_EVENT_MASK_KEY_RELEASE    |
@@ -273,7 +269,7 @@ private:
       MConnection,                    // connection
       XCB_COPY_FROM_PARENT,           // depth (same as root)
       MWindow,                        // window Id
-      MWindowParent,                  // parent window
+      MScreen->root,//MWindowParent,  // parent window
       0, 0,                           // x, y
       AWidth, AHeight,                // width, height
       0,                              // border_width
@@ -282,12 +278,12 @@ private:
       window_mask,
       window_mask_values
     );
-    if (AParent) {
+    if (AEmbedded) {
       //reparent(AParent);
       removeDecorations();
     }
     else {
-      setWindowTitle(ATitle);
+      //setWindowTitle(ATitle);
       wantDeleteWindowEvent();
     }
     MWindowXpos   = 0;
@@ -295,6 +291,8 @@ private:
     MWindowWidth  = AWidth;
     MWindowHeight = AHeight;
   }
+
+
 
   //----------
 
@@ -1022,7 +1020,7 @@ public:
     #ifdef MIP_XCB_WAIT_FOR_MAPNOTIFY
     waitForMapNotify();
     #endif
-    if (MUseEventThread) startEventThread();
+    if (MEmbedded) startEventThread();
     //paint?
     //xcb_flush(MConnection);
     setMouseCursor(MIP_CURSOR_DEFAULT);
@@ -1035,10 +1033,8 @@ public:
   //----------
 
   void close() override {
-
     //on_window_close();
-
-    if (MUseEventThread) stopEventThread();
+    if (MEmbedded) stopEventThread();
     xcb_unmap_window(MConnection,MWindow);
     xcb_flush(MConnection);
   }
@@ -1073,9 +1069,10 @@ public:
 
   //----------
 
-  void reparent(intptr_t AParent) override {
-    MWindowParent = (intptr_t)AParent;
-    xcb_reparent_window(MConnection,MWindow,MWindowParent,0,0);
+  void reparent(uint32_t AParent) override {
+    //MWindowParent = (intptr_t)AParent;
+    //xcb_reparent_window(MConnection,MWindow,MWindowParent,0,0);
+    xcb_reparent_window(MConnection,MWindow,AParent,0,0);
     xcb_flush(MConnection);
   }
 

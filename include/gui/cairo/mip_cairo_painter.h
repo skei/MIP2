@@ -60,7 +60,7 @@ class MIP_CairoPainter
 private:
 //------------------------------
 
-  bool              MSurfaceAllocated = false;
+  bool              MCreatedSurface   = false;
   cairo_surface_t*  MSurface          = nullptr;
   cairo_t*          MCairo            = nullptr;
 
@@ -81,16 +81,21 @@ public:
 
     If drawable is a Window, then the function cairo_xcb_surface_set_size()
     must be called whenever the size of the window changes.
+
+    This function references target , so you can immediately call
+    cairo_surface_destroy() on it if you don't need to maintain a separate
+    reference to it.
   */
 
   MIP_CairoPainter(MIP_Drawable* ADrawable) {
   //: MIP_BasePainter(/*ADrawable*/) {
     if (ADrawable->isCairo()) {
       MSurface = ADrawable->createCairoSurface();
-      MIP_Assert(MSurface);
-      MSurfaceAllocated = true;
+      //MIP_Print("MSurface: %p\n",MSurface);
+      MCreatedSurface = true;
       MCairo = cairo_create(MSurface);
-      MIP_PRINT; check_cairo_errors(MCairo);
+      //MIP_Print("MCairo: %p\n",MCairo);
+      //MIP_PRINT; check_cairo_errors(MCairo);
       cairo_set_line_width(MCairo,1);
       //setFontSize(11);
     }
@@ -104,10 +109,11 @@ public:
   MIP_CairoPainter(cairo_surface_t* ASurface) {
   //: MIP_BasePainter() {
     MSurface = ASurface;
-    MIP_Assert(MSurface);
-    MSurfaceAllocated = false;
+    //MIP_Print("MSurface: %p\n",MSurface);
+    MCreatedSurface = false;
     MCairo = cairo_create(MSurface);
-    MIP_PRINT; check_cairo_errors(MCairo);
+    //MIP_Print("MCairo: %p\n",MCairo);
+    //MIP_PRINT; check_cairo_errors(MCairo);
     cairo_set_line_width(MCairo,1);
     //setFontSize(11);
   }
@@ -115,10 +121,13 @@ public:
   //----------
 
   virtual ~MIP_CairoPainter() {
-    MIP_PRINT;
-    check_cairo_errors(MCairo);
+    if (MCreatedSurface) {
+      cairo_surface_destroy(MSurface);
+      ////if (MSurface && MSurfaceAllocated) cairo_surface_finish(MSurface);
+      //MIP_Print("MSurface ref count: %i\n",cairo_surface_get_reference_count(MSurface));  // prints 2
+    }
     cairo_destroy(MCairo);
-    if (MSurface && MSurfaceAllocated) cairo_surface_destroy(MSurface);
+    //MIP_Print("MCairo ref count: %i\n",cairo_get_reference_count(MCairo));              // prints 0
   }
 
 //------------------------------
@@ -134,7 +143,10 @@ public: // cairo surface
 public:
 //------------------------------
 
-  MIP_Drawable* getTarget() override { return nullptr; }
+  MIP_Drawable* getTarget() override {
+    MIP_Print("TODO!\n");
+    return nullptr;
+  }
 
 //------------------------------
 public: // surface
@@ -168,7 +180,7 @@ public: // surface
   */
 
   void flush() override {
-    MIP_PRINT;
+    //MIP_PRINT;
     cairo_surface_flush(MSurface);
   }
 
@@ -181,6 +193,7 @@ public: // surface
   */
 
   void dirty() override {
+    //MIP_PRINT;
     cairo_surface_mark_dirty(MSurface);
   }
 
@@ -189,6 +202,7 @@ public: // surface
   //}
 
   void dirty(MIP_FRect ARect) override {
+    //MIP_PRINT;
     //cairo_surface_mark_dirty_rectangle(MCairoSurface,ARect.x,ARect.y,ARect.x2(),ARect.y2());
     cairo_surface_mark_dirty_rectangle(MSurface,ARect.x,ARect.y,ARect.w,ARect.h);
   }
@@ -211,6 +225,7 @@ public: // surface
   //----------
 
   void finish() override {
+    //MIP_PRINT;
     cairo_surface_finish(MSurface);
   }
 
@@ -694,9 +709,12 @@ public: // image
   void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) override {
     cairo_surface_t* srf = ASource->createCairoSurface();
     cairo_set_source_surface(MCairo,srf,/*0,0*/AXpos-ASrc.x,AYpos-ASrc.y);
-    cairo_surface_destroy(srf);
     cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
     cairo_fill(MCairo);
+    cairo_surface_destroy(srf);
+    //cairo_surface_finish(srf);
+    MIP_Print("srf ref count: %i\n",cairo_surface_get_reference_count(srf));    // prints 1
+
   }
 
   //----------
@@ -705,14 +723,17 @@ public: // image
     float xscale = (float)ADst.w / (float)ASrc.w;
     float yscale = (float)ADst.h / (float)ASrc.h;
     cairo_rectangle(MCairo,ADst.x,ADst.y,ADst.w,ADst.h);
-    cairo_save(MCairo);
-    cairo_translate(MCairo,ADst.x,ADst.y);
-    cairo_scale(MCairo,xscale,yscale);
     cairo_surface_t* srf = ASource->createCairoSurface();
     cairo_set_source_surface(MCairo,srf,0,0/*ASrcX,ASrcY*/);
-    cairo_surface_destroy(srf);
-    cairo_fill(MCairo);
+    cairo_save(MCairo);
+      cairo_translate(MCairo,ADst.x,ADst.y);
+      cairo_scale(MCairo,xscale,yscale);
+      cairo_fill(MCairo);
     cairo_restore(MCairo);
+    cairo_surface_destroy(srf);
+    //cairo_surface_finish(srf);
+    MIP_Print("srf ref count: %i\n",cairo_surface_get_reference_count(srf));    // prints ..
+
   }
 
 

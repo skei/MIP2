@@ -16,8 +16,7 @@ class MIP_BaseWindow
 public:
 //------------------------------
 
-  //MIP_BaseWindow(int32_t AWidth, int32_t AHeight, const char* ATitle, void* AParentPtr)
-  MIP_BaseWindow(int32_t AWidth, int32_t AHeight/*, const char* ATitle, uint32_t AParent*/)
+  MIP_BaseWindow(int32_t AWidth, int32_t AHeight)
   : MIP_Widget( MIP_FRect(AWidth,AHeight)) {
   }
 
@@ -50,8 +49,6 @@ public:
 public:
 //------------------------------
 
-  //virtual MIP_Painter* getPainter() { return nullptr; }
-
   virtual void setWindowPos(uint32_t AXpos, uint32_t AYpos) {}
   virtual void setWindowSize(uint32_t AWidth, uint32_t AHeight) {}
   virtual void setWindowTitle(const char* ATitle) {}
@@ -59,7 +56,7 @@ public:
   virtual void open() {}
   virtual void close() {}
   virtual void eventLoop() {}
-  virtual void reparent(intptr_t AParent) {}
+  virtual void reparent(uint32_t AParent) {}
   virtual void startTimer(uint32_t ms) {}
   virtual void stopTimer(void) {}
   virtual void setMouseCursor(uint32_t ACursor) {}

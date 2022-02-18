@@ -9,9 +9,9 @@
 #include "gui/mip_drawable.h"
 #include "gui/base/mip_base_painter.h"
 
-#ifdef MIP_USE_CAIRO
-  #include "gui/cairo/mip_cairo.h"
-#endif
+//#ifdef MIP_USE_CAIRO
+//  #include "gui/cairo/mip_cairo.h"
+//#endif
 
 //----------------------------------------------------------------------
 
@@ -100,18 +100,20 @@ public:
 public:
 //------------------------------
 
-  #ifdef MIP_USE_CAIRO
-  cairo_surface_t* createCairoSurface() {
-    cairo_surface_t* surface = cairo_xcb_surface_create(
-      MConnection,
-      MDrawable,
-      mip_xcb_find_visual(MConnection,MVisual),
-      MWidth,
-      MHeight
-    );
-    return surface;
-  }
-  #endif
+//  #ifdef MIP_USE_CAIRO
+//
+//  cairo_surface_t* createCairoSurface() {
+//    cairo_surface_t* surface = cairo_xcb_surface_create(
+//      MConnection,
+//      MDrawable,
+//      mip_xcb_find_visual(MConnection,MVisual),
+//      MWidth,
+//      MHeight
+//    );
+//    return surface;
+//  }
+//
+//  #endif
 
 //------------------------------
 private:

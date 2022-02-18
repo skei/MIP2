@@ -1,12 +1,13 @@
 
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
-//#define MIP_PAINTER_XCB
+#define MIP_PAINTER_XCB
 
-#define MIP_USE_CAIRO
-#define MIP_PAINTER_CAIRO
+//#define MIP_USE_CAIRO
+//#define MIP_PAINTER_CAIRO
 
 //#define MIP_NO_WINDOW_BUFFERING
+//#define MIP_XCB_WAIT_FOR_MAPNOTIFY
 
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
@@ -265,6 +266,11 @@ public: // plugin
         MEditor->connect(knob2,1);
         MEditor->connect(knob3,2);
         MEditor->connect(knob4,3);
+        MIP_Window* win = MEditor->getWindow();
+        MSizer->setTarget(win);
+        win->appendWidget(MEditorPanel);
+        //win->alignWidgets();
+        //win->on_window_paint(0,0,640,480);
       }
     }
     return result;
@@ -279,17 +285,20 @@ public: // plugin
 
   //----------
 
-  bool gui_x11_attach(const char *display_name, unsigned long window) final {
-    bool result = MIP_Plugin::gui_x11_attach(display_name,window);
-    if (result) {
-      if (MEditor) {
-        MIP_Window* win = MEditor->getWindow();
-        MSizer->setTarget(win);
-        win->appendWidget(MEditorPanel);
-      }
-    }
-    return result;
-  }
+//  bool gui_x11_attach(const char *display_name, unsigned long window) final {
+//    bool result = MIP_Plugin::gui_x11_attach(display_name,window);
+//    if (result) {
+//      if (MEditor) {
+//        MIP_Window* win = MEditor->getWindow();
+//        win->reparent(window);
+//        MSizer->setTarget(win);
+//        win->appendWidget(MEditorPanel);
+//        //win->alignWidgets();
+//        //win->on_window_paint(0,0,640,480);
+//      }
+//    }
+//    return result;
+//  }
 
 };
 
