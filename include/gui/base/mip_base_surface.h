@@ -13,13 +13,8 @@ class MIP_BaseSurface {
 public:
 //------------------------------
 
-   // window
   MIP_BaseSurface() {
   }
-
-   // pixmap
-  //MIP_BaseSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
-  //}
 
   virtual ~MIP_BaseSurface() {
   }

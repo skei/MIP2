@@ -4,7 +4,7 @@
 
 //#define MIP_NO_WINDOW_BUFFERING
 
-//
+//----------
 
 #include "mip.h"
 #include "base/types/mip_rect.h"
@@ -42,14 +42,12 @@ public:
 
 class MIP_Window
 : public MIP_ImplementedWindow {
-//, public MIP_Widget {
 
 //------------------------------
 private:
 //------------------------------
 
   MIP_WindowListener* MListener               = nullptr;
-
   MIP_Painter*        MWindowPainter          = nullptr;
 
   #ifndef MIP_NO_WINDOW_BUFFERING
@@ -94,7 +92,6 @@ public:
   : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded) {
     MName = "MIP_Window";
     MListener = AListener;
-    //flags.autoClip = true;
     MWindowPainter = new MIP_Painter(this);
     MIP_Assert(MWindowPainter);
     #ifndef MIP_NO_WINDOW_BUFFERING
@@ -115,6 +112,16 @@ public:
 public:
 //------------------------------
 
+  virtual bool isBuffered() {
+    #ifdef MIP_NO_WINDOW_BUFFERING
+    return false;
+    #else
+    return true;
+    #endif
+  }
+
+  //----------
+
   MIP_Painter* getPainter() {
     #ifdef MIP_NO_WINDOW_BUFFERING
     return MWindowPainter;
@@ -124,14 +131,6 @@ public:
   }
 
   //----------
-
-  virtual bool isBuffered() {
-    #ifdef MIP_NO_WINDOW_BUFFERING
-    return false;
-    #else
-    return true;
-    #endif
-  }
 
   MIP_Widget* getMouseHoverWidget()        { return MMouseHoverWidget; }
   MIP_Widget* getMouseModalWidget()        { return MMouseModalWidget; }
@@ -272,7 +271,7 @@ public: // widget
     #endif
   };
 
-  // -> MIP_Widget
+  //----------
 
 //  void paintWidgets(MIP_Painter* APainter, MIP_FRect ARect) {
 //    if (MChildren.size() > 0) {

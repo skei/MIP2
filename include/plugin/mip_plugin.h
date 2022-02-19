@@ -217,9 +217,10 @@ public: // editor listener
   //----------
 
   void on_editor_resize(uint32_t AWidth, uint32_t AHeight) final {
+    MIP_PRINT;
     if (MHost && MHost->gui) {
       if (!MHost->gui->request_resize(MHost->host,AWidth,AHeight)) {
-        //MIP_Print("host->gui->request_resize(%i,%i) failed\n",AWidth,AHeight);
+        MIP_Print("host->gui->request_resize(%i,%i) failed\n",AWidth,AHeight);
       }
     }
   }

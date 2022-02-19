@@ -27,9 +27,6 @@
 //
 //----------------------------------------------------------------------
 
-//#define NUM_THREADS 16
-//#define NUM_RANDOM  512
-
 #define NUM_PARAMS          4
 #define NUM_AUDIO_INPUTS    2
 #define NUM_AUDIO_OUTPUTS   2
@@ -126,7 +123,7 @@ private:
   MIP_PanelWidget*  MEditorPanel  = nullptr;
   MIP_SizerWidget*  MSizer        = nullptr;
 
-  //float MSum = 0.0;
+  float MSum = 0.0;
 
 //------------------------------
 public:
@@ -167,27 +164,32 @@ private:
 
   //----------
 
+  //#define NUM_THREADS 16
+  //#define NUM_RANDOM  512
+  //
+  //void test_thread_pool() {
+  //  if (MHost->thread_pool) {
+  //    bool didComputeVoices = false;
+  //    //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
+  //    if (!didComputeVoices) {
+  //      for (uint32_t i=0; i<NUM_THREADS;i++) {
+  //        thread_pool_exec(i);
+  //        //MThreadPool.exec(&MPlugin,i);
+  //      }
+  //    }
+  //  }
+  //}
+
+  //----------
+
   void handle_process(const clap_process_t *process) final {
     float**  inputs  = process->audio_inputs[0].data32;
     float**  outputs = process->audio_outputs[0].data32;
     uint32_t length  = process->frames_count;
     float    scale   = getParameterValue(0) + getParameterModulation(0);
-
-    // test thread pool
-    //
     //MSum = 0.0;
-    //if (MHost->thread_pool) {
-    //  bool didComputeVoices = false;
-    //  //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
-    //  if (!didComputeVoices) {
-    //    for (uint32_t i=0; i<NUM_THREADS;i++) {
-    //      thread_pool_exec(i);
-    //      //MThreadPool.exec(&MPlugin,i);
-    //    }
-    //  }
-    //}
+    //test_thread_pool();
     //scale *= MSum;
-
     MIP_CopyStereoBuffer(outputs,inputs,length);
     MIP_ScaleStereoBuffer(outputs,scale,length);
   }
@@ -198,10 +200,9 @@ private:
 
   void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
     { // send modulation value for parameter 0 to host
-      //float v0 = MParameterValues[0] + MParameterModulations[0];
-      //v0 = MIP_Clamp(v0,0,1);
-      //send_param_mod_event(0,v0,out_events);
-      //
+      float v0 = MParameterValues[0] + MParameterModulations[0];
+      v0 = MIP_Clamp(v0,0,1);
+      send_param_mod_event(0,v0,out_events);
       //float v1 = MParameterValues[1] + MParameterModulations[1];
       //v0 = MIP_Clamp(v1,0,1);
       //send_param_mod_event(1,v1,out_events);
