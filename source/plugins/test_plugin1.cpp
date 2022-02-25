@@ -1,18 +1,15 @@
 
 #define MIP_USE_XCB
 #define MIP_GUI_XCB
-#define MIP_PAINTER_XCB
+//#define MIP_PAINTER_XCB
 
-//#define MIP_USE_CAIRO
-//#define MIP_PAINTER_CAIRO
+#define MIP_USE_CAIRO
+#define MIP_PAINTER_CAIRO
 
 //#define MIP_NO_WINDOW_BUFFERING
-//#define MIP_XCB_WAIT_FOR_MAPNOTIFY
 
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
-
-//#define MIP_PLUGIN_USE_INVALIDATION
 
 //----------
 
@@ -142,6 +139,15 @@ public:
 private:
 //------------------------------
 
+  /*
+    if we want to do something special with incoming parameter values or
+      modulations, we can do it here.. otherwise we can just use the values
+      in MParameterValues and MParameterModulations arrays
+      (set by MIP_Plugin, so careful with ordering if you override it)
+  */
+
+  //----------
+
   //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
   //  MIP_Plugin::handle_parameter_event(param_value);
   //}
@@ -151,6 +157,13 @@ private:
   //void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
   //  MIP_Plugin::handle_modulation_event(param_mod);
   //}
+
+//------------------------------
+
+  /*
+    thread pool experiment that didn't go so well..
+    need to find a more suitable test setup..
+  */
 
   //----------
 
@@ -180,7 +193,7 @@ private:
   //  }
   //}
 
-  //----------
+//------------------------------
 
   void handle_process(const clap_process_t *process) final {
     float**  inputs  = process->audio_inputs[0].data32;
@@ -197,6 +210,8 @@ private:
   //----------
 
   // called from end of process()
+  // or param_flush..
+  // can we send param_mod events from flush()?
 
   void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
     { // send modulation value for parameter 0 to host
@@ -245,7 +260,11 @@ public: // plugin
 
   //----------
 
+  const char* buttonrow_text[6] = { "1", "2", "3", "four", "5", "6" };
+
   bool gui_create() final {
+    //MEditor = new MIP_Editor(this,this);
+    //MIsEditorOpen = false;
     bool result = MIP_Plugin::gui_create();
     if (result) {
       MEditorPanel = new MIP_PanelWidget(MIP_FRect(0));
@@ -262,6 +281,13 @@ public: // plugin
       MEditorPanel->appendWidget(knob3);
       MEditorPanel->appendWidget(knob4);
       MEditorPanel->appendWidget(MSizer);
+
+      // test
+
+      MEditorPanel->appendWidget( new MIP_ButtonRowWidget( MIP_FRect( 10, 70, 230, 20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI ));
+      MEditorPanel->appendWidget( new MIP_SelectorWidget( MIP_FRect(  10,100, 110, 20)  ));
+      MEditorPanel->appendWidget( new MIP_SliderWidget( MIP_FRect(   130,100, 110, 20), "Slider", 0.5 ));
+
       if (MEditor) {
         MEditor->connect(knob1,0);
         MEditor->connect(knob2,1);
@@ -280,26 +306,10 @@ public: // plugin
   //----------
 
   void gui_show() final {
+    // (MIP_Plugin doesn't know about myParameters)
     setEditorParameterValues(myParameters,NUM_PARAMS);
     MIP_Plugin::gui_show();
   }
-
-  //----------
-
-//  bool gui_x11_attach(const char *display_name, unsigned long window) final {
-//    bool result = MIP_Plugin::gui_x11_attach(display_name,window);
-//    if (result) {
-//      if (MEditor) {
-//        MIP_Window* win = MEditor->getWindow();
-//        win->reparent(window);
-//        MSizer->setTarget(win);
-//        win->appendWidget(MEditorPanel);
-//        //win->alignWidgets();
-//        //win->on_window_paint(0,0,640,480);
-//      }
-//    }
-//    return result;
-//  }
 
 };
 
@@ -336,25 +346,16 @@ public:
 //
 //----------------------------------------------------------------------
 
-//#ifdef MIP_PLUGIN_USE_INVALIDATION
-//
-//  #define NUM_INVALIDATION_SOURCES 2
-//  const clap_plugin_invalidation_source_t myInvalidationSources[NUM_INVALIDATION_SOURCES] = {
-//    { "/usr/lib/ladspa/", ".so", true },
-//    { "~/.ladspa",        ".so", true }
-//  };
-//
-//#endif
+//volatile
+//bool already_called = false;
 
-//----------
+//
 
-void MIP_RegisterPlugins(MIP_ClapList* AList) {
-  AList->appendPlugin(&myDescriptor);
-  AList->appendPlugin(&myDescriptor2);
-  //#ifdef MIP_PLUGIN_USE_INVALIDATION
-  //AList->appendInvalidationSource( &myInvalidationSources[0] );
-  //AList->appendInvalidationSource( &myInvalidationSources[1] );
-  //#endif
+void MIP_Register(MIP_ClapRegistry* ARegistry) {
+  //MIP_Assert(already_called == false);
+  //already_called = true;
+  ARegistry->appendPlugin(&myDescriptor);
+  ARegistry->appendPlugin(&myDescriptor2);
 }
 
 //----------------------------------------------------------------------

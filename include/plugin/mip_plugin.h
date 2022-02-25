@@ -2,6 +2,15 @@
 #define mip_plugin_included
 //----------------------------------------------------------------------
 
+/*
+  notes:
+  - close editor, no gui_hide
+  - delete plugin, no gui_destroy
+*/
+
+//----------------------------------------------------------------------
+
+
 #include "mip.h"
 #include "base/types/mip_array.h"
 #include "base/types/mip_queue.h"
@@ -39,6 +48,29 @@
 //
 //----------------------------------------------------------------------
 
+//struct MIP_Parameter {
+//  const clap_param_info_t* ptr = nullptr;
+//};
+//
+//struct MIP_AudioPort {
+//  const clap_audio_port_info_t* ptr = nullptr;
+//};
+//
+//struct MIP_NotePort {
+//  const clap_note_port_info_t* ptr = nullptr;
+//};
+//
+//struct MIP_QuickControl {
+//  const clap_quick_controls_page_t* ptr = nullptr;
+//};
+//
+//typedef MIP_Array<MIP_Parameter*>     MIP_Parameters;
+//typedef MIP_Array<MIP_AudioPort*>     MIP_AudioPorts;
+//typedef MIP_Array<MIP_NotePort*>      MIP_NotePorts;
+//typedef MIP_Array<MIP_QuickControl*>  MIP_QuickControls;
+
+//----------
+
 typedef MIP_Array<const clap_param_info_t*>           MIP_Parameters;
 typedef MIP_Array<const clap_audio_port_info_t*>      MIP_AudioPorts;
 typedef MIP_Array<const clap_note_port_info_t*>       MIP_NotePorts;
@@ -59,35 +91,38 @@ class MIP_Plugin
   #endif
 
 //------------------------------
+private:
+//------------------------------
+
+  MIP_ClapIntQueue                MAudioParamQueue      = {};
+  float*                          MAudioParamVal        = nullptr;
+
+  MIP_ClapIntQueue                MHostParamQueue       = {};
+  float*                          MHostParamVal         = nullptr;
+  float*                          MHostParamMod         = nullptr;
+
+//------------------------------
 protected:
 //------------------------------
 
-  const clap_plugin_descriptor_t* MDescriptor = nullptr;
-  MIP_ClapHost*                   MHost       = nullptr;
+  const clap_plugin_descriptor_t* MDescriptor           = nullptr;
+  MIP_ClapHost*                   MHost                 = nullptr;
 
-  MIP_Parameters    MParameters           = {};
-  MIP_AudioPorts    MAudioInputs          = {};
-  MIP_AudioPorts    MAudioOutputs         = {};
-  MIP_NotePorts     MNoteInputs           = {};
-  MIP_NotePorts     MNoteOutputs          = {};
-  MIP_QuickControls MQuickControls        = {};
+  MIP_Parameters                  MParameters           = {};
+  MIP_AudioPorts                  MAudioInputs          = {};
+  MIP_AudioPorts                  MAudioOutputs         = {};
+  MIP_NotePorts                   MNoteInputs           = {};
+  MIP_NotePorts                   MNoteOutputs          = {};
+  MIP_QuickControls               MQuickControls        = {};
 
-  float*            MParameterValues      = nullptr;
-  float*            MParameterModulations = nullptr;
-  bool              MIsProcessing         = false;
-  bool              MIsActivated          = false;
-
-  MIP_ClapIntQueue  MAudioParamQueue      = {};
-  float*            MAudioParamVal        = nullptr;
-
-  MIP_ClapIntQueue  MHostParamQueue       = {};
-  float*            MHostParamVal         = nullptr;
-  float*            MHostParamMod         = nullptr;
-
+  float*                          MParameterValues      = nullptr;
+  float*                          MParameterModulations = nullptr;
+  bool                            MIsProcessing         = false;
+  bool                            MIsActivated          = false;
 
   #ifndef MIP_NO_GUI
-  MIP_Editor*       MEditor               = nullptr;
-  bool              MIsEditorOpen         = false;
+  MIP_Editor*                     MEditor               = nullptr;
+  bool                            MIsEditorOpen         = false;
   #endif
 
 
@@ -122,15 +157,29 @@ public:
 public:
 //------------------------------
 
-  float getParameterModulation(uint32_t AIndex) { return MParameterModulations[AIndex]; }
-  float getParameterValue(uint32_t AIndex)      { return MParameterValues[AIndex]; }
+  float getParameterModulation(uint32_t AIndex) {
+    return MParameterModulations[AIndex];
+  }
 
-  void  setParameterModulation(uint32_t AIndex, float AValue) { MParameterModulations[AIndex] = AValue; }
-  void  setParameterValue(uint32_t AIndex, float AValue)      { MParameterValues[AIndex] = AValue; }
+  float getParameterValue(uint32_t AIndex) {
+    return MParameterValues[AIndex];
+  }
 
-  //----------
+  void setParameterModulation(uint32_t AIndex, float AValue) {
+    MParameterModulations[AIndex] = AValue;
+  }
 
-  virtual bool getParameterValueText(char* ABuffer, uint32_t AIndex, float AValue) { return false; }
+  void setParameterValue(uint32_t AIndex, float AValue) {
+    MParameterValues[AIndex] = AValue;
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  virtual bool getParameterValueText(char* ABuffer, uint32_t AIndex, float AValue) {
+    return false;
+  }
 
 //------------------------------
 //private: // ??
@@ -217,7 +266,7 @@ public: // editor listener
   //----------
 
   void on_editor_resize(uint32_t AWidth, uint32_t AHeight) final {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (MHost && MHost->gui) {
       if (!MHost->gui->request_resize(MHost->host,AWidth,AHeight)) {
         MIP_Print("host->gui->request_resize(%i,%i) failed\n",AWidth,AHeight);
@@ -556,8 +605,8 @@ public: // event-filter
         case CLAP_EVENT_PARAM_MOD:        return true;
         case CLAP_EVENT_TRANSPORT:        return true;
         case CLAP_EVENT_MIDI:             return true;
-        case CLAP_EVENT_MIDI_SYSEX:       return true;
-        case CLAP_EVENT_MIDI2:            return true;
+        //case CLAP_EVENT_MIDI_SYSEX:       return true;
+        //case CLAP_EVENT_MIDI2:            return true;
       }
     }
     return false;
@@ -638,25 +687,17 @@ public: // gui
     MIP_PRINT;
     MIsEditorOpen = false;
     MEditor = new MIP_Editor(this,this);
-    if (MEditor) {
-      //MIP_Print("-> true\n");
-      return true;
-    }
-    else {
-      //MIP_Print("!MEditor -> false\n");
-      return false;
-    }
+    return (MEditor);
   }
 
   //----------
 
   void gui_destroy() override {
     MIP_PRINT;
-    //MIP_Print("\n");
     if (MIsEditorOpen) {
       MIsEditorOpen = false;
+      //gui_hide();
       MEditor->hide();
-      //gui_hide
     }
     delete MEditor;
     MEditor = nullptr;
@@ -672,7 +713,7 @@ public: // gui
       return res;
     }
     else {
-      //MIP_Print("!MEditor -> false\n");
+      MIP_Print("!MEditor -> false\n");
       return true;
     }
   }
@@ -687,7 +728,7 @@ public: // gui
       return res;
     }
     else {
-      //MIP_Print("!MEditor -> false\n");
+      MIP_Print("!MEditor -> false\n");
       return false;
     }
   }
@@ -702,7 +743,7 @@ public: // gui
       return res;
     }
     else {
-      //MIP_Print("!MEditor -> false\n");
+      MIP_Print("!MEditor -> false\n");
       return false;
     }
   }
@@ -718,7 +759,7 @@ public: // gui
     else {
       *width = 0;
       *height = 0;
-      //MIP_Print("!MEditor -> (%i,%i)\n", *width,*height);
+      MIP_Print("!MEditor -> (%i,%i)\n", *width,*height);
     }
   }
 
@@ -732,7 +773,7 @@ public: // gui
       return res;
     }
     else {
-      //MIP_Print("%i,%i : !MEditor -> false\n",width,height);
+      MIP_Print("%i,%i : !MEditor -> false\n",width,height);
       return false;
     }
   }
@@ -747,7 +788,7 @@ public: // gui
       MIsEditorOpen = true;
     }
     else {
-      //MIP_Print("!MEditor\n");
+      MIP_Print("!MEditor\n");
     }
   }
 
@@ -761,7 +802,7 @@ public: // gui
       MEditor->hide();
     }
     else {
-      //MIP_Print("!MEditor\n");
+      MIP_Print("!MEditor\n");
     }
   }
 

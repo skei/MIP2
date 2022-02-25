@@ -444,8 +444,8 @@
 		<Unit filename="../include/plugin/clap/mip_clap_host_implementation.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_hosted_plugin.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_invalidation.h" />
-		<Unit filename="../include/plugin/clap/mip_clap_list.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_plugin.h" />
+		<Unit filename="../include/plugin/clap/mip_clap_registry.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_utils.h" />
 		<Unit filename="../include/plugin/dssi/backup/kode_dssi.h" />
 		<Unit filename="../include/plugin/dssi/backup/kode_dssi_host.h" />
@@ -572,11 +572,15 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/plugins/ports/sa_sonic_maximizer.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../source/plugins/test_plugin1.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/test/test_json.cpp">
+		<Unit filename="../source/test/test_gui.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

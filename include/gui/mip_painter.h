@@ -46,6 +46,7 @@ public:
   MIP_Painter(MIP_Drawable* ATarget)
   : MIP_ImplementedPainter(ATarget) {
     MClipRect = MIP_FRect( ATarget->getWidth()-1, ATarget->getHeight()-1 );
+    //MIP_Print("cliprect: %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
     //MClipStack.push(MClipRect);
   }
 
@@ -64,6 +65,7 @@ public:
   */
 
   void pushClip(MIP_FRect ARect) {
+    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     MClipStack.push(MClipRect);
     MClipRect = ARect;
     //resetClip();
@@ -79,6 +81,7 @@ public:
 
   MIP_FRect popClip() {
     MClipRect = MClipStack.pop();
+    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
     //resetClip();
     setClip(MClipRect);
     return MClipRect;
@@ -94,6 +97,7 @@ public:
 
   void setClipRect(MIP_FRect ARect) {
     MClipRect = ARect;
+    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
   }
 
   //----------

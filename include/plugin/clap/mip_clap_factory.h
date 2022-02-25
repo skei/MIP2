@@ -4,14 +4,11 @@
 
 #include "mip.h"
 #include "extern/clap/clap.h"
-#include "plugin/clap/mip_clap_list.h"
 #include "plugin/clap/mip_clap_plugin.h"
-
-extern MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost);
 
 //----------
 
-#ifndef MIP_NO_DEFAULT_PLUGIN_FACTORY
+//#ifndef MIP_NO_DEFAULT_PLUGIN_FACTORY
 
 //----------------------------------------------------------------------
 //
@@ -25,8 +22,7 @@ extern MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descr
 */
 
 uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
-  //MIP_PRINT;
-  return MIP_GLOBAL_CLAP_LIST.getNumPlugins();
+  return MIP_CLAP_REGISTRY.getNumPlugins();
 }
 
 //----------
@@ -39,8 +35,7 @@ uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory
 */
 
 const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
-  //MIP_Print("index: %i\n",index);
-  return MIP_GLOBAL_CLAP_LIST.getPlugin(index);
+  return MIP_CLAP_REGISTRY.getPlugin(index);
 }
 
 //----------
@@ -54,14 +49,9 @@ const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(cons
 */
 
 const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-  //MIP_Print("plugin_id: %s\n",plugin_id);
-  int32_t index = MIP_GLOBAL_CLAP_LIST.findPluginById(plugin_id);
-  //MIP_ClapHostProxy* hostproxy = new MIP_ClapHostProxy(host);
-  const clap_plugin_descriptor_t* descriptor = MIP_GLOBAL_CLAP_LIST.getPlugin(index);
-  MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,host); // deleted in MIP_ClapPlugin.clap_plugin_destroy_callback()
-
-//  MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
-
+  int32_t index = MIP_CLAP_REGISTRY.findPluginById(plugin_id);
+  const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getPlugin(index);
+  MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,host);
   return plugin->ptr();
 }
 
@@ -73,13 +63,13 @@ const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugi
 
 //static
 //constexpr
-const clap_plugin_factory MIP_GLOBAL_CLAP_FACTORY = {
+const clap_plugin_factory MIP_CLAP_FACTORY = {
   clap_factory_get_plugin_count_callback,
   clap_factory_get_plugin_descriptor_callback,
   clap_factory_create_plugin_callback
 };
 
-#endif // MIP_NO_DEFAULT_PLUGIN_FACTORY
+//#endif // MIP_NO_DEFAULT_PLUGIN_FACTORY
 
 //----------------------------------------------------------------------
 #endif

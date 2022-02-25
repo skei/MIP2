@@ -27,6 +27,7 @@
 typedef MIP_ImplementedWindow MIP_BasicWindow;;
 
 //----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
 class MIP_WindowListener {
 public:
@@ -92,20 +93,24 @@ public:
   : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded) {
     MName = "MIP_Window";
     MListener = AListener;
+// move these to open() ?
     MWindowPainter = new MIP_Painter(this);
     MIP_Assert(MWindowPainter);
     #ifndef MIP_NO_WINDOW_BUFFERING
     createBuffer(AWidth,AHeight);
     #endif
+//
   }
 
   //----------
 
   virtual ~MIP_Window() {
+// to close() ?
     if (MWindowPainter) delete MWindowPainter;
     #ifndef MIP_NO_WINDOW_BUFFERING
     deleteBuffer();
     #endif
+//
   }
 
 //------------------------------
@@ -221,6 +226,7 @@ public: // window
   //----------
 
   void fillWindowBackground(MIP_FRect ARect) {
+    //MIP_PRINT;
     #ifdef MIP_NO_WINDOW_BUFFERING
       MWindowPainter->fillRectangle(ARect,MWindowBackgroundColor);
       //MWindowPainter->flush();
@@ -333,9 +339,10 @@ public: // buffer
     //MBufferPainter->pushClip(ARect);
     paintWidgets(MBufferPainter,ARect);
     MBufferPainter->flush();
-    //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
-    MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
-    MWindowPainter->flush();
+    blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
+    //MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+    //MWindowPainter->flush();
+
     //MBufferPainter->popClip();
   }
 
@@ -548,7 +555,7 @@ public: // MIP_BaseWindow
   //----------
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    //MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
+//    MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
     MIP_FRect rect = MIP_FRect(AXpos,AYpos,AWidth,AHeight);
     if (MFillWindowBackground) fillWindowBackground(rect);
     #ifdef MIP_NO_WINDOW_BUFFERING
@@ -556,6 +563,7 @@ public: // MIP_BaseWindow
     #else
     paintBuffer(rect);
     #endif
+//    MIP_Print("\n");
   }
 
 //------------------------------

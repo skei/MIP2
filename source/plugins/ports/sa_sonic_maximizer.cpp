@@ -39,9 +39,9 @@ const char* sonic_maximizer_features[] = {
 
 const clap_plugin_descriptor_t sonic_maximizer_descriptor = {
   CLAP_VERSION,
-  "torhelgeskei/sa_sonic_maximizer/v0.0.1",
+  "skei.audio/sa_sonic_maximizer/0.0.1",
   "sa_sonic_maximizer",
-  "torhelgeskei",
+  "skei.audio",
   "https://torhelgeskei.com",
   "",
   "",
@@ -240,14 +240,14 @@ public: // plugin
 //
 //----------------------------------------------------------------------
 
-void MIP_RegisterPlugins(MIP_ClapList* AList) {
-  AList->appendPlugin(&sonic_maximizer_descriptor);
+void MIP_Register(MIP_ClapRegistry* ARegistry) {
+  ARegistry->appendPlugin(&sonic_maximizer_descriptor);
 }
 
 //----------
 
-void MIP_UnregisterPlugins(MIP_ClapList* AList) {
-}
+//void MIP_UnregisterPlugins(MIP_ClapList* AList) {
+//}
 
 //----------------------------------------------------------------------
 

@@ -2,11 +2,6 @@
 #define mip_xcb_included
 //----------------------------------------------------------------------
 
-// wait for mapnotify event after opening window
-//#define MIP_XCB_WAIT_FOR_MAPNOTIFY
-
-//----------------------------------------------------------------------
-
 #include "mip.h"
 
 #include <xcb/xcb.h>

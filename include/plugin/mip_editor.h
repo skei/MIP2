@@ -74,9 +74,81 @@ public:
   virtual ~MIP_Editor() {
     delete MTimer;
     free(MParamToWidget);
-    if (MWindow) delete MWindow;
     free(MGuiParamVal);
     free(MGuiParamMod);
+
+    if (MWindow) delete MWindow;
+
+  }
+
+//------------------------------
+public: // clap.gui
+//------------------------------
+
+  virtual bool attach(const char* ADisplay, uint32_t AWindow) {
+    //MIP_PRINT;
+    //MWindow = new MIP_Window(256,256,this,true);
+    MWindow->reparent(AWindow);
+    return true;
+  }
+
+  //----------
+
+  virtual void show() {
+    //MIP_PRINT;
+    MWindow->setOwnerWindow(MWindow);
+    MWindow->alignWidgets();
+    MWindow->open();
+    //
+    MTimer->start(30);
+    MEditorIsOpen = true;
+  }
+
+  //----------
+
+  virtual void hide() {
+    //MIP_PRINT;
+    MEditorIsOpen = false;
+    MTimer->stop();
+    MWindow->close();
+  }
+
+  virtual bool setScale(double AScale) {
+    MScale = AScale;
+    return true;
+  }
+
+  //----------
+
+  virtual bool getSize(uint32_t *width, uint32_t *height) {
+    //MIP_PRINT;
+    *width = MWidth;
+    *height = MHeight;
+    return true;
+  }
+
+  //----------
+
+  virtual bool canResize() {
+    //MIP_PRINT;
+    return MCanResize;
+  }
+
+  //----------
+
+  virtual void roundSize(uint32_t *width, uint32_t *height) {
+    //MIP_PRINT;
+    *width = MWidth;
+    *height = MHeight;
+  }
+
+  //----------
+
+  virtual bool setSize(uint32_t width, uint32_t height) {
+    //MIP_PRINT;
+    MWidth = width;
+    MHeight = height;
+    return true;
   }
 
 //------------------------------
@@ -122,7 +194,8 @@ private: // window listener
   // [gui]
 
   void on_updateWidgetFromWindow(MIP_Widget* AWidget) final {
-    uint32_t index = AWidget->getParamIndex();
+    int32_t index = AWidget->getParamIndex();
+    //MIP_Print("index: %i\n",index);
     if (index >= 0) {
       float value = AWidget->getValue();
       if (MListener) MListener->on_editor_updateParameter(index,value);
@@ -239,70 +312,6 @@ public:
     }
   }
 
-//------------------------------
-public: // clap.gui
-//------------------------------
-
-  virtual bool attach(const char* ADisplay, uint32_t AWindow) {
-    //MWindow = new MIP_Window(256,256,this,true);
-    MWindow->reparent(AWindow);
-    return true;
-  }
-
-  //----------
-
-  virtual void show() {
-    MWindow->setOwnerWindow(MWindow);
-    MWindow->alignWidgets();
-    MWindow->open();
-    //
-    MTimer->start(30);
-    MEditorIsOpen = true;
-  }
-
-  //----------
-
-  virtual void hide() {
-    MEditorIsOpen = false;
-    MTimer->stop();
-    MWindow->close();
-  }
-
-  virtual bool setScale(double AScale) {
-    MScale = AScale;
-    return true;
-  }
-
-  //----------
-
-  virtual bool getSize(uint32_t *width, uint32_t *height) {
-    *width = MWidth;
-    *height = MHeight;
-    return true;
-  }
-
-  //----------
-
-  virtual bool canResize() {
-    return MCanResize;
-  }
-
-  //----------
-
-  virtual void roundSize(uint32_t *width, uint32_t *height) {
-    *width = MWidth;
-    *height = MHeight;
-  }
-
-  //----------
-
-  virtual bool setSize(uint32_t width, uint32_t height) {
-    MWidth = width;
-    MHeight = height;
-    return true;
-  }
-
-  //----------
 
 };
 

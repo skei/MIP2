@@ -89,8 +89,8 @@ private:
   //bool                        MUseEventThread               = false;
   bool                        MEmbedded                     = false;
 
-  bool      MFillBackground   = false;//true;
-  MIP_Color MBackgroundColor  = MIP_Color(0.5);
+//  bool      MFillBackground   = false;//true;
+//  MIP_Color MBackgroundColor  = MIP_Color(0.5);
 
 //------------------------------
 private:
@@ -151,8 +151,8 @@ public:
 public:
 //------------------------------
 
-  void setFillBackground(bool f=true) { MFillBackground = f; }
-  void setBackgroundColor(MIP_Color c) { MBackgroundColor = c; }
+//  void setFillBackground(bool f=true) { MFillBackground = f; }
+//  void setBackgroundColor(MIP_Color c) { MBackgroundColor = c; }
 
 //------------------------------
 public: // drawable
@@ -211,14 +211,14 @@ private:
     MScreenWindow   = MScreen->root;
     MScreenColormap = MScreen->default_colormap;
     MScreenVisual   = MScreen->root_visual;
-    MScreenGC       = xcb_generate_id(MConnection);
     MScreenDrawable = MScreen->root;
+    //MScreenGC       = xcb_generate_id(MConnection);
   }
 
   //----------
 
   void disconnect() {
-    xcb_free_gc(MConnection,MScreenGC);
+    //xcb_free_gc(MConnection,MScreenGC);
     xcb_disconnect(MConnection);
   }
 
@@ -1179,9 +1179,9 @@ public:
   void paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
     //on_paint(MWindowPainter,ARect);
-    if (MFillBackground) {
-      fill(AXpos,AYpos,AWidth,AHeight,MBackgroundColor);
-    }
+//    if (MFillBackground) {
+//      fill(AXpos,AYpos,AWidth,AHeight,MBackgroundColor);
+//    }
     on_window_paint(AXpos,AYpos,AWidth,AHeight);
   }
 

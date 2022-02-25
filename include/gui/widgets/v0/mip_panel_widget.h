@@ -84,9 +84,12 @@ public:
 
   virtual void fillBackground(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MFillBackground) {
-      //APainter->fillRectangle(getRect(),MBackgroundColor);
-      //TODO: intersect MRect,ARect
-      APainter->fillRectangle(MRect,MBackgroundColor);
+      //APainter->fillRectangle(MRect,MBackgroundColor);
+      MIP_FRect rect = MRect;
+      rect.overlap(ARect);
+      if (rect.isNotEmpty()) {
+        APainter->fillRectangle(rect,MBackgroundColor);
+      }
     }
   }
 

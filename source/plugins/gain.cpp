@@ -112,8 +112,8 @@ public: // plugin
 //
 //----------------------------------------------------------------------
 
-void MIP_RegisterPlugins(MIP_ClapList* AList) {
-  AList->appendPlugin(&myDescriptor);
+void MIP_Register(MIP_ClapRegistry* ARegistry) {
+  ARegistry->appendPlugin(&myDescriptor);
 }
 
 //----------------------------------------------------------------------
