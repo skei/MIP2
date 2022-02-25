@@ -10,11 +10,11 @@ in progress, prototype, proof of concept, pre-, ..
 changes are frequent, code will break..
 
 
-* os: linux (windows considered)
-* plugin: clap (with wrappers for exe, vst2, vst3, [ladspa, lv2])
-* host: clap, ladspa (other formats considered)
-* gui: xcb (cairo coming)
-* io: jack audio/midi
+* os: linux (maybe windows)
+* plugin: clap (with wrappers for exe, vst2, vst3, [maybe ladspa, lv2])
+* host: clap, ladspa (maybe other formats)
+* gui: xcb (optionally with cairo on top)
+* io: jack audio/midi (standalone executable)
 * other: too much to list..
 
 
