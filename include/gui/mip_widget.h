@@ -890,20 +890,20 @@ public:
 
   //----------
 
-  virtual void do_widget_setModal(MIP_Widget* AWidget, bool AModal=true) {
-    if (MParent) MParent->do_widget_setModal(AWidget,AModal);
+  virtual void do_widget_setModal(MIP_Widget* AWidget) {
+    if (MParent) MParent->do_widget_setModal(AWidget);
   }
 
   //----------
 
-  virtual void do_widget_captureMouse(MIP_Widget* AWidget, bool ACapture=true) {
-    if (MParent) MParent->do_widget_captureMouse(AWidget,ACapture);
+  virtual void do_widget_captureMouse(MIP_Widget* AWidget) {
+    if (MParent) MParent->do_widget_captureMouse(AWidget);
   }
 
   //----------
 
-  virtual void do_widget_captureKeyboard(MIP_Widget* AWidget, bool ACapture=true) {
-    if (MParent) MParent->do_widget_captureKeyboard(AWidget,ACapture);
+  virtual void do_widget_captureKeyboard(MIP_Widget* AWidget) {
+    if (MParent) MParent->do_widget_captureKeyboard(AWidget);
   }
 
 

@@ -186,7 +186,7 @@ public:
     //setRect(AXpos,AYpos,MMenuWidth,MMenuHeight);
     setRect(menu_rect);
     do_widget_redraw(this,menu_rect,0); // redraw parent?
-//    do_widget_grabModal(this);
+    do_widget_setModal(this);
   }
 
   //----------
@@ -198,7 +198,7 @@ public:
     flags.active = false;
     flags.visible = false;
     do_widget_redraw(this,getRect(),0);
-//    do_widget_grabModal(nullptr);
+    do_widget_setModal(nullptr);
     setWidth(0);
     setHeight(0);
   }

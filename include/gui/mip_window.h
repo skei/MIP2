@@ -59,7 +59,7 @@ private:
   #endif
 
   MIP_Widget*         MMouseHoverWidget       = nullptr;
-  MIP_Widget*         MMouseModalWidget       = nullptr;
+  MIP_Widget*         MModalWidget            = nullptr;
   MIP_Widget*         MMouseClickedWidget     = nullptr;
   MIP_Widget*         MMouseCapturedWidget    = nullptr;
   MIP_Widget*         MMouseLockedWidget      = nullptr;
@@ -137,11 +137,11 @@ public:
 
   //----------
 
-  MIP_Widget* getMouseHoverWidget()        { return MMouseHoverWidget; }
-  MIP_Widget* getMouseModalWidget()        { return MMouseModalWidget; }
-  MIP_Widget* getMouseClickedWidget()      { return MMouseClickedWidget; }
-  MIP_Widget* getMouseMouseLockedWidget()  { return MMouseLockedWidget; }
-  MIP_Widget* getKeyInputWidget()          { return MKeyInputWidget; }
+  MIP_Widget* getMouseHoverWidget()       { return MMouseHoverWidget; }
+  MIP_Widget* getModalWidget()            { return MModalWidget; }
+  MIP_Widget* getMouseClickedWidget()     { return MMouseClickedWidget; }
+  MIP_Widget* getMouseMouseLockedWidget() { return MMouseLockedWidget; }
+  MIP_Widget* getKeyInputWidget()         { return MKeyInputWidget; }
 
   //----------
 
@@ -154,8 +154,8 @@ public:
 
   void updateHoverWidget(uint32_t AXpos, uint32_t AYpos, uint32_t ATimeStamp=0) {
     MIP_Widget* hover = nullptr;
-    if (MMouseModalWidget) {
-      hover = MMouseModalWidget->findWidget(AXpos,AYpos);
+    if (MModalWidget) {
+      hover = MModalWidget->findWidget(AXpos,AYpos);
     }
     else {
       hover = findWidget(AXpos,AYpos);
@@ -186,8 +186,8 @@ public:
 
   void releaseHoverWidget(MIP_Widget* AClicked, uint32_t AXpos, uint32_t AYpos, uint32_t ATimeStamp=0) {
     MIP_Widget* hover = nullptr;
-    if (MMouseModalWidget) {
-      hover = MMouseModalWidget->findWidget(AXpos,AYpos);
+    if (MModalWidget) {
+      hover = MModalWidget->findWidget(AXpos,AYpos);
     }
     else {
       hover = findWidget(AXpos,AYpos);
@@ -663,20 +663,20 @@ public: // MIP_Widget
 
   //----------
 
-  void do_widget_setModal(MIP_Widget* AWidget, bool AModal=true) override {
-    MMouseModalWidget = AWidget;
+  void do_widget_setModal(MIP_Widget* AWidget) override {
+    MModalWidget = AWidget;
     updateHoverWidget(MMouseX,MMouseY);
   }
 
   //----------
 
-  void do_widget_captureMouse(MIP_Widget* AWidget, bool ACapture=true) override {
+  void do_widget_captureMouse(MIP_Widget* AWidget) override {
     MMouseLockedWidget = AWidget;
   }
 
   //----------
 
-  void do_widget_captureKeyboard(MIP_Widget* AWidget, bool ACapture=true) override {
+  void do_widget_captureKeyboard(MIP_Widget* AWidget) override {
     MKeyInputWidget = AWidget;
   }
 
