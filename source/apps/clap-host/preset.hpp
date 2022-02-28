@@ -32,9 +32,11 @@ clap_istream_t preset_stream = {
   preset_stream_read
 };
 
-//----------
+//------------------------------
+//
+//------------------------------
 
-void load_preset(const clap_plugin_t* plugin, const char* arg_preset_file) {
+bool load_preset_state(const clap_plugin_t* plugin, const char* arg_preset_file) {
   printf("loading preset: '%s'\n",arg_preset_file);
   const clap_plugin_state_t* state = (const clap_plugin_state_t*)plugin->get_extension(plugin,CLAP_EXT_STATE);
   if (state) printf("* we have state!\n");
@@ -50,9 +52,34 @@ void load_preset(const clap_plugin_t* plugin, const char* arg_preset_file) {
   stream_pos = 0;
   if (state->load(plugin,&preset_stream)) {
     printf("preset '%s' loaded\n",arg_preset_file);
+    return true;
   }
   else {
     printf("error loading preset '%s'\n",arg_preset_file);
+    return false;
+  }
+}
+
+//----------
+
+bool load_preset_file(const clap_plugin_t* plugin, const char* arg_preset_file) {
+  const clap_plugin_preset_load_t* preset_load = (const clap_plugin_preset_load_t*)plugin->get_extension(plugin,CLAP_EXT_PRESET_LOAD);
+  if (preset_load) {
+    return preset_load->from_file(plugin,arg_preset_file);
+  }
+  return false;
+}
+
+//------------------------------
+//
+//------------------------------
+
+bool load_preset(const clap_plugin_t* plugin, const char* arg_preset_file) {
+  if (plugin->get_extension(plugin,CLAP_EXT_PRESET_LOAD)) {
+    return load_preset_file(plugin,arg_preset_file);
+  }
+  else {
+    return load_preset_state(plugin,arg_preset_file);
   }
 }
 
