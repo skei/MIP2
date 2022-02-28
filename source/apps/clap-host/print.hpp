@@ -225,7 +225,8 @@ void print_plugin_descriptor(Host* host, uint32_t index, const char* json_file=n
 
 void print_plugin_parameters(const clap_plugin_t* plugin, const char* json_file=nullptr) {
   const clap_plugin_params_t* params = (const clap_plugin_params_t*)plugin->get_extension(plugin,CLAP_EXT_PARAMS);
-  if (params) {    uint32_t num = params->count(plugin);
+  if (params) {
+    uint32_t num = params->count(plugin);
     for (uint32_t i=0; i<num; i++) {
       clap_param_info_t param_info;
       if (params->get_info(plugin,i,&param_info)) {
