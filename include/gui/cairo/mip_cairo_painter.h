@@ -762,8 +762,8 @@ public: // image
     //MIP_CHECK_CAIRO_REFCOUNT(MCairo);
     cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
     cairo_fill(MCairo);
+    //cairo_surface_finish(srf);
     cairo_surface_destroy(srf);
-    cairo_surface_finish(srf);
     //MIP_CHECK_CAIRO_SURFACE_ERROR(srf);
     //MIP_CHECK_CAIRO_SURFACE_REFCOUNT(srf);
     //MIP_Print("srf ref count: %i\n",cairo_surface_get_reference_count(srf));    // prints 1
