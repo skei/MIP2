@@ -136,7 +136,7 @@ public:
   }
 
 //------------------------------
-private:
+public:
 //------------------------------
 
   /*
@@ -158,6 +158,8 @@ private:
   //  MIP_Plugin::handle_modulation_event(param_mod);
   //}
 
+//------------------------------
+public:
 //------------------------------
 
   /*
@@ -193,6 +195,8 @@ private:
   //  }
   //}
 
+//------------------------------
+public:
 //------------------------------
 
   void handle_process(const clap_process_t *process) final {
@@ -262,10 +266,14 @@ public: // plugin
 
   const char* buttonrow_text[6] = { "1", "2", "3", "four", "5", "6" };
 
+  //----------
+
   bool gui_create() final {
-    //MEditor = new MIP_Editor(this,this);
-    //MIsEditorOpen = false;
-    bool result = MIP_Plugin::gui_create();
+    //bool result = MIP_Plugin::gui_create();
+    MEditor = new MIP_Editor(this,this,400,400);
+    MEditor->setCanResize();
+    bool result = (MEditor);
+    MIsEditorOpen = false;
     if (result) {
       MEditorPanel = new MIP_PanelWidget(MIP_FRect(0));
       MEditorPanel->setBackgroundColor(0.6);
@@ -284,9 +292,23 @@ public: // plugin
 
       // test
 
-      MEditorPanel->appendWidget( new MIP_ButtonRowWidget( MIP_FRect( 10, 70, 230, 20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI ));
-      MEditorPanel->appendWidget( new MIP_SelectorWidget( MIP_FRect(  10,100, 110, 20)  ));
-      MEditorPanel->appendWidget( new MIP_SliderWidget( MIP_FRect(   130,100, 110, 20), "Slider", 0.5 ));
+      MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect(100,100) );
+      menu1->appendMenuItem("first");
+      menu1->appendMenuItem("item2");
+      menu1->appendMenuItem("item3");
+      menu1->appendMenuItem("4");
+      menu1->appendMenuItem("five");
+      menu1->setItemSize(90,20);
+      menu1->setItemLayout(1,5);
+      menu1->setMenuMirror(true,false);
+
+      MEditorPanel->appendWidget( new MIP_ButtonRowWidget(MIP_FRect(  10, 70, 230, 20 ), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI ));
+      MEditorPanel->appendWidget( new MIP_SliderWidget(   MIP_FRect(  10,100, 110, 20 ), "Slider", 0.5 ));
+
+      MIP_SelectorWidget* selector = (MIP_SelectorWidget*)MEditorPanel->appendWidget( new MIP_SelectorWidget( MIP_FRect( 130,100, 110, 20 )  ));
+      selector->setMenu(menu1);
+
+      MEditorPanel->appendWidget(menu1);
 
       if (MEditor) {
         MEditor->connect(knob1,0);
@@ -346,14 +368,7 @@ public:
 //
 //----------------------------------------------------------------------
 
-//volatile
-//bool already_called = false;
-
-//
-
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
-  //MIP_Assert(already_called == false);
-  //already_called = true;
   ARegistry->appendPlugin(&myDescriptor);
   ARegistry->appendPlugin(&myDescriptor2);
 }

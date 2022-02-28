@@ -34,10 +34,10 @@ private:
   MIP_EditorListener* MListener         = nullptr;
   MIP_ClapPlugin*     MPlugin           = nullptr;
   uint32_t            MNumParams        = 0;
-  uint32_t            MWidth            = 256;//250;
-  uint32_t            MHeight           = 256;//70;
+  uint32_t            MWidth            = 0;
+  uint32_t            MHeight           = 0;
   double              MScale            = 1.0;
-  bool                MCanResize        = true;//false;
+  bool                MCanResize        = false;
   MIP_Window*         MWindow           = nullptr;
   MIP_Timer*          MTimer            = nullptr;
   MIP_Widget**        MParamToWidget    = nullptr;
@@ -47,13 +47,20 @@ private:
   float*              MGuiParamMod      = nullptr;
   bool                MEditorIsOpen     = true;
 
+//  uint32_t            MResizeWidth      = 0;
+//  uint32_t            MResizeHeight     = 0;
+
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin) {
+  MIP_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight) {
     MListener = AListener;
     MPlugin = APlugin;
+    MWidth = AWidth;
+    MHeight = AHeight;
+//    MResizeWidth = AWidth;
+//    MResizeHeight = AHeight;
     MNumParams = APlugin->params_count();
     uint32_t size = MNumParams * sizeof(MIP_Widget*);
     MParamToWidget = (MIP_Widget**)malloc(size);
@@ -65,7 +72,7 @@ public:
     memset(MGuiParamMod,0,size);
     MTimer = new MIP_Timer(this);
 
-    MWindow = new MIP_Window(256,256,this,true);
+    MWindow = new MIP_Window(AWidth,AHeight,this,true);
 
   }
 
@@ -114,6 +121,7 @@ public: // clap.gui
   }
 
   virtual bool setScale(double AScale) {
+    //MIP_Print("%.2f\n",AScale);
     MScale = AScale;
     return true;
   }
@@ -121,7 +129,7 @@ public: // clap.gui
   //----------
 
   virtual bool getSize(uint32_t *width, uint32_t *height) {
-    //MIP_PRINT;
+    //MIP_Print("-> %i,%i\n",MWidth,MHeight);
     *width = MWidth;
     *height = MHeight;
     return true;
@@ -130,14 +138,16 @@ public: // clap.gui
   //----------
 
   virtual bool canResize() {
-    //MIP_PRINT;
+    //MIP_Print("-> %s\n",MCanResize?"true":"false");
     return MCanResize;
   }
 
   //----------
 
   virtual void roundSize(uint32_t *width, uint32_t *height) {
-    //MIP_PRINT;
+    //MIP_Print("-> %i,%i\n",MResizeWidth,MResizeHeight);
+//    *width = MResizeWidth;
+//    *height = MResizeHeight;
     *width = MWidth;
     *height = MHeight;
   }
@@ -145,9 +155,16 @@ public: // clap.gui
   //----------
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    //MIP_PRINT;
-    MWidth = width;
-    MHeight = height;
+    //MIP_Print("%i,%i\n",width,height);
+    if ((width != MWidth) || (height != MHeight)) {
+      MWidth = width;
+      MHeight = height;
+      //MResizeWidth = width;
+      //MResizeHeight = height;
+//      MWindow->resizeWindow(MWidth,MHeight);
+      //MWindow->on_window_resize(width,height);
+      //MWindow->on_window_paint(0,0,width,height);
+    }
     return true;
   }
 
@@ -158,6 +175,8 @@ public:
   MIP_Window* getWindow() {
     return MWindow;
   }
+
+  void setCanResize(bool AResize=true) { MCanResize = AResize; }
 
   //----------
 
@@ -205,6 +224,9 @@ private: // window listener
   //----------
 
   void on_resizeFromWindow(uint32_t AWidth, uint32_t AHeight) final {
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
+    //MResizeWidth = AWidth;
+    //MResizeHeight = AHeight;
     if (MListener) MListener->on_editor_resize(AWidth,AHeight);
   }
 
