@@ -9,7 +9,9 @@
 #include "gui/mip_drawable.h"
 #include "gui/base/mip_base_painter.h"
 
-typedef MIP_Stack<MIP_FRect,16> MIP_RectStack;
+#define MIP_RECT_STACK_SIZE 1024
+
+typedef MIP_Stack<MIP_FRect,MIP_RECT_STACK_SIZE> MIP_RectStack;
 
 //----------------------------------------------------------------------
 
@@ -66,6 +68,7 @@ public:
 
   void pushClip(MIP_FRect ARect) {
     //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
+    //MIP_Print("depth: %i\n",MClipStack.getNumItems());
     MClipStack.push(MClipRect);
     MClipRect = ARect;
     //resetClip();
