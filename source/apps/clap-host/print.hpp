@@ -40,27 +40,28 @@ void json_end(const char* filename) {
 //----------------------------------------------------------------------
 
 void print_json_plugin_list(Host* host) {
+  //printf("plugins:\n");
+  json.objectBegin("plugin list");
+    const clap_plugin_factory* factory = host->getClapFactory();
+    uint32_t num = factory->get_plugin_count(factory);
+    for (uint32_t i=0; i<num; i++) {
+      json.objectBegin("plugin");
+        const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,i);
+        //printf("  %i. %s (%s)\n",i,descriptor->name,descriptor->description);
+        json.i32("index",(int32_t *)&i);
+        json.string("name",(const char **)&descriptor->name);
+        json.string("description",(const char **)&descriptor->description);
+      json.objectEnd();
+    }
+  json.objectEnd();
 }
 
 //----------
 
-//    Json json = {};
-//    json_buffer[0] = 0;
-//    json.setupWrite(true,json_buffer,65536);
-//
-//      const clap_plugin_factory* factory = host->getClapFactory();
-//      const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,index);
-//      print_json_descriptor(&json,descriptor);
-//
-//    uint32_t json_size = strlen(json_buffer);
-//    FILE* fp = fopen(json_file,"wt");
-//    fwrite(json_buffer,1,json_size,fp);
-//    fclose(fp);
-
 void print_json_descriptor(const clap_plugin_descriptor_t* desc) {
   char version_string[32] = {0};
   sprintf(version_string,"%i.%i.%i",desc->clap_version.major,desc->clap_version.minor,desc->clap_version.revision);
-  printf("version_string: '%s'\n",version_string);
+  //printf("version_string: '%s'\n",version_string);
   const char* version_ptr = (const char*)version_string;
   json.objectBegin("descriptor");
     json.string("clap_version",&version_ptr);
@@ -138,16 +139,7 @@ void print_json_parameter(uint32_t index, const clap_param_info_t* param) {
 //
 //----------------------------------------------------------------------
 
-//    printf("plugins:\n");
-//    const clap_plugin_factory* factory = host->getClapFactory();
-//    uint32_t num = factory->get_plugin_count(factory);
-//    for (uint32_t i=0; i<num; i++) {
-//      const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,i);
-//      printf("  %i. %s (%s)\n",i,descriptor->name,descriptor->description);
-//    }
-
 void print_stdout_plugin_list(Host* host) {
-  //write_stdout_plugin_list(host)
   printf("plugins:\n");
   const clap_plugin_factory* factory = host->getClapFactory();
   uint32_t num = factory->get_plugin_count(factory);
@@ -159,27 +151,6 @@ void print_stdout_plugin_list(Host* host) {
 
 //----------
 
-//    printf("descriptor (%i):\n",index);
-//    const clap_plugin_factory* factory = host->getClapFactory();
-//    const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,index);
-//    printf("  clap_version: %i.%i.%i\n",descriptor->clap_version.major,descriptor->clap_version.minor,descriptor->clap_version.revision);
-//    printf("  id:           %s\n",descriptor->id);
-//    printf("  name:         %s\n",descriptor->name);
-//    printf("  vendor:       %s\n",descriptor->vendor);
-//    printf("  url:          %s\n",descriptor->url);
-//    printf("  manual_url:   %s\n",descriptor->manual_url);
-//    printf("  support_url:  %s\n",descriptor->support_url);
-//    printf("  version:      %s\n",descriptor->version);
-//    printf("  description:  %s\n",descriptor->description);
-//    //printf("  features:     %s\n",descriptor->features);
-//    printf("  features:     ");
-//    int i = 0;
-//    while ( descriptor->features[i] ) {
-//      printf("%s ",descriptor->features[i]);
-//      i++;
-//    }
-
-//void print_stdout_descriptor(Host* host, uint32_t index) {
 void print_stdout_descriptor(const clap_plugin_descriptor_t* descriptor) {
   //printf("descriptor (%i):\n",index);
   //const clap_plugin_factory* factory = host->getClapFactory();

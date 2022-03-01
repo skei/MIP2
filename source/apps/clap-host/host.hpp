@@ -113,7 +113,7 @@ public:
     if (index >= MFactory->get_plugin_count(MFactory)) return nullptr;
     const clap_plugin_descriptor* descriptor = MFactory->get_plugin_descriptor(MFactory,index);
     const clap_plugin* plugin = MFactory->create_plugin(MFactory,&MHost,descriptor->id);
-    plugin->init(plugin);
+//    plugin->init(plugin);
     return plugin;
   }
 
