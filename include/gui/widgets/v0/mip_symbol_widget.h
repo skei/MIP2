@@ -76,6 +76,13 @@ public:
       case MIP_SYMBOL_FILL_ELLIPSE:
         APainter->fillEllipse(mrect,MColor);
         break;
+      //case MIP_SYMBOL_TRI_DOWN_RIGHT:
+      //  APainter->drawTriangle( mrect.x2(), mrect.y, mrect.x2(), mrect.y2(), mrect.x, mrect.y2(), MColor );
+      //  break;
+      //case MIP_SYMBOL_FILL_TRI_DOWN_RIGHT:
+      //  APainter->fillTriangle( mrect.x2(), mrect.y, mrect.x2(), mrect.y2(), mrect.x, mrect.y2(), MColor );
+      //  break;
+
     }
     drawBorder(APainter,ARect,AMode);
   }

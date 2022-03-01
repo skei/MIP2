@@ -267,6 +267,8 @@ enum MIP_ESymbols {
   MIP_SYMBOL_FILL_TRI_DOWN       = 7,
   MIP_SYMBOL_ELLIPSE             = 8,
   MIP_SYMBOL_FILL_ELLIPSE        = 9
+  //MIP_SYMBOL_TRI_DOWN_RIGHT      = 6,
+  //MIP_SYMBOL_FILL_TRI_DOWN_RIGHT = 7,
 };
 
 enum MIP_ETextAlignment {

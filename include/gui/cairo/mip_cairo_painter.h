@@ -189,9 +189,9 @@ public: // surface
   */
 
   void resize(uint32_t AWidth, uint32_t AHeight) override {
-    MIP_Print("%i,%i\n",AWidth,AHeight);
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
     cairo_xcb_surface_set_size(MSurface,AWidth,AHeight);
-    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
+//    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
     //MIP_CHECK_CAIRO_SURFACE_REFCOUNT(MSurface);
   }
 
@@ -209,7 +209,7 @@ public: // surface
   void flush() override {
     //MIP_PRINT;
     cairo_surface_flush(MSurface);
-    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
+//    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
   }
 
   //----------
@@ -223,7 +223,7 @@ public: // surface
   void dirty() override {
     //MIP_PRINT;
     cairo_surface_mark_dirty(MSurface);
-    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
+//    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
   }
 
   //void dirty(float AX1, float AY1, float AX2, float AY2) {
@@ -234,7 +234,7 @@ public: // surface
     //MIP_PRINT;
     //cairo_surface_mark_dirty_rectangle(MCairoSurface,ARect.x,ARect.y,ARect.x2(),ARect.y2());
     cairo_surface_mark_dirty_rectangle(MSurface,ARect.x,ARect.y,ARect.w,ARect.h);
-    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
+//    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
   }
 
   //----------
@@ -257,7 +257,7 @@ public: // surface
   void finish() override {
     //MIP_PRINT;
     cairo_surface_finish(MSurface);
-    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
+//    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
     //MIP_CHECK_CAIRO_SURFACE_REFCOUNT(MSurface);
   }
 

@@ -266,10 +266,10 @@ public: // editor listener
   //----------
 
   void on_editor_resize(uint32_t AWidth, uint32_t AHeight) final {
-    //MIP_PRINT;
     if (MHost && MHost->gui) {
+      //MIP_Print("host.gui.request_resize(%i,%i)\n",AWidth,AHeight);
       if (!MHost->gui->request_resize(MHost->host,AWidth,AHeight)) {
-        //MIP_Print("host->gui->request_resize(%i,%i) failed\n",AWidth,AHeight);
+        MIP_Print("host->gui->request_resize(%i,%i) returned false\n",AWidth,AHeight);
       }
     }
   }
@@ -664,7 +664,7 @@ public: // gui-x11
   #ifndef MIP_NO_GUI
 
   bool gui_x11_attach(const char *display_name, unsigned long window) override {
-    //MIP_Print("display_name: %s window: %i\n",display_name,window);
+    MIP_Print("display_name: %s window: %i\n",display_name,window);
     if (MEditor) {
       //MIP_Print("'%s',%i -> true\n",display_name,window);
       MEditor->attach(display_name,window);
@@ -685,7 +685,7 @@ public: // gui
   #ifndef MIP_NO_GUI
 
   bool gui_create() override {
-    //MIP_PRINT;
+    MIP_PRINT;
     MIsEditorOpen = false;
     MEditor = new MIP_Editor(this,this,256,256);
     return (MEditor);
@@ -694,7 +694,7 @@ public: // gui
   //----------
 
   void gui_destroy() override {
-    //MIP_PRINT;
+    MIP_PRINT;
     if (MIsEditorOpen) {
       MIsEditorOpen = false;
       //gui_hide();
@@ -710,11 +710,11 @@ public: // gui
     //MIP_Print("scale: %.3f\n");
     if (MEditor) {
       bool res = MEditor->setScale(scale);
-      //MIP_Print("%.3f -> %s\n", scale,res?"true":"false");
+      MIP_Print("%.3f -> %s\n", scale,res?"true":"false");
       return res;
     }
     else {
-      //MIP_Print("!MEditor -> false\n");
+      MIP_Print("!MEditor -> false\n");
       return true;
     }
   }
@@ -725,11 +725,11 @@ public: // gui
     //MIP_Print("*width: %i *height: %i\n", *width,*height);
     if (MEditor) {
       bool res = MEditor->getSize(width,height);
-      //MIP_Print("-> (%i,%i) %s\n", *width,*height,res?"true":"false");
+      MIP_Print("-> (%i,%i) %s\n", *width,*height,res?"true":"false");
       return res;
     }
     else {
-      //MIP_Print("!MEditor -> false\n");
+      MIP_Print("!MEditor -> false\n");
       return false;
     }
   }
@@ -740,11 +740,11 @@ public: // gui
     //MIP_PRINT;
     if (MEditor) {
       bool res = MEditor->canResize();
-      //MIP_Print("-> %s\n", res?"true":"false");
+      MIP_Print("-> %s\n", res?"true":"false");
       return res;
     }
     else {
-      //MIP_Print("!MEditor -> false\n");
+      MIP_Print("!MEditor -> false\n");
       return false;
     }
   }
@@ -754,13 +754,14 @@ public: // gui
   void gui_round_size(uint32_t *width, uint32_t *height) override {
     //MIP_Print("*width: %i *height: %i\n",*width,*height);
     if (MEditor) {
+      MIP_Print("(%i,%i) -> ", *width,*height);
       MEditor->roundSize(width,height);
-      //MIP_Print("-> (%i,%i)\n", *width,*height);
+      MIP_DPrint("(%i,%i)\n", *width,*height);
     }
     else {
       *width = 0;
       *height = 0;
-      //MIP_Print("!MEditor -> (%i,%i)\n", *width,*height);
+      MIP_Print("!MEditor -> (%i,%i)\n", *width,*height);
     }
   }
 
@@ -770,11 +771,11 @@ public: // gui
     //MIP_Print("width: %i height: %i\n",width,height);
     if (MEditor) {
       bool res = MEditor->setSize(width,height);
-      //MIP_Print("%i,%i -> %s\n", width,height,res?"true":"false");
+      MIP_Print("%i,%i -> %s\n", width,height,res?"true":"false");
       return res;
     }
     else {
-      //MIP_Print("%i,%i : !MEditor -> false\n",width,height);
+      MIP_Print("%i,%i : !MEditor -> false\n",width,height);
       return false;
     }
   }
@@ -784,12 +785,12 @@ public: // gui
   void gui_show() override {
     //MIP_PRINT;
     if (MEditor) {
-      //MIP_Print("\n");
+      MIP_Print("\n");
       MEditor->show();
       MIsEditorOpen = true;
     }
     else {
-      //MIP_Print("!MEditor\n");
+      MIP_Print("!MEditor\n");
     }
   }
 
@@ -798,12 +799,12 @@ public: // gui
   void gui_hide() override {
     //MIP_PRINT;
     if (MEditor) {
-      //MIP_Print("\n");
+      MIP_Print("\n");
       MIsEditorOpen = false;
       MEditor->hide();
     }
     else {
-      //MIP_Print("!MEditor\n");
+      MIP_Print("!MEditor\n");
     }
   }
 

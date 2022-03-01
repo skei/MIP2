@@ -95,7 +95,14 @@ public:
 //    rect.overlap(ARect);
 //    APainter->fillRectangle(rect,MFillColor);
     //APainter->fillRectangle(getRect(),MFillColor);
-    APainter->fillRectangle(ARect,MFillColor);
+
+    if (MMode == MIP_SIZER_WINDOW) {
+      APainter->fillTriangle( MRect.x2(), MRect.y, MRect.x2(), MRect.y2(), MRect.x, MRect.y2(), MFillColor );
+    }
+    else {
+      APainter->fillRectangle(MRect,MFillColor);
+    }
+
   }
 
   //----------

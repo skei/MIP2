@@ -269,20 +269,25 @@ public: // plugin
   //----------
 
   bool gui_create() final {
+
+    MIP_PRINT;
     //bool result = MIP_Plugin::gui_create();
+
     MEditor = new MIP_Editor(this,this,400,400);
+    MIsEditorOpen = false;
+
     MEditor->setCanResize();
     bool result = (MEditor);
-    MIsEditorOpen = false;
     if (result) {
       MEditorPanel = new MIP_PanelWidget(MIP_FRect(0));
       MEditorPanel->setBackgroundColor(0.6);
+      //MEditorPanel->layout.innerBorder = 2;
       MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
       MIP_KnobWidget*   knob1 = new MIP_KnobWidget(MIP_FRect( 10,10, 50,50));
       MIP_KnobWidget*   knob2 = new MIP_KnobWidget(MIP_FRect( 70,10, 50,50));
       MIP_KnobWidget*   knob3 = new MIP_KnobWidget(MIP_FRect(130,10, 50,50));
       MIP_KnobWidget*   knob4 = new MIP_KnobWidget(MIP_FRect(190,10, 50,50));
-      MSizer = new MIP_SizerWidget(MIP_FRect(10,10),MIP_SIZER_WINDOW);//MEditor->getWindow());
+      MSizer = new MIP_SizerWidget(MIP_FRect(15,15),MIP_SIZER_WINDOW);//MEditor->getWindow());
       MSizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
       MEditorPanel->appendWidget(knob1);
       MEditorPanel->appendWidget(knob2);
