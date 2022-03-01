@@ -262,7 +262,7 @@ private:
       uint8_t msg2    = midievent->msg2;
       uint8_t msg3    = midievent->msg3;
       int32_t offset  = floorf(time * MSampleRate);
-      //printf("> MIDI : offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
+      //printf("MIDI : offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
       switch( msg1 & 0xF0) {
 
         case MIDI_NOTE_OFF: {
@@ -454,7 +454,7 @@ public:
 
     num_samples += (arg_decay_seconds * arg_sample_rate);
 
-    printf("> length = %f seconds\n",num_samples / arg_sample_rate);
+    printf("length = %f seconds\n",num_samples / arg_sample_rate);
 
     if (num_samples == 0) {
       printf("* Error: num_samples == 0\n");
@@ -463,7 +463,7 @@ public:
 
     // because of larry.mid (20 minutes or something..)
     if (num_samples >= (arg_sample_rate * 180.0)) {
-      printf("> Truncating to 3 minute\n" );
+      printf("truncating to 3 minute\n" );
       num_samples = 180.0 * arg_sample_rate;
     }
 

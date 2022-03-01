@@ -10,7 +10,7 @@ int32_t   stream_pos = 0;
 // to: error checking, safety, etc, etc...
 
 int64_t preset_stream_read(struct clap_istream *stream, void *buffer, uint64_t size) {
-  printf("* stream read: plugin asking for %i bytes\n",(int)size);
+  printf("stream read: plugin asking for %i bytes\n",(int)size);
   if (stream_pos >= preset_size) return 0;
   int num = preset_size - stream_pos;
   if (num >= (int)size) {
@@ -37,14 +37,13 @@ clap_istream_t preset_stream = {
 //------------------------------
 
 bool load_preset_state(const clap_plugin_t* plugin, const char* arg_preset_file) {
-  printf("loading preset: '%s'\n",arg_preset_file);
   const clap_plugin_state_t* state = (const clap_plugin_state_t*)plugin->get_extension(plugin,CLAP_EXT_STATE);
-  if (state) printf("* we have state!\n");
+  if (state) printf("state extension supported\n");
   FILE* fp = nullptr;
   fp = fopen(arg_preset_file,"rb");
   fseek(fp,0,SEEK_END);
   preset_size = ftell(fp);
-  printf("* filesiz: %i\n",preset_size);
+  printf("filesize: %i\n",preset_size);
   //rewind(fp);
   fseek(fp,0,SEEK_SET);
   fread(preset_buffer,1,preset_size,fp);
@@ -75,10 +74,13 @@ bool load_preset_file(const clap_plugin_t* plugin, const char* arg_preset_file) 
 //------------------------------
 
 bool load_preset(const clap_plugin_t* plugin, const char* arg_preset_file) {
+  printf("loading preset: '%s'\n",arg_preset_file);
   if (plugin->get_extension(plugin,CLAP_EXT_PRESET_LOAD)) {
+    printf("preset-load extension supported\n");
     return load_preset_file(plugin,arg_preset_file);
   }
   else {
+    printf("preset-load extension not supported\n");
     return load_preset_state(plugin,arg_preset_file);
   }
 }

@@ -134,9 +134,6 @@ int main(int argc, char** argv) {
     arg_remap_param     = arg_parser.getArgIntAfterSymbol( ':',  "-r",   "--remap");
   }
 
-//------------------------------
-
-  bool do_process = true;
 
   if (!host.loadPlugin(arg_plugin_path)) {
     printf("error loading plugin\n");
@@ -147,45 +144,58 @@ int main(int argc, char** argv) {
     json_begin();
   }
 
+  //----------
+
   if (arg_list_plugins) {
     print_plugin_list(&host,arg_json_file);
-    do_process = false;
+    //do_process = false;
   }
 
-  if (arg_print_descriptor) {
+  else if (arg_print_descriptor) {
     print_plugin_descriptor(&host,arg_plugin_index,arg_json_file);
-    do_process = false;
+    //do_process = false;
   }
 
-  plugin = host.createPlugin(arg_plugin_path,arg_plugin_index);
-  //plugin->init();
+  else { // create
 
-  if (arg_print_parameters) {
-    print_plugin_parameters(plugin,arg_json_file);
-    do_process = false;
-  }
+    plugin = host.createPlugin(arg_plugin_path,arg_plugin_index);
+    //plugin->init();
+
+    bool do_process = true;
+
+    if (arg_print_parameters) {
+      print_plugin_parameters(plugin,arg_json_file);
+      do_process = false;
+    }
+
+    if (arg_preset_file) {
+      load_preset(plugin,arg_preset_file);
+    }
+
+    //----------
+
+    if (do_process) {
+      plugin->activate(plugin,arg_sample_rate,1,arg_block_size);
+      plugin->start_processing(plugin);
+      Process proc = Process(plugin);
+      result = proc.process();
+      plugin->stop_processing(plugin);
+      plugin->deactivate(plugin);
+    }
+
+    //plugin->destroy();
+
+  } // create
+
+  //----------
 
   if (arg_json_file) {
     json_end(arg_json_file);
   }
 
-  if (arg_preset_file) {
-    load_preset(plugin,arg_preset_file);
-  }
-
-//------------------------------
-
-  if (do_process) {
-    plugin->activate(plugin,arg_sample_rate,1,arg_block_size);
-    plugin->start_processing(plugin);
-    Process proc = Process(plugin);
-    result = proc.process();
-    plugin->stop_processing(plugin);
-    plugin->deactivate(plugin);
-  }
-  //plugin->destroy();
   printf("unloading plugin\n");
   host.unloadPlugin();
+
   printf("unloading ok\n");
   return result;
 

@@ -6,7 +6,7 @@
 //
 //----------------------------------------------------------------------
 
-//#include "../source/apps/clap-host/main.cpp"
+#include "../source/apps/clap-host/main.cpp"
 //#include "../source/test/test_xcb_window.cpp"
 
 //----------------------------------------------------------------------
@@ -18,7 +18,7 @@
 //#include "../source/plugins/clap-minimal.cpp"
 //#include "../source/plugins/gain.cpp"
 //#include "../source/plugins/ladspa_wrapper.cpp"
-#include "../source/plugins/test_plugin1.cpp"
+//#include "../source/plugins/test_plugin1.cpp"
 
 // ports
 

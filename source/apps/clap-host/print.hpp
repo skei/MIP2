@@ -194,11 +194,45 @@ void print_stdout_descriptor(const clap_plugin_descriptor_t* descriptor) {
     printf("%s ",descriptor->features[i]);
     i++;
   }
+  printf("\n");
+
 }
 
 //----------
 
-void print_stdout_parameter(const clap_param_info_t* param) {
+void print_stdout_parameter(uint32_t index, const clap_param_info_t* param) {
+  //uint64_t    cookie            = (uint64_t)param->cookie;  // ouch !!!!!
+  const char* name              = param->name;
+  const char* module            = param->module;
+  uint32_t    flags             = param->flags;
+  bool        is_stepped        = (flags & CLAP_PARAM_IS_STEPPED);
+  bool        is_per_note       = (flags & CLAP_PARAM_IS_PER_NOTE);
+  bool        is_per_channel    = (flags & CLAP_PARAM_IS_PER_CHANNEL);
+  bool        is_per_port       = (flags & CLAP_PARAM_IS_PER_PORT);
+  bool        is_periodic       = (flags & CLAP_PARAM_IS_PERIODIC);
+  bool        is_hidden         = (flags & CLAP_PARAM_IS_HIDDEN);
+  bool        is_bypass         = (flags & (1 << 6) /*CLAP_PARAM_IS_BYPASS*/ );
+  bool        is_readonly       = (flags & CLAP_PARAM_IS_READONLY);
+  bool        is_modulatable    = (flags & CLAP_PARAM_IS_MODULATABLE);
+  bool        requires_process  = (flags & CLAP_PARAM_REQUIRES_PROCESS);
+  printf("\n");
+  printf("  id: %i\n",param->id);
+  printf("  name:          %s\n",name);
+  printf("  module:        %s\n",module);
+  printf("  min_value:     %.3f\n",param->min_value);
+  printf("  max_value:     %.3f\n",param->max_value);
+  printf("  default_value: %.3f\n",param->default_value);
+  printf("  flags:         0x%04X\n",param->flags);
+  if (is_stepped)       printf("    CLAP_PARAM_IS_STEPPED\n");
+  if (is_per_note)      printf("    CLAP_PARAM_IS_PER_NOTE\n");
+  if (is_per_channel)   printf("    CLAP_PARAM_IS_PER_CHANNEL\n");
+  if (is_per_port)      printf("    CLAP_PARAM_IS_PER_PORT\n");
+  if (is_periodic)      printf("    CLAP_PARAM_IS_PERIODIC\n");
+  if (is_hidden)        printf("    CLAP_PARAM_IS_HIDDEN\n");
+  if (is_bypass)        printf("    CLAP_PARAM_IS_BYPASS\n");
+  if (is_readonly)      printf("    CLAP_PARAM_IS_READONLY\n");
+  if (is_modulatable)   printf("    CLAP_PARAM_IS_MODULATABLE\n");
+  if (requires_process) printf("    CLAP_PARAM_REQUIRES_PROCESS\n");
 }
 
 //----------------------------------------------------------------------
@@ -231,7 +265,7 @@ void print_plugin_parameters(const clap_plugin_t* plugin, const char* json_file=
       clap_param_info_t param_info;
       if (params->get_info(plugin,i,&param_info)) {
         if (json_file) print_json_parameter(&param_info);
-        else print_stdout_parameter(&param_info);
+        else print_stdout_parameter(i,&param_info);
       }
     }
   }
