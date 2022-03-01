@@ -2,7 +2,7 @@
 #define print_included
 //----------------------------------------------------------------------
 
-
+#define JSON_BUFFER_SIZE (1024*1024)
 
 //----------------------------------------------------------------------
 //
@@ -12,19 +12,25 @@
 
 #include "json.hpp"
 
-Json  json                = {};
-char  json_buffer[65536]  = {0};
+
+Json  json                    = {};
+char  json_buffer[1024*1024]  = {0};
 
 //----------
 
 void json_begin() {
   json_buffer[0] = 0;
-  json.setupWrite(true,json_buffer,65536);
+  json.setupWrite(true,json_buffer,JSON_BUFFER_SIZE);
+  //json.objectBegin(nullptr);
 }
 
 //----------
 
 void json_end(const char* filename) {
+  //json.objectEnd();
+  if (json.error()) {
+    printf("%s\n",json.errorMessage());
+  }
   uint32_t json_size = strlen(json_buffer);
   FILE* fp = fopen(filename,"wt");
   fwrite(json_buffer,1,json_size,fp);
@@ -52,11 +58,11 @@ void print_json_plugin_list(Host* host) {
 //    fclose(fp);
 
 void print_json_descriptor(const clap_plugin_descriptor_t* desc) {
-  json.objectBegin(nullptr);
-    char version_string[32] = {0};
-    sprintf(version_string,"%i.%i.%i",desc->clap_version.major,desc->clap_version.minor,desc->clap_version.revision);
-    printf("version_string: '%s'\n",version_string);
-    const char* version_ptr = (const char*)version_string;
+  char version_string[32] = {0};
+  sprintf(version_string,"%i.%i.%i",desc->clap_version.major,desc->clap_version.minor,desc->clap_version.revision);
+  printf("version_string: '%s'\n",version_string);
+  const char* version_ptr = (const char*)version_string;
+  json.objectBegin("descriptor");
     json.string("clap_version",&version_ptr);
     json.string("id",(const char**)&desc->id);
     json.string("name",(const char**)&desc->name);
@@ -66,26 +72,26 @@ void print_json_descriptor(const clap_plugin_descriptor_t* desc) {
     json.string("support_url",(const char**)&desc->support_url);
     json.string("version",(const char**)&desc->version);
     json.string("description",(const char**)&desc->description);
-    json.arrayBegin("features");
-    int i = 0;
-    while ( desc->features[i] ) {
-      //json.string("...",(const char**)&desc->features[i]);
-      json.string(nullptr,(const char**)&desc->features[i]);
-      i++;
-    }
-    json.arrayEnd();
+    json.objectBegin("features");
+      int i = 0;
+      while ( desc->features[i] ) {
+        //json.string("...",(const char**)&desc->features[i]);
+        json.string(nullptr,(const char**)&desc->features[i]);
+        i++;
+      }
+    json.objectEnd();
   json.objectEnd();
-  if (json.error()) {
-    printf("%s\n",json.errorMessage());
-  }
+  //if (json.error()) {
+  //  printf("%s\n",json.errorMessage());
+  //}
   //printf("5\n");
   //printf("write_json_descriptor... ok\n");
 }
 
 //----------
 
-void print_json_parameter(const clap_param_info_t* param) {
-  uint64_t    cookie            = (uint64_t)param->cookie;  // ouch !!!!!
+void print_json_parameter(uint32_t index, const clap_param_info_t* param) {
+  //uint64_t    cookie            = (uint64_t)param->cookie;  // ouch !!!!!
   const char* name              = param->name;
   const char* module            = param->module;
   uint32_t    flags             = param->flags;
@@ -99,31 +105,31 @@ void print_json_parameter(const clap_param_info_t* param) {
   bool        is_readonly       = flags & CLAP_PARAM_IS_READONLY;
   bool        is_modulatable    = flags & CLAP_PARAM_IS_MODULATABLE;
   bool        requires_process  = flags & CLAP_PARAM_REQUIRES_PROCESS;
-  json.objectBegin(nullptr);
-  json.u32("id",(uint32_t*)&param->id);
-  json.u32("flags",(uint32_t*)&param->flags);
-  json.arrayBegin("flags_ext");
-  json.boolean("CLAP_PARAM_IS_STEPPED",&is_stepped);
-  json.boolean("CLAP_PARAM_IS_PER_NOTE",&is_per_note);
-  json.boolean("CLAP_PARAM_IS_PER_CHANNEL",&is_per_channel);
-  json.boolean("CLAP_PARAM_IS_PER_PORT",&is_per_port);
-  json.boolean("CLAP_PARAM_IS_PERIODIC",&is_periodic);
-  json.boolean("CLAP_PARAM_IS_HIDDEN",&is_hidden);
-  json.boolean("CLAP_PARAM_IS_BYPASS",&is_bypass);
-  json.boolean("CLAP_PARAM_IS_READONLY",&is_readonly);
-  json.boolean("CLAP_PARAM_IS_MODULATABLE",&is_modulatable);
-  json.boolean("CLAP_PARAM_REQUIRES_PROCESS",&requires_process);
-  json.arrayEnd();
-  json.u64("cookie",&cookie);
-  json.string("name",(const char**)&name);
-  json.string("module",(const char**)&module);
-  json.f64("min_value",(double*)&param->min_value);
-  json.f64("max_value",(double*)&param->max_value);
-  json.f64("default_value",(double*)&param->default_value);
+  json.objectBegin("parameter");
+    json.u32("id",(uint32_t*)&param->id);
+    //json.u32("flags",(uint32_t*)&param->flags);
+    json.objectBegin("flags");
+      json.boolean("CLAP_PARAM_IS_STEPPED",&is_stepped);
+      json.boolean("CLAP_PARAM_IS_PER_NOTE",&is_per_note);
+      json.boolean("CLAP_PARAM_IS_PER_CHANNEL",&is_per_channel);
+      json.boolean("CLAP_PARAM_IS_PER_PORT",&is_per_port);
+      json.boolean("CLAP_PARAM_IS_PERIODIC",&is_periodic);
+      json.boolean("CLAP_PARAM_IS_HIDDEN",&is_hidden);
+      json.boolean("CLAP_PARAM_IS_BYPASS",&is_bypass);
+      json.boolean("CLAP_PARAM_IS_READONLY",&is_readonly);
+      json.boolean("CLAP_PARAM_IS_MODULATABLE",&is_modulatable);
+      json.boolean("CLAP_PARAM_REQUIRES_PROCESS",&requires_process);
+    json.objectEnd();
+    //json.u64("cookie",&cookie);
+    json.string("name",(const char**)&name);
+    json.string("module",(const char**)&module);
+    json.f64("min_value",(double*)&param->min_value);
+    json.f64("max_value",(double*)&param->max_value);
+    json.f64("default_value",(double*)&param->default_value);
   json.objectEnd();
-  if (json.error()) {
-    printf("%s\n",json.errorMessage());
-  }
+  //if (json.error()) {
+  //  printf("%s\n",json.errorMessage());
+  //}
 }
 
 //----------------------------------------------------------------------
@@ -264,7 +270,7 @@ void print_plugin_parameters(const clap_plugin_t* plugin, const char* json_file=
     for (uint32_t i=0; i<num; i++) {
       clap_param_info_t param_info;
       if (params->get_info(plugin,i,&param_info)) {
-        if (json_file) print_json_parameter(&param_info);
+        if (json_file) print_json_parameter(i,&param_info);
         else print_stdout_parameter(i,&param_info);
       }
     }
