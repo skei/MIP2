@@ -2,10 +2,6 @@
 #define mip_clap_registry_included
 //----------------------------------------------------------------------
 
-/*
-  todo: MIP_ClapRegistry
-*/
-
 //----------
 
 #include "mip.h"
@@ -38,16 +34,15 @@ class MIP_ClapRegistry {
 private:
 //------------------------------
 
-    clap_descriptor_array MDescriptors;
-    clap_factory_array    MFactories;
-    clap_factory_id_array MFactoryIds;
+    clap_descriptor_array MDescriptors          = {};
+    clap_descriptor_array MAutoFreeDescriptors  = {};
+    clap_factory_array    MFactories            = {};
+    clap_factory_id_array MFactoryIds           = {};
 
     //#ifdef MIP_PLUGIN_USE_INVALIDATION
     //clap_invalidation_sources MInvalidationSources;
     //#endif
     //mip_clap_plugins          MPluginInstances;
-
-
 
 //------------------------------
 public:
@@ -60,11 +55,26 @@ public:
   //----------
 
   ~MIP_ClapRegistry() {
+    for (uint32_t i=0; i<MAutoFreeDescriptors.size(); i++) {
+      clap_plugin_descriptor_t* desc = (clap_plugin_descriptor_t*)MAutoFreeDescriptors[i];
+      if (desc) {
+        free((void*)desc->id);
+        free((void*)desc->name);
+        free((void*)desc->vendor);
+        free(desc);
+      }
+    }
   }
 
 //------------------------------
 public: // descriptors
 //------------------------------
+
+  void autoFreePlugin(const clap_plugin_descriptor_t* ADescriptor) {
+    MAutoFreeDescriptors.push_back(ADescriptor);
+  }
+
+  //----------
 
   void appendPlugin(const clap_plugin_descriptor_t* ADescriptor) {
     MDescriptors.push_back(ADescriptor);

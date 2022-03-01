@@ -2,6 +2,7 @@
 #define mip_included
 //----------------------------------------------------------------------
 
+#include <dirent.h>
 #include <math.h>
 #include <memory.h>
 #include <stdint.h>
@@ -9,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+
 
 
 //----------

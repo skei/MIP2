@@ -501,8 +501,8 @@ public: // plugin
 
   bool init() override {
     uint32_t num = MParameters.size();
-    MParameterValues    = (float*)malloc(num * sizeof(float));
-    MParameterModulations    = (float*)malloc(num * sizeof(float));
+    MParameterValues = (float*)malloc(num * sizeof(float));
+    MParameterModulations = (float*)malloc(num * sizeof(float));
     for (uint32_t i=0; i<num; i++) {
       float v = MParameters[i]->default_value;
       setParameterValue(i,v);

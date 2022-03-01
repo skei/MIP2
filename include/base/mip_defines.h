@@ -146,6 +146,7 @@
 
   #ifdef MIP_NO_GUI
     #define MIP_GUI_DEFINED
+    #define MIP_NO_PAINTER
   #endif
 
   #ifdef MIP_GUI_XCB

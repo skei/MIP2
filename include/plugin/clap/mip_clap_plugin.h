@@ -35,7 +35,9 @@ public:
 public:
 //------------------------------
 
-  const clap_plugin_t* ptr() { return &MPlugin; }
+  const clap_plugin_t* ptr() {
+    return &MPlugin;
+  }
 
   virtual void invalidate() {
     MIP_Print("\n");

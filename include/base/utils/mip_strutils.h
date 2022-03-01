@@ -175,14 +175,14 @@ const char* MIP_GetFilenameFromPath(const char* APath) {
 
 // returns 'exe', not '.exe'
 
-//const char* MIP_GetFileExt(/*const*/ char* APath) {
-//  if (APath) {
-//    char *dot;
-//    dot = MIP_Strrchr(APath,'.');
-//    if (dot) return dot+1;
-//  }
-//  return (char*)"NULL";
-//}
+const char* MIP_GetFileExt(/*const*/ char* APath) {
+  if (APath) {
+    char* dot;
+    dot = strrchr(APath,'.');
+    if (dot) return dot+1;
+  }
+  return nullptr;
+}
 
 //----------
 
