@@ -148,8 +148,8 @@ public: // clap.gui
     //MIP_Print("-> %i,%i\n",MResizeWidth,MResizeHeight);
 //    *width = MResizeWidth;
 //    *height = MResizeHeight;
-//    *width = MWidth;
-//    *height = MHeight;
+    *width  = *width;//  & 0xffc0;
+    *height = *height;// & 0xffc0;
   }
 
   //----------

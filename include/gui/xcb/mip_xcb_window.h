@@ -252,6 +252,7 @@ private:
       XCB_EVENT_MASK_LEAVE_WINDOW   |
       XCB_EVENT_MASK_POINTER_MOTION |
       XCB_EVENT_MASK_EXPOSURE       |
+//      XCB_EVENT_MASK_RESIZE_REDIRECT |
       XCB_EVENT_MASK_STRUCTURE_NOTIFY;
     uint32_t window_mask =
       XCB_CW_BACK_PIXMAP  |
@@ -301,6 +302,15 @@ private:
   }
 
   //----------
+
+  /*
+    const uint32_t values[] ={true,};
+    xcb_change_window_attributes (connection, window, XCB_CW_OVERRIDE_REDIRECT, values);
+  */
+
+  //void changeWindowAttributes(uint32_t value_mask, const uint32_t* value_list) {
+  //  xcb_void_cookie_t res = xcb_change_window_attributes(MConnection,MWindow,value_mask,value_list);
+  //}
 
   //----------
 
@@ -584,6 +594,16 @@ private:
         int32_t y = configure_notify->y;
         int32_t w = configure_notify->width;
         int32_t h = configure_notify->height;
+
+        //MIP_Print("%i,%i\n",w,h);
+
+        // use last event only..
+        //while (XCheckTypedWindowEvent(mDisplay, ev->xconfigure.window, ConfigureNotify, ev))
+        //{
+        //  w = ev->xconfigure.width;
+        //  h = ev->xconfigure.height;
+        //}
+
         if ((x != MWindowXpos) || (y != MWindowYpos)) {
           MWindowXpos = x;
           MWindowYpos = y;
@@ -706,7 +726,7 @@ private:
         int32_t   x = motion_notify->event_x;
         int32_t   y = motion_notify->event_y;
         uint32_t ts = motion_notify->time;
-      on_window_mouseMove(x,y,s,ts);
+        on_window_mouseMove(x,y,s,ts);
         break;
       }
 
@@ -862,8 +882,8 @@ private:
       //}
 
       //case XCB_RESIZE_REQUEST: {
-      //  xcb_resize_request_event_t* resize_request = (xcb_resize_request_event_t*)AEvent;
-      //  XCB_Print("XCB_RESIZE_REQUEST\n");
+      //  //xcb_resize_request_event_t* resize_request = (xcb_resize_request_event_t*)AEvent;
+      //  MIP_Print("XCB_RESIZE_REQUEST\n");
       //  break;
       //}
 

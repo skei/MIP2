@@ -269,12 +269,13 @@ public: // plugin
   //----------
 
   bool gui_create() final {
-
     MIP_PRINT;
     //bool result = MIP_Plugin::gui_create();
+    MIsEditorOpen = false;
 
     MEditor = new MIP_Editor(this,this,400,400);
-    MIsEditorOpen = false;
+
+//
 
     MEditor->setCanResize();
     bool result = (MEditor);
@@ -294,8 +295,6 @@ public: // plugin
       MEditorPanel->appendWidget(knob3);
       MEditorPanel->appendWidget(knob4);
       MEditorPanel->appendWidget(MSizer);
-
-      // test
 
       MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect(100,100) );
       menu1->appendMenuItem("first");
@@ -327,6 +326,9 @@ public: // plugin
         //win->on_window_paint(0,0,640,480);
       }
     }
+
+//
+
     return result;
   }
 

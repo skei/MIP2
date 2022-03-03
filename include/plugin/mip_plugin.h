@@ -267,7 +267,6 @@ public: // editor listener
 
   void on_editor_resize(uint32_t AWidth, uint32_t AHeight) final {
     if (MHost && MHost->gui) {
-      //MIP_Print("host.gui.request_resize(%i,%i)\n",AWidth,AHeight);
       if (!MHost->gui->request_resize(MHost->host,AWidth,AHeight)) {
         MIP_Print("host->gui->request_resize(%i,%i) returned false\n",AWidth,AHeight);
       }
@@ -292,8 +291,8 @@ public: // handle
   virtual void handle_note_expression_event(clap_event_note_expression_t* event) {}
 
   virtual void handle_midi_event(clap_event_midi_t* event) {}
-  virtual void handle_midi_event(clap_event_midi2_t* event) {}
-  virtual void handle_midi_event(clap_event_midi_sysex_t* event) {}
+  virtual void handle_midi2_event(clap_event_midi2_t* event) {}
+  virtual void handle_midi_sysex_event(clap_event_midi_sysex_t* event) {}
   virtual void handle_transport_event(clap_event_transport_t* event) {}
 
   //----------
@@ -357,8 +356,8 @@ protected: // handle
           case CLAP_EVENT_PARAM_VALUE:      handle_parameter_event((clap_event_param_value_t*)header); break;
           case CLAP_EVENT_PARAM_MOD:        handle_modulation_event((clap_event_param_mod_t*)header); break;
           case CLAP_EVENT_MIDI:             handle_midi_event((clap_event_midi_t*)header); break;
-          case CLAP_EVENT_MIDI2:            handle_midi_event((clap_event_midi2_t*)header); break;
-          case CLAP_EVENT_MIDI_SYSEX:       handle_midi_event((clap_event_midi_sysex_t*)header); break;
+          case CLAP_EVENT_MIDI2:            handle_midi2_event((clap_event_midi2_t*)header); break;
+          case CLAP_EVENT_MIDI_SYSEX:       handle_midi_sysex_event((clap_event_midi_sysex_t*)header); break;
           case CLAP_EVENT_TRANSPORT:        handle_transport_event((clap_event_transport_t*)header); break;
         }
       }
