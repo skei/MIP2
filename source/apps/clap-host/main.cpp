@@ -1,8 +1,21 @@
 
 /*
 
+  COMPILE:
+
   g++ -Wall -g -c main.cpp -o main.o
   g++ -o clap-host main.o -ldl -lsndfile
+
+  TODO / MAYBE / CONSIDER:
+
+  * json config file (alternative to command line arguments)
+  * printout: audio/note ports, note names, etc..
+  * code cleanup, structure
+  * error checking, safety
+  * show gui
+  * more diagnostics
+  * remove long command line argument variants?
+  * save (potential) midi output to file
 
 */
 
@@ -52,6 +65,7 @@ bool                  arg_print_parameters  = false;
 
 //----------------------------------------------------------------------
 
+// uses a lot the above global variables..
 #include "process.hpp"
 
 //----------------------------------------------------------------------
