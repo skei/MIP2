@@ -118,7 +118,7 @@ private:
   //----------
 
   MIP_PanelWidget*  MEditorPanel  = nullptr;
-  MIP_SizerWidget*  MSizer        = nullptr;
+  //MIP_SizerWidget*  MSizer        = nullptr;
 
   float MSum = 0.0;
 
@@ -270,31 +270,17 @@ public: // plugin
 
   bool gui_create() final {
     MIP_PRINT;
-    //bool result = MIP_Plugin::gui_create();
-    MIsEditorOpen = false;
 
+    //bool result = MIP_Plugin::gui_create();
+    MEditorIsOpen = false;
     MEditor = new MIP_Editor(this,this,400,400);
 
-//
+// -> myEditor()
 
-    MEditor->setCanResize();
     bool result = (MEditor);
     if (result) {
-      MEditorPanel = new MIP_PanelWidget(MIP_FRect(0));
-      MEditorPanel->setBackgroundColor(0.6);
-      //MEditorPanel->layout.innerBorder = 2;
-      MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-      MIP_KnobWidget*   knob1 = new MIP_KnobWidget(MIP_FRect( 10,10, 50,50));
-      MIP_KnobWidget*   knob2 = new MIP_KnobWidget(MIP_FRect( 70,10, 50,50));
-      MIP_KnobWidget*   knob3 = new MIP_KnobWidget(MIP_FRect(130,10, 50,50));
-      MIP_KnobWidget*   knob4 = new MIP_KnobWidget(MIP_FRect(190,10, 50,50));
-      MSizer = new MIP_SizerWidget(MIP_FRect(15,15),MIP_SIZER_WINDOW);//MEditor->getWindow());
-      MSizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
-      MEditorPanel->appendWidget(knob1);
-      MEditorPanel->appendWidget(knob2);
-      MEditorPanel->appendWidget(knob3);
-      MEditorPanel->appendWidget(knob4);
-      MEditorPanel->appendWidget(MSizer);
+
+      //MEditor->setCanResize();
 
       MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect(100,100) );
       menu1->appendMenuItem("first");
@@ -306,25 +292,60 @@ public: // plugin
       menu1->setItemLayout(1,5);
       menu1->setMenuMirror(true,false);
 
-      MEditorPanel->appendWidget( new MIP_ButtonRowWidget(MIP_FRect(  10, 70, 230, 20 ), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI ));
-      MEditorPanel->appendWidget( new MIP_SliderWidget(   MIP_FRect(  10,100, 110, 20 ), "Slider", 0.5 ));
+      //
 
-      MIP_SelectorWidget* selector = (MIP_SelectorWidget*)MEditorPanel->appendWidget( new MIP_SelectorWidget( MIP_FRect( 130,100, 110, 20 )  ));
+      MEditorPanel = new MIP_PanelWidget(MIP_FRect(100,100));
+      MEditorPanel->setBackgroundColor(0.6);
+      MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+      MEditorPanel->layout.innerBorder = MIP_FRect(10,10,10,10);
+      MEditorPanel->layout.spacing = 10;
+
+      MIP_KnobWidget*   knob1 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+      MIP_KnobWidget*   knob2 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+      MIP_KnobWidget*   knob3 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+      MIP_KnobWidget*   knob4 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+
+      knob1->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+      knob2->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+      knob3->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+      knob4->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+
+      MEditorPanel->appendWidget(knob1);
+      MEditorPanel->appendWidget(knob2);
+      MEditorPanel->appendWidget(knob3);
+      MEditorPanel->appendWidget(knob4);
+
+      //MSizer = new MIP_SizerWidget(MIP_FRect( 15,15),MIP_SIZER_WINDOW);
+      //MSizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
+      //MEditorPanel->appendWidget(MSizer);
+
+      MIP_ButtonRowWidget* button_row = new MIP_ButtonRowWidget(MIP_FRect(230,20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI );
+      button_row->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+      MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
+      slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+
+      MIP_SelectorWidget* selector = new MIP_SelectorWidget(MIP_FRect(110,20));
       selector->setMenu(menu1);
+      selector->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
 
+      MEditorPanel->appendWidget(button_row);
+      MEditorPanel->appendWidget(slider);
+      MEditorPanel->appendWidget(selector);
       MEditorPanel->appendWidget(menu1);
 
-      if (MEditor) {
-        MEditor->connect(knob1,0);
-        MEditor->connect(knob2,1);
-        MEditor->connect(knob3,2);
-        MEditor->connect(knob4,3);
-        MIP_Window* win = MEditor->getWindow();
-        MSizer->setTarget(win);
-        win->appendWidget(MEditorPanel);
-        //win->alignWidgets();
-        //win->on_window_paint(0,0,640,480);
-      }
+// --
+
+      MEditor->connect(knob1,0);
+      MEditor->connect(knob2,1);
+      MEditor->connect(knob3,2);
+      MEditor->connect(knob4,3);
+
+      MIP_Window* win = MEditor->getWindow();
+      //MSizer->setTarget(win);
+      win->appendWidget(MEditorPanel);
+      //win->alignWidgets();
+      //win->on_window_paint(0,0,640,480);
     }
 
 //

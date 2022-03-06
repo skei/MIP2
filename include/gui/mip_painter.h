@@ -67,7 +67,7 @@ public:
   */
 
   void pushClip(MIP_FRect ARect) {
-    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
+    //MIP_Print("ARect = %.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     //MIP_Print("depth: %i\n",MClipStack.getNumItems());
     MClipStack.push(MClipRect);
     MClipRect = ARect;
@@ -84,7 +84,7 @@ public:
 
   MIP_FRect popClip() {
     MClipRect = MClipStack.pop();
-    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
+    //MIP_Print("MClipRect = %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
     //resetClip();
     setClip(MClipRect);
     return MClipRect;
@@ -100,7 +100,7 @@ public:
 
   void setClipRect(MIP_FRect ARect) {
     MClipRect = ARect;
-    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
+    //MIP_Print("ARect = %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
   }
 
   //----------

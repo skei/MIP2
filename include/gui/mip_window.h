@@ -74,14 +74,14 @@ private:
   int32_t             MMousePrevY             = 0;
   int32_t             MMouseClickedX          = 0;
   int32_t             MMouseClickedY          = 0;
-  uint32_t            MMouseClickedB          = 0;
-  uint32_t            MMouseClickedS          = 0;
+  //uint32_t            MMouseClickedB          = 0;
+  //uint32_t            MMouseClickedS          = 0;
   int32_t             MMouseDragX             = 0;
   int32_t             MMouseDragY             = 0;
-  uint32_t            MPrevClickTime          = 0;
+  //uint32_t            MPrevClickTime          = 0;
 
-  uint32_t            MClickedWidth           = 0;
-  uint32_t            MClickedHeight          = 0;
+  //uint32_t            MClickedWidth           = 0;
+  //uint32_t            MClickedHeight          = 0;
   uint32_t            MResizingWidth          = 0;
   uint32_t            MResizingHeight         = 0;
 
@@ -210,16 +210,22 @@ public:
 public: // window
 //------------------------------
 
+  // called from:
+  //   on_window_resize
+  //   MIP_Editor.setSize
+
   void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
     #ifndef MIP_NO_WINDOW_BUFFERING
       resizeBuffer(AWidth,AHeight);
     #endif
     MRect.w = AWidth;
     MRect.h = AHeight;
+    //MInitialRect.w = AWidth;
+    //MInitialRect.h = AHeight;
     alignWidgets();
     if (MWindowPainter) {
       MWindowPainter->resize(AWidth,AHeight);
-      MWindowPainter->flush();
+      //MWindowPainter->flush();
     }
   }
 
@@ -243,6 +249,10 @@ public: // window
     paintWidgets(MWindowPainter,ARect);
     //MWindowPainter->popClip();
     MWindowPainter->flush();
+  }
+
+  void paintWindow() {
+    paintWindow(MRect);
   }
 
 //------------------------------
@@ -323,9 +333,11 @@ public: // buffer
   bool resizeBuffer(uint32_t AWidth, uint32_t AHeight) {
     uint32_t w = MIP_NextPowerOfTwo(AWidth);
     uint32_t h = MIP_NextPowerOfTwo(AHeight);
+    //MIP_Print("%i,%i -> %i,%i\n",AWidth,AHeight,w,h);
     if ((w != MBufferWidth) || (h != MBufferHeight)) {
+      //MIP_Print("  (recreate buffer)\n");
       deleteBuffer();
-      createBuffer(AWidth,AHeight);
+      createBuffer(w,h);//(AWidth,AHeight);
     }
     return true;
   }
@@ -339,7 +351,10 @@ public: // buffer
     //MBufferPainter->pushClip(ARect);
     paintWidgets(MBufferPainter,ARect);
     MBufferPainter->flush();
+
+    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
+
     //MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
     //MWindowPainter->flush();
 
@@ -361,6 +376,13 @@ public:
     //  paintWidget(this,MRect,0);
     //#endif
   }
+
+  //----------
+
+  //void alignWidgets(bool ARecursive=true) override {
+  //  MIP_Print("%.2f,%.2f,%.2f,%.2f\n",MRect.x,MRect.y,MRect.w,MRect.h);
+  //  MIP_ImplementedWindow::alignWidgets(ARecursive);
+  //}
 
   //----------
 
@@ -442,11 +464,14 @@ public: // MIP_BaseWindow
     //if ((ATimeStamp - MPrevClickTime) < MIP_GUI_DBLCLICK_MS) {
     //  double_click = true;
     //}
+
     //MPrevClickTime = ATimeStamp;
     //MClickedWidth   = MRect.w;
     //MClickedHeight  = MRect.h;
+
     MResizingWidth   = MRect.w;
     MResizingHeight  = MRect.h;
+
     MMouseClickedX  = AXpos;
     MMouseClickedY  = AYpos;
     MMousePrevX     = AXpos;
@@ -610,8 +635,10 @@ public: // MIP_Widget
     //}
 
     //MIP_Print("%.2f, %.2f\n",ADeltaX,ADeltaY);
+
     MResizingWidth += ADeltaX;
     MResizingHeight += ADeltaY;
+
     MListener->on_resizeFromWindow(MResizingWidth,MResizingHeight);
     //alignWidgets();
     //redraw();

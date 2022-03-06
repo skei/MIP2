@@ -77,7 +77,7 @@ public:
     track_info          = (clap_host_track_info_t*)AHost->get_extension(AHost,CLAP_EXT_TRACK_INFO);
     tuning              = (clap_host_tuning_t*)AHost->get_extension(AHost,CLAP_EXT_TUNING);
 
-    /*
+
     if (ambisonic) { MIP_Print("host supports: %s\n",CLAP_EXT_AMBISONIC); }
     if (audio_ports_config) { MIP_Print("host supports: %s\n",CLAP_EXT_AUDIO_PORTS_CONFIG); }
     if (audio_ports) { MIP_Print("host supports: %s\n",CLAP_EXT_AUDIO_PORTS); }
@@ -102,7 +102,7 @@ public:
     if (timer_support) { MIP_Print("host supports: %s\n",CLAP_EXT_TIMER_SUPPORT); }
     if (track_info) { MIP_Print("host supports: %s\n",CLAP_EXT_TRACK_INFO); }
     if (tuning) { MIP_Print("host supports: %s\n",CLAP_EXT_TUNING); }
-    */
+
 
   }
 

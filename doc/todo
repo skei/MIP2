@@ -40,6 +40,14 @@
   examine clipping and widget hierarchy
   push/pop clip rectangles
 
+  topmost (window) cliprect vs resizing
+
+* combine update rects in expose events (xcb gui)?
+  #ifdef MIP_XCB_COMBINE_EXPOSE_RECTS
+
+  many small rectangles (blinking lights) -> 1 on_window_paint() call
+  but unnecessary redrawing for unchanged 'inbetweeen' widgets
+
 //----------------------------------------------------------------------
 //
 // midi

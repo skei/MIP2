@@ -239,6 +239,7 @@ public:
   */
 
   void setClip(MIP_FRect ARect) override {
+    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     //resetClip();
     xcb_rectangle_t rectangles[] = {{
       (int16_t)ARect.x,

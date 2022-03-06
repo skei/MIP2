@@ -122,7 +122,7 @@ protected:
 
   #ifndef MIP_NO_GUI
   MIP_Editor*                     MEditor               = nullptr;
-  bool                            MIsEditorOpen         = false;
+  bool                            MEditorIsOpen         = false;
   #endif
 
 
@@ -302,7 +302,7 @@ public: // handle
     float v = param_value->value;
     setParameterValue(i,v);
     #ifndef MIP_NO_GUI
-    if (MEditor && MIsEditorOpen) MEditor->updateParameterInProcess(i,v);
+    if (MEditor && MEditorIsOpen) MEditor->updateParameterInProcess(i,v);
     #endif
   }
 
@@ -313,14 +313,14 @@ public: // handle
     float v = param_mod->amount;
     setParameterModulation(i,v);
     #ifndef MIP_NO_GUI
-    if (MEditor && MIsEditorOpen) MEditor->updateModulationFromHost(i,v);
+    if (MEditor && MEditorIsOpen) MEditor->updateModulationFromHost(i,v);
     #endif
   }
 
   //----------
 
   virtual void handle_process(const clap_process_t *process) {
-    //
+
     //float* in0 = process->audio_inputs[0].data32[0];
     //float* in1 = process->audio_inputs[0].data32[1];
     //float* out0 = process->audio_outputs[0].data32[0];
@@ -330,12 +330,12 @@ public: // handle
     //  *out0++ = *in0++;
     //  *out1++ = *in1++;
     //}
-    //
+
     //float** inputs = process->audio_inputs[0].data32;
     //float** outputs = process->audio_outputs[0].data32;
     //uint32_t length = process->frames_count;
     //MIP_CopyStereoBuffer(outputs,inputs,length);
-    //
+
   }
 
 //------------------------------
@@ -556,7 +556,7 @@ public: // plugin
   //----------
 
   const void* get_extension(const char *id) override {
-//    MIP_Print("host asks for: %s\n",id);
+    MIP_Print("host asks for: %s\n",id);
     //MIP_Print("id: %s\n",id);
     //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
     //if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
@@ -685,20 +685,25 @@ public: // gui
 
   bool gui_create() override {
     MIP_PRINT;
-    MIsEditorOpen = false;
+    MEditorIsOpen = false;
     MEditor = new MIP_Editor(this,this,256,256);
-    return (MEditor);
+    if (MEditor) {
+      //MEditor->createWindow();
+      return true;
+    }
+    return false;
   }
 
   //----------
 
   void gui_destroy() override {
     MIP_PRINT;
-    if (MIsEditorOpen) {
-      MIsEditorOpen = false;
+    if (MEditorIsOpen) {
+      MEditorIsOpen = false;
       //gui_hide();
       MEditor->hide();
     }
+    //MEditor->destroyWindow();
     delete MEditor;
     MEditor = nullptr;
   }
@@ -786,7 +791,7 @@ public: // gui
     if (MEditor) {
       MIP_Print("\n");
       MEditor->show();
-      MIsEditorOpen = true;
+      MEditorIsOpen = true;
     }
     else {
       MIP_Print("!MEditor\n");
@@ -799,7 +804,7 @@ public: // gui
     //MIP_PRINT;
     if (MEditor) {
       MIP_Print("\n");
-      MIsEditorOpen = false;
+      MEditorIsOpen = false;
       MEditor->hide();
     }
     else {

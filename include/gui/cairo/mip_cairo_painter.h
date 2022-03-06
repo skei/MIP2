@@ -274,7 +274,7 @@ public: // clip
   */
 
   void setClip(MIP_FRect ARect) override {
-    //MIP_Trace("CLIP x %.0f y %.0f w %.0f h %.0f\n",AX1,AY1,AX2-AX1,AY2-AY1);
+    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     cairo_reset_clip(MCairo);
     cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w+1,ARect.h+1);
     cairo_clip(MCairo);
