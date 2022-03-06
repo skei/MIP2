@@ -101,7 +101,8 @@ public:
 
   //----------
 
-  void output_events_push_back(const clap_event_header_t* event) {
+  bool output_events_try_push(const clap_event_header_t* event) {
+    return false;
   }
 
   //----------
@@ -127,9 +128,9 @@ private: // callbacks
   //----------
 
   static
-  void process_output_events_push_back(const clap_output_events_t* list, const clap_event_header_t *event) {
+  bool process_output_events_try_push(const clap_output_events_t* list, const clap_event_header_t *event) {
     Process* proc = (Process*)list->ctx;
-    proc->output_events_push_back(event);
+    return proc->output_events_try_push(event);
   }
 
 //------------------------------
@@ -171,7 +172,7 @@ private:
 
   void prepare_event_outputs() {
     MContextOutputEvents.ctx            = this;
-    MContextOutputEvents.push_back      = &process_output_events_push_back;
+    MContextOutputEvents.try_push       = &process_output_events_try_push;
   }
 
   /*

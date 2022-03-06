@@ -32,7 +32,6 @@
 
 #include "arguments.hpp"
 #include "host.hpp"
-#include "plugin.hpp"
 #include "print.hpp"
 #include "preset.hpp"
 

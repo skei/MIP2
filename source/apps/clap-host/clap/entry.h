@@ -3,13 +3,9 @@
 #include "version.h"
 #include "private/macros.h"
 
-#include "private/align.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#pragma pack(push, CLAP_ALIGN)
 
 // This interface is the entry point of the dynamic library.
 //
@@ -22,7 +18,7 @@ extern "C" {
 //
 // Windows
 //   - %CommonFilesFolder%/CLAP/
-//   - %LOCALAPPDATA%/Programs/Common/VST3/
+//   - %LOCALAPPDATA%/Programs/Common/CLAP/
 //
 // MacOS
 //   - /Library/Audio/Plug-Ins/CLAP
@@ -57,8 +53,6 @@ typedef struct clap_plugin_entry {
 
 /* Entry point */
 CLAP_EXPORT extern const clap_plugin_entry_t clap_entry;
-
-#pragma pack(pop)
 
 #ifdef __cplusplus
 }

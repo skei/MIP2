@@ -192,6 +192,7 @@ public: // extensions
 
   virtual void ambisonic_changed() {}
   virtual uint32_t audio_ports_get_preferred_sample_size() { return 0; }
+  virtual bool audio_ports_is_rescan_flag_supported(uint32_t flag) { return false; }
   virtual void audio_ports_rescan(uint32_t flags) {}
   virtual void audio_ports_config_rescan() {}
   virtual void check_for_update_on_new_version(const clap_check_for_update_info *update_info) {}
@@ -279,19 +280,19 @@ private: // extensions
 
   // audio-ports
 
-  //static uint32_t clap_host_audio_ports_get_preferred_sample_size_callback(const clap_host *host) {
-  //  Host* host_ = (Host*)host->host_data;
-  //  return host_->audio_ports_get_preferred_sample_size();
-  //}
+  static bool clap_host_is_rescan_flag_supported_callback(const clap_host_t *host, uint32_t flag) {
+    Host* host_ = (Host*)host->host_data;
+    return host_->audio_ports_is_rescan_flag_supported(flag);
+  }
 
-  static void clap_host_audio_ports_rescan_callback(const clap_host *host, uint32_t flags) {
+  static void clap_host_rescan_callback(const clap_host_t *host, uint32_t flags) {
     Host* host_ = (Host*)host->host_data;
     host_->audio_ports_rescan(flags);
   }
 
   clap_host_audio_ports MAudioPorts = {
-    //clap_host_audio_ports_get_preferred_sample_size_callback,
-    clap_host_audio_ports_rescan_callback
+    clap_host_is_rescan_flag_supported_callback,
+    clap_host_rescan_callback
   };
 
   // audio-ports-config
