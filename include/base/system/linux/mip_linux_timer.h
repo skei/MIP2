@@ -53,17 +53,17 @@ public:
     MSigEvent.sigev_value.sival_ptr   = AListener;
     //int res =
     timer_create(CLOCK_REALTIME, &MSigEvent, &MTimer);
-    //MIP_Trace("MTimer %i\n",MTimer);
+    //MIP_Print("MTimer %i\n",MTimer);
     /*if (res == -1) {
       switch(errno) {
         case EAGAIN:
-          MIP_Trace("timer_create error: Temporary error during kernel allocation of timer structures.\n");
+          MIP_Print("timer_create error: Temporary error during kernel allocation of timer structures.\n");
           break;
         case EINVAL:
-          MIP_Trace("timer_create error: Clock ID, sigev_notify, sigev_signo, or sigev_notify_thread_id is invalid.\n");
+          MIP_Print("timer_create error: Clock ID, sigev_notify, sigev_signo, or sigev_notify_thread_id is invalid.\n");
           break;
         case ENOMEM:
-          MIP_Trace("timer_create error: Could not allocate memory.\n");
+          MIP_Print("timer_create error: Could not allocate memory.\n");
           break;
       }
     }*/
@@ -88,7 +88,7 @@ public:
     float nsec = (s-sec) * 1000000000; // 1000000.0f * (sec - MIP_Fract(s));
     time_t isec = sec;
     long insec = nsec;
-    //MIP_Trace("s %.4f sec %.4f nsec %.4f isec %i insec %i\n",s,sec,nsec,isec,insec);
+    //MIP_Print("s %.4f sec %.4f nsec %.4f isec %i insec %i\n",s,sec,nsec,isec,insec);
     if (oneshot) {
       MTimerSpec.it_interval.tv_sec   = 0;
       MTimerSpec.it_interval.tv_nsec  = 0;
@@ -104,13 +104,13 @@ public:
     /*if (res == -1) {
       switch(errno) {
         case EFAULT:
-          MIP_Trace("timer_settime error: new_value, old_value, or curr_value is not a valid pointer.\n");
+          MIP_Print("timer_settime error: new_value, old_value, or curr_value is not a valid pointer.\n");
           break;
         //case EINVAL:
-        //  MIP_Trace("timer_settime error: timerid is invalid.\n");
+        //  MIP_Print("timer_settime error: timerid is invalid.\n");
         //  break;
         case EINVAL:
-          MIP_Trace("timer_settime: new_value.it_value is negative; or new_value.it_value.tv_nsec is negative or greater than 999,999,999.\n");
+          MIP_Print("timer_settime: new_value.it_value is negative; or new_value.it_value.tv_nsec is negative or greater than 999,999,999.\n");
           break;
       }
     }*/

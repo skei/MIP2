@@ -50,6 +50,8 @@ private:
 //  uint32_t            MResizeWidth      = 0;
 //  uint32_t            MResizeHeight     = 0;
 
+  MIP_Widgets        MChangedParmeters = {};
+
 //------------------------------
 public:
 //------------------------------
@@ -277,8 +279,10 @@ private: // timer listener
   // [timer]
 
   void on_timerCallback(void) final {
+    clearChangedParameters();
     flushGuiParams();
     flushGuiMods();
+    redrawChangedParameters();
   }
 
 //------------------------------
@@ -310,6 +314,14 @@ public:
 public:
 //------------------------------
 
+  /*
+    if both parameter value and modulation is modified, the widget will be
+    painted twice..
+
+    TODO: checkForDuplicatesAndUseLatest
+          while loop?
+  */
+
   // called from updateParameterFromHost()
 
   void queueGuiParam(uint32_t AIndex) {
@@ -321,15 +333,18 @@ public:
   // [gui]
 
   void flushGuiParams() {
-    if (MEditorIsOpen) {
+    if (MEditorIsOpen && MWindow) {
       uint32_t index = 0;
       while (MGuiParamQueue.read(&index)) {
         float value = MGuiParamVal[index];
         MIP_Widget* widget = MParamToWidget[index];
         if (widget) {
-          //if (widget->getValue() != value)
+          if (widget->getValue() != value)
           widget->setValue(value);
-          MWindow->paintWidget(widget);
+//          MWindow->paintWidget(widget);
+          if (MChangedParmeters.findItem(widget) < 0) {
+            MChangedParmeters.append(widget);
+          }
         }
       }
     }
@@ -350,10 +365,30 @@ public:
         float value = MGuiParamMod[index];
         MIP_Widget* widget = MParamToWidget[index];
         if (widget) {
-          //if (widget->getValue() != value)
+          //if (widget->getModValue() != value)
           widget->setModValue(value);
-          MWindow->paintWidget(widget);
+//          MWindow->paintWidget(widget);
+          if (MChangedParmeters.findItem(widget) < 0) {
+            MChangedParmeters.append(widget);
+          }
         }
+      }
+    }
+  }
+
+  //----------
+
+  void clearChangedParameters() {
+    MChangedParmeters.clear();
+  }
+
+  //----------
+
+  void redrawChangedParameters() {
+    for (uint32_t i=0; i<MChangedParmeters.size(); i++) {
+      if (MEditorIsOpen && MWindow) {
+        MIP_Widget* widget = MChangedParmeters[i];
+        MWindow->paintWidget(widget);
       }
     }
   }

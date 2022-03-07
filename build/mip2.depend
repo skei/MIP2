@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1646678100 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../source/plugins/test_plugin1.cpp"
+1646681066 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/test/test_gui.cpp"
 
 1643950248 /DISKS/sda2/code/git/MIP2/source/test/test.cpp
 	"mip.h"
@@ -1259,7 +1259,7 @@
 	"audio/mip_audio_math.h"
 	"gui/mip_widgets.h"
 
-1646236269 /DISKS/sda2/code/git/MIP2/source/test/test_gui.cpp
+1646236473 /DISKS/sda2/code/git/MIP2/source/test/test_gui.cpp
 	"mip.h"
 	"gui/mip_window.h"
 	"gui/mip_widgets.h"

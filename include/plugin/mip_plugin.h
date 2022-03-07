@@ -660,7 +660,7 @@ public: // params
 public: // gui
 //------------------------------
 
-//  #ifndef MIP_NO_GUI
+  #ifndef MIP_NO_GUI
 
   bool gui_is_api_supported(const char *api, bool is_floating) override {
     if (is_floating) {
@@ -843,7 +843,7 @@ public: // gui
     return false;
   }
 
-//  #endif // MIP_NO_GUI
+  #endif // MIP_NO_GUI
 
 //------------------------------
 public: // audio-ports

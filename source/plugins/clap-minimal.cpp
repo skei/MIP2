@@ -1,4 +1,6 @@
 
+//TODO: update to clap 0.20.0
+
 /*
   g++ -Wall -std=c++14 -O2 -fPIC -c clap-minimal.cpp -o build.o
   g++ -shared build.o -o clap-minimal.clap -s

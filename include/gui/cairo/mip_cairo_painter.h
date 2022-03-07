@@ -269,25 +269,57 @@ public: // clip
 
 
   /*
+    Establishes a new clip region by intersecting the current clip region with
+    the current path as it would be filled by cairo_fill() and according to the
+    current fill rule (see cairo_set_fill_rule()).
+
+    After cairo_clip(), the current path will be cleared from the cairo context.
+
+    The current clip region affects all drawing operations by effectively
+    masking out any changes to the surface that are outside the current clip
+    region.
+
+    Calling cairo_clip() can only make the clip region smaller, never larger.
+    But the current clip is part of the graphics state, so a temporary
+    restriction of the clip region can be achieved by calling cairo_clip()
+    within a cairo_save()/cairo_restore() pair. The only other means of
+    increasing the size of the clip region is cairo_reset_clip().
+  */
+
+  /*
   - After cairo_clip(), the current path will be cleared from the cairo context
   - Calling cairo_clip() can only make the clip region smaller, never larger
   */
 
   void setClip(MIP_FRect ARect) override {
     //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
-    cairo_reset_clip(MCairo);
+    //cairo_reset_clip(MCairo);
+    resetClip();
     cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w+1,ARect.h+1);
     cairo_clip(MCairo);
-    MIP_CHECK_CAIRO_ERROR(MCairo);
+    //MIP_CHECK_CAIRO_ERROR(MCairo);
     //cairo_new_path(MCairo); // path not consumed by clip()
   }
 
   //----------
 
+  /*
+    Reset the current clip region to its original, unrestricted state. That is,
+    set the clip region to an infinitely large shape containing the target
+    surface. Equivalently, if infinity is too hard to grasp, one can imagine
+    the clip region being reset to the exact bounds of the target surface.
+
+    Note that code meant to be reusable should not call cairo_reset_clip() as
+    it will cause results unexpected by higher-level code which calls
+    cairo_clip(). Consider using cairo_save() and cairo_restore() around
+    cairo_clip() as a more robust means of temporarily restricting the clip
+    region.
+  */
+
   void resetClip() override {
     //MIP_Trace("RESET CLIP\n");
     cairo_reset_clip(MCairo);
-    MIP_CHECK_CAIRO_ERROR(MCairo);
+    //MIP_CHECK_CAIRO_ERROR(MCairo);
   }
 
 //------------------------------

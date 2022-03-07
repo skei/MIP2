@@ -79,6 +79,12 @@ public:
 private:
 //------------------------------
 
+  void freeItems(void) {
+    for (uint32_t i=0; i<MSize; i++) free( MBuffer[i] );
+  }
+
+  //----------
+
   void deleteItems(void) {
     for (uint32_t i=0; i<MSize; i++) delete MBuffer[i];
   }
@@ -123,6 +129,13 @@ private:
 //------------------------------
 public:
 //------------------------------
+
+  int32_t findItem(_T& AItem) {
+    for (uint32_t i=0; i<MSize; i++) {
+      if (MBuffer[i] == AItem) return i;
+    }
+    return -1;
+  }
 
   void clear(bool AErase=false) {
     clearBuffer(AErase);

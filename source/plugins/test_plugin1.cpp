@@ -219,9 +219,9 @@ public:
 
   void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
     { // send modulation value for parameter 0 to host
-      float v0 = MParameterValues[0] + MParameterModulations[0];
-      v0 = MIP_Clamp(v0,0,1);
-      send_param_mod_event(0,v0,out_events);
+//      float v0 = MParameterValues[0] + MParameterModulations[0];
+//      v0 = MIP_Clamp(v0,0,1);
+//      send_param_mod_event(0,v0,out_events);
       //float v1 = MParameterValues[1] + MParameterModulations[1];
       //v0 = MIP_Clamp(v1,0,1);
       //send_param_mod_event(1,v1,out_events);

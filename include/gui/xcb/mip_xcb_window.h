@@ -80,9 +80,10 @@ private:
 
   xcb_key_symbols_t*          MKeySyms                      = nullptr;
 
-  pthread_t                   MTimerThread                  = 0;
-  bool                        MTimerThreadActive            = false;
-  int32_t                     MTimerSleep                   = 20; // 20 ms = 50 hz
+//  pthread_t                   MTimerThread                  = 0;
+//  bool                        MTimerThreadActive            = false;
+//  int32_t                     MTimerSleep                   = 20; // 20 ms = 50 hz
+
   pthread_t                   MEventThread                  = 0;
   bool                        MEventThreadActive            = false;
   bool                        MQuitEventLoop                = false;
@@ -359,9 +360,9 @@ private:
   //----------
 
   void initThreads() {
-    MTimerThread        = 0;
-    MTimerThreadActive  = false;
-    MTimerSleep         = 30;
+//    MTimerThread        = 0;
+//    MTimerThreadActive  = false;
+//    MTimerSleep         = 30;
     //#ifndef MIP_XCB_NO_EVENT_THREAD
     MEventThread        = 0;
     MEventThreadActive  = false;
@@ -371,7 +372,7 @@ private:
   //----------
 
   void cleanupThreads() {
-    if (MTimerThreadActive) stopTimer();
+//    if (MTimerThreadActive) stopTimer();
     //#ifndef MIP_XCB_NO_EVENT_THREAD
     if (MEventThreadActive) stopEventThread();
     //#endif
@@ -970,20 +971,20 @@ private:
 
   //----------
 
-  static
-  void* xcb_timer_thread_proc(void* AWindow) {
-    MIP_XcbWindow* window = (MIP_XcbWindow*)AWindow;
-    if (window) {
-      xcb_connection_t* connection = window->MConnection;
-      xcb_flush(connection); // so we're sure all messages have been sent before entering loop
-      while (window->MTimerThreadActive) {
-        //window->on_window_timer();
-        window->sendEvent(MIP_THREAD_ID_TIMER,0);
-        MIP_Sleep(window->MTimerSleep); // ???
-      }
-    }
-    return nullptr;
-  }
+//  static
+//  void* xcb_timer_thread_proc(void* AWindow) {
+//    MIP_XcbWindow* window = (MIP_XcbWindow*)AWindow;
+//    if (window) {
+//      xcb_connection_t* connection = window->MConnection;
+//      xcb_flush(connection); // so we're sure all messages have been sent before entering loop
+//      while (window->MTimerThreadActive) {
+//        //window->on_window_timer();
+//        window->sendEvent(MIP_THREAD_ID_TIMER,0);
+//        MIP_Sleep(window->MTimerSleep); // ???
+//      }
+//    }
+//    return nullptr;
+//  }
 
 //------------------------------
 public:
@@ -1098,19 +1099,19 @@ public:
 
   //----------
 
-  void startTimer(uint32_t ms) override {
-    MTimerSleep = ms;
-    MTimerThreadActive = true;
-    pthread_create(&MTimerThread,nullptr,xcb_timer_thread_proc,this);
-  }
+//  void startTimer(uint32_t ms) override {
+//    MTimerSleep = ms;
+//    MTimerThreadActive = true;
+//    pthread_create(&MTimerThread,nullptr,xcb_timer_thread_proc,this);
+//  }
 
   //----------
 
-  void stopTimer(void) override {
-    void* ret;
-    MTimerThreadActive = false;
-    pthread_join(MTimerThread,&ret);
-  }
+//  void stopTimer(void) override {
+//    void* ret;
+//    MTimerThreadActive = false;
+//    pthread_join(MTimerThread,&ret);
+//  }
 
   //----------
 
