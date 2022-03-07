@@ -166,10 +166,8 @@ public: // clap.gui
     //MIP_Print("-> %i,%i\n",MResizeWidth,MResizeHeight);
 //    *width = MResizeWidth;
 //    *height = MResizeHeight;
-
 //    MWidth  = *width;
 //    MHeight = *height;
-
     //*width  = *width;//  & 0xffc0;
     //*height = *height;// & 0xffc0;
   }
@@ -186,10 +184,8 @@ public: // clap.gui
 //      MWindow->resizeWindow(MWidth,MHeight);
 //      MWindow->paintWindow();
       // blit?
-
       //MWindow->on_window_resize(width,height);
       MWindow->resizeWindow(width,height);
-
       MWindow->on_window_paint(0,0,width,height);
 
 //    }

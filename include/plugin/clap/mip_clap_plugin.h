@@ -53,6 +53,7 @@ public:
   virtual void deactivate() {}
   virtual bool start_processing() { return true; }
   virtual void stop_processing() {}
+  virtual void reset() {}
   virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_CONTINUE; }
   virtual void on_main_thread() {}
 
@@ -94,16 +95,32 @@ public: // extensions
   virtual bool      audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) { return false; }
   virtual bool      audio_ports_config_select(clap_id config_id) { return true; }
   virtual bool      event_filter_accepts(uint16_t space_id, uint16_t event_type) { return true; }
-  virtual bool      gui_create() { return true; }
-  virtual void      gui_destroy() {}
-  virtual bool      gui_set_scale(double scale) { return true; }
-  virtual bool      gui_get_size(uint32_t *width, uint32_t *height) { return false; }
-  virtual bool      gui_can_resize() { return true; }
-  virtual void      gui_round_size(uint32_t *width, uint32_t *height) {}
-  virtual bool      gui_set_size(uint32_t width, uint32_t height) { return true; }
-  virtual void      gui_show() {}
-  virtual void      gui_hide() {}
-  virtual bool      gui_x11_attach(const char *display_name, unsigned long window) { return true; }
+
+//  virtual bool      gui_create() { return true; }
+//  virtual void      gui_destroy() {}
+//  virtual bool      gui_set_scale(double scale) { return true; }
+//  virtual bool      gui_get_size(uint32_t *width, uint32_t *height) { return false; }
+//  virtual bool      gui_can_resize() { return true; }
+//  virtual void      gui_round_size(uint32_t *width, uint32_t *height) {}
+//  virtual bool      gui_set_size(uint32_t width, uint32_t height) { return true; }
+//  virtual void      gui_show() {}
+//  virtual void      gui_hide() {}
+//  virtual bool      gui_x11_attach(const char *display_name, unsigned long window) { return true; }
+
+  virtual bool gui_is_api_supported(const char *api, bool is_floating) { return false; }
+  virtual bool gui_create(const char *api, bool is_floating) { return false; }
+  virtual void gui_destroy() {}
+  virtual bool gui_set_scale(double scale) { return false; }
+  virtual bool gui_get_size(uint32_t *width, uint32_t *height) { return false; }
+  virtual bool gui_can_resize() { return false; }
+  virtual bool gui_adjust_size(uint32_t *width, uint32_t *height) { return false; }
+  virtual bool gui_set_size(uint32_t width, uint32_t height) { return false; }
+  virtual bool gui_set_parent(const clap_window_t *window) { return false; }
+  virtual bool gui_set_transient(const clap_window_t *window) { return false; }
+  virtual void gui_suggest_title(const char *title) {}
+  virtual bool gui_show() { return false; }
+  virtual bool gui_hide() { return false; }
+
   virtual uint32_t  latency_get() { return 0; }
   virtual uint32_t  note_name_count() { return 0; }
   virtual bool      note_name_get(uint32_t index, clap_note_name_t *note_name) { return false; }
@@ -189,6 +206,11 @@ private:
     return plug->process(process);
   }
 
+  static void clap_plugin_reset_callback(const struct clap_plugin *plugin) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->reset();
+  }
+
   static const void* clap_plugin_get_extension_callback(const struct clap_plugin *plugin, const char *id) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->get_extension(id);
@@ -211,6 +233,7 @@ protected:
     clap_plugin_deactivate_callback,
     clap_plugin_start_processing_callback,
     clap_plugin_stop_processing_callback,
+    clap_plugin_reset_callback,
     clap_plugin_process_callback,
     clap_plugin_get_extension_callback,
     clap_plugin_on_main_thread_callback
@@ -295,70 +318,151 @@ protected:
 
 private:
 
-  static bool clap_plugin_gui_create_callback(const clap_plugin_t *plugin) {
-    //MIP_PRINT;
+//  static bool clap_plugin_gui_create_callback(const clap_plugin_t *plugin) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_create();
+//  }
+//
+//  static void clap_plugin_gui_destroy_callback(const clap_plugin_t *plugin) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_destroy();
+//  }
+//
+//  static bool clap_plugin_gui_set_scale_callback(const clap_plugin_t *plugin, double scale) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_set_scale(scale);
+//  }
+//
+//  static bool clap_plugin_gui_get_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_get_size(width,height);
+//  }
+//
+//  static bool clap_plugin_gui_can_resize_callback(const clap_plugin_t *plugin) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_can_resize();
+//  }
+//
+//  static void clap_plugin_gui_round_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_round_size(width,height);
+//  }
+//
+//  static bool clap_plugin_gui_set_size_callback(const clap_plugin_t *plugin, uint32_t width, uint32_t height) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_set_size(width,height);
+//  }
+//
+//  static void clap_plugin_gui_show_callback(const clap_plugin_t *plugin) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_show();
+//  }
+//
+//  static void clap_plugin_gui_hide_callback(const clap_plugin_t *plugin) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_hide();
+//  }
+
+  static bool clap_plugin_gui_is_api_supported_callback(const clap_plugin_t *plugin, const char *api, bool is_floating) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->gui_create();
+    return plug->gui_is_api_supported(api,is_floating);
+  }
+
+  static bool clap_plugin_gui_create_callback(const clap_plugin_t *plugin, const char *api, bool is_floating) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->gui_create(api,is_floating);
   }
 
   static void clap_plugin_gui_destroy_callback(const clap_plugin_t *plugin) {
-    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->gui_destroy();
+    plug->gui_destroy();
   }
 
   static bool clap_plugin_gui_set_scale_callback(const clap_plugin_t *plugin, double scale) {
-    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_set_scale(scale);
   }
 
   static bool clap_plugin_gui_get_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
-    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_get_size(width,height);
   }
 
   static bool clap_plugin_gui_can_resize_callback(const clap_plugin_t *plugin) {
-    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_can_resize();
   }
 
-  static void clap_plugin_gui_round_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
-    //MIP_PRINT;
+  static bool clap_plugin_gui_adjust_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->gui_round_size(width,height);
+    return plug->gui_adjust_size(width,height);
   }
 
   static bool clap_plugin_gui_set_size_callback(const clap_plugin_t *plugin, uint32_t width, uint32_t height) {
-    //MIP_PRINT;
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_set_size(width,height);
   }
 
-  static void clap_plugin_gui_show_callback(const clap_plugin_t *plugin) {
-    //MIP_PRINT;
+  static bool clap_plugin_gui_set_parent_callback(const clap_plugin_t *plugin, const clap_window_t *window) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->gui_set_parent(window);
+  }
+
+  static bool clap_plugin_gui_set_transient_callback(const clap_plugin_t *plugin, const clap_window_t *window) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->gui_set_transient(window);
+  }
+
+  static void clap_plugin_gui_suggest_title_callback(const clap_plugin_t *plugin, const char *title) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    plug->gui_suggest_title(title);
+  }
+
+  static bool clap_plugin_gui_show_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_show();
   }
 
-  static void clap_plugin_gui_hide_callback(const clap_plugin_t *plugin) {
-    //MIP_PRINT;
+  static bool clap_plugin_gui_hide_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_hide();
   }
 
 protected:
 
+//  clap_plugin_gui_t MGui = {
+//    clap_plugin_gui_create_callback,
+//    clap_plugin_gui_destroy_callback,
+//    clap_plugin_gui_set_scale_callback,
+//    clap_plugin_gui_get_size_callback,
+//    clap_plugin_gui_can_resize_callback,
+//    clap_plugin_gui_round_size_callback,
+//    clap_plugin_gui_set_size_callback,
+//    clap_plugin_gui_show_callback,
+//    clap_plugin_gui_hide_callback
+//  };
+
   clap_plugin_gui_t MGui = {
+    clap_plugin_gui_is_api_supported_callback,
     clap_plugin_gui_create_callback,
     clap_plugin_gui_destroy_callback,
     clap_plugin_gui_set_scale_callback,
     clap_plugin_gui_get_size_callback,
     clap_plugin_gui_can_resize_callback,
-    clap_plugin_gui_round_size_callback,
+    clap_plugin_gui_adjust_size_callback,
     clap_plugin_gui_set_size_callback,
+    clap_plugin_gui_set_parent_callback,
+    clap_plugin_gui_set_transient_callback,
+    clap_plugin_gui_suggest_title_callback,
     clap_plugin_gui_show_callback,
     clap_plugin_gui_hide_callback
   };
@@ -367,19 +471,19 @@ protected:
   // clap.gui-x11
   //--------------------
 
-private:
-
-  static bool clap_plugin_gui_x11_attach_callback(const clap_plugin_t *plugin, const char *display_name, unsigned long window) {
-    //MIP_PRINT;
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->gui_x11_attach(display_name,window);
-  }
-
-protected:
-
-  clap_plugin_gui_x11_t MGuiX11 = {
-    clap_plugin_gui_x11_attach_callback
-  };
+//private:
+//
+//  static bool clap_plugin_gui_x11_attach_callback(const clap_plugin_t *plugin, const char *display_name, unsigned long window) {
+//    //MIP_PRINT;
+//    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+//    return plug->gui_x11_attach(display_name,window);
+//  }
+//
+//protected:
+//
+//  clap_plugin_gui_x11_t MGuiX11 = {
+//    clap_plugin_gui_x11_attach_callback
+//  };
 
   //--------------------
   // clap.latency

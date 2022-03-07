@@ -470,7 +470,7 @@ public: // plugin
     param_mod.channel         = -1;
     param_mod.amount          = value;
     clap_event_header_t* header = (clap_event_header_t*)&param_mod;
-    out_events->push_back(out_events,header);
+    out_events->try_push(out_events,header);
   }
 
   //----------
@@ -491,7 +491,7 @@ public: // plugin
     param_value.channel         = -1;
     param_value.value           = value;
     clap_event_header_t* header = (clap_event_header_t*)&param_value;
-    out_events->push_back(out_events,header);
+    out_events->try_push(out_events,header);
   }
 
 //------------------------------
@@ -657,35 +657,30 @@ public: // params
   }
 
 //------------------------------
-public: // gui-x11
-//------------------------------
-
-  #ifndef MIP_NO_GUI
-
-  bool gui_x11_attach(const char *display_name, unsigned long window) override {
-    MIP_Print("display_name: %s window: %i\n",display_name,window);
-    if (MEditor) {
-      //MIP_Print("'%s',%i -> true\n",display_name,window);
-      MEditor->attach(display_name,window);
-      return true;
-    }
-    else {
-      //MIP_Print("!Meditor-> false\n");
-    return false;
-    }
-  }
-
-  #endif
-
-//------------------------------
 public: // gui
 //------------------------------
 
-  #ifndef MIP_NO_GUI
+//  #ifndef MIP_NO_GUI
 
-  bool gui_create() override {
-    MIP_PRINT;
+  bool gui_is_api_supported(const char *api, bool is_floating) override {
+    if (is_floating) {
+      MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
+      return false;
+    }
+    if (strcmp(api,CLAP_WINDOW_API_X11) == 0) {
+      MIP_Print("api: %s floating: %s -> true\n",api,is_floating?"true":"false");
+      return true;
+    }
+    MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
+    return false;
+  }
+
+  //----------
+
+  bool gui_create(const char *api, bool is_floating) override {
+    MIP_Print("api: %s floating: %s\n",api,is_floating?"true":"false");
     MEditorIsOpen = false;
+    if (is_floating) return false;
     MEditor = new MIP_Editor(this,this,256,256);
     if (MEditor) {
       //MEditor->createWindow();
@@ -697,7 +692,7 @@ public: // gui
   //----------
 
   void gui_destroy() override {
-    MIP_PRINT;
+    MIP_Print("\n");
     if (MEditorIsOpen) {
       MEditorIsOpen = false;
       //gui_hide();
@@ -711,7 +706,7 @@ public: // gui
   //----------
 
   bool gui_set_scale(double scale) override {
-    //MIP_Print("scale: %.3f\n");
+    MIP_Print("scale: %.2f\n",scale);
     if (MEditor) {
       bool res = MEditor->setScale(scale);
       MIP_Print("%.3f -> %s\n", scale,res?"true":"false");
@@ -721,12 +716,13 @@ public: // gui
       MIP_Print("!MEditor -> false\n");
       return true;
     }
+    return false;
   }
 
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
-    //MIP_Print("*width: %i *height: %i\n", *width,*height);
+    MIP_Print("\n");
     if (MEditor) {
       bool res = MEditor->getSize(width,height);
       MIP_Print("-> (%i,%i) %s\n", *width,*height,res?"true":"false");
@@ -736,12 +732,13 @@ public: // gui
       MIP_Print("!MEditor -> false\n");
       return false;
     }
+    return false;
   }
 
   //----------
 
   bool gui_can_resize() override {
-    //MIP_PRINT;
+    MIP_Print("\n");
     if (MEditor) {
       bool res = MEditor->canResize();
       MIP_Print("-> %s\n", res?"true":"false");
@@ -751,12 +748,13 @@ public: // gui
       MIP_Print("!MEditor -> false\n");
       return false;
     }
+    return false;
   }
 
   //----------
 
-  void gui_round_size(uint32_t *width, uint32_t *height) override {
-    //MIP_Print("*width: %i *height: %i\n",*width,*height);
+  bool gui_adjust_size(uint32_t *width, uint32_t *height) override {
+    MIP_Print("*width: %i *height: %i\n",*width,*height);
     if (MEditor) {
       MIP_Print("(%i,%i) -> ", *width,*height);
       MEditor->roundSize(width,height);
@@ -767,12 +765,13 @@ public: // gui
       *height = 0;
       MIP_Print("!MEditor -> (%i,%i)\n", *width,*height);
     }
+    return false;
   }
 
   //----------
 
   bool gui_set_size(uint32_t width, uint32_t height) override {
-    //MIP_Print("width: %i height: %i\n",width,height);
+    MIP_Print("width: %i height: %i\n",width,height);
     if (MEditor) {
       bool res = MEditor->setSize(width,height);
       MIP_Print("%i,%i -> %s\n", width,height,res?"true":"false");
@@ -782,12 +781,42 @@ public: // gui
       MIP_Print("%i,%i : !MEditor -> false\n",width,height);
       return false;
     }
+    return false;
   }
 
   //----------
 
-  void gui_show() override {
-    //MIP_PRINT;
+  bool gui_set_parent(const clap_window_t *window) override {
+    MIP_Print("window: %p\n",window);
+    if (MEditor) {
+      //MIP_Print("'%s',%i -> true\n",display_name,window);
+      MEditor->attach(nullptr,window->x11);
+      return true;
+    }
+    else {
+      //MIP_Print("!Meditor-> false\n");
+    return false;
+    }
+  return false;
+  }
+
+  //----------
+
+  bool gui_set_transient(const clap_window_t *window) override {
+    MIP_Print("window: %p\n",window);
+    return false;
+  }
+
+  //----------
+
+  void gui_suggest_title(const char *title) override {
+    MIP_Print("title: %s\n",title);
+  }
+
+  //----------
+
+  bool gui_show() override {
+    MIP_Print("\n");
     if (MEditor) {
       MIP_Print("\n");
       MEditor->show();
@@ -796,12 +825,13 @@ public: // gui
     else {
       MIP_Print("!MEditor\n");
     }
+    return false;
   }
 
   //----------
 
-  void gui_hide() override {
-    //MIP_PRINT;
+  bool gui_hide() override {
+    MIP_Print("\n");
     if (MEditor) {
       MIP_Print("\n");
       MEditorIsOpen = false;
@@ -810,9 +840,10 @@ public: // gui
     else {
       MIP_Print("!MEditor\n");
     }
+    return false;
   }
 
-  #endif
+//  #endif // MIP_NO_GUI
 
 //------------------------------
 public: // audio-ports
