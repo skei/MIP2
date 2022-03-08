@@ -99,7 +99,6 @@ private:
     { 1, "Output 2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
-
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
     { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
     { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
@@ -274,7 +273,7 @@ public: // plugin
   */
 
   bool gui_create(const char *api, bool is_floating) final {
-    MIP_PRINT;
+    //MIP_PRINT;
 
     if (strcmp(api,CLAP_WINDOW_API_X11) != 0) {
       MIP_Print("not x11\n");

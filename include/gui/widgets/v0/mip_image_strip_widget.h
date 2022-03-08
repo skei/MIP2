@@ -80,7 +80,7 @@ public:
     return MIP_FRect(x,y,w,h);
   }
 
-  virtual void drawTile(MIP_BasePainter* APainter) {
+  virtual void drawTile(MIP_Painter* APainter) {
     //MIP_Surface* surface = getImageSurface();
     if (MSurface) {
       uint32_t num_tiles = MTileXCount * MTileYCount;

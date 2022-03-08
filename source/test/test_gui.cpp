@@ -1,11 +1,13 @@
 
+#define MIP_EXE
+
 #define MIP_GUI_XCB
 //#define MIP_PAINTER_XCB
 #define MIP_USE_CAIRO
 #define MIP_PAINTER_CAIRO
 
-#define MIP_NO_PLUGIN
-//#define MIP_NO_WINDOW_BUFFERING
+//#define MIP_NO_PLUGIN
+#define MIP_NO_WINDOW_BUFFERING
 
 #include "mip.h"
 #include "gui/mip_window.h"
@@ -24,32 +26,42 @@ class myWindow
 
 private:
 
-  MIP_Bitmap*   knob_bitmap   = nullptr;
-  MIP_Surface*  knob_surface  = nullptr;
+  MIP_Bitmap*   MKnobBitmap   = nullptr;
+  MIP_Surface*  MKnobSurface  = nullptr;
 
 public:
 
   myWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener=nullptr, bool AEmbedded=false)
   : MIP_Window(AWidth,AHeight,AListener,AEmbedded) {
-    setFillWindowBackground(true);
-    knob_bitmap = new MIP_Bitmap(knob4_60x60_131,knob4_60x60_131_size);
-    //knob_bitmap->convertRgbaToBgra();
-    knob_bitmap->premultAlpha(0x808080);
-    knob_surface = new MIP_Surface(this,knob_bitmap->getWidth(),knob_bitmap->getHeight());
-    MIP_Painter* knob_painter = new MIP_Painter(knob_surface);
-    knob_painter->uploadBitmap(0,0,knob_bitmap);
-    knob_painter->flush();
-    delete knob_painter;
-    MIP_ImageStripWidget* imagestrip = new MIP_ImageStripWidget(  MIP_FRect(10,10, 60,60) );
-    imagestrip->setup(1,131,knob_surface);
-    appendWidget(imagestrip);
+    init();
   }
 
   //----------
 
   virtual ~myWindow() {
-    delete knob_surface;
-    delete knob_bitmap;
+    cleanup();
+  }
+
+  //----------
+
+  void init() {
+    setFillWindowBackground(true);
+    MKnobBitmap = new MIP_Bitmap(knob4_60x60_131,knob4_60x60_131_size);
+    //knob_bitmap->convertRgbaToBgra();
+    MKnobBitmap->premultAlpha(0x808080);
+    MKnobSurface = new MIP_Surface(this,MKnobBitmap->getWidth(),MKnobBitmap->getHeight());
+    MIP_Painter* painter = new MIP_Painter(MKnobSurface);
+    painter->uploadBitmap(0,0,MKnobBitmap);
+    painter->flush();
+    delete painter;
+    MIP_ImageStripWidget* imagestrip = new MIP_ImageStripWidget( MIP_FRect(10,10, 60,60) );
+    imagestrip->setup(1,131,MKnobSurface);
+    appendWidget(imagestrip);
+  }
+
+  void cleanup() {
+    delete MKnobSurface;
+    delete MKnobBitmap;
   }
 
 public:

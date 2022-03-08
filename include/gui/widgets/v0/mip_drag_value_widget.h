@@ -41,6 +41,7 @@ protected:
   float       MDragSensitivity2   = 0.05;
   uint32_t    MDragDirection      = MIP_UP;
   float       MDragValue          = 0.0f;
+  float       MClickedValue       = 0.0f;
   //float       MDragValue2         = 0.0f;
 
   // double-click
@@ -195,6 +196,7 @@ public:
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
 
     MPrevShift = (AState & MIP_KEY_SHIFT);
+    MClickedValue = getValue();
     MDragValue = getValue();
 
     if (AButton == MIP_BUTTON_LEFT) {
@@ -207,7 +209,6 @@ public:
 //        }
 //      } // dbl click
 //      MPrevClickTime = ATimeStamp;
-
       if (MCanDragValue) {
         if (flags.autoMouseLock)    do_widget_setMouseCursor(this,MIP_CURSOR_GRAB);
         if (flags.autoMouseHide)    do_widget_setMouseCursor(this,MIP_CURSOR_HIDE);
@@ -258,6 +259,9 @@ public:
   //----------
 
   void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp=0) override {
+
+    //float diff = MValue - MClickedValue;
+    //MIP_Print("diff: %.2f\n",diff);
 
     if (MCanDragValue) {
       //float sens = MDragSensitivity;

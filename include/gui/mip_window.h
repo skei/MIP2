@@ -370,11 +370,14 @@ public:
   void open() override {
     //attachWindow(this);
     alignWidgets();
+
+//    #ifdef MIP_EXE
+//      //on_window_paint(0,0,MRect.w,MRect.h);
+//      paintWindow();
+//    #endif
+
     MIP_ImplementedWindow::open();
-    //#ifndef MIP_PLUGIN_EXE
-    //  //on_window_paint(0,0,MRect.w,MRect.h);
-    //  paintWidget(this,MRect,0);
-    //#endif
+
   }
 
   //----------

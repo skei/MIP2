@@ -2,12 +2,53 @@
 #define mip_editor_included
 //----------------------------------------------------------------------
 
+/*
+  TODO:
+    widget/automation 'fighting'..
+    - MClickedValue could have changed becaouse of modulation
+*/
+
 #include "mip.h"
 #include "base/system/mip_timer.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_utils.h"
 #include "gui/mip_window.h"
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+class MIP_EditorWindow
+: public MIP_Window {
+
+public:
+
+  MIP_EditorWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener=nullptr)
+  : MIP_Window(AWidth,AHeight,AListener,true) {
+  }
+
+  virtual ~MIP_EditorWindow() {
+  }
+
+public:
+
+//  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode=0) override {
+//    //MIP_Window::on_widget_paint(APainter,ARect,AMode);
+//    MEditor->MGuiParamVal[AIndex] = AValue;
+//    MEditor->queueGuiParam(AIndex);
+//  }
+
+  void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
+    MIP_PRINT;
+    //if (MListener) MListener->do_window_redrawWidget(AWidget);
+    //invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
+    MIP_Window::do_widget_redraw(AWidget,ARect,AMode);
+  }
+
+};
 
 //----------------------------------------------------------------------
 //
@@ -38,7 +79,8 @@ private:
   uint32_t            MHeight           = 0;
   double              MScale            = 1.0;
   bool                MCanResize        = false;
-  MIP_Window*         MWindow           = nullptr;
+  //MIP_Window*         MWindow           = nullptr;
+  MIP_EditorWindow*   MWindow           = nullptr;
   MIP_Timer*          MTimer            = nullptr;
   MIP_Widget**        MParamToWidget    = nullptr;
   MIP_ClapIntQueue    MGuiParamQueue    = {};
@@ -75,7 +117,8 @@ public:
     MTimer = new MIP_Timer(this);
 
     //createWindow(AWidth,AHeight);
-    MWindow = new MIP_Window(AWidth,AHeight,this,true);
+    //MWindow = new MIP_Window(AWidth,AHeight,this,true);
+    MWindow = new MIP_EditorWindow(AWidth,AHeight,this);
 
   }
 
@@ -95,7 +138,6 @@ public:
 //------------------------------
 public:
 //------------------------------
-
 
   //void createWindow() {
   //  MWindow = new MIP_Window(MWidth,MHeight,this,true);
@@ -164,7 +206,7 @@ public: // clap.gui
 
   //----------
 
-  virtual void roundSize(uint32_t *width, uint32_t *height) {
+  virtual void adjustSize(uint32_t *width, uint32_t *height) {
     //MIP_Print("-> %i,%i\n",MResizeWidth,MResizeHeight);
 //    *width = MResizeWidth;
 //    *height = MResizeHeight;
@@ -202,7 +244,9 @@ public:
     return MWindow;
   }
 
-  void setCanResize(bool AResize=true) { MCanResize = AResize; }
+  void setCanResize(bool AResize=true) {
+    MCanResize = AResize;
+  }
 
   //----------
 
@@ -318,8 +362,8 @@ public:
     if both parameter value and modulation is modified, the widget will be
     painted twice..
 
-    TODO: checkForDuplicatesAndUseLatest
-          while loop?
+    TODO: check for duplicates and use latest
+          max redraws per frame
   */
 
   // called from updateParameterFromHost()

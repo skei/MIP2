@@ -556,8 +556,7 @@ public: // plugin
   //----------
 
   const void* get_extension(const char *id) override {
-    MIP_Print("host asks for: %s\n",id);
-    //MIP_Print("id: %s\n",id);
+    //MIP_Print("host asks for: %s\n",id);
     //if (strcmp(id,CLAP_EXT_AMBISONIC) == 0)           return &MAmbisonic;
     //if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         return &MAudioPorts;
     //if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE) == 0)    return &MCheckForUpdate;
@@ -664,21 +663,21 @@ public: // gui
 
   bool gui_is_api_supported(const char *api, bool is_floating) override {
     if (is_floating) {
-      MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
+      //MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
       return false;
     }
     if (strcmp(api,CLAP_WINDOW_API_X11) == 0) {
-      MIP_Print("api: %s floating: %s -> true\n",api,is_floating?"true":"false");
+      //MIP_Print("api: %s floating: %s -> true\n",api,is_floating?"true":"false");
       return true;
     }
-    MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
+    //MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
     return false;
   }
 
   //----------
 
   bool gui_create(const char *api, bool is_floating) override {
-    MIP_Print("api: %s floating: %s\n",api,is_floating?"true":"false");
+    //MIP_Print("api: %s floating: %s\n",api,is_floating?"true":"false");
     MEditorIsOpen = false;
     if (is_floating) return false;
     MEditor = new MIP_Editor(this,this,256,256);
@@ -692,7 +691,7 @@ public: // gui
   //----------
 
   void gui_destroy() override {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     if (MEditorIsOpen) {
       MEditorIsOpen = false;
       //gui_hide();
@@ -706,14 +705,14 @@ public: // gui
   //----------
 
   bool gui_set_scale(double scale) override {
-    MIP_Print("scale: %.2f\n",scale);
+    //MIP_Print("scale: %.2f\n",scale);
     if (MEditor) {
       bool res = MEditor->setScale(scale);
-      MIP_Print("%.3f -> %s\n", scale,res?"true":"false");
+      //MIP_Print("%.3f -> %s\n", scale,res?"true":"false");
       return res;
     }
     else {
-      MIP_Print("!MEditor -> false\n");
+      //MIP_Print("!MEditor -> false\n");
       return true;
     }
     return false;
@@ -722,14 +721,14 @@ public: // gui
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     if (MEditor) {
       bool res = MEditor->getSize(width,height);
-      MIP_Print("-> (%i,%i) %s\n", *width,*height,res?"true":"false");
+      //MIP_Print("-> (%i,%i) %s\n", *width,*height,res?"true":"false");
       return res;
     }
     else {
-      MIP_Print("!MEditor -> false\n");
+      //MIP_Print("!MEditor -> false\n");
       return false;
     }
     return false;
@@ -738,14 +737,14 @@ public: // gui
   //----------
 
   bool gui_can_resize() override {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     if (MEditor) {
       bool res = MEditor->canResize();
-      MIP_Print("-> %s\n", res?"true":"false");
+      //MIP_Print("-> %s\n", res?"true":"false");
       return res;
     }
     else {
-      MIP_Print("!MEditor -> false\n");
+      //MIP_Print("!MEditor -> false\n");
       return false;
     }
     return false;
@@ -754,16 +753,16 @@ public: // gui
   //----------
 
   bool gui_adjust_size(uint32_t *width, uint32_t *height) override {
-    MIP_Print("*width: %i *height: %i\n",*width,*height);
+    //MIP_Print("*width: %i *height: %i\n",*width,*height);
     if (MEditor) {
-      MIP_Print("(%i,%i) -> ", *width,*height);
-      MEditor->roundSize(width,height);
-      MIP_DPrint("(%i,%i)\n", *width,*height);
+      //MIP_Print("(%i,%i) -> ", *width,*height);
+      MEditor->adjustSize(width,height);
+      //MIP_DPrint("(%i,%i)\n", *width,*height);
     }
     else {
       *width = 0;
       *height = 0;
-      MIP_Print("!MEditor -> (%i,%i)\n", *width,*height);
+      //MIP_Print("!MEditor -> (%i,%i)\n", *width,*height);
     }
     return false;
   }
@@ -771,14 +770,14 @@ public: // gui
   //----------
 
   bool gui_set_size(uint32_t width, uint32_t height) override {
-    MIP_Print("width: %i height: %i\n",width,height);
+    //MIP_Print("width: %i height: %i\n",width,height);
     if (MEditor) {
       bool res = MEditor->setSize(width,height);
-      MIP_Print("%i,%i -> %s\n", width,height,res?"true":"false");
+      //MIP_Print("%i,%i -> %s\n", width,height,res?"true":"false");
       return res;
     }
     else {
-      MIP_Print("%i,%i : !MEditor -> false\n",width,height);
+      //MIP_Print("%i,%i : !MEditor -> false\n",width,height);
       return false;
     }
     return false;
@@ -787,7 +786,7 @@ public: // gui
   //----------
 
   bool gui_set_parent(const clap_window_t *window) override {
-    MIP_Print("window: %p\n",window);
+    //MIP_Print("window: %p\n",window);
     if (MEditor) {
       //MIP_Print("'%s',%i -> true\n",display_name,window);
       MEditor->attach(nullptr,window->x11);
@@ -803,27 +802,27 @@ public: // gui
   //----------
 
   bool gui_set_transient(const clap_window_t *window) override {
-    MIP_Print("window: %p\n",window);
+    //MIP_Print("window: %p\n",window);
     return false;
   }
 
   //----------
 
   void gui_suggest_title(const char *title) override {
-    MIP_Print("title: %s\n",title);
+    //MIP_Print("title: %s\n",title);
   }
 
   //----------
 
   bool gui_show() override {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     if (MEditor) {
-      MIP_Print("\n");
+      //MIP_Print("\n");
       MEditor->show();
       MEditorIsOpen = true;
     }
     else {
-      MIP_Print("!MEditor\n");
+      //MIP_Print("!MEditor\n");
     }
     return false;
   }
@@ -831,14 +830,14 @@ public: // gui
   //----------
 
   bool gui_hide() override {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     if (MEditor) {
-      MIP_Print("\n");
+      //MIP_Print("\n");
       MEditorIsOpen = false;
       MEditor->hide();
     }
     else {
-      MIP_Print("!MEditor\n");
+      //MIP_Print("!MEditor\n");
     }
     return false;
   }

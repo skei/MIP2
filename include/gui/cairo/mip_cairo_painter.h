@@ -153,8 +153,8 @@ public:
     if (MCreatedSurface) {
       cairo_surface_destroy(MSurface);
     }
-    cairo_device_finish(MDevice);
-    cairo_device_destroy(MDevice);
+    //cairo_device_finish(MDevice);
+    //cairo_device_destroy(MDevice);
   }
 
 //------------------------------
@@ -794,7 +794,7 @@ public: // image
     //MIP_CHECK_CAIRO_REFCOUNT(MCairo);
     cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
     cairo_fill(MCairo);
-    //cairo_surface_finish(srf);
+    cairo_surface_flush(srf);
     cairo_surface_destroy(srf);
     //MIP_CHECK_CAIRO_SURFACE_ERROR(srf);
     //MIP_CHECK_CAIRO_SURFACE_REFCOUNT(srf);
