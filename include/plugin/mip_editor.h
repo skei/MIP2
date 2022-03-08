@@ -42,7 +42,7 @@ public:
 //  }
 
   void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     //if (MListener) MListener->do_window_redrawWidget(AWidget);
     //invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
     MIP_Window::do_widget_redraw(AWidget,ARect,AMode);
@@ -208,12 +208,8 @@ public: // clap.gui
 
   virtual void adjustSize(uint32_t *width, uint32_t *height) {
     //MIP_Print("-> %i,%i\n",MResizeWidth,MResizeHeight);
-//    *width = MResizeWidth;
-//    *height = MResizeHeight;
-//    MWidth  = *width;
-//    MHeight = *height;
-    //*width  = *width;//  & 0xffc0;
-    //*height = *height;// & 0xffc0;
+//    *width  = *width  & 0xffc0;
+//    *height = *height & 0xffc0;
   }
 
   //----------
@@ -229,6 +225,7 @@ public: // clap.gui
 //      MWindow->paintWindow();
       // blit?
       //MWindow->on_window_resize(width,height);
+
       MWindow->resizeWindow(width,height);
       MWindow->on_window_paint(0,0,width,height);
 

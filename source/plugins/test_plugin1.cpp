@@ -1,11 +1,9 @@
 
 #define MIP_USE_XCB
+#define MIP_USE_CAIRO
 #define MIP_GUI_XCB
 //#define MIP_PAINTER_XCB
-
-#define MIP_USE_CAIRO
 #define MIP_PAINTER_CAIRO
-
 //#define MIP_NO_WINDOW_BUFFERING
 
 #define MIP_DEBUG_PRINT_SOCKET
@@ -138,24 +136,15 @@ public:
 public:
 //------------------------------
 
-  /*
-    if we want to do something special with incoming parameter values or
-      modulations, we can do it here.. otherwise we can just use the values
-      in MParameterValues and MParameterModulations arrays
-      (set by MIP_Plugin, so careful with ordering if you override it)
-  */
+  void handle_parameter_event(const clap_event_param_value_t* param_value) final {
+    MIP_Plugin::handle_parameter_event(param_value);
+  }
 
   //----------
 
-  //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
-  //  MIP_Plugin::handle_parameter_event(param_value);
-  //}
-
-  //----------
-
-  //void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
-  //  MIP_Plugin::handle_modulation_event(param_mod);
-  //}
+  void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
+    MIP_Plugin::handle_modulation_event(param_mod);
+  }
 
 //------------------------------
 public:
@@ -212,19 +201,10 @@ public:
 
   //----------
 
-  // called from end of process()
-  // or param_flush..
-  // can we send param_mod events from flush()?
-
   void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
-    { // send modulation value for parameter 0 to host
-//      float v0 = MParameterValues[0] + MParameterModulations[0];
-//      v0 = MIP_Clamp(v0,0,1);
-//      send_param_mod_event(0,v0,out_events);
-      //float v1 = MParameterValues[1] + MParameterModulations[1];
-      //v0 = MIP_Clamp(v1,0,1);
-      //send_param_mod_event(1,v1,out_events);
-    }
+    //float v0 = MParameterValues[0] + MParameterModulations[0];
+    //v0 = MIP_Clamp(v0,0,1);
+    //send_param_mod_event(0,v0,out_events);
     MIP_Plugin::handle_events_output(in_events,out_events);
   }
 
@@ -253,7 +233,6 @@ public: // plugin
     if (!ext) {
       if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)     return &MAudioPorts;
       if (strcmp(id,CLAP_EXT_GUI) == 0)             return &MGui;
-    //if (strcmp(id,CLAP_EXT_GUI_X11) == 0)         return &MGuiX11;
       if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)      return &MNotePorts;
       if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)  return &MQuickControls;
       if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)     return &MThreadPool;
@@ -267,33 +246,21 @@ public: // plugin
 
   //----------
 
-  /*
-  bool gui_create() final {
-  }
-  */
-
   bool gui_create(const char *api, bool is_floating) final {
-    //MIP_PRINT;
-
     if (strcmp(api,CLAP_WINDOW_API_X11) != 0) {
       MIP_Print("not x11\n");
       return false;
     }
-
     if (is_floating) {
       MIP_Print("floating\n");
     return false;
     }
-
-    //bool result = MIP_Plugin::gui_create();
     MEditorIsOpen = false;
     MEditor = new MIP_Editor(this,this,400,400);
     // -> myEditor()
     bool result = (MEditor);
     if (result) {
-
       MEditor->setCanResize();
-
       MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect(100,100) );
       menu1->appendMenuItem("first");
       menu1->appendMenuItem("item2");
@@ -320,11 +287,9 @@ public: // plugin
       MEditorPanel->appendWidget(knob2);
       MEditorPanel->appendWidget(knob3);
       MEditorPanel->appendWidget(knob4);
-
       MSizer = new MIP_SizerWidget(MIP_FRect( 15,15),MIP_SIZER_WINDOW);
       MSizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
       MEditorPanel->appendWidget(MSizer);
-
       MIP_ButtonRowWidget* button_row = new MIP_ButtonRowWidget(MIP_FRect(230,20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI );
       button_row->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
       MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
@@ -341,15 +306,10 @@ public: // plugin
       MEditor->connect(knob3,2);
       MEditor->connect(knob4,3);
       MIP_Window* win = MEditor->getWindow();
-
       MSizer->setTarget(win);
-
       win->appendWidget(MEditorPanel);
-      //win->alignWidgets();
-      //win->on_window_paint(0,0,640,480);
     }
     return result;
-    //return false;
   }
 
   //----------

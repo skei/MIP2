@@ -39,7 +39,8 @@ struct MIP_Drawable {
   #endif
 
   #ifdef MIP_USE_CAIRO
-  virtual cairo_surface_t*  createCairoSurface()  { return nullptr; }
+  virtual cairo_surface_t*  getCairoSurface()     { return nullptr; }
+//virtual cairo_surface_t*  createCairoSurface()  { return nullptr; }
   #endif
 
   //#ifdef MIP_USE_CTX

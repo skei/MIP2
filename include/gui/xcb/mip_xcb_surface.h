@@ -32,25 +32,35 @@ private:
   bool              MIsWindow         = false;
   xcb_window_t      MWindow           = XCB_NONE;
 
+  #ifdef MIP_USE_CAIRO
+  cairo_surface_t*  MCairoSurface     = nullptr;
+  cairo_device_t*   MCairoDevice      = nullptr;
+  #endif
+
 //------------------------------
 public:
 //------------------------------
 
-  MIP_XcbSurface(MIP_Drawable* ATarget) {
-  //: MIP_BaseSurface() {
-    // window
-    MConnection     = ATarget->getXcbConnection();
-    MTargetDrawable = ATarget->getXcbDrawable();
-    MTargetVisual   = ATarget->getXcbVisual();
-    MWidth          = ATarget->getWidth();
-    MHeight         = ATarget->getHeight();
-    MDepth          = ATarget->getDepth();
-    MWindow         = ATarget->getXcbWindow();
-    MIsWindow       = true;
-    xcb_flush(MConnection);
-  }
+  /*
+    cairo_xcb_surface_create()
 
-  //----------
+    Creates an XCB surface that draws to the given drawable. The way that
+    colors are represented in the drawable is specified by the provided visual.
+
+    Note: If drawable is a Window, then the function cairo_xcb_surface_set_size()
+    must be called whenever the size of the window changes.
+
+    When drawable is a Window containing child windows then drawing to the
+    created surface will be clipped by those child windows. When the created
+    surface is used as a source, the contents of the children will be included.
+
+    Returns a pointer to the newly created surface. The caller owns the surface
+    and should call cairo_surface_destroy() when done with it.
+
+    This function always returns a valid pointer, but it will return a pointer
+    to a "nil" surface if an error such as out of memory occurs. You can use
+    cairo_surface_status() to check for this.
+  */
 
   MIP_XcbSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
   //: MIP_BaseSurface() {
@@ -78,6 +88,16 @@ public:
       );
     //}
     xcb_flush(MConnection);
+    #ifdef MIP_USE_CAIRO
+    MCairoSurface = cairo_xcb_surface_create(
+      MConnection,
+      MPixmap,
+      mip_xcb_find_visual(MConnection,MTargetVisual),
+      MWidth,
+      MHeight
+    );
+    MCairoDevice = cairo_device_reference(cairo_surface_get_device(MCairoSurface));
+    #endif
   }
 
   //----------
@@ -86,6 +106,11 @@ public:
     if (!MIsWindow) {
       xcb_free_pixmap(MConnection,MPixmap);
     }
+    #ifdef MIP_USE_CAIRO
+    cairo_surface_destroy(MCairoSurface);
+    cairo_device_finish(MCairoDevice);
+    cairo_device_destroy(MCairoDevice);
+    #endif
   }
 
 //------------------------------
@@ -113,42 +138,8 @@ public: // drawable
   xcb_drawable_t      getXcbDrawable()    final { return MPixmap; } //MTargetDrawable; }
 
   #ifdef MIP_USE_CAIRO
-
-  bool isCairo() final {
-    return true;
-  }
-
-  /*
-    cairo_xcb_surface_create()
-
-    Creates an XCB surface that draws to the given drawable. The way that
-    colors are represented in the drawable is specified by the provided visual.
-
-    Note: If drawable is a Window, then the function cairo_xcb_surface_set_size()
-    must be called whenever the size of the window changes.
-
-    When drawable is a Window containing child windows then drawing to the
-    created surface will be clipped by those child windows. When the created
-    surface is used as a source, the contents of the children will be included.
-
-    Returns a pointer to the newly created surface. The caller owns the surface
-    and should call cairo_surface_destroy() when done with it.
-
-    This function always returns a valid pointer, but it will return a pointer
-    to a "nil" surface if an error such as out of memory occurs. You can use
-    cairo_surface_status() to check for this.
-  */
-
-  cairo_surface_t* createCairoSurface() final {
-    cairo_surface_t* surface = cairo_xcb_surface_create(
-      MConnection,
-      MPixmap,
-      mip_xcb_find_visual(MConnection,MTargetVisual),
-      MWidth,
-      MHeight
-    );
-    return surface;
-  }
+  bool                isCairo()           final { return true; }
+  cairo_surface_t*    getCairoSurface()   final { return MCairoSurface; }
 
   #endif
 

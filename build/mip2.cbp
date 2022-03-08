@@ -257,10 +257,6 @@
 		<Unit filename="../include/extern/clap/ext/draft/tuning.h" />
 		<Unit filename="../include/extern/clap/ext/event-filter.h" />
 		<Unit filename="../include/extern/clap/ext/event-registry.h" />
-		<Unit filename="../include/extern/clap/ext/gui-cocoa.h" />
-		<Unit filename="../include/extern/clap/ext/gui-free-standing.h" />
-		<Unit filename="../include/extern/clap/ext/gui-win32.h" />
-		<Unit filename="../include/extern/clap/ext/gui-x11.h" />
 		<Unit filename="../include/extern/clap/ext/gui.h" />
 		<Unit filename="../include/extern/clap/ext/latency.h" />
 		<Unit filename="../include/extern/clap/ext/log.h" />
@@ -270,6 +266,7 @@
 		<Unit filename="../include/extern/clap/ext/posix-fd-support.h" />
 		<Unit filename="../include/extern/clap/ext/render.h" />
 		<Unit filename="../include/extern/clap/ext/state.h" />
+		<Unit filename="../include/extern/clap/ext/tail.h" />
 		<Unit filename="../include/extern/clap/ext/thread-check.h" />
 		<Unit filename="../include/extern/clap/ext/thread-pool.h" />
 		<Unit filename="../include/extern/clap/ext/timer-support.h" />
@@ -280,7 +277,6 @@
 		<Unit filename="../include/extern/clap/plugin-factory.h" />
 		<Unit filename="../include/extern/clap/plugin-invalidation.h" />
 		<Unit filename="../include/extern/clap/plugin.h" />
-		<Unit filename="../include/extern/clap/private/align.h" />
 		<Unit filename="../include/extern/clap/private/macros.h" />
 		<Unit filename="../include/extern/clap/private/std.h" />
 		<Unit filename="../include/extern/clap/process.h" />

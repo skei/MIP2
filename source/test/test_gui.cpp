@@ -1,13 +1,14 @@
 
 #define MIP_EXE
-
 #define MIP_GUI_XCB
 //#define MIP_PAINTER_XCB
 #define MIP_USE_CAIRO
 #define MIP_PAINTER_CAIRO
 
+//#define MIP_NO_WINDOW_BUFFERING
+//#define MIP_XCB_WAIT_FOR_MAPNOTIFY
+
 //#define MIP_NO_PLUGIN
-#define MIP_NO_WINDOW_BUFFERING
 
 #include "mip.h"
 #include "gui/mip_window.h"
@@ -59,6 +60,8 @@ public:
     appendWidget(imagestrip);
   }
 
+  //----------
+
   void cleanup() {
     delete MKnobSurface;
     delete MKnobBitmap;
@@ -89,7 +92,7 @@ public:
 //----------------------------------------------------------------------
 
 int main() {
-  myWindow* window = new myWindow(640,480);
+  myWindow* window = new myWindow(400,400);
   window->open();
   window->eventLoop();
   window->close();

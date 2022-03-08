@@ -48,7 +48,6 @@ public:
 //------------------------------
 
   MIP_XcbPainter(MIP_Drawable* ATarget) {
-  //: MIP_BasePainter(/*ATarget*/) {
     if (ATarget->isDrawable()) {
       MTarget     = ATarget;
       MConnection = ATarget->getXcbConnection();
@@ -92,7 +91,6 @@ public:
   //----------
 
   virtual ~MIP_XcbPainter() {
-    //xcb_flush(MConnection);
     xcb_free_gc(MConnection,MGC);
   }
 
@@ -202,7 +200,7 @@ private:
     MFontRight    = reply->overall_right;
     //MFontOverallAscent = reply->overall_ascent;
     //MFontOverallDescent = reply->overall_descent;
-    //free(xcb_str);
+    //free(xcb_str); // ???
     free(reply);
   }
 
@@ -239,7 +237,7 @@ public:
   */
 
   void setClip(MIP_FRect ARect) override {
-    //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
+    //MIP_Print("ARect: %.0f,%.0f,%.0f,%.0f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     //resetClip();
     xcb_rectangle_t rectangles[] = {{
       (int16_t)ARect.x,

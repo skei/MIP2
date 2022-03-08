@@ -14,10 +14,10 @@ protected:
 //------------------------------
 
   bool        MFillBackground   = true;
-  MIP_Color  MBackgroundColor  = MIP_Color(0.6f);
+  MIP_Color   MBackgroundColor  = MIP_Color(0.6f);
 
   bool        MDrawBorder       = true;
-  MIP_Color  MBorderColor      = MIP_Color(0.3f);
+  MIP_Color   MBorderColor      = MIP_Color(0.3f);
   uint32_t    MBorderEdges      = MIP_EDGES_ALL;
 
 //------------------------------
@@ -85,8 +85,13 @@ public:
   virtual void fillBackground(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MFillBackground) {
       //APainter->fillRectangle(MRect,MBackgroundColor);
+
       MIP_FRect rect = MRect;
       rect.overlap(ARect);
+
+// qwe debug
+//      MIP_FRect rect = ARect;
+
       if (rect.isNotEmpty()) {
         APainter->fillRectangle(rect,MBackgroundColor);
       }

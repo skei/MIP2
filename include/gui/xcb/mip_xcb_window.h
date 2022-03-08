@@ -93,6 +93,11 @@ private:
 //  bool      MFillBackground   = false;//true;
 //  MIP_Color MBackgroundColor  = MIP_Color(0.5);
 
+  #ifdef MIP_USE_CAIRO
+  cairo_surface_t*  MCairoSurface = nullptr;
+  cairo_device_t*   MCairoDevice      = nullptr;
+  #endif
+
 //------------------------------
 private:
 //------------------------------
@@ -135,12 +140,28 @@ public:
     initKeyboard();
     initThreads();
     xcb_flush(MConnection);
+    #ifdef MIP_USE_CAIRO
+    MCairoSurface = cairo_xcb_surface_create(
+      MConnection,
+      MWindow,
+      mip_xcb_find_visual(MConnection,MScreenVisual),
+      MWindowWidth,
+      MWindowHeight
+    );
+    MCairoDevice = cairo_device_reference(cairo_surface_get_device(MCairoSurface));
+    #endif
+
   }
 
   //----------
 
   virtual ~MIP_XcbWindow() {
     cleanupThreads();
+    #ifdef MIP_USE_CAIRO
+    cairo_surface_destroy(MCairoSurface);
+    cairo_device_finish(MCairoDevice);
+    cairo_device_destroy(MCairoDevice);
+    #endif
     cleanupKeyboard();
     cleanupMouseCursor();
     destroyWindow();
@@ -173,20 +194,19 @@ public: // drawable
 
   #ifdef MIP_USE_CAIRO
 
-  bool isCairo() final {
-    return true;
-  }
+  bool              isCairo()         final { return true; }
+  cairo_surface_t*  getCairoSurface() final { return MCairoSurface; }
 
-  cairo_surface_t* createCairoSurface() final {
-    cairo_surface_t* surface = cairo_xcb_surface_create(
-      MConnection,
-      MWindow,
-      mip_xcb_find_visual(MConnection,MScreenVisual),
-      MWindowWidth,
-      MWindowHeight
-    );
-    return surface;
-  }
+//  cairo_surface_t* createCairoSurface() final {
+//    cairo_surface_t* surface = cairo_xcb_surface_create(
+//      MConnection,
+//      MWindow,
+//      mip_xcb_find_visual(MConnection,MScreenVisual),
+//      MWindowWidth,
+//      MWindowHeight
+//    );
+//    return surface;
+//  }
 
   #endif
 

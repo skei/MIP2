@@ -61,6 +61,18 @@ public:
 public:
 //------------------------------
 
+  void resize(uint32_t AWidth, uint32_t AHeight) override {
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
+    MIP_ImplementedPainter::resize(AWidth,AHeight);
+    MClipStack.reset();
+    MClipRect = MIP_FRect( AWidth/*-1*/, AHeight/*-1*/ );
+    MClipStack.push(MClipRect);
+  }
+
+//------------------------------
+public:
+//------------------------------
+
   /*
     - push current clip rect
     - set new clip rect
