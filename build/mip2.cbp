@@ -16,11 +16,13 @@
 					<Add option="-fno-pie" />
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-fsanitize=leak" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-no-pie" />
+					<Add option="-fsanitize=leak" />
 				</Linker>
 			</Target>
 			<Target title="exe release">
@@ -254,6 +256,7 @@
 		<Unit filename="../include/extern/clap/ext/draft/quick-controls.h" />
 		<Unit filename="../include/extern/clap/ext/draft/surround.h" />
 		<Unit filename="../include/extern/clap/ext/draft/track-info.h" />
+		<Unit filename="../include/extern/clap/ext/draft/transport-control.h" />
 		<Unit filename="../include/extern/clap/ext/draft/tuning.h" />
 		<Unit filename="../include/extern/clap/ext/event-filter.h" />
 		<Unit filename="../include/extern/clap/ext/event-registry.h" />

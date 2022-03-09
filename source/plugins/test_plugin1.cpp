@@ -260,7 +260,9 @@ public: // plugin
     // -> myEditor()
     bool result = (MEditor);
     if (result) {
-      MEditor->setCanResize();
+
+      //MEditor->setCanResize();
+
       MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect(100,100) );
       menu1->appendMenuItem("first");
       menu1->appendMenuItem("item2");

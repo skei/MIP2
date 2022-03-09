@@ -2,6 +2,14 @@
 #define mip_window_included
 //----------------------------------------------------------------------
 
+/*
+  handles:
+  - painting
+  - buffering
+  - resizing
+  - mouse handling
+*/
+
 #include "mip.h"
 #include "base/types/mip_rect.h"
 #include "gui/mip_painter.h"
@@ -23,6 +31,7 @@
 typedef MIP_ImplementedWindow MIP_BasicWindow;;
 
 //----------------------------------------------------------------------
+//
 //----------------------------------------------------------------------
 
 class MIP_WindowListener {
@@ -115,8 +124,6 @@ public:
     #endif
   }
 
-  //----------
-
   MIP_Painter* getPainter() {
     #ifdef MIP_NO_WINDOW_BUFFERING
     return MWindowPainter;
@@ -125,15 +132,11 @@ public:
     #endif
   }
 
-  //----------
-
   MIP_Widget* getMouseHoverWidget()       { return MMouseHoverWidget; }
   MIP_Widget* getModalWidget()            { return MModalWidget; }
   MIP_Widget* getMouseClickedWidget()     { return MMouseClickedWidget; }
   MIP_Widget* getMouseMouseLockedWidget() { return MMouseLockedWidget; }
   MIP_Widget* getKeyInputWidget()         { return MKeyInputWidget; }
-
-  //----------
 
   void setFillWindowBackground(bool s=true)     { MFillWindowBackground = s; }
   void setWindowBackgroundColor(MIP_Color c)    { MWindowBackgroundColor = c; }
@@ -141,6 +144,11 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  /*
+    find widget the mouse cursoring is hovering above
+    sets MMouseHoverWidget to foiund widget, or null if none..
+  */
 
   void updateHoverWidget(uint32_t AXpos, uint32_t AYpos, uint32_t ATimeStamp=0) {
     MIP_Widget* hover = nullptr;
@@ -206,7 +214,14 @@ public: // window
     #endif
     MRect.w = AWidth;
     MRect.h = AHeight;
+
+    //MWindowWidth = AWidth;
+    //MWindowHeight = AHeight;
+
     alignWidgets();
+
+//    setWindowSize(AWidth,AHeight);
+
     if (MWindowPainter) {
       MWindowPainter->resize(AWidth,AHeight);
     }
@@ -469,7 +484,7 @@ public: // MIP_BaseWindow
   //----------
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-//    MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
+    //MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
     MIP_FRect rect = MIP_FRect(AXpos,AYpos,AWidth,AHeight);
     if (MFillWindowBackground) fillWindowBackground(rect);
     #ifdef MIP_NO_WINDOW_BUFFERING
@@ -477,7 +492,7 @@ public: // MIP_BaseWindow
     #else
     paintBuffer(rect);
     #endif
-//    MIP_Print("\n");
+    //MIP_Print("\n");
   }
 
 //------------------------------
@@ -494,12 +509,15 @@ public: // MIP_Widget
 
   //----------
 
-  // TODO: queue widget(s), and redraw all later
-  // timer, idle..
+  /*
+    here we lose all information about what widget to redraw :-/
+    later, when the window gets the expose event, we just know the rect
+
+    should we notify the listener (editor), and let it handle it?
+  */
 
   void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
     //MIP_PRINT;
-    //if (MListener) MListener->do_window_redrawWidget(AWidget);
     invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
   }
 
@@ -513,7 +531,6 @@ public: // MIP_Widget
 
   /*
     widget has been resized
-    notify parent of widget, and realign/redraw
   */
 
   void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) override {
@@ -522,9 +539,6 @@ public: // MIP_Widget
     MResizingHeight += ADeltaY;
     MListener->on_resizeFromWindow(MResizingWidth,MResizingHeight);
   }
-
-  //----------
-
 
   //----------
 

@@ -155,7 +155,7 @@ public: // clap.gui
 //------------------------------
 
   virtual bool attach(const char* ADisplay, uint32_t AWindow) {
-    //MIP_PRINT;
+    MIP_PRINT;
     //MWindow = new MIP_Window(256,256,this,true);
     MWindow->reparent(AWindow);
     return true;
@@ -164,7 +164,7 @@ public: // clap.gui
   //----------
 
   virtual void show() {
-    //MIP_PRINT;
+    MIP_PRINT;
     MWindow->setOwnerWindow(MWindow);
     //MWindow->alignWidgets();
     MWindow->open();
@@ -176,14 +176,14 @@ public: // clap.gui
   //----------
 
   virtual void hide() {
-    //MIP_PRINT;
+    MIP_PRINT;
     MEditorIsOpen = false;
     MTimer->stop();
     MWindow->close();
   }
 
   virtual bool setScale(double AScale) {
-    //MIP_Print("%.2f\n",AScale);
+    MIP_Print("%.2f\n",AScale);
     MScale = AScale;
     return true;
   }
@@ -191,7 +191,7 @@ public: // clap.gui
   //----------
 
   virtual bool getSize(uint32_t *width, uint32_t *height) {
-    //MIP_Print("-> %i,%i\n",MWidth,MHeight);
+    MIP_Print("-> %i,%i\n",MWidth,MHeight);
     *width = MWidth;
     *height = MHeight;
     return true;
@@ -200,14 +200,14 @@ public: // clap.gui
   //----------
 
   virtual bool canResize() {
-    //MIP_Print("-> %s\n",MCanResize?"true":"false");
+    MIP_Print("-> %s\n",MCanResize?"true":"false");
     return MCanResize;
   }
 
   //----------
 
   virtual void adjustSize(uint32_t *width, uint32_t *height) {
-    //MIP_Print("-> %i,%i\n",MResizeWidth,MResizeHeight);
+    MIP_Print("*width:%i *height:%i\n",*width,*height);
 //    *width  = *width  & 0xffc0;
 //    *height = *height & 0xffc0;
   }
@@ -215,7 +215,7 @@ public: // clap.gui
   //----------
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    //MIP_Print("%i,%i\n",width,height);
+    MIP_Print("%i,%i\n",width,height);
 //    if ((width != MWidth) || (height != MHeight)) {
       MWidth = width;
       MHeight = height;
@@ -225,6 +225,8 @@ public: // clap.gui
 //      MWindow->paintWindow();
       // blit?
       //MWindow->on_window_resize(width,height);
+
+      MWindow->setWindowSize(width,height);
 
       MWindow->resizeWindow(width,height);
       MWindow->on_window_paint(0,0,width,height);

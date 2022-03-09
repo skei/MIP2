@@ -40,6 +40,13 @@ class MIP_XcbWindow
 , public MIP_Drawable {
 
 //------------------------------
+protected:
+//------------------------------
+
+  int32_t                     MWindowWidth                  = 0;
+  int32_t                     MWindowHeight                 = 0;
+
+//------------------------------
 private:
 //------------------------------
 
@@ -60,8 +67,8 @@ private:
   //xcb_window_t                MWindowParent                 = XCB_NONE;
   int32_t                     MWindowXpos                   = 0;
   int32_t                     MWindowYpos                   = 0;
-  int32_t                     MWindowWidth                  = 0;
-  int32_t                     MWindowHeight                 = 0;
+//  int32_t                     MWindowWidth                  = 0;
+//  int32_t                     MWindowHeight                 = 0;
   bool                        MWindowMapped                 = false;
   bool                        MWindowExposed                = false;
 
@@ -615,6 +622,7 @@ private:
         int32_t y = configure_notify->y;
         int32_t w = configure_notify->width;
         int32_t h = configure_notify->height;
+        //MIP_Print("XCB_CONFIGURE_NOTIFY. event_x:%i event_y:%i width:%i height:%i\n",x,y,w,h);
 
         //MIP_Print("%i,%i\n",w,h);
 
@@ -650,6 +658,7 @@ private:
         int32_t w = expose->width;
         int32_t h = expose->height;
         //RECT = MIP_Rect(x,y,w,h);
+        //MIP_Print("XCB_EXPOSE_NOTIFY. event_x:%i event_y:%i width:%i height:%i\n",x,y,w,h);
 
         // https://cairographics.org/cookbook/xcbsurface.c/
         // Avoid extra redraws by checking if this is the last expose event in the sequence
@@ -747,6 +756,7 @@ private:
         int32_t   x = motion_notify->event_x;
         int32_t   y = motion_notify->event_y;
         uint32_t ts = motion_notify->time;
+        //MIP_Print("XCB_MOTION_NOTIFY. state:%i event_x:%i event_y:%i time:%i\n",s,x,y,ts);
         on_window_mouseMove(x,y,s,ts);
         break;
       }
@@ -762,6 +772,7 @@ private:
         int32_t   x = enter_notify->event_x;
         int32_t   y = enter_notify->event_y;
         uint32_t ts = enter_notify->time;
+        MIP_Print("XCB_ENTER_NOTIFY. event_x:%i event_y:%i time:%i\n",x,y,ts);
       //#endif
         on_window_mouseEnter(x,y,ts);
         break;
@@ -776,6 +787,10 @@ private:
         int32_t   x = leave_notify->event_x;
         int32_t   y = leave_notify->event_y;
         uint32_t ts = leave_notify->time;
+
+        //xcb_window_t parent = leave_notify->event;
+
+        MIP_Print("XCB_LEAVE_NOTIFY. event_x:%i event_y:%i time:%i\n",x,y,ts);
         //#endif
         on_window_mouseLeave(x,y,ts);
         break;
@@ -1011,8 +1026,8 @@ public:
 //------------------------------
 
   void setWindowPos(uint32_t AXpos, uint32_t AYpos) override {
-    MWindowXpos = AXpos;
-    MWindowYpos = AYpos;
+//    MWindowXpos = AXpos;
+//    MWindowYpos = AYpos;
     static uint32_t values[] = {
       (uint32_t)AXpos,
       (uint32_t)AYpos
@@ -1024,12 +1039,15 @@ public:
   //----------
 
   void setWindowSize(uint32_t AWidth, uint32_t AHeight) override {
-    MWindowWidth = AWidth;
-    MWindowHeight = AHeight;
+//    MWindowWidth = AWidth;
+//    MWindowHeight = AHeight;
     static uint32_t values[] = {
       (uint32_t)AWidth,
       (uint32_t)AHeight
     };
+
+    MIP_Print("*** calling xcb_configure_window, width/height %i,%i\n",AWidth,AHeight);
+
     xcb_configure_window(MConnection,MWindow,XCB_CONFIG_WINDOW_WIDTH|XCB_CONFIG_WINDOW_HEIGHT,values);
     xcb_flush(MConnection);
     //cairo_xcb_surface_set_size:

@@ -28,13 +28,15 @@
 //
 //----------------------------------------------------------------------
 
-#ifdef MIP_PLUGIN_USE_INVALIDATION
-#include "plugin/clap/mip_clap_invalidation.h"
-#endif
+//#ifdef MIP_PLUGIN_USE_INVALIDATION
+//#include "plugin/clap/mip_clap_invalidation.h"
+//#endif
 
 //#include "plugin/clap/mip_clap_factory.h"
 
 #include "plugin/clap/mip_clap_entry.h"
+
+//TODO
 
 //#include "plugin/wrapper/mip_exe_wrapper.h"
 //#include "plugin/wrapper/mip_lv2_wrapper.h"
@@ -48,26 +50,33 @@
 //
 //----------------------------------------------------------------------
 
-//struct MIP_Parameter {
-//  const clap_param_info_t* ptr = nullptr;
-//};
-//
-//struct MIP_AudioPort {
-//  const clap_audio_port_info_t* ptr = nullptr;
-//};
-//
-//struct MIP_NotePort {
-//  const clap_note_port_info_t* ptr = nullptr;
-//};
-//
-//struct MIP_QuickControl {
-//  const clap_quick_controls_page_t* ptr = nullptr;
-//};
-//
-//typedef MIP_Array<MIP_Parameter*>     MIP_Parameters;
-//typedef MIP_Array<MIP_AudioPort*>     MIP_AudioPorts;
-//typedef MIP_Array<MIP_NotePort*>      MIP_NotePorts;
-//typedef MIP_Array<MIP_QuickControl*>  MIP_QuickControls;
+/*
+
+struct MIP_Parameter {
+  const clap_param_info_t* ptr = nullptr;
+  float       from01(float value) {}
+  float       to01(float value) {}
+  const char* getDisplayText(float value) {}
+};
+
+struct MIP_AudioPort {
+  const clap_audio_port_info_t* ptr = nullptr;
+};
+
+struct MIP_NotePort {
+  const clap_note_port_info_t* ptr = nullptr;
+};
+
+struct MIP_QuickControl {
+  const clap_quick_controls_page_t* ptr = nullptr;
+};
+
+typedef MIP_Array<MIP_Parameter*>     MIP_Parameters;
+typedef MIP_Array<MIP_AudioPort*>     MIP_AudioPorts;
+typedef MIP_Array<MIP_NotePort*>      MIP_NotePorts;
+typedef MIP_Array<MIP_QuickControl*>  MIP_QuickControls;
+
+*/
 
 //----------
 
@@ -231,7 +240,7 @@ protected: // ??
   //----------
 
   // queued in on_editor_updateParameter()
-  // called from handle_events_output (end of process)
+  // called from handle_events_output (end of process), flush
 
   void flushHostParams(const clap_output_events_t* out_events) {
     uint32_t index = 0;
@@ -682,7 +691,6 @@ public: // gui
     if (is_floating) return false;
     MEditor = new MIP_Editor(this,this,256,256);
     if (MEditor) {
-      //MEditor->createWindow();
       return true;
     }
     return false;
@@ -694,10 +702,8 @@ public: // gui
     //MIP_Print("\n");
     if (MEditorIsOpen) {
       MEditorIsOpen = false;
-      //gui_hide();
       MEditor->hide();
     }
-    //MEditor->destroyWindow();
     delete MEditor;
     MEditor = nullptr;
   }

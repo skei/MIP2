@@ -217,6 +217,8 @@ public:
 
   //----------
 
+  // returns this if no child widget at x/y
+
   MIP_Widget* findWidget(float AXpos, float AYpos, bool ARecursive=true) {
     if (MChildren.size() > 0) {
       for (int32_t i = MChildren.size()-1; i >= 0; i--) {
