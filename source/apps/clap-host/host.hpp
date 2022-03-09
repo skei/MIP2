@@ -223,7 +223,7 @@ public: // extensions
   virtual bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) { return false; }
   virtual bool timer_support_unregister_timer(clap_id timer_id) { return false; }
   virtual bool track_info_get(clap_track_info *info) { return false; }
-  virtual double tuning_get(int32_t key, int32_t channel) { return 0.0; }
+//  virtual double tuning_get(int32_t key, int32_t channel) { return 0.0; }
 
 //------------------------------
 private:
@@ -571,14 +571,14 @@ private: // extensions
 
   // tuning.draft/0
 
-  static double clap_host_tuning_get_callback(const clap_host *host, int32_t key, int32_t channel) {
-    Host* host_ = (Host*)host->host_data;
-    return host_->tuning_get(key,channel);
-  }
-
-  clap_host_tuning MTuning = {
-    clap_host_tuning_get_callback
-  };
+//  static double clap_host_tuning_get_callback(const clap_host *host, int32_t key, int32_t channel) {
+//    Host* host_ = (Host*)host->host_data;
+//    return host_->tuning_get(key,channel);
+//  }
+//
+//  clap_host_tuning MTuning = {
+//    clap_host_tuning_get_callback
+//  };
 
 
 };
