@@ -272,15 +272,15 @@ private:
 
   void createWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
     uint32_t event_mask =
-      XCB_EVENT_MASK_KEY_PRESS      |
-      XCB_EVENT_MASK_KEY_RELEASE    |
-      XCB_EVENT_MASK_BUTTON_PRESS   |
-      XCB_EVENT_MASK_BUTTON_RELEASE |
-      XCB_EVENT_MASK_ENTER_WINDOW   |
-      XCB_EVENT_MASK_LEAVE_WINDOW   |
-      XCB_EVENT_MASK_POINTER_MOTION |
-      XCB_EVENT_MASK_EXPOSURE       |
-//      XCB_EVENT_MASK_RESIZE_REDIRECT |
+      XCB_EVENT_MASK_KEY_PRESS        |
+      XCB_EVENT_MASK_KEY_RELEASE      |
+      XCB_EVENT_MASK_BUTTON_PRESS     |
+      XCB_EVENT_MASK_BUTTON_RELEASE   |
+      XCB_EVENT_MASK_ENTER_WINDOW     |
+      XCB_EVENT_MASK_LEAVE_WINDOW     |
+      XCB_EVENT_MASK_POINTER_MOTION   |
+      XCB_EVENT_MASK_EXPOSURE         |
+    //XCB_EVENT_MASK_RESIZE_REDIRECT  |
       XCB_EVENT_MASK_STRUCTURE_NOTIFY;
     uint32_t window_mask =
       XCB_CW_BACK_PIXMAP  |
@@ -387,9 +387,9 @@ private:
   //----------
 
   void initThreads() {
-//    MTimerThread        = 0;
-//    MTimerThreadActive  = false;
-//    MTimerSleep         = 30;
+    //MTimerThread        = 0;
+    //MTimerThreadActive  = false;
+    //MTimerSleep         = 30;
     //#ifndef MIP_XCB_NO_EVENT_THREAD
     MEventThread        = 0;
     MEventThreadActive  = false;
@@ -399,7 +399,7 @@ private:
   //----------
 
   void cleanupThreads() {
-//    if (MTimerThreadActive) stopTimer();
+    //if (MTimerThreadActive) stopTimer();
     //#ifndef MIP_XCB_NO_EVENT_THREAD
     if (MEventThreadActive) stopEventThread();
     //#endif
@@ -772,7 +772,7 @@ private:
         int32_t   x = enter_notify->event_x;
         int32_t   y = enter_notify->event_y;
         uint32_t ts = enter_notify->time;
-        MIP_Print("XCB_ENTER_NOTIFY. event_x:%i event_y:%i time:%i\n",x,y,ts);
+        //MIP_Print("XCB_ENTER_NOTIFY. event_x:%i event_y:%i time:%i\n",x,y,ts);
       //#endif
         on_window_mouseEnter(x,y,ts);
         break;
@@ -787,10 +787,8 @@ private:
         int32_t   x = leave_notify->event_x;
         int32_t   y = leave_notify->event_y;
         uint32_t ts = leave_notify->time;
-
         //xcb_window_t parent = leave_notify->event;
-
-        MIP_Print("XCB_LEAVE_NOTIFY. event_x:%i event_y:%i time:%i\n",x,y,ts);
+        //MIP_Print("XCB_LEAVE_NOTIFY. event_x:%i event_y:%i time:%i\n",x,y,ts);
         //#endif
         on_window_mouseLeave(x,y,ts);
         break;
@@ -1026,31 +1024,22 @@ public:
 //------------------------------
 
   void setWindowPos(uint32_t AXpos, uint32_t AYpos) override {
-//    MWindowXpos = AXpos;
-//    MWindowYpos = AYpos;
-    static uint32_t values[] = {
-      (uint32_t)AXpos,
-      (uint32_t)AYpos
-    };
-    xcb_configure_window(MConnection,MWindow,XCB_CONFIG_WINDOW_X|XCB_CONFIG_WINDOW_Y,values);
+    //MWindowXpos = AXpos;
+    //MWindowYpos = AYpos;
+    uint32_t values[] = { AXpos, AYpos };
+    xcb_configure_window(MConnection,MWindow,XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y,values);
     xcb_flush(MConnection);
   }
 
   //----------
 
   void setWindowSize(uint32_t AWidth, uint32_t AHeight) override {
-//    MWindowWidth = AWidth;
-//    MWindowHeight = AHeight;
-    static uint32_t values[] = {
-      (uint32_t)AWidth,
-      (uint32_t)AHeight
-    };
-
-    MIP_Print("*** calling xcb_configure_window, width/height %i,%i\n",AWidth,AHeight);
-
-    xcb_configure_window(MConnection,MWindow,XCB_CONFIG_WINDOW_WIDTH|XCB_CONFIG_WINDOW_HEIGHT,values);
+    //MWindowWidth = AWidth;
+    //MWindowHeight = AHeight;
+    uint32_t values[] = { AWidth, AHeight };
+    //MIP_Print("> calling xcb_configure_window %i,%i\n",AWidth,AHeight);
+    xcb_configure_window(MConnection,MWindow,XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT,values);
     xcb_flush(MConnection);
-    //cairo_xcb_surface_set_size:
   }
 
   //----------
@@ -1080,13 +1069,10 @@ public:
     waitForMapNotify();
     #endif
     if (MEmbedded) startEventThread();
-    //paint?
     //xcb_flush(MConnection);
     setMouseCursor(MIP_CURSOR_DEFAULT);
     xcb_flush(MConnection);
-
     //on_window_open(MWindowWidth,MWindowHeight);
-
   }
 
   //----------
@@ -1332,13 +1318,11 @@ public:
   //----------
 
   void fill(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, MIP_Color AColor) override {
-
     // set color
     uint32_t mask = XCB_GC_FOREGROUND;
     uint32_t values[1];
     values[0] = xcb_color(AColor);
     xcb_change_gc(MConnection,MScreenGC,mask,values);
-
     // fill rectangle
     xcb_rectangle_t rectangles[] = {{
       (int16_t)AXpos,     //0,

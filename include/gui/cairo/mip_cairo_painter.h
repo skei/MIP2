@@ -113,7 +113,7 @@ public:
       MCairo = cairo_create(MSurface);
       MIP_CHECK_CAIRO_ERROR(MCairo);
       //cairo_set_line_width(MCairo,1);
-      //setFontSize(11);
+      setFontSize(11);
     }
     else {
       //MIP_Print("! ADrawable->isCairo()\n");
@@ -261,8 +261,8 @@ public: // clip
 
   void setClip(MIP_FRect ARect) override {
     //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
-    //cairo_reset_clip(MCairo);
-    resetClip();
+    //resetClip();
+    cairo_reset_clip(MCairo);
     cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w+1,ARect.h+1);
     cairo_clip(MCairo);
     //cairo_new_path(MCairo); // path not consumed by clip() ???

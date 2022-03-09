@@ -155,7 +155,7 @@ public: // clap.gui
 //------------------------------
 
   virtual bool attach(const char* ADisplay, uint32_t AWindow) {
-    MIP_PRINT;
+    //MIP_PRINT;
     //MWindow = new MIP_Window(256,256,this,true);
     MWindow->reparent(AWindow);
     return true;
@@ -164,11 +164,10 @@ public: // clap.gui
   //----------
 
   virtual void show() {
-    MIP_PRINT;
+    //MIP_PRINT;
     MWindow->setOwnerWindow(MWindow);
     //MWindow->alignWidgets();
     MWindow->open();
-    //
     MTimer->start(30);
     MEditorIsOpen = true;
   }
@@ -176,14 +175,16 @@ public: // clap.gui
   //----------
 
   virtual void hide() {
-    MIP_PRINT;
+    //MIP_PRINT;
     MEditorIsOpen = false;
     MTimer->stop();
     MWindow->close();
   }
 
+  //----------
+
   virtual bool setScale(double AScale) {
-    MIP_Print("%.2f\n",AScale);
+    //MIP_Print("%.2f\n",AScale);
     MScale = AScale;
     return true;
   }
@@ -191,7 +192,7 @@ public: // clap.gui
   //----------
 
   virtual bool getSize(uint32_t *width, uint32_t *height) {
-    MIP_Print("-> %i,%i\n",MWidth,MHeight);
+    //MIP_Print("-> %i,%i\n",MWidth,MHeight);
     *width = MWidth;
     *height = MHeight;
     return true;
@@ -200,38 +201,28 @@ public: // clap.gui
   //----------
 
   virtual bool canResize() {
-    MIP_Print("-> %s\n",MCanResize?"true":"false");
+    //MIP_Print("-> %s\n",MCanResize?"true":"false");
     return MCanResize;
   }
 
   //----------
 
   virtual void adjustSize(uint32_t *width, uint32_t *height) {
-    MIP_Print("*width:%i *height:%i\n",*width,*height);
-//    *width  = *width  & 0xffc0;
-//    *height = *height & 0xffc0;
+    //MIP_Print("*width:%i *height:%i\n",*width,*height);
+    *width  = *width  & 0xffc0;
+    *height = *height & 0xffc0;
   }
 
   //----------
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    MIP_Print("%i,%i\n",width,height);
-//    if ((width != MWidth) || (height != MHeight)) {
-      MWidth = width;
-      MHeight = height;
-//      MResizeWidth = width;
-//      MResizeHeight = height;
-//      MWindow->resizeWindow(MWidth,MHeight);
-//      MWindow->paintWindow();
-      // blit?
-      //MWindow->on_window_resize(width,height);
-
-      MWindow->setWindowSize(width,height);
-
-      MWindow->resizeWindow(width,height);
-      MWindow->on_window_paint(0,0,width,height);
-
-//    }
+    //MIP_Print("%i,%i\n",width,height);
+    MWidth = width;
+    MHeight = height;
+    MWindow->setWindowSize(width,height);       // calls xcb_configure_window(w,h)
+    MWindow->resizeWindow(width,height);        // buffer, realign, painter.resize
+    //MWindow->on_window_paint(0,0,width,height);
+//    MWindow->paint();
     return true;
   }
 
@@ -242,6 +233,8 @@ public:
   MIP_Window* getWindow() {
     return MWindow;
   }
+
+  //----------
 
   void setCanResize(bool AResize=true) {
     MCanResize = AResize;
@@ -294,8 +287,8 @@ private: // window listener
 
   void on_resizeFromWindow(uint32_t AWidth, uint32_t AHeight) final {
     //MIP_Print("%i,%i\n",AWidth,AHeight);
-//    MResizeWidth = AWidth;
-//    MResizeHeight = AHeight;
+    //MResizeWidth = AWidth;
+    //MResizeHeight = AHeight;
     if (MListener) MListener->on_editor_resize(AWidth,AHeight);
   }
 
@@ -357,14 +350,6 @@ public:
 public:
 //------------------------------
 
-  /*
-    if both parameter value and modulation is modified, the widget will be
-    painted twice..
-
-    TODO: check for duplicates and use latest
-          max redraws per frame
-  */
-
   // called from updateParameterFromHost()
 
   void queueGuiParam(uint32_t AIndex) {
@@ -384,7 +369,7 @@ public:
         if (widget) {
           if (widget->getValue() != value)
           widget->setValue(value);
-//          MWindow->paintWidget(widget);
+          //MWindow->paintWidget(widget);
           if (MChangedParmeters.findItem(widget) < 0) {
             MChangedParmeters.append(widget);
           }
@@ -410,7 +395,7 @@ public:
         if (widget) {
           //if (widget->getModValue() != value)
           widget->setModValue(value);
-//          MWindow->paintWidget(widget);
+          //MWindow->paintWidget(widget);
           if (MChangedParmeters.findItem(widget) < 0) {
             MChangedParmeters.append(widget);
           }

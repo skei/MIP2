@@ -1,10 +1,11 @@
 
 #define MIP_USE_XCB
-#define MIP_USE_CAIRO
 #define MIP_GUI_XCB
-//#define MIP_PAINTER_XCB
-#define MIP_PAINTER_CAIRO
+#define MIP_PAINTER_XCB
+//#define MIP_USE_CAIRO
+//#define MIP_PAINTER_CAIRO
 //#define MIP_NO_WINDOW_BUFFERING
+//#define MIP_XCB_WAIT_FOR_MAPNOTIFY
 
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
@@ -261,7 +262,7 @@ public: // plugin
     bool result = (MEditor);
     if (result) {
 
-      //MEditor->setCanResize();
+      MEditor->setCanResize();
 
       MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect(100,100) );
       menu1->appendMenuItem("first");

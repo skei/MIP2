@@ -89,9 +89,6 @@ public:
       MIP_FRect rect = MRect;
       rect.overlap(ARect);
 
-// qwe debug
-//      MIP_FRect rect = ARect;
-
       if (rect.isNotEmpty()) {
         APainter->fillRectangle(rect,MBackgroundColor);
       }
