@@ -24,7 +24,7 @@
 */
 
 bool clap_entry_init_callback(const char *plugin_path) {
-  MIP_Register(&MIP_CLAP_REGISTRY);
+  if (MIP_Register) MIP_Register(&MIP_CLAP_REGISTRY);
   //MIP_Assert(MIP_GLOBAL_CLAP_LIST.getNumPlugins() > 0);
   return true;
 }
@@ -33,10 +33,12 @@ bool clap_entry_init_callback(const char *plugin_path) {
 
 /*
   No more calls into the DSO must be made after calling deinit().
+
+  not called during enumeration (process just deleted?)
 */
 
 void clap_entry_deinit_callback() {
-  //MIP_UnregisterPlugins(&MIP_GLOBAL_CLAP_LIST);
+  if (MIP_Unregister) MIP_Unregister(&MIP_CLAP_REGISTRY);
 }
 
 //----------

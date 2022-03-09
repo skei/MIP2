@@ -209,8 +209,8 @@ public: // clap.gui
 
   virtual void adjustSize(uint32_t *width, uint32_t *height) {
     //MIP_Print("*width:%i *height:%i\n",*width,*height);
-    *width  = *width  & 0xffc0;
-    *height = *height & 0xffc0;
+//    *width  = *width  & 0xffc0;
+//    *height = *height & 0xffc0;
   }
 
   //----------

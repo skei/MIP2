@@ -338,7 +338,6 @@ public: // plugin
 #undef NUM_NOTE_INPUTS
 #undef NUM_NOTE_OUTPUTS
 #undef NUM_QUICK_CONTROLS
-
 #undef ALL_DIALECTS
 
 //----------------------------------------------------------------------
@@ -364,6 +363,11 @@ void MIP_Register(MIP_ClapRegistry* ARegistry) {
   ARegistry->appendPlugin(&myDescriptor);
   ARegistry->appendPlugin(&myDescriptor2);
 }
+
+//----------
+
+//void MIP_Unregister(MIP_ClapRegistry* ARegistry) {
+//}
 
 //----------------------------------------------------------------------
 
