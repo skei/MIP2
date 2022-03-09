@@ -623,7 +623,6 @@ private:
         int32_t w = configure_notify->width;
         int32_t h = configure_notify->height;
         //MIP_Print("XCB_CONFIGURE_NOTIFY. event_x:%i event_y:%i width:%i height:%i\n",x,y,w,h);
-
         //MIP_Print("%i,%i\n",w,h);
 
         // use last event only..
@@ -644,6 +643,7 @@ private:
           on_window_resize(w,h);
         }
         break;
+
       }
 
       //----------

@@ -214,12 +214,8 @@ public: // window
     #endif
     MRect.w = AWidth;
     MRect.h = AHeight;
-    //MWindowWidth = AWidth;
-    //MWindowHeight = AHeight;
     alignWidgets();
-    //setWindowSize(AWidth,AHeight);
     if (MWindowPainter) {
-      //MWindowPainter->resetClip();
       MWindowPainter->resize(AWidth,AHeight);
     }
   }
@@ -251,7 +247,7 @@ public: // widget
 //------------------------------
 
   void paint() {
-    MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",MRect.x,MRect.y,MRect.w,MRect.h);
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",MRect.x,MRect.y,MRect.w,MRect.h);
     #ifdef MIP_NO_WINDOW_BUFFERING
     paintWindow(MRect);
     #else
@@ -260,7 +256,7 @@ public: // widget
   }
 
   void paint(MIP_FRect ARect) {
-    MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     #ifdef MIP_NO_WINDOW_BUFFERING
     paintWindow(ARect);
     #else
@@ -270,7 +266,7 @@ public: // widget
 
   void paintWidget(MIP_Widget* AWidget) {
     MIP_FRect rect = AWidget->getRect();
-    MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",rect.x,rect.y,rect.w,rect.h);
+    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",rect.x,rect.y,rect.w,rect.h);
     #ifdef MIP_NO_WINDOW_BUFFERING
     paintWindow(rect);
     #else

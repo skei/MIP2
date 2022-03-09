@@ -220,9 +220,6 @@ public: // clap.gui
     MWidth = width;
     MHeight = height;
     MWindow->setWindowSize(width,height);       // calls xcb_configure_window(w,h)
-    MWindow->resizeWindow(width,height);        // buffer, realign, painter.resize
-    //MWindow->on_window_paint(0,0,width,height);
-//    MWindow->paint();
     return true;
   }
 
