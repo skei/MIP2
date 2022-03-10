@@ -24,7 +24,7 @@
 */
 
 bool clap_entry_init_callback(const char *plugin_path) {
-  if (MIP_Register) MIP_Register(&MIP_CLAP_REGISTRY);
+  //if (MIP_Register) MIP_Register(&MIP_CLAP_REGISTRY);
   //MIP_Assert(MIP_GLOBAL_CLAP_LIST.getNumPlugins() > 0);
   return true;
 }
@@ -38,7 +38,7 @@ bool clap_entry_init_callback(const char *plugin_path) {
 */
 
 void clap_entry_deinit_callback() {
-  if (MIP_Unregister) MIP_Unregister(&MIP_CLAP_REGISTRY);
+  //if (MIP_Unregister) MIP_Unregister(&MIP_CLAP_REGISTRY);
 }
 
 //----------

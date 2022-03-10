@@ -52,7 +52,7 @@ public:
 //------------------------------
 
   MIP_ClapRegistry() {
-    //MIP_RegisterPlugins(this);
+    if (MIP_Register) MIP_Register(this);
   }
 
   //----------
@@ -67,6 +67,7 @@ public:
         free(desc);
       }
     }
+    if (MIP_Unregister) MIP_Unregister(this);
   }
 
 //------------------------------

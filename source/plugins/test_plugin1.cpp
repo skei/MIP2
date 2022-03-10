@@ -8,7 +8,7 @@
 //#define MIP_NO_WINDOW_BUFFERING
 //#define MIP_XCB_WAIT_FOR_MAPNOTIFY
 
-#define MIP_DEBUG_PRINT_SOCKET
+//#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 //----------
@@ -372,6 +372,7 @@ void MIP_Register(MIP_ClapRegistry* ARegistry) {
 //----------------------------------------------------------------------
 
 MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
+  MIP_PRINT;
   switch (AIndex) {
     case 0: return new myPlugin(ADescriptor,AHost);
     case 1: return new myPlugin2(ADescriptor,AHost);

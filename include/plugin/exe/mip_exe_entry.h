@@ -11,10 +11,11 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host.h"
-#include "plugin/clap/mip_clap_list.h"
+#include "plugin/clap/mip_clap_registry.h"
 //#include "plugin/clap/mip_clap_plugin_proxy.h"
-#include "plugin/wrapper/exe/mip_exe.h"
-#include "plugin/wrapper/exe/mip_exe_plugin.h"
+#include "plugin/exe/mip_exe.h"
+#include "plugin/exe/mip_exe_plugin.h"
+#include "plugin/exe/mip_exe_host.h"
 
 #ifndef MIP_NO_EXE_AUDIO
 #include "audio/mip_audio_jack.h"
@@ -30,13 +31,14 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_ExeEntry {
+class MIP_ExeEntry
+: public MIP_WindowListener {
 
 //------------------------------
 private:
 //------------------------------
 
-  MIP_ClapHost  MHost = {};
+  //MIP_ExeHost* MHost = nullptr;
 
   #ifndef MIP_NO_EXE_AUDIO
   MIP_AudioJack MAudio;
@@ -61,8 +63,7 @@ public:
 
   int main(int argc, char** argv) {
 
-    #if 0
-
+MIP_PRINT;
 
     #ifndef MIP_NO_EXE_AUDIO
       //MAudio.config(44100.0,256,3,2,2);
@@ -70,28 +71,18 @@ public:
       MAudio.start();
     #endif
 
-
-//    const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
-//    const clap_plugin_t*            plugin      = MIP_CreatePlugin(MHost.ptr(),descriptor->id); // deleted in MIP_ExePlugin destructor
-//    MIP_ExePlugin*                  exeplugin   = new MIP_ExePlugin(plugin);
-
-
-
-
     uint32_t index = 0;
-    const clap_plugin_descriptor_t* desc = MIP_GLOBAL_CLAP_LIST.getPlugin(index);
-    MIP_ClapHost* host = new MIP_ClapHost();  // TODO: MIP_ExeClapHost : public MIP_ClapHost
-    MIP_ClapPlugin* mipplugin = MIP_CreatePlugin(0,desc,host->ptr());
-
-//    MIP_GLOBAL_CLAP_LIST.appendInstance(mipplugin);
-
+    const clap_plugin_descriptor_t* desc = MIP_CLAP_REGISTRY.getPlugin(index);
+    MIP_ExeHost* host = new MIP_ExeHost(argc,argv);  // TODO: MIP_ExeClapHost : public MIP_ClapHost
+    MIP_ClapPlugin* mipplugin = nullptr;
+    if (MIP_CreatePlugin) {
+      mipplugin = MIP_CreatePlugin(0,desc,host->ptr());
+    }
+    else {
+    }
     const clap_plugin_t* plugin = mipplugin->ptr();
     plugin->init(plugin);
 
-
-
-    const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(plugin,CLAP_EXT_GUI);
-    const clap_plugin_gui_x11_t* gui_x11 = (const clap_plugin_gui_x11_t*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);
 
 //    plugin->on_plugin_init();
 //    plugin->on_plugin_activate(44100,256,256);
@@ -100,19 +91,47 @@ public:
 
     #ifndef MIP_NO_GUI
 
-    gui->create(plugin);
-    gui_x11->attach(plugin,"",0);
-    gui->show(plugin);
+    /*
+      Showing the GUI works as follow:
+       1. clap_plugin_gui->is_api_supported(), check what can work
+       2. clap_plugin_gui->create(), allocates gui resources
+       3. if the plugin window is floating
+       4.    -> clap_plugin_gui->set_transient()
+       5.    -> clap_plugin_gui->suggest_title()
+       6. else
+       7.    -> clap_plugin_gui->set_scale(), if the function pointer is provided by the plugin
+       8.    -> clap_plugin_gui->get_size(), gets initial size
+       9.    -> clap_plugin_gui->can_resize()
+      10. clap_plugin_gui->show()
+      11. clap_plugin_gui->hide()/show() ...
+      12. clap_plugin_gui->destroy() when done with the gui
+    */
 
-//    MIP_Editor* editor = plugin->getEditor();
-//    MIP_Window* window = editor->getWindow();
-//    if (window) {
-//      window->paint();
-//      window->eventLoop();
-//    }
+    const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(plugin,CLAP_EXT_GUI);
+    if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
+      gui->create(plugin,CLAP_WINDOW_API_X11,false);
+      gui->set_scale(plugin,1.0);
+      uint32_t width = 0.0;
+      uint32_t height = 0.0;
+      gui->get_size(plugin,&width,&height);
+      //if (gui->can_resize(plugin)) {}
 
-    gui->hide(plugin);
-    gui->destroy(plugin);
+      MIP_Window* window = new MIP_Window(width,height,this);
+      window->open();
+      clap_window_t clap_window = {};
+      clap_window.api = CLAP_WINDOW_API_X11;
+      clap_window.x11 = window->getXcbWindow();
+      gui->set_parent( plugin, &clap_window );
+
+      gui->show(plugin);
+      window->eventLoop();
+
+      window->close();
+      delete window;
+      //gui->hide(plugin);
+      gui->destroy(plugin);
+
+    }
 
 //    delete editor;
 
@@ -143,14 +162,13 @@ public:
 //    plugin->destroy(plugin);
 
     plugin->destroy(plugin);
+
     delete host;
 
     #ifndef MIP_NO_EXE_AUDIO
       MAudio.stop();
       MAudio.exit();
     #endif
-
-    #endif // 0
 
     return 0;
   }

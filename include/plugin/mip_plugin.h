@@ -28,21 +28,8 @@
 //
 //----------------------------------------------------------------------
 
-//#ifdef MIP_PLUGIN_USE_INVALIDATION
-//#include "plugin/clap/mip_clap_invalidation.h"
-//#endif
-
-//#include "plugin/clap/mip_clap_factory.h"
-
 #include "plugin/clap/mip_clap_entry.h"
-
-//TODO
-
-//#include "plugin/wrapper/mip_exe_wrapper.h"
-//#include "plugin/wrapper/mip_lv2_wrapper.h"
-//#include "plugin/wrapper/mip_vst2_wrapper.h"
-//#include "plugin/wrapper/mip_vst3_wrapper.h"
-
+#include "plugin/exe/mip_exe_entry.h"
 
 //----------------------------------------------------------------------
 //
@@ -181,6 +168,11 @@ public:
   void setParameterValue(uint32_t AIndex, float AValue) {
     MParameterValues[AIndex] = AValue;
   }
+
+//  #ifndef MIP_NO_GUI
+//  MIP_Editor* getEditor() { return MEditor; }
+//  bool        isEditorOpen() { return MEditorIsOpen; }
+//  #endif
 
 //------------------------------
 public:
