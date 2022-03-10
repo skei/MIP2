@@ -212,12 +212,12 @@ public: // window
     #ifndef MIP_NO_WINDOW_BUFFERING
       resizeBuffer(AWidth,AHeight);
     #endif
-    MRect.w = AWidth;
-    MRect.h = AHeight;
-    alignWidgets();
     if (MWindowPainter) {
       MWindowPainter->resize(AWidth,AHeight);
     }
+    MRect.w = AWidth;
+    MRect.h = AHeight;
+    alignWidgets();
   }
 
   //----------

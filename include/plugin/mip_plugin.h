@@ -29,7 +29,10 @@
 //----------------------------------------------------------------------
 
 #include "plugin/clap/mip_clap_entry.h"
-#include "plugin/exe/mip_exe_entry.h"
+
+#ifdef MIP_PLUGIN_EXE
+  #include "plugin/exe/mip_exe_entry.h"
+#endif
 
 //----------------------------------------------------------------------
 //

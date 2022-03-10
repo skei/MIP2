@@ -17,6 +17,7 @@
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-DMIP_DEBUG" />
+					<Add option="-DMIP_EXE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -31,6 +32,7 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-fno-pie" />
+					<Add option="-DMIP_EXE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -49,6 +51,7 @@
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-fsanitize=leak" />
 					<Add option="-DMIP_DEBUG" />
+					<Add option="-DMIP_EXE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -69,6 +72,7 @@
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-DMIP_DEBUG" />
+					<Add option="-DMIP_PLUGIN" />
 				</Compiler>
 			</Target>
 			<Target title="plugin release">
@@ -83,6 +87,7 @@
 					<Add option="-O3" />
 					<Add option="-fPIC" />
 					<Add option="-fvisibility=hidden" />
+					<Add option="-DMIP_PLUGIN" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />
@@ -103,6 +108,7 @@
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
 					<Add option="-DMIP_DEBUG" />
+					<Add option="-DMIP_PLUGIN" />
 				</Compiler>
 			</Target>
 		</Build>
