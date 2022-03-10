@@ -622,7 +622,7 @@ private:
         int32_t y = configure_notify->y;
         int32_t w = configure_notify->width;
         int32_t h = configure_notify->height;
-        MIP_Print("XCB_CONFIGURE_NOTIFY. event_x:%i event_y:%i width:%i height:%i\n",x,y,w,h);
+        //MIP_Print("XCB_CONFIGURE_NOTIFY. event_x:%i event_y:%i width:%i height:%i\n",x,y,w,h);
         //MIP_Print("%i,%i\n",w,h);
 
         // use last event only..
@@ -658,7 +658,7 @@ private:
         int32_t w = expose->width;
         int32_t h = expose->height;
         //RECT = MIP_Rect(x,y,w,h);
-        MIP_Print("XCB_EXPOSE_NOTIFY. event_x:%i event_y:%i width:%i height:%i\n",x,y,w,h);
+        //MIP_Print("XCB_EXPOSE_NOTIFY. event_x:%i event_y:%i width:%i height:%i\n",x,y,w,h);
 
         // https://cairographics.org/cookbook/xcbsurface.c/
         // Avoid extra redraws by checking if this is the last expose event in the sequence
@@ -1222,7 +1222,7 @@ public:
   //----------
 
   void paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
+    //MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
     //on_paint(MWindowPainter,ARect);
 //    if (MFillBackground) {
 //      fill(AXpos,AYpos,AWidth,AHeight,MBackgroundColor);

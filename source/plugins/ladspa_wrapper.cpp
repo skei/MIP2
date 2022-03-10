@@ -36,7 +36,7 @@ void register_ladspa_plugin(char* path, MIP_ClapRegistry* ARegistry) {
       //const char* filename = MIP_GetFilenameFromPath(path);
       //MIP_Print("%s\n",filename);
       LADSPA_Descriptor_Function get_ladspa_descriptor = (LADSPA_Descriptor_Function)dlsym(lib,"ladspa_descriptor");
-      //TODO:
+      //TODO, all indices:
       /*
       int index = 0;
       const LADSPA_Descriptor* ladspa_descriptor;

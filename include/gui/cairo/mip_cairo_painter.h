@@ -113,7 +113,7 @@ public:
       MCairo = cairo_create(MSurface);
       MIP_CHECK_CAIRO_ERROR(MCairo);
       //cairo_set_line_width(MCairo,1);
-      setFontSize(11);
+      setFontSize(12);
     }
     else {
       //MIP_Print("! ADrawable->isCairo()\n");

@@ -72,6 +72,7 @@ public:
     MContent->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     //MContent->layout.spacing = 5;
     //MContent->layout.innerBorder = 0;
+    MContent->setDrawBorder(false);
     MIP_PanelWidget::appendWidget(MContent);
 
   }

@@ -30,7 +30,7 @@
 
 #include "plugin/clap/mip_clap_entry.h"
 
-#ifdef MIP_PLUGIN_EXE
+#ifdef MIP_EXE
   #include "plugin/exe/mip_exe_entry.h"
 #endif
 
