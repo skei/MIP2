@@ -193,7 +193,7 @@ protected: // ??
   /*
     called from editor when widget changes (gui thread)
     editor.on_updateWidgetFromWindow
-    editor_listener->on_editor_updateParameter
+    editor_listener->on_updateParameterFromEditor
     flush queue in process (audio thread)
   */
 
@@ -234,7 +234,7 @@ protected: // ??
 
   //----------
 
-  // queued in on_editor_updateParameter()
+  // queued in on_updateParameterFromEditor()
   // called from handle_events_output (end of process), flush
 
   void flushHostParams(const clap_output_events_t* out_events) {
@@ -255,11 +255,11 @@ public: // editor listener
   /*
     called from editor when widget changes (gui thread)
     - editor.on_updateWidgetFromWindow
-    - editor_listener->on_editor_updateParameter
+    - editor_listener->on_updateParameterFromEditor
     flushed in start of process() (audio thread)
   */
 
-  void on_editor_updateParameter(uint32_t AIndex, float AValue) final {
+  void on_updateParameterFromEditor(uint32_t AIndex, float AValue) final {
     //MIP_Print("%i = %.3f\n",AIndex,AValue);
     MAudioParamVal[AIndex] = AValue;
     queueAudioParam(AIndex);
@@ -269,7 +269,7 @@ public: // editor listener
 
   //----------
 
-  void on_editor_resize(uint32_t AWidth, uint32_t AHeight) final {
+  void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) final {
     if (MHost && MHost->gui) {
       if (!MHost->gui->request_resize(MHost->host,AWidth,AHeight)) {
         MIP_Print("host->gui->request_resize(%i,%i) returned false\n",AWidth,AHeight);

@@ -162,7 +162,7 @@ public: // editor listener
 //  // AValue is 0..1 (widget-value)
 //  // TODO: convert via parameter if necessary..
 //
-//  void on_editor_updateParameter(uint32_t AIndex, float AValue) override {
+//  void on_updateParameterFromEditor(uint32_t AIndex, float AValue) override {
 //    //MEditorParameterValues[AIndex] = AValue;
 //    //MIP_Parameter* parameter = MDescriptor->parameters[AIndex];
 //    //float value = parameter->from01(AValue);
@@ -173,7 +173,7 @@ public: // editor listener
 //
 //  //----------
 //
-//  void on_editor_resize(uint32_t AWidth, uint32_t AHeight) override {
+//  void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) override {
 //  }
 //
 //  #endif

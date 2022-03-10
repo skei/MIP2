@@ -566,6 +566,10 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/plugins/guidemo_v0.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../source/plugins/ladspa_wrapper.cpp">
 			<Option compile="0" />
 			<Option link="0" />

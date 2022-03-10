@@ -35,33 +35,25 @@ public:
 
 public:
 
-//  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode=0) override {
-//    //MIP_Window::on_widget_paint(APainter,ARect,AMode);
-//    MEditor->MGuiParamVal[AIndex] = AValue;
-//    MEditor->queueGuiParam(AIndex);
-//  }
-
-  void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
-    //MIP_PRINT;
-    //if (MListener) MListener->do_window_redrawWidget(AWidget);
-    //invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
-    MIP_Window::do_widget_redraw(AWidget,ARect,AMode);
-  }
+  //void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
+  //  //MIP_PRINT;
+  //  MIP_Window::do_widget_redraw(AWidget,ARect,AMode);
+  //}
 
 };
 
-//----------------------------------------------------------------------
-//
-//
-//
 //----------------------------------------------------------------------
 
 class MIP_EditorListener{
 public:
-  virtual void on_editor_updateParameter(uint32_t AIndex, float AValue) {}
-  virtual void on_editor_resize(uint32_t AWidth, uint32_t AHeight) {}
+  virtual void on_updateParameterFromEditor(uint32_t AIndex, float AValue) {} // on_updateParameterFromEditor
+  virtual void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) {}       // on_resizeFromEditor
 };
 
+//----------------------------------------------------------------------
+//
+//
+//
 //----------------------------------------------------------------------
 
 class MIP_Editor
@@ -79,7 +71,6 @@ private:
   uint32_t            MHeight           = 0;
   double              MScale            = 1.0;
   bool                MCanResize        = false;
-  //MIP_Window*         MWindow           = nullptr;
   MIP_EditorWindow*   MWindow           = nullptr;
   MIP_Timer*          MTimer            = nullptr;
   MIP_Widget**        MParamToWidget    = nullptr;
@@ -88,11 +79,7 @@ private:
   float*              MGuiParamVal      = nullptr;
   float*              MGuiParamMod      = nullptr;
   bool                MEditorIsOpen     = true;
-
-//  uint32_t            MResizeWidth      = 0;
-//  uint32_t            MResizeHeight     = 0;
-
-  MIP_Widgets        MChangedParmeters = {};
+  MIP_Widgets         MChangedParmeters = {};
 
 //------------------------------
 public:
@@ -103,21 +90,17 @@ public:
     MPlugin = APlugin;
     MWidth = AWidth;
     MHeight = AHeight;
-//    MResizeWidth = AWidth;
-//    MResizeHeight = AHeight;
     MNumParams = APlugin->params_count();
     uint32_t size = MNumParams * sizeof(MIP_Widget*);
     MParamToWidget = (MIP_Widget**)malloc(size);
     memset(MParamToWidget,0,size);
     size = MNumParams * sizeof(float);
-    MGuiParamVal  = (float*)malloc(size);
-    MGuiParamMod  = (float*)malloc(size);
+    MGuiParamVal = (float*)malloc(size);
+    MGuiParamMod = (float*)malloc(size);
     memset(MGuiParamVal,0,size);
     memset(MGuiParamMod,0,size);
     MTimer = new MIP_Timer(this);
 
-    //createWindow(AWidth,AHeight);
-    //MWindow = new MIP_Window(AWidth,AHeight,this,true);
     MWindow = new MIP_EditorWindow(AWidth,AHeight,this);
 
   }
@@ -130,25 +113,9 @@ public:
     free(MGuiParamVal);
     free(MGuiParamMod);
 
-    //destroyWindow();
     if (MWindow) delete MWindow;
 
   }
-
-//------------------------------
-public:
-//------------------------------
-
-  //void createWindow() {
-  //  MWindow = new MIP_Window(MWidth,MHeight,this,true);
-  //}
-
-  //----------
-
-  //void destroyWindow() {
-  //  if (MWindow) delete MWindow;
-  //  MWindow = nullptr;
-  //}
 
 //------------------------------
 public: // clap.gui
@@ -156,7 +123,6 @@ public: // clap.gui
 
   virtual bool attach(const char* ADisplay, uint32_t AWindow) {
     //MIP_PRINT;
-    //MWindow = new MIP_Window(256,256,this,true);
     MWindow->reparent(AWindow);
     return true;
   }
@@ -166,7 +132,6 @@ public: // clap.gui
   virtual void show() {
     //MIP_PRINT;
     MWindow->setOwnerWindow(MWindow);
-    //MWindow->alignWidgets();
     MWindow->open();
     MTimer->start(30);
     MEditorIsOpen = true;
@@ -209,8 +174,8 @@ public: // clap.gui
 
   virtual void adjustSize(uint32_t *width, uint32_t *height) {
     //MIP_Print("*width:%i *height:%i\n",*width,*height);
-//    *width  = *width  & 0xffc0;
-//    *height = *height & 0xffc0;
+    //*width = *width & 0xffc0;
+    //*height = *height & 0xffc0;
   }
 
   //----------
@@ -219,7 +184,7 @@ public: // clap.gui
     //MIP_Print("%i,%i\n",width,height);
     MWidth = width;
     MHeight = height;
-    MWindow->setWindowSize(width,height);       // calls xcb_configure_window(w,h)
+    MWindow->setWindowSize(width,height);
     return true;
   }
 
@@ -239,21 +204,17 @@ public:
 
   //----------
 
-  void connect(MIP_Widget* AWidget, int32_t AParamIndex/*, int32_t ASubParamIndex=-1*/) {
+  void connect(MIP_Widget* AWidget, int32_t AParamIndex) {
     AWidget->setParamIndex(AParamIndex);
-    //AWidget->setSubParamIndex(ASubParamIndex);
     MParamToWidget[AParamIndex] = AWidget;
     //AWidget->on_widget_connect(AParamIndex,ASubParamIndex);
     clap_param_info_t info;
     MPlugin->params_get_info(AParamIndex,&info);
     const char* name = info.name;
     float def_value = info.default_value;
-    //float min_value = info.min_value;
-    //float max_value = info.max_value;
     AWidget->setDefaultValue(def_value);
     AWidget->setValue(def_value);
     AWidget->setParamName(name);
-    //AWidget->setParamDefValue(name);
   }
 
   //----------
@@ -276,7 +237,7 @@ private: // window listener
     //MIP_Print("index: %i\n",index);
     if (index >= 0) {
       float value = AWidget->getValue();
-      if (MListener) MListener->on_editor_updateParameter(index,value);
+      if (MListener) MListener->on_updateParameterFromEditor(index,value);
     }
   }
 
@@ -284,30 +245,13 @@ private: // window listener
 
   void on_resizeFromWindow(uint32_t AWidth, uint32_t AHeight) final {
     //MIP_Print("%i,%i\n",AWidth,AHeight);
-    //MResizeWidth = AWidth;
-    //MResizeHeight = AHeight;
-    if (MListener) MListener->on_editor_resize(AWidth,AHeight);
+    if (MListener) MListener->on_resizeFromEditor(AWidth,AHeight);
   }
 
 
 //------------------------------
 private: // timer listener
 //------------------------------
-
-  /*
-
-    * avoid drawing widget multiple times
-      (param & mod changed)
-      - create list (getQueuedGuiParams)
-      - add to list : getQueuedGuiMods
-      - remove duplicates from list
-          just sort the ints queued values = parameter indices,
-          duplicates should be easy to spot?
-      - paint list
-
-   * paintmode = default, value, mod
-
-  */
 
   // [timer]
 
@@ -387,11 +331,11 @@ public:
     if (MEditorIsOpen) {
       uint32_t index = 0;
       while (MGuiModQueue.read(&index)) {
-        float value = MGuiParamMod[index];
+        float valuemod = MGuiParamMod[index];
         MIP_Widget* widget = MParamToWidget[index];
         if (widget) {
           //if (widget->getModValue() != value)
-          widget->setModValue(value);
+          widget->setModValue(valuemod);
           //MWindow->paintWidget(widget);
           if (MChangedParmeters.findItem(widget) < 0) {
             MChangedParmeters.append(widget);
@@ -413,7 +357,10 @@ public:
     for (uint32_t i=0; i<MChangedParmeters.size(); i++) {
       if (MEditorIsOpen && MWindow) {
         MIP_Widget* widget = MChangedParmeters[i];
-        MWindow->paintWidget(widget);
+        //MWindow->paintWidget(widget);
+        MWindow->do_widget_redraw(widget,widget->getRect(),0);
+        //invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
+
       }
     }
   }
