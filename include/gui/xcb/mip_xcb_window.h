@@ -183,6 +183,8 @@ public:
 //  void setFillBackground(bool f=true) { MFillBackground = f; }
 //  void setBackgroundColor(MIP_Color c) { MBackgroundColor = c; }
 
+  xcb_screen_t* getXcbScreen() { return MScreen; }
+
 //------------------------------
 public: // drawable
 //------------------------------

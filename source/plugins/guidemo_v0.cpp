@@ -5,7 +5,7 @@
 #define MIP_PAINTER_CAIRO
 //#define MIP_PAINTER_XCB
 
-#define MIP_DEBUG_PRINT_SOCKET
+//#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 //----------
@@ -14,6 +14,9 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
+
+#include "base/utils/mip_strutils.h"
+#include "base/debug/mip_debug_memory.h"
 
 //----------------------------------------------------------------------
 //
@@ -135,7 +138,9 @@ public:
 //      back_panel->layout.spacing = 5;
 //      MEditorWidget->appendWidget(back_panel);
 
-      // ----- left_panel -----
+//----------
+
+      // left_panel
 
       MIP_PanelWidget* left_panel = new MIP_PanelWidget(MIP_FRect(150));
       MEditorWidget->appendWidget(left_panel);
@@ -169,9 +174,37 @@ public:
           group1->setFillBackground(true);
           group1->setBackgroundColor(MIP_Color(0.6,0.6,0.6));
 
-        MIP_KeyboardWidget* keyboard = new MIP_KeyboardWidget(MIP_FRect(60));
+        MIP_KeyboardWidget* keyboard = new MIP_KeyboardWidget(MIP_FRect(40));
         left_panel->appendWidget(keyboard);
         keyboard->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_ButtonWidget* button = new MIP_ButtonWidget(MIP_FRect(20));
+        left_panel->appendWidget(button);
+        button->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        button->setIsToggle(false);
+
+        MIP_ButtonWidget* switch1 = new MIP_ButtonWidget(MIP_FRect(20));
+        left_panel->appendWidget(switch1);
+        switch1->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        switch1->setIsToggle(true);
+
+        MIP_RangeSliderWidget* rangeslider = new MIP_RangeSliderWidget(MIP_FRect(20));
+        left_panel->appendWidget(rangeslider);
+        rangeslider->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        rangeslider->setValue(0.2);
+        rangeslider->setValue2(0.7);
+
+        MIP_ScrollBarWidget* scrollbar = new MIP_ScrollBarWidget(MIP_FRect(20));
+        left_panel->appendWidget(scrollbar);
+        scrollbar->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_SliderBankWidget* sliderbank = new MIP_SliderBankWidget(MIP_FRect(40),16);
+        left_panel->appendWidget(sliderbank);
+        sliderbank->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_TextEditWidget* textedit = new MIP_TextEditWidget(MIP_FRect(20));
+        left_panel->appendWidget(textedit);
+        textedit->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
 
       // left_sizer
 
@@ -180,7 +213,9 @@ public:
       left_sizer->layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
       left_sizer->setTarget(left_panel);
 
-      // ----- right top panel -----
+//----------
+
+      // right top panel
 
       MIP_PanelWidget* right_top_panel = new MIP_PanelWidget(MIP_FRect(100));
       MEditorWidget->appendWidget(right_top_panel);
@@ -190,18 +225,30 @@ public:
       right_top_panel->layout.spacing = 5;
 
         MIP_KnobWidget* knob1 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-        MIP_KnobWidget* knob2 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-        MIP_KnobWidget* knob3 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-        knob1->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-        knob2->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-        knob3->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
         right_top_panel->appendWidget(knob1);
-        right_top_panel->appendWidget(knob2);
-        right_top_panel->appendWidget(knob3);
+        knob1->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
-        MEditor->connect(knob1,0);
-        MEditor->connect(knob2,1);
-        MEditor->connect(knob3,2);
+        MIP_KnobWidget* knob2 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+        right_top_panel->appendWidget(knob2);
+        knob2->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+
+        MIP_KnobWidget* knob3 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+        right_top_panel->appendWidget(knob3);
+        knob3->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+
+      MEditor->connect(knob1,0);
+      MEditor->connect(knob2,1);
+      MEditor->connect(knob3,2);
+
+      MIP_CurveWidget* curve1 = new MIP_CurveWidget( MIP_FRect( 50,50 ),false);
+      right_top_panel->appendWidget(curve1);
+      curve1->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+      curve1->setValue(0.5);
+
+      MIP_CurveWidget* curve2 = new MIP_CurveWidget( MIP_FRect( 50,50 ),true);
+      right_top_panel->appendWidget(curve2);
+      curve2->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+      curve2->setValue(0.5);
 
       // top_sizer
 
@@ -210,7 +257,9 @@ public:
       top_sizer->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
       top_sizer->setTarget(right_top_panel);
 
-      // ----- right bottom panel -----
+//----------
+
+      // right bottom panel
 
       MIP_PanelWidget* right_bottom_panel = new MIP_PanelWidget(MIP_FRect(100));
       MEditorWidget->appendWidget(right_bottom_panel);
@@ -244,7 +293,9 @@ public:
       bottom_sizer->setTarget(right_bottom_panel);
       MEditorWidget->appendWidget(bottom_sizer);
 
-      // ----- right center panel -----
+//----------
+
+      // right center panel
 
       MIP_PanelWidget* right_center_panel = new MIP_PanelWidget(MIP_FRect());
       right_center_panel->setBackgroundColor(0.6);
@@ -263,6 +314,10 @@ public:
         page2->setFillBackground(true);
         page2->setBackgroundColor(MIP_Color(0.6,0.65,0.6));
 
+          //MIP_GraphWidget* graph = new MIP_GraphWidget(MIP_FRect());
+          //page2->appendWidget(graph);
+          //graph->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+
         MIP_PanelWidget* page3 = new MIP_PanelWidget(MIP_FRect());
         page3->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
         page3->setFillBackground(true);
@@ -276,7 +331,7 @@ public:
         tabs->appendPage("Page3",page3);
         tabs->selectPage(0);
 
-      // -----
+//----------
 
       /*
 
@@ -376,12 +431,16 @@ public: // plugin
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
   ARegistry->appendPlugin(&myDescriptor);
+
+  //MIP_FRect* rect = new MIP_FRect();
+
 }
 
 //----------
 
-//void MIP_Unregister(MIP_ClapRegistry* ARegistry) {
-//}
+void MIP_Unregister(MIP_ClapRegistry* ARegistry) {
+  MIP_GLOBAL_DEBUG.dumpMemoryNodes();
+}
 
 //----------------------------------------------------------------------
 
