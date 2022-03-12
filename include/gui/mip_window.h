@@ -354,8 +354,6 @@ public: // MIP_BaseWindow
 
   //----------
 
-  // TOD: realign
-
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("w %i h %i\n",AWidth,AHeight);
     resizeWindow(AWidth,AHeight);
@@ -548,7 +546,7 @@ public: // MIP_Widget
     //MIP_Print("%.2f, %.2f\n",ADeltaX,ADeltaY);
     MResizingWidth += ADeltaX;
     MResizingHeight += ADeltaY;
-    MListener->on_resizeFromWindow(MResizingWidth,MResizingHeight);
+    if (MListener) MListener->on_resizeFromWindow(MResizingWidth,MResizingHeight);
   }
 
   //----------

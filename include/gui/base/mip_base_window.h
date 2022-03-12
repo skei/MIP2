@@ -54,6 +54,7 @@ public:
   virtual void open() {}
   virtual void close() {}
   virtual void eventLoop() {}
+  //virtual void parentEventLoop(intptr_t AChild) {}
   virtual void reparent(uint32_t AParent) {}
   virtual void startTimer(uint32_t ms) {}
   virtual void stopTimer(void) {}
@@ -67,7 +68,8 @@ public:
   virtual void paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
   virtual void endPaint() {}
   virtual void invalidate(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
-  virtual void sendEvent(uint32_t AData, uint32_t AType) {}
+  //virtual void sendEvent(uint32_t AData, uint32_t AType) {}
+  virtual void sendClientMessage(uint32_t AData, uint32_t AType) {}
   virtual void flush(void) {}
   virtual void sync(void) {}
 

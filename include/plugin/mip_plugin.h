@@ -156,6 +156,11 @@ public:
 public:
 //------------------------------
 
+  //#ifndef MIP_NO_GUI
+  //  MIP_Editor* getEditor() { return MEditor; }
+  //  bool isOpen() { return MEditorIsOpen; }
+  //#endif
+
   float getParameterModulation(uint32_t AIndex) {
     return MParameterModulations[AIndex];
   }
@@ -674,10 +679,10 @@ public: // gui
   //----------
 
   bool gui_create(const char *api, bool is_floating) override {
-    //MIP_Print("api: %s floating: %s\n",api,is_floating?"true":"false");
+    MIP_Print("api: %s floating: %s\n",api,is_floating?"true":"false");
     MEditorIsOpen = false;
     if (is_floating) return false;
-    MEditor = new MIP_Editor(this,this,256,256,true);
+    MEditor = new MIP_Editor(this,this,256,256,!is_floating);
     if (MEditor) return true;
     return false;
   }

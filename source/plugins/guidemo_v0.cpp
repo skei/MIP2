@@ -8,6 +8,8 @@
 //#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
+//#define MIP_DEBUG_MEMORY
+
 //----------
 
 #include "mip.h"
@@ -16,7 +18,6 @@
 #include "gui/mip_widgets.h"
 
 #include "base/utils/mip_strutils.h"
-#include "base/debug/mip_debug_memory.h"
 
 //----------------------------------------------------------------------
 //
@@ -81,6 +82,9 @@ public:
 
   myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
+
+    //MIP_FRect* rect = new MIP_FRect();
+
   }
 
   //----------
@@ -106,9 +110,11 @@ public:
 public:
 //------------------------------
 
-  bool create_editor() {
+  bool create_editor(bool is_floating) {
     MEditorIsOpen = false;
-    MEditor = new MIP_Editor(this,this,800,600);
+
+    MEditor = new MIP_Editor(this,this,800,600,!is_floating);
+
     if (MEditor) {
       MEditor->setCanResize();
 
@@ -401,9 +407,9 @@ public: // plugin
     }
     if (is_floating) {
       MIP_Print("floating\n");
-    return false;
+      //return false;
     }
-    return create_editor();
+    return create_editor(is_floating);
   }
 
   //----------
@@ -439,7 +445,9 @@ void MIP_Register(MIP_ClapRegistry* ARegistry) {
 //----------
 
 void MIP_Unregister(MIP_ClapRegistry* ARegistry) {
+  #ifdef MIP_DEBUG_MEMORY
   MIP_GLOBAL_DEBUG.dumpMemoryNodes();
+  #endif
 }
 
 //----------------------------------------------------------------------

@@ -31,6 +31,41 @@
 //
 //----------------------------------------------------------------------
 
+class MIP_ExeWindow
+: public MIP_Window {
+
+private:
+
+  const clap_plugin_t*      plugin  = nullptr;
+  const clap_plugin_gui_t*  gui     = nullptr;
+
+public:
+
+  MIP_ExeWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener, bool AEmbedded)
+  : MIP_Window(AWidth,AHeight,AListener,AEmbedded) {
+  }
+
+  virtual ~MIP_ExeWindow() {
+  }
+
+  void setup (const clap_plugin_t* APlugin, const clap_plugin_gui_t* AGui) {
+    plugin = APlugin;
+    gui = AGui;
+  }
+
+  void on_window_resize(int32_t AWidth, int32_t AHeight) override {
+    MIP_Window::on_window_resize(AWidth,AHeight);
+    gui->set_size(plugin,AWidth,AHeight);
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
 class MIP_ExeEntry
 : public MIP_WindowListener {
 
@@ -43,6 +78,14 @@ private:
   #ifndef MIP_NO_EXE_AUDIO
   MIP_AudioJack MAudio;
   #endif
+
+//  const clap_plugin_descriptor_t* descriptor
+//   const clap_plugin_t* plugin = mipplugin->ptr();
+//  MIP_ExeHost* host
+//  MIP_ClapPlugin* mipplugin
+
+  const clap_plugin_t*      plugin  = nullptr;
+  const clap_plugin_gui_t*  gui     = nullptr;
 
 //------------------------------
 public:
@@ -58,6 +101,18 @@ public:
   }
 
 //------------------------------
+public: // window listener
+//------------------------------
+
+  //void on_updateWidgetFromWindow(MIP_Widget* AWidget) override {
+  //  MIP_PRINT;
+  //}
+
+  //void on_resizeFromWindow(uint32_t AWidth, uint32_t AHeight) override {
+  //  MIP_PRINT;
+  //}
+
+//------------------------------
 public:
 //------------------------------
 
@@ -70,34 +125,41 @@ public:
     #endif
 
     uint32_t index = 0;
-    const clap_plugin_descriptor_t* desc = MIP_CLAP_REGISTRY.getPlugin(index);
+    const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getPlugin(index);
     MIP_ExeHost* host = new MIP_ExeHost(argc,argv);
     if (host) {
       MIP_ClapPlugin* mipplugin = nullptr;
       if (MIP_CreatePlugin) {
-        mipplugin = MIP_CreatePlugin(0,desc,host->ptr());
-        const clap_plugin_t* plugin = mipplugin->ptr();
+        mipplugin = MIP_CreatePlugin(0,descriptor,host->ptr());
+        plugin = mipplugin->ptr();
         plugin->init(plugin);
         plugin->activate(plugin,44100,128,128);
         //plugin->start_processing(plugin);
+
         #ifndef MIP_NO_GUI
-        // embedded editor doesn't receive CONFIGURE_NOTIFY events
-        const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(plugin,CLAP_EXT_GUI);
+
+        //const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(plugin,CLAP_EXT_GUI);
+        gui = (const clap_plugin_gui_t*)plugin->get_extension(plugin,CLAP_EXT_GUI);
+
+        //if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
+        //  gui->create(plugin,CLAP_WINDOW_API_X11,false);
+
         if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
           gui->create(plugin,CLAP_WINDOW_API_X11,false);
+
           gui->set_scale(plugin,1.0);
           uint32_t width = 0.0;
           uint32_t height = 0.0;
           gui->get_size(plugin,&width,&height);
           //if (gui->can_resize(plugin)) {}
 
-          MIP_Window* window = new MIP_Window(width,height,this,false);
-          window->open();
+          MIP_ExeWindow* window = new MIP_ExeWindow(width,height,this,false);
+          window->setup(plugin,gui);
 
+          window->open();
           clap_window_t clap_window = {};
           clap_window.api = CLAP_WINDOW_API_X11;
           clap_window.x11 = window->getXcbWindow();
-
           gui->set_parent( plugin, &clap_window );
           gui->show(plugin);
 
@@ -109,6 +171,7 @@ public:
           gui->destroy(plugin);
         }
         #endif
+
         //plugin->stop_processing(plugin);
         plugin->deactivate(plugin);
         plugin->destroy(plugin);
