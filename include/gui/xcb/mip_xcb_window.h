@@ -136,7 +136,7 @@ private:
 public:
 //------------------------------
 
-  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
   : MIP_BaseWindow(AWidth,AHeight) {
     MName = "MIP_XcbWindow";
     MEmbedded = AEmbedded;// ? true : false;
@@ -272,7 +272,7 @@ private:
 
   //----------
 
-  void createWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
+  void createWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded) {
     uint32_t event_mask =
       XCB_EVENT_MASK_KEY_PRESS        |
       XCB_EVENT_MASK_KEY_RELEASE      |
@@ -1092,9 +1092,10 @@ public:
     MQuitEventLoop = false;
     xcb_flush(MConnection);
     xcb_generic_event_t* event;// = xcb_wait_for_event(MConnection);
-    //while (event) {
+
     while ((event = xcb_wait_for_event(MConnection))) {
       uint32_t e = event->response_type & ~0x80;
+
       if (e == XCB_CLIENT_MESSAGE) {
         xcb_client_message_event_t* client_message = (xcb_client_message_event_t*)event;
         xcb_atom_t  type = client_message->type;
@@ -1106,11 +1107,13 @@ public:
             break;
           }
         }
-      }
+      } // client
+
       eventHandler(event);
       free(event); // not malloc'ed
       if (MQuitEventLoop) break;
       //event = xcb_wait_for_event(MConnection);
+
     }
   }
 

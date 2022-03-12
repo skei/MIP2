@@ -63,8 +63,6 @@ public:
 
   int main(int argc, char** argv) {
 
-MIP_PRINT;
-
     #ifndef MIP_NO_EXE_AUDIO
       //MAudio.config(44100.0,256,3,2,2);
       MAudio.init(this);
@@ -92,16 +90,21 @@ MIP_PRINT;
           uint32_t height = 0.0;
           gui->get_size(plugin,&width,&height);
           //if (gui->can_resize(plugin)) {}
-          MIP_Window* window = new MIP_Window(width,height,this);
+
+          MIP_Window* window = new MIP_Window(width,height,this,false);
           window->open();
+
           clap_window_t clap_window = {};
           clap_window.api = CLAP_WINDOW_API_X11;
-          clap_window.x11 = window->getXcbWindow();//getXcbScreen()->root;
+          clap_window.x11 = window->getXcbWindow();
+
           gui->set_parent( plugin, &clap_window );
           gui->show(plugin);
+
           window->eventLoop();
           window->close();
           delete window;
+
           //gui->hide(plugin);
           gui->destroy(plugin);
         }

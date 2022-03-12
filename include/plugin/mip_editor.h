@@ -26,8 +26,8 @@ class MIP_EditorWindow
 
 public:
 
-  MIP_EditorWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener=nullptr)
-  : MIP_Window(AWidth,AHeight,AListener,true) {
+  MIP_EditorWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener, bool AEmbedded)
+  : MIP_Window(AWidth,AHeight,AListener,AEmbedded) {
   }
 
   virtual ~MIP_EditorWindow() {
@@ -71,6 +71,7 @@ private:
   uint32_t            MHeight           = 0;
   double              MScale            = 1.0;
   bool                MCanResize        = false;
+  bool                MEmbedded         = false;
   MIP_EditorWindow*   MWindow           = nullptr;
   MIP_Timer*          MTimer            = nullptr;
   MIP_Widget**        MParamToWidget    = nullptr;
@@ -85,11 +86,12 @@ private:
 public:
 //------------------------------
 
-  MIP_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight) {
+  MIP_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded) {
     MListener = AListener;
     MPlugin = APlugin;
     MWidth = AWidth;
     MHeight = AHeight;
+    MEmbedded = AEmbedded;
     MNumParams = APlugin->params_count();
     uint32_t size = MNumParams * sizeof(MIP_Widget*);
     MParamToWidget = (MIP_Widget**)malloc(size);
@@ -101,7 +103,7 @@ public:
     memset(MGuiParamMod,0,size);
     MTimer = new MIP_Timer(this);
 
-    MWindow = new MIP_EditorWindow(AWidth,AHeight,this);
+    MWindow = new MIP_EditorWindow(AWidth,AHeight,this,AEmbedded);
 
   }
 

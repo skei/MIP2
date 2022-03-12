@@ -666,15 +666,8 @@ public: // gui
   #ifndef MIP_NO_GUI
 
   bool gui_is_api_supported(const char *api, bool is_floating) override {
-    if (is_floating) {
-      //MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
-      return false;
-    }
-    if (strcmp(api,CLAP_WINDOW_API_X11) == 0) {
-      //MIP_Print("api: %s floating: %s -> true\n",api,is_floating?"true":"false");
-      return true;
-    }
-    //MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
+    if (is_floating) return false;
+    if (strcmp(api,CLAP_WINDOW_API_X11) == 0) return true;
     return false;
   }
 
@@ -684,10 +677,8 @@ public: // gui
     //MIP_Print("api: %s floating: %s\n",api,is_floating?"true":"false");
     MEditorIsOpen = false;
     if (is_floating) return false;
-    MEditor = new MIP_Editor(this,this,256,256);
-    if (MEditor) {
-      return true;
-    }
+    MEditor = new MIP_Editor(this,this,256,256,true);
+    if (MEditor) return true;
     return false;
   }
 
@@ -803,14 +794,14 @@ public: // gui
   //----------
 
   bool gui_set_transient(const clap_window_t *window) override {
-    //MIP_Print("window: %p\n",window);
+    MIP_Print("window: %p\n",window);
     return false;
   }
 
   //----------
 
   void gui_suggest_title(const char *title) override {
-    //MIP_Print("title: %s\n",title);
+    MIP_Print("title: %s\n",title);
   }
 
   //----------
