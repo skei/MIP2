@@ -24,8 +24,6 @@
 */
 
 bool clap_entry_init_callback(const char *plugin_path) {
-  //if (MIP_Register) MIP_Register(&MIP_CLAP_REGISTRY);
-  //MIP_Assert(MIP_GLOBAL_CLAP_LIST.getNumPlugins() > 0);
   return true;
 }
 
@@ -33,12 +31,9 @@ bool clap_entry_init_callback(const char *plugin_path) {
 
 /*
   No more calls into the DSO must be made after calling deinit().
-
-  not called during enumeration (process just deleted?)
 */
 
 void clap_entry_deinit_callback() {
-  //if (MIP_Unregister) MIP_Unregister(&MIP_CLAP_REGISTRY);
 }
 
 //----------
@@ -53,11 +48,9 @@ void clap_entry_deinit_callback() {
 const void* clap_entry_get_factory_callback(const char *factory_id) {
   int32_t index = MIP_CLAP_REGISTRY.findFactoryById(factory_id);
   if (index >= 0) return MIP_CLAP_REGISTRY.getFactory(index);
-
   if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
     return &MIP_CLAP_FACTORY;
   }
-
   return nullptr;
 }
 
@@ -71,7 +64,6 @@ const void* clap_entry_get_factory_callback(const char *factory_id) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
 
-// MIP_GLOBAL_CLAP_ENTRY
 CLAP_EXPORT const clap_plugin_entry clap_entry = {
   CLAP_VERSION,
   clap_entry_init_callback,
@@ -80,14 +72,6 @@ CLAP_EXPORT const clap_plugin_entry clap_entry = {
 };
 
 #pragma GCC diagnostic pop
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-//#endif // MIP_NO_DEFAULT_PLUGIN_ENTRY
 
 //----------------------------------------------------------------------
 #endif

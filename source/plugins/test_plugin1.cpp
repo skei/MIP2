@@ -258,7 +258,7 @@ public: // plugin
     return false;
     }
     MEditorIsOpen = false;
-    MEditor = new MIP_Editor(this,this,400,400);
+    MEditor = new MIP_Editor(this,this,400,400,true);
     // -> myEditor()
     bool result = (MEditor);
     if (result) {

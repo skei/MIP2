@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1646939996 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+1647126446 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
 	"../source/plugins/guidemo_v0.cpp"
 
 1643950248 /DISKS/sda2/code/git/MIP2/source/test/test.cpp
@@ -499,9 +499,8 @@
 	<lv2/urid/urid.h>
 	<lv2/lv2plug.in/ns/extensions/ui/ui.h>
 
-1647105289 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe_entry.h
+1647126320 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe_entry.h
 	"mip.h"
-	"plugin/mip_editor.h"
 	"plugin/mip_plugin.h"
 	"plugin/clap/mip_clap.h"
 	"plugin/clap/mip_clap_host.h"
@@ -510,6 +509,7 @@
 	"plugin/exe/mip_exe_plugin.h"
 	"plugin/exe/mip_exe_host.h"
 	"audio/mip_audio_jack.h"
+	"plugin/mip_editor.h"
 
 1642871083 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe.h
 	"mip.h"
@@ -1090,7 +1090,7 @@
 	"mip.h"
 	"gui/cairo/mip_cairo.h"
 
-1646872789 /DISKS/sda2/code/git/MIP2/source/plugins/test_plugin1.cpp
+1647126001 /DISKS/sda2/code/git/MIP2/source/plugins/test_plugin1.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
@@ -1269,7 +1269,7 @@
 	"audio/mip_audio_math.h"
 	"gui/mip_widgets.h"
 
-1646778608 /DISKS/sda2/code/git/MIP2/source/test/test_gui.cpp
+1647126424 /DISKS/sda2/code/git/MIP2/source/test/test_gui.cpp
 	"mip.h"
 	"gui/mip_window.h"
 	"gui/mip_widgets.h"
@@ -1552,4 +1552,8 @@
 	"base/utils/mip_strutils.h"
 
 1647040827 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_memory.h
+
+1647126221 /DISKS/sda2/code/git/MIP2/source/plugins/gain.cpp
+	"mip.h"
+	"plugin/mip_plugin.h"
 

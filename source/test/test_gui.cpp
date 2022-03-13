@@ -1,5 +1,5 @@
 
-#define MIP_EXE
+//#define MIP_EXE
 #define MIP_GUI_XCB
 //#define MIP_PAINTER_XCB
 #define MIP_USE_CAIRO
@@ -32,8 +32,8 @@ private:
 
 public:
 
-  myWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener=nullptr, bool AEmbedded=false)
-  : MIP_Window(AWidth,AHeight,AListener,AEmbedded) {
+  myWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener=nullptr)
+  : MIP_Window(AWidth,AHeight,AListener,false) {
     init();
   }
 

@@ -7,7 +7,6 @@
 //----------
 
 #include "mip.h"
-#include "plugin/mip_editor.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host.h"
@@ -21,15 +20,17 @@
 #include "audio/mip_audio_jack.h"
 #endif
 
-//#ifndef MIP_NO_GUI
-//  #include "plugin/mip_editor.h"
-//#endif
+#ifndef MIP_NO_GUI
+  #include "plugin/mip_editor.h"
+#endif
 
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
+
+#ifndef MIP_NO_GUI
 
 class MIP_ExeWindow
 : public MIP_Window {
@@ -60,6 +61,8 @@ public:
 
 };
 
+#endif
+
 //----------------------------------------------------------------------
 //
 //
@@ -67,8 +70,11 @@ public:
 //----------------------------------------------------------------------
 
 class MIP_ExeEntry
+#ifndef MIP_NO_GUI
 : public MIP_WindowListener {
-
+#else
+{
+#endif
 //------------------------------
 private:
 //------------------------------
@@ -85,7 +91,10 @@ private:
 //  MIP_ClapPlugin* mipplugin
 
   const clap_plugin_t*      plugin  = nullptr;
+
+  #ifndef MIP_NO_GUI
   const clap_plugin_gui_t*  gui     = nullptr;
+  #endif
 
 //------------------------------
 public:
