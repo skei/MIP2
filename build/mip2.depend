@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1647126446 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+1647194523 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
 	"../source/plugins/guidemo_v0.cpp"
 
 1643950248 /DISKS/sda2/code/git/MIP2/source/test/test.cpp
@@ -252,7 +252,7 @@
 	"../clap.h"
 	"../stream.h"
 
-1646872519 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_entry.h
+1647179929 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_entry.h
 	"mip.h"
 	"extern/clap/clap.h"
 	"plugin/clap/mip_clap_registry.h"
@@ -264,7 +264,7 @@
 1646774497 /DISKS/sda2/code/git/MIP2/include/extern/clap/ext/draft/check-for-update.h
 	"../../plugin.h"
 
-1646840638 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_plugin.h
+1647180173 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_plugin.h
 	"mip.h"
 	"plugin/clap/mip_clap.h"
 
@@ -275,7 +275,7 @@
 	"plugin/vst2/mip_vst2.h"
 	"plugin/vst2/mip_vst2_plugin.h"
 
-1646702110 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_host.h
+1647180486 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_host.h
 	"mip.h"
 	"plugin/clap/mip_clap.h"
 
@@ -574,7 +574,7 @@
 1646774497 /DISKS/sda2/code/git/MIP2/include/extern/clap/ext/draft/cv.h
 	"../../plugin.h"
 
-1646869134 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_factory.h
+1647179965 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_factory.h
 	"mip.h"
 	"extern/clap/clap.h"
 	"plugin/clap/mip_clap_plugin.h"
@@ -589,7 +589,7 @@
 	"plugin/clap/mip_clap_host.h"
 	"plugin/clap/mip_clap_host_implementation.h"
 
-1647104036 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1647200584 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"mip.h"
 	"base/system/mip_time.h"
 	"base/types/mip_color.h"
@@ -733,7 +733,7 @@
 	"plugin/clap/mip_clap_utils.h"
 	"gui/mip_window.h"
 
-1647105135 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1647200615 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/types/mip_rect.h"
 	"gui/mip_painter.h"
@@ -745,7 +745,7 @@
 1641745135 /DISKS/sda2/code/git/MIP2/include/base/types/mip_rect.h
 	"mip.h"
 
-1646711736 /DISKS/sda2/code/git/MIP2/include/gui/mip_painter.h
+1647200650 /DISKS/sda2/code/git/MIP2/include/gui/mip_painter.h
 	"mip.h"
 	"base/types/mip_stack.h"
 	"gui/mip_drawable.h"
@@ -777,7 +777,7 @@
 	"gui/xcb/mip_xcb_utils.h"
 	"gui/cairo/mip_cairo.h"
 
-1646859739 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_painter.h
+1647200624 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_painter.h
 	"mip.h"
 	"base/types/mip_color.h"
 	"gui/xcb/mip_xcb.h"
@@ -1080,7 +1080,7 @@
 1644090437 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_rgba.h
 	"base/utils/mip_math.h"
 
-1646945201 /DISKS/sda2/code/git/MIP2/include/gui/cairo/mip_cairo_painter.h
+1647200629 /DISKS/sda2/code/git/MIP2/include/gui/cairo/mip_cairo_painter.h
 	"mip.h"
 	"gui/base/mip_base_painter.h"
 	"gui/cairo/mip_cairo.h"
@@ -1150,7 +1150,7 @@
 1645058241 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_slider_widget.h
 	"gui/widgets/v0/mip_drag_value_widget.h"
 
-1645058245 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_graph_widget.h
+1647285802 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_graph_widget.h
 	"base/types/mip_list.h"
 	"gui/widgets/v0/mip_panel_widget.h"
 	"gui/mip_widget.h"
@@ -1158,7 +1158,7 @@
 1641751681 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_group_box_widget.h
 	"gui/mip_widgets.h"
 
-1646704518 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_image_strip_widget.h
+1647194052 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_image_strip_widget.h
 	"gui/widgets/v0/mip_drag_value_widget.h"
 
 1645058253 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_image_widget.h
@@ -1269,7 +1269,7 @@
 	"audio/mip_audio_math.h"
 	"gui/mip_widgets.h"
 
-1647126424 /DISKS/sda2/code/git/MIP2/source/test/test_gui.cpp
+1647186377 /DISKS/sda2/code/git/MIP2/source/test/test_gui.cpp
 	"mip.h"
 	"gui/mip_window.h"
 	"gui/mip_widgets.h"
@@ -1540,20 +1540,23 @@
 	"midi_file.hpp"
 	"midi_player.hpp"
 
-1646872961 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_host_implementation.h
+1647180532 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_host_implementation.h
 	"mip.h"
 	"plugin/clap/mip_clap.h"
 
-1647100312 /DISKS/sda2/code/git/MIP2/source/plugins/guidemo_v0.cpp
+1647286470 /DISKS/sda2/code/git/MIP2/source/plugins/guidemo_v0.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
 	"gui/mip_widgets.h"
-	"base/utils/mip_strutils.h"
 
 1647040827 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_memory.h
 
 1647126221 /DISKS/sda2/code/git/MIP2/source/plugins/gain.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
+
+1647255260 /DISKS/sda2/code/git/MIP2/include/plugin/mip_parameter.h
+	"mip.h"
+	"base/types/mip_array.h"
 

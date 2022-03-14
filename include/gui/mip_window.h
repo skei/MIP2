@@ -209,15 +209,23 @@ public: // window
 //------------------------------
 
   void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
+    //MIP_Print("w %i h %i\n",AWidth,AHeight);
+
     #ifndef MIP_NO_WINDOW_BUFFERING
       resizeBuffer(AWidth,AHeight);
     #endif
+
     if (MWindowPainter) {
       MWindowPainter->resize(AWidth,AHeight);
     }
+
     MRect.w = AWidth;
     MRect.h = AHeight;
     alignWidgets();
+
+    //#ifdef MIP_EXE
+    //  paint();
+    //#endif
   }
 
   //----------
@@ -314,11 +322,13 @@ public: // buffer
   //----------
 
   void paintBuffer(MIP_FRect ARect) {
+    //MIP_Print("%.0f,%.0f,%.0f,%.0f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     paintWidgets(MBufferPainter,ARect);
     MBufferPainter->flush();
     blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
-    //MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
-    //MWindowPainter->flush();
+//    MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+//    MWindowPainter->flush();
+
   }
 
   #endif // MIP_NO_WINDOW_BUFFERING

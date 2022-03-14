@@ -1110,13 +1110,16 @@ public:
 //      } // client
 
       switch (e) {
+
         //case XCB_EXPOSE:
         //  MIP_Print("expose\n");
         //  xcb_send_event(MConnection,false,AChild,XCB_EXPOSE,event);
         //  break;
+
         //case XCB_CONFIGURE_NOTIFY:
         //  MIP_Print("configure_notify\n");
         //  break;
+
         case XCB_CLIENT_MESSAGE:
           if (e == XCB_CLIENT_MESSAGE) {
             xcb_client_message_event_t* client_message = (xcb_client_message_event_t*)event;

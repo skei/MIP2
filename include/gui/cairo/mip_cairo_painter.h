@@ -168,7 +168,7 @@ public: // surface
   */
 
   void resize(uint32_t AWidth, uint32_t AHeight) override {
-    //MIP_Print("%i,%i\n",AWidth,AHeight);
+    //MIP_Print("w %i h %i\n",AWidth,AHeight);
     cairo_xcb_surface_set_size(MSurface,AWidth,AHeight);
   }
 
