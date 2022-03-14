@@ -25,7 +25,7 @@ changes are frequent, code will break..
 * permissive license
 * ...
 
-![screenshot](/doc/screenshots/gui2.png?raw=true "Screenshot")
+![screenshot](/doc/screenshots/gui2.png)
 
 * make it work
 * make it right
