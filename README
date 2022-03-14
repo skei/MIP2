@@ -3,7 +3,7 @@ MIP 2
 (much in little)
 
 
-plugin wrappers, abstractions, simplifications, helpers, ..
+plugins, wrappers, abstractions, simplifications, helpers, ..
 
 
 v0.0.0
@@ -25,9 +25,6 @@ changes are frequent, code will break..
 - no (minimal) dependencies
 - permissive license
 - ...
-
-
-![screenshot](/doc/screenshots/gui2.png)
 
 
 - make it work
