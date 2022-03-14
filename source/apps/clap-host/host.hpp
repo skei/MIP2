@@ -253,7 +253,7 @@ private:
   clap_host MHost = {
     CLAP_VERSION,
     this,
-    "Host",
+    "MIP Clap Host", //"Host",
     "Tor-Helge Skei",
     "https://torhelgeskei.com",
     "0.0.1",
