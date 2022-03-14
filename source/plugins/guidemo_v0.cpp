@@ -1,14 +1,9 @@
 
-#define MIP_USE_XCB
 #define MIP_GUI_XCB
-#define MIP_USE_CAIRO
 #define MIP_PAINTER_CAIRO
-//#define MIP_PAINTER_XCB
 
 //#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
-
-//#define MIP_DEBUG_MEMORY
 
 //----------
 
@@ -17,7 +12,14 @@
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
 
-#include "base/utils/mip_strutils.h"
+
+
+
+
+
+
+
+
 
 //----------------------------------------------------------------------
 //
@@ -25,7 +27,7 @@
 //
 //----------------------------------------------------------------------
 
-
+#define NUM_GRAPH_MODULES 8
 //----------
 
 const char* myFeatures[] = {
@@ -76,6 +78,9 @@ private:
   //MIP_PanelWidget*  MEditorPanel  = nullptr;
   //MIP_SizerWidget*  MSizer        = nullptr;
 
+  //MIP_GraphModule MModules[10] = {};
+
+
 //------------------------------
 public:
 //------------------------------
@@ -109,6 +114,29 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  void add_modules(MIP_GraphWidget* AGraph) {
+    for (uint32_t m=0; m<NUM_GRAPH_MODULES; m++) {
+      uint32_t num_in = MIP_RandomRangeInt(1,5);
+      uint32_t num_out = MIP_RandomRangeInt(1,5);
+      MIP_GraphModule* module = new MIP_GraphModule();
+      module->numInputs = num_in;
+      module->numOutputs = num_out;
+      for (uint32_t i=0; i<num_in; i++) {
+        uint32_t typ = MIP_PIN_DATA;
+        if (MIP_Random() >= 0.5) typ = MIP_PIN_SIGNAL;
+        module->inputs[i] = typ;
+      }
+      for (uint32_t o=0; o<num_out; o++) {
+        uint32_t typ = MIP_PIN_DATA;
+        if (MIP_Random() >= 0.5) typ = MIP_PIN_SIGNAL;
+        module->outputs[o] = typ;
+      }
+      uint32_t x = MIP_RandomRangeInt(0,255);
+      uint32_t y = MIP_RandomRangeInt(0,255);
+      AGraph->addModule( module, x,y, "Module");
+    }
+  }
 
   bool create_editor(bool is_floating) {
     MEditorIsOpen = false;
@@ -320,14 +348,17 @@ public:
         page2->setFillBackground(true);
         page2->setBackgroundColor(MIP_Color(0.6,0.65,0.6));
 
-          //MIP_GraphWidget* graph = new MIP_GraphWidget(MIP_FRect());
-          //page2->appendWidget(graph);
-          //graph->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+          MIP_GraphWidget* graph = new MIP_GraphWidget(MIP_FRect());
+          page2->appendWidget(graph);
+          graph->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+
+          add_modules(graph);
 
         MIP_PanelWidget* page3 = new MIP_PanelWidget(MIP_FRect());
         page3->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
         page3->setFillBackground(true);
         page3->setBackgroundColor(MIP_Color(0.6,0.6,0.65));
+
 
         MIP_TabsWidget* tabs = new MIP_TabsWidget(MIP_FRect(),3);
         right_center_panel->appendWidget(tabs);
