@@ -1,8 +1,9 @@
 
 //#define MIP_EXE
 #define MIP_GUI_XCB
-//#define MIP_PAINTER_XCB
 #define MIP_USE_CAIRO
+
+//#define MIP_PAINTER_XCB
 #define MIP_PAINTER_CAIRO
 
 //#define MIP_NO_WINDOW_BUFFERING
