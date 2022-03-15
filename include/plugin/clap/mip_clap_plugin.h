@@ -86,8 +86,8 @@ public: // extensions
   virtual void      posix_fd_support_on_fd(int fd, int flags) {}
   virtual bool      render_has_hard_realtime_requirement() { return false; }
   virtual bool      render_set(clap_plugin_render_mode mode) { return true; }
-  virtual bool      state_save(clap_ostream_t *stream) { return true; }
-  virtual bool      state_load(clap_istream_t *stream) { return true; }
+  virtual bool      state_save(const clap_ostream_t *stream) { return true; }
+  virtual bool      state_load(const clap_istream_t *stream) { return true; }
   virtual void      thread_pool_exec(uint32_t task_index) {}
   virtual void      timer_support_on_timer(clap_id timer_id) {}
 
@@ -507,12 +507,12 @@ protected:
 
 private:
 
-  static bool clap_plugin_state_save_callback(const clap_plugin_t *plugin, clap_ostream_t *stream) {
+  static bool clap_plugin_state_save_callback(const clap_plugin_t *plugin, const clap_ostream_t *stream) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->state_save(stream);
   }
 
-  static bool clap_plugin_state_load_callback(const clap_plugin_t *plugin, clap_istream_t *stream) {
+  static bool clap_plugin_state_load_callback(const clap_plugin_t *plugin, const clap_istream_t *stream) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->state_load(stream);
   }

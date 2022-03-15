@@ -531,7 +531,7 @@ public: // plugin
     param_mod.header.time     = 0;
     param_mod.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
     param_mod.header.type     = CLAP_EVENT_PARAM_MOD;
-    param_mod.header.flags    = CLAP_EVENT_BEGIN_ADJUST | CLAP_EVENT_END_ADJUST | CLAP_EVENT_SHOULD_RECORD;// | CLAP_EVENT_IS_LIVE;
+    param_mod.header.flags    = 0;//CLAP_EVENT_DONT_RECORD;// | CLAP_EVENT_IS_LIVE;
     param_mod.param_id        = index;
     param_mod.cookie          = nullptr;
     param_mod.port_index      = -1;
@@ -552,7 +552,7 @@ public: // plugin
     param_value.header.time     = 0;
     param_value.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
     param_value.header.type     = CLAP_EVENT_PARAM_VALUE;
-    param_value.header.flags    = CLAP_EVENT_BEGIN_ADJUST | CLAP_EVENT_END_ADJUST | CLAP_EVENT_SHOULD_RECORD;// | CLAP_EVENT_IS_LIVE;
+    param_value.header.flags    = 0;//CLAP_EVENT_DONT_RECORD;// | CLAP_EVENT_IS_LIVE;
     param_value.param_id        = index;
     param_value.cookie          = nullptr;
     param_value.port_index      = -1;

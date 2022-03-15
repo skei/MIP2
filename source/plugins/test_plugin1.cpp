@@ -82,12 +82,12 @@ class myPlugin
 private:
 //------------------------------
 
-  clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",   "Params", 0.0, 1.0, 0.5 },
-    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param2", "Params", 0.0, 1.0, 0.5 },
-    { 2, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param3", "Params", 0.0, 1.0, 0.5 },
-    { 3, 0,                                                     nullptr, "param4", "Params", 0.0, 1.0, 0.5 }
-  };
+//  clap_param_info_t myParameters[NUM_PARAMS] = {
+//    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",   "Params", 0.0, 1.0, 0.5 },
+//    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param2", "Params", 0.0, 1.0, 0.5 },
+//    { 2, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param3", "Params", 0.0, 1.0, 0.5 },
+//    { 3, 0,                                                     nullptr, "param4", "Params", 0.0, 1.0, 0.5 }
+//  };
 
   clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
     { 0, "Input 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
@@ -215,7 +215,22 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    setupParameters(myParameters,NUM_PARAMS);
+
+    //setupParameters(myParameters,NUM_PARAMS);
+
+    appendParameter(new MIP_Parameter( 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, "Gain",   "Params", 0.0, 1.0, 0.5 ));
+    appendParameter(new MIP_Parameter( 1, CLAP_PARAM_IS_AUTOMATABLE,                             "param2", "Params", 0.0, 1.0, 0.5 ));
+    appendParameter(new MIP_Parameter( 2, CLAP_PARAM_IS_AUTOMATABLE,                             "param3", "Params", 0.0, 1.0, 0.5 ));
+    appendParameter(new MIP_Parameter( 3, CLAP_PARAM_IS_AUTOMATABLE,                             "param4", "Params", 0.0, 1.0, 0.5 ));
+
+//  clap_param_info_t myParameters[NUM_PARAMS] = {
+//    {  },
+//    {  },
+//    {  },
+//    { 3, 0,                                                     nullptr, "param4", "Params", 0.0, 1.0, 0.5 }
+//  };
+
+
     setupAudioInputs(myAudioInputs,NUM_AUDIO_INPUTS);
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
@@ -223,7 +238,8 @@ public: // plugin
     setupQuickControls(myQuickControls,NUM_QUICK_CONTROLS);
     bool result = MIP_Plugin::init();
     if (result) {
-      setDefaultParameterValues(myParameters,NUM_PARAMS);
+      //setDefaultParameterValues(myParameters,NUM_PARAMS);
+      setDefaultParameterValues();
     }
     return result;
   }
@@ -320,7 +336,8 @@ public: // plugin
 
   bool gui_show() final {
     // (MIP_Plugin doesn't know about myParameters)
-    setEditorParameterValues(myParameters,NUM_PARAMS);
+    //setEditorParameterValues(myParameters,NUM_PARAMS);
+    setEditorParameterValues();
     MIP_Plugin::gui_show();
     return true;
   }

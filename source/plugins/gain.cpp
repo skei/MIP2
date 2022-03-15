@@ -96,11 +96,13 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    setupParameters(myParameters,NUM_PARAMS);
+
+    //setupParameters(myParameters,NUM_PARAMS);
+
+    appendParameter( new MIP_Parameter( 0, CLAP_PARAM_IS_AUTOMATABLE, "Gain", "Params", 0.0, 1.0, 0.5 ) );
+
     bool result = MIP_Plugin::init();
-    if (result) {
-      setDefaultParameterValues(myParameters,NUM_PARAMS);
-    }
+    if (result) { setDefaultParameterValues(); }
     return result;
   }
 

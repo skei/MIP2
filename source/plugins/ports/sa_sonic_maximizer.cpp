@@ -69,15 +69,15 @@ class sonic_maximizer_plugin
 private:
 //------------------------------
 
-  #define NUM_PARAMS 3
+//  #define NUM_PARAMS 3
 
   // id, flags, cookie, name, module, min, max, def
 
-  clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0, 0, nullptr, "Low Cont", "Params",   0.0, 10.0,  1.0 },
-    { 1, 0, nullptr, "Process",  "Params",   0.0, 10.0,  1.0 },
-    { 2, 0, nullptr, "Output",   "Params", -30.0,  0.0, -3.0 }
-  };
+//  clap_param_info_t myParameters[NUM_PARAMS] = {
+//    { 0, 0, nullptr, "Low Cont", "Params",   0.0, 10.0,  1.0 },
+//    { 1, 0, nullptr, "Process",  "Params",   0.0, 10.0,  1.0 },
+//    { 2, 0, nullptr, "Output",   "Params", -30.0,  0.0, -3.0 }
+//  };
 
   #undef MAX_PARAMS
 
@@ -207,10 +207,13 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    setupParameters(myParameters,NUM_PARAMS);
+    //setupParameters(myParameters,NUM_PARAMS);
+    appendParameter(new MIP_Parameter( 0, CLAP_PARAM_IS_AUTOMATABLE, "Low Cont", "Params",   0.0, 10.0,  1.0 ));
+    appendParameter(new MIP_Parameter( 1, CLAP_PARAM_IS_AUTOMATABLE, "Process",  "Params",   0.0, 10.0,  1.0 ));
+    appendParameter(new MIP_Parameter( 2, CLAP_PARAM_IS_AUTOMATABLE, "Output",   "Params", -30.0,  0.0, -3.0 ));
     bool result = MIP_Plugin::init();
     if (result) {
-      setDefaultParameterValues(myParameters,NUM_PARAMS);
+      setDefaultParameterValues();
       precalc();
     }
     return result;

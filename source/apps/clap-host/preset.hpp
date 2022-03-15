@@ -9,7 +9,7 @@ int32_t   stream_pos = 0;
 // returns the number of bytes read. 0 for end of file. -1 on error.
 // to: error checking, safety, etc, etc...
 
-int64_t preset_stream_read(struct clap_istream *stream, void *buffer, uint64_t size) {
+int64_t preset_stream_read(const struct clap_istream *stream, void *buffer, uint64_t size) {
   printf("stream read: plugin asking for %i bytes\n",(int)size);
   if (stream_pos >= preset_size) return 0;
   int num = preset_size - stream_pos;
