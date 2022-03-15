@@ -36,6 +36,8 @@ public:
   const char*         url()     { return MHost.url; }
   const char*         version() { return MHost.version; }
 
+  //
+
   void setData(void* data)          { MHost.host_data = data; }
   void setName(const char* txt)     { MHost.name      = txt; }
   void setVendor(const char* txt)   { MHost.vendor    = txt; }
@@ -84,13 +86,10 @@ public: // extensions
 //------------------------------
 
   //virtual void ambisonic_changed() {}
-
   virtual uint32_t audio_ports_get_preferred_sample_size() { return 0; }
-
   //virtual void audio_ports_rescan(uint32_t flags) {}
   static bool  audio_ports_is_rescan_flag_supported(uint32_t flag) { return false; }
   static void  audio_ports_rescan(uint32_t flags) {}
-
   virtual void audio_ports_config_rescan() {}
   virtual void check_for_update_on_new_version(const clap_check_for_update_info *update_info) {}
   //virtual void cv_changed() {}

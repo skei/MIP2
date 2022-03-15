@@ -131,7 +131,10 @@
 			<Add library="cairo" />
 			<Add library="rt" />
 		</Linker>
+		<Unit filename="../LICENSE" />
+		<Unit filename="../README" />
 		<Unit filename="../doc/compile.txt" />
+		<Unit filename="../doc/todo.txt" />
 		<Unit filename="../include/audio/analysis/mip_beat_detector.h" />
 		<Unit filename="../include/audio/analysis/mip_envelope_detector.h" />
 		<Unit filename="../include/audio/analysis/mip_envelope_follower.h" />
@@ -201,6 +204,7 @@
 		<Unit filename="../include/base/debug/mip_debug_assert.h" />
 		<Unit filename="../include/base/debug/mip_debug_callstack.h" />
 		<Unit filename="../include/base/debug/mip_debug_crash_handler.h" />
+		<Unit filename="../include/base/debug/mip_debug_memory.h" />
 		<Unit filename="../include/base/debug/mip_debug_print.h" />
 		<Unit filename="../include/base/mip_attributes.h" />
 		<Unit filename="../include/base/mip_config.h" />

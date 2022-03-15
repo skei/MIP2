@@ -96,7 +96,7 @@ public:
       MWidth,
       MHeight
     );
-    MCairoDevice = cairo_device_reference(cairo_surface_get_device(MCairoSurface));
+//    MCairoDevice = cairo_device_reference(cairo_surface_get_device(MCairoSurface));
     #endif
   }
 
@@ -108,8 +108,8 @@ public:
     }
     #ifdef MIP_USE_CAIRO
     cairo_surface_destroy(MCairoSurface);
-    cairo_device_finish(MCairoDevice);
-    cairo_device_destroy(MCairoDevice);
+//    cairo_device_finish(MCairoDevice);
+//    cairo_device_destroy(MCairoDevice);
     #endif
   }
 

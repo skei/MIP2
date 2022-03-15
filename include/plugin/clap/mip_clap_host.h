@@ -77,33 +77,6 @@ public:
     track_info          = (clap_host_track_info_t*)AHost->get_extension(AHost,CLAP_EXT_TRACK_INFO);
     tuning              = (clap_host_tuning_t*)AHost->get_extension(AHost,CLAP_EXT_TUNING);
 
-    /*
-    if (ambisonic) { MIP_Print("host supports: %s\n",CLAP_EXT_AMBISONIC); }
-    if (audio_ports_config) { MIP_Print("host supports: %s\n",CLAP_EXT_AUDIO_PORTS_CONFIG); }
-    if (audio_ports) { MIP_Print("host supports: %s\n",CLAP_EXT_AUDIO_PORTS); }
-    if (check_for_update) { MIP_Print("host supports: %s\n",CLAP_EXT_CHECK_FOR_UPDATE); }
-    if (cv) { MIP_Print("host supports: %s\n",CLAP_EXT_CV); }
-    if (event_filter) { MIP_Print("host supports: %s\n",CLAP_EXT_EVENT_FILTER); }
-    if (event_registry) { MIP_Print("host supports: %s\n",CLAP_EXT_EVENT_REGISTRY); }
-    if (file_reference) { MIP_Print("host supports: %s\n",CLAP_EXT_FILE_REFERENCE); }
-    if (gui) { MIP_Print("host supports: %s\n",CLAP_EXT_GUI); }
-    if (latency) { MIP_Print("host supports: %s\n",CLAP_EXT_LATENCY); }
-    if (log) { MIP_Print("host supports: %s\n",CLAP_EXT_LOG); }
-    if (midi_mapping) { MIP_Print("host supports: %s\n",CLAP_EXT_MIDI_MAPPINGS); }
-    if (note_name) { MIP_Print("host supports: %s\n",CLAP_EXT_NOTE_NAME); }
-    if (note_ports) { MIP_Print("host supports: %s\n",CLAP_EXT_NOTE_PORTS); }
-    if (params) { MIP_Print("host supports: %s\n",CLAP_EXT_PARAMS); }
-    if (posix_fd_support) { MIP_Print("host supports: %s\n",CLAP_EXT_POSIX_FD_SUPPORT); }
-    if (quick_controls) { MIP_Print("host supports: %s\n",CLAP_EXT_QUICK_CONTROLS); }
-    if (state) { MIP_Print("host supports: %s\n",CLAP_EXT_STATE); }
-    if (surround) { MIP_Print("host supports: %s\n",CLAP_EXT_SURROUND); }
-    if (thread_check) { MIP_Print("host supports: %s\n",CLAP_EXT_THREAD_CHECK); }
-    if (thread_pool) { MIP_Print("host supports: %s\n",CLAP_EXT_THREAD_POOL); }
-    if (timer_support) { MIP_Print("host supports: %s\n",CLAP_EXT_TIMER_SUPPORT); }
-    if (track_info) { MIP_Print("host supports: %s\n",CLAP_EXT_TRACK_INFO); }
-    if (tuning) { MIP_Print("host supports: %s\n",CLAP_EXT_TUNING); }
-    */
-
   }
 
   virtual ~MIP_ClapHost() {
@@ -129,6 +102,36 @@ public:
      host->request_callback(host);
    }
 
+//------------------------------
+public:
+//------------------------------
+
+  void printSupportedExtensions() {
+    if (ambisonic)          { MIP_Print("host supports: %s\n",CLAP_EXT_AMBISONIC); }
+    if (audio_ports_config) { MIP_Print("host supports: %s\n",CLAP_EXT_AUDIO_PORTS_CONFIG); }
+    if (audio_ports)        { MIP_Print("host supports: %s\n",CLAP_EXT_AUDIO_PORTS); }
+    if (check_for_update)   { MIP_Print("host supports: %s\n",CLAP_EXT_CHECK_FOR_UPDATE); }
+    if (cv)                 { MIP_Print("host supports: %s\n",CLAP_EXT_CV); }
+    if (event_filter)       { MIP_Print("host supports: %s\n",CLAP_EXT_EVENT_FILTER); }
+    if (event_registry)     { MIP_Print("host supports: %s\n",CLAP_EXT_EVENT_REGISTRY); }
+    if (file_reference)     { MIP_Print("host supports: %s\n",CLAP_EXT_FILE_REFERENCE); }
+    if (gui)                { MIP_Print("host supports: %s\n",CLAP_EXT_GUI); }
+    if (latency)            { MIP_Print("host supports: %s\n",CLAP_EXT_LATENCY); }
+    if (log)                { MIP_Print("host supports: %s\n",CLAP_EXT_LOG); }
+    if (midi_mapping)       { MIP_Print("host supports: %s\n",CLAP_EXT_MIDI_MAPPINGS); }
+    if (note_name)          { MIP_Print("host supports: %s\n",CLAP_EXT_NOTE_NAME); }
+    if (note_ports)         { MIP_Print("host supports: %s\n",CLAP_EXT_NOTE_PORTS); }
+    if (params)             { MIP_Print("host supports: %s\n",CLAP_EXT_PARAMS); }
+    if (posix_fd_support)   { MIP_Print("host supports: %s\n",CLAP_EXT_POSIX_FD_SUPPORT); }
+    if (quick_controls)     { MIP_Print("host supports: %s\n",CLAP_EXT_QUICK_CONTROLS); }
+    if (state)              { MIP_Print("host supports: %s\n",CLAP_EXT_STATE); }
+    if (surround)           { MIP_Print("host supports: %s\n",CLAP_EXT_SURROUND); }
+    if (thread_check)       { MIP_Print("host supports: %s\n",CLAP_EXT_THREAD_CHECK); }
+    if (thread_pool)        { MIP_Print("host supports: %s\n",CLAP_EXT_THREAD_POOL); }
+    if (timer_support)      { MIP_Print("host supports: %s\n",CLAP_EXT_TIMER_SUPPORT); }
+    if (track_info)         { MIP_Print("host supports: %s\n",CLAP_EXT_TRACK_INFO); }
+    if (tuning)             { MIP_Print("host supports: %s\n",CLAP_EXT_TUNING); }
+  }
 
 };
 

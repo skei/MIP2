@@ -1,0 +1,55 @@
+
+
+//----------------------------------------------------------------------
+//
+// general
+//
+//----------------------------------------------------------------------
+
+* windows version
+
+//----------------------------------------------------------------------
+//
+// base
+//
+//----------------------------------------------------------------------
+
+* MIP_Registry
+
+  make it more generic?
+  MIP_Object, MIP_Refcount, ..
+
+//----------------------------------------------------------------------
+//
+// plugin
+//
+//----------------------------------------------------------------------
+
+* vst2/3 adapters
+* vst2/3 hosting
+
+//----------------------------------------------------------------------
+//
+// gui
+//
+//----------------------------------------------------------------------
+
+
+* widgets
+  - combine Slider, DualRange, ScrollBar
+  - path-based drawing (cairo)
+
+  - MIP_TreeWidget
+    - branch, leaf
+    - folder, file
+    - text-based group-box
+
+* find hovering widget doesn't take innerBoder into account
+  (you can hover/click over a part of a knob that is hidden behind a
+  (blank) innerBorder area)
+
+* stop modal when resizing window
+
+* widget flag: proportional
+  (knobs, circular widget, etc)
+

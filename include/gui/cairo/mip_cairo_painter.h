@@ -168,7 +168,7 @@ public: // surface
   */
 
   void resize(uint32_t AWidth, uint32_t AHeight) override {
-    //MIP_Print("%i,%i\n",AWidth,AHeight);
+    //MIP_Print("w %i h %i\n",AWidth,AHeight);
     cairo_xcb_surface_set_size(MSurface,AWidth,AHeight);
   }
 
@@ -729,18 +729,12 @@ public: // image
 
   void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
     cairo_surface_t* srf = ABitmap->createCairoSurface();
-    //MIP_CHECK_CAIRO_SURFACE_ERROR(srf);
-    //MIP_CHECK_CAIRO_SURFACE_REFCOUNT(srf);
+    cairo_save(MCairo);
     cairo_set_source_surface(MCairo,srf,0,0);
-    //MIP_CHECK_CAIRO_ERROR(MCairo);
-    //MIP_CHECK_CAIRO_REFCOUNT(MCairo);
     cairo_rectangle(MCairo,AXpos,AYpos,ABitmap->getWidth(),ABitmap->getHeight());
     cairo_fill(MCairo);
-    //cairo_surface_finish(srf);
+    cairo_restore(MCairo);
     cairo_surface_destroy(srf);
-    //MIP_CHECK_CAIRO_SURFACE_ERROR(srf);
-    //MIP_CHECK_CAIRO_SURFACE_REFCOUNT(srf);
-    //MIP_Print("srf ref count: %i\n",cairo_surface_get_reference_count(srf));    // prints 1
   }
 
   //----------
@@ -752,20 +746,12 @@ public: // image
   //----------
 
   void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) override {
-    //cairo_surface_t* srf = ASource->createCairoSurface();
     cairo_surface_t* srf = ASource->getCairoSurface();
-    //MIP_CHECK_CAIRO_SURFACE_ERROR(srf);
-    //MIP_CHECK_CAIRO_SURFACE_REFCOUNT(srf);
+    cairo_save(MCairo);
     cairo_set_source_surface(MCairo,srf,/*0,0*/AXpos-ASrc.x,AYpos-ASrc.y);
-    //MIP_CHECK_CAIRO_ERROR(MCairo);
-    //MIP_CHECK_CAIRO_REFCOUNT(MCairo);
     cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
     cairo_fill(MCairo);
-    cairo_surface_flush(srf);
-    //cairo_surface_destroy(srf);
-    //MIP_CHECK_CAIRO_SURFACE_ERROR(srf);
-    //MIP_CHECK_CAIRO_SURFACE_REFCOUNT(srf);
-    //MIP_Print("srf ref count: %i\n",cairo_surface_get_reference_count(srf));    // prints 1
+    cairo_restore(MCairo);
   }
 
   //----------
@@ -773,19 +759,14 @@ public: // image
   void drawImage(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) override {
     float xscale = (float)ADst.w / (float)ASrc.w;
     float yscale = (float)ADst.h / (float)ASrc.h;
-    cairo_rectangle(MCairo,ADst.x,ADst.y,ADst.w,ADst.h);
-
     cairo_surface_t* srf = ASource->getCairoSurface();
-    //MIP_CHECK_CAIRO_SURFACE_ERROR(srf);
-    cairo_set_source_surface(MCairo,srf,0,0/*ASrcX,ASrcY*/);
-    //MIP_CHECK_CAIRO_ERROR(MCairo);
     cairo_save(MCairo);
+    cairo_set_source_surface(MCairo,srf,0,0/*ASrcX,ASrcY*/);
+    cairo_rectangle(MCairo,ADst.x,ADst.y,ADst.w,ADst.h);
     cairo_translate(MCairo,ADst.x,ADst.y);
     cairo_scale(MCairo,xscale,yscale);
     cairo_fill(MCairo);
     cairo_restore(MCairo);
-    //MIP_CHECK_CAIRO_ERROR(MCairo);
-    //MIP_Print("srf ref count: %i\n",cairo_surface_get_reference_count(srf));    // prints ..
   }
 
 

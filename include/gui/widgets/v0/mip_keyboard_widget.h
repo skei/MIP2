@@ -44,7 +44,7 @@ class MIP_KeyboardWidget
 private:
 //------------------------------
 
-  bool        MActiveMap[12]    = {0};
+  bool        MActiveMap[12]    = {1,1,1,1,1,1,1,1,1,1,1,1};
   int32_t     MNoteRects1[12*4] = {0};
   int32_t     MNoteRects2[12*4] = {0};
 

@@ -81,6 +81,7 @@ public:
   }
 
   virtual void drawTile(MIP_Painter* APainter) {
+    MIP_FRect mrect = getRect();
     //MIP_Surface* surface = getImageSurface();
     if (MSurface) {
       uint32_t num_tiles = MTileXCount * MTileYCount;
@@ -88,7 +89,7 @@ public:
         float v = (float)getValue() * (float)num_tiles;
         uint32_t tile = MIP_MinI( num_tiles - 1, floorf(v) );
         MIP_FRect rect = getTileRect(tile);
-        APainter->drawImage(getRect().x,getRect().y,MSurface,rect);
+        APainter->drawImage(mrect.x,mrect.y,MSurface,rect);
       }
     }
   }

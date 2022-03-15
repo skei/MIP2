@@ -6,10 +6,6 @@
 #include "extern/clap/clap.h"
 #include "plugin/clap/mip_clap_plugin.h"
 
-//----------
-
-//#ifndef MIP_NO_DEFAULT_PLUGIN_FACTORY
-
 //----------------------------------------------------------------------
 //
 //
@@ -56,10 +52,9 @@ const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugi
     return plugin->ptr();
   }
   else {
-    MIP_Print("no MIP_CreatePlugin()\n");
+    //MIP_Print("no MIP_CreatePlugin()\n");
     return nullptr;
   }
-
 }
 
 //----------------------------------------------------------------------
@@ -68,15 +63,11 @@ const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugi
 //
 //----------------------------------------------------------------------
 
-//static
-//constexpr
 const clap_plugin_factory MIP_CLAP_FACTORY = {
   clap_factory_get_plugin_count_callback,
   clap_factory_get_plugin_descriptor_callback,
   clap_factory_create_plugin_callback
 };
-
-//#endif // MIP_NO_DEFAULT_PLUGIN_FACTORY
 
 //----------------------------------------------------------------------
 #endif

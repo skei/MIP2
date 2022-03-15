@@ -100,6 +100,9 @@ private:
   float*                          MHostParamVal         = nullptr;
   float*                          MHostParamMod         = nullptr;
 
+  MIP_ClapIntQueue                MHostBeginParamQueue  = {};
+  MIP_ClapIntQueue                MHostEndParamQueue    = {};
+
 //------------------------------
 protected:
 //------------------------------
@@ -155,6 +158,11 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  //#ifndef MIP_NO_GUI
+  //  MIP_Editor* getEditor() { return MEditor; }
+  //  bool isOpen() { return MEditorIsOpen; }
+  //#endif
 
   float getParameterModulation(uint32_t AIndex) {
     return MParameterModulations[AIndex];
@@ -246,11 +254,43 @@ protected: // ??
     }
   }
 
+  //----------
+
+  void queueHostBeginParam(uint32_t AIndex) {
+    MHostBeginParamQueue.write(AIndex);
+  }
+
+  void queueHostEndParam(uint32_t AIndex) {
+    MHostEndParamQueue.write(AIndex);
+  }
+
+  void flushHostBeginParams(const clap_output_events_t* out_events) {
+    uint32_t index = 0;
+    while (MHostBeginParamQueue.read(&index)) {
+      //
+    }
+  }
+
+  void flushHostEndParams(const clap_output_events_t* out_events) {
+    uint32_t index = 0;
+    while (MHostEndParamQueue.read(&index)) {
+      //
+    }
+  }
+
 //------------------------------
 public: // editor listener
 //------------------------------
 
   #ifndef MIP_NO_GUI
+
+  void on_beginUpdateParameterFromEditor(uint32_t AIndex) final {
+    //queueHostBeginUpdateParam(AIndex);
+  }
+
+  void on_endUpdateParameterFromEditor(uint32_t AIndex) final {
+    //queueHostEndUpdateParam(AIndex);
+  }
 
   /*
     called from editor when widget changes (gui thread)
@@ -373,7 +413,10 @@ protected: // handle
   virtual void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
     #ifndef MIP_NO_GUI
     //if (MEditor && MIsEditorOpen) {
+
+//      flushHostBeginParams(out_events);
       flushHostParams(out_events);
+//      flushHostEndParams(out_events);
     //}
     #endif
   }
@@ -666,28 +709,19 @@ public: // gui
   #ifndef MIP_NO_GUI
 
   bool gui_is_api_supported(const char *api, bool is_floating) override {
-    if (is_floating) {
-      //MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
-      return false;
-    }
-    if (strcmp(api,CLAP_WINDOW_API_X11) == 0) {
-      //MIP_Print("api: %s floating: %s -> true\n",api,is_floating?"true":"false");
-      return true;
-    }
-    //MIP_Print("api: %s floating: %s -> false\n",api,is_floating?"true":"false");
+    if (is_floating) return false;
+    if (strcmp(api,CLAP_WINDOW_API_X11) == 0) return true;
     return false;
   }
 
   //----------
 
   bool gui_create(const char *api, bool is_floating) override {
-    //MIP_Print("api: %s floating: %s\n",api,is_floating?"true":"false");
+    MIP_Print("api: %s floating: %s\n",api,is_floating?"true":"false");
     MEditorIsOpen = false;
     if (is_floating) return false;
-    MEditor = new MIP_Editor(this,this,256,256);
-    if (MEditor) {
-      return true;
-    }
+    MEditor = new MIP_Editor(this,this,256,256,!is_floating);
+    if (MEditor) return true;
     return false;
   }
 
@@ -803,14 +837,14 @@ public: // gui
   //----------
 
   bool gui_set_transient(const clap_window_t *window) override {
-    //MIP_Print("window: %p\n",window);
+    MIP_Print("window: %p\n",window);
     return false;
   }
 
   //----------
 
   void gui_suggest_title(const char *title) override {
-    //MIP_Print("title: %s\n",title);
+    MIP_Print("title: %s\n",title);
   }
 
   //----------

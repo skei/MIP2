@@ -88,7 +88,7 @@ private:
 public:
 //------------------------------
 
-  MIP_Window(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener=nullptr, bool AEmbedded=false)
+  MIP_Window(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener, bool AEmbedded)
   : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded) {
     MName = "MIP_Window";
     MListener = AListener;
@@ -209,15 +209,23 @@ public: // window
 //------------------------------
 
   void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
+    //MIP_Print("w %i h %i\n",AWidth,AHeight);
+
     #ifndef MIP_NO_WINDOW_BUFFERING
       resizeBuffer(AWidth,AHeight);
     #endif
+
     if (MWindowPainter) {
       MWindowPainter->resize(AWidth,AHeight);
     }
+
     MRect.w = AWidth;
     MRect.h = AHeight;
     alignWidgets();
+
+    //#ifdef MIP_EXE
+    //  paint();
+    //#endif
   }
 
   //----------
@@ -314,11 +322,13 @@ public: // buffer
   //----------
 
   void paintBuffer(MIP_FRect ARect) {
+    //MIP_Print("%.0f,%.0f,%.0f,%.0f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     paintWidgets(MBufferPainter,ARect);
     MBufferPainter->flush();
     blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
-    //MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
-    //MWindowPainter->flush();
+//    MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+//    MWindowPainter->flush();
+
   }
 
   #endif // MIP_NO_WINDOW_BUFFERING
@@ -353,8 +363,6 @@ public: // MIP_BaseWindow
   }
 
   //----------
-
-  // TOD: realign
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("w %i h %i\n",AWidth,AHeight);
@@ -548,7 +556,7 @@ public: // MIP_Widget
     //MIP_Print("%.2f, %.2f\n",ADeltaX,ADeltaY);
     MResizingWidth += ADeltaX;
     MResizingHeight += ADeltaY;
-    MListener->on_resizeFromWindow(MResizingWidth,MResizingHeight);
+    if (MListener) MListener->on_resizeFromWindow(MResizingWidth,MResizingHeight);
   }
 
   //----------

@@ -136,7 +136,7 @@ private:
 public:
 //------------------------------
 
-  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
   : MIP_BaseWindow(AWidth,AHeight) {
     MName = "MIP_XcbWindow";
     MEmbedded = AEmbedded;// ? true : false;
@@ -182,6 +182,8 @@ public:
 
 //  void setFillBackground(bool f=true) { MFillBackground = f; }
 //  void setBackgroundColor(MIP_Color c) { MBackgroundColor = c; }
+
+  xcb_screen_t* getXcbScreen() { return MScreen; }
 
 //------------------------------
 public: // drawable
@@ -270,7 +272,7 @@ private:
 
   //----------
 
-  void createWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
+  void createWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded) {
     uint32_t event_mask =
       XCB_EVENT_MASK_KEY_PRESS        |
       XCB_EVENT_MASK_KEY_RELEASE      |
@@ -499,7 +501,8 @@ private:
   void stopEventThread() {
     void* ret;
     MEventThreadActive = false;
-    sendEvent(MIP_THREAD_ID_KILL,0);
+    //sendEvent(MIP_THREAD_ID_KILL,0);
+    sendClientMessage(MIP_THREAD_ID_KILL,0);
     pthread_join(MEventThread,&ret);
   }
 
@@ -1090,27 +1093,126 @@ public:
     MQuitEventLoop = false;
     xcb_flush(MConnection);
     xcb_generic_event_t* event;// = xcb_wait_for_event(MConnection);
-    //while (event) {
     while ((event = xcb_wait_for_event(MConnection))) {
       uint32_t e = event->response_type & ~0x80;
-      if (e == XCB_CLIENT_MESSAGE) {
-        xcb_client_message_event_t* client_message = (xcb_client_message_event_t*)event;
-        xcb_atom_t  type = client_message->type;
-        uint32_t      data = client_message->data.data32[0];
-        if (type == MWMProtocolsAtom) {
-          if (data == MWMDeleteWindowAtom) {
-            free(event); // not malloc'ed
-            //MQuitEventLoop = true;
-            break;
-          }
-        }
-      }
+
+//      if (e == XCB_CLIENT_MESSAGE) {
+//        xcb_client_message_event_t* client_message = (xcb_client_message_event_t*)event;
+//        xcb_atom_t type = client_message->type;
+//        uint32_t data = client_message->data.data32[0];
+//        if (type == MWMProtocolsAtom) {
+//          if (data == MWMDeleteWindowAtom) {
+//            free(event); // not malloc'ed
+//            //MQuitEventLoop = true;
+//            return; //break;
+//          }
+//        }
+//      } // client
+
+      switch (e) {
+
+        //case XCB_EXPOSE:
+        //  MIP_Print("expose\n");
+        //  xcb_send_event(MConnection,false,AChild,XCB_EXPOSE,event);
+        //  break;
+
+        //case XCB_CONFIGURE_NOTIFY:
+        //  MIP_Print("configure_notify\n");
+        //  break;
+
+        case XCB_CLIENT_MESSAGE:
+          if (e == XCB_CLIENT_MESSAGE) {
+            xcb_client_message_event_t* client_message = (xcb_client_message_event_t*)event;
+            xcb_atom_t type = client_message->type;
+            uint32_t data = client_message->data.data32[0];
+            if (type == MWMProtocolsAtom) {
+              if (data == MWMDeleteWindowAtom) {
+                free(event); // not malloc'ed
+                //MQuitEventLoop = true;
+                //break;
+                return;
+              }
+            }
+          } // client
+          break;
+      };
+
       eventHandler(event);
-      free(event); // not malloc'ed
+      free(event);
       if (MQuitEventLoop) break;
-      //event = xcb_wait_for_event(MConnection);
-    }
+    } // while event
+
   }
+
+  //----------
+
+  // https://specifications.freedesktop.org/xembed-spec/0.5/ar01s06.html
+
+  /*
+
+    static int trapped_error_code = 0;
+    static int (*old_error_handler) (Display *, XErrorEvent *);
+
+    static int error_handler(Display *display, XErrorEvent *error) {
+      trapped_error_code = error->error_code;
+      return 0;
+    }
+
+    void trap_errors(void) {
+      trapped_error_code = 0;
+      old_error_handler = XSetErrorHandler(error_handler);
+    }
+
+    int untrap_errors(void) {
+      XSetErrorHandler(old_error_handler);
+      return trapped_error_code;
+    }
+
+    void handle_event(Display* dpy,	XEvent* ev) {
+      if (ev->type == KeyPress || ev->type==KeyRelease) {
+        ev->xkey.window = client;
+	      trap_errors();
+        XSendEvent( dpy, client, False, NoEventMask, ev );
+	      XSync( dpy, False );
+	      if (untrap_errors()) {
+	        // Handle failure
+	      }
+	      return;
+      }
+      // ...
+    }
+
+    void send_xembed_message(Display* dpy, Window w, long message, long detail, long data1, long data2) {
+      XEvent ev;
+      memset(&ev, 0, sizeof(ev));
+      ev.xclient.type = ClientMessage;
+      ev.xclient.window = w;
+      ev.xclient.message_type = XInternAtom( dpy, "_XEMBED", False );
+      ev.xclient.format = 32;
+      ev.xclient.data.l[0] = x_time;
+      ev.xclient.data.l[1] = message;
+      ev.xclient.data.l[2] = detail;
+      ev.xclient.data.l[3] = data1;
+      ev.xclient.data.l[4] = data2;
+      trap_errors();
+      XSendEvent(dpy, w, False, NoEventMask, &ev);
+      XSync(dpy, False);
+      if (untrap_errors()) {
+	      // Handle failure
+      }
+    }
+
+  */
+
+//  void parentEventLoop(intptr_t AChild) override {
+//    MQuitEventLoop = false;
+//    xcb_flush(MConnection);
+//    xcb_generic_event_t* event;// = xcb_wait_for_event(MConnection);
+//    while ((event = xcb_wait_for_event(MConnection))) {
+//      xcb_send_event(MConnection,false /*propagate*/,AChild, XCB_EVENT_MASK_NO_EVENT /*event_mask*/, (const char*)event );
+//      xcb_flush(MConnection);
+//    }
+//  }
 
   //----------
 
@@ -1264,7 +1366,8 @@ public:
     https://stackoverflow.com/questions/40533318/xcb-custom-message-to-event-loop
   */
 
-  void sendEvent(uint32_t AData, uint32_t AType) override {
+  //void sendEvent(uint32_t AData, uint32_t AType) override {
+  void sendClientMessage(uint32_t AData, uint32_t AType) override {
     memset(MClientMessageEventBuffer,0,sizeof(MClientMessageEventBuffer));
     MClientMessageEvent->window         = MWindow;
     MClientMessageEvent->response_type  = XCB_CLIENT_MESSAGE;
@@ -1407,8 +1510,105 @@ public:
   }
 
 //------------------------------
+public:
+//------------------------------
+
+  /*
+    typedef struct {
+      uint8_t      response_type;
+      uint8_t      depth;         // depth of the window
+      uint16_t     sequence;
+      uint32_t     length;
+      xcb_window_t root;          // Id of the root window
+      int16_t      x;             // X coordinate of the window's location
+      int16_t      y;             // Y coordinate of the window's location
+      uint16_t     width;         // Width of the window
+      uint16_t     height;        // Height of the window
+      uint16_t     border_width;  // Width of the window's border
+    } xcb_get_geometry_reply_t;
+
+    xcb_get_geometry_cookie_t xcb_get_geometry(xcb_connection_t* c, xcb_drawable_t drawable);
+    xcb_get_geometry_reply_t *xcb_get_geometry_reply(xcb_connection_t* c, xcb_get_geometry_cookie_t cookie, xcb_generic_error_t** e);
+  */
+
+  //xcb_get_geometry_reply_t* getGeometry() {
+  //  xcb_get_geometry_cookie_t cookie = xcb_get_geometry(MConnection,MWindow/*MDrawable*/);
+  //  xcb_get_geometry_reply_t* reply = xcb_get_geometry_reply(MConnection,cookie,nullptr);
+  // return reply;
+  //  //free(reply);
+  //}
+
+  //----------
+
+  /*
+    typedef struct {
+      uint8_t      response_type;
+      uint8_t      pad0;
+      uint16_t     sequence;
+      uint32_t     length;
+      xcb_window_t root;
+      xcb_window_t parent;       // Id of the parent window
+      uint16_t     children_len;
+      uint8_t      pad1[14];
+    } xcb_query_tree_reply_t;
+
+    xcb_query_tree_cookie_t xcb_query_tree(xcb_connection_t* c, xcb_window_t window);
+    xcb_query_tree_reply_t *xcb_query_tree_reply(xcb_connection_t* c, xcb_query_tree_cookie_t cookie, xcb_generic_error_t** e);
+  */
+
+  xcb_window_t getXcbParent() {
+    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
+    xcb_query_tree_reply_t* reply = xcb_query_tree_reply(MConnection,cookie,nullptr);
+    xcb_window_t parent = reply->parent;
+    free(reply);
+    return parent;
+  }
+
+  //----------
+
+  // Displays the root, parent and children of the specified window.
+
+  /*
+  void my_example() {
+    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
+    xcb_query_tree_reply_t* reply;
+    if ((reply = xcb_query_tree_reply(MConnection,cookie,nullptr))) {
+      //printf("root = 0x%08x\n", reply->root);
+      //printf("parent = 0x%08x\n", reply->parent);
+      xcb_window_t *children = xcb_query_tree_children(reply);
+      for (int i = 0; i < xcb_query_tree_children_length(reply); i++) {
+        //printf("child window = 0x%08x\n", children[i]);
+      }
+      free(reply);
+    }
+  }
+  */
+
+  uint32_t getXcbChildCount() {
+    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
+    xcb_query_tree_reply_t* reply;
+    if ((reply = xcb_query_tree_reply(MConnection,cookie,nullptr))) {
+      int num_children = xcb_query_tree_children_length(reply);
+      free(reply);
+      return num_children;
+    }
+    return 0;
+  }
+
+  uint32_t getXcbChild(uint32_t AIndex) {
+    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
+    xcb_query_tree_reply_t* reply;
+    if ((reply = xcb_query_tree_reply(MConnection,cookie,nullptr))) {
+      xcb_window_t *children = xcb_query_tree_children(reply);
+      xcb_window_t child = children[AIndex];
+      free(reply);
+      return child;
+    }
+    return 0;
+  }
 
 };
 
+  //--------
 //----------------------------------------------------------------------
 #endif
