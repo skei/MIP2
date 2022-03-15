@@ -101,7 +101,7 @@ public:
 //------------------------------
 
   MIP_ExeEntry() {
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //----------
