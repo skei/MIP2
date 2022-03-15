@@ -12,7 +12,6 @@
 
 #include "json.hpp"
 
-
 Json  json                    = {};
 char  json_buffer[1024*1024]  = {0};
 
@@ -21,13 +20,13 @@ char  json_buffer[1024*1024]  = {0};
 void json_begin() {
   json_buffer[0] = 0;
   json.setupWrite(true,json_buffer,JSON_BUFFER_SIZE);
-  //json.objectBegin(nullptr);
+  json.objectBegin(nullptr);
 }
 
 //----------
 
 void json_end(const char* filename) {
-  //json.objectEnd();
+  json.objectEnd();
   if (json.error()) {
     printf("%s\n",json.errorMessage());
   }
@@ -41,11 +40,11 @@ void json_end(const char* filename) {
 
 void print_json_plugin_list(Host* host) {
   //printf("plugins:\n");
-  json.objectBegin("plugin list");
+  json.arrayBegin("plugin list");
     const clap_plugin_factory* factory = host->getClapFactory();
     uint32_t num = factory->get_plugin_count(factory);
     for (uint32_t i=0; i<num; i++) {
-      json.objectBegin("plugin");
+        json.objectBegin(nullptr);
         const clap_plugin_descriptor_t* descriptor = factory->get_plugin_descriptor(factory,i);
         //printf("  %i. %s (%s)\n",i,descriptor->name,descriptor->description);
         json.i32("index",(int32_t *)&i);
@@ -53,7 +52,7 @@ void print_json_plugin_list(Host* host) {
         json.string("description",(const char **)&descriptor->description);
       json.objectEnd();
     }
-  json.objectEnd();
+  json.arrayEnd();
 }
 
 //----------
@@ -73,14 +72,14 @@ void print_json_descriptor(const clap_plugin_descriptor_t* desc) {
     json.string("support_url",(const char**)&desc->support_url);
     json.string("version",(const char**)&desc->version);
     json.string("description",(const char**)&desc->description);
-    json.objectBegin("features");
+    json.arrayBegin("features");
       int i = 0;
       while ( desc->features[i] ) {
         //json.string("...",(const char**)&desc->features[i]);
         json.string(nullptr,(const char**)&desc->features[i]);
         i++;
       }
-    json.objectEnd();
+    json.arrayEnd();
   json.objectEnd();
   //if (json.error()) {
   //  printf("%s\n",json.errorMessage());
@@ -106,7 +105,7 @@ void print_json_parameter(uint32_t index, const clap_param_info_t* param) {
   bool        is_readonly       = flags & CLAP_PARAM_IS_READONLY;
   bool        is_modulatable    = flags & CLAP_PARAM_IS_MODULATABLE;
   bool        requires_process  = flags & CLAP_PARAM_REQUIRES_PROCESS;
-  json.objectBegin("parameter");
+    json.objectBegin(nullptr);
     json.u32("id",(uint32_t*)&param->id);
     //json.u32("flags",(uint32_t*)&param->flags);
     json.objectBegin("flags");
@@ -238,6 +237,7 @@ void print_plugin_parameters(const clap_plugin_t* plugin, const char* json_file=
   const clap_plugin_params_t* params = (const clap_plugin_params_t*)plugin->get_extension(plugin,CLAP_EXT_PARAMS);
   if (params) {
     uint32_t num = params->count(plugin);
+    json.arrayBegin("parameter list");
     for (uint32_t i=0; i<num; i++) {
       clap_param_info_t param_info;
       if (params->get_info(plugin,i,&param_info)) {
@@ -245,6 +245,7 @@ void print_plugin_parameters(const clap_plugin_t* plugin, const char* json_file=
         else print_stdout_parameter(i,&param_info);
       }
     }
+    json.arrayEnd();
   }
 }
 
