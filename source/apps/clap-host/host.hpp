@@ -2,11 +2,15 @@
 #define host_included
 //----------------------------------------------------------------------
 
-//#include <windows.h>
-#include <dlfcn.h>
+// WIN32 = totally untested!!
+
+#ifdef WIN32
+  #include <windows.h>
+#else
+  #include <dlfcn.h>
+#endif
 
 #include "clap/clap.h"
-#include "clap/ext/draft/ambisonic.h"
 #include "clap/ext/draft/check-for-update.h"
 
 
@@ -23,37 +27,14 @@ class Host {
 private:
 //------------------------------
 
-    //HINSTANCE                   MLibHandle      = nullptr;
-
-    void*                       MLibrary    = nullptr;
+    #ifdef WIN32
+      HINSTANCE                 MLibrary    = nullptr;
+    #else
+      void*                     MLibrary    = nullptr;
+    #endif
     const clap_plugin_entry*    MEntry      = nullptr;
     const clap_plugin_factory*  MFactory    = nullptr;
     char                        MPathOnly[512]  = {0};
-
-//  clap_host                     MHost
-//  clap_host_ambisonic           MAmbisonic
-//  clap_host_audio_ports         MAudioPorts
-//  clap_host_audio_ports_config  MAudioPortsConfig
-//  clap_host_check_for_update    MChekForUpdate
-//  clap_host_event_filter        MEventFilter
-//  clap_host_event_registry      MEventRegistry
-//  clap_host_file_reference      MFileReference
-//  clap_host_gui                 MGui
-//  clap_host_latency             MLatency
-//  clap_host_log                 MLog
-//  clap_host_midi_mappings       MMidiMappings
-//  clap_host_note_name           MNoteName
-//  clap_host_note_ports          MNotePorts
-//  clap_host_params              MParams
-//  clap_host_posix_fd_support    MPosixFdSupport
-//  clap_host_quick_controls      MQuickControls
-//  clap_host_state               MState
-//  clap_host_surround            MSurround
-//  clap_host_thread_check        MThreadCheck
-//  clap_host_thread_pool         MThreadPool
-//  clap_host_timer_support       MTimerSupport
-//  clap_host_track_info          MTrackInfo
-//  clap_host_tuning              MTuning
 
 //------------------------------
 public:
@@ -88,11 +69,13 @@ public:
 //------------------------------
 
   bool loadPlugin(const char* path) {
-    //MPluginPath = path;
-    //MLibrary = LoadLibrary(path);
-    //MEntry = (struct clap_plugin_entry*)GetProcAddress(MLibrary,"clap_entry");
-    MLibrary = dlopen(path,RTLD_LAZY|RTLD_LOCAL); // RTLD_NOW
-    MEntry = (struct clap_plugin_entry*)dlsym(MLibrary,"clap_entry");
+    #ifdef WIN32
+      MLibrary = LoadLibrary(path);
+      MEntry = (struct clap_plugin_entry*)GetProcAddress(MLibrary,"clap_entry");
+    #else
+      MLibrary = dlopen(path,RTLD_LAZY|RTLD_LOCAL); // RTLD_NOW
+      MEntry = (struct clap_plugin_entry*)dlsym(MLibrary,"clap_entry");
+    #endif
     get_path_only(MPathOnly,path);
     MEntry->init(MPathOnly);
     MFactory = (const clap_plugin_factory*)MEntry->get_factory(CLAP_PLUGIN_FACTORY_ID);
@@ -102,8 +85,11 @@ public:
   //----------
 
   void unloadPlugin() {
-    //if (MEntry) MEntry->deinit();
-    if (MLibrary) dlclose(MLibrary);
+    #ifdef WIN32
+      if (MEntry) MEntry->deinit();
+    #else
+      if (MLibrary) dlclose(MLibrary);
+    #endif
   }
 
   //----------
@@ -113,7 +99,7 @@ public:
     if (index >= MFactory->get_plugin_count(MFactory)) return nullptr;
     const clap_plugin_descriptor* descriptor = MFactory->get_plugin_descriptor(MFactory,index);
     const clap_plugin* plugin = MFactory->create_plugin(MFactory,&MHost,descriptor->id);
-//    plugin->init(plugin);
+    //plugin->init(plugin);
     return plugin;
   }
 
@@ -127,35 +113,14 @@ public:
 private:
 //------------------------------
 
-  // /home/skei/test.so -> test.so
-  // returns ptr to first character after last /
-
-  /*
-  const char* get_filename_from_path(const char* path) {
-    if (path) {
-      const char* slash     = strrchr(path,'/');
-      const char* backslash = strrchr(path,'\\');
-      if (slash) {
-        return slash + 1;
-      }
-      else if (backslash) {
-        return backslash + 1;
-      }
-    }
-    return NULL;
-  }
-  */
-
-  //----------
-
   // /home/skei/test.so -> /home/skei/
-  // makes a copy of dst, inserts a 0 after the last /
+  // makes a copy of src, inserts a 0 after the last /
 
   char* get_path_only(char* dst, const char* src) {
     if (dst && src) {
       strcpy(dst,src);
       char* slash     = strrchr(dst,'/');
-      char* backslash = strrchr(dst,'\\');
+      char* backslash = strrchr(dst,'\\'); // WIN32 ?
       if (slash) {
         slash[1] = 0;
         return dst;
@@ -167,15 +132,6 @@ private:
     }
     return nullptr;
   }
-
-//------------------------------
-public: // timer listener
-//------------------------------
-
-  //void on_timerCallback(void) override {
-  //  //MIP_CLAPPRINT;
-  //  //hosted_plugin->timer()
-  //}
 
 //------------------------------
 public: // clap plugin
@@ -223,7 +179,7 @@ public: // extensions
   virtual bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) { return false; }
   virtual bool timer_support_unregister_timer(clap_id timer_id) { return false; }
   virtual bool track_info_get(clap_track_info *info) { return false; }
-//  virtual double tuning_get(int32_t key, int32_t channel) { return 0.0; }
+  //virtual double tuning_get(int32_t key, int32_t channel) { return 0.0; }
 
 //------------------------------
 private:
@@ -571,15 +527,14 @@ private: // extensions
 
   // tuning.draft/0
 
-//  static double clap_host_tuning_get_callback(const clap_host *host, int32_t key, int32_t channel) {
-//    Host* host_ = (Host*)host->host_data;
-//    return host_->tuning_get(key,channel);
-//  }
-//
-//  clap_host_tuning MTuning = {
-//    clap_host_tuning_get_callback
-//  };
-
+  //static double clap_host_tuning_get_callback(const clap_host *host, int32_t key, int32_t channel) {
+  //  Host* host_ = (Host*)host->host_data;
+  //  return host_->tuning_get(key,channel);
+  //}
+  //
+  //clap_host_tuning MTuning = {
+  //  clap_host_tuning_get_callback
+  //};
 
 };
 

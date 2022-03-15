@@ -8,14 +8,6 @@
 
 #include <sndfile.h>
 
-//----------
-
-//SFM_READ    0x10
-//SFM_WIITE   0x20
-//SFM_RDWR    0x30
-
-
-
 //----------------------------------------------------------------------
 //
 //
@@ -36,7 +28,6 @@ private:
   uint32_t    MSapleRate  = 44100;
   uint32_t    MChannels   = 2;
 
-
 //------------------------------
 public:
 //------------------------------
@@ -49,7 +40,11 @@ public:
   ~AudioFile() {
   }
 
-  SF_INFO* getInfo() { return &MInfo; }
+  //----------
+
+  SF_INFO* getInfo() {
+    return &MInfo;
+  }
 
 //------------------------------
 public:
@@ -90,7 +85,6 @@ public:
         return true;
 
       //case AUDIO_FILE_RDWR:
-      //
       //  return false;
 
     } // switch

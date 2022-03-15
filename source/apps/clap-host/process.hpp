@@ -37,7 +37,6 @@ class Process {
 private:
 //------------------------------
 
-//MIP_ClapHostedPlugin* MPlugin           = nullptr;
   const clap_plugin_t*  MPlugin           = nullptr;
 
   AudioFile             MAudioInputFile   = {};
@@ -176,15 +175,6 @@ private:
   }
 
   /*
-    CLAP_TRANSPORT_HAS_TEMPO
-    CLAP_TRANSPORT_HAS_BEATS_TIMELINE
-    CLAP_TRANSPORT_HAS_SECONDS_TIMELINE
-    CLAP_TRANSPORT_HAS_TIME_SIGNATURE
-    CLAP_TRANSPORT_IS_PLAYING
-    CLAP_TRANSPORT_IS_RECORDING
-    CLAP_TRANSPORT_IS_LOOP_ACTIVE
-    CLAP_TRANSPORT_IS_WITHIN_PRE_ROLL
-
     TODO:
       get tempo/timesig from midifile
       increase counter as we render the blocks
@@ -211,15 +201,14 @@ private:
     MContextTransport.tsig_denom          = 4;
   }
 
-  //void prepare_context(uint32_t channels, uint32_t blocksize, uint32_t latency=0) {
   void prepare_context(uint32_t num_in, uint32_t num_out, uint32_t blocksize, uint32_t latency) {
     MContext.steady_time          = MCurrentSample;
     MContext.frames_count         = blocksize;
     MContext.transport            = &MContextTransport;
     MContext.audio_inputs         = &MContextAudioInputs;
     MContext.audio_outputs        = &MContextAudioOutputs;
-    MContext.audio_inputs_count   = num_in; //channels;
-    MContext.audio_outputs_count  = num_out; //channels;
+    MContext.audio_inputs_count   = num_in;
+    MContext.audio_outputs_count  = num_out;
     MContext.in_events            = &MContextInputEvents;
     MContext.out_events           = &MContextOutputEvents;
   }
@@ -263,7 +252,6 @@ private:
       uint8_t msg2    = midievent->msg2;
       uint8_t msg3    = midievent->msg3;
       int32_t offset  = floorf(time * MSampleRate);
-      //printf("MIDI : offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
       switch( msg1 & 0xF0) {
 
         case MIDI_NOTE_OFF: {
@@ -290,7 +278,7 @@ private:
           note_event->header.size     = sizeof(clap_event_note_t);  // event size including this header, eg: sizeof (clap_event_note)
           note_event->header.time     = offset;                     // time at which the event happens
           note_event->header.space_id = 0;                          // event space, see clap_host_event_registry
-          note_event->header.type     = CLAP_EVENT_NOTE_ON;        // event type
+          note_event->header.type     = CLAP_EVENT_NOTE_ON;         // event type
           note_event->header.flags    = 0;                          // see clap_event_flags
           note_event->port_index      = 0;
           note_event->key             = msg2;
@@ -313,7 +301,7 @@ private:
           expression_event->port_index      = 0;
           expression_event->key             = msg2;
           expression_event->channel         = msg1 & 0x0f;
-          expression_event->value           = msg3 / 127.0; // TODO
+          expression_event->value           = msg3 / 127.0; // TODO !!!
           MClapEvents.push_back(event);
           break;
         }
@@ -328,7 +316,7 @@ private:
             param_value_event->header.space_id  = 0;                                 // event space, see clap_host_event_registry
             param_value_event->header.type      = CLAP_EVENT_PARAM_VALUE;               // event type
             param_value_event->header.flags     = 0;                                 // see clap_event_flags
-            param_value_event->cookie           = MRemapParamInfo.cookie; //NULL; // !!!
+            param_value_event->cookie           = MRemapParamInfo.cookie;
             param_value_event->param_id         = MRemapParamInfo.id;
             param_value_event->port_index       = -1;
             param_value_event->key              = -1;
@@ -353,6 +341,8 @@ private:
           }
           break;
         }
+
+        // TODO?
 
         //case MIDI_PROGRAM_CHANGE: {
         //  break;
@@ -403,9 +393,7 @@ private:
 public:
 //------------------------------
 
-  //int process(const clap_plugin_t* plugin) {
   int process() {
-    //const clap_plugin* plugin = APlugin->getClapPlugin();
 
     MSampleRate = arg_sample_rate;
     uint32_t num_samples = 0;
@@ -464,17 +452,9 @@ public:
 
     // because of larry.mid (20 minutes or something..)
     if (num_samples >= (arg_sample_rate * 180.0)) {
-      printf("truncating to 3 minute\n" );
+      printf("truncating to 3 minutes\n" );
       num_samples = 180.0 * arg_sample_rate;
     }
-
-    //if ((arg_remap_cc >= 0) && (arg_remap_param >= 0)) {
-    //  MInstance->getParam(arg_remap_param,&MRemapParamInfo);
-    //}
-
-    //uint32_t num_blocks = num_samples / arg->block_size;
-    //num_blocks += 1; // just to be sure :-)
-    //float seconds_per_block = arg->block_size / arg->sample_rate;
 
     // prepare
     prepare_transport();
@@ -487,23 +467,6 @@ public:
     MCurrentSample = 0;   // current position (in samples)
     MCurrentTime = 0.0;   // current position (in seconds)
 
-    //#ifndef NO_GUI
-    //  const clap_plugin_gui_t*     gui     = (const clap_plugin_gui_t*    )plugin->get_extension(plugin,CLAP_EXT_GUI    );
-    //  const clap_plugin_gui_x11_t* gui_x11 = (const clap_plugin_gui_x11_t*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);
-    //  uint32_t width = 256;
-    //  uint32_t height = 256;
-    //  if (gui && gui_x11) {
-    //    gui->create(plugin);
-    //    gui->set_scale(plugin,1.0); //
-    //    gui->get_size(plugin,&width,&height);
-    //    MWindow = new MIP_Window(width,height,"plugin");
-    //    MWindow->open();
-    //    xcb_window_t xcbwin = MWindow->getXcbWindow();
-    //    gui_x11->attach(plugin,nullptr /*""*/,xcbwin);
-    //    gui->show(plugin);
-    //  }
-    //#endif
-
     printf("processing %i samples\n",num_samples);
 
     while (num_samples > 0) {
@@ -512,8 +475,7 @@ public:
 
       uint32_t block_size = arg_block_size;
       if (arg_fuzz_block_size) {
-        //block_size = 1 + (rand() % arg_block_size); // min 16?
-        block_size = rand() % (arg_block_size+1);     // (0..blocksize, incl)
+        block_size = rand() % (arg_block_size+1); // (0..blocksize, incl)
       }
       if (block_size > num_samples) {
         block_size = num_samples;
@@ -530,7 +492,6 @@ public:
 
       // audio input
 
-      //else {
       if (arg_audio_input_file) {
         MAudioInputFile.read(arg_num_audio_inputs,block_size,MAudioInputBuffers);
       }
@@ -551,15 +512,6 @@ public:
       num_samples     -= block_size;
 
     }
-
-    //MIP_Sleep(10000);
-
-    //#ifndef NO_GUI
-    //  gui->hide(plugin);
-    //  gui->destroy(plugin);
-    //  MWindow->close();
-    //  delete MWindow;
-    //#endif
 
     printf("Finished processing\n");
 

@@ -12,7 +12,7 @@
   * printout: audio/note ports, note names, etc..
   * code cleanup, structure
   * error checking, safety
-  * show gui
+  * show gui (?)
   * more diagnostics
   * remove long command line argument variants?
   * save (potential) midi output to file

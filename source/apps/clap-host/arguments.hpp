@@ -122,7 +122,7 @@ public:
         return getStr(i);
       }
     }
-    return nullptr;//"";
+    return nullptr;
   }
 
   //----------
@@ -174,7 +174,7 @@ public:
         return text2;
       }
     }
-    return nullptr;//"";
+    return nullptr;
   }
 
   //----------

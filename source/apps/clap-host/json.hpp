@@ -28,27 +28,20 @@ class Json {
 private:
 //------------------------------
 
-  xjson*    MJson             = nullptr;
-  //char*     MBuffer           = nullptr;
-  //uint32_t  MBufferSize       = 0;
-  //bool      MBufferAllocated  = false;
+  xjson* MJson = nullptr;
 
 //------------------------------
 public:
 //------------------------------
 
   Json() {
-    //MBufferSize       = ABufferSize;
-    //MBuffer           = ABuffer;
-    //MBufferAllocated  = false;
 
-    MJson             = (xjson*)malloc(sizeof(xjson));
+    MJson = (xjson*)malloc(sizeof(xjson));
     memset(MJson,0,sizeof(xjson));
     xjson_set_string_allocator(MJson,json_allocate_string);
   }
 
   virtual ~Json() {
-    //if (MBuffer && MBufferAllocated) free(MBuffer);
   }
 
 //------------------------------
