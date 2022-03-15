@@ -11,13 +11,14 @@ class MIP_CircularWaveformWidget
 private:
 //------------------------------
 
-    float*      MBuffer       = nullptr;
-    int32_t     MBufferSize   = 0;
-    //float       MRadius       = 100.0f;
-    float       MOuterRadius  = 1.0f;
-    float       MInnerRadius  = 0.6f;
-    bool        MBipolar      = false;
-    MIP_Color  MLineColor    = MIP_COLOR_DARK_GRAY;
+    bool        MAllocatedBuffer  = false;
+    float*      MBuffer           = nullptr;
+    int32_t     MBufferSize       = 0;
+    //float       MRadius           = 100.0f;
+    float       MOuterRadius      = 1.0f;
+    float       MInnerRadius      = 0.6f;
+    bool        MBipolar          = true;//false;
+    MIP_Color  MLineColor         = MIP_COLOR_DARK_GRAY;
 
 //------------------------------
 public:
@@ -33,6 +34,7 @@ public:
 
   virtual ~MIP_CircularWaveformWidget() {
     //if (MBuffer) SFree(MBuffer);
+    if (MAllocatedBuffer) free(MBuffer);
   }
 
 //------------------------------
@@ -48,9 +50,24 @@ public:
     void      setBuffer(int32_t AIndex, float AValue) { MBuffer[AIndex] = AValue; }
     void      setBuffer(float* ABuffer)               { MBuffer = ABuffer; }
     void      setBufferSize(int32_t ASize)            { MBufferSize = ASize; }
+
+    void createBuffer(uint32_t ASize) {
+      MBuffer = (float*)malloc(ASize * sizeof(float));
+      MBufferSize = ASize;
+      MAllocatedBuffer = true;
+    }
+
+    void deleteBuffer() {
+      if (MAllocatedBuffer) free(MBuffer);
+      MAllocatedBuffer = false;
+      MBuffer = nullptr;
+      MBufferSize = 0;
+    }
+
     //void      setRadius(float ARadius)              { MRadius = ARadius; }
-    void      setOuterRadius(float ARadius)           { MOuterRadius = ARadius; }
+
     void      setInnerRadius(float ARadius)           { MInnerRadius = ARadius; }
+    void      setOuterRadius(float ARadius)           { MOuterRadius = ARadius; }
     void      setBipolar(bool ABipolar=true)          { MBipolar = ABipolar; }
 
 //------------------------------
@@ -63,8 +80,8 @@ public:
 
     fillBackground(APainter,ARect,AMode);
 
-    MIP_FRect mrect = getRect();
-    if (MBufferSize > 0) {
+    if ((MBuffer) && (MBufferSize > 0)) {
+      MIP_FRect mrect = getRect();
 
       float xcenter = mrect.x + (mrect.w / 2);
       float ycenter = mrect.y + (mrect.h / 2);
@@ -89,9 +106,9 @@ public:
       r2 *= radius;// * 0.5f;
       rec2.shrink( r2 * 0.5f );
 
-      APainter->drawEllipse(rec2,MIP_COLOR_WHITE,1);
+      //APainter->drawEllipse(rec2,MIP_COLOR_WHITE,1);
 
-      if (MBuffer) {
+      //if (MBuffer) {
         if (MBipolar) {
           for (int32_t i=0; i<MBufferSize; i++) {
             vv = (MBuffer[i] + 1.0f) * 0.5f;      // 0..1
@@ -126,7 +143,7 @@ public:
             angle += angleadd;
           }
         } // bipolar
-      } // buffer
+      //} // buffer
 
 //      APainter->drawEllipse(rec2,MIP_COLOR_WHITE,1);
 

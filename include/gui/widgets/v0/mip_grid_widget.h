@@ -27,34 +27,34 @@ class MIP_GridWidget
 private:
 //------------------------------
 
-  bool        MIsDragging           = false;
-  bool        MIsMoving             = false;
-  int32_t     MClickedX             = -1;
-  int32_t     MClickedY             = -1;
-  int32_t     MSelectedX            = -1;
-  int32_t     MSelectedY            = -1;
-  int32_t     MSelectedXcount       = 0;
-  int32_t     MSelectedYcount       = 0;
+  bool      MIsDragging           = false;
+  bool      MIsMoving             = false;
+  int32_t   MClickedX             = -1;
+  int32_t   MClickedY             = -1;
+  int32_t   MSelectedX            = -1;
+  int32_t   MSelectedY            = -1;
+  int32_t   MSelectedXcount       = 0;
+  int32_t   MSelectedYcount       = 0;
 
 //------------------------------
 protected:
 //------------------------------
 
-  int32_t     MNumColumns           = 0;
-  int32_t     MNumRows              = 0;          // rows
+  int32_t   MNumColumns           = 0;
+  int32_t   MNumRows              = 0;          // rows
 
-  bool        MSelectCell           = true;
-  bool        MSelectMultipleCells  = true;
+  bool      MSelectCell           = true;
+  bool      MSelectMultipleCells  = true;
 
-  bool        MDrawCells            = true;
-  bool        MDrawHorizontalLines  = true;
-  bool        MDrawVerticalLines    = true;
-  bool        MDrawSelectedCells    = true;
+  bool      MDrawCells            = true;
+  bool      MDrawHorizontalLines  = true;
+  bool      MDrawVerticalLines    = true;
+  bool      MDrawSelectedCells    = true;
 
-  MIP_Color  MGridColor            = MIP_COLOR_DARK_GRAY;
+  MIP_Color MGridColor            = MIP_COLOR_DARK_GRAY;
 
-  //bool        MFillBackground       = false;
-  //MIP_Color  MBackgroundColor      = MIP_COLOR_GRAY;
+  //bool      MFillBackground       = false;
+  //MIP_Color MBackgroundColor      = MIP_COLOR_GRAY;
 
 //------------------------------
 public:
