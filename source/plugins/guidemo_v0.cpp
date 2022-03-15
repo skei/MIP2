@@ -12,14 +12,7 @@
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
 
-
-
-
-
-
-
-
-
+#include "../data/img/knob4_60x60_131.h"
 
 //----------------------------------------------------------------------
 //
@@ -75,11 +68,8 @@ private:
 
   MIP_Widget*  MEditorWidget = nullptr;
 
-  //MIP_PanelWidget*  MEditorPanel  = nullptr;
-  //MIP_SizerWidget*  MSizer        = nullptr;
-
-  //MIP_GraphModule MModules[10] = {};
-
+  MIP_Bitmap*   MKnobBitmap   = nullptr;
+  MIP_Surface*  MKnobSurface  = nullptr;
 
 //------------------------------
 public:
@@ -117,8 +107,8 @@ public:
 
   void add_modules(MIP_GraphWidget* AGraph) {
     for (uint32_t m=0; m<NUM_GRAPH_MODULES; m++) {
-      uint32_t num_in = MIP_RandomRangeInt(1,5);
-      uint32_t num_out = MIP_RandomRangeInt(1,5);
+      uint32_t num_in = MIP_RandomRangeInt(0,5);
+      uint32_t num_out = MIP_RandomRangeInt(0,5);
       MIP_GraphModule* module = new MIP_GraphModule();
       module->numInputs = num_in;
       module->numOutputs = num_out;
@@ -138,17 +128,32 @@ public:
     }
   }
 
+  //----------
+
   bool create_editor(bool is_floating) {
+    MIP_PRINT;
     MEditorIsOpen = false;
 
     MEditor = new MIP_Editor(this,this,800,600,!is_floating);
 
     if (MEditor) {
       MEditor->setCanResize();
+      MIP_Window* window = MEditor->getWindow();
+
+      // image strip (knob)
+
+      MKnobBitmap = new MIP_Bitmap(knob4_60x60_131,knob4_60x60_131_size);
+      //knob_bitmap->convertRgbaToBgra();
+      MKnobBitmap->premultAlpha(0x999999);
+      MKnobSurface = new MIP_Surface(window,MKnobBitmap->getWidth(),MKnobBitmap->getHeight());
+      MIP_Painter* painter = new MIP_Painter(MKnobSurface);
+      painter->uploadBitmap(0,0,MKnobBitmap);
+      painter->flush();
+      delete painter;
 
       // (selector) menu
 
-      MIP_MenuWidget* selector_menu = new MIP_MenuWidget( MIP_FRect(100,100) );
+      MIP_MenuWidget* selector_menu = new MIP_MenuWidget( MIP_FRect() );
       selector_menu->appendMenuItem("first");
       selector_menu->appendMenuItem("item2");
       selector_menu->appendMenuItem("item3");
@@ -163,15 +168,6 @@ public:
       MEditorWidget = new MIP_Widget(MIP_FRect());
       MEditorWidget->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
 
-//      // back_panel
-//
-//      MIP_PanelWidget* back_panel = new MIP_PanelWidget(MIP_FRect());
-//      back_panel->setBackgroundColor(0.6);
-//      back_panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-//      back_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
-//      back_panel->layout.spacing = 5;
-//      MEditorWidget->appendWidget(back_panel);
-
 //----------
 
       // left_panel
@@ -183,9 +179,16 @@ public:
       left_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
       left_panel->layout.spacing = 5;
 
-        MIP_ButtonRowWidget* button_row = new MIP_ButtonRowWidget(MIP_FRect(230,20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI );
+        MIP_ButtonRowWidget* button_row = new MIP_ButtonRowWidget(MIP_FRect(20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI );
         left_panel->appendWidget(button_row);
         button_row->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        button_row->setButtonState(0,true);
+        button_row->setButtonState(2,true);
+
+        MIP_ButtonRowWidget* button_row2 = new MIP_ButtonRowWidget(MIP_FRect(20), 6, buttonrow_text, MIP_BUTTON_ROW_SINGLE );
+        left_panel->appendWidget(button_row2);
+        button_row2->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        button_row2->setButtonState(0,true);
 
         MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
         left_panel->appendWidget(slider);
@@ -206,7 +209,7 @@ public:
           groupbox->appendWidget(group1);
           group1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
           group1->setFillBackground(true);
-          group1->setBackgroundColor(MIP_Color(0.6,0.6,0.6));
+          group1->setBackgroundColor(MIP_Color(0.6,0.6,0.65));
 
         MIP_KeyboardWidget* keyboard = new MIP_KeyboardWidget(MIP_FRect(40));
         left_panel->appendWidget(keyboard);
@@ -239,6 +242,28 @@ public:
         MIP_TextEditWidget* textedit = new MIP_TextEditWidget(MIP_FRect(20));
         left_panel->appendWidget(textedit);
         textedit->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        /*
+        MIP_CircularWaveformWidget* circular = new MIP_CircularWaveformWidget(MIP_FRect(150));
+        left_panel->appendWidget(circular);
+        circular->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        circular->setInnerRadius(0.5);
+        circular->setOuterRadius(1);
+        circular->setBipolar(true);
+        circular->createBuffer(1024);
+        for (uint32_t i=0; i<1024; i++) circular->setBuffer(i,MIP_RandomRange(-1,1));
+        */
+
+        MIP_GridWidget* grid = new MIP_GridWidget(MIP_FRect(100),6,8);
+        left_panel->appendWidget(grid);
+        grid->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_ValueGraphWidget* valuegraph = new MIP_ValueGraphWidget(MIP_FRect(40),16);
+        left_panel->appendWidget(valuegraph);
+        valuegraph->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+
+//----------
 
       // left_sizer
 
@@ -284,6 +309,13 @@ public:
       curve2->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
       curve2->setValue(0.5);
 
+      MIP_ImageStripWidget* imagestrip = new MIP_ImageStripWidget(MIP_FRect(60));
+      right_top_panel->appendWidget(imagestrip);
+      imagestrip->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+      imagestrip->setup(1,131,MKnobSurface);
+
+//----------
+
       // top_sizer
 
       MIP_SizerWidget* top_sizer = new MIP_SizerWidget(MIP_FRect(5),MIP_SIZER_TOP);
@@ -305,14 +337,9 @@ public:
         MIP_ScrollBoxWidget* scrollbox1 = new MIP_ScrollBoxWidget(MIP_FRect(),true,false);
         right_bottom_panel->appendWidget(scrollbox1);
         scrollbox1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-        //scrollbox1->setDrawBorder(true);
-        //scrollbox1->layout.spacing = MIP_FPoint(5,0);
 
         scrollbox1->getContentWidget()->layout.innerBorder = MIP_FRect(5,5,5,5);
         scrollbox1->getContentWidget()->layout.spacing = 5;
-
-        //scrollbox1->layout.innerBorder = MIP_FRect(5,5,5,5);
-        //scrollbox1->layout.spacing = MIP_FPoint(5,5);
 
         for (uint32_t i=0; i<100; i++) {
           MIP_KnobWidget* knob = new MIP_KnobWidget( MIP_FRect( 32,32 ));
@@ -320,49 +347,50 @@ public:
           knob->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
         }
 
+//----------
+
       // bottom_sizer
 
       MIP_SizerWidget* bottom_sizer = new MIP_SizerWidget(MIP_FRect(5),MIP_SIZER_BOTTOM);
+      MEditorWidget->appendWidget(bottom_sizer);
       bottom_sizer->layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
       bottom_sizer->setTarget(right_bottom_panel);
-      MEditorWidget->appendWidget(bottom_sizer);
 
 //----------
 
       // right center panel
 
       MIP_PanelWidget* right_center_panel = new MIP_PanelWidget(MIP_FRect());
+      MEditorWidget->appendWidget(right_center_panel);
       right_center_panel->setBackgroundColor(0.6);
       right_center_panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
       right_center_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
       right_center_panel->layout.spacing = 5;
-      MEditorWidget->appendWidget(right_center_panel);
 
-        MIP_PanelWidget* page1 = new MIP_PanelWidget(MIP_FRect());
-        page1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-        page1->setFillBackground(true);
-        page1->setBackgroundColor(MIP_Color(0.65,0.6,0.6));
-
-        MIP_PanelWidget* page2 = new MIP_PanelWidget(MIP_FRect());
-        page2->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-        page2->setFillBackground(true);
-        page2->setBackgroundColor(MIP_Color(0.6,0.65,0.6));
-
-          MIP_GraphWidget* graph = new MIP_GraphWidget(MIP_FRect());
-          page2->appendWidget(graph);
-          graph->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-
-          add_modules(graph);
-
-        MIP_PanelWidget* page3 = new MIP_PanelWidget(MIP_FRect());
-        page3->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-        page3->setFillBackground(true);
-        page3->setBackgroundColor(MIP_Color(0.6,0.6,0.65));
-
-
-        MIP_TabsWidget* tabs = new MIP_TabsWidget(MIP_FRect(),3);
+        MIP_TabsWidget* tabs = new MIP_TabsWidget(MIP_FRect());
         right_center_panel->appendWidget(tabs);
         tabs->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+
+          MIP_PanelWidget* page1 = new MIP_PanelWidget(MIP_FRect());
+          page1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+          page1->setFillBackground(true);
+          page1->setBackgroundColor(MIP_Color(0.65,0.6,0.6));
+
+          MIP_PanelWidget* page2 = new MIP_PanelWidget(MIP_FRect());
+          page2->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+          page2->setFillBackground(false);
+          page2->setBackgroundColor(MIP_Color(0.6,0.65,0.6));
+
+            MIP_GraphWidget* graph = new MIP_GraphWidget(MIP_FRect());
+            page2->appendWidget(graph);
+            graph->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+            add_modules(graph);
+
+          MIP_PanelWidget* page3 = new MIP_PanelWidget(MIP_FRect());
+          page3->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+          page3->setFillBackground(true);
+          page3->setBackgroundColor(MIP_Color(0.6,0.6,0.65));
+
         tabs->appendPage("Page1",page1);
         tabs->appendPage("Page2",page2);
         tabs->appendPage("Page3",page3);
@@ -380,8 +408,6 @@ public:
 
       MEditorWidget->appendWidget(selector_menu);
 
-      MIP_Window* window = MEditor->getWindow();
-
       //MSizer->setTarget(win);
 
       window->appendWidget(MEditorWidget);
@@ -389,6 +415,14 @@ public:
       return true;
     }
     return false;
+  }
+
+  //----------
+
+  void destroy_editor() {
+    MIP_PRINT;
+    delete MKnobSurface;
+    delete MKnobBitmap;
   }
 
 
@@ -441,6 +475,11 @@ public: // plugin
       //return false;
     }
     return create_editor(is_floating);
+  }
+
+  void gui_destroy() final {
+    MIP_Plugin::gui_destroy();
+    destroy_editor();
   }
 
   //----------
