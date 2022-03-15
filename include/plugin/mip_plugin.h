@@ -20,6 +20,8 @@
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_plugin.h"
 
+#include "plugin/mip_parameter.h"
+
 #ifndef MIP_NO_GUI
 #include "plugin/mip_editor.h"
 #endif
@@ -70,7 +72,9 @@ typedef MIP_Array<MIP_QuickControl*>  MIP_QuickControls;
 
 //----------
 
-typedef MIP_Array<const clap_param_info_t*>           MIP_Parameters;
+//typedef MIP_Array<const clap_param_info_t*>           MIP_Parameters;
+typedef MIP_Array<MIP_Parameter*> MIP_Parameters;
+
 typedef MIP_Array<const clap_audio_port_info_t*>      MIP_AudioPorts;
 typedef MIP_Array<const clap_note_port_info_t*>       MIP_NotePorts;
 typedef MIP_Array<const clap_quick_controls_page_t*>  MIP_QuickControls;
@@ -149,6 +153,9 @@ public:
   //----------
 
   virtual ~MIP_Plugin() {
+    #ifndef MIP_NO_AUTODELETE
+    deleteParameters();
+    #endif
     delete MHost;
     free (MAudioParamVal);
     free (MHostParamVal);
@@ -425,31 +432,46 @@ protected: // handle
 protected: // setup
 //------------------------------
 
-  void setupParameters(clap_param_info_t* params, uint32_t num) {
-    for (uint32_t i=0; i<num; i++) {
-      const clap_param_info_t* info = &params[i];
-      MParameters.append(info);
+  //void setupParameters(clap_param_info_t* params, uint32_t num) {
+  //  for (uint32_t i=0; i<num; i++) {
+  //    const clap_param_info_t* info = &params[i];
+  //    MParameters.append(info);
+  //  }
+  //}
+
+  MIP_Parameter* appendParameter(MIP_Parameter* AParameter) {
+    uint32_t index = MParameters.size();
+    AParameter->setIndex(index);
+    MParameters.append(AParameter);
+    return AParameter;
+  }
+
+  //----------
+
+  void deleteParameters() {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      delete MParameters[i];
     }
   }
 
   //----------
 
-  void setDefaultParameterValues(clap_param_info_t* params, uint32_t num) {
-    for (uint32_t i=0; i<num; i++) {
-      const clap_param_info_t* info = &params[i];
-      MParameterValues[i] = info->default_value;
+  void setDefaultParameterValues() {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      //const clap_param_info_t* info = &params[i];
+      MParameterValues[i] = MParameters[i]->info.default_value;
       MParameterModulations[i] = 0.0;
     }
   }
 
   //----------
 
-  void setEditorParameterValues(clap_param_info_t* params, uint32_t num) {
-    for (uint32_t i=0; i<num; i++) {
-      #ifndef MIP_NO_GUI
+  void setEditorParameterValues() {
+    #ifndef MIP_NO_GUI
+    for (uint32_t i=0; i<MParameters.size(); i++) {
       if (MEditor) MEditor->setParameterValue(i,MParameterValues[i]);
-      #endif
     }
+    #endif
   }
 
 //------------------------------
@@ -550,7 +572,7 @@ public: // plugin
     MParameterValues = (float*)malloc(num * sizeof(float));
     MParameterModulations = (float*)malloc(num * sizeof(float));
     for (uint32_t i=0; i<num; i++) {
-      float v = MParameters[i]->default_value;
+      float v = MParameters[i]->info.default_value;
       setParameterValue(i,v);
       setParameterModulation(i,0);
     }
@@ -669,7 +691,8 @@ public: // params
   //----------
 
   bool params_get_info(uint32_t param_index, clap_param_info_t* param_info) override {
-    memcpy(param_info,MParameters[param_index],sizeof(clap_param_info_t));
+    //memcpy(param_info,MParameters[param_index],sizeof(clap_param_info_t));
+    memcpy(param_info,&MParameters[param_index]->info,sizeof(clap_param_info_t));
     return true;
   }
 

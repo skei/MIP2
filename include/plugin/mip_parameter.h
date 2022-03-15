@@ -17,17 +17,26 @@ typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
 class MIP_Parameter {
 
 //------------------------------
-protected:
+public:
 //------------------------------
 
-  //const clap_plugin_t*    MPlugin
-  clap_param_info_t MInfo = {0};
+  clap_param_info_t info  = {0};
+  int32_t          index  = -1;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Parameter() {
+  MIP_Parameter(clap_id AId, clap_param_info_flags AFlags=CLAP_PARAM_IS_AUTOMATABLE, const char* AName="", const char* AModule="", double AMinValue=0, double AMaxValue=1, double ADefValue=0) {
+    index = -1;
+    info.id = AId;
+    info.flags = AFlags;
+    info.cookie = this;
+    strncpy(info.name,AName,CLAP_NAME_SIZE);
+    strncpy(info.module,AModule,CLAP_MODULE_SIZE);
+    info.min_value = AMinValue;
+    info.max_value = AMaxValue;
+    info.default_value = ADefValue;
   }
 
   //----------
@@ -39,25 +48,29 @@ public:
 public:
 //------------------------------
 
-  clap_param_info_t*    getParamInfo()      { return &MInfo; }
+  void setIndex(int32_t AIndex)               { index = AIndex; }
 
-  clap_id               getId()             { return MInfo.id; }
-  clap_param_info_flags getFlags()          { return MInfo.flags; }
-  void*                 getCookie()         { return MInfo.cookie; }
-  char*                 getName()           { return MInfo.name; }
-  char*                 getModule()         { return MInfo.module; }
-  double                getMinValue()       { return MInfo.min_value; }
-  double                getMaxValue()       { return MInfo.max_value; }
-  double                getDefaultValue()   { return MInfo.default_value; }
+  void setId(clap_id id)                      { info.id = id; }
+  void setFlags(clap_param_info_flags flags)  { info.flags = flags; }
+  void setCookie(void * cookie)               { info.cookie = cookie; }
+  void setNeme(const char* name)              { strncpy(info.name,name,CLAP_NAME_SIZE); }
+  void setModule(const char* module)          { strncpy(info.module,module,CLAP_MODULE_SIZE); }
+  void setMinValue(double min_value)          { info.min_value = min_value; }
+  void setMaxValue(double max_value)          { info.max_value = max_value; }
+  void setDefaultValue(double default_value)  { info.default_value = default_value; }
 
-  void setId(clap_id id)                      { MInfo.id = id; }
-  void setFlags(clap_param_info_flags flags)  { MInfo.flags = flags; }
-  void setCookie(void * cookie)               { MInfo.cookie = cookie; }
-  void setNeme(const char* name)              { strncpy(MInfo.name,name,CLAP_NAME_SIZE); }
-  void setModule(const char* module)          { strncpy(MInfo.module,module,CLAP_MODULE_SIZE); }
-  void setMinValue(double min_value)          { MInfo.min_value = min_value; }
-  void setMaxValue(double max_value)          { MInfo.max_value = max_value; }
-  void setDefaultValue(double default_value)  { MInfo.default_value = default_value; }
+  int32_t               getIndex()          { return index; }
+  clap_param_info_t*    getParamInfo()      { return &info; }
+
+  clap_id               getId()             { return info.id; }
+  clap_param_info_flags getFlags()          { return info.flags; }
+  void*                 getCookie()         { return info.cookie; }
+  char*                 getName()           { return info.name; }
+  char*                 getModule()         { return info.module; }
+  double                getMinValue()       { return info.min_value; }
+  double                getMaxValue()       { return info.max_value; }
+  double                getDefaultValue()   { return info.default_value; }
+
 
 //------------------------------
 public:

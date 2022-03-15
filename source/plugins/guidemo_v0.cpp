@@ -2,7 +2,7 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 //----------
@@ -56,13 +56,13 @@ class myPlugin
 private:
 //------------------------------
 
-  #define NUM_PARAMS 3
-
-  clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Param1 AM", "Params", 0.0, 1.0, 0.5 },
-    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "Param2 A",  "Params", 0.0, 1.0, 0.5 },
-    { 2, 0,                                                     nullptr, "Param3",    "Params", 0.0, 1.0, 0.5 }
-  };
+//  #define NUM_PARAMS 3
+//
+//  clap_param_info_t myParameters[NUM_PARAMS] = {
+//    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Param1 AM", "Params", 0.0, 1.0, 0.5 },
+//    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "Param2 A",  "Params", 0.0, 1.0, 0.5 },
+//    { 2, 0,                                                     nullptr, "Param3",    "Params", 0.0, 1.0, 0.5 }
+//  };
 
   //----------
 
@@ -131,7 +131,6 @@ public:
   //----------
 
   bool create_editor(bool is_floating) {
-    MIP_PRINT;
     MEditorIsOpen = false;
 
     MEditor = new MIP_Editor(this,this,800,600,!is_floating);
@@ -444,9 +443,15 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    setupParameters(myParameters,NUM_PARAMS);
+
+    //setupParameters(myParameters,NUM_PARAMS);
+    appendParameter( new MIP_Parameter(0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,  "Param1 AM",  "Params", 0.0, 1.0, 0.4) );
+    appendParameter( new MIP_Parameter(1, CLAP_PARAM_IS_AUTOMATABLE,                              "Param2 A",   "Params", 0.0, 1.0, 0.5) );
+    appendParameter( new MIP_Parameter(3, 0,                                                      "Param3",     "Params", 0.0, 1.0, 0.6) );
+
     if (MIP_Plugin::init()) {
-      setDefaultParameterValues(myParameters,NUM_PARAMS);
+      //setDefaultParameterValues(myParameters,NUM_PARAMS);
+      setDefaultParameterValues();
       return true;
     }
     return false;
@@ -488,7 +493,8 @@ public: // plugin
   // about myParameters) (still true?)
 
   bool gui_show() final {
-    setEditorParameterValues(myParameters,NUM_PARAMS);
+    //setEditorParameterValues(myParameters,NUM_PARAMS);
+    setEditorParameterValues();
     MIP_Plugin::gui_show();
     return true;
   }
