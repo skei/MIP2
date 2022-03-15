@@ -131,7 +131,10 @@
 			<Add library="cairo" />
 			<Add library="rt" />
 		</Linker>
+		<Unit filename="../LICENSE" />
+		<Unit filename="../README" />
 		<Unit filename="../doc/compile.txt" />
+		<Unit filename="../doc/todo.txt" />
 		<Unit filename="../include/audio/analysis/mip_beat_detector.h" />
 		<Unit filename="../include/audio/analysis/mip_envelope_detector.h" />
 		<Unit filename="../include/audio/analysis/mip_envelope_follower.h" />
