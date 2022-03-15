@@ -100,6 +100,9 @@ private:
   float*                          MHostParamVal         = nullptr;
   float*                          MHostParamMod         = nullptr;
 
+  MIP_ClapIntQueue                MHostBeginParamQueue  = {};
+  MIP_ClapIntQueue                MHostEndParamQueue    = {};
+
 //------------------------------
 protected:
 //------------------------------
@@ -251,11 +254,43 @@ protected: // ??
     }
   }
 
+  //----------
+
+  void queueHostBeginParam(uint32_t AIndex) {
+    MHostBeginParamQueue.write(AIndex);
+  }
+
+  void queueHostEndParam(uint32_t AIndex) {
+    MHostEndParamQueue.write(AIndex);
+  }
+
+  void flushHostBeginParams(const clap_output_events_t* out_events) {
+    uint32_t index = 0;
+    while (MHostBeginParamQueue.read(&index)) {
+      //
+    }
+  }
+
+  void flushHostEndParams(const clap_output_events_t* out_events) {
+    uint32_t index = 0;
+    while (MHostEndParamQueue.read(&index)) {
+      //
+    }
+  }
+
 //------------------------------
 public: // editor listener
 //------------------------------
 
   #ifndef MIP_NO_GUI
+
+  void on_beginUpdateParameterFromEditor(uint32_t AIndex) final {
+    //queueHostBeginUpdateParam(AIndex);
+  }
+
+  void on_endUpdateParameterFromEditor(uint32_t AIndex) final {
+    //queueHostEndUpdateParam(AIndex);
+  }
 
   /*
     called from editor when widget changes (gui thread)
@@ -378,7 +413,10 @@ protected: // handle
   virtual void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
     #ifndef MIP_NO_GUI
     //if (MEditor && MIsEditorOpen) {
+
+//      flushHostBeginParams(out_events);
       flushHostParams(out_events);
+//      flushHostEndParams(out_events);
     //}
     #endif
   }

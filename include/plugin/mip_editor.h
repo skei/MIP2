@@ -46,8 +46,10 @@ public:
 
 class MIP_EditorListener{
 public:
-  virtual void on_updateParameterFromEditor(uint32_t AIndex, float AValue) {} // on_updateParameterFromEditor
-  virtual void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) {}       // on_resizeFromEditor
+  virtual void on_beginUpdateParameterFromEditor(uint32_t AIndex) {}
+  virtual void on_updateParameterFromEditor(uint32_t AIndex, float AValue) {}
+  virtual void on_endUpdateParameterFromEditor(uint32_t AIndex) {}
+  virtual void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) {}
 };
 
 //----------------------------------------------------------------------
