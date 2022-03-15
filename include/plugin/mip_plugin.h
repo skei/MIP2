@@ -97,38 +97,38 @@ class MIP_Plugin
 private:
 //------------------------------
 
-  MIP_ClapIntQueue                MAudioParamQueue      = {};
-  float*                          MAudioParamVal        = nullptr;
+  MIP_ClapIntQueue                MAudioParamQueue        = {};
+  float*                          MAudioParamVal          = nullptr;
 
-  MIP_ClapIntQueue                MHostParamQueue       = {};
-  float*                          MHostParamVal         = nullptr;
-  float*                          MHostParamMod         = nullptr;
+  MIP_ClapIntQueue                MHostParamQueue         = {};
+  float*                          MHostParamVal           = nullptr;
+  float*                          MHostParamMod           = nullptr;
 
-  MIP_ClapIntQueue                MHostBeginParamQueue  = {};
-  MIP_ClapIntQueue                MHostEndParamQueue    = {};
+  MIP_ClapIntQueue                MHostBeginGestureQueue  = {};
+  MIP_ClapIntQueue                MHostEndGestureQueue    = {};
 
 //------------------------------
 protected:
 //------------------------------
 
-  const clap_plugin_descriptor_t* MDescriptor           = nullptr;
-  MIP_ClapHost*                   MHost                 = nullptr;
+  const clap_plugin_descriptor_t* MDescriptor             = nullptr;
+  MIP_ClapHost*                   MHost                   = nullptr;
 
-  MIP_Parameters                  MParameters           = {};
-  MIP_AudioPorts                  MAudioInputs          = {};
-  MIP_AudioPorts                  MAudioOutputs         = {};
-  MIP_NotePorts                   MNoteInputs           = {};
-  MIP_NotePorts                   MNoteOutputs          = {};
-  MIP_QuickControls               MQuickControls        = {};
+  MIP_Parameters                  MParameters             = {};
+  MIP_AudioPorts                  MAudioInputs            = {};
+  MIP_AudioPorts                  MAudioOutputs           = {};
+  MIP_NotePorts                   MNoteInputs             = {};
+  MIP_NotePorts                   MNoteOutputs            = {};
+  MIP_QuickControls               MQuickControls          = {};
 
-  float*                          MParameterValues      = nullptr;
-  float*                          MParameterModulations = nullptr;
-  bool                            MIsProcessing         = false;
-  bool                            MIsActivated          = false;
+  float*                          MParameterValues        = nullptr;
+  float*                          MParameterModulations   = nullptr;
+  bool                            MIsProcessing           = false;
+  bool                            MIsActivated            = false;
 
   #ifndef MIP_NO_GUI
-  MIP_Editor*                     MEditor               = nullptr;
-  bool                            MEditorIsOpen         = false;
+  MIP_Editor*                     MEditor                 = nullptr;
+  bool                            MEditorIsOpen           = false;
   #endif
 
 
@@ -263,25 +263,33 @@ protected: // ??
 
   //----------
 
-  void queueHostBeginParam(uint32_t AIndex) {
-    MHostBeginParamQueue.write(AIndex);
+  // gestures
+
+  void queueHostBeginGesture(uint32_t AIndex) {
+    MHostBeginGestureQueue.write(AIndex);
   }
 
-  void queueHostEndParam(uint32_t AIndex) {
-    MHostEndParamQueue.write(AIndex);
+  //----------
+
+  void queueHostEndGesture(uint32_t AIndex) {
+    MHostEndGestureQueue.write(AIndex);
   }
 
-  void flushHostBeginParams(const clap_output_events_t* out_events) {
+  //----------
+
+  void flushHostBeginGestures(const clap_output_events_t* out_events) {
     uint32_t index = 0;
-    while (MHostBeginParamQueue.read(&index)) {
-      //
+    while (MHostBeginGestureQueue.read(&index)) {
+      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_BEGIN,out_events);
     }
   }
 
-  void flushHostEndParams(const clap_output_events_t* out_events) {
+  //----------
+
+  void flushHostEndGestures(const clap_output_events_t* out_events) {
     uint32_t index = 0;
-    while (MHostEndParamQueue.read(&index)) {
-      //
+    while (MHostEndGestureQueue.read(&index)) {
+      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_END,out_events);
     }
   }
 
@@ -292,11 +300,11 @@ public: // editor listener
   #ifndef MIP_NO_GUI
 
   void on_beginUpdateParameterFromEditor(uint32_t AIndex) final {
-    //queueHostBeginUpdateParam(AIndex);
+    queueHostBeginGesture(AIndex);
   }
 
   void on_endUpdateParameterFromEditor(uint32_t AIndex) final {
-    //queueHostEndUpdateParam(AIndex);
+    queueHostEndGesture(AIndex);
   }
 
   /*
@@ -421,9 +429,9 @@ protected: // handle
     #ifndef MIP_NO_GUI
     //if (MEditor && MIsEditorOpen) {
 
-//      flushHostBeginParams(out_events);
+      flushHostBeginGestures(out_events);
       flushHostParams(out_events);
-//      flushHostEndParams(out_events);
+      flushHostEndGestures(out_events);
     //}
     #endif
   }
@@ -525,6 +533,27 @@ protected: // setup
 public: // plugin
 //------------------------------
 
+  //TODO: MIP_EditorListener -> MIP_Plugin
+
+  void send_param_value_event(uint32_t index, float value, const clap_output_events_t* out_events) {
+    clap_event_param_value_t param_value;
+    param_value.header.size     = sizeof (clap_event_param_value_t);
+    param_value.header.time     = 0;
+    param_value.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+    param_value.header.type     = CLAP_EVENT_PARAM_VALUE;
+    param_value.header.flags    = 0;//CLAP_EVENT_DONT_RECORD;// | CLAP_EVENT_IS_LIVE;
+    param_value.param_id        = index;
+    param_value.cookie          = nullptr;
+    param_value.port_index      = -1;
+    param_value.key             = -1;
+    param_value.channel         = -1;
+    param_value.value           = value;
+    clap_event_header_t* header = (clap_event_header_t*)&param_value;
+    out_events->try_push(out_events,header);
+  }
+
+  //----------
+
   void send_param_mod_event(uint32_t index, float value, const clap_output_events_t* out_events) {
     clap_event_param_mod_t param_mod;
     param_mod.header.size     = sizeof (clap_event_param_mod_t);
@@ -544,22 +573,15 @@ public: // plugin
 
   //----------
 
-  //TODO: MIP_EditorListener -> MIP_Plugin
-
-  void send_param_value_event(uint32_t index, float value, const clap_output_events_t* out_events) {
-    clap_event_param_value_t param_value;
-    param_value.header.size     = sizeof (clap_event_param_value_t);
-    param_value.header.time     = 0;
-    param_value.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
-    param_value.header.type     = CLAP_EVENT_PARAM_VALUE;
-    param_value.header.flags    = 0;//CLAP_EVENT_DONT_RECORD;// | CLAP_EVENT_IS_LIVE;
-    param_value.param_id        = index;
-    param_value.cookie          = nullptr;
-    param_value.port_index      = -1;
-    param_value.key             = -1;
-    param_value.channel         = -1;
-    param_value.value           = value;
-    clap_event_header_t* header = (clap_event_header_t*)&param_value;
+  void send_param_gesture_event(uint32_t index, int32_t param_gesture, const clap_output_events_t* out_events) {
+    clap_event_param_gesture_t gesture;
+    gesture.header.size     = sizeof (clap_event_param_gesture_t);
+    gesture.header.time     = 0;
+    gesture.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+    gesture.header.type     = param_gesture;//CLAP_EVENT_PARAM_GESTURE_BEGIN;
+    gesture.header.flags    = 0;//CLAP_EVENT_DONT_RECORD;// | CLAP_EVENT_IS_LIVE;
+    gesture.param_id        = index;
+    clap_event_header_t* header = (clap_event_header_t*)&gesture;
     out_events->try_push(out_events,header);
   }
 
