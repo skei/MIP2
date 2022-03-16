@@ -85,8 +85,9 @@ public:
   //----------
 
   void unloadPlugin() {
+    if (MEntry) MEntry->deinit();
     #ifdef WIN32
-      if (MEntry) MEntry->deinit();
+      if (MLibrary) FreeLibrary(MLibrary);
     #else
       if (MLibrary) dlclose(MLibrary);
     #endif
