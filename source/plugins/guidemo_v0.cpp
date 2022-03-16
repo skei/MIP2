@@ -419,7 +419,6 @@ public:
   //----------
 
   void destroy_editor() {
-    MIP_PRINT;
     delete MKnobSurface;
     delete MKnobBitmap;
   }
@@ -434,8 +433,6 @@ public:
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_CopyStereoBuffer(outputs,inputs,length);
-    //float scale = getParameterValue(0) + getParameterModulation(0);
-    //MIP_ScaleStereoBuffer(outputs,scale,length);
   }
 
 //------------------------------
@@ -443,18 +440,10 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-
-    //setupParameters(myParameters,NUM_PARAMS);
     appendParameter( new MIP_Parameter(0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,  "Param1 AM",  "Params", 0.0, 1.0, 0.4) );
     appendParameter( new MIP_Parameter(1, CLAP_PARAM_IS_AUTOMATABLE,                              "Param2 A",   "Params", 0.0, 1.0, 0.5) );
-    appendParameter( new MIP_Parameter(3, 0,                                                      "Param3",     "Params", 0.0, 1.0, 0.6) );
-
-    if (MIP_Plugin::init()) {
-      //setDefaultParameterValues(myParameters,NUM_PARAMS);
-      setDefaultParameterValues();
-      return true;
-    }
-    return false;
+    appendParameter( new MIP_Parameter(2, 0,                                                      "Param3",     "Params", 0.0, 1.0, 0.6) );
+    return MIP_Plugin::init();
   }
 
   //----------
@@ -503,7 +492,7 @@ public: // plugin
 
 //----------------------------------------------------------------------
 
-#undef NUM_PARAMS
+//#undef NUM_PARAMS
 
 //----------------------------------------------------------------------
 //
@@ -513,9 +502,6 @@ public: // plugin
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
   ARegistry->appendPlugin(&myDescriptor);
-
-  //MIP_FRect* rect = new MIP_FRect();
-
 }
 
 //----------

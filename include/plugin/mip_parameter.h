@@ -20,6 +20,17 @@ class MIP_Parameter {
 public:
 //------------------------------
 
+  /*
+    clap_id                id;
+    clap_param_info_flags  flags;
+    void*                  cookie;
+    char                   name[CLAP_NAME_SIZE];
+    char                   module[CLAP_MODULE_SIZE];
+    double                 min_value;
+    double                 max_value;
+    double                 default_value;
+  */
+
   clap_param_info_t info  = {0};
   int32_t          index  = -1;
 
@@ -27,16 +38,44 @@ public:
 public:
 //------------------------------
 
+  MIP_Parameter(clap_id AId, const char* AName="", double ADefValue=0) {
+    index               = -1;
+    info.id             = AId;
+    info.flags          = CLAP_PARAM_IS_AUTOMATABLE;
+    info.cookie         = this;
+    info.min_value      = 0.0;
+    info.max_value      = 1.0;
+    info.default_value  = ADefValue;
+    strncpy(info.name,AName,CLAP_NAME_SIZE);
+    strncpy(info.module,"",CLAP_MODULE_SIZE);
+  }
+
+  //----------
+
   MIP_Parameter(clap_id AId, clap_param_info_flags AFlags=CLAP_PARAM_IS_AUTOMATABLE, const char* AName="", const char* AModule="", double AMinValue=0, double AMaxValue=1, double ADefValue=0) {
-    index = -1;
-    info.id = AId;
-    info.flags = AFlags;
-    info.cookie = this;
+    index               = -1;
+    info.id             = AId;
+    info.flags          = AFlags;
+    info.cookie         = this;
+    info.min_value      = AMinValue;
+    info.max_value      = AMaxValue;
+    info.default_value  = ADefValue;
     strncpy(info.name,AName,CLAP_NAME_SIZE);
     strncpy(info.module,AModule,CLAP_MODULE_SIZE);
-    info.min_value = AMinValue;
-    info.max_value = AMaxValue;
-    info.default_value = ADefValue;
+  }
+
+  //----------
+
+  MIP_Parameter(clap_param_info_t* param_info) {
+    index               = -1;
+    info.id             = param_info->id;
+    info.flags          = param_info->flags;
+    info.cookie         = this;//param_info->cookie;
+    info.min_value      = param_info->min_value;
+    info.max_value      = param_info->max_value;
+    info.default_value  = param_info->default_value;
+    strncpy(info.name,param_info->name,CLAP_NAME_SIZE);
+    strncpy(info.module,param_info->module,CLAP_MODULE_SIZE);
   }
 
   //----------
@@ -88,14 +127,17 @@ public:
 
   //----------
 
-  virtual bool value_to_text(double value, char *text, uint32_t size) {
-    return false;
+  virtual bool value_to_text(double value, char* text, uint32_t size) {
+    sprintf(text,"%.3f",value);
+    return true;
   }
 
   //----------
 
   virtual bool text_to_value(const char* text, double* value) {
-    return false;
+    float f = atof(text);
+    *value = f;
+    return true;
   }
 
 

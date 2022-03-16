@@ -140,7 +140,8 @@ public:
   : MIP_ClapPlugin(ADescriptor,AHost) {
     MDescriptor = ADescriptor;
     MHost = new MIP_ClapHost(AHost);
-    uint32_t num = params_count();
+    //uint32_t num = params_count();
+    uint32_t num = MParameters.size();
     uint32_t size = num * sizeof(float);
     MAudioParamVal = (float*)malloc(size);
     MHostParamVal = (float*)malloc(size);
@@ -578,8 +579,8 @@ public: // plugin
     gesture.header.size     = sizeof (clap_event_param_gesture_t);
     gesture.header.time     = 0;
     gesture.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
-    gesture.header.type     = param_gesture;//CLAP_EVENT_PARAM_GESTURE_BEGIN;
-    gesture.header.flags    = 0;//CLAP_EVENT_DONT_RECORD;// | CLAP_EVENT_IS_LIVE;
+    gesture.header.type     = param_gesture;  //CLAP_EVENT_PARAM_GESTURE_BEGIN;
+    gesture.header.flags    = 0;              //CLAP_EVENT_DONT_RECORD;// | CLAP_EVENT_IS_LIVE;
     gesture.param_id        = index;
     clap_event_header_t* header = (clap_event_header_t*)&gesture;
     out_events->try_push(out_events,header);
@@ -707,14 +708,16 @@ public: // params
 //------------------------------
 
   uint32_t params_count() override {
+    //return MParameters.size();
     return MParameters.size();
   }
 
   //----------
 
   bool params_get_info(uint32_t param_index, clap_param_info_t* param_info) override {
-    //memcpy(param_info,MParameters[param_index],sizeof(clap_param_info_t));
-    memcpy(param_info,&MParameters[param_index]->info,sizeof(clap_param_info_t));
+    //memcpy(param_info,&MParameters[param_index]->info,sizeof(clap_param_info_t));
+    clap_param_info_t* info = &MParameters[param_index]->info;
+    memcpy(param_info,info,sizeof(clap_param_info_t));
     return true;
   }
 
@@ -727,17 +730,21 @@ public: // params
 
   //----------
 
-  bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) override {
-    sprintf(display,"%.3f",value);
-    return true;
+  bool params_value_to_text(clap_id param_id, double value, char* display, uint32_t size) override {
+    //sprintf(display,"%.3f",value);
+    //return true;
+    bool result = MParameters[param_id]->value_to_text(value,display,size);
+    return result;
   }
 
   //----------
 
-  bool params_text_to_value(clap_id param_id, const char *display, double *value) override {
-    float f = atof(display);
-    *value = f;
-    return true;
+  bool params_text_to_value(clap_id param_id, const char* display, double* value) override {
+    //float f = atof(display);
+    //*value = f;
+    //return true;
+    bool result = MParameters[param_id]->text_to_value(display,value);
+    return result;
   }
 
   //----------

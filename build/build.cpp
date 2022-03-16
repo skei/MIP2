@@ -6,7 +6,7 @@
 //
 //----------------------------------------------------------------------
 
-#include "../source/apps/clap-host/main.cpp"
+//#include "../source/apps/clap-host/main.cpp"
 
 //----------------------------------------------------------------------
 //
@@ -19,7 +19,7 @@
 //#include "../source/plugins/ladspa_wrapper.cpp"
 //#include "../source/plugins/test_plugin1.cpp"
 
-//#include "../source/plugins/guidemo_v0.cpp"
+#include "../source/plugins/guidemo_v0.cpp"
 
 // ports
 
