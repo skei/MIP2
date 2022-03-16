@@ -14,12 +14,7 @@ typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
 //
 //----------------------------------------------------------------------
 
-class MIP_Parameter {
-
-//------------------------------
-public:
-//------------------------------
-
+  // clap_param_info_t
   /*
     clap_id                id;
     clap_param_info_flags  flags;
@@ -31,40 +26,39 @@ public:
     double                 default_value;
   */
 
+  // clap_param_info_flags
+  /*
+    CLAP_PARAM_IS_STEPPED
+    CLAP_PARAM_IS_PER_NOTE
+    CLAP_PARAM_IS_PER_CHANNEL
+    CLAP_PARAM_IS_PER_PORT
+    CLAP_PARAM_IS_PERIODIC
+    CLAP_PARAM_IS_HIDDEN
+    CLAP_PARAM_IS_BYPASS
+    CLAP_PARAM_IS_READONLY
+    CLAP_PARAM_IS_MODULATABLE
+    CLAP_PARAM_REQUIRES_PROCESS
+    CLAP_PARAM_IS_AUTOMATABLE
+  */
+
+//----------------------------------------------------------------------
+//
+// parameter
+//
+//----------------------------------------------------------------------
+
+class MIP_Parameter {
+
+//------------------------------
+public:
+//------------------------------
+
   clap_param_info_t info  = {0};
   int32_t          index  = -1;
 
 //------------------------------
 public:
 //------------------------------
-
-  MIP_Parameter(clap_id AId, const char* AName="", double ADefValue=0) {
-    index               = -1;
-    info.id             = AId;
-    info.flags          = CLAP_PARAM_IS_AUTOMATABLE;
-    info.cookie         = this;
-    info.min_value      = 0.0;
-    info.max_value      = 1.0;
-    info.default_value  = ADefValue;
-    strncpy(info.name,AName,CLAP_NAME_SIZE);
-    strncpy(info.module,"",CLAP_MODULE_SIZE);
-  }
-
-  //----------
-
-  MIP_Parameter(clap_id AId, clap_param_info_flags AFlags=CLAP_PARAM_IS_AUTOMATABLE, const char* AName="", const char* AModule="", double AMinValue=0, double AMaxValue=1, double ADefValue=0) {
-    index               = -1;
-    info.id             = AId;
-    info.flags          = AFlags;
-    info.cookie         = this;
-    info.min_value      = AMinValue;
-    info.max_value      = AMaxValue;
-    info.default_value  = ADefValue;
-    strncpy(info.name,AName,CLAP_NAME_SIZE);
-    strncpy(info.module,AModule,CLAP_MODULE_SIZE);
-  }
-
-  //----------
 
   MIP_Parameter(clap_param_info_t* param_info) {
     index               = -1;
@@ -98,30 +92,31 @@ public:
   void setMaxValue(double max_value)          { info.max_value = max_value; }
   void setDefaultValue(double default_value)  { info.default_value = default_value; }
 
-  int32_t               getIndex()          { return index; }
-  clap_param_info_t*    getParamInfo()      { return &info; }
+  //----------
 
-  clap_id               getId()             { return info.id; }
-  clap_param_info_flags getFlags()          { return info.flags; }
-  void*                 getCookie()         { return info.cookie; }
-  char*                 getName()           { return info.name; }
-  char*                 getModule()         { return info.module; }
-  double                getMinValue()       { return info.min_value; }
-  double                getMaxValue()       { return info.max_value; }
-  double                getDefaultValue()   { return info.default_value; }
+  int32_t               getIndex()        { return index; }
+  clap_param_info_t*    getParamInfo()    { return &info; }
 
+  clap_id               getId()           { return info.id; }
+  clap_param_info_flags getFlags()        { return info.flags; }
+  void*                 getCookie()       { return info.cookie; }
+  char*                 getName()         { return info.name; }
+  char*                 getModule()       { return info.module; }
+  double                getMinValue()     { return info.min_value; }
+  double                getMaxValue()     { return info.max_value; }
+  double                getDefaultValue() { return info.default_value; }
 
 //------------------------------
 public:
 //------------------------------
 
-  virtual double normalize(double value) {
+  virtual double fromInternal(double value) {
     return value;
   }
 
   //----------
 
-  virtual double denormalize(double value) {
+  virtual double toInternal(double value) {
     return value;
   }
 
@@ -141,6 +136,16 @@ public:
   }
 
 
+};
+
+//----------------------------------------------------------------------
+//
+// int
+//
+//----------------------------------------------------------------------
+
+class MIP_IntParameter
+: public MIP_Parameter {
 };
 
 //----------------------------------------------------------------------

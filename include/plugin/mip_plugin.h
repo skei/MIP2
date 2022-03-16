@@ -770,9 +770,9 @@ public: // gui
 
   bool gui_create(const char *api, bool is_floating) override {
     MIP_Print("api: %s floating: %s\n",api,is_floating?"true":"false");
-    MEditorIsOpen = false;
+    //MEditorIsOpen = false;
     if (is_floating) return false;
-    MEditor = new MIP_Editor(this,this,256,256,!is_floating);
+    MEditor = new MIP_Editor(this,this,256,256,false);
     if (MEditor) return true;
     return false;
   }
@@ -904,6 +904,9 @@ public: // gui
   bool gui_show() override {
     //MIP_Print("\n");
     if (MEditor) {
+
+      setEditorParameterValues();
+
       //MIP_Print("\n");
       MEditor->show();
       MEditorIsOpen = true;

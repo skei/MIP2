@@ -58,16 +58,16 @@ private:
 
 //  #define NUM_PARAMS 3
 //
-//  clap_param_info_t myParameters[NUM_PARAMS] = {
-//    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Param1 AM", "Params", 0.0, 1.0, 0.5 },
-//    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "Param2 A",  "Params", 0.0, 1.0, 0.5 },
-//    { 2, 0,                                                     nullptr, "Param3",    "Params", 0.0, 1.0, 0.5 }
-//  };
+
+  clap_param_info_t myParameters[3] = {
+    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Param1 AM", "Params", 0.0, 1.0, 0.5 },
+    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "Param2 A",  "Params", 0.0, 1.0, 0.5 },
+    { 2, 0,                                                     nullptr, "Param3",    "Params", 0.0, 1.0, 0.5 }
+  };
 
   //----------
 
-  MIP_Widget*  MEditorWidget = nullptr;
-
+  MIP_Widget*   MEditorWidget = nullptr;
   MIP_Bitmap*   MKnobBitmap   = nullptr;
   MIP_Surface*  MKnobSurface  = nullptr;
 
@@ -77,9 +77,6 @@ public:
 
   myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
-
-    //MIP_FRect* rect = new MIP_FRect();
-
   }
 
   //----------
@@ -131,8 +128,7 @@ public:
   //----------
 
   bool create_editor(bool is_floating) {
-    MEditorIsOpen = false;
-
+    //MEditorIsOpen = false;
     MEditor = new MIP_Editor(this,this,800,600,!is_floating);
 
     if (MEditor) {
@@ -440,9 +436,9 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    appendParameter( new MIP_Parameter(0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,  "Param1 AM",  "Params", 0.0, 1.0, 0.4) );
-    appendParameter( new MIP_Parameter(1, CLAP_PARAM_IS_AUTOMATABLE,                              "Param2 A",   "Params", 0.0, 1.0, 0.5) );
-    appendParameter( new MIP_Parameter(2, 0,                                                      "Param3",     "Params", 0.0, 1.0, 0.6) );
+    for (uint32_t i=0; i<3; i++) {
+      appendParameter(new MIP_Parameter( &myParameters[i] ));
+    }
     return MIP_Plugin::init();
   }
 
@@ -471,21 +467,11 @@ public: // plugin
     return create_editor(is_floating);
   }
 
+  //----------
+
   void gui_destroy() final {
     MIP_Plugin::gui_destroy();
     destroy_editor();
-  }
-
-  //----------
-
-  // (should ideally have been be in MIP_Plugin, but MIP_Plugin doesn't know
-  // about myParameters) (still true?)
-
-  bool gui_show() final {
-    //setEditorParameterValues(myParameters,NUM_PARAMS);
-    setEditorParameterValues();
-    MIP_Plugin::gui_show();
-    return true;
   }
 
 };
