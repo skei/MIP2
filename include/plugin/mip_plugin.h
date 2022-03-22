@@ -300,11 +300,11 @@ public: // editor listener
 
   #ifndef MIP_NO_GUI
 
-  void on_beginUpdateParameterFromEditor(uint32_t AIndex) final {
+  void on_beginUpdateParameterFromEditor(uint32_t AIndex) override {
     queueHostBeginGesture(AIndex);
   }
 
-  void on_endUpdateParameterFromEditor(uint32_t AIndex) final {
+  void on_endUpdateParameterFromEditor(uint32_t AIndex) override {
     queueHostEndGesture(AIndex);
   }
 
@@ -315,7 +315,7 @@ public: // editor listener
     flushed in start of process() (audio thread)
   */
 
-  void on_updateParameterFromEditor(uint32_t AIndex, float AValue) final {
+  void on_updateParameterFromEditor(uint32_t AIndex, float AValue) override {
     //MIP_Print("%i = %.3f\n",AIndex,AValue);
     MAudioParamVal[AIndex] = AValue;
     queueAudioParam(AIndex);
@@ -325,7 +325,7 @@ public: // editor listener
 
   //----------
 
-  void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) final {
+  void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) override {
     if (MHost && MHost->gui) {
       if (!MHost->gui->request_resize(MHost->host,AWidth,AHeight)) {
         MIP_Print("host->gui->request_resize(%i,%i) returned false\n",AWidth,AHeight);
