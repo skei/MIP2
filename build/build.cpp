@@ -17,9 +17,9 @@
 //#include "../source/plugins/clap-minimal.cpp"       //TODO: update to newest clap
 //#include "../source/plugins/gain.cpp"
 //#include "../source/plugins/ladspa_wrapper.cpp"
-//#include "../source/plugins/test_plugin1.cpp"
+#include "../source/plugins/test_plugin1.cpp"
 
-#include "../source/plugins/guidemo_v0.cpp"
+//#include "../source/plugins/guidemo_v0.cpp"
 
 // ports
 

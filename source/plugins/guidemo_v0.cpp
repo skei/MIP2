@@ -163,6 +163,19 @@ public:
       MEditorWidget = new MIP_Widget(MIP_FRect());
       MEditorWidget->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
 
+      /* */
+
+      MIP_PanelWidget* footer = new MIP_PanelWidget(MIP_FRect(20));
+      MEditorWidget->appendWidget(footer);
+      footer->layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
+      footer->setDrawBorder(false);
+
+      MIP_SizerWidget* window_sizer = new MIP_SizerWidget(MIP_FRect( 15,15),MIP_SIZER_WINDOW);
+      footer->appendWidget(window_sizer);
+      window_sizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
+
+      /* */
+
 //----------
 
       // left_panel
@@ -392,14 +405,6 @@ public:
         tabs->selectPage(0);
 
 //----------
-
-      /*
-
-      MSizer = new MIP_SizerWidget(MIP_FRect( 15,15),MIP_SIZER_WINDOW);
-      MSizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
-      MEditorPanel->appendWidget(MSizer);
-
-      */
 
       MEditorWidget->appendWidget(selector_menu);
 

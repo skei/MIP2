@@ -8,12 +8,13 @@
 //#define MIP_NO_WINDOW_BUFFERING
 //#define MIP_XCB_WAIT_FOR_MAPNOTIFY
 
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 //----------
 
 #include "mip.h"
+#include "audio/mip_voice_manager.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
@@ -31,11 +32,17 @@
 #define NUM_NOTE_OUTPUTS    2
 #define NUM_QUICK_CONTROLS  2
 
-#define ALL_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
+//#define SUPPORTED_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
+#define SUPPORTED_DIALECTS  CLAP_NOTE_DIALECT_CLAP
 
 //----------
 
-const char* myFeatures[] = {
+const char* myFeatures1[] = {
+  "instrument",
+  nullptr
+};
+
+const char* myFeatures2[] = {
   "audio_effect",
   nullptr
 };
@@ -52,7 +59,7 @@ const clap_plugin_descriptor_t myDescriptor = {
   "",
   "0.0.0",
   "simple mip2 test plugin",
-  myFeatures
+  myFeatures1
 };
 
 //test
@@ -66,7 +73,77 @@ const clap_plugin_descriptor_t myDescriptor2 = {
   "",
   "0.0.0",
   "simple mip2 test plugin 2",
-  myFeatures
+  myFeatures2
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+class myVoice {
+
+public:
+
+  uint32_t note_on(float key, float velocity) {
+    MIP_Print("note on %.2f %.2f\n",key,velocity);
+    return MIP_VOICE_PLAYING;
+  }
+
+  uint32_t note_off(float velocity) {
+    MIP_Print("note off %.2f\n",velocity);
+    return MIP_VOICE_FINISHED;
+  }
+
+  void note_choke() {
+    MIP_Print("note choke\n");
+  }
+
+  void note_end() {
+    MIP_Print("note end\n");
+  }
+
+  void tuning(float amount) {
+    MIP_Print("tuning %.2f\n",amount);
+  }
+
+  void volume(float amount) {
+    MIP_Print("volume %.2f\n",amount);
+  }
+
+  void pan(float amount) {
+    MIP_Print("pan %.2f\n",amount);
+  }
+
+  void vibrato(float amount) {
+    MIP_Print("vibrato %.2f\n",amount);
+  }
+
+  void expression(float amount) {
+    MIP_Print("expression %.2f\n",amount);
+  }
+
+  void brightness(float amount) {
+    MIP_Print("brightness %.2f\n",amount);
+  }
+
+  void pressure(float amount) {
+    MIP_Print("pressure %.2f\n",amount);
+  }
+
+  void parameter(uint32_t index, float value) {
+    MIP_Print("parameter %i %.2f\n",index,value);
+  }
+
+  void modulation(uint32_t index, float value) {
+    MIP_Print("modulation %i %.2f\n",index,value);
+  }
+
+  uint32_t process(uint32_t AState) {
+    return MIP_VOICE_PLAYING;
+  }
+
 };
 
 //----------------------------------------------------------------------
@@ -82,12 +159,12 @@ class myPlugin
 private:
 //------------------------------
 
-//  clap_param_info_t myParameters[NUM_PARAMS] = {
-//    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",   "Params", 0.0, 1.0, 0.5 },
-//    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param2", "Params", 0.0, 1.0, 0.5 },
-//    { 2, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param3", "Params", 0.0, 1.0, 0.5 },
-//    { 3, 0,                                                     nullptr, "param4", "Params", 0.0, 1.0, 0.5 }
-//  };
+  clap_param_info_t myParameters[NUM_PARAMS] = {
+    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",   "Params", 0.0, 1.0, 0.5 },
+    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param2", "Params", 0.0, 1.0, 0.5 },
+    { 2, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param3", "Params", 0.0, 1.0, 0.5 },
+    { 3, 0,                                                     nullptr, "param4", "Params", 0.0, 1.0, 0.5 }
+  };
 
   clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
     { 0, "Input 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
@@ -100,13 +177,13 @@ private:
   };
 
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
-    { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
-    { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
+    { 0, SUPPORTED_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
+    { 1, SUPPORTED_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
   };
 
   clap_note_port_info_t myNoteOutputs[NUM_NOTE_OUTPUTS] = {
-    { 0, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
-    { 1, ALL_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
+    { 0, SUPPORTED_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
+    { 1, SUPPORTED_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
   };
 
   clap_quick_controls_page_t myQuickControls[NUM_QUICK_CONTROLS] = {
@@ -120,6 +197,8 @@ private:
   MIP_SizerWidget*  MSizer        = nullptr;
 
   float MSum = 0.0;
+
+  MIP_VoiceManager<myVoice,16>  MVoices = {};
 
 //------------------------------
 public:
@@ -138,14 +217,70 @@ public:
 public:
 //------------------------------
 
-  void handle_parameter_event(const clap_event_param_value_t* param_value) final {
-    MIP_Plugin::handle_parameter_event(param_value);
+  /*
+    todo: fill out all fields of event struct
+  */
+
+  void on_updateParameterFromEditor(uint32_t AIndex, float AValue) override {
+    //MIP_Print("%i %.2f\n",AIndex,AValue);
+    clap_event_param_value_t event;
+    event.param_id    = AIndex;
+    event.cookie      = nullptr;
+    event.port_index  = -1;
+    event.key         = -1;
+    event.channel     = -1;
+    event.value       = AValue;
+    MVoices.on_parameter_value(&event);
+    MIP_Plugin::on_updateParameterFromEditor(AIndex,AValue);
   }
 
-  //----------
+//------------------------------
+public:
+//------------------------------
 
-  void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
-    MIP_Plugin::handle_modulation_event(param_mod);
+//  void handle_parameter_event(const clap_event_param_value_t* param_value) final {
+//    MIP_Plugin::handle_parameter_event(param_value);
+//  }
+//
+//  //----------
+//
+//  void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
+//    MIP_Plugin::handle_modulation_event(param_mod);
+//  }
+
+  void handle_events_input(const clap_input_events_t* in_events, const clap_output_events_t* out_events) override {
+    //MIP_Plugin::handle_events_input(in_events,out_events);
+    uint32_t num_events = in_events->size(in_events);
+    for (uint32_t i=0; i<num_events; i++) {
+      const clap_event_header_t* header = in_events->get(in_events,i);
+      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+        switch (header->type) {
+          case CLAP_EVENT_NOTE_ON:        MVoices.on_note_on((clap_event_note_t*)header);                   break;
+          case CLAP_EVENT_NOTE_OFF:       MVoices.on_note_off((clap_event_note_t*)header);                  break;
+          case CLAP_EVENT_NOTE_END:       MVoices.on_note_end((clap_event_note_t*)header);                  break;
+          case CLAP_EVENT_NOTE_CHOKE:     MVoices.on_note_choke((clap_event_note_t*)header);                break;
+          case CLAP_EVENT_PARAM_VALUE:    MVoices.on_parameter_value((clap_event_param_value_t*)header);    break;
+          case CLAP_EVENT_PARAM_MOD:      MVoices.on_parameter_modulation((clap_event_param_mod_t*)header); break;
+          //case CLAP_EVENT_MIDI:
+          //case CLAP_EVENT_MIDI2:
+          //case CLAP_EVENT_MIDI_SYSEX:
+          //case CLAP_EVENT_TRANSPORT:
+          case CLAP_EVENT_NOTE_EXPRESSION:
+            {
+              clap_event_note_expression_t* event = (clap_event_note_expression_t*)header;
+              switch (event->expression_id) {
+                case CLAP_NOTE_EXPRESSION_VOLUME:       MVoices.on_note_volume_expression(event);      break;
+                case CLAP_NOTE_EXPRESSION_PAN:          MVoices.on_note_pan_expression(event);         break;
+                case CLAP_NOTE_EXPRESSION_TUNING:       MVoices.on_note_tuning_expression(event);      break;
+                case CLAP_NOTE_EXPRESSION_VIBRATO:      MVoices.on_note_vibrato_expression(event);     break;
+                case CLAP_NOTE_EXPRESSION_EXPRESSION:   MVoices.on_note_expression_expression(event);  break;
+                case CLAP_NOTE_EXPRESSION_BRIGHTNESS:   MVoices.on_note_brightness_expression(event);  break;
+                case CLAP_NOTE_EXPRESSION_PRESSURE:     MVoices.on_note_pressure_expression(event);    break;
+              }
+            }
+        }
+      }
+    }
   }
 
 //------------------------------
@@ -190,15 +325,16 @@ public:
 //------------------------------
 
   void handle_process(const clap_process_t *process) final {
-    float**  inputs  = process->audio_inputs[0].data32;
-    float**  outputs = process->audio_outputs[0].data32;
-    uint32_t length  = process->frames_count;
-    float    scale   = getParameterValue(0) + getParameterModulation(0);
+//    float**  inputs  = process->audio_inputs[0].data32;
+//    float**  outputs = process->audio_outputs[0].data32;
+//    uint32_t length  = process->frames_count;
+//    float    scale   = getParameterValue(0) + getParameterModulation(0);
     //MSum = 0.0;
     //test_thread_pool();
     //scale *= MSum;
-    MIP_CopyStereoBuffer(outputs,inputs,length);
-    MIP_ScaleStereoBuffer(outputs,scale,length);
+//    MIP_CopyStereoBuffer(outputs,inputs,length);
+//    MIP_ScaleStereoBuffer(outputs,scale,length);
+    MVoices.process(process);
   }
 
   //----------
@@ -215,22 +351,14 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-
     //setupParameters(myParameters,NUM_PARAMS);
-
-    appendParameter(new MIP_Parameter( 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, "Gain",   "Params", 0.0, 1.0, 0.5 ));
-    appendParameter(new MIP_Parameter( 1, CLAP_PARAM_IS_AUTOMATABLE,                             "param2", "Params", 0.0, 1.0, 0.5 ));
-    appendParameter(new MIP_Parameter( 2, CLAP_PARAM_IS_AUTOMATABLE,                             "param3", "Params", 0.0, 1.0, 0.5 ));
-    appendParameter(new MIP_Parameter( 3, CLAP_PARAM_IS_AUTOMATABLE,                             "param4", "Params", 0.0, 1.0, 0.5 ));
-
-//  clap_param_info_t myParameters[NUM_PARAMS] = {
-//    {  },
-//    {  },
-//    {  },
-//    { 3, 0,                                                     nullptr, "param4", "Params", 0.0, 1.0, 0.5 }
-//  };
-
-
+    //appendParameter(new MIP_Parameter( 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, "Gain",   "Params", 0.0, 1.0, 0.5 ));
+    //appendParameter(new MIP_Parameter( 1, CLAP_PARAM_IS_AUTOMATABLE,                             "param2", "Params", 0.0, 1.0, 0.5 ));
+    //appendParameter(new MIP_Parameter( 2, CLAP_PARAM_IS_AUTOMATABLE,                             "param3", "Params", 0.0, 1.0, 0.5 ));
+    //appendParameter(new MIP_Parameter( 3, CLAP_PARAM_IS_AUTOMATABLE,                             "param4", "Params", 0.0, 1.0, 0.5 ));
+    for (uint32_t i=0; i<NUM_PARAMS; i++) {
+      appendParameter(new MIP_Parameter( &myParameters[i] ));
+    }
     setupAudioInputs(myAudioInputs,NUM_AUDIO_INPUTS);
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);

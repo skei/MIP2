@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "gui/mip_widget.h"
+#include "gui/widgets/v0/mip_panel_widget.h"
 
 #define MIP_SIZER_NONE   0
 #define MIP_SIZER_LEFT   1
