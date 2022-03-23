@@ -15,6 +15,7 @@
 
 #include "mip.h"
 #include "audio/mip_voice_manager.h"
+#include "audio/mip_audio_math.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
@@ -84,63 +85,125 @@ const clap_plugin_descriptor_t myDescriptor2 = {
 
 class myVoice {
 
+private:
+
+  MIP_VoiceContext* context = nullptr;
+  float             hz      = 0.0;  // note hz
+  //float             bend    = 0.0;  // note bend
+  //float             mbend   = 0.0;  // master bend
+  float             ph      = 0.0;  // phase
+  float             phadd   = 0.0;  // phase add
+
+  int32_t note_key = -1;
+
 public:
 
-  uint32_t note_on(float key, float velocity) {
-    MIP_Print("note on %.2f %.2f\n",key,velocity);
+  void prepare(MIP_VoiceContext* AContext) {
+    context = AContext;
+  }
+
+  //----------
+
+  uint32_t note_on(int32_t key, float velocity) {
+    //MIP_Print("note on %i %.2f\n",key,velocity);
+    note_key = key;
+    //bend = 0.0;
+    ph = 0.0;
+    hz = MIP_NoteToHz(key);
+    phadd = hz / context->samplerate;
     return MIP_VOICE_PLAYING;
   }
 
+  //----------
+
   uint32_t note_off(float velocity) {
-    MIP_Print("note off %.2f\n",velocity);
+    //MIP_Print("note off %.2f\n",velocity);
     return MIP_VOICE_FINISHED;
   }
 
+  //----------
+
   void note_choke() {
-    MIP_Print("note choke\n");
+    //MIP_Print("note choke\n");
   }
+
+  //----------
 
   void note_end() {
-    MIP_Print("note end\n");
+    //MIP_Print("note end\n");
   }
+
+  //----------
 
   void tuning(float amount) {
-    MIP_Print("tuning %.2f\n",amount);
+    //MIP_Print("tuning %.2f\n",amount);
+    //bend = amount;
+    hz = MIP_NoteToHz(note_key + amount);
+    phadd = hz / context->samplerate;
   }
+
+  //----------
 
   void volume(float amount) {
-    MIP_Print("volume %.2f\n",amount);
+    //MIP_Print("volume %.2f\n",amount);
   }
+
+  //----------
 
   void pan(float amount) {
-    MIP_Print("pan %.2f\n",amount);
+    //MIP_Print("pan %.2f\n",amount);
   }
+
+  //----------
 
   void vibrato(float amount) {
-    MIP_Print("vibrato %.2f\n",amount);
+    //MIP_Print("vibrato %.2f\n",amount);
   }
+
+  //----------
 
   void expression(float amount) {
-    MIP_Print("expression %.2f\n",amount);
+    //MIP_Print("expression %.2f\n",amount);
   }
+
+  //----------
 
   void brightness(float amount) {
-    MIP_Print("brightness %.2f\n",amount);
+    //MIP_Print("brightness %.2f\n",amount);
   }
+
+  //----------
 
   void pressure(float amount) {
-    MIP_Print("pressure %.2f\n",amount);
+    //MIP_Print("pressure %.2f\n",amount);
   }
+
+  //----------
 
   void parameter(uint32_t index, float value) {
-    MIP_Print("parameter %i %.2f\n",index,value);
+    //MIP_Print("parameter %i %.2f\n",index,value);
   }
+
+  //----------
 
   void modulation(uint32_t index, float value) {
-    MIP_Print("modulation %i %.2f\n",index,value);
+    //MIP_Print("modulation %i %.2f\n",index,value);
   }
 
+  //----------
+
   uint32_t process(uint32_t AState) {
+    //float**  inputs  = context->process->audio_inputs[0].data32;
+    float*  output0 = context->process->audio_outputs[0].data32[0];
+    float*  output1 = context->process->audio_outputs[0].data32[1];
+    uint32_t length  = context->process->frames_count;
+    for (uint32_t i=0; i<length; i++) {
+      float out = ph;
+      ph += phadd;
+      ph = MIP_Fract(ph);
+      *output0++ += out * 0.1;
+      *output1++ += out * 0.1;
+    }
     return MIP_VOICE_PLAYING;
   }
 
@@ -217,27 +280,6 @@ public:
 public:
 //------------------------------
 
-  /*
-    todo: fill out all fields of event struct
-  */
-
-  void on_updateParameterFromEditor(uint32_t AIndex, float AValue) override {
-    //MIP_Print("%i %.2f\n",AIndex,AValue);
-    clap_event_param_value_t event;
-    event.param_id    = AIndex;
-    event.cookie      = nullptr;
-    event.port_index  = -1;
-    event.key         = -1;
-    event.channel     = -1;
-    event.value       = AValue;
-    MVoices.on_parameter_value(&event);
-    MIP_Plugin::on_updateParameterFromEditor(AIndex,AValue);
-  }
-
-//------------------------------
-public:
-//------------------------------
-
 //  void handle_parameter_event(const clap_event_param_value_t* param_value) final {
 //    MIP_Plugin::handle_parameter_event(param_value);
 //  }
@@ -287,53 +329,14 @@ public:
 public:
 //------------------------------
 
-  /*
-    thread pool experiment that didn't go so well..
-    need to find a more suitable test setup..
-  */
-
-  //----------
-
-  //void thread_pool_exec(uint32_t task_index) final {
-  //  float f = 0.0;
-  //  for (uint32_t i=0; i<NUM_RANDOM; i++) {
-  //    f += (MIP_Random() * 0.00001);
-  //  }
-  //  MSum += (1.0 / NUM_THREADS) + f;
-  //}
-
-  //----------
-
-  //#define NUM_THREADS 16
-  //#define NUM_RANDOM  512
-  //
-  //void test_thread_pool() {
-  //  if (MHost->thread_pool) {
-  //    bool didComputeVoices = false;
-  //    //didComputeVoices = MHost->thread_pool->request_exec(MHost->host,NUM_THREADS);
-  //    if (!didComputeVoices) {
-  //      for (uint32_t i=0; i<NUM_THREADS;i++) {
-  //        thread_pool_exec(i);
-  //        //MThreadPool.exec(&MPlugin,i);
-  //      }
-  //    }
-  //  }
-  //}
-
-//------------------------------
-public:
-//------------------------------
-
   void handle_process(const clap_process_t *process) final {
-//    float**  inputs  = process->audio_inputs[0].data32;
-//    float**  outputs = process->audio_outputs[0].data32;
-//    uint32_t length  = process->frames_count;
-//    float    scale   = getParameterValue(0) + getParameterModulation(0);
-    //MSum = 0.0;
-    //test_thread_pool();
-    //scale *= MSum;
-//    MIP_CopyStereoBuffer(outputs,inputs,length);
-//    MIP_ScaleStereoBuffer(outputs,scale,length);
+    //float**  inputs  = process->audio_inputs[0].data32;
+    float**  outputs = process->audio_outputs[0].data32;
+    uint32_t length  = process->frames_count;
+    //float    scale   = getParameterValue(0) + getParameterModulation(0);
+    //MIP_CopyStereoBuffer(outputs,inputs,length);
+    //MIP_ScaleStereoBuffer(outputs,scale,length);
+    MIP_ClearStereoBuffer(outputs,length);
     MVoices.process(process);
   }
 
@@ -351,11 +354,6 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    //setupParameters(myParameters,NUM_PARAMS);
-    //appendParameter(new MIP_Parameter( 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, "Gain",   "Params", 0.0, 1.0, 0.5 ));
-    //appendParameter(new MIP_Parameter( 1, CLAP_PARAM_IS_AUTOMATABLE,                             "param2", "Params", 0.0, 1.0, 0.5 ));
-    //appendParameter(new MIP_Parameter( 2, CLAP_PARAM_IS_AUTOMATABLE,                             "param3", "Params", 0.0, 1.0, 0.5 ));
-    //appendParameter(new MIP_Parameter( 3, CLAP_PARAM_IS_AUTOMATABLE,                             "param4", "Params", 0.0, 1.0, 0.5 ));
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
       appendParameter(new MIP_Parameter( &myParameters[i] ));
     }
@@ -371,6 +369,14 @@ public: // plugin
     }
     return result;
   }
+
+  //----------
+
+  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
+    MVoices.prepare(sample_rate);
+    return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
+  }
+
 
   //----------
 

@@ -233,8 +233,15 @@ protected: // ??
       if (value != MParameterValues[index]) {
         MParameterValues[index] = value;
 
-        // notify plugin
-        //.on_plugin_parameter(index,value);
+        // notify plugin (fake param_value event)
+        clap_event_param_value_t event;
+        event.param_id    = index;
+        event.cookie      = nullptr;
+        event.port_index  = -1;
+        event.key         = -1;
+        event.channel     = -1;
+        event.value       = value;
+        handle_parameter_event(&event);
 
       }
     }
