@@ -8,7 +8,8 @@
 
   - sample accurate events (in & out)
   - send event_mod events (end, choke?)
-  - handle note_choke
+  - note end? MIP_VOICE_RELEASED or MIP_VOICE_FINISHED
+  - handle note_choke/end?
   - handle volume expression
 
 
@@ -70,8 +71,6 @@ class MIP_VoiceManager {
 private:
 //------------------------------
 
-  bool              MPrepared                     = false;
-
   MIP_VoiceContext  MVoiceContext                 = {0};
   VOICE             MVoices[NUM]                  = {};
   uint32_t          MVoiceState[NUM]              = {0};
@@ -104,12 +103,10 @@ public:
 //------------------------------
 
   void prepare(double samplerate) {
-    //if (MPrepared) return;
     MVoiceContext.samplerate = samplerate;
     for (uint32_t i=0; i<NUM; i++) {
       MVoices[i].prepare(&MVoiceContext);
     }
-    //MPrepared = true;
   }
 
 //------------------------------
@@ -245,6 +242,15 @@ public:
 private:
 //------------------------------
 
+  /*
+    Note on, off, end and choke events.
+    In the case of note choke or end events:
+    - the velocity is ignored.
+    - key and channel are used to match active notes, a value of -1 matches all.
+  */
+
+//------------------------------
+
   // assumes AChannel >= 0
 
   void handle_voice_note_on(int32_t AChannel, int32_t AKey, float AVelocity) {
@@ -253,10 +259,10 @@ private:
     if (voice >= 0) {
       kill_voice(voice);
       MNoteToVoice[note] = voice;
-      float note = (float)AKey;
+      //float note = (float)AKey;
       MVoiceNote[voice]     = AKey;
       MVoiceChannel[voice]  = AChannel;
-      MVoiceState[voice]    = MVoices[voice].note_on(note,AVelocity);
+      MVoiceState[voice]    = MVoices[voice].note_on(AKey/*note*/,AVelocity);
     }
   }
 
@@ -275,6 +281,9 @@ private:
 
   //----------
 
+  // NOTE_CHOKE is meant to choke the voice(s), like in a drum machine when a closed hihat
+  // chokes an open hihat.
+
   // assumes AChannel >= 0
 
   void handle_voice_note_choke(int32_t AChannel, int32_t AKey) {
@@ -288,6 +297,10 @@ private:
   }
 
   //----------
+
+  // NOTE_END is sent by the plugin to the host, when a voice terminates.
+  // When using polyphonic modulations, the host has to start voices for its modulators.
+  // This message helps the host to track the plugin's voice management.
 
   // assumes AChannel >= 0
 
@@ -303,9 +316,31 @@ private:
 
   //----------
 
-  //void handle_voice_bend(int32_t AChannel, uint32_t ABend) {
-  //  float v = (ABend * MIP_INV8192F) - 1.0f;
-  // tuning = -1 .. 1
+  // with 0 < x <= 4, plain = 20 * log(x)
+
+  void handle_voice_volume(int32_t AChannel, int32_t AKey, float AVolume) {
+    uint32_t note = (AChannel * 128) + AKey;
+    int32_t voice = MNoteToVoice[note];
+    if (voice >= 0) {
+      MVoices[voice].volume(AVolume);
+    }
+  }
+
+  //----------
+
+  // pan, 0 left, 0.5 center, 1 right
+
+  void handle_voice_pan(int32_t AChannel, int32_t AKey, float APan) {
+    uint32_t note = (AChannel * 128) + AKey;
+    int32_t voice = MNoteToVoice[note];
+    if (voice >= 0) {
+      MVoices[voice].pan(APan);
+    }
+  }
+
+  //----------
+
+  // relative tuning in semitone, from -120 to +120
 
   void handle_voice_tuning(int32_t AChannel, int32_t AKey, float ABend) {
     uint32_t note = (AChannel * 128) + AKey;
@@ -317,39 +352,7 @@ private:
 
   //----------
 
-  void handle_voice_pressure(int32_t AChannel, int32_t AKey, float APress) {
-    uint32_t note = (AChannel * 128) + AKey;
-    int32_t voice = MNoteToVoice[note];
-    if (voice >= 0) {
-      MVoices[voice].pressure(APress);
-    }
-  }
-
-  //----------
-
-  void handle_voice_brightness(int32_t AChannel, int32_t AKey, float ABrightness) {
-    uint32_t note = (AChannel * 128) + AKey;
-    int32_t voice = MNoteToVoice[note];
-    if (voice >= 0) {
-      MVoices[voice].brightness(ABrightness);
-    }
-  }
-
-  void handle_voice_volume(int32_t AChannel, int32_t AKey, float AVolume) {
-    uint32_t note = (AChannel * 128) + AKey;
-    int32_t voice = MNoteToVoice[note];
-    if (voice >= 0) {
-      MVoices[voice].volume(AVolume);
-    }
-  }
-
-  void handle_voice_pan(int32_t AChannel, int32_t AKey, float APan) {
-    uint32_t note = (AChannel * 128) + AKey;
-    int32_t voice = MNoteToVoice[note];
-    if (voice >= 0) {
-      MVoices[voice].pan(APan);
-    }
-  }
+  // 0..1
 
   void handle_voice_vibrato(int32_t AChannel, int32_t AKey, float AVibrato) {
     uint32_t note = (AChannel * 128) + AKey;
@@ -359,11 +362,39 @@ private:
     }
   }
 
+  //----------
+
+  // 0..1
+
   void handle_voice_expression(int32_t AChannel, int32_t AKey, float AExpression) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
       MVoices[voice].expression(AExpression);
+    }
+  }
+
+  //----------
+
+  // 0..1
+
+  void handle_voice_brightness(int32_t AChannel, int32_t AKey, float ABrightness) {
+    uint32_t note = (AChannel * 128) + AKey;
+    int32_t voice = MNoteToVoice[note];
+    if (voice >= 0) {
+      MVoices[voice].brightness(ABrightness);
+    }
+  }
+
+  //----------
+
+  // 0..1
+
+  void handle_voice_pressure(int32_t AChannel, int32_t AKey, float APress) {
+    uint32_t note = (AChannel * 128) + AKey;
+    int32_t voice = MNoteToVoice[note];
+    if (voice >= 0) {
+      MVoices[voice].pressure(APress);
     }
   }
 
@@ -378,6 +409,15 @@ private:
   }
 
   //----------
+
+  // PARAM_VALUE sets the parameter's value; uses clap_event_param_value.
+  // PARAM_MOD sets the parameter's modulation amount; uses clap_event_param_mod.
+  //
+  // The value heard is: param_value + param_mod.
+  //
+  // In case of a concurrent global value/modulation versus a polyphonic one,
+  // the voice should only use the polyphonic one and the polyphonic modulation
+  // amount will already include the monophonic signal.
 
   void handle_voice_param(int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
     int32_t voice = MNoteToVoice[(AChannel * 128) + AKey];
@@ -398,48 +438,30 @@ private:
   //------------------------------
 
   void handle_master_ctrl(uint32_t AIndex, uint32_t AValue) {
-    //MIP_Print("master ctrl %i %.2f\n",AIndex,AValue);
-    //for (uint32_t i=0; i<NUM; i++) {
-    //  MVoices[i].master_ctrl(AIndex,AValue);
-    //}
   }
 
   //----------
 
   void handle_master_param(uint32_t AIndex, float AValue) {
-    //MIP_Print("master param %i %.2f\n",AIndex,AValue);
-    //for (uint32_t i=0; i<NUM; i++) {
-    //  MVoices[i].master_param(AIndex,AValue);
-    //}
   }
 
   //----------
 
   void handle_master_mod(uint32_t AIndex, float AValue) {
-    //MIP_Print("master mod %i %.2f\n",AIndex,AValue);
-    //for (uint32_t i=0; i<NUM; i++) {
-    //  MVoices[i].master_mod(AIndex,AValue);
-    //}
   }
 
   //----------
+
+  // midi channel pitchbend
 
   void handle_master_tuning(float ABend) {
-    //MIP_Print("master bend %.2f\n",ABend);
-    //float mb = (ABend * MIP_INV8192F) - 1.0f;
-    //for (uint32_t i=0; i<NUM; i++) {
-    //  MVoices[i].master_bend(mb);
-    //}
   }
 
   //----------
 
+  // midi polyphonic aftertouch
+
   void handle_master_pressure(uint32_t APressure) {
-    //MIP_Print("master pressure %.2f\n",APressure);
-    //float mp = (float)AVelocity * MIP_INV127F;
-    //for (uint32_t i=0; i<NUM; i++) {
-    //  MVoices[i].master_pressure(mp);
-    //}
   }
 
 //------------------------------
@@ -481,6 +503,26 @@ private:
 private:
 //------------------------------
 
+  void send_note_end(uint32_t index) {
+    clap_event_note_t event;
+    clap_event_header_t* header = (clap_event_header_t*)&event;
+    header->size      = sizeof(clap_event_note_t);
+    header->time      = MVoiceContext.process->frames_count - 1;
+    header->space_id  = CLAP_CORE_EVENT_SPACE_ID;
+    header->type      = CLAP_EVENT_NOTE_END;
+    header->flags     = 0;
+    event.port_index  = 0;
+    event.key         = MVoiceNote[index];
+    event.channel     = MVoiceChannel[index];
+    event.velocity    = 0.0;
+    const clap_output_events_t* out_events = MVoiceContext.process->out_events;
+    out_events->try_push(out_events,header);
+  }
+
+//------------------------------
+private:
+//------------------------------
+
   void preProcess() {
   }
 
@@ -489,13 +531,9 @@ private:
   void postProcess() {
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceState[i] == MIP_VOICE_FINISHED) {
-        // shound be sample-time at event...
-//        uint32_t time = MVoiceContext.length - 1;
-//        int32_t  port = 0;
-//        int32_t  note = MVoiceNote[i];
-//        int32_t  chan = MVoiceChannel[i];
-//        send_note_end_event(MVoiceContext.process,time,port,note,chan);
         kill_voice(i);
+        // shound be sample-time at event...
+        send_note_end(i);
       }
       //TODO: send PARAM_MOD events
     }

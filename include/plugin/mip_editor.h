@@ -133,21 +133,23 @@ public: // clap.gui
 
   //----------
 
-  virtual void show() {
+  virtual bool show() {
     //MIP_PRINT;
     MWindow->setOwnerWindow(MWindow);
     MWindow->open();
     MTimer->start(30);
     MEditorIsOpen = true;
+    return true;
   }
 
   //----------
 
-  virtual void hide() {
+  virtual bool hide() {
     //MIP_PRINT;
     MEditorIsOpen = false;
     MTimer->stop();
     MWindow->close();
+    return true;
   }
 
   //----------
@@ -176,10 +178,11 @@ public: // clap.gui
 
   //----------
 
-  virtual void adjustSize(uint32_t *width, uint32_t *height) {
+  virtual bool adjustSize(uint32_t *width, uint32_t *height) {
     //MIP_Print("*width:%i *height:%i\n",*width,*height);
     //*width = *width & 0xffc0;
     //*height = *height & 0xffc0;
+    return true;
   }
 
   //----------

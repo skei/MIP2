@@ -59,7 +59,7 @@ const clap_plugin_descriptor_t myDescriptor = {
   "",
   "",
   "0.0.0",
-  "simple mip2 test plugin",
+  "simple mip2 test instrument",
   myFeatures1
 };
 
@@ -73,7 +73,7 @@ const clap_plugin_descriptor_t myDescriptor2 = {
   "",
   "",
   "0.0.0",
-  "simple mip2 test plugin 2",
+  "simple mip2 test effect",
   myFeatures2
 };
 
@@ -89,12 +89,18 @@ private:
 
   MIP_VoiceContext* context = nullptr;
   float             hz      = 0.0;  // note hz
-  //float             bend    = 0.0;  // note bend
-  //float             mbend   = 0.0;  // master bend
   float             ph      = 0.0;  // phase
   float             phadd   = 0.0;  // phase add
 
-  int32_t note_key = -1;
+  int32_t _key  = -1;
+  float   _onvel  = 0.0;
+  float   _offvel = 0.0;
+  float   _vol    = 0.0;
+  float   _pan    = 0.0;
+  float   _vibr   = 0.0;
+  float   _expr   = 0.0;
+  float   _bright = 0.0;
+  float   _press  = 0.0;
 
 public:
 
@@ -106,7 +112,8 @@ public:
 
   uint32_t note_on(int32_t key, float velocity) {
     //MIP_Print("note on %i %.2f\n",key,velocity);
-    note_key = key;
+    _key = key;
+    _onvel = velocity;
     //bend = 0.0;
     ph = 0.0;
     hz = MIP_NoteToHz(key);
@@ -117,92 +124,91 @@ public:
   //----------
 
   uint32_t note_off(float velocity) {
-    //MIP_Print("note off %.2f\n",velocity);
+    _offvel = velocity;
     return MIP_VOICE_FINISHED;
   }
 
   //----------
 
   void note_choke() {
-    //MIP_Print("note choke\n");
   }
 
   //----------
 
   void note_end() {
-    //MIP_Print("note end\n");
   }
 
   //----------
 
   void tuning(float amount) {
-    //MIP_Print("tuning %.2f\n",amount);
-    //bend = amount;
-    hz = MIP_NoteToHz(note_key + amount);
+    hz = MIP_NoteToHz(_key + amount);
     phadd = hz / context->samplerate;
   }
 
   //----------
 
   void volume(float amount) {
-    //MIP_Print("volume %.2f\n",amount);
+    _vol = amount;
   }
 
   //----------
 
   void pan(float amount) {
-    //MIP_Print("pan %.2f\n",amount);
+    _pan = amount;
   }
 
   //----------
 
   void vibrato(float amount) {
-    //MIP_Print("vibrato %.2f\n",amount);
+    _vibr = amount;
   }
 
   //----------
 
   void expression(float amount) {
-    //MIP_Print("expression %.2f\n",amount);
+    _expr = amount;
   }
 
   //----------
 
   void brightness(float amount) {
-    //MIP_Print("brightness %.2f\n",amount);
+    _bright = amount;
   }
 
   //----------
 
   void pressure(float amount) {
-    //MIP_Print("pressure %.2f\n",amount);
+    _press = amount;
   }
 
   //----------
 
   void parameter(uint32_t index, float value) {
-    //MIP_Print("parameter %i %.2f\n",index,value);
   }
 
   //----------
 
   void modulation(uint32_t index, float value) {
-    //MIP_Print("modulation %i %.2f\n",index,value);
   }
 
   //----------
 
   uint32_t process(uint32_t AState) {
-    //float**  inputs  = context->process->audio_inputs[0].data32;
-    float*  output0 = context->process->audio_outputs[0].data32[0];
-    float*  output1 = context->process->audio_outputs[0].data32[1];
+    //float**  inputs = context->process->audio_inputs[0].data32;
+    float* output0 = context->process->audio_outputs[0].data32[0];
+    float* output1 = context->process->audio_outputs[0].data32[1];
     uint32_t length  = context->process->frames_count;
     for (uint32_t i=0; i<length; i++) {
       float out = ph;
       ph += phadd;
       ph = MIP_Fract(ph);
-      *output0++ += out * 0.1;
-      *output1++ += out * 0.1;
+      // hack
+      //float v = _onvel;
+      //v += (0.0 + (1.0 * _press));
+      float v = _onvel + _press;
+      v = MIP_Clamp(v,0,1);
+      *output0++ += out * v;
+      *output1++ += out * v;
     }
     return MIP_VOICE_PLAYING;
   }
@@ -223,10 +229,47 @@ private:
 //------------------------------
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Gain",   "Params", 0.0, 1.0, 0.5 },
-    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param2", "Params", 0.0, 1.0, 0.5 },
-    { 2, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "param3", "Params", 0.0, 1.0, 0.5 },
-    { 3, 0,                                                     nullptr, "param4", "Params", 0.0, 1.0, 0.5 }
+
+    { 0,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_PER_NOTE,
+      nullptr,
+      "param1",
+      "Params",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    { 1,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,
+      nullptr,
+      "param2",
+      "Params",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    { 2,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "param3",
+      "Params",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    { 3,
+      0,
+      nullptr,
+      "param4",
+      "Params",
+      0.0,
+      1.0,
+      0.5
+    }
+
   };
 
   clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
@@ -297,16 +340,38 @@ public:
       const clap_event_header_t* header = in_events->get(in_events,i);
       if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
         switch (header->type) {
-          case CLAP_EVENT_NOTE_ON:        MVoices.on_note_on((clap_event_note_t*)header);                   break;
-          case CLAP_EVENT_NOTE_OFF:       MVoices.on_note_off((clap_event_note_t*)header);                  break;
-          case CLAP_EVENT_NOTE_END:       MVoices.on_note_end((clap_event_note_t*)header);                  break;
-          case CLAP_EVENT_NOTE_CHOKE:     MVoices.on_note_choke((clap_event_note_t*)header);                break;
-          case CLAP_EVENT_PARAM_VALUE:    MVoices.on_parameter_value((clap_event_param_value_t*)header);    break;
-          case CLAP_EVENT_PARAM_MOD:      MVoices.on_parameter_modulation((clap_event_param_mod_t*)header); break;
+
+          case CLAP_EVENT_NOTE_ON:
+            MVoices.on_note_on((clap_event_note_t*)header);
+            break;
+
+          case CLAP_EVENT_NOTE_OFF:
+            MVoices.on_note_off((clap_event_note_t*)header);
+            break;
+
+          case CLAP_EVENT_NOTE_END:
+            MVoices.on_note_end((clap_event_note_t*)header);
+            break;
+
+          case CLAP_EVENT_NOTE_CHOKE:
+            MVoices.on_note_choke((clap_event_note_t*)header);
+            break;
+
+          case CLAP_EVENT_PARAM_VALUE:
+            handle_parameter_event((clap_event_param_value_t*)header);
+            MVoices.on_parameter_value((clap_event_param_value_t*)header);
+            break;
+
+          case CLAP_EVENT_PARAM_MOD:
+            handle_modulation_event((clap_event_param_mod_t*)header);
+            MVoices.on_parameter_modulation((clap_event_param_mod_t*)header);
+            break;
+
           //case CLAP_EVENT_MIDI:
           //case CLAP_EVENT_MIDI2:
           //case CLAP_EVENT_MIDI_SYSEX:
           //case CLAP_EVENT_TRANSPORT:
+
           case CLAP_EVENT_NOTE_EXPRESSION:
             {
               clap_event_note_expression_t* event = (clap_event_note_expression_t*)header;
@@ -320,6 +385,10 @@ public:
                 case CLAP_NOTE_EXPRESSION_PRESSURE:     MVoices.on_note_pressure_expression(event);    break;
               }
             }
+
+          //default:
+          //  break;
+
         }
       }
     }
@@ -330,10 +399,10 @@ public:
 //------------------------------
 
   void handle_process(const clap_process_t *process) final {
-    //float**  inputs  = process->audio_inputs[0].data32;
-    float**  outputs = process->audio_outputs[0].data32;
-    uint32_t length  = process->frames_count;
-    //float    scale   = getParameterValue(0) + getParameterModulation(0);
+    //float** inputs = process->audio_inputs[0].data32;
+    float** outputs = process->audio_outputs[0].data32;
+    uint32_t length = process->frames_count;
+    //float scale = getParameterValue(0) + getParameterModulation(0);
     //MIP_CopyStereoBuffer(outputs,inputs,length);
     //MIP_ScaleStereoBuffer(outputs,scale,length);
     MIP_ClearStereoBuffer(outputs,length);
@@ -342,12 +411,12 @@ public:
 
   //----------
 
-  void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
-    //float v0 = MParameterValues[0] + MParameterModulations[0];
-    //v0 = MIP_Clamp(v0,0,1);
-    //send_param_mod_event(0,v0,out_events);
-    MIP_Plugin::handle_events_output(in_events,out_events);
-  }
+  //void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
+  //  //float v0 = MParameterValues[0] + MParameterModulations[0];
+  //  //v0 = MIP_Clamp(v0,0,1);
+  //  //send_param_mod_event(0,v0,out_events);
+  //  MIP_Plugin::handle_events_output(in_events,out_events);
+  //}
 
 //------------------------------
 public: // plugin
@@ -362,12 +431,12 @@ public: // plugin
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
     setupNoteOutputs(myNoteOutputs,NUM_NOTE_OUTPUTS);
     setupQuickControls(myQuickControls,NUM_QUICK_CONTROLS);
-    bool result = MIP_Plugin::init();
-    if (result) {
+    if (MIP_Plugin::init()) {
       //setDefaultParameterValues(myParameters,NUM_PARAMS);
       setDefaultParameterValues();
+    return true;
     }
-    return result;
+    return false;
   }
 
   //----------
@@ -392,7 +461,9 @@ public: // plugin
     return ext;
   }
 
-  //----------
+//------------------------------
+public: // gui
+//------------------------------
 
   const char* buttonrow_text[6] = { "1", "2", "3", "four", "5", "6" };
 
