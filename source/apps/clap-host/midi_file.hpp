@@ -138,16 +138,15 @@ typedef std::vector<MidiTrack*> MidiTracks;
 
 struct MidiSequence {
 
-  char*           name          = nullptr;
-  uint32_t        format        = 0;
-  uint32_t        num_tracks    = 0;
-  uint32_t        tpq           = 0;
+  char*       name          = nullptr;
+  uint32_t    format        = 0;
+  uint32_t    num_tracks    = 0;
+  uint32_t    tpq           = 0;
   MidiTracks  tracks        = {};
-  float           length        = 0.0;
-
-  uint32_t        tempo         = 0.0;
-  uint32_t        timesig_num   = 0;
-  uint32_t        timesig_denom = 0;
+  float       length        = 0.0;
+  uint32_t    tempo         = 120.0;
+  uint32_t    timesig_num   = 4;
+  uint32_t    timesig_denom = 4;
 
   //----------
 
@@ -184,6 +183,7 @@ struct MidiSequence {
     uint32_t  ticks_per_qnote = tpq; // <PPQ from the header>
     float     us_per_tick     = (float)us_per_qnote / (float)ticks_per_qnote;
     float     s_per_tick      = us_per_tick / 1000000.0;
+
     length = 0.0;
     for (uint32_t t=0; t<num_tracks; t++) {
       MidiTrack* track = tracks[t];
@@ -220,15 +220,13 @@ private:
   uint8_t*          MBuffer          = nullptr;
   uint8_t*          MBufferPtr       = nullptr;
   uint32_t          MBufferSize      = 0;
-
-  MidiSequence* MSequence        = nullptr;
-
+  MidiSequence*     MSequence        = nullptr;
   uint8_t*          MTrackStartPtr   = nullptr;
   uint32_t          MRunningStatus   = 0;
   bool              MEndOfTrack      = false;
   uint32_t          MNumTrackEvents  = 0;
-  MidiTrack*    MCurrentTrack    = nullptr;
-//uint32_t          MSplitTracks     = 0;
+  MidiTrack*        MCurrentTrack    = nullptr;
+  //uint32_t        MSplitTracks     = 0;
 
 //------------------------------
 public:
@@ -631,6 +629,9 @@ private:
     MEndOfTrack = false;
     while (MEndOfTrack == false) {
       uint32_t delta_time = read_variable();
+
+//      printf("delta_time: %i\n",delta_time);
+
       read_event(delta_time);
       MNumTrackEvents += 1;
     }
