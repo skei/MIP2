@@ -251,19 +251,31 @@ private:
 
 //------------------------------
 
+  /*
+    todo:
+      consider note already playing.. (multiple keyboards)
+      note to voice only handles one voicenote
+  */
+
   // assumes AChannel >= 0
 
   void handle_voice_note_on(int32_t AChannel, int32_t AKey, float AVelocity) {
-    uint32_t note = (AChannel * 128) + AKey;
-    int32_t voice = find_voice(true);
-    if (voice >= 0) {
-      kill_voice(voice);
-      MNoteToVoice[note] = voice;
-      //float note = (float)AKey;
-      MVoiceNote[voice]     = AKey;
-      MVoiceChannel[voice]  = AChannel;
-      MVoiceState[voice]    = MVoices[voice].note_on(AKey/*note*/,AVelocity);
-    }
+
+    start_voice(AChannel,AKey,AVelocity);
+
+//    uint32_t note = (AChannel * 128) + AKey;
+//    int32_t voice = find_voice(true);
+//    if (voice >= 0) {
+//      // kill potentially already playing voice
+//      //kill_voice( MNoteToVoice[note] );
+//      //kill_voice(voice);
+//      MNoteToVoice[note]    = voice;
+//      //float note = (float)AKey;
+//      MVoiceNote[voice]     = AKey;
+//      MVoiceChannel[voice]  = AChannel;
+//      MVoiceState[voice]    = MVoices[voice].note_on(AKey/*note*/,AVelocity);
+//    }
+
   }
 
   //----------
@@ -476,6 +488,7 @@ private:
     if (ATryReleased) {
       for (uint32_t i=0; i<NUM; i++) {
         if (MVoiceState[i] == MIP_VOICE_RELEASED) {
+          //kill_voice(i);
           return i;
         }
       }
@@ -485,19 +498,71 @@ private:
 
   //----------
 
-  // should we tell the voice that we kill it?
+  int32_t start_voice(int32_t AChannel, int32_t AKey, float AVelocity) {
+    uint32_t note = (AChannel * 128) + AKey;
 
-  void kill_voice(uint32_t voice) {
-    int32_t n  = MVoiceNote[voice];
-    int32_t ch = MVoiceChannel[voice];
-    if ((n>=0) && (ch>=0)) {
-      uint32_t note = (ch * 128) + n;
-      MNoteToVoice[note]    = -1;
-      MVoiceNote[voice]     = -1;
-      MVoiceChannel[voice]  = -1;
-      MVoiceState[voice]    = MIP_VOICE_OFF;
+    // kill potentially already playing voice
+    int32_t prev_voice = MNoteToVoice[note];
+    if (prev_voice >= 0) kill_voice(prev_voice);
+
+    int32_t voice = find_voice(true);
+    if (voice >= 0) {
+      MNoteToVoice[note] = voice;
+      MVoiceNote[voice] = AKey;
+      MVoiceChannel[voice] = AChannel;
+      MVoiceState[voice] = MVoices[voice].note_on(AKey,AVelocity);
+      return voice;
     }
+    return -1;
   }
+
+  //----------
+
+  void kill_voice(int32_t voice) {
+    if (voice < 0) return;
+    MVoiceNote[voice] = -1;
+    MVoiceChannel[voice] = -1;
+    MVoiceState[voice] = MIP_VOICE_OFF;
+    int32_t key = MVoiceNote[voice];
+    int32_t channel = MVoiceChannel[voice];
+    if (key < 0) return;
+    if (channel < 0) return;
+    uint32_t note = (channel * 128) + key;
+    MNoteToVoice[note] = -1;
+  }
+
+  //----------
+
+//  // should we tell the voice that we kill it?
+//
+//  void kill_key(int32_t key, int32_t channel) {
+//    if ((key >= 0) && (channel >= 0)) {
+//      uint32_t note = (channel * 128) + key;
+//      MNoteToVoice[note]    = -1;
+////      MVoiceNote[voice]     = -1;
+////      MVoiceChannel[voice]  = -1;
+////      MVoiceState[voice]    = MIP_VOICE_OFF;
+////      //MVoices[voice].note_off(n,0);
+//    }
+//  }
+//
+//  //----------
+//
+//  void kill_voice(uint32_t voice) {
+//    if (voice < 0) return;
+//    if (voice >= MIP_VOICE_NOTES) return;
+//    int32_t key  = MVoiceNote[voice];
+//    int32_t channel = MVoiceChannel[voice];
+//    kill_key(key,channel);
+//    //if ((n>=0) && (ch>=0)) {
+//    //  uint32_t note = (ch * 128) + n;
+//    //  MNoteToVoice[note]    = -1;
+//      MVoiceNote[voice]     = -1;
+//      MVoiceChannel[voice]  = -1;
+//      MVoiceState[voice]    = MIP_VOICE_OFF;
+//      //MVoices[voice].note_off(n,0);
+//    //}
+//  }
 
 //------------------------------
 private:
