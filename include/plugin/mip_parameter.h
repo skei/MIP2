@@ -74,6 +74,22 @@ public:
 
   //----------
 
+  MIP_Parameter(uint32_t id, uint32_t flags, const char* name, const char* module, float minval, float maxval, float defval) {
+
+    index               = -1;
+
+    info.id             = id;
+    info.flags          = flags;
+    info.cookie         = this;
+    info.min_value      = minval;
+    info.max_value      = maxval;
+    info.default_value  = defval;
+    strncpy(info.name,name,CLAP_NAME_SIZE);
+    strncpy(info.module,module,CLAP_MODULE_SIZE);
+  }
+
+  //----------
+
   virtual ~MIP_Parameter() {
   }
 
@@ -122,14 +138,14 @@ public:
 
   //----------
 
-  virtual bool value_to_text(double value, char* text, uint32_t size) {
+  virtual bool valueToText(double value, char* text, uint32_t size) {
     sprintf(text,"%.3f",value);
     return true;
   }
 
   //----------
 
-  virtual bool text_to_value(const char* text, double* value) {
+  virtual bool textToValue(const char* text, double* value) {
     float f = atof(text);
     *value = f;
     return true;
@@ -146,6 +162,71 @@ public:
 
 class MIP_IntParameter
 : public MIP_Parameter {
+
+//------------------------------
+public:
+//------------------------------
+
+  MIP_IntParameter(clap_param_info_t* param_info)
+  : MIP_Parameter(param_info) {
+  }
+
+  //----------
+
+  MIP_IntParameter(uint32_t id, uint32_t flags, const char* name, const char* module, int32_t minval, int32_t maxval, int32_t defval)
+  : MIP_Parameter(id,flags,name,module,minval,maxval,defval) {
+  }
+
+  //----------
+
+  virtual ~MIP_IntParameter() {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  bool valueToText(double value, char* text, uint32_t size) override {
+    sprintf(text,"%i",(int)value);
+    return true;
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+// text
+//
+//----------------------------------------------------------------------
+
+class MIP_TextParameter
+: public MIP_IntParameter {
+
+//------------------------------
+private:
+//------------------------------
+
+  const char** MText = nullptr;
+
+//------------------------------
+public:
+//------------------------------
+
+  MIP_TextParameter(uint32_t id, uint32_t flags, const char* name, const char* module, int32_t minval, int32_t maxval, int32_t defval, const char** text)
+  : MIP_IntParameter(id,flags,name,module,minval,maxval,defval) {
+    MText = text;
+    info.flags |= CLAP_PARAM_IS_STEPPED;
+  }
+
+  //----------
+
+  bool valueToText(double value, char* text, uint32_t size) override {
+    int i = (int)value;
+    strncpy(text,MText[i],size);
+    return true;
+  }
+
+
 };
 
 //----------------------------------------------------------------------
