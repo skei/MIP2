@@ -23,8 +23,7 @@ pro/con:
 
 - headers-only
 - lock-free
-- un-modern
-- un-cool c++
+- un-modern, un-cool c++
 - minimal setup
 - minimal dependencies
 - permissive license
