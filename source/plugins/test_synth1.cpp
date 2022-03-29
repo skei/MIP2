@@ -1,12 +1,15 @@
+/*
+  resizable gui
+  parameter modulation
+  audio ports
+  note ports
+  quick controls
+  note events
+*/
 
-#define MIP_USE_XCB
+
 #define MIP_GUI_XCB
-//#define MIP_PAINTER_XCB
-#define MIP_USE_CAIRO
 #define MIP_PAINTER_CAIRO
-
-//#define MIP_NO_WINDOW_BUFFERING
-//#define MIP_XCB_WAIT_FOR_MAPNOTIFY
 
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
@@ -36,50 +39,53 @@
 //#define SUPPORTED_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
 #define SUPPORTED_DIALECTS  CLAP_NOTE_DIALECT_CLAP
 
-//----------
+//----------------------------------------------------------------------
+//
+// descriptor
+//
+//----------------------------------------------------------------------
 
 const char* myFeatures1[] = {
   "instrument",
   nullptr
 };
 
+const clap_plugin_descriptor_t myDescriptor = {
+  CLAP_VERSION,
+  "torhelgeskei/test_synth1/v0.0.0",
+  "test_synth1",
+  "torhelgeskei",
+  "https://torhelgeskei.com",
+  "",
+  "",
+  "0.0.0",
+  "simple mip2 test synth",
+  myFeatures1
+};
+
+//----------
+
 const char* myFeatures2[] = {
   "audio_effect",
   nullptr
 };
 
-//----------
-
-const clap_plugin_descriptor_t myDescriptor = {
-  CLAP_VERSION,
-  "torhelgeskei/test_plugin1/v0.0.0",
-  "test_plugin1",
-  "torhelgeskei",
-  "https://torhelgeskei.com",
-  "",
-  "",
-  "0.0.0",
-  "simple mip2 test instrument",
-  myFeatures1
-};
-
-//test
 const clap_plugin_descriptor_t myDescriptor2 = {
   CLAP_VERSION,
-  "torhelgeskei/test_plugin2/v0.0.0",
-  "test_plugin2",
+  "torhelgeskei/test_synth1_2/v0.0.0",
+  "test_synth1 (2)",
   "torhelgeskei",
   "https://torhelgeskei.com",
   "",
   "",
   "0.0.0",
-  "simple mip2 test effect",
+  "blablabla",
   myFeatures2
 };
 
 //----------------------------------------------------------------------
 //
-//
+// voice
 //
 //----------------------------------------------------------------------
 
@@ -88,11 +94,12 @@ class myVoice {
 private:
 
   MIP_VoiceContext* context = nullptr;
-  float             hz      = 0.0;  // note hz
-  float             ph      = 0.0;  // phase
-  float             phadd   = 0.0;  // phase add
 
-  int32_t _key  = -1;
+  float   hz      = 0.0;  // note hz
+  float   ph      = 0.0;  // phase
+  float   phadd   = 0.0;  // phase add
+
+  int32_t _key    = -1;
   float   _onvel  = 0.0;
   float   _offvel = 0.0;
   float   _vol    = 0.0;
@@ -194,7 +201,7 @@ public:
   //----------
 
   uint32_t process(uint32_t AState) {
-    //float**  inputs = context->process->audio_inputs[0].data32;
+    //float** inputs = context->process->audio_inputs[0].data32;
     float* output0 = context->process->audio_outputs[0].data32[0];
     float* output1 = context->process->audio_outputs[0].data32[1];
     uint32_t length  = context->process->frames_count;
@@ -202,15 +209,125 @@ public:
       float out = ph;
       ph += phadd;
       ph = MIP_Fract(ph);
-      // hack
-      //float v = _onvel;
-      //v += (0.0 + (1.0 * _press));
       float v = _onvel + _press;
       v = MIP_Clamp(v,0,1);
       *output0++ += out * v;
       *output1++ += out * v;
     }
     return MIP_VOICE_PLAYING;
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+// editor
+//
+//----------------------------------------------------------------------
+
+class myEditor
+: public MIP_Editor {
+
+private:
+
+  const char* buttonrow_text[6] = { "1", "2", "3", "four", "5", "6" };
+
+public:
+
+  myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
+  : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
+
+    // can resize
+    setCanResize();
+
+    // menu
+
+    MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect(100,100) );
+    menu1->appendMenuItem("first");
+    menu1->appendMenuItem("item2");
+    menu1->appendMenuItem("item3");
+    menu1->appendMenuItem("4");
+    menu1->appendMenuItem("five");
+    menu1->setItemSize(90,20);
+    menu1->setItemLayout(1,5);
+    menu1->setMenuMirror(true,false);
+
+    // panel
+
+    MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_FRect(100,100));
+    MEditorPanel->setBackgroundColor(0.6);
+    MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    MEditorPanel->layout.innerBorder = MIP_FRect(10,10,10,10);
+    MEditorPanel->layout.spacing = 5;
+
+    // knob 1
+
+    MIP_KnobWidget* knob1 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+    MEditorPanel->appendWidget(knob1);
+    knob1->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    connect(knob1,0);
+
+    // knob 2
+
+    MIP_KnobWidget* knob2 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+    MEditorPanel->appendWidget(knob2);
+    knob2->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    connect(knob2,1);
+
+    // knob 3
+
+    MIP_KnobWidget* knob3 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+    MEditorPanel->appendWidget(knob3);
+    knob3->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    connect(knob3,2);
+
+    // knob 4
+
+    MIP_KnobWidget* knob4 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
+    MEditorPanel->appendWidget(knob4);
+    knob4->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    connect(knob4,3);
+
+    // window sizer
+
+    MIP_SizerWidget* MSizer = new MIP_SizerWidget(MIP_FRect( 15,15),MIP_SIZER_WINDOW);
+    MSizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
+    MEditorPanel->appendWidget(MSizer);
+
+    // button row
+
+    MIP_ButtonRowWidget* button_row = new MIP_ButtonRowWidget(MIP_FRect(230,20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI );
+    MEditorPanel->appendWidget(button_row);
+    button_row->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+    // slider
+
+    MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
+    MEditorPanel->appendWidget(slider);
+    slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+
+    // selector
+
+    MIP_SelectorWidget* selector = new MIP_SelectorWidget(MIP_FRect(110,20));
+    MEditorPanel->appendWidget(selector);
+    selector->setMenu(menu1);
+    selector->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+
+    // append menu last (so it draws on top of everything else)
+
+    MEditorPanel->appendWidget(menu1);
+
+    // window
+
+    MIP_Window* win = getWindow();
+    MSizer->setTarget(win);
+    win->appendWidget(MEditorPanel);
+
+  }
+
+  //----------
+
+  virtual ~myEditor() {
   }
 
 };
@@ -273,38 +390,93 @@ private:
   };
 
   clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
-    { 0, "Input 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
-    { 1, "Input 2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+    {
+      0,
+      "Input 1",
+      CLAP_AUDIO_PORT_IS_MAIN,
+      2,
+      CLAP_PORT_STEREO,
+      CLAP_INVALID_ID
+    },
+    {
+      1,
+      "Input 2",
+      0,
+      2,
+      CLAP_PORT_STEREO,
+      CLAP_INVALID_ID
+    }
   };
 
   clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
-    { 0, "Output 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID },
-    { 1, "Output 2", 0,                       2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+    {
+      0,
+      "Output 1",
+      CLAP_AUDIO_PORT_IS_MAIN,
+      2,
+      CLAP_PORT_STEREO,
+      CLAP_INVALID_ID
+    },
+    {
+      1,
+      "Output 2",
+      0,
+      2,
+      CLAP_PORT_STEREO,
+      CLAP_INVALID_ID
+    }
   };
 
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
-    { 0, SUPPORTED_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
-    { 1, SUPPORTED_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
+    {
+      0,
+      SUPPORTED_DIALECTS,
+      CLAP_NOTE_DIALECT_CLAP,
+      "Notes In 1"
+    },
+    {
+      1,
+      SUPPORTED_DIALECTS,
+      CLAP_NOTE_DIALECT_CLAP,
+      "Notes In 2"
+    }
   };
 
   clap_note_port_info_t myNoteOutputs[NUM_NOTE_OUTPUTS] = {
-    { 0, SUPPORTED_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 1" },
-    { 1, SUPPORTED_DIALECTS, CLAP_NOTE_DIALECT_CLAP, "Notes 2" }
+    {
+      0,
+      SUPPORTED_DIALECTS,
+      CLAP_NOTE_DIALECT_CLAP,
+      "Notes Out 1"
+    },
+    {
+      1,
+      SUPPORTED_DIALECTS,
+      CLAP_NOTE_DIALECT_CLAP,
+      "Notes Out 2"
+    }
   };
 
   clap_quick_controls_page_t myQuickControls[NUM_QUICK_CONTROLS] = {
-    { 0, "Quick 1", "preset", {0,1,2,3,0,1,2,3} },
-    { 1, "Quick 2", "device", {0,1,2,3,0,1,2,3} }
+    {
+      0,
+      "Quick 1",
+      "preset",
+      {0,1,2,3,0,1,2,3}
+    },
+    {
+      1,
+      "Quick 2",
+      "device",
+      {0,1,2,3,0,1,2,3}
+    }
   };
 
-  //----------
-
-  MIP_PanelWidget*  MEditorPanel  = nullptr;
-  MIP_SizerWidget*  MSizer        = nullptr;
-
-  float MSum = 0.0;
-
   MIP_VoiceManager<myVoice,16>  MVoices = {};
+
+  // todo: -> descriptor..
+  uint32_t MDefaultEditorWidth  = 400;
+  uint32_t MDefaultEditorHeight = 400;
 
 //------------------------------
 public:
@@ -323,15 +495,17 @@ public:
 public:
 //------------------------------
 
-//  void handle_parameter_event(const clap_event_param_value_t* param_value) final {
-//    MIP_Plugin::handle_parameter_event(param_value);
-//  }
-//
-//  //----------
-//
-//  void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
-//    MIP_Plugin::handle_modulation_event(param_mod);
-//  }
+  //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
+  //  MIP_Plugin::handle_parameter_event(param_value);
+  //}
+
+  //----------
+
+  //void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
+  //  MIP_Plugin::handle_modulation_event(param_mod);
+  //}
+
+  //----------
 
   void handle_events_input(const clap_input_events_t* in_events, const clap_output_events_t* out_events) override {
     //MIP_Plugin::handle_events_input(in_events,out_events);
@@ -376,22 +550,22 @@ public:
             {
               clap_event_note_expression_t* event = (clap_event_note_expression_t*)header;
               switch (event->expression_id) {
-                case CLAP_NOTE_EXPRESSION_VOLUME:       MVoices.on_note_volume_expression(event);      break;
-                case CLAP_NOTE_EXPRESSION_PAN:          MVoices.on_note_pan_expression(event);         break;
-                case CLAP_NOTE_EXPRESSION_TUNING:       MVoices.on_note_tuning_expression(event);      break;
-                case CLAP_NOTE_EXPRESSION_VIBRATO:      MVoices.on_note_vibrato_expression(event);     break;
-                case CLAP_NOTE_EXPRESSION_EXPRESSION:   MVoices.on_note_expression_expression(event);  break;
-                case CLAP_NOTE_EXPRESSION_BRIGHTNESS:   MVoices.on_note_brightness_expression(event);  break;
-                case CLAP_NOTE_EXPRESSION_PRESSURE:     MVoices.on_note_pressure_expression(event);    break;
+                case CLAP_NOTE_EXPRESSION_VOLUME:     MVoices.on_note_volume_expression(event);     break;
+                case CLAP_NOTE_EXPRESSION_PAN:        MVoices.on_note_pan_expression(event);        break;
+                case CLAP_NOTE_EXPRESSION_TUNING:     MVoices.on_note_tuning_expression(event);     break;
+                case CLAP_NOTE_EXPRESSION_VIBRATO:    MVoices.on_note_vibrato_expression(event);    break;
+                case CLAP_NOTE_EXPRESSION_EXPRESSION: MVoices.on_note_expression_expression(event); break;
+                case CLAP_NOTE_EXPRESSION_BRIGHTNESS: MVoices.on_note_brightness_expression(event); break;
+                case CLAP_NOTE_EXPRESSION_PRESSURE:   MVoices.on_note_pressure_expression(event);   break;
               }
-            }
+            } // note expression
 
           //default:
           //  break;
 
-        }
-      }
-    }
+        } // switch type
+      } // CLAP_CORE_EVENT_SPACE_ID
+    } // for events
   }
 
 //------------------------------
@@ -399,14 +573,11 @@ public:
 //------------------------------
 
   void handle_process(const clap_process_t *process) final {
-    //float** inputs = process->audio_inputs[0].data32;
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
-    //float scale = getParameterValue(0) + getParameterModulation(0);
-    //MIP_CopyStereoBuffer(outputs,inputs,length);
-    //MIP_ScaleStereoBuffer(outputs,scale,length);
     MIP_ClearStereoBuffer(outputs,length);
     MVoices.process(process);
+    // post-process?
   }
 
   //----------
@@ -426,17 +597,13 @@ public: // plugin
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
       appendParameter(new MIP_Parameter( &myParameters[i] ));
     }
+    // do the same thing with the following too..
     setupAudioInputs(myAudioInputs,NUM_AUDIO_INPUTS);
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
     setupNoteOutputs(myNoteOutputs,NUM_NOTE_OUTPUTS);
     setupQuickControls(myQuickControls,NUM_QUICK_CONTROLS);
-    if (MIP_Plugin::init()) {
-      //setDefaultParameterValues(myParameters,NUM_PARAMS);
-      setDefaultParameterValues();
-    return true;
-    }
-    return false;
+    return MIP_Plugin::init();
   }
 
   //----------
@@ -446,17 +613,15 @@ public: // plugin
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
   }
 
-
   //----------
 
   const void* get_extension(const char *id) final {
     const void* ext = MIP_Plugin::get_extension(id);
     if (!ext) {
-      if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)     return &MAudioPorts;
       if (strcmp(id,CLAP_EXT_GUI) == 0)             return &MGui;
+      if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)     return &MAudioPorts;
       if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)      return &MNotePorts;
       if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)  return &MQuickControls;
-      if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)     return &MThreadPool;
     }
     return ext;
   }
@@ -464,10 +629,6 @@ public: // plugin
 //------------------------------
 public: // gui
 //------------------------------
-
-  const char* buttonrow_text[6] = { "1", "2", "3", "four", "5", "6" };
-
-  //----------
 
   bool gui_create(const char *api, bool is_floating) final {
     if (strcmp(api,CLAP_WINDOW_API_X11) != 0) {
@@ -479,80 +640,13 @@ public: // gui
     return false;
     }
     MEditorIsOpen = false;
-    MEditor = new MIP_Editor(this,this,400,400,true);
-    // -> myEditor()
-    bool result = (MEditor);
-    if (result) {
-
-      MEditor->setCanResize();
-
-      MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect(100,100) );
-      menu1->appendMenuItem("first");
-      menu1->appendMenuItem("item2");
-      menu1->appendMenuItem("item3");
-      menu1->appendMenuItem("4");
-      menu1->appendMenuItem("five");
-      menu1->setItemSize(90,20);
-      menu1->setItemLayout(1,5);
-      menu1->setMenuMirror(true,false);
-      MEditorPanel = new MIP_PanelWidget(MIP_FRect(100,100));
-      MEditorPanel->setBackgroundColor(0.6);
-      MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-      MEditorPanel->layout.innerBorder = MIP_FRect(10,10,10,10);
-      MEditorPanel->layout.spacing = 5;
-      MIP_KnobWidget*   knob1 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-      MIP_KnobWidget*   knob2 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-      MIP_KnobWidget*   knob3 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-      MIP_KnobWidget*   knob4 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-      knob1->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
-      knob2->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
-      knob3->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
-      knob4->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
-      MEditorPanel->appendWidget(knob1);
-      MEditorPanel->appendWidget(knob2);
-      MEditorPanel->appendWidget(knob3);
-      MEditorPanel->appendWidget(knob4);
-      MSizer = new MIP_SizerWidget(MIP_FRect( 15,15),MIP_SIZER_WINDOW);
-      MSizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
-      MEditorPanel->appendWidget(MSizer);
-      MIP_ButtonRowWidget* button_row = new MIP_ButtonRowWidget(MIP_FRect(230,20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI );
-      button_row->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
-      slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-      MIP_SelectorWidget* selector = new MIP_SelectorWidget(MIP_FRect(110,20));
-      selector->setMenu(menu1);
-      selector->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-      MEditorPanel->appendWidget(button_row);
-      MEditorPanel->appendWidget(slider);
-      MEditorPanel->appendWidget(selector);
-      MEditorPanel->appendWidget(menu1);
-      MEditor->connect(knob1,0);
-      MEditor->connect(knob2,1);
-      MEditor->connect(knob3,2);
-      MEditor->connect(knob4,3);
-      MIP_Window* win = MEditor->getWindow();
-      MSizer->setTarget(win);
-      win->appendWidget(MEditorPanel);
-    }
-    return result;
-  }
-
-  //----------
-
-  bool gui_show() final {
-    // (MIP_Plugin doesn't know about myParameters)
-    //setEditorParameterValues(myParameters,NUM_PARAMS);
-    setEditorParameterValues();
-    MIP_Plugin::gui_show();
-    return true;
+    MEditor = new myEditor(this,this,MDefaultEditorWidth,MDefaultEditorHeight,true);
+    return (MEditor);
   }
 
 };
 
 //----------------------------------------------------------------------
-
-//#undef NUM_THREADS
-//#undef NUM_RANDOM
 
 #undef NUM_PARAMS
 #undef NUM_AUDIO_INPUTS
@@ -577,7 +671,7 @@ public:
 
 //----------------------------------------------------------------------
 //
-//
+// register
 //
 //----------------------------------------------------------------------
 

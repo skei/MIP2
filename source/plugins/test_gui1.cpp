@@ -32,8 +32,8 @@ const char* myFeatures[] = {
 
 const clap_plugin_descriptor_t myDescriptor = {
   CLAP_VERSION,
-  "torhelgeskei/guitest_v0/v0.0.0",
-  "guitest_v0",
+  "torhelgeskei/test_gui1/v0.0.0",
+  "test_gui1",
   "torhelgeskei",
   "https://torhelgeskei.com",
   "",
@@ -497,11 +497,11 @@ void MIP_Register(MIP_ClapRegistry* ARegistry) {
 
 //----------
 
-void MIP_Unregister(MIP_ClapRegistry* ARegistry) {
-  #ifdef MIP_DEBUG_MEMORY
-  MIP_GLOBAL_DEBUG.dumpMemoryNodes();
-  #endif
-}
+//void MIP_Unregister(MIP_ClapRegistry* ARegistry) {
+//  #ifdef MIP_DEBUG_MEMORY
+//  MIP_GLOBAL_DEBUG.dumpMemoryNodes();
+//  #endif
+//}
 
 //----------------------------------------------------------------------
 
