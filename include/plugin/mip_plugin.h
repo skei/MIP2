@@ -16,7 +16,6 @@
 #include "base/types/mip_queue.h"
 #include "audio/mip_audio_utils.h"
 #include "plugin/clap/mip_clap.h"
-//#include "plugin/clap/mip_clap_entry.h"
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_plugin.h"
 
@@ -28,13 +27,29 @@
 
 //----------------------------------------------------------------------
 //
+// entry
+//
 //----------------------------------------------------------------------
 
 #include "plugin/clap/mip_clap_entry.h"
 
+//----------
+
 #ifdef MIP_EXE
   #include "plugin/exe/mip_exe_entry.h"
 #endif
+
+//#ifdef MIP_LV2
+//  #include "plugin/lv2/mip_lv2_entry.h"
+//#endif
+
+//#ifdef MIP_VST2
+//  #include "plugin/vst2/mip_vst2_entry.h"
+//#endif
+
+//#ifdef MIP_VST3
+//  #include "plugin/vst3/mip_vst3_entry.h"
+//#endif
 
 //----------------------------------------------------------------------
 //
@@ -72,16 +87,16 @@ typedef MIP_Array<MIP_QuickControl*>  MIP_QuickControls;
 
 //----------
 
-//typedef MIP_Array<const clap_param_info_t*>           MIP_Parameters;
 typedef MIP_Array<MIP_Parameter*> MIP_Parameters;
 
+//typedef MIP_Array<const clap_param_info_t*>           MIP_Parameters;
 typedef MIP_Array<const clap_audio_port_info_t*>      MIP_AudioPorts;
 typedef MIP_Array<const clap_note_port_info_t*>       MIP_NotePorts;
 typedef MIP_Array<const clap_quick_controls_page_t*>  MIP_QuickControls;
 
 //----------------------------------------------------------------------
 //
-//
+// plugin
 //
 //----------------------------------------------------------------------
 
@@ -197,9 +212,9 @@ public:
 public:
 //------------------------------
 
-  virtual bool getParameterValueText(char* ABuffer, uint32_t AIndex, float AValue) {
-    return false;
-  }
+//  virtual bool getParameterValueText(char* ABuffer, uint32_t AIndex, float AValue) {
+//    return false;
+//  }
 
 //------------------------------
 //private: // ??
@@ -332,10 +347,21 @@ public: // editor listener
 
   //----------
 
+  // Resizing the window (initiated by the plugin, if embedded):
+  // 1. Plugins calls clap_host_gui->request_resize()
+  // 2. If the host returns true the new size is accepted,
+  //    the host doesn't have to call clap_plugin_gui->set_size().
+  //    If the host returns false, the new size is rejected.
+
   void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) override {
     if (MHost && MHost->gui) {
-      if (!MHost->gui->request_resize(MHost->host,AWidth,AHeight)) {
+      bool accepted = MHost->gui->request_resize(MHost->host,AWidth,AHeight);
+      if (!accepted) {
         MIP_Print("host->gui->request_resize(%i,%i) returned false\n",AWidth,AHeight);
+      }
+      else {
+        MIP_Print("host->gui->request_resize(%i,%i) returned true\n",AWidth,AHeight);
+        // resize..
       }
     }
   }
@@ -454,6 +480,8 @@ protected: // setup
   //    MParameters.append(info);
   //  }
   //}
+
+  //----------
 
   MIP_Parameter* appendParameter(MIP_Parameter* AParameter) {
     uint32_t index = MParameters.size();
@@ -736,14 +764,14 @@ public: // params
   //----------
 
   bool params_value_to_text(clap_id param_id, double value, char* display, uint32_t size) override {
-    bool result = MParameters[param_id]->value_to_text(value,display,size);
+    bool result = MParameters[param_id]->valueToText(value,display,size);
     return result;
   }
 
   //----------
 
   bool params_text_to_value(clap_id param_id, const char* display, double* value) override {
-    bool result = MParameters[param_id]->text_to_value(display,value);
+    bool result = MParameters[param_id]->textToValue(display,value);
     return result;
   }
 
@@ -851,12 +879,6 @@ public: // gui
       bool res = MEditor->show();
       MEditorIsOpen = res;
       return res;
-
-      // ??
-      //setEditorParameterValues();
-      //MEditorIsOpen = true;
-      //return MEditor->show();
-
     }
     return false;
   }

@@ -7,6 +7,7 @@
 //----------------------------------------------------------------------
 
 //#include "../source/apps/clap-host/main.cpp"
+//#include "../source/apps/clap-host/test_midi.cpp"
 
 //----------------------------------------------------------------------
 //
@@ -14,16 +15,12 @@
 //
 //----------------------------------------------------------------------
 
-//#include "../source/plugins/clap-minimal.cpp"       //TODO: update to newest clap
-//#include "../source/plugins/gain.cpp"
-//#include "../source/plugins/ladspa_wrapper.cpp"
-#include "../source/plugins/test_plugin1.cpp"
+//#include "../source/plugins/sa_botage.cpp"
+//#include "../source/plugins/sa_ladspa.cpp"
+//#include "../source/plugins/sa_ports.cpp"
 
-//#include "../source/plugins/guidemo_v0.cpp"
-
-// ports
-
-//#include "../source/plugins/ports/sa_sonic_maximizer.cpp"
+#include "../source/plugins/test_gui1.cpp"
+//#include "../source/plugins/test_synth1.cpp"
 
 
 //----------------------------------------------------------------------
