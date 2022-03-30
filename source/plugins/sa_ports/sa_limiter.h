@@ -31,7 +31,7 @@ const char* sa_limiter_features[] = {
 
 const clap_plugin_descriptor_t sa_limiter_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_limiter/0.0.1",
+  "skei.audio/sa_limiter",
   "sa_limiter",
   "skei.audio",
   "https://torhelgeskei.com",

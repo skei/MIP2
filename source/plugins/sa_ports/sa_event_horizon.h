@@ -36,7 +36,7 @@ const char* sa_event_horizon_features[] = {
 
 const clap_plugin_descriptor_t sa_event_horizon_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_event_horizon/0.0.1",
+  "skei.audio/sa_event_horizon",
   "sa_event_horizon",
   "skei.audio",
   "https://torhelgeskei.com",

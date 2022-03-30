@@ -44,7 +44,7 @@ const char* sa_exciter_features[] = {
 
 const clap_plugin_descriptor_t sa_exciter_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_exciter/0.0.1",
+  "skei.audio/sa_exciter",
   "sa_exciter",
   "skei.audio",
   "https://torhelgeskei.com",

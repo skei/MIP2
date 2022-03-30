@@ -52,13 +52,13 @@ const char* myFeatures[] = {
 
 const clap_plugin_descriptor_t myDescriptor = {
   CLAP_VERSION,
-  "torhelgeskei/test_synth1/v0.0.0",
+  "skei.audio/test_synth1",
   "test_synth1",
-  "torhelgeskei",
+  "skei.audio",
   "https://torhelgeskei.com",
   "",
   "",
-  "0.0.0",
+  "0.0.1",
   "simple mip2 test synth",
   myFeatures
 };

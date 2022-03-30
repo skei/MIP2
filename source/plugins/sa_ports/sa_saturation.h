@@ -39,7 +39,7 @@ const char* sa_saturation_features[] = {
 
 const clap_plugin_descriptor_t sa_saturation_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_saturation/0.0.1",
+  "skei.audio/sa_saturation",
   "sa_saturation",
   "skei.audio",
   "https://torhelgeskei.com",

@@ -31,7 +31,7 @@ const char* template_features[] = {
 
 const clap_plugin_descriptor_t template_descriptor = {
   CLAP_VERSION,
-  "skei.audio/template/0.0.1",
+  "skei.audio/template",
   "template",
   "skei.audio",
   "https://torhelgeskei.com",

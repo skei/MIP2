@@ -21,14 +21,14 @@ struct  MIP_Graph;
 //
 //----------------------------------------------------------------------
 
-#define MODULE_WIDTH    100
-#define MODULE_HEIGHT   30
+#define MODULE_WIDTH    120
+#define MODULE_HEIGHT   40
 
-#define PIN_WIDTH       6
-#define PIN_XDIST       8
+#define PIN_WIDTH       10
+#define PIN_XDIST       12
 
-#define PIN_HEIGHT      5
-#define PIN_YDIST       8
+#define PIN_HEIGHT      8
+#define PIN_YDIST       11
 
 #define MAX_PINS        16
 //#define BASE_HEIGHT     (MODULE_HEIGHT - (PIN_YDIST * 2) - 2)

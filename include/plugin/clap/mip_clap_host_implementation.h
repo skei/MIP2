@@ -153,7 +153,7 @@ public:
     CLAP_VERSION,
     this,
     "MIP_ClapHostImplementation",
-    "Tor-Helge Skei",
+    "skei.audio",
     "https://torhelgeskei.com",
     "0.0.1",
     clap_host_get_extension_callback,

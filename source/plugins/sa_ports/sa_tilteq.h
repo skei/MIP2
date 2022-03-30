@@ -28,7 +28,7 @@ const char* sa_tilteq_features[] = {
 
 const clap_plugin_descriptor_t sa_tilteq_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_tilteq/0.0.1",
+  "skei.audio/sa_tilteq",
   "sa_tilteq",
   "skei.audio",
   "https://torhelgeskei.com",

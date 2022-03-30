@@ -36,7 +36,7 @@ const char* sa_hall_reverb_features[] = {
 
 const clap_plugin_descriptor_t sa_hall_reverb_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_hall_reverb/0.0.1",
+  "skei.audio/sa_hall_reverb",
   "sa_hall_reverb",
   "skei.audio",
   "https://torhelgeskei.com",

@@ -27,7 +27,7 @@ const char* sa_hrtf_features[] = {
 
 const clap_plugin_descriptor_t sa_hrtf_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_hrtf/0.0.1",
+  "skei.audio/sa_hrtf",
   "sa_hrtf",
   "skei.audio",
   "https://torhelgeskei.com",

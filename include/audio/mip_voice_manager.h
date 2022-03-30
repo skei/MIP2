@@ -4,18 +4,11 @@
 
 /*
   TODO:
-  - redo this completely (in progress)
-
   - sample accurate events (in & out)
   - send event_mod events (end, choke?)
-  - note end? MIP_VOICE_RELEASED or MIP_VOICE_FINISHED
+  - note end? when MIP_VOICE_FINISHED (so host can turn off voice/modulation)
   - handle note_choke/end?
-  - handle volume expression
-
-
-  - voice stealing.. if two keyboards play the same note..
-    midi channel & key = the same..
-    check if already playing/occupied.. kill already playing?
+  - handle note expressions (vol, pan, etc)
 
 */
 
@@ -161,7 +154,6 @@ public:
     }
   }
 
-
 //------------------------------
 public:
 //------------------------------
@@ -246,6 +238,9 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  // CLAP_NOTE_DIALECT_MIDI
+  // CLAP_NOTE_DIALECT_MIDI_MPE
 
   void on_midi(clap_event_midi_t* event) {
     uint32_t evt    = event->data[0] & 0xf0;
@@ -334,13 +329,17 @@ public:
 
   //----------
 
-  void on_midi2(clap_event_midi2_t* event) {
+  void on_midi_sysex(clap_event_midi_sysex_t* event) {
     MIP_Print("todo\n");
   }
 
-  //----------
+//------------------------------
+public:
+//------------------------------
 
-  void on_midi_sysex(clap_event_midi_sysex_t* event) {
+  // CLAP_NOTE_DIALECT_MIDI2
+
+  void on_midi2(clap_event_midi2_t* event) {
     MIP_Print("todo\n");
   }
 

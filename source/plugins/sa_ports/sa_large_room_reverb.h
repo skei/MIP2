@@ -31,7 +31,7 @@ const char* sa_large_room_reverb_features[] = {
 
 const clap_plugin_descriptor_t sa_large_room_reverb_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_large_room_reverb/0.0.1",
+  "skei.audio/sa_large_room_reverb",
   "sa_large_room_reverb",
   "skei.audio",
   "https://torhelgeskei.com",

@@ -47,7 +47,7 @@ const char* sa_sonic_maximizer_features[] = {
 
 const clap_plugin_descriptor_t sa_sonic_maximizer_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_sonic_maximizer/0.0.1",
+  "skei.audio/sa_sonic_maximizer",
   "sa_sonic_maximizer",
   "skei.audio",
   "https://torhelgeskei.com",

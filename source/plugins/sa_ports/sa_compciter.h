@@ -48,7 +48,7 @@ const char* sa_compciter_features[] = {
 
 const clap_plugin_descriptor_t sa_compciter_descriptor = {
   CLAP_VERSION,
-  "skei.audio/sa_compciter/0.0.1",
+  "skei.audio/sa_compciter",
   "sa_compciter",
   "skei.audio",
   "https://torhelgeskei.com",
