@@ -45,7 +45,7 @@
 //
 //----------------------------------------------------------------------
 
-const char* myFeatures1[] = {
+const char* myFeatures[] = {
   "instrument",
   nullptr
 };
@@ -60,27 +60,7 @@ const clap_plugin_descriptor_t myDescriptor = {
   "",
   "0.0.0",
   "simple mip2 test synth",
-  myFeatures1
-};
-
-//----------
-
-const char* myFeatures2[] = {
-  "audio_effect",
-  nullptr
-};
-
-const clap_plugin_descriptor_t myDescriptor2 = {
-  CLAP_VERSION,
-  "torhelgeskei/test_synth1_2/v0.0.0",
-  "test_synth1 (2)",
-  "torhelgeskei",
-  "https://torhelgeskei.com",
-  "",
-  "",
-  "0.0.0",
-  "blablabla",
-  myFeatures2
+  myFeatures
 };
 
 //----------------------------------------------------------------------
@@ -201,7 +181,6 @@ public:
   //----------
 
   uint32_t process(uint32_t AState) {
-    //float** inputs = context->process->audio_inputs[0].data32;
     float* output0 = context->process->audio_outputs[0].data32[0];
     float* output1 = context->process->audio_outputs[0].data32[1];
     uint32_t length  = context->process->frames_count;
@@ -237,7 +216,6 @@ public:
   myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
   : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
 
-    // can resize
     setCanResize();
 
     // menu
@@ -354,7 +332,7 @@ private:
       "Params",
       0.0,
       1.0,
-      0.5
+      0.2
     },
 
     { 1,
@@ -364,7 +342,7 @@ private:
       "Params",
       0.0,
       1.0,
-      0.5
+      0.4
     },
 
     { 2,
@@ -374,7 +352,7 @@ private:
       "Params",
       0.0,
       1.0,
-      0.5
+      0.6
     },
 
     { 3,
@@ -384,92 +362,9 @@ private:
       "Params",
       0.0,
       1.0,
-      0.5
+      0.8
     }
 
-  };
-
-  clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
-    {
-      0,
-      "Input 1",
-      CLAP_AUDIO_PORT_IS_MAIN,
-      2,
-      CLAP_PORT_STEREO,
-      CLAP_INVALID_ID
-    },
-    {
-      1,
-      "Input 2",
-      0,
-      2,
-      CLAP_PORT_STEREO,
-      CLAP_INVALID_ID
-    }
-  };
-
-  clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
-    {
-      0,
-      "Output 1",
-      CLAP_AUDIO_PORT_IS_MAIN,
-      2,
-      CLAP_PORT_STEREO,
-      CLAP_INVALID_ID
-    },
-    {
-      1,
-      "Output 2",
-      0,
-      2,
-      CLAP_PORT_STEREO,
-      CLAP_INVALID_ID
-    }
-  };
-
-  clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
-    {
-      0,
-      SUPPORTED_DIALECTS,
-      CLAP_NOTE_DIALECT_CLAP,
-      "Notes In 1"
-    },
-    {
-      1,
-      SUPPORTED_DIALECTS,
-      CLAP_NOTE_DIALECT_CLAP,
-      "Notes In 2"
-    }
-  };
-
-  clap_note_port_info_t myNoteOutputs[NUM_NOTE_OUTPUTS] = {
-    {
-      0,
-      SUPPORTED_DIALECTS,
-      CLAP_NOTE_DIALECT_CLAP,
-      "Notes Out 1"
-    },
-    {
-      1,
-      SUPPORTED_DIALECTS,
-      CLAP_NOTE_DIALECT_CLAP,
-      "Notes Out 2"
-    }
-  };
-
-  clap_quick_controls_page_t myQuickControls[NUM_QUICK_CONTROLS] = {
-    {
-      0,
-      "Quick 1",
-      "preset",
-      {0,1,2,3,0,1,2,3}
-    },
-    {
-      1,
-      "Quick 2",
-      "device",
-      {0,1,2,3,0,1,2,3}
-    }
   };
 
   MIP_VoiceManager<myVoice,16>  MVoices = {};
@@ -492,117 +387,14 @@ public:
   }
 
 //------------------------------
-public:
-//------------------------------
-
-  //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
-  //  MIP_Plugin::handle_parameter_event(param_value);
-  //}
-
-  //----------
-
-  //void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
-  //  MIP_Plugin::handle_modulation_event(param_mod);
-  //}
-
-  //----------
-
-  void handle_events_input(const clap_input_events_t* in_events, const clap_output_events_t* out_events) override {
-    //MIP_Plugin::handle_events_input(in_events,out_events);
-    uint32_t num_events = in_events->size(in_events);
-    for (uint32_t i=0; i<num_events; i++) {
-      const clap_event_header_t* header = in_events->get(in_events,i);
-      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-        switch (header->type) {
-
-          case CLAP_EVENT_NOTE_ON:
-            MVoices.on_note_on((clap_event_note_t*)header);
-            break;
-
-          case CLAP_EVENT_NOTE_OFF:
-            MVoices.on_note_off((clap_event_note_t*)header);
-            break;
-
-          case CLAP_EVENT_NOTE_END:
-            MVoices.on_note_end((clap_event_note_t*)header);
-            break;
-
-          case CLAP_EVENT_NOTE_CHOKE:
-            MVoices.on_note_choke((clap_event_note_t*)header);
-            break;
-
-          case CLAP_EVENT_PARAM_VALUE:
-            handle_parameter_event((clap_event_param_value_t*)header);
-            MVoices.on_parameter_value((clap_event_param_value_t*)header);
-            break;
-
-          case CLAP_EVENT_PARAM_MOD:
-            handle_modulation_event((clap_event_param_mod_t*)header);
-            MVoices.on_parameter_modulation((clap_event_param_mod_t*)header);
-            break;
-
-          //case CLAP_EVENT_MIDI:
-          //case CLAP_EVENT_MIDI2:
-          //case CLAP_EVENT_MIDI_SYSEX:
-          //case CLAP_EVENT_TRANSPORT:
-
-          case CLAP_EVENT_NOTE_EXPRESSION:
-            {
-              clap_event_note_expression_t* event = (clap_event_note_expression_t*)header;
-              switch (event->expression_id) {
-                case CLAP_NOTE_EXPRESSION_VOLUME:     MVoices.on_note_volume_expression(event);     break;
-                case CLAP_NOTE_EXPRESSION_PAN:        MVoices.on_note_pan_expression(event);        break;
-                case CLAP_NOTE_EXPRESSION_TUNING:     MVoices.on_note_tuning_expression(event);     break;
-                case CLAP_NOTE_EXPRESSION_VIBRATO:    MVoices.on_note_vibrato_expression(event);    break;
-                case CLAP_NOTE_EXPRESSION_EXPRESSION: MVoices.on_note_expression_expression(event); break;
-                case CLAP_NOTE_EXPRESSION_BRIGHTNESS: MVoices.on_note_brightness_expression(event); break;
-                case CLAP_NOTE_EXPRESSION_PRESSURE:   MVoices.on_note_pressure_expression(event);   break;
-              }
-            } // note expression
-
-          //default:
-          //  break;
-
-        } // switch type
-      } // CLAP_CORE_EVENT_SPACE_ID
-    } // for events
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-  void handle_process(const clap_process_t *process) final {
-    float** outputs = process->audio_outputs[0].data32;
-    uint32_t length = process->frames_count;
-    MIP_ClearStereoBuffer(outputs,length);
-    MVoices.process(process);
-    // post-process?
-  }
-
-  //----------
-
-  //void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
-  //  //float v0 = MParameterValues[0] + MParameterModulations[0];
-  //  //v0 = MIP_Clamp(v0,0,1);
-  //  //send_param_mod_event(0,v0,out_events);
-  //  MIP_Plugin::handle_events_output(in_events,out_events);
-  //}
-
-//------------------------------
 public: // plugin
 //------------------------------
 
   bool init() final {
-    for (uint32_t i=0; i<NUM_PARAMS; i++) {
-      appendParameter(new MIP_Parameter( &myParameters[i] ));
-    }
-    // do the same thing with the following too..
-    setupAudioInputs(myAudioInputs,NUM_AUDIO_INPUTS);
-    setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
-    setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
-    setupNoteOutputs(myNoteOutputs,NUM_NOTE_OUTPUTS);
-    setupQuickControls(myQuickControls,NUM_QUICK_CONTROLS);
+    //for (uint32_t i=0; i<NUM_PARAMS; i++) {
+    //  appendParameter(new MIP_Parameter( &myParameters[i] ));
+    //}
+    setupParameters(myParameters,NUM_PARAMS);
     return MIP_Plugin::init();
   }
 
@@ -616,14 +408,8 @@ public: // plugin
   //----------
 
   const void* get_extension(const char *id) final {
-    const void* ext = MIP_Plugin::get_extension(id);
-    if (!ext) {
-      if (strcmp(id,CLAP_EXT_GUI) == 0)             return &MGui;
-      if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)     return &MAudioPorts;
-      if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)      return &MNotePorts;
-      if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)  return &MQuickControls;
-    }
-    return ext;
+    if (strcmp(id,CLAP_EXT_GUI) == 0) return &MGui;
+    return MIP_Plugin::get_extension(id);
   }
 
 //------------------------------
@@ -642,6 +428,61 @@ public: // gui
     MEditorIsOpen = false;
     MEditor = new myEditor(this,this,MDefaultEditorWidth,MDefaultEditorHeight,true);
     return (MEditor);
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  void handle_events_input(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
+    uint32_t num_events = in_events->size(in_events);
+    for (uint32_t i=0; i<num_events; i++) {
+      const clap_event_header_t* header = in_events->get(in_events,i);
+      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+
+        switch (header->type) {
+          case CLAP_EVENT_PARAM_VALUE:
+            handle_parameter_event((clap_event_param_value_t*)header);
+            break;
+          case CLAP_EVENT_PARAM_MOD:
+            handle_modulation_event((clap_event_param_mod_t*)header);
+            break;
+        }
+
+        MVoices.on_event(header);
+      }
+    }
+  }
+
+  //----------
+
+  //void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
+  //  //float v0 = MParameterValues[0] + MParameterModulations[0];
+  //  //v0 = MIP_Clamp(v0,0,1);
+  //  //send_param_mod_event(0,v0,out_events);
+  //  MIP_Plugin::handle_events_output(in_events,out_events);
+  //}
+
+  //----------
+
+  //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
+  //  MIP_Plugin::handle_parameter_event(param_value);
+  //}
+
+  //----------
+
+  //void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
+  //  MIP_Plugin::handle_modulation_event(param_mod);
+  //}
+
+  //----------
+
+  void handle_process(const clap_process_t *process) final {
+    float** outputs = process->audio_outputs[0].data32;
+    uint32_t length = process->frames_count;
+    MIP_ClearStereoBuffer(outputs,length);
+    MVoices.process(process);
+    // post-process?
   }
 
 };
@@ -677,7 +518,6 @@ public:
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
   ARegistry->appendPlugin(&myDescriptor);
-  ARegistry->appendPlugin(&myDescriptor2);
 }
 
 //----------
@@ -688,10 +528,8 @@ void MIP_Register(MIP_ClapRegistry* ARegistry) {
 //----------------------------------------------------------------------
 
 MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-  MIP_PRINT;
   switch (AIndex) {
     case 0: return new myPlugin(ADescriptor,AHost);
-    case 1: return new myPlugin2(ADescriptor,AHost);
   }
   return nullptr;
 }

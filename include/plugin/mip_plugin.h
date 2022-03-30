@@ -474,12 +474,12 @@ protected: // handle
 protected: // setup
 //------------------------------
 
-  //void setupParameters(clap_param_info_t* params, uint32_t num) {
-  //  for (uint32_t i=0; i<num; i++) {
-  //    const clap_param_info_t* info = &params[i];
-  //    MParameters.append(info);
-  //  }
-  //}
+  void setupParameters(clap_param_info_t* params, uint32_t num) {
+    for (uint32_t i=0; i<num; i++) {
+      MIP_Parameter* parameter = new MIP_Parameter(&params[i]);
+      appendParameter(parameter);
+    }
+  }
 
   //----------
 

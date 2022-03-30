@@ -561,28 +561,42 @@
 		<Unit filename="../source/apps/clap-host/test.json" />
 		<Unit filename="../source/apps/clap-host/test2.wav" />
 		<Unit filename="../source/apps/clap-host/xjson.h" />
-		<Unit filename="../source/plugins/clap-minimal.cpp">
+		<Unit filename="../source/plugins/sa_botage.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/compile_clap_minimal.sh" />
-		<Unit filename="../source/plugins/gain.cpp">
+		<Unit filename="../source/plugins/sa_botage/sa_botage_logo.h" />
+		<Unit filename="../source/plugins/sa_ladspa.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/guidemo_v0.cpp">
+		<Unit filename="../source/plugins/sa_ports.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/ladspa_wrapper.cpp">
+		<Unit filename="../source/plugins/sa_ports/sa_compciter.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_event_horizon.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_exciter.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_exciter2.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_hall_reverb.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_hrtf.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_large_room_reverb.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_limiter.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_saturation.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_small_room_reverb.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_sonic_maximizer.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_tilteq.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_transient_killer.h" />
+		<Unit filename="../source/plugins/sa_simple.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/ports/sa_sonic_maximizer.cpp">
+		<Unit filename="../source/plugins/template.h" />
+		<Unit filename="../source/plugins/test_gui1.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/test_plugin1.cpp">
+		<Unit filename="../source/plugins/test_synth1.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

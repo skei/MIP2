@@ -34,7 +34,8 @@ public:
 public:
 //------------------------------
 
-  virtual void drawImage(MIP_BasePainter* APainter) {
+  //virtual void drawImage(MIP_BasePainter* APainter) {
+  virtual void drawImage(MIP_Painter* APainter) {
     //MIP_Surface* surface = getImageSurface();
     if (MSurface) {
       MIP_FRect rect = MIP_FRect(0,0,MSurface->getWidth(),MSurface->getHeight());

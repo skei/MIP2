@@ -30,13 +30,10 @@
 #define MIP_VOICE_MAX_CHANNELS    16
 #define MIP_VOICE_MAX_NOTES       128
 #define MIP_VOICE_NOTES           (MIP_VOICE_MAX_CHANNELS * MIP_VOICE_MAX_NOTES)
-
-
-#define MIP_MASTER_BEND_RANGE  2.0f
-#define MIP_VOICE_BEND_RANGE   48.0f
-
-#define MIP_INV_MASTER_BEND_RANGE  (1.0 / MIP_MASTER_BEND_RANGE)
-#define MIP_INV_VOICE_BEND_RANGE   (1.0 / MIP_VOICE_BEND_RANGE)
+#define MIP_MASTER_BEND_RANGE     2.0f
+#define MIP_VOICE_BEND_RANGE      48.0f
+#define MIP_INV_MASTER_BEND_RANGE (1.0 / MIP_MASTER_BEND_RANGE)
+#define MIP_INV_VOICE_BEND_RANGE  (1.0 / MIP_VOICE_BEND_RANGE)
 
 //----------------------------------------------------------------------
 //
@@ -78,19 +75,14 @@ private:
   int32_t           MVoiceChannel[NUM]            = {0};
   int32_t           MNoteToVoice[MIP_VOICE_NOTES] = {0};
 
-  //uint32_t          MVoiceAge[NUM]                = {0};
+//uint32_t          MVoiceAge[NUM]                = {0};
 
 //------------------------------
 public:
 //------------------------------
 
   MIP_VoiceManager() {
-    for (uint32_t i=0; i<(MIP_VOICE_NOTES); i++) MNoteToVoice[i] = -1;
-    for (uint32_t i=0; i<NUM; i++) {
-      MVoiceState[i]    = MIP_VOICE_OFF;
-      MVoiceNote[i]     = -1;
-      MVoiceChannel[i]  = -1;
-    }
+    reset();
   }
 
   //----------
@@ -102,12 +94,73 @@ public:
 public:
 //------------------------------
 
+  void reset() {
+    for (uint32_t i=0; i<(MIP_VOICE_NOTES); i++) {
+      MNoteToVoice[i] = -1;
+    }
+    for (uint32_t i=0; i<NUM; i++) {
+      MVoiceState[i] = MIP_VOICE_OFF;
+      MVoiceNote[i] = -1;
+      MVoiceChannel[i] = -1;
+    }
+  }
+
+  //----------
+
   void prepare(double samplerate) {
     MVoiceContext.samplerate = samplerate;
     for (uint32_t i=0; i<NUM; i++) {
       MVoices[i].prepare(&MVoiceContext);
     }
   }
+
+//------------------------------
+public:
+//------------------------------
+
+  void on_event(const clap_event_header_t* header) {
+    clap_event_note_expression_t* event;
+    switch (header->type) {
+      case CLAP_EVENT_NOTE_ON:
+        on_note_on((clap_event_note_t*)header);
+        break;
+      case CLAP_EVENT_NOTE_OFF:
+        on_note_off((clap_event_note_t*)header);
+        break;
+      case CLAP_EVENT_NOTE_END:
+        on_note_end((clap_event_note_t*)header);
+        break;
+      case CLAP_EVENT_NOTE_CHOKE:
+        on_note_choke((clap_event_note_t*)header);
+        break;
+      case CLAP_EVENT_PARAM_VALUE:
+        on_parameter_value((clap_event_param_value_t*)header);
+        break;
+      case CLAP_EVENT_PARAM_MOD:
+        on_parameter_modulation((clap_event_param_mod_t*)header);
+        break;
+      //case CLAP_EVENT_MIDI:
+      //  break;
+      //case CLAP_EVENT_MIDI2:
+      //  break;
+      //case CLAP_EVENT_MIDI_SYSEX:
+      //  break;
+      //case CLAP_EVENT_TRANSPORT:
+      //  break;
+      case CLAP_EVENT_NOTE_EXPRESSION:
+        event = (clap_event_note_expression_t*)header;
+        switch (event->expression_id) {
+          case CLAP_NOTE_EXPRESSION_VOLUME:     on_note_volume_expression(event);     break;
+          case CLAP_NOTE_EXPRESSION_PAN:        on_note_pan_expression(event);        break;
+          case CLAP_NOTE_EXPRESSION_TUNING:     on_note_tuning_expression(event);     break;
+          case CLAP_NOTE_EXPRESSION_VIBRATO:    on_note_vibrato_expression(event);    break;
+          case CLAP_NOTE_EXPRESSION_EXPRESSION: on_note_expression_expression(event); break;
+          case CLAP_NOTE_EXPRESSION_BRIGHTNESS: on_note_brightness_expression(event); break;
+          case CLAP_NOTE_EXPRESSION_PRESSURE:   on_note_pressure_expression(event);   break;
+        }
+    }
+  }
+
 
 //------------------------------
 public:
@@ -195,12 +248,97 @@ public:
 //------------------------------
 
   void on_midi(clap_event_midi_t* event) {
-    MIP_Print("todo\n");
+    uint32_t evt    = event->data[0] & 0xf0;
+    uint32_t chan   = event->data[0] & 0x0f;
+    uint32_t index  = event->data[1] & 0x7f;
+    uint32_t val    = event->data[2] & 0x7f;
+    float    fval   = (float)val * MIP_INV127F;
+    float    fval14 = ((index * 128) + val) * MIP_INV127F;
+    switch (evt) {
+
+      case MIP_MIDI_NOTE_OFF:
+
+        handle_voice_note_off(chan,index,fval);
+        break;
+
+      case MIP_MIDI_NOTE_ON:
+
+        if (val == 0) handle_voice_note_off(chan,index,0);
+        else handle_voice_note_on(chan,index,fval);
+        break;
+
+      case MIP_MIDI_POLY_AFTERTOUCH:
+
+        if (chan == 0) {
+          handle_master_pressure(fval);
+        }
+        else {
+          handle_voice_pressure(chan,index,fval);
+        }
+        break;
+
+      case MIP_MIDI_CONTROL_CHANGE:
+
+        if (chan == 0) {
+          handle_master_ctrl(index,fval);
+        }
+        else {
+          for (uint32_t i=0; i<NUM; i++) {
+            if (MVoiceChannel[i] == chan) {
+              handle_voice_ctrl(chan,MVoiceNote[i],fval14);
+            }
+          }
+        }
+        break;
+
+      case MIP_MIDI_PROGRAM_CHANGE:
+
+        //if (chan == 0) {
+        //}
+        //else {
+        //}
+        break;
+
+      case MIP_MIDI_CHANNEL_AFTERTOUCH:
+
+        if (chan == 0) {
+          handle_master_pressure(fval);
+        }
+        else {
+          handle_voice_pressure(chan,index,fval);
+        }
+        break;
+
+      case MIP_MIDI_PITCHBEND:
+
+        if (chan == 0) {
+          handle_master_tuning(fval14);
+        }
+        else {
+          for (uint32_t i=0; i<NUM; i++) {
+            if (MVoiceChannel[i] == chan) {
+              handle_voice_tuning(chan,MVoiceNote[i],fval14);
+            }
+          }
+        }
+        break;
+
+      case MIP_MIDI_SYS:
+        break;
+
+      //default:
+      //  break;
+
+    }
   }
+
+  //----------
 
   void on_midi2(clap_event_midi2_t* event) {
     MIP_Print("todo\n");
   }
+
+  //----------
 
   void on_midi_sysex(clap_event_midi_sysex_t* event) {
     MIP_Print("todo\n");
@@ -260,22 +398,7 @@ private:
   // assumes AChannel >= 0
 
   void handle_voice_note_on(int32_t AChannel, int32_t AKey, float AVelocity) {
-
     start_voice(AChannel,AKey,AVelocity);
-
-//    uint32_t note = (AChannel * 128) + AKey;
-//    int32_t voice = find_voice(true);
-//    if (voice >= 0) {
-//      // kill potentially already playing voice
-//      //kill_voice( MNoteToVoice[note] );
-//      //kill_voice(voice);
-//      MNoteToVoice[note]    = voice;
-//      //float note = (float)AKey;
-//      MVoiceNote[voice]     = AKey;
-//      MVoiceChannel[voice]  = AChannel;
-//      MVoiceState[voice]    = MVoices[voice].note_on(AKey/*note*/,AVelocity);
-//    }
-
   }
 
   //----------
@@ -412,6 +535,8 @@ private:
 
   //----------
 
+  // TODO:
+
   void handle_voice_ctrl(int32_t AChannel, int32_t AKey, uint32_t AIndex, uint32_t AValue) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
@@ -531,39 +656,6 @@ private:
     MNoteToVoice[note] = -1;
   }
 
-  //----------
-
-//  // should we tell the voice that we kill it?
-//
-//  void kill_key(int32_t key, int32_t channel) {
-//    if ((key >= 0) && (channel >= 0)) {
-//      uint32_t note = (channel * 128) + key;
-//      MNoteToVoice[note]    = -1;
-////      MVoiceNote[voice]     = -1;
-////      MVoiceChannel[voice]  = -1;
-////      MVoiceState[voice]    = MIP_VOICE_OFF;
-////      //MVoices[voice].note_off(n,0);
-//    }
-//  }
-//
-//  //----------
-//
-//  void kill_voice(uint32_t voice) {
-//    if (voice < 0) return;
-//    if (voice >= MIP_VOICE_NOTES) return;
-//    int32_t key  = MVoiceNote[voice];
-//    int32_t channel = MVoiceChannel[voice];
-//    kill_key(key,channel);
-//    //if ((n>=0) && (ch>=0)) {
-//    //  uint32_t note = (ch * 128) + n;
-//    //  MNoteToVoice[note]    = -1;
-//      MVoiceNote[voice]     = -1;
-//      MVoiceChannel[voice]  = -1;
-//      MVoiceState[voice]    = MIP_VOICE_OFF;
-//      //MVoices[voice].note_off(n,0);
-//    //}
-//  }
-
 //------------------------------
 private:
 //------------------------------
@@ -640,13 +732,13 @@ public:
 
   void process(const clap_process_t *process) {
     MVoiceContext.process = process;
-//    prepare(MSampleRate);
+    //prepare(MSampleRate);
     preProcess();
     //MVoiceContext.process = process;
     float** outputs = process->audio_outputs->data32;
     uint32_t length = process->frames_count;
-//    MVoiceContext.buffers = outputs;
-//    MVoiceContext.length = length;
+    //MVoiceContext.buffers = outputs;
+    //MVoiceContext.length = length;
     MIP_ClearStereoBuffer(outputs,length);
     processPlayingVoices();
     processReleasedVoices();

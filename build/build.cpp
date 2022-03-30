@@ -19,8 +19,8 @@
 //#include "../source/plugins/sa_ladspa.cpp"
 //#include "../source/plugins/sa_ports.cpp"
 
-#include "../source/plugins/test_gui1.cpp"
-//#include "../source/plugins/test_synth1.cpp"
+//#include "../source/plugins/test_gui1.cpp"
+#include "../source/plugins/test_synth1.cpp"
 
 
 //----------------------------------------------------------------------

@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1648579050 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../source/plugins/test_gui1.cpp"
+1648638162 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/plugins/sa_botage.cpp"
 
 1643950248 /DISKS/sda2/code/git/MIP2/source/test/test.cpp
 	"mip.h"
@@ -1162,7 +1162,7 @@
 1647316040 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_image_strip_widget.h
 	"gui/widgets/v0/mip_drag_value_widget.h"
 
-1645058253 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_image_widget.h
+1648645999 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_image_widget.h
 	"gui/widgets/v0/mip_panel_widget.h"
 
 1646955750 /DISKS/sda2/code/git/MIP2/include/gui/widgets/v0/mip_keyboard_widget.h
@@ -1642,4 +1642,15 @@
 	"plugin/mip_editor.h"
 	"gui/mip_widgets.h"
 	"../data/img/knob4_60x60_131.h"
+
+1648646559 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage.cpp
+	"mip.h"
+	"audio/mip_voice_manager.h"
+	"audio/mip_audio_math.h"
+	"plugin/mip_plugin.h"
+	"plugin/mip_editor.h"
+	"gui/mip_widgets.h"
+	"sa_botage/sa_botage_logo.h"
+
+1648646406 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage/sa_botage_logo.h
 
