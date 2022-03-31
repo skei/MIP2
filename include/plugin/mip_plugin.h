@@ -505,6 +505,10 @@ protected: // setup
       //const clap_param_info_t* info = &params[i];
       MParameterValues[i] = MParameters[i]->info.default_value;
       MParameterModulations[i] = 0.0;
+
+//!!!!!
+//      queueAudioParameters();
+
     }
   }
 
@@ -517,6 +521,14 @@ protected: // setup
     }
     #endif
   }
+
+  //----------
+
+  //void queueAudioParameters() {
+  //  for (uint32_t i=0; i<MParameters.size(); i++) {
+  //    queueAudioParam(i);
+  //  }
+  //}
 
 //------------------------------
 protected: // setup

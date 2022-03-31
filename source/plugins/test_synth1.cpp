@@ -1,12 +1,3 @@
-/*
-  resizable gui
-  parameter modulation
-  audio ports
-  note ports
-  quick controls
-  note events
-*/
-
 
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
@@ -29,12 +20,7 @@
 //
 //----------------------------------------------------------------------
 
-#define NUM_PARAMS          4
-#define NUM_AUDIO_INPUTS    2
-#define NUM_AUDIO_OUTPUTS   2
-#define NUM_NOTE_INPUTS     2
-#define NUM_NOTE_OUTPUTS    2
-#define NUM_QUICK_CONTROLS  2
+#define NUM_PARAMS 4
 
 //#define SUPPORTED_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
 #define SUPPORTED_DIALECTS  CLAP_NOTE_DIALECT_CLAP
@@ -49,6 +35,8 @@ const char* myFeatures[] = {
   "instrument",
   nullptr
 };
+
+//----------
 
 const clap_plugin_descriptor_t myDescriptor = {
   CLAP_VERSION,
@@ -71,7 +59,9 @@ const clap_plugin_descriptor_t myDescriptor = {
 
 class myVoice {
 
+//------------------------------
 private:
+//------------------------------
 
   MIP_VoiceContext* context = nullptr;
 
@@ -89,7 +79,9 @@ private:
   float   _bright = 0.0;
   float   _press  = 0.0;
 
+//------------------------------
 public:
+//------------------------------
 
   void prepare(MIP_VoiceContext* AContext) {
     context = AContext;
@@ -98,7 +90,6 @@ public:
   //----------
 
   uint32_t note_on(int32_t key, float velocity) {
-    //MIP_Print("note on %i %.2f\n",key,velocity);
     _key = key;
     _onvel = velocity;
     //bend = 0.0;
@@ -207,11 +198,15 @@ public:
 class myEditor
 : public MIP_Editor {
 
+//------------------------------
 private:
+//------------------------------
 
-  const char* buttonrow_text[6] = { "1", "2", "3", "four", "5", "6" };
+  const char* buttonrow_text[6] = { "1", "2", "III", "Four", "5", "6" };
 
+//------------------------------
 public:
+//------------------------------
 
   myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
   : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
@@ -220,7 +215,7 @@ public:
 
     // menu
 
-    MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect(100,100) );
+    MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect() );
     menu1->appendMenuItem("first");
     menu1->appendMenuItem("item2");
     menu1->appendMenuItem("item3");
@@ -232,7 +227,7 @@ public:
 
     // panel
 
-    MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_FRect(100,100));
+    MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_FRect());
     MEditorPanel->setBackgroundColor(0.6);
     MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     MEditorPanel->layout.innerBorder = MIP_FRect(10,10,10,10);
@@ -490,25 +485,7 @@ public:
 //----------------------------------------------------------------------
 
 #undef NUM_PARAMS
-#undef NUM_AUDIO_INPUTS
-#undef NUM_AUDIO_OUTPUTS
-#undef NUM_NOTE_INPUTS
-#undef NUM_NOTE_OUTPUTS
-#undef NUM_QUICK_CONTROLS
 #undef ALL_DIALECTS
-
-//----------------------------------------------------------------------
-//
-// plugin 2
-//
-//----------------------------------------------------------------------
-
-class myPlugin2
-: public MIP_Plugin {
-public:
-  myPlugin2(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) : MIP_Plugin(ADescriptor,AHost) {}
-  virtual ~myPlugin2() {}
-};
 
 //----------------------------------------------------------------------
 //
