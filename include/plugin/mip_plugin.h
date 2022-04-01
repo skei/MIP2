@@ -646,6 +646,24 @@ public: // plugin
     out_events->try_push(out_events,header);
   }
 
+  //----------
+
+  void send_note_event(uint32_t type, int32_t port, int32_t key, int32_t channel, double velocity, const clap_output_events_t* out_events) {
+    clap_event_note_t note;
+    note.header.size      = sizeof(clap_event_note_t);
+    note.header.time      = 0;
+    note.header.space_id  = CLAP_CORE_EVENT_SPACE_ID;
+    note.header.type      = type;
+    note.header.flags     = 0; //CLAP_EVENT_DONT_RECORD;// | CLAP_EVENT_IS_LIVE;
+    note.port_index       = port;
+    note.channel          = channel;
+    note.key              = key;
+    note.velocity = velocity;
+    clap_event_header_t* header = (clap_event_header_t*)&note;
+    out_events->try_push(out_events,header);
+  }
+
+
 //------------------------------
 public: // plugin
 //------------------------------
