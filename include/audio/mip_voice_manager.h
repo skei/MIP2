@@ -113,6 +113,7 @@ public:
 
   void on_event(const clap_event_header_t* header) {
     clap_event_note_expression_t* event;
+    //MIP_Print("Event: %i\n",header->type);
     switch (header->type) {
       case CLAP_EVENT_NOTE_ON:
         on_note_on((clap_event_note_t*)header);
@@ -142,6 +143,7 @@ public:
       //  break;
       case CLAP_EVENT_NOTE_EXPRESSION:
         event = (clap_event_note_expression_t*)header;
+        //MIP_Print("Note Expression: %i\n",event->expression_id);
         switch (event->expression_id) {
           case CLAP_NOTE_EXPRESSION_VOLUME:     on_note_volume_expression(event);     break;
           case CLAP_NOTE_EXPRESSION_PAN:        on_note_pan_expression(event);        break;
@@ -151,6 +153,7 @@ public:
           case CLAP_NOTE_EXPRESSION_BRIGHTNESS: on_note_brightness_expression(event); break;
           case CLAP_NOTE_EXPRESSION_PRESSURE:   on_note_pressure_expression(event);   break;
         }
+        break;
     }
   }
 
@@ -243,6 +246,7 @@ public:
   // CLAP_NOTE_DIALECT_MIDI_MPE
 
   void on_midi(clap_event_midi_t* event) {
+    /*
     uint32_t evt    = event->data[0] & 0xf0;
     uint32_t chan   = event->data[0] & 0x0f;
     uint32_t index  = event->data[1] & 0x7f;
@@ -250,20 +254,14 @@ public:
     float    fval   = (float)val * MIP_INV127F;
     float    fval14 = ((index * 128) + val) * MIP_INV127F;
     switch (evt) {
-
       case MIP_MIDI_NOTE_OFF:
-
         handle_voice_note_off(chan,index,fval);
         break;
-
       case MIP_MIDI_NOTE_ON:
-
         if (val == 0) handle_voice_note_off(chan,index,0);
         else handle_voice_note_on(chan,index,fval);
         break;
-
       case MIP_MIDI_POLY_AFTERTOUCH:
-
         if (chan == 0) {
           handle_master_pressure(fval);
         }
@@ -271,9 +269,7 @@ public:
           handle_voice_pressure(chan,index,fval);
         }
         break;
-
       case MIP_MIDI_CONTROL_CHANGE:
-
         if (chan == 0) {
           handle_master_ctrl(index,fval);
         }
@@ -285,17 +281,13 @@ public:
           }
         }
         break;
-
       case MIP_MIDI_PROGRAM_CHANGE:
-
         //if (chan == 0) {
         //}
         //else {
         //}
         break;
-
       case MIP_MIDI_CHANNEL_AFTERTOUCH:
-
         if (chan == 0) {
           handle_master_pressure(fval);
         }
@@ -303,9 +295,7 @@ public:
           handle_voice_pressure(chan,index,fval);
         }
         break;
-
       case MIP_MIDI_PITCHBEND:
-
         if (chan == 0) {
           handle_master_tuning(fval14);
         }
@@ -317,20 +307,18 @@ public:
           }
         }
         break;
-
       case MIP_MIDI_SYS:
         break;
-
       //default:
       //  break;
-
     }
+    */
   }
 
   //----------
 
   void on_midi_sysex(clap_event_midi_sysex_t* event) {
-    MIP_Print("todo\n");
+    //MIP_Print("todo\n");
   }
 
 //------------------------------
@@ -340,7 +328,7 @@ public:
   // CLAP_NOTE_DIALECT_MIDI2
 
   void on_midi2(clap_event_midi2_t* event) {
-    MIP_Print("todo\n");
+    //MIP_Print("todo\n");
   }
 
 //------------------------------
@@ -352,6 +340,7 @@ public:
     float value = event->value;
     int32_t channel = event->channel;
     int32_t key = event->key;
+    //MIP_Print("index %i value %.2f channel %i key %i\n",index,value,channel,key);
     if ((channel >= 0) && (key >= 0)) {
       handle_voice_param(channel,key,index,value);
     }
@@ -376,7 +365,7 @@ public:
   }
 
 //------------------------------
-private:
+public: //private:
 //------------------------------
 
   /*
@@ -579,6 +568,10 @@ private:
   //----------
 
   void handle_master_param(uint32_t AIndex, float AValue) {
+    //MIP_Print("%i %.3f\n",AIndex,AValue);
+    for (uint32_t i=0; i<NUM; i++) {
+      MVoices[i].parameter(AIndex,AValue);
+    }
   }
 
   //----------
@@ -601,7 +594,8 @@ private:
   }
 
 //------------------------------
-private:
+public: //private:
+
 //------------------------------
 
   int32_t find_voice(bool ATryReleased=true) {
@@ -656,7 +650,7 @@ private:
   }
 
 //------------------------------
-private:
+public: //private:
 //------------------------------
 
   void send_note_end(uint32_t index) {
@@ -676,7 +670,7 @@ private:
   }
 
 //------------------------------
-private:
+public: //private:
 //------------------------------
 
   void preProcess() {

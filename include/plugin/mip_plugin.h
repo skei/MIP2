@@ -57,33 +57,17 @@
 //
 //----------------------------------------------------------------------
 
-/*
-
-struct MIP_Parameter {
-  const clap_param_info_t* ptr = nullptr;
-  float       from01(float value) {}
-  float       to01(float value) {}
-  const char* getDisplayText(float value) {}
-};
-
-struct MIP_AudioPort {
-  const clap_audio_port_info_t* ptr = nullptr;
-};
-
-struct MIP_NotePort {
-  const clap_note_port_info_t* ptr = nullptr;
-};
-
-struct MIP_QuickControl {
-  const clap_quick_controls_page_t* ptr = nullptr;
-};
-
-typedef MIP_Array<MIP_Parameter*>     MIP_Parameters;
-typedef MIP_Array<MIP_AudioPort*>     MIP_AudioPorts;
-typedef MIP_Array<MIP_NotePort*>      MIP_NotePorts;
-typedef MIP_Array<MIP_QuickControl*>  MIP_QuickControls;
-
-*/
+//struct MIP_AudioPort {
+//  const clap_audio_port_info_t* ptr = nullptr;
+//};
+//
+//struct MIP_NotePort {
+//  const clap_note_port_info_t* ptr = nullptr;
+//};
+//
+//struct MIP_QuickControl {
+//  const clap_quick_controls_page_t* ptr = nullptr;
+//};
 
 //----------
 
@@ -119,8 +103,8 @@ private:
   float*                          MHostParamVal           = nullptr;
   float*                          MHostParamMod           = nullptr;
 
-  MIP_ClapIntQueue                MHostBeginGestureQueue  = {};
-  MIP_ClapIntQueue                MHostEndGestureQueue    = {};
+//  MIP_ClapIntQueue                MHostBeginGestureQueue  = {};
+//  MIP_ClapIntQueue                MHostEndGestureQueue    = {};
 
 //------------------------------
 protected:
@@ -248,15 +232,15 @@ protected: // ??
       if (value != MParameterValues[index]) {
         MParameterValues[index] = value;
 
-        // notify plugin (fake param_value event)
-        clap_event_param_value_t event;
-        event.param_id    = index;
-        event.cookie      = nullptr;
-        event.port_index  = -1;
-        event.key         = -1;
-        event.channel     = -1;
-        event.value       = value;
-        handle_parameter_event(&event);
+//        // notify plugin (fake param_value event)
+//        clap_event_param_value_t event;
+//        event.param_id    = index;
+//        event.cookie      = nullptr;
+//        event.port_index  = -1;
+//        event.key         = -1;
+//        event.channel     = -1;
+//        event.value       = value;
+//        handle_parameter_event(&event);
 
       }
     }
@@ -280,7 +264,9 @@ protected: // ??
     while (MHostParamQueue.read(&index)) {
       float value = MHostParamVal[index];
       //todo: check if value reallyt changed (if multiple events)
+      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_BEGIN,out_events);
       send_param_value_event(index,value,out_events);
+      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_END,out_events);
     }
   }
 
@@ -288,33 +274,33 @@ protected: // ??
 
   // gestures
 
-  void queueHostBeginGesture(uint32_t AIndex) {
-    MHostBeginGestureQueue.write(AIndex);
-  }
-
-  //----------
-
-  void queueHostEndGesture(uint32_t AIndex) {
-    MHostEndGestureQueue.write(AIndex);
-  }
-
-  //----------
-
-  void flushHostBeginGestures(const clap_output_events_t* out_events) {
-    uint32_t index = 0;
-    while (MHostBeginGestureQueue.read(&index)) {
-      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_BEGIN,out_events);
-    }
-  }
-
-  //----------
-
-  void flushHostEndGestures(const clap_output_events_t* out_events) {
-    uint32_t index = 0;
-    while (MHostEndGestureQueue.read(&index)) {
-      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_END,out_events);
-    }
-  }
+//  void queueHostBeginGesture(uint32_t AIndex) {
+//    MHostBeginGestureQueue.write(AIndex);
+//  }
+//
+//  //----------
+//
+//  void queueHostEndGesture(uint32_t AIndex) {
+//    MHostEndGestureQueue.write(AIndex);
+//  }
+//
+//  //----------
+//
+//  void flushHostBeginGestures(const clap_output_events_t* out_events) {
+//    uint32_t index = 0;
+//    while (MHostBeginGestureQueue.read(&index)) {
+//      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_BEGIN,out_events);
+//    }
+//  }
+//
+//  //----------
+//
+//  void flushHostEndGestures(const clap_output_events_t* out_events) {
+//    uint32_t index = 0;
+//    while (MHostEndGestureQueue.read(&index)) {
+//      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_END,out_events);
+//    }
+//  }
 
 //------------------------------
 public: // editor listener
@@ -322,13 +308,13 @@ public: // editor listener
 
   #ifndef MIP_NO_GUI
 
-  void on_beginUpdateParameterFromEditor(uint32_t AIndex) override {
-    queueHostBeginGesture(AIndex);
-  }
+  //void on_beginUpdateParameterFromEditor(uint32_t AIndex) override {
+  //  queueHostBeginGesture(AIndex);
+  //}
 
-  void on_endUpdateParameterFromEditor(uint32_t AIndex) override {
-    queueHostEndGesture(AIndex);
-  }
+  //void on_endUpdateParameterFromEditor(uint32_t AIndex) override {
+  //  queueHostEndGesture(AIndex);
+  //}
 
   /*
     called from editor when widget changes (gui thread)
@@ -377,22 +363,48 @@ public: // handle
     called from process (audio thread)
   */
 
-  virtual void handle_note_on_event(clap_event_note_t* event) {}
-  virtual void handle_note_off_event(clap_event_note_t* event) {}
-  virtual void handle_note_end_event(clap_event_note_t* event) {}
-  virtual void handle_note_choke_event(clap_event_note_t* event) {}
-  virtual void handle_note_expression_event(clap_event_note_expression_t* event) {}
+  virtual void handle_note_on_event(clap_event_note_t* event) {
+    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
+  }
 
-  virtual void handle_midi_event(clap_event_midi_t* event) {}
-  virtual void handle_midi2_event(clap_event_midi2_t* event) {}
-  virtual void handle_midi_sysex_event(clap_event_midi_sysex_t* event) {}
-  virtual void handle_transport_event(clap_event_transport_t* event) {}
+  virtual void handle_note_off_event(clap_event_note_t* event) {
+    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
+  }
+
+  virtual void handle_note_end_event(clap_event_note_t* event) {
+    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
+  }
+
+  virtual void handle_note_choke_event(clap_event_note_t* event) {
+    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
+  }
+
+  virtual void handle_note_expression_event(clap_event_note_expression_t* event) {
+    //MIP_Print("port %i channel %i key %i expr %i value %.3f\n",event->port_index,event->channel,event->key,event->expression_id,event->value);
+  }
+
+  virtual void handle_midi_event(clap_event_midi_t* event) {
+    //MIP_Print("\n");
+  }
+
+  virtual void handle_midi2_event(clap_event_midi2_t* event) {
+    //MIP_Print("\n");
+  }
+
+  virtual void handle_midi_sysex_event(clap_event_midi_sysex_t* event) {
+    //MIP_Print("\n");
+  }
+
+  virtual void handle_transport_event(clap_event_transport_t* event) {
+    //MIP_Print("\n");
+  }
 
   //----------
 
   virtual void handle_parameter_event(const clap_event_param_value_t* param_value) {
     uint32_t i = param_value->param_id;
     float v = param_value->value;
+    //MIP_Print("%i = %.3f\n",i,v);
     setParameterValue(i,v);
     #ifndef MIP_NO_GUI
     if (MEditor && MEditorIsOpen) MEditor->updateParameterInProcess(i,v);
@@ -404,6 +416,7 @@ public: // handle
   virtual void handle_modulation_event(const clap_event_param_mod_t* param_mod) {
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
+    //MIP_Print("%i = %.3f\n",i,v);
     setParameterModulation(i,v);
     #ifndef MIP_NO_GUI
     if (MEditor && MEditorIsOpen) MEditor->updateModulationFromHost(i,v);
@@ -413,7 +426,6 @@ public: // handle
   //----------
 
   virtual void handle_process(const clap_process_t *process) {
-
     //float* in0 = process->audio_inputs[0].data32[0];
     //float* in1 = process->audio_inputs[0].data32[1];
     //float* out0 = process->audio_outputs[0].data32[0];
@@ -428,7 +440,6 @@ public: // handle
     //float** outputs = process->audio_outputs[0].data32;
     //uint32_t length = process->frames_count;
     //MIP_CopyStereoBuffer(outputs,inputs,length);
-
   }
 
 //------------------------------
@@ -462,10 +473,9 @@ protected: // handle
   virtual void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
     #ifndef MIP_NO_GUI
     //if (MEditor && MIsEditorOpen) {
-
-      flushHostBeginGestures(out_events);
+      //flushHostBeginGestures(out_events);
       flushHostParams(out_events);
-      flushHostEndGestures(out_events);
+      //flushHostEndGestures(out_events);
     //}
     #endif
   }
@@ -506,8 +516,11 @@ protected: // setup
       MParameterValues[i] = MParameters[i]->info.default_value;
       MParameterModulations[i] = 0.0;
 
-//!!!!!
+//----------
+
 //      queueAudioParameters();
+
+//----------
 
     }
   }

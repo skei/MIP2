@@ -15,17 +15,17 @@
 
 //----------------------------------------------------------------------
 
-#define kft_none  0
-#define kft_lp    1
-#define kft_hp    2
-#define kft_bp    3
-#define kft_n     4
+#define MIP_SVF_NONE  0
+#define MIP_SVF_LP    1
+#define MIP_SVF_HP    2
+#define MIP_SVF_BP    3
+#define MIP_SVF_N     4
 
 class MIP_SvfFilter {
 
   private:
 
-    uint32_t  MMode = kft_none;
+    uint32_t  MMode = MIP_SVF_NONE;
     float     MFreq = 1;
     float     MBW   = 0;
     float     z1    = 0;
@@ -69,7 +69,7 @@ class MIP_SvfFilter {
 
     float process(float AValue) {
       //result := 0;
-      if (MMode==kft_none) return AValue;
+      if (MMode==MIP_SVF_NONE) return AValue;
       else {
         float L   = z2 + MFreq * z1;
         float H   = AValue - L - MBW   * z1;
@@ -78,10 +78,10 @@ class MIP_SvfFilter {
         z1 = B;
         z2 = L;
         switch(MMode) {
-          case kft_lp:  return L; //break;
-          case kft_hp:  return H; //break;
-          case kft_bp:  return B; //break;
-          case kft_n:   return N; //break;
+          case MIP_SVF_LP:  return L; //break;
+          case MIP_SVF_HP:  return H; //break;
+          case MIP_SVF_BP:  return B; //break;
+          case MIP_SVF_N:   return N; //break;
         }
       }
       return 0;

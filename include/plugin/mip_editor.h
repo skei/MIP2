@@ -35,10 +35,13 @@ public:
 
 public:
 
-  //void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
-  //  //MIP_PRINT;
-  //  MIP_Window::do_widget_redraw(AWidget,ARect,AMode);
-  //}
+//  void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
+//    //MIP_PRINT;
+//    //int32_t param_index = AWidget->getParamIndex();
+//    //if (param_index < 0) {
+//      MIP_Window::do_widget_redraw(AWidget,ARect,AMode);
+//    //}
+//  }
 
 };
 
@@ -211,7 +214,25 @@ public:
 
   //----------
 
+//  void connect(MIP_Widget* AWidget, MIP_Parameter* AParameter) {
+//    AWidget->setParameter(AParameter);
+//    int32_t index = AParameter->getIndex();
+//    //connect(AWidget,index);
+//    MParamToWidget[index] = AWidget;
+//    //AWidget->on_widget_connect(AParamIndex,ASubParamIndex);
+//    clap_param_info_t info;
+//    MPlugin->params_get_info(index,&info);
+//    const char* name = info.name;
+//    float def_value = info.default_value;
+//    AWidget->setDefaultValue(def_value);
+//    AWidget->setValue(def_value);
+//    AWidget->setParamName(name);
+//  }
+
+  //----------
+
   void connect(MIP_Widget* AWidget, int32_t AParamIndex) {
+    //MIP_Print("index %i\n",AParamIndex);
     AWidget->setParamIndex(AParamIndex);
     MParamToWidget[AParamIndex] = AWidget;
     //AWidget->on_widget_connect(AParamIndex,ASubParamIndex);
@@ -241,7 +262,6 @@ private: // window listener
 
   void on_updateWidgetFromWindow(MIP_Widget* AWidget) final {
     int32_t index = AWidget->getParamIndex();
-    //MIP_Print("index: %i\n",index);
     if (index >= 0) {
       float value = AWidget->getValue();
       if (MListener) MListener->on_updateParameterFromEditor(index,value);

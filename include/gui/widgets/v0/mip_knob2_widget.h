@@ -22,13 +22,13 @@ protected:
   MIP_KnobWidget*  wdg_knob        = nullptr;
   MIP_TextWidget*  wdg_label       = nullptr;
   MIP_TextWidget*  wdg_value       = nullptr;
-  char              value_text[32]  = {0};
+  char             value_text[32]  = {0};
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Knob2Widget(MIP_FRect ARect)
+  MIP_Knob2Widget(MIP_FRect ARect, const char* AName="")
   : MIP_Widget(ARect) {
     setName("MIP_Knob2Widget");
     setHint("knob2");
@@ -49,7 +49,7 @@ public:
     #undef H
     #undef KS
 
-    wdg_label->setText("knob2");
+    wdg_label->setText(AName);
     //wdg_label->setTextSize(10);
     wdg_label->setFillBackground(false);
     wdg_label->setBackgroundColor(MIP_Color(0.55));
@@ -146,10 +146,10 @@ public:
 //      }
       do_widget_redraw(wdg_value,wdg_value->getRect(),0);
     }
-    else {
+//    else {
       //if (MParent) MParent->do_widget_update(this);
-      MIP_Widget::do_widget_update(this);
-    }
+      MIP_Widget::do_widget_update(this,AMode);
+//    }
   }
 
 };

@@ -80,6 +80,9 @@ protected:
   float           MModValue               = 0.0;
   float           MValue                  = 0.0;
   float           MDefaultValue           = 0.0;
+
+//  MIP_Parameter*  MParameter              = nullptr;
+
   int32_t         MParamIndex             = -1;
   char            MParamName[256]         = {0};
 
@@ -159,9 +162,14 @@ public: // set
 //virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
 //virtual void setOwner(MIP_BaseWindow* AOwner)             { MOwner = AOwner; }
 //virtual void setSelectedParameter(uint32_t AIndex)        { MSelectedParameter = AIndex; }
-//virtual void setParameterPtr(MIP_Parameter* p)            { MParameterPtr = p; }
 
-  virtual void setParamIndex(uint32_t AIndex)               { MParamIndex = AIndex; }
+  //virtual void setParameter(MIP_Parameter* p) {
+  //  MParameter = p;
+  //  MParamIndex = MParameter->getIndex();
+  //}
+
+  virtual void setParamIndex(int32_t AIndex)                { MParamIndex = AIndex; }
+
   //virtual void setSubParamIndex(uint32_t AIndex)            { MSubParamIndex = AIndex; }
 
   virtual void setParamName(const char* AName) {
@@ -187,7 +195,9 @@ public:
   virtual MIP_FRect       getRect()                   { return MRect; }
   virtual float           getValue()                  { return MValue; }
 
+  //MIP_Parameter*          getParameter()              { return MParameter; }
   virtual int32_t         getParamIndex()             { return MParamIndex; }
+
   //virtual int32_t         getSubParamIndex()          { return MSubParamIndex; }
 
 //------------------------------

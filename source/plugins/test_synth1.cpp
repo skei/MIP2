@@ -10,6 +10,7 @@
 #include "mip.h"
 #include "audio/mip_voice_manager.h"
 #include "audio/mip_audio_math.h"
+#include "audio/filters/mip_svf_filter.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
@@ -23,7 +24,7 @@
 #define NUM_PARAMS 4
 
 //#define SUPPORTED_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
-#define SUPPORTED_DIALECTS  CLAP_NOTE_DIALECT_CLAP
+//#define SUPPORTED_DIALECTS  CLAP_NOTE_DIALECT_CLAP
 
 //----------------------------------------------------------------------
 //
@@ -64,6 +65,10 @@ private:
 //------------------------------
 
   MIP_VoiceContext* context = nullptr;
+  MIP_SvfFilter     filter  = {};
+
+  float   ffreq   = 0.5;
+  float   fres    = 0.5;
 
   float   hz      = 0.0;  // note hz
   float   ph      = 0.0;  // phase
@@ -79,6 +84,7 @@ private:
   float   _bright = 0.0;
   float   _press  = 0.0;
 
+
 //------------------------------
 public:
 //------------------------------
@@ -92,7 +98,6 @@ public:
   uint32_t note_on(int32_t key, float velocity) {
     _key = key;
     _onvel = velocity;
-    //bend = 0.0;
     ph = 0.0;
     hz = MIP_NoteToHz(key);
     phadd = hz / context->samplerate;
@@ -162,6 +167,10 @@ public:
   //----------
 
   void parameter(uint32_t index, float value) {
+    switch (index) {
+      case 2: ffreq = value; break;
+      case 3: fres = value; break;
+    }
   }
 
   //----------
@@ -176,7 +185,10 @@ public:
     float* output1 = context->process->audio_outputs[0].data32[1];
     uint32_t length  = context->process->frames_count;
     for (uint32_t i=0; i<length; i++) {
-      float out = ph;
+      filter.setMode(MIP_SVF_LP);
+      filter.setFreq(ffreq * ffreq);
+      filter.setBW(1.0 - fres);
+      float out = filter.process(ph);
       ph += phadd;
       ph = MIP_Fract(ph);
       float v = _onvel + _press;
@@ -202,7 +214,7 @@ class myEditor
 private:
 //------------------------------
 
-  const char* buttonrow_text[6] = { "1", "2", "III", "Four", "5", "6" };
+
 
 //------------------------------
 public:
@@ -210,92 +222,39 @@ public:
 
   myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
   : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
-
-    setCanResize();
-
-    // menu
-
-    MIP_MenuWidget* menu1 = new MIP_MenuWidget( MIP_FRect() );
-    menu1->appendMenuItem("first");
-    menu1->appendMenuItem("item2");
-    menu1->appendMenuItem("item3");
-    menu1->appendMenuItem("4");
-    menu1->appendMenuItem("five");
-    menu1->setItemSize(90,20);
-    menu1->setItemLayout(1,5);
-    menu1->setMenuMirror(true,false);
-
+    MIP_Window* window = getWindow();
     // panel
-
     MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_FRect());
     MEditorPanel->setBackgroundColor(0.6);
     MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     MEditorPanel->layout.innerBorder = MIP_FRect(10,10,10,10);
     MEditorPanel->layout.spacing = 5;
-
-    // knob 1
-
-    MIP_KnobWidget* knob1 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-    MEditorPanel->appendWidget(knob1);
-    knob1->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
-    connect(knob1,0);
-
-    // knob 2
-
-    MIP_KnobWidget* knob2 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-    MEditorPanel->appendWidget(knob2);
-    knob2->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
-    connect(knob2,1);
-
-    // knob 3
-
-    MIP_KnobWidget* knob3 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-    MEditorPanel->appendWidget(knob3);
-    knob3->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
-    connect(knob3,2);
-
-    // knob 4
-
-    MIP_KnobWidget* knob4 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-    MEditorPanel->appendWidget(knob4);
-    knob4->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
-    connect(knob4,3);
-
-    // window sizer
-
-    MIP_SizerWidget* MSizer = new MIP_SizerWidget(MIP_FRect( 15,15),MIP_SIZER_WINDOW);
-    MSizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
-    MEditorPanel->appendWidget(MSizer);
-
-    // button row
-
-    MIP_ButtonRowWidget* button_row = new MIP_ButtonRowWidget(MIP_FRect(230,20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI );
-    MEditorPanel->appendWidget(button_row);
-    button_row->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-
-    // slider
-
-    MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
-    MEditorPanel->appendWidget(slider);
-    slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-
-    // selector
-
-    MIP_SelectorWidget* selector = new MIP_SelectorWidget(MIP_FRect(110,20));
-    MEditorPanel->appendWidget(selector);
-    selector->setMenu(menu1);
-    selector->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-
-    // append menu last (so it draws on top of everything else)
-
-    MEditorPanel->appendWidget(menu1);
-
-    // window
-
-    MIP_Window* win = getWindow();
-    MSizer->setTarget(win);
-    win->appendWidget(MEditorPanel);
-
+    // vol
+    MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Vol");
+    MEditorPanel->appendWidget(vol_knob);
+    vol_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    connect(vol_knob,0);
+    // pan
+    MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Pan");
+    MEditorPanel->appendWidget(pan_knob);
+    pan_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    connect(pan_knob,1);
+    // freq
+    MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Freq");
+    MEditorPanel->appendWidget(freq_knob);
+    freq_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    connect(freq_knob,2);
+    // res
+    MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Res");
+    MEditorPanel->appendWidget(res_knob);
+    res_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    connect(res_knob,3);
+    // test
+    MIP_Knob2Widget* test_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Test");
+    MEditorPanel->appendWidget(test_knob);
+    test_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+    //
+    window->appendWidget(MEditorPanel);
   }
 
   //----------
@@ -307,7 +266,7 @@ public:
 
 //----------------------------------------------------------------------
 //
-//
+// plugin
 //
 //----------------------------------------------------------------------
 
@@ -319,52 +278,14 @@ private:
 //------------------------------
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
-
-    { 0,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_PER_NOTE,
-      nullptr,
-      "param1",
-      "Params",
-      0.0,
-      1.0,
-      0.2
-    },
-
-    { 1,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,
-      nullptr,
-      "param2",
-      "Params",
-      0.0,
-      1.0,
-      0.4
-    },
-
-    { 2,
-      CLAP_PARAM_IS_AUTOMATABLE,
-      nullptr,
-      "param3",
-      "Params",
-      0.0,
-      1.0,
-      0.6
-    },
-
-    { 3,
-      0,
-      nullptr,
-      "param4",
-      "Params",
-      0.0,
-      1.0,
-      0.8
-    }
-
+    { 0, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Vol",  "", 0.0, 1.0, 0.5 },
+    { 1, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Pan",  "", 0.0, 1.0, 0.5 },
+    { 2, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Freq", "", 0.0, 1.0, 0.5 },
+    { 3, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Res",  "", 0.0, 1.0, 0.5 }
   };
 
   MIP_VoiceManager<myVoice,16>  MVoices = {};
 
-  // todo: -> descriptor..
   uint32_t MDefaultEditorWidth  = 400;
   uint32_t MDefaultEditorHeight = 400;
 
@@ -386,9 +307,6 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    //for (uint32_t i=0; i<NUM_PARAMS; i++) {
-    //  appendParameter(new MIP_Parameter( &myParameters[i] ));
-    //}
     setupParameters(myParameters,NUM_PARAMS);
     return MIP_Plugin::init();
   }
@@ -430,20 +348,11 @@ public:
 //------------------------------
 
   void handle_events_input(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
+    MIP_Plugin::handle_events_input(in_events,out_events);
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
       if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-
-        switch (header->type) {
-          case CLAP_EVENT_PARAM_VALUE:
-            handle_parameter_event((clap_event_param_value_t*)header);
-            break;
-          case CLAP_EVENT_PARAM_MOD:
-            handle_modulation_event((clap_event_param_mod_t*)header);
-            break;
-        }
-
         MVoices.on_event(header);
       }
     }
@@ -451,33 +360,20 @@ public:
 
   //----------
 
-  //void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
-  //  //float v0 = MParameterValues[0] + MParameterModulations[0];
-  //  //v0 = MIP_Clamp(v0,0,1);
-  //  //send_param_mod_event(0,v0,out_events);
-  //  MIP_Plugin::handle_events_output(in_events,out_events);
-  //}
-
-  //----------
-
-  //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
-  //  MIP_Plugin::handle_parameter_event(param_value);
-  //}
-
-  //----------
-
-  //void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
-  //  MIP_Plugin::handle_modulation_event(param_mod);
-  //}
-
-  //----------
-
   void handle_process(const clap_process_t *process) final {
+
+    MVoices.handle_master_param(2,MParameterValues[2]);
+    MVoices.handle_master_param(3,MParameterValues[3]);
+
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
     MVoices.process(process);
-    // post-process?
+    float v = MParameterValues[0];
+    float p = MParameterValues[1];
+    float l = v * (1.0 - p);
+    float r = v * (      p);
+    MIP_ScaleStereoBuffer(outputs,l,r,length);
   }
 
 };
@@ -498,11 +394,6 @@ void MIP_Register(MIP_ClapRegistry* ARegistry) {
 }
 
 //----------
-
-//void MIP_Unregister(MIP_ClapRegistry* ARegistry) {
-//}
-
-//----------------------------------------------------------------------
 
 MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
   switch (AIndex) {

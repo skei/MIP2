@@ -132,7 +132,7 @@
 			<Add library="rt" />
 		</Linker>
 		<Unit filename="../LICENSE" />
-		<Unit filename="../README" />
+		<Unit filename="../README.md" />
 		<Unit filename="../doc/compile.txt" />
 		<Unit filename="../doc/todo.txt" />
 		<Unit filename="../include/audio/analysis/mip_beat_detector.h" />
@@ -570,6 +570,13 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/plugins/sa_mini.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_mini/sa_fibonacci.h" />
+		<Unit filename="../source/plugins/sa_mini/sa_grains.h" />
+		<Unit filename="../source/plugins/sa_mini/sa_pitch.h" />
 		<Unit filename="../source/plugins/sa_ports.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -587,10 +594,6 @@
 		<Unit filename="../source/plugins/sa_ports/sa_sonic_maximizer.h" />
 		<Unit filename="../source/plugins/sa_ports/sa_tilteq.h" />
 		<Unit filename="../source/plugins/sa_ports/sa_transient_killer.h" />
-		<Unit filename="../source/plugins/sa_simple.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
 		<Unit filename="../source/plugins/template.h" />
 		<Unit filename="../source/plugins/test_gui1.cpp">
 			<Option compile="0" />
