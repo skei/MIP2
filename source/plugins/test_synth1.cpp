@@ -362,6 +362,8 @@ public:
 
   void handle_process(const clap_process_t *process) final {
 
+    // send freq/res to voices..
+    // hmmmm.. this doesn't feel right..
     MVoices.handle_master_param(2,MParameterValues[2]);
     MVoices.handle_master_param(3,MParameterValues[3]);
 
@@ -369,8 +371,8 @@ public:
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
     MVoices.process(process);
-    float v = MParameterValues[0];
-    float p = MParameterValues[1];
+    float v = MParameterValues[0];  // vol
+    float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);
     float r = v * (      p);
     MIP_ScaleStereoBuffer(outputs,l,r,length);
