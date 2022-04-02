@@ -45,6 +45,8 @@ protected:
   bool                MMirrorX      = false;
   bool                MMirrorY      = false;
 
+  bool MAlwaysOpen = false;
+
 //------------------------------
 public:
 //------------------------------
@@ -56,12 +58,20 @@ public:
     setHint("menu");
 //    MMenuWidth  = ARect.w;
 //    MMenuHeight = ARect.h;
-    flags.active = false;
-    flags.visible = false;
+    if (MAlwaysOpen) {
+      flags.active = true;
+      flags.visible = true;
+    }
+    else {
+      flags.active = false;
+      flags.visible = false;
+    }
     setFillBackground();
     setBackgroundColor(MIP_COLOR_LIGHT_GRAY);
     setDrawBorder();
   }
+
+  //----------
 
   virtual ~MIP_MenuWidget() {
   }
@@ -83,6 +93,10 @@ public:
   }
 
   //----------
+
+  virtual void setListener(MIP_MenuListener* AListener) {
+    MListener = AListener;
+  }
 
   virtual void setItemWidth(int32_t AWidth) {
     //if (AWidth < 0) MItemWidth = (MRect.w * 100 / (-AWidth);
@@ -141,6 +155,7 @@ public:
   //----------
 
   virtual void open(MIP_MenuListener* AListener, int32_t AXpos, int32_t AYpos) {
+    if (MAlwaysOpen) return;
     //MIP_FRect mrect = getRect();
     //MIP_Print("%i,%i / %i,%i\n",MItemWidth,MItemHeight,MItemsX,MItemsY);
     MListener = AListener;
@@ -192,6 +207,7 @@ public:
   //----------
 
   virtual void close(void) {
+    if (MAlwaysOpen) return;
     MListener = nullptr;
     //MIsActive = false;
     //MIsVisible = false;
@@ -232,21 +248,22 @@ public:
 public:
 //------------------------------
 
-  void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
+  void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
+    MIP_PRINT;
     MIP_PanelWidget::on_widget_mouseClick(AXpos,AYpos,AButton,AState,ATimeStamp);
     if (AButton == MIP_BUTTON_LEFT) {
       if (!getRect().contains(AXpos,AYpos)) {
         // left-clicked outside of widget
         MSelectedItem = MPrevSelected;
         if (MListener) MListener->on_menuEvent(MSelectedItem);
-        close();
+        if (!MAlwaysOpen) close();
       }
     }
     if (AButton == MIP_BUTTON_RIGHT) {
       // right-clicked
       MSelectedItem = MPrevSelected;
       if (MListener) MListener->on_menuEvent(MSelectedItem);
-      close();
+      if (!MAlwaysOpen) close();
     }
   }
 
@@ -256,11 +273,12 @@ public:
 
   // item selected
 
-  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) final {
+  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
+    //MIP_PRINT;
     int32_t index = ASender->getWidgetIndex();
     MSelectedItem = index;
     if (MListener) MListener->on_menuEvent(MSelectedItem);
-    close();
+    if (!MAlwaysOpen) close();
     MIP_PanelWidget::do_widget_update(this,AMode);
     //MIP_Widget::do_widget_update(ASender);
   }
@@ -269,12 +287,13 @@ public:
 
   // (right button clicked)
 
-  void do_widget_notify(MIP_Widget* AWidget, uint32_t AValue=0) final {
+  void do_widget_notify(MIP_Widget* AWidget, uint32_t AValue=0) override {
+    //MIP_PRINT;
     if (AValue == MIP_MENU_NOTIFY_CLOSE) {
       // right clicked on menuitem
       MSelectedItem = MPrevSelected;
       if (MListener) MListener->on_menuEvent(MSelectedItem);
-      close();
+      if (!MAlwaysOpen) close();
     }
     //MIP_Widget::do_widget_notify(AWidget,AValue);
   }
@@ -283,35 +302,3 @@ public:
 
 //----------------------------------------------------------------------
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-
-
-
-
-
-  public:
-
-    void do_update(MIP_Widget* ASender) override {
-    }
-
-    void do_notify(MIP_Widget* ASender, int32_t AMsg) override {
-    }
-
-};
-
-#endif // 0
