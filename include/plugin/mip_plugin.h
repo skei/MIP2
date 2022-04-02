@@ -193,14 +193,6 @@ public:
 //  #endif
 
 //------------------------------
-public:
-//------------------------------
-
-//  virtual bool getParameterValueText(char* ABuffer, uint32_t AIndex, float AValue) {
-//    return false;
-//  }
-
-//------------------------------
 //private: // ??
 protected: // ??
 //------------------------------
@@ -401,7 +393,7 @@ public: // handle
 
   //----------
 
-  virtual void handle_parameter_event(const clap_event_param_value_t* param_value) {
+  virtual void handle_parameter_event(clap_event_param_value_t* param_value) {
     uint32_t i = param_value->param_id;
     float v = param_value->value;
     //MIP_Print("%i = %.3f\n",i,v);
@@ -413,7 +405,7 @@ public: // handle
 
   //----------
 
-  virtual void handle_modulation_event(const clap_event_param_mod_t* param_mod) {
+  virtual void handle_modulation_event(clap_event_param_mod_t* param_mod) {
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
     //MIP_Print("%i = %.3f\n",i,v);
@@ -426,6 +418,7 @@ public: // handle
   //----------
 
   virtual void handle_process(const clap_process_t *process) {
+
     //float* in0 = process->audio_inputs[0].data32[0];
     //float* in1 = process->audio_inputs[0].data32[1];
     //float* out0 = process->audio_outputs[0].data32[0];
@@ -440,13 +433,14 @@ public: // handle
     //float** outputs = process->audio_outputs[0].data32;
     //uint32_t length = process->frames_count;
     //MIP_CopyStereoBuffer(outputs,inputs,length);
+
   }
 
 //------------------------------
 protected: // handle
 //------------------------------
 
-  virtual void handle_events_input(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+  virtual void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
@@ -470,7 +464,7 @@ protected: // handle
 
   //----------
 
-  virtual void handle_events_output(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+  virtual void handle_output_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
     #ifndef MIP_NO_GUI
     //if (MEditor && MIsEditorOpen) {
       //flushHostBeginGestures(out_events);
@@ -515,13 +509,6 @@ protected: // setup
       //const clap_param_info_t* info = &params[i];
       MParameterValues[i] = MParameters[i]->info.default_value;
       MParameterModulations[i] = 0.0;
-
-//----------
-
-//      queueAudioParameters();
-
-//----------
-
     }
   }
 
@@ -593,6 +580,13 @@ protected: // setup
 //------------------------------
 public: // plugin
 //------------------------------
+
+  void send_event(const clap_event_header_t* header, const clap_output_events_t* out_events) {
+    out_events->try_push(out_events,header);
+  }
+
+  //----------
+
 
   //TODO: MIP_EditorListener -> MIP_Plugin
 
@@ -717,9 +711,9 @@ public: // plugin
 
   clap_process_status process(const clap_process_t *process) override {
     flushAudioParams();
-    handle_events_input(process->in_events,process->out_events);
+    handle_input_events(process->in_events,process->out_events);
     handle_process(process);
-    handle_events_output(process->in_events,process->out_events);
+    handle_output_events(process->in_events,process->out_events);
     return CLAP_PROCESS_CONTINUE;
   }
 
@@ -742,13 +736,13 @@ public: // plugin
     //if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)          return &MNotePorts;
     if (strcmp(id,CLAP_EXT_PARAMS) == 0)              return &MParams;
     //if (strcmp(id,CLAP_EXT_POSIX_FD_SUPPORT) == 0)    return &MPosixFdSupport;
-    if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MPresetLoad;
+    //if (strcmp(id,CLAP_EXT_PRESET_LOAD) == 0)         return &MPresetLoad;
     //if (strcmp(id,CLAP_EXT_QUICK_CONTROLS) == 0)      return &MQuickControls;
     //if (strcmp(id,CLAP_EXT_RENDER) == 0)              return &MRender;
     if (strcmp(id,CLAP_EXT_STATE) == 0)               return &MState;
     //if (strcmp(id,CLAP_EXT_SURROUND) == 0)            return &MSurround;
     //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MThreadPool;
-    if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MTimerSupport;
+    //if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MTimerSupport;
     //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
     return nullptr;
   }
@@ -821,8 +815,8 @@ public: // params
   //----------
 
   void params_flush(const clap_input_events_t* in, const clap_output_events_t* out) override {
-    handle_events_input(in,out);
-    handle_events_output(in,out);
+    handle_input_events(in,out);
+    handle_output_events(in,out);
   }
 
 //------------------------------
@@ -1025,13 +1019,30 @@ public: // timer-support
 public: // state
 //------------------------------
 
-  //bool state_save(clap_ostream_t *stream) override {
-  //  return true;
-  //}
+//  bool state_save(const clap_ostream_t *stream) override {
+//    MIP_PRINT;
+//    const void* buffer = MParameterValues;
+//    uint64_t size = MParameters.size() * sizeof(float);
+//    uint32_t version = 0;
+//    //int64_t res;
+//    /*res =*/ stream->write(stream,&version,sizeof(uint32_t));
+//    /*res =*/ stream->write(stream,buffer,size);
+//    return true;
+//  }
 
   //----------
 
-  //bool state_load(clap_istream_t *stream) override {
+  //bool state_load(const clap_istream_t *stream) override {
+  //  MIP_PRINT;
+  //  uint32_t version;
+  //  //int64_t res;
+  //  /*res =*/ stream->read(stream,&version,sizeof(uint32_t));
+  //  if (version == 0) {
+  //    void* buffer = MParameterValues;
+  //    uint64_t size = MParameters.size() * sizeof(float);
+  //    /*res =*/ stream->read(stream,buffer,size);
+  //    // todo: redraw, update audio, etc..
+  //  }
   //  return true;
   //};
 

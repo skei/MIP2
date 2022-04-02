@@ -347,15 +347,69 @@ public: // gui
 public:
 //------------------------------
 
-  void handle_events_input(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
-    MIP_Plugin::handle_events_input(in_events,out_events);
-    uint32_t num_events = in_events->size(in_events);
-    for (uint32_t i=0; i<num_events; i++) {
-      const clap_event_header_t* header = in_events->get(in_events,i);
-      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-        MVoices.on_event(header);
-      }
+//  void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
+//    MIP_Plugin::handle_input_events(in_events,out_events);
+//    uint32_t num_events = in_events->size(in_events);
+//    for (uint32_t i=0; i<num_events; i++) {
+//      const clap_event_header_t* header = in_events->get(in_events,i);
+//      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+//        MVoices.on_event(header);
+//      }
+//    }
+//  }
+
+  //----------
+
+  void handle_note_on_event(clap_event_note_t* event) final {
+    MVoices.on_note_on(event);
+  }
+
+  void handle_note_off_event(clap_event_note_t* event) final {
+    MVoices.on_note_off(event);
+  }
+
+  void handle_note_end_event(clap_event_note_t* event) final {
+    MVoices.on_note_end(event);
+  }
+
+  void handle_note_choke_event(clap_event_note_t* event) final {
+    MVoices.on_note_choke(event);
+  }
+
+  void handle_note_expression_event(clap_event_note_expression_t* event) final {
+    switch (event->expression_id) {
+      case CLAP_NOTE_EXPRESSION_VOLUME:     MVoices.on_note_volume_expression(event);     break;
+      case CLAP_NOTE_EXPRESSION_PAN:        MVoices.on_note_pan_expression(event);        break;
+      case CLAP_NOTE_EXPRESSION_TUNING:     MVoices.on_note_tuning_expression(event);     break;
+      case CLAP_NOTE_EXPRESSION_VIBRATO:    MVoices.on_note_vibrato_expression(event);    break;
+      case CLAP_NOTE_EXPRESSION_EXPRESSION: MVoices.on_note_expression_expression(event); break;
+      case CLAP_NOTE_EXPRESSION_BRIGHTNESS: MVoices.on_note_brightness_expression(event); break;
+      case CLAP_NOTE_EXPRESSION_PRESSURE:   MVoices.on_note_pressure_expression(event);   break;
     }
+  }
+
+  void handle_midi_event(clap_event_midi_t* event) final {
+    MVoices.on_midi(event);
+  }
+
+  void handle_midi2_event(clap_event_midi2_t* event) final {
+    MVoices.on_midi2(event);
+  }
+
+  void handle_midi_sysex_event(clap_event_midi_sysex_t* event) final {
+    MVoices.on_midi_sysex(event);
+  }
+
+  void handle_transport_event(clap_event_transport_t* event) final {
+    //MVoices.transport(event);
+    }
+
+  void handle_parameter_event(clap_event_param_value_t* event) final {
+    MVoices.on_parameter_value(event);
+  }
+
+  void handle_modulation_event(clap_event_param_mod_t* event) final {
+    MVoices.on_parameter_modulation(event);
   }
 
   //----------

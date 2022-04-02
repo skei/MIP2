@@ -218,7 +218,7 @@ private:
     }
 */
 
-  void handle_events_input(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
+  void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);

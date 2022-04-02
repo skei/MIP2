@@ -803,11 +803,19 @@ public:
     //MIP_Print("%s : k %i s %i\n",MName,AKey,AState);
   }
 
-//  virtual void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex=0) {
-  virtual void on_widget_connect(uint32_t AParamIndex, uint32_t ASubIndex=0) {
-    //MIP_Print("%s : i %i\n",MName,AParameterIndex);
-    //MParameters[ASubIndex] = AParameter;
+  virtual void on_widget_connect(MIP_Parameter* AParameter) {
+    MParamIndex = AParameter->getIndex();
+    strncpy(MParamName,AParameter->getName(),255);
+    MValue = AParameter->getDefaultValue();
+    MDefaultValue = AParameter->getDefaultValue();
   }
+
+  //virtual void on_widget_connect(uint32_t AIndex, clap_param_info_t* AInfo) {
+  //  MParamIndex = AIndex;
+  //  strncpy(MParamName,AInfo->name,255);
+  //  MValue = AInfo->default_value;
+  //  MDefaultValue = AInfo->default_value;
+  //}
 
   //virtual void on_widget_connect(int32_t AParameterIndex) {
   //  //MIP_Print("%s : i %i\n",MName,AParameterIndex);

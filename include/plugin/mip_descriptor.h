@@ -2,6 +2,8 @@
 #define mip_descriptor_included
 //----------------------------------------------------------------------
 
+#if 0
+
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/mip_parameter.h"
@@ -42,6 +44,8 @@ public:
   const clap_plugin_descriptor_t  clap_descriptor = {0};
 
 };
+
+#endif // 0
 
 //----------------------------------------------------------------------
 #endif

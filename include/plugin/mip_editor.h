@@ -214,35 +214,24 @@ public:
 
   //----------
 
-//  void connect(MIP_Widget* AWidget, MIP_Parameter* AParameter) {
-//    AWidget->setParameter(AParameter);
-//    int32_t index = AParameter->getIndex();
-//    //connect(AWidget,index);
-//    MParamToWidget[index] = AWidget;
-//    //AWidget->on_widget_connect(AParamIndex,ASubParamIndex);
-//    clap_param_info_t info;
-//    MPlugin->params_get_info(index,&info);
+  void connect(MIP_Widget* AWidget, int32_t AParamIndex) {
+    //MIP_Print("index %i\n",AParamIndex);
+
+    AWidget->setParamIndex(AParamIndex);
+    MParamToWidget[AParamIndex] = AWidget;
+
+    clap_param_info_t info;
+    if (MPlugin->params_get_info(AParamIndex,&info)) {
+      MIP_Parameter* parameter = (MIP_Parameter*)info.cookie;
+      AWidget->on_widget_connect(parameter);
+    }
+
 //    const char* name = info.name;
 //    float def_value = info.default_value;
 //    AWidget->setDefaultValue(def_value);
 //    AWidget->setValue(def_value);
 //    AWidget->setParamName(name);
-//  }
 
-  //----------
-
-  void connect(MIP_Widget* AWidget, int32_t AParamIndex) {
-    //MIP_Print("index %i\n",AParamIndex);
-    AWidget->setParamIndex(AParamIndex);
-    MParamToWidget[AParamIndex] = AWidget;
-    //AWidget->on_widget_connect(AParamIndex,ASubParamIndex);
-    clap_param_info_t info;
-    MPlugin->params_get_info(AParamIndex,&info);
-    const char* name = info.name;
-    float def_value = info.default_value;
-    AWidget->setDefaultValue(def_value);
-    AWidget->setValue(def_value);
-    AWidget->setParamName(name);
   }
 
   //----------

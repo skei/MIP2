@@ -175,7 +175,14 @@ private:
           //  handle_transport_event((clap_event_transport_t*)header);
           //  break;
 
+          default:
+            send_event(header,out_events);
+            break;
+
         }
+      } // space id
+      else {
+        send_event(header,out_events);
       }
     }
   }
