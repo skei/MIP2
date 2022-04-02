@@ -2,6 +2,8 @@
 #define mip_menu_widget2_included
 //----------------------------------------------------------------------
 
+#if 0
+
 #include "gui/widgets/v0/mip_panel_widget.h"
 #include "gui/widgets/v0/mip_menu_item_widget2.h"
 
@@ -137,6 +139,8 @@ public:
   }
 
 };
+
+#endif // 0
 
 //----------------------------------------------------------------------
 #endif

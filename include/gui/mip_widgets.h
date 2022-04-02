@@ -12,7 +12,6 @@
 #include "gui/widgets/v0/mip_container_widget.h"
 #include "gui/widgets/v0/mip_curve_widget.h"
 #include "gui/widgets/v0/mip_drag_value_widget.h"
-#include "gui/widgets/v0/mip_drag_value2_widget.h"
 #include "gui/widgets/v0/mip_dual_slider_widget.h"
 #include "gui/widgets/v0/mip_graph_widget.h"
 #include "gui/widgets/v0/mip_grid_widget.h"

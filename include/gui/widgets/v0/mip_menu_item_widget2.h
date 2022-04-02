@@ -2,6 +2,8 @@
 #define mip_menu_item_widget2_included
 //----------------------------------------------------------------------
 
+#if 0
+
 #include "gui/widgets/v0/mip_text_widget.h"
 
 #define MIP_MENU_NOTIFY_CLOSE2 1
@@ -106,6 +108,10 @@ public:
 //  }
 
 };
+
+#endif // 0
+
+
 
 //----------------------------------------------------------------------
 #endif

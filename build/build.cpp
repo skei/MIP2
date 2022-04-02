@@ -21,7 +21,7 @@
 //#include "../source/plugins/sa_ports.cpp"
 
 //#include "../source/plugins/test_gui1.cpp"
-#include "../source/plugins/test_synth1.cpp"
+//#include "../source/plugins/test_synth1.cpp"
 
 
 //----------------------------------------------------------------------
@@ -32,7 +32,7 @@
 
 //TODO
 
-//#include "../source/test/test_gui.cpp"        // TODO: redraw before showing/opening..
+#include "../source/test/test_gui.cpp"        // TODO: redraw before showing/opening..
 //#include "../source/test/test_plugin.cpp"
 //#include "../source/test/test_synth.cpp"
 //#include "../source/test/test_win32.cpp"

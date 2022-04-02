@@ -8,6 +8,7 @@
 #include "base/types/mip_array.h"
 #include "base/types/mip_point.h"
 #include "base/types/mip_rect.h"
+#include "plugin/mip_parameter.h"
 #include "gui/mip_painter.h"
 
 //----------------------------------------------------------------------

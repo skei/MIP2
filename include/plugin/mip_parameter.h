@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "base/types/mip_array.h"
+#include "plugin/clap/mip_clap.h"
 
 class MIP_Parameter;
 typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
