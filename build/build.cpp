@@ -32,7 +32,7 @@
 
 //TODO
 
-#include "../source/test/test_gui.cpp"        // TODO: redraw before showing/opening..
+#include "../source/test/test_gui2.cpp"        // TODO: redraw before showing/opening..
 //#include "../source/test/test_plugin.cpp"
 //#include "../source/test/test_synth.cpp"
 //#include "../source/test/test_win32.cpp"

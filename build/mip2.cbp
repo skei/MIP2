@@ -422,6 +422,7 @@
 		<Unit filename="../include/gui/nogui/mip_nogui_painter.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui_surface.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui_window.h" />
+		<Unit filename="../include/gui/widgets/mip_panel_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_button_row_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_button_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_cached_widget.h" />
@@ -429,7 +430,6 @@
 		<Unit filename="../include/gui/widgets/v0/mip_circular_waveform_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_container_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_curve_widget.h" />
-		<Unit filename="../include/gui/widgets/v0/mip_drag_value2_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_drag_value_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_dual_slider_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_graph_widget.h" />
@@ -444,9 +444,7 @@
 		<Unit filename="../include/gui/widgets/v0/mip_knob_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_main_menu_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_menu_item_widget.h" />
-		<Unit filename="../include/gui/widgets/v0/mip_menu_item_widget2.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_menu_widget.h" />
-		<Unit filename="../include/gui/widgets/v0/mip_menu_widget2.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_modmatrix_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_pages_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_panel_widget.h" />
@@ -605,6 +603,10 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/test/test_gui.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_gui2.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

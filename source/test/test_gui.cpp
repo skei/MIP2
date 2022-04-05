@@ -9,6 +9,9 @@
 
 #include "../data/img/knob4_60x60_131.h"
 
+#include "gui/mip_widget2.h"
+
+
 //----------------------------------------------------------------------
 //
 // window
@@ -16,7 +19,8 @@
 //----------------------------------------------------------------------
 
 class myWindow
-: public MIP_Window {
+: public MIP_Window
+, public MIP_MenuListener {
 
 //------------------------------
 private:
@@ -44,25 +48,48 @@ public:
 public:
 //------------------------------
 
+  void on_menuEvent(int32_t AIndex) override {
+    MIP_Print("%i\n",AIndex);
+  }
+
+
+//------------------------------
+public:
+//------------------------------
+
   void init() {
 
-    //
+    // menus
 
     MIP_MenuWidget* file_menu = new MIP_MenuWidget(MIP_FRect());
-    file_menu->setItemLayout(1,1);
+    file_menu->setItemLayout(1,5);
+    file_menu->setItemSize(80,16);
     file_menu->appendMenuItem("New");
+    file_menu->appendMenuItem("Open");
+    file_menu->appendMenuItem("Save");
+    file_menu->appendMenuItem("---");
+    file_menu->appendMenuItem("Exit");
+
+    MIP_MenuWidget* host_menu = new MIP_MenuWidget(MIP_FRect());
+    host_menu->setItemLayout(1,1);
+    host_menu->setItemSize(80,16);
+    host_menu->appendMenuItem("Reset");
 
     MIP_MenuWidget* plugin_menu = new MIP_MenuWidget(MIP_FRect());
     plugin_menu->setItemLayout(1,3);
+    plugin_menu->setItemSize(80,16);
     plugin_menu->appendMenuItem("Load");
     plugin_menu->appendMenuItem("Unload");
     plugin_menu->appendMenuItem("Open Editor");
 
-    // main menu
+    //
 
-    MIP_MainMenuWidget* main_menu = new MIP_MainMenuWidget(MIP_FRect(25));
+    MIP_MainMenuWidget* main_menu = new MIP_MainMenuWidget(MIP_FRect(25),this);
     appendWidget(main_menu);
+    //main_menu->setItemSize(32,16);
+
     main_menu->appendMenu("File",file_menu);
+    main_menu->appendMenu("Host",host_menu);
     main_menu->appendMenu("Plugin",plugin_menu);
 
     // knob bitmap
@@ -92,6 +119,7 @@ public:
 
     //
     appendWidget(file_menu);
+    appendWidget(host_menu);
     appendWidget(plugin_menu);
 
   }

@@ -34,10 +34,10 @@ protected:
   MIP_MenuListener*   MListener     = nullptr;
   MIP_MenuItems       MItems;
   uint32_t            MBorderSize   = 5; //0; //1;
-  float               MMenuWidth    = 96;
-  float               MMenuHeight   = 16;
-  uint32_t            MItemWidth    = 96;
-  uint32_t            MItemHeight   = 16;
+  float               MMenuWidth    = 0;//96;
+  float               MMenuHeight   = 0;//16;
+  uint32_t            MItemWidth    = 0;//96;
+  uint32_t            MItemHeight   = 0;//16;
   int32_t             MSelectedItem = -1;
   int32_t             MPrevSelected = -1;
   uint32_t            MItemsX       = 1;
@@ -80,52 +80,20 @@ public:
 public:
 //------------------------------
 
-  virtual int32_t getSelectedItem() {
-    return MSelectedItem;
-  }
-
-  virtual uint32_t getNumItems() {
-    return MItems.size();
-  }
-
-  virtual const char* getItem(uint32_t AIndex) {
-    return MItems[AIndex];
-  }
+  virtual int32_t     getSelectedItem()               { return MSelectedItem; }
+  virtual uint32_t    getNumItems()                   { return MItems.size(); }
+  virtual const char* getItem(uint32_t AIndex)        { return MItems[AIndex]; }
+  virtual bool        getAlwaysOpen()                 { return MAlwaysOpen; }
+  virtual void        setAlwaysOpen(bool state=true)  { MAlwaysOpen = state; }
 
   //----------
 
-  virtual void setListener(MIP_MenuListener* AListener) {
-    MListener = AListener;
-  }
-
-  virtual void setItemWidth(int32_t AWidth) {
-    //if (AWidth < 0) MItemWidth = (MRect.w * 100 / (-AWidth);
-    //else
-    MItemWidth = AWidth;
-  }
-
-  virtual void setItemHeight(int32_t AHeight) {
-    //if (AHeight < 0) MItemHeight = (MRect.h * 100 / (-AHeight);
-    //else
-    MItemHeight = AHeight;
-  }
-
-  virtual void setItemSize(int32_t AWidth, int32_t AHeight) {
-    //if (AHeight < 0) MItemHeight = (MRect.h * 100 / (-AHeight);
-    //else
-    MItemWidth = AWidth;
-    MItemHeight = AHeight;
-  }
-
-  virtual void setItemLayout(int32_t x, int32_t y) {
-    MItemsX = x;
-    MItemsY = y;
-  }
-
-  virtual void setMenuMirror(bool x, bool y) {
-    MMirrorX = x;
-    MMirrorY = y;
-  }
+  virtual void setListener(MIP_MenuListener* AListener)     { MListener = AListener; }
+  virtual void setItemWidth(int32_t AWidth)                 { MItemWidth = AWidth; }
+  virtual void setItemHeight(int32_t AHeight)               { MItemHeight = AHeight; }
+  virtual void setItemSize(int32_t AWidth, int32_t AHeight) { MItemWidth = AWidth; MItemHeight = AHeight; }
+  virtual void setItemLayout(int32_t x, int32_t y)          { MItemsX = x; MItemsY = y; }
+  virtual void setMenuMirror(bool x, bool y)                { MMirrorX = x; MMirrorY = y; }
 
 //------------------------------
 public:
@@ -223,18 +191,18 @@ public:
 public:
 //------------------------------
 
-  virtual void appendMenuItem2(const char* ALabel) {
-    MIP_MenuItemWidget* text;
-    text = new MIP_MenuItemWidget( MIP_FRect(50,20) );
-    text->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    text->setText(ALabel);
-    appendWidget(text);
-  }
+  //virtual void appendMenuItem2(const char* ALabel) {
+  //  MIP_MenuItemWidget* text;
+  //  text = new MIP_MenuItemWidget( MIP_FRect(50,20) );
+  //  text->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+  //  text->setText(ALabel);
+  //  appendWidget(text);
+  //}
 
   //----------
 
-  virtual void open2(int32_t AXpos, int32_t AYpos) {
-  }
+  //virtual void open2(int32_t AXpos, int32_t AYpos) {
+  //}
 
 //------------------------------
 public:

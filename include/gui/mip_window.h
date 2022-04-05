@@ -124,6 +124,18 @@ public:
     #endif
   }
 
+  MIP_Painter* getWindowPainter() {
+    return MWindowPainter;
+  }
+
+  MIP_Painter* getBufferPainter() {
+    #ifdef MIP_NO_WINDOW_BUFFERING
+    return MWindowPainter;
+    #else
+    return nullptr;
+    #endif
+  }
+
   MIP_Painter* getPainter() {
     #ifdef MIP_NO_WINDOW_BUFFERING
     return MWindowPainter;

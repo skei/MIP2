@@ -53,3 +53,12 @@
 * widget flag: proportional
   (knobs, circular widget, etc)
 
+* double clicking
+
+* MIP_Skin, MIP_Theme, MIP_Styling
+
+  a set of basic drawing functions you combine and use to drawing widgets?
+  on_widget_paint..
+
+
+

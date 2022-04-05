@@ -34,7 +34,8 @@ enum MIP_ECorners {
   MIP_CORNER_LEFT_TOP            = 0x01,
   MIP_CORNER_LEFT_BOTTOM         = 0x02,
   MIP_CORNER_RIGHT_TOP           = 0x04,
-  MIP_CORNER_RIGHT_BOTTOM        = 0x08
+  MIP_CORNER_RIGHT_BOTTOM        = 0x08,
+  MIP_CORNER_ALL                 = 0xFF
 };
 
 //----------------------------------------------------------------------

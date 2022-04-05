@@ -2,7 +2,7 @@
 #define mip_widget_included
 //----------------------------------------------------------------------
 
-#define MIP_WIDGET_MAX_PARAMS 8
+//#define MIP_WIDGET_MAX_PARAMS 8
 
 #include "mip.h"
 #include "base/types/mip_array.h"
@@ -27,35 +27,35 @@ struct MIP_WidgetFlags {
   ////bool canMove          = false;
   ////bool canResize        = false;
 
-  bool active           = true;
-  bool visible          = true;
-  bool opaque           = false;
-  bool interacting      = false;
-  bool sizePercent      = false;
-  bool posPercent       = false;
-  bool autoCursor       = true;
-  bool autoHint         = false;
-  bool autoClip         = true;
-  bool autoSize         = false;
-  bool autoMouseLock    = false;
-  bool autoMouseHide    = false;
-  bool autoMouseRedraw  = false;
-  bool canDrag          = false;
-  bool canDrop          = false;
+  bool active           = true;     // send events to widget
+  bool visible          = true;     // draw widget
+  bool opaque           = false;    // fully covers its parent (no transparent areas)
+  bool interacting      = false;    // is currently interacting with widget
+  bool sizePercent      = false;    // widget size is percent (of client area), not pixels
+  bool posPercent       = false;    // widget pos is percent (of client area), not pixels
+  bool autoCursor       = true;     // set mouse cursor automatically when hovering over a widget (entering)
+  bool autoHint         = false;    // send hint automatically when hovering over a widget (entering)
+  bool autoClip         = true;     // clip child widgets
+  bool autoSize         = false;    // set size to content (child widgets) size (not used yet)
+  bool autoMouseLock    = false;    // lock/glue mouse position when interacting (hiding)
+  bool autoMouseHide    = false;    // hide mouse cursor when interacting
+  bool autoMouseRedraw  = false;    // redraw widget at start/end of interaction
+  bool canDrag          = false;    // not used yet
+  bool canDrop          = false;    // not used yet
 };
 
 //----------
 
 struct MIP_WidgetLayout {
-  uint32_t    alignment     = MIP_WIDGET_ALIGN_PARENT;
-  MIP_FRect   innerBorder   = MIP_FRect(0,0);   // space between widgets and parent edges
-  MIP_FPoint  spacing       = MIP_FPoint(0,0);  // space inbetween widgets
-  MIP_FRect   extraBorder   = MIP_FRect(0,0);   // extra space/border for each widget
-  bool        contentBorder = true;             // true if content rect includes innerBorder of parent
-  MIP_FRect   outerBorder   = MIP_FRect(0,0);
-  MIP_FPoint  minSize       = MIP_FPoint(0,0);
-  MIP_FPoint  maxSize       = MIP_FPoint(999999,999999);
-  float       scale         = 1.0;
+  uint32_t    alignment     = MIP_WIDGET_ALIGN_PARENT;    // how to align widget related to parent widget
+  MIP_FRect   innerBorder   = MIP_FRect(0,0);             // space between widgets and parent edges
+  MIP_FPoint  spacing       = MIP_FPoint(0,0);            // space inbetween widgets
+  MIP_FRect   extraBorder   = MIP_FRect(0,0);             // extra space/border for each widget
+  bool        contentBorder = true;                       // true if content rect includes innerBorder of parent
+  MIP_FRect   outerBorder   = MIP_FRect(0,0);             //
+  MIP_FPoint  minSize       = MIP_FPoint(0,0);            // minimum widget size (when resizing)
+  MIP_FPoint  maxSize       = MIP_FPoint(999999,999999);  // maximum widget size (when resizing)
+  float       scale         = 1.0;                        // widget drawing scale..
 };
 
 //----------------------------------------------------------------------
@@ -66,32 +66,33 @@ class MIP_Widget {
 protected:
 //------------------------------
 
-  const char*     MName                   = "MIP_Widget";
-  const char*     MHint                   = "widget";
-  int32_t         MCursor                 = MIP_CURSOR_DEFAULT;
-  MIP_Widget*     MOwnerWindow            = nullptr;        // = MIP_Window;
-  MIP_Widget*     MParent                 = nullptr;
-  MIP_Widgets     MChildren               = {};
-  int32_t         MWidgetIndex            = -1;
-  MIP_FRect       MRect                   = {};
-  MIP_FRect       MInitialRect            = MIP_FRect(0,0); // starting rect (used by layout
-  MIP_FRect       MContentRect            = MIP_FRect(0,0); // rect surrounding child widgets
-  float           MChildrenXOffset        = 0.0f;           // offset (relative to parent rect)
-  float           MChildrenYOffset        = 0.0f;           // -"-
-  float           MModValue               = 0.0;
-  float           MValue                  = 0.0;
-  float           MDefaultValue           = 0.0;
-
-//  MIP_Parameter*  MParameter              = nullptr;
-
-  int32_t         MParamIndex             = -1;
-  char            MParamName[256]         = {0};
-
-//MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};            // ptrs to connected parameters
+  const char*     MName                   = "MIP_Widget";         //
+  const char*     MHint                   = "widget";             //
+  int32_t         MCursor                 = MIP_CURSOR_DEFAULT;   //
+  MIP_Widget*     MOwnerWindow            = nullptr;              // = MIP_Window;
+  MIP_Widget*     MParent                 = nullptr;              //
+  MIP_Widgets     MChildren               = {};                   //
+  int32_t         MWidgetIndex            = -1;                   //
+  MIP_FRect       MRect                   = {};                   //
+  MIP_FRect       MInitialRect            = MIP_FRect(0,0);       // starting rect (used by layout/alignment
+  MIP_FRect       MContentRect            = MIP_FRect(0,0);       // rect containing/surrounding child widgets
+  float           MChildrenXOffset        = 0.0f;                 // offset (relative to parent rect)
+  float           MChildrenYOffset        = 0.0f;                 // -"-
+  float           MModValue               = 0.0;                  //
+  float           MValue                  = 0.0;                  //
+  float           MDefaultValue           = 0.0;                  //
+  int32_t         MParamIndex             = -1;                   //
+  char            MParamName[256]         = {0};                  //
+  //MIP_Parameter*  MParameter              = nullptr;              //
+  //MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};       //
 
 //------------------------------
 public:
 //------------------------------
+
+  // public to make it easier to access,
+  // and avoid needing tons and tons of setters/getters
+  // hacky/dangerous.. but, well..
 
   MIP_WidgetFlags   flags   = {};
   MIP_WidgetLayout  layout  = {};
@@ -160,23 +161,20 @@ public: // set
   virtual void setValue(float AValue)                       { MValue = AValue; }
   virtual void setWidth(float AWidth)                       { MRect.w = AWidth; }
 
-//virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
-//virtual void setOwner(MIP_BaseWindow* AOwner)             { MOwner = AOwner; }
-//virtual void setSelectedParameter(uint32_t AIndex)        { MSelectedParameter = AIndex; }
+  virtual void setParamIndex(int32_t AIndex)                { MParamIndex = AIndex; }
+  virtual void setParamName(const char* AName)              { strcpy(MParamName,AName); }
+
+  //virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
+  //virtual void setOwner(MIP_BaseWindow* AOwner)             { MOwner = AOwner; }
+  //virtual void setSelectedParameter(uint32_t AIndex)        { MSelectedParameter = AIndex; }
 
   //virtual void setParameter(MIP_Parameter* p) {
   //  MParameter = p;
   //  MParamIndex = MParameter->getIndex();
   //}
 
-  virtual void setParamIndex(int32_t AIndex)                { MParamIndex = AIndex; }
-
   //virtual void setSubParamIndex(uint32_t AIndex)            { MSubParamIndex = AIndex; }
 
-  virtual void setParamName(const char* AName) {
-    //strncpy(MParamName,AName,256);
-    strcpy(MParamName,AName);
-  }
 
 //------------------------------
 public:
@@ -196,9 +194,9 @@ public:
   virtual MIP_FRect       getRect()                   { return MRect; }
   virtual float           getValue()                  { return MValue; }
 
-  //MIP_Parameter*          getParameter()              { return MParameter; }
   virtual int32_t         getParamIndex()             { return MParamIndex; }
 
+  //MIP_Parameter*          getParameter()              { return MParameter; }
   //virtual int32_t         getSubParamIndex()          { return MSubParamIndex; }
 
 //------------------------------

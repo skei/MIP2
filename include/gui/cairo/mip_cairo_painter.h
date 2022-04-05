@@ -310,31 +310,31 @@ public: // get
 public: // set
 //------------------------------
 
-  void setColor(MIP_Color AColor) {
+  void setColor(MIP_Color AColor) override {
     cairo_set_source_rgba(MCairo,AColor.r,AColor.g,AColor.b,AColor.a);
   }
 
   //----------
 
-  void setLineWidth(float ASize) {
+  void setLineWidth(float ASize) override {
     cairo_set_line_width(MCairo,ASize);
   }
 
   //----------
 
-  void setLineDash(double* ADashes, uint32_t ANumDashes, float AOffset) {
+  void setLineDash(double* ADashes, uint32_t ANumDashes, float AOffset) override {
     cairo_set_dash(MCairo,ADashes,ANumDashes,AOffset);
   }
 
   //----------
 
-  void setLineCap(uint32_t ALineCap) {
+  void setLineCap(uint32_t ALineCap) override {
     cairo_set_line_cap(MCairo,mip_line_cap[ALineCap]);
   }
 
   //----------
 
-  void setLineJoin(uint32_t ALineJoin) {
+  void setLineJoin(uint32_t ALineJoin) override {
     cairo_set_line_join(MCairo,mip_line_join[ALineJoin]);
   }
 
@@ -345,7 +345,7 @@ public: // set
     size is 10.0.
   */
 
-  void setFontSize(float ASize) {
+  void setFontSize(float ASize) override {
     cairo_set_font_size(MCairo,ASize);
   }
 
@@ -357,7 +357,7 @@ public: // set
     other references to it.
   */
 
-  void setFontFace(const char* AName, uint32_t ASlant, uint32_t AWeight) {
+  void setFontFace(const char* AName, uint32_t ASlant, uint32_t AWeight) override {
     cairo_select_font_face(MCairo,AName,mip_font_slant[ASlant],mip_font_weight[AWeight]);
   }
 
@@ -365,21 +365,21 @@ public: // set
 public: // path
 //------------------------------
 
-  void strokePath(bool APreserve=false) {
+  void strokePath(bool APreserve=false) override {
     if (APreserve) cairo_stroke_preserve(MCairo);
     else cairo_stroke(MCairo);
   }
 
   //----------
 
-  void fillPath(bool APreserve=false) {
+  void fillPath(bool APreserve=false) override {
     if (APreserve) cairo_fill_preserve(MCairo);
     else cairo_fill(MCairo);
   }
 
   //----------
 
-  void fillPathGradient(float AX1, float AY1, float AX2, float AY2, MIP_Color AColor1, MIP_Color AColor2, bool AVertical, bool APreserve=false) {
+  void fillPathGradient(float AX1, float AY1, float AX2, float AY2, MIP_Color AColor1, MIP_Color AColor2, bool AVertical, bool APreserve=false) override {
     cairo_pattern_t *pat;
     if (AVertical) pat = cairo_pattern_create_linear( AX1,AY1, AX1,AY2 );
     else pat = cairo_pattern_create_linear( AX1,AY1, AX2,AY1 );
@@ -395,19 +395,19 @@ public: // path
 public:
 //------------------------------
 
-  void moveTo(float AX, float AY) {
+  void moveTo(float AX, float AY) override {
     cairo_move_to(MCairo,AX,AY);
   }
 
   //----------
 
-  void lineTo(float AX, float AY) {
+  void lineTo(float AX, float AY) override {
     cairo_line_to(MCairo,AX,AY);
   }
 
   //----------
 
-  void curveTo(float AX2, float AY2, float AX3, float AY3, float AX4, float AY4) {
+  void curveTo(float AX2, float AY2, float AX3, float AY3, float AX4, float AY4) override {
     cairo_curve_to(MCairo,AX2,AY2,AX3,AY3,AX4,AY4);
   }
 
@@ -418,7 +418,7 @@ public:
     http://www.cairographics.org/FAQ/#sharp_lines
   */
 
-  void horizLine(float AX1, float AY1, float AX2) {
+  void horizLine(float AX1, float AY1, float AX2) override {
     cairo_move_to(MCairo,AX1,AY1+0.5);
     cairo_line_to(MCairo,AX2,AY1+0.5);
     cairo_stroke(MCairo);
@@ -426,7 +426,7 @@ public:
 
   //----------
 
-  void vertLine(float AX1, float AY1, float AY2) {
+  void vertLine(float AX1, float AY1, float AY2) override {
     cairo_move_to(MCairo,AX1+0.5,AY1);
     cairo_line_to(MCairo,AX1+0.5,AY2);
     cairo_stroke(MCairo);
@@ -434,7 +434,7 @@ public:
 
   //----------
 
-  void rectangle(MIP_FRect ARect) {
+  void rectangle(MIP_FRect ARect) override {
     cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w,ARect.h);
   }
 
@@ -444,7 +444,7 @@ public:
   //             32
 
   //void roundedRectangle(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t ACorners) {
-  void roundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners) {
+  void roundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners) override {
     int32_t x = ARect.x;
     int32_t y = ARect.y;
     int32_t w = ARect.w;//+1;
@@ -466,7 +466,7 @@ public:
   //----------
 
   //void ellipse(float AX1, float AY1, float AX2, float AY2) {
-  void ellipse(MIP_FRect ARect) {
+  void ellipse(MIP_FRect ARect) override {
     float w2 = ARect.w * 0.5f;
     float h2 = ARect.h * 0.5f;
     cairo_save(MCairo);
@@ -479,7 +479,7 @@ public:
 
   //----------
 
-  void arc(float AX1, float AY1, float AX2, float AY2, float AAngle1, float AAngle2) {
+  void arc(float AX1, float AY1, float AX2, float AY2, float AAngle1, float AAngle2) override {
     float w2 = (float)(AX2 - AX1 + 1) * 0.5f;
     float h2 = (float)(AY2 - AY1 + 1) * 0.5f;
     float a1 = (AAngle1+0.75) * (M_PI*2.0);
@@ -495,18 +495,27 @@ public:
 
   //----------
 
-  void triangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3) {
+  void triangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3) override {
     cairo_move_to(MCairo,AX1,AY1);
     cairo_line_to(MCairo,AX2,AY2);
     cairo_line_to(MCairo,AX3,AY3);
     cairo_line_to(MCairo,AX1,AY1);
   }
 
+  //----------
+
+  void text(float AXpos, float AYpos, const char* AText) override {
+    cairo_move_to(MCairo,AXpos,AYpos);
+    cairo_show_text(MCairo,AText);
+  }
+
+  //----------
+
 //------------------------------
 public: // draw
 //------------------------------
 
-  void drawPoint(float AX, float AY, MIP_Color AColor) {
+  void drawPoint(float AX, float AY, MIP_Color AColor) override {
     setColor(AColor);
     ellipse(MIP_FRect(AX-0.5f,AY-0.5f,AX+0.5f,AY+0.5f));
     //_rectangle(AX,AY,AX+1,AY+1);
@@ -515,7 +524,7 @@ public: // draw
 
   //----------
 
-  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, float AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     moveTo(AXpos1,AYpos1);
@@ -535,7 +544,7 @@ public: // draw
 
   //----------
 
-  void drawRectangle(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawRectangle(MIP_FRect ARect, MIP_Color AColor, float AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     rectangle(ARect);
@@ -545,7 +554,7 @@ public: // draw
   //----------
 
   //void drawRoundedRectangle(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t AC) {
-  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor, float AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     //roundedRectangle(AX1,AY1,AX2,AY2,AR,AC);
@@ -555,7 +564,7 @@ public: // draw
 
   //----------
 
-  void drawArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor, float AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     arc(ARect.x,ARect.y,ARect.x2(),ARect.y2(),AAngle1,AAngle2);
@@ -564,7 +573,7 @@ public: // draw
 
   //----------
 
-  void drawEllipse(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawEllipse(MIP_FRect ARect, MIP_Color AColor, float AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     ellipse(ARect);
@@ -573,7 +582,7 @@ public: // draw
 
   //----------
 
-  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor, float AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     triangle(AX1,AY1,AX2,AY2,AX3,AY3);
@@ -582,7 +591,7 @@ public: // draw
 
   //----------
 
-  void drawCurve(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, float AX4, float AY4, MIP_Color AColor, uint32_t AWidth=1) {
+  void drawCurve(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, float AX4, float AY4, MIP_Color AColor, float AWidth=1) {
     setColor(AColor);
     setLineWidth(AWidth);
     moveTo(AX1,AY1);
