@@ -81,33 +81,57 @@ void print_json_descriptor(const clap_plugin_descriptor_t* desc) {
 
 //----------
 
+//   CLAP_PARAM_IS_STEPPED
+//   CLAP_PARAM_IS_PERIODIC
+//   CLAP_PARAM_IS_HIDDEN
+//   CLAP_PARAM_IS_READONLY
+//   CLAP_PARAM_IS_BYPASS
+//   CLAP_PARAM_IS_AUTOMATABLE
+//   CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE
+//   CLAP_PARAM_IS_AUTOMATABLE_PER_CHANNEL
+//   CLAP_PARAM_IS_AUTOMATABLE_PER_PORT
+//   CLAP_PARAM_IS_MODULATABLE
+//   CLAP_PARAM_IS_MODULATABLE_PER_NOTE
+//   CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
+//   CLAP_PARAM_IS_MODULATABLE_PER_PORT
+//   CLAP_PARAM_REQUIRES_PROCESS
+
 void print_json_parameter(uint32_t index, const clap_param_info_t* param) {
-  const char* name              = param->name;
-  const char* module            = param->module;
-  uint32_t    flags             = param->flags;
-  bool        is_stepped        = flags & CLAP_PARAM_IS_STEPPED;
-  bool        is_per_note       = flags & CLAP_PARAM_IS_PER_NOTE;
-  bool        is_per_channel    = flags & CLAP_PARAM_IS_PER_CHANNEL;
-  bool        is_per_port       = flags & CLAP_PARAM_IS_PER_PORT;
-  bool        is_periodic       = flags & CLAP_PARAM_IS_PERIODIC;
-  bool        is_hidden         = flags & CLAP_PARAM_IS_HIDDEN;
-  bool        is_bypass         = flags & CLAP_PARAM_IS_BYPASS;
-  bool        is_readonly       = flags & CLAP_PARAM_IS_READONLY;
-  bool        is_modulatable    = flags & CLAP_PARAM_IS_MODULATABLE;
-  bool        requires_process  = flags & CLAP_PARAM_REQUIRES_PROCESS;
-    json.objectBegin(nullptr);
+  const char* name                        = param->name;
+  const char* module                      = param->module;
+  uint32_t    flags                       = param->flags;
+  bool        is_stepped                  = flags & CLAP_PARAM_IS_STEPPED;
+  bool        is_periodic                 = flags & CLAP_PARAM_IS_PERIODIC;
+  bool        is_hidden                   = flags & CLAP_PARAM_IS_HIDDEN;
+  bool        is_readonly                 = flags & CLAP_PARAM_IS_READONLY;
+  bool        is_bypass                   = flags & CLAP_PARAM_IS_BYPASS;
+  bool        is_automatable              = flags & CLAP_PARAM_IS_AUTOMATABLE;
+  bool        is_automatable_per_note     = flags & CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE;
+  bool        is_automatable_per_channel  = flags & CLAP_PARAM_IS_AUTOMATABLE_PER_CHANNEL;
+  bool        is_automatable_per_port     = flags & CLAP_PARAM_IS_AUTOMATABLE_PER_PORT;
+  bool        is_modulatable              = flags & CLAP_PARAM_IS_MODULATABLE;
+  bool        is_modulatable_per_note     = flags & CLAP_PARAM_IS_MODULATABLE_PER_NOTE;
+  bool        is_modulatable_per_channel  = flags & CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL;
+  bool        is_modulatable_per_port     = flags & CLAP_PARAM_IS_MODULATABLE_PER_PORT;
+  bool        requires_process            = flags & CLAP_PARAM_REQUIRES_PROCESS;
+
+  json.objectBegin(nullptr);
     json.u32("id",(uint32_t*)&param->id);
     //json.u32("flags",(uint32_t*)&param->flags);
     json.objectBegin("flags");
       json.boolean("CLAP_PARAM_IS_STEPPED",&is_stepped);
-      json.boolean("CLAP_PARAM_IS_PER_NOTE",&is_per_note);
-      json.boolean("CLAP_PARAM_IS_PER_CHANNEL",&is_per_channel);
-      json.boolean("CLAP_PARAM_IS_PER_PORT",&is_per_port);
       json.boolean("CLAP_PARAM_IS_PERIODIC",&is_periodic);
       json.boolean("CLAP_PARAM_IS_HIDDEN",&is_hidden);
-      json.boolean("CLAP_PARAM_IS_BYPASS",&is_bypass);
       json.boolean("CLAP_PARAM_IS_READONLY",&is_readonly);
+      json.boolean("CLAP_PARAM_IS_BYPASS",&is_bypass);
+      json.boolean("CLAP_PARAM_IS_AUTOMATABLE",&is_automatable);
+      json.boolean("CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE",&is_automatable_per_note);
+      json.boolean("CLAP_PARAM_IS_AUTOMATABLE_PER_CHANNEL",&is_automatable_per_channel);
+      json.boolean("CLAP_PARAM_IS_AUTOMATABLE_PER_PORT",&is_automatable_per_port);
       json.boolean("CLAP_PARAM_IS_MODULATABLE",&is_modulatable);
+      json.boolean("CLAP_PARAM_IS_MODULATABLE_PER_NOTE",&is_modulatable_per_note);
+      json.boolean("CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL",&is_modulatable_per_channel);
+      json.boolean("CLAP_PARAM_IS_MODULATABLE_PER_PORT",&is_modulatable_per_port);
       json.boolean("CLAP_PARAM_REQUIRES_PROCESS",&requires_process);
     json.objectEnd();
     json.string("name",(const char**)&name);
@@ -162,16 +186,22 @@ void print_stdout_parameter(uint32_t index, const clap_param_info_t* param) {
   const char* name              = param->name;
   const char* module            = param->module;
   uint32_t    flags             = param->flags;
-  bool        is_stepped        = (flags & CLAP_PARAM_IS_STEPPED);
-  bool        is_per_note       = (flags & CLAP_PARAM_IS_PER_NOTE);
-  bool        is_per_channel    = (flags & CLAP_PARAM_IS_PER_CHANNEL);
-  bool        is_per_port       = (flags & CLAP_PARAM_IS_PER_PORT);
-  bool        is_periodic       = (flags & CLAP_PARAM_IS_PERIODIC);
-  bool        is_hidden         = (flags & CLAP_PARAM_IS_HIDDEN);
-  bool        is_bypass         = (flags & CLAP_PARAM_IS_BYPASS); // (1 << 6);
-  bool        is_readonly       = (flags & CLAP_PARAM_IS_READONLY);
-  bool        is_modulatable    = (flags & CLAP_PARAM_IS_MODULATABLE);
-  bool        requires_process  = (flags & CLAP_PARAM_REQUIRES_PROCESS);
+
+  bool        is_stepped                  = flags & CLAP_PARAM_IS_STEPPED;
+  bool        is_periodic                 = flags & CLAP_PARAM_IS_PERIODIC;
+  bool        is_hidden                   = flags & CLAP_PARAM_IS_HIDDEN;
+  bool        is_readonly                 = flags & CLAP_PARAM_IS_READONLY;
+  bool        is_bypass                   = flags & CLAP_PARAM_IS_BYPASS;
+  bool        is_automatable              = flags & CLAP_PARAM_IS_AUTOMATABLE;
+  bool        is_automatable_per_note     = flags & CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE;
+  bool        is_automatable_per_channel  = flags & CLAP_PARAM_IS_AUTOMATABLE_PER_CHANNEL;
+  bool        is_automatable_per_port     = flags & CLAP_PARAM_IS_AUTOMATABLE_PER_PORT;
+  bool        is_modulatable              = flags & CLAP_PARAM_IS_MODULATABLE;
+  bool        is_modulatable_per_note     = flags & CLAP_PARAM_IS_MODULATABLE_PER_NOTE;
+  bool        is_modulatable_per_channel  = flags & CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL;
+  bool        is_modulatable_per_port     = flags & CLAP_PARAM_IS_MODULATABLE_PER_PORT;
+  bool        requires_process            = flags & CLAP_PARAM_REQUIRES_PROCESS;
+
   printf("\n");
   printf("  id: %i\n",param->id);
   printf("  name:          %s\n",name);
@@ -180,16 +210,22 @@ void print_stdout_parameter(uint32_t index, const clap_param_info_t* param) {
   printf("  max_value:     %.3f\n",param->max_value);
   printf("  default_value: %.3f\n",param->default_value);
   printf("  flags:         0x%04X\n",param->flags);
-  if (is_stepped)       printf("    CLAP_PARAM_IS_STEPPED\n");
-  if (is_per_note)      printf("    CLAP_PARAM_IS_PER_NOTE\n");
-  if (is_per_channel)   printf("    CLAP_PARAM_IS_PER_CHANNEL\n");
-  if (is_per_port)      printf("    CLAP_PARAM_IS_PER_PORT\n");
-  if (is_periodic)      printf("    CLAP_PARAM_IS_PERIODIC\n");
-  if (is_hidden)        printf("    CLAP_PARAM_IS_HIDDEN\n");
-  if (is_bypass)        printf("    CLAP_PARAM_IS_BYPASS\n");
-  if (is_readonly)      printf("    CLAP_PARAM_IS_READONLY\n");
-  if (is_modulatable)   printf("    CLAP_PARAM_IS_MODULATABLE\n");
-  if (requires_process) printf("    CLAP_PARAM_REQUIRES_PROCESS\n");
+
+  if (is_stepped)                 printf("    CLAP_PARAM_IS_STEPPED\n");
+  if (is_periodic)                printf("    CLAP_PARAM_IS_PERIODIC\n");
+  if (is_hidden)                  printf("    CLAP_PARAM_IS_HIDDEN\n");
+  if (is_readonly)                printf("    CLAP_PARAM_IS_READONLY\n");
+  if (is_bypass)                  printf("    CLAP_PARAM_IS_BYPASS\n");
+  if (is_automatable)             printf("    CLAP_PARAM_IS_AUTOMATABLE");
+  if (is_automatable_per_note)    printf("    CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE\n");
+  if (is_automatable_per_channel) printf("    CLAP_PARAM_IS_AUTOMATABLE_PER_CHANNEL\n");
+  if (is_automatable_per_port)    printf("    CLAP_PARAM_IS_AUTOMATABLE_PER_PORT\n");
+  if (is_modulatable)             printf("    CLAP_PARAM_IS_MODULATABLE\n");
+  if (is_modulatable_per_note)    printf("    CLAP_PARAM_IS_MODULATABLE_PER_NOTE\n");
+  if (is_modulatable_per_channel) printf("    CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL\n");
+  if (is_modulatable_per_port)    printf("    CLAP_PARAM_IS_MODULATABLE_PER_PORT\n");
+  if (requires_process)           printf("    CLAP_PARAM_REQUIRES_PROCESS\n");
+
 }
 
 //----------------------------------------------------------------------
