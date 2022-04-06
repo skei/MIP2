@@ -60,9 +60,33 @@ private:
 //
 
   clap_param_info_t myParameters[3] = {
-    { 0, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Param1 AM", "Params", 0.0, 1.0, 0.5 },
-    { 1, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "Param2 A",  "Params", 0.0, 1.0, 0.5 },
-    { 2, 0,                                                     nullptr, "Param3",    "Params", 0.0, 1.0, 0.5 }
+    { 0,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Param1",
+      "Params",
+      0.0,
+      1.0,
+      0.5
+    },
+    { 1,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE,
+      nullptr,
+      "Param2",
+      "Params",
+      0.0,
+      1.0,
+      0.5
+    },
+    { 2,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE,
+      nullptr,
+      "Param3",
+      "Params",
+      0.0,
+      1.0,
+      0.5
+    }
   };
 
   //----------

@@ -156,7 +156,7 @@ private:
 private:
 //------------------------------
 
-  void handle_parameter_event(const clap_event_param_value_t* param_value) final {
+  void handle_parameter_event(clap_event_param_value_t* param_value) final {
     MIP_Plugin::handle_parameter_event(param_value);
     need_recalc = true;
   }

@@ -60,11 +60,13 @@ public: // extensions
   virtual bool      audio_ports_config_select(clap_id config_id) { return true; }
   virtual bool      event_filter_accepts(uint16_t space_id, uint16_t event_type) { return true; }
   virtual bool      gui_is_api_supported(const char *api, bool is_floating) { return false; }
+  virtual bool      gui_get_preferred_api(const char **api, bool *is_floating) { return false; }
   virtual bool      gui_create(const char *api, bool is_floating) { return false; }
   virtual void      gui_destroy() {}
   virtual bool      gui_set_scale(double scale) { return false; }
   virtual bool      gui_get_size(uint32_t *width, uint32_t *height) { return false; }
   virtual bool      gui_can_resize() { return false; }
+  virtual bool      gui_get_resize_hints(clap_gui_resize_hints_t *hints) { return false; }
   virtual bool      gui_adjust_size(uint32_t *width, uint32_t *height) { return false; }
   virtual bool      gui_set_size(uint32_t width, uint32_t height) { return false; }
   virtual bool      gui_set_parent(const clap_window_t *window) { return false; }
@@ -273,6 +275,11 @@ private:
     return plug->gui_is_api_supported(api,is_floating);
   }
 
+  static bool clap_plugin_gui_get_preferred_api_callback(const clap_plugin_t *plugin, const char **api, bool *is_floating) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->gui_get_preferred_api(api,is_floating);
+  }
+
   static bool clap_plugin_gui_create_callback(const clap_plugin_t *plugin, const char *api, bool is_floating) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_create(api,is_floating);
@@ -296,6 +303,11 @@ private:
   static bool clap_plugin_gui_can_resize_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->gui_can_resize();
+  }
+
+  static bool clap_plugin_gui_get_resize_hints_callback(const clap_plugin_t *plugin, clap_gui_resize_hints_t *hints) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->gui_get_resize_hints(hints);
   }
 
   static bool clap_plugin_gui_adjust_size_callback(const clap_plugin_t *plugin, uint32_t *width, uint32_t *height) {
@@ -333,15 +345,19 @@ private:
     return plug->gui_hide();
   }
 
+
+
 protected:
 
   clap_plugin_gui_t MGui = {
     clap_plugin_gui_is_api_supported_callback,
+    clap_plugin_gui_get_preferred_api_callback,
     clap_plugin_gui_create_callback,
     clap_plugin_gui_destroy_callback,
     clap_plugin_gui_set_scale_callback,
     clap_plugin_gui_get_size_callback,
     clap_plugin_gui_can_resize_callback,
+    clap_plugin_gui_get_resize_hints_callback,
     clap_plugin_gui_adjust_size_callback,
     clap_plugin_gui_set_size_callback,
     clap_plugin_gui_set_parent_callback,

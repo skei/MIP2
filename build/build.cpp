@@ -15,13 +15,12 @@
 //
 //----------------------------------------------------------------------
 
-//#include "../source/plugins/sa_botage.cpp"
 //#include "../source/plugins/sa_ladspa.cpp"
 //#include "../source/plugins/sa_mini.cpp"
 //#include "../source/plugins/sa_ports.cpp"
 
 //#include "../source/plugins/test_gui1.cpp"
-//#include "../source/plugins/test_synth1.cpp"
+#include "../source/plugins/test_synth1.cpp"
 
 
 //----------------------------------------------------------------------
@@ -30,10 +29,5 @@
 //
 //----------------------------------------------------------------------
 
-//TODO
-
-#include "../source/test/test_gui2.cpp"        // TODO: redraw before showing/opening..
-//#include "../source/test/test_plugin.cpp"
-//#include "../source/test/test_synth.cpp"
-//#include "../source/test/test_win32.cpp"
+//#include "../source/test/test_gui2.cpp"
 

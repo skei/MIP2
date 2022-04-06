@@ -97,7 +97,13 @@ public: // extensions
   virtual bool event_registry_query(const char* space_name, uint16_t* space_id) { return false; }
   virtual void file_reference_changed() {}
   virtual void file_reference_set_dirty(clap_id resource_id) {}
-  virtual bool gui_resize(uint32_t width, uint32_t height) { return false; }
+
+  virtual void gui_resize_hints_changed() {}
+  virtual bool gui_request_resize(uint32_t width, uint32_t height) { return false; }
+  virtual bool gui_request_show() { return false; }
+  virtual bool gui_request_hide() { return false; }
+  virtual void gui_closed(bool was_destroyed) {}
+
   virtual void latency_changed() {}
   virtual void log_log(clap_log_severity severity, const char *msg) {}
   virtual void midi_mappings_changed() {}
@@ -323,15 +329,37 @@ public:
 
 private:
 
-  static bool clap_host_gui_resize_callback(const clap_host *host, uint32_t width, uint32_t height) {
+  static void clap_host_gui_resize_hints_changed_callback(const clap_host *host) {
     MIP_ClapHostImplementation* host_ = (MIP_ClapHostImplementation*)host->host_data;
-    return host_->gui_resize(width,height);
+    host_->gui_resize_hints_changed();
   }
 
-public:
+  static bool clap_host_gui_request_resize_callback(const clap_host *host, uint32_t width, uint32_t height) {
+    MIP_ClapHostImplementation* host_ = (MIP_ClapHostImplementation*)host->host_data;
+    return host_->gui_request_resize(width,height);
+  }
+
+  static bool clap_host_gui_request_show_callback(const clap_host *host) {
+    MIP_ClapHostImplementation* host_ = (MIP_ClapHostImplementation*)host->host_data;
+    return host_->gui_request_show();
+  }
+
+  static bool clap_host_gui_request_hide_callback(const clap_host *host) {
+    MIP_ClapHostImplementation* host_ = (MIP_ClapHostImplementation*)host->host_data;
+    return host_->gui_request_hide();
+  }
+
+  static void clap_host_gui_closed_callback(const clap_host *host, bool was_destroyed) {
+    MIP_ClapHostImplementation* host_ = (MIP_ClapHostImplementation*)host->host_data;
+    host_->gui_closed(was_destroyed);
+  }
 
   clap_host_gui MGui = {
-    clap_host_gui_resize_callback
+    clap_host_gui_resize_hints_changed_callback,
+    clap_host_gui_request_resize_callback,
+    clap_host_gui_request_show_callback,
+    clap_host_gui_request_hide_callback,
+    clap_host_gui_closed_callback
   };
 
   //--------------------
