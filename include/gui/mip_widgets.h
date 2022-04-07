@@ -12,7 +12,6 @@
 // v0
 //----------------------------------------------------------------------
 
-
 #include "gui/widgets/v0/mip_button_row_widget.h"
 #include "gui/widgets/v0/mip_button_widget.h"
 #include "gui/widgets/v0/mip_cached_widget.h"
@@ -32,9 +31,11 @@
 #include "gui/widgets/v0/mip_knob3_widget.h"
 #include "gui/widgets/v0/mip_knob4_widget.h"
 #include "gui/widgets/v0/mip_knob_widget.h"
-#include "gui/widgets/v0/mip_main_menu_widget.h"
+
 #include "gui/widgets/v0/mip_menu_item_widget.h"
 #include "gui/widgets/v0/mip_menu_widget.h"
+#include "gui/widgets/v0/mip_main_menu_widget.h"
+
 #include "gui/widgets/v0/mip_modmatrix_widget.h"
 #include "gui/widgets/v0/mip_pages_widget.h"
 //#include "gui/widgets/v0/mip_panel_widget.h"

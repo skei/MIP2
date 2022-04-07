@@ -16,8 +16,8 @@
 */
 
 #include "base/utils/mip_math.h"
-//#include "gui/mip_widget.h"
-#include "gui/widgets/v0/mip_panel_widget.h"
+#include "gui/mip_widgets.h"
+//#include "gui/widgets/v0/mip_panel_widget.h"
 
 class MIP_GridWidget
 //: public MIP_Widget {

@@ -8,8 +8,10 @@
     menu size?
 */
 
-#include "gui/widgets/v0/mip_menu_item_widget.h"
-#include "gui/widgets/v0/mip_panel_widget.h"
+//#include "gui/widgets/v0/mip_menu_item_widget.h"
+//#include "gui/widgets/v0/mip_panel_widget.h"
+#include "gui/mip_widgets.h"
+
 
 //typedef vector<char*> MIP_MenuItems;
 typedef MIP_Array<char*> MIP_MenuItems;

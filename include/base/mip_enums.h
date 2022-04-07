@@ -26,7 +26,7 @@ enum MIP_EEdges {
   MIP_EDGE_BOTTOM                = 0x02,
   MIP_EDGE_LEFT                  = 0x04,
   MIP_EDGE_RIGHT                 = 0x08,
-  MIP_EDGES_ALL                  = 0x0f
+  MIP_EDGE_ALL                   = 0xFF
 };
 
 enum MIP_ECorners {

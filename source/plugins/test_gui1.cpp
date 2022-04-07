@@ -204,12 +204,16 @@ public:
 
       // left_panel
 
-      MIP_PanelWidget* left_panel = new MIP_PanelWidget(MIP_FRect(150));
+      MIP_PanelWidget* left_panel = new MIP_PanelWidget(MIP_FRect(250));
       MEditorWidget->appendWidget(left_panel);
       left_panel->setBackgroundColor(0.6);
       left_panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
       left_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
       left_panel->layout.spacing = 5;
+
+        //
+
+        //
 
         MIP_ButtonRowWidget* button_row = new MIP_ButtonRowWidget(MIP_FRect(20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI );
         left_panel->appendWidget(button_row);
@@ -407,6 +411,98 @@ public:
           page1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
           page1->setFillBackground(true);
           page1->setBackgroundColor(MIP_Color(0.65,0.6,0.6));
+          page1->layout.innerBorder = MIP_FRect(10,10,10,10);
+          page1->layout.spacing = 5;
+
+//            MIP_PanelWidget* p1 = new MIP_PanelWidget(MIP_FRect(100,25));
+//            p1->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p1->setFillBackground(true);
+//            p1->setFillBackground(true);
+//            p1->setFillGradient();
+//            p1->setBackgroundColor(MIP_COLOR_LIGHT_GRAY);
+//            p1->setDrawBorder(true);
+//            p1->setBorderColor(MIP_COLOR_BLACK);
+//            p1->setBorderEdges(MIP_EDGE_ALL);
+//            p1->setBorderThickness(1);
+//            p1->setBorderRoundedCorners(MIP_CORNER_ALL);
+//            p1->setBorderRoundedRadius(10);
+//            page1->appendWidget(p1);
+
+            MIP_PanelWidget* p;
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            p->setDrawBorder();
+            p->setFillBackground(false);
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            p->setDrawBorder();
+            p->setBorderEdges(MIP_EDGE_LEFT + MIP_EDGE_RIGHT);
+            p->setRoundedCorners(MIP_CORNER_LEFT_TOP + MIP_CORNER_RIGHT_TOP + MIP_CORNER_RIGHT_BOTTOM);
+            p->setFillBackground(false);
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            p->setFillBackground();
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            p->setFillGradient();
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            p->setFillGradient();
+            p->setDrawBorder();
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            p->setFillGradient();
+            p->setDrawBorder();
+            p->setRoundedCorners(MIP_CORNER_ALL);
+            p->setRoundedRadius(6);
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            p->setFillGradient();
+            p->setDrawBorder();
+            p->setRoundedCorners(MIP_CORNER_LEFT_TOP + MIP_CORNER_RIGHT_TOP);
+            p->setRoundedRadius(6);
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            //p->setFillBackground();
+            p->setFillGradient();
+            p->setDrawBorder();
+            p->setBorderThickness(2);
+            p->setBorderEdges(MIP_EDGE_LEFT + MIP_EDGE_TOP + MIP_EDGE_RIGHT);
+            p->setRoundedCorners(MIP_CORNER_LEFT_TOP);
+            p->setRoundedRadius(12);
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            p->setDrawBorder();
+            p->setRoundedCorners(MIP_CORNER_ALL);
+            p->setRoundedRadius(9);
+
+            p = new MIP_PanelWidget(MIP_FRect(100,25));
+            page1->appendWidget(p);
+            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+            p->setFillGradient();
+            p->setGradientColor1(MIP_COLOR_LIGHT_GREEN);
+            p->setGradientColor2(MIP_COLOR_DARK_GREEN);
+            p->setDrawBorder();
+            p->setRoundedCorners(MIP_CORNER_ALL);
+            p->setRoundedRadius(11);
 
           MIP_PanelWidget* page2 = new MIP_PanelWidget(MIP_FRect());
           page2->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;

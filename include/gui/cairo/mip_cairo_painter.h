@@ -2,6 +2,9 @@
 #define mip_cairo_painter_included
 //----------------------------------------------------------------------
 
+//#define MIP_CAIRO_SHIFT_HALF_PIXEL
+
+
 /*
   Most surface types allow accessing the surface without using Cairo functions.
   If you do this, keep in mind that it is mandatory that you call
@@ -201,6 +204,8 @@ public: // surface
     cairo_surface_mark_dirty(MSurface);
   }
 
+  //----------
+
   void dirty(MIP_FRect ARect) override {
     //MIP_PRINT;
     //cairo_surface_mark_dirty_rectangle(MCairoSurface,ARect.x,ARect.y,ARect.x2(),ARect.y2());
@@ -263,7 +268,7 @@ public: // clip
     //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     //resetClip();
     cairo_reset_clip(MCairo);
-    cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w+1,ARect.h+1);
+    cairo_rectangle(MCairo,ARect.x-1,ARect.y-1,ARect.w+1,ARect.h+1);
     cairo_clip(MCairo);
     //cairo_new_path(MCairo); // path not consumed by clip() ???
   }
@@ -380,6 +385,12 @@ public: // path
   //----------
 
   void fillPathGradient(float AX1, float AY1, float AX2, float AY2, MIP_Color AColor1, MIP_Color AColor2, bool AVertical, bool APreserve=false) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AX1 += 0.5;
+      AY1 += 0.5;
+      AX2 += 0.5;
+      AY2 += 0.5;
+    #endif
     cairo_pattern_t *pat;
     if (AVertical) pat = cairo_pattern_create_linear( AX1,AY1, AX1,AY2 );
     else pat = cairo_pattern_create_linear( AX1,AY1, AX2,AY1 );
@@ -396,18 +407,34 @@ public:
 //------------------------------
 
   void moveTo(float AX, float AY) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AX += 0.5;
+      AY += 0.5;
+    #endif
     cairo_move_to(MCairo,AX,AY);
   }
 
   //----------
 
   void lineTo(float AX, float AY) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AX += 0.5;
+      AY += 0.5;
+    #endif
     cairo_line_to(MCairo,AX,AY);
   }
 
   //----------
 
   void curveTo(float AX2, float AY2, float AX3, float AY3, float AX4, float AY4) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AX2 += 0.5;
+      AY2 += 0.5;
+      AX3 += 0.5;
+      AY3 += 0.5;
+      AX4 += 0.5;
+      AY4 += 0.5;
+    #endif
     cairo_curve_to(MCairo,AX2,AY2,AX3,AY3,AX4,AY4);
   }
 
@@ -419,23 +446,37 @@ public:
   */
 
   void horizLine(float AX1, float AY1, float AX2) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AX1 += 0.5;
+      AY1 += 0.5;
+      AX2 += 0.5;
+    #endif
     cairo_move_to(MCairo,AX1,AY1+0.5);
     cairo_line_to(MCairo,AX2,AY1+0.5);
-    cairo_stroke(MCairo);
+    //cairo_stroke(MCairo);
   }
 
   //----------
 
   void vertLine(float AX1, float AY1, float AY2) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AX1 += 0.5;
+      AY1 += 0.5;
+      AY2 += 0.5;
+    #endif
     cairo_move_to(MCairo,AX1+0.5,AY1);
     cairo_line_to(MCairo,AX1+0.5,AY2);
-    cairo_stroke(MCairo);
+    //cairo_stroke(MCairo);
   }
 
   //----------
 
   void rectangle(MIP_FRect ARect) override {
-    cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w,ARect.h);
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      cairo_rectangle(MCairo,ARect.x+0.5,ARect.y+0.5,ARect.w,ARect.h);
+    #else
+      cairo_rectangle(MCairo,ARect.x,ARect.y,ARect.w,ARect.h);
+    #endif
   }
 
   //----------
@@ -444,23 +485,90 @@ public:
   //             32
 
   //void roundedRectangle(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t ACorners) {
-  void roundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners) override {
+  void roundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges) override {
     int32_t x = ARect.x;
     int32_t y = ARect.y;
     int32_t w = ARect.w;//+1;
     int32_t h = ARect.h;//+1;
     int32_t r = ARadius;
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      x += 0.5;
+      y += 0.5;
+    #endif
     float degrees = M_PI / 180.0;
+
+    bool left         = (AEdges & MIP_EDGE_LEFT);
+    bool right        = (AEdges & MIP_EDGE_RIGHT);
+    bool top          = (AEdges & MIP_EDGE_TOP);
+    bool bottom       = (AEdges & MIP_EDGE_BOTTOM);
+    bool left_top     = (ACorners & MIP_CORNER_LEFT_TOP);
+    bool left_bottom  = (ACorners & MIP_CORNER_LEFT_BOTTOM);
+    bool right_top    = (ACorners & MIP_CORNER_RIGHT_TOP);
+    bool right_bottom = (ACorners & MIP_CORNER_RIGHT_BOTTOM);
+
     cairo_new_sub_path(MCairo);
-    if (ACorners & MIP_CORNER_RIGHT_TOP) cairo_arc(MCairo, x+w-r-0, y+r, r, -90*degrees, 0*degrees);
+
+    // .1
+    // ..
+
+    // start upper right
+
+    if (right_top) cairo_arc(MCairo, x+w-r-0, y+r, r, -90*degrees, 0*degrees);
     else cairo_move_to(MCairo, x+w-0, y);
-    if (ACorners & MIP_CORNER_RIGHT_BOTTOM) cairo_arc(MCairo, x+w-r-0, y+h-r-0, r, 0*degrees, 90*degrees);
-    else cairo_line_to(MCairo, x+w-0, y+h-0);
-    if (ACorners & MIP_CORNER_LEFT_BOTTOM) cairo_arc(MCairo, x+r, y+h-r-0, r, 90*degrees, 180*degrees);
-    else cairo_line_to(MCairo, x, y+h-0);
-    if (ACorners & MIP_CORNER_LEFT_TOP) cairo_arc(MCairo, x+r, y+r, r, 180*degrees, 270*degrees);
-    else cairo_line_to(MCairo, x, y);
-    cairo_close_path(MCairo);
+
+    // right top to bottom
+
+    if (right) {
+      if (right_bottom) cairo_arc(MCairo, x+w-r-0, y+h-r-0, r, 0*degrees, 90*degrees);
+      else cairo_line_to(MCairo, x+w-0, y+h-0 );
+    }
+    else {
+      if (right_bottom) cairo_arc(MCairo, x+w-r-0, y+h-r-0, r, 0*degrees, 90*degrees);
+      else cairo_move_to(MCairo, x+w-0, y+h-0 );
+    }
+
+    // bottom right to left
+
+    if (bottom) {
+      if (left_bottom) cairo_arc(MCairo, x+r, y+h-r-0, r, 90*degrees, 180*degrees);
+      else cairo_line_to(MCairo, x, y+h-0);
+
+    }
+    else {
+      if (left_bottom) cairo_arc(MCairo, x+r, y+h-r-0, r, 90*degrees, 180*degrees);
+      else cairo_move_to(MCairo, x, y+h-0);
+    }
+
+    // left bottom to top
+
+    if (left) {
+      if (left_top) cairo_arc(MCairo, x+r, y+r, r, 180*degrees, 270*degrees);
+      else cairo_line_to(MCairo, x, y);
+    }
+    else {
+      if (left_top) cairo_arc(MCairo, x+r, y+r, r, 180*degrees, 270*degrees);
+      else cairo_move_to(MCairo, x, y);
+    }
+
+    // top let to right
+
+    if (top) {
+      if (right_top) cairo_line_to(MCairo, x+w-r, y);
+      else cairo_line_to(MCairo, x+w, y);
+      //cairo_close_path(MCairo);
+    }
+    else {
+      //cairo_move_to(MCairo, x+w-0, y);
+      if (right_top) cairo_move_to(MCairo, x+w-r, y);
+      else cairo_move_to(MCairo, x+w, y);
+      //cairo_close_path(MCairo);
+    }
+
+    //double x,y;
+    //cairo_get_current_point(MCairo,&x,&y);
+                         //    // ..
+    //cairo_close_path(MCairo);
+
   }
 
   //----------
@@ -470,7 +578,11 @@ public:
     float w2 = ARect.w * 0.5f;
     float h2 = ARect.h * 0.5f;
     cairo_save(MCairo);
-    cairo_translate(MCairo,ARect.x+w2,ARect.y+h2);
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      cairo_translate(MCairo,ARect.x+w2+0.5,ARect.y+h2+0.5);
+    #else
+      cairo_translate(MCairo,ARect.x+w2,ARect.y+h2);
+    #endif
     cairo_scale(MCairo,w2,h2);
     cairo_new_sub_path(MCairo); // ???
     cairo_arc(MCairo,0,0,1,0,(M_PI*2.0));
@@ -480,6 +592,12 @@ public:
   //----------
 
   void arc(float AX1, float AY1, float AX2, float AY2, float AAngle1, float AAngle2) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AX1 += 0.5;
+      AY1 += 0.5;
+      AX2 += 0.5;
+      AY2 += 0.5;
+    #endif
     float w2 = (float)(AX2 - AX1 + 1) * 0.5f;
     float h2 = (float)(AY2 - AY1 + 1) * 0.5f;
     float a1 = (AAngle1+0.75) * (M_PI*2.0);
@@ -496,6 +614,14 @@ public:
   //----------
 
   void triangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AX1 += 0.5;
+      AY1 += 0.5;
+      AX2 += 0.5;
+      AY2 += 0.5;
+      AX3 += 0.5;
+      AY3 += 0.5;
+    #endif
     cairo_move_to(MCairo,AX1,AY1);
     cairo_line_to(MCairo,AX2,AY2);
     cairo_line_to(MCairo,AX3,AY3);
@@ -505,6 +631,10 @@ public:
   //----------
 
   void text(float AXpos, float AYpos, const char* AText) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AXpos += 0.5;
+      AYpos += 0.5;
+    #endif
     cairo_move_to(MCairo,AXpos,AYpos);
     cairo_show_text(MCairo,AText);
   }
@@ -554,11 +684,11 @@ public: // draw
   //----------
 
   //void drawRoundedRectangle(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t AC) {
-  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor, float AWidth=1) override {
+  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges, MIP_Color AColor, float AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
     //roundedRectangle(AX1,AY1,AX2,AY2,AR,AC);
-    roundedRectangle(ARect,ARadius,ACorners);
+    roundedRectangle(ARect,ARadius,ACorners,AEdges);
     strokePath();
   }
 
@@ -614,9 +744,9 @@ public: // fill
 
   //----------
 
-  void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor) override {
+  void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges, MIP_Color AColor) override {
     setColor(AColor);
-    roundedRectangle(ARect,ARadius,ACorners);
+    roundedRectangle(ARect,ARadius,ACorners,AEdges);
     fillPath();
   }
 
@@ -686,6 +816,10 @@ public: // text
 //------------------------------
 
   void drawText(float AXpos, float AYpos, const char* AText, MIP_Color AColor) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AXpos += 0.5;
+      AYpos += 0.5;
+    #endif
     setColor(AColor);
     cairo_move_to(MCairo,AXpos,AYpos);
     cairo_show_text(MCairo,AText);
@@ -702,6 +836,12 @@ public: // text
     float y = ARect.y;
     float w = ARect.w; //+1;
     float h = ARect.h; //+1;
+
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      x += 0.5;
+      y += 0.5;
+    #endif
+
     cairo_text_extents(MCairo,AText,&e);
     switch (AAlignment) {
       case MIP_TEXT_ALIGN_LEFT:
@@ -737,6 +877,10 @@ public: // image
 //------------------------------
 
   void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AXpos += 0.5;
+      AYpos += 0.5;
+    #endif
     cairo_surface_t* srf = ABitmap->createCairoSurface();
     cairo_save(MCairo);
     cairo_set_source_surface(MCairo,srf,0,0);
@@ -749,6 +893,10 @@ public: // image
   //----------
 
   void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource) override {
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      AXpos += 0.5;
+      AYpos += 0.5;
+    #endif
     drawImage(AXpos,AYpos,ASource,MIP_FRect(0,0,ASource->getWidth(),ASource->getHeight()));
   }
 
@@ -758,7 +906,11 @@ public: // image
     cairo_surface_t* srf = ASource->getCairoSurface();
     cairo_save(MCairo);
     cairo_set_source_surface(MCairo,srf,/*0,0*/AXpos-ASrc.x,AYpos-ASrc.y);
-    cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      cairo_rectangle(MCairo,AXpos+0.5,AYpos+0.5,ASrc.w,ASrc.h);
+    #else
+      cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
+    #endif
     cairo_fill(MCairo);
     cairo_restore(MCairo);
   }
@@ -771,8 +923,14 @@ public: // image
     cairo_surface_t* srf = ASource->getCairoSurface();
     cairo_save(MCairo);
     cairo_set_source_surface(MCairo,srf,0,0/*ASrcX,ASrcY*/);
-    cairo_rectangle(MCairo,ADst.x,ADst.y,ADst.w,ADst.h);
-    cairo_translate(MCairo,ADst.x,ADst.y);
+    #ifdef MIP_CAIRO_SHIFT_HALF_PIXEL
+      cairo_rectangle(MCairo,ADst.x+0.5,ADst.y+0.5,ADst.w,ADst.h);
+      cairo_translate(MCairo,ADst.x,ADst.y);
+    #else
+      cairo_rectangle(MCairo,ADst.x,ADst.y,ADst.w,ADst.h);
+      cairo_translate(MCairo,ADst.x,ADst.y);
+    #endif
+
     cairo_scale(MCairo,xscale,yscale);
     cairo_fill(MCairo);
     cairo_restore(MCairo);

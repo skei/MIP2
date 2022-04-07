@@ -69,7 +69,7 @@ public:
   virtual void horizLine(float AX1, float AY1, float AX2) {}
   virtual void vertLine(float AX1, float AY1, float AY2) {}
   virtual void rectangle(MIP_FRect ARect) {}
-  virtual void roundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners) {}
+  virtual void roundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges) {}
   virtual void ellipse(MIP_FRect ARect) {}
   virtual void arc(float AX1, float AY1, float AX2, float AY2, float AAngle1, float AAngle2) {}
   virtual void triangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3) {}
@@ -80,13 +80,13 @@ public:
   virtual void drawPoint(float AX, float AY, MIP_Color AColor) {}
   virtual void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, float AWidth=1) {}
   virtual void drawRectangle(MIP_FRect ARect, MIP_Color AColor, float AWidth=1) {}
-  virtual void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor, float AWidth=1) {}
+  virtual void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges, MIP_Color AColor, float AWidth=1) {}
   virtual void drawArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor, float AWidth=1) {}
   virtual void drawEllipse(MIP_FRect ARect, MIP_Color AColor, float AWidth=1) {}
   virtual void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor, float AWidth=1) {}
 
   virtual void fillRectangle(MIP_FRect ARect, MIP_Color AColor) {}
-  virtual void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor) {}
+  virtual void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges, MIP_Color AColor) {}
   virtual void fillArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor) {}
   virtual void fillEllipse(MIP_FRect ARect, MIP_Color AColor) {}
   virtual void fillTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor) {}

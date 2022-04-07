@@ -447,7 +447,7 @@
 		<Unit filename="../include/gui/widgets/v0/mip_menu_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_modmatrix_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_pages_widget.h" />
-		<Unit filename="../include/gui/widgets/v0/mip_panel_widget.h" />
+		<Unit filename="../include/gui/widgets/v0/mip_panel_widget0.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_plot_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_range_slider_widget.h" />
 		<Unit filename="../include/gui/widgets/v0/mip_saheader_widget.h" />
@@ -521,7 +521,6 @@
 		<Unit filename="../include/plugin/lv2/mip_lv2_entry.h" />
 		<Unit filename="../include/plugin/lv2/mip_lv2_host.h" />
 		<Unit filename="../include/plugin/lv2/mip_lv2_plugin.h" />
-		<Unit filename="../include/plugin/mip_descriptor.h" />
 		<Unit filename="../include/plugin/mip_editor.h" />
 		<Unit filename="../include/plugin/mip_host.h" />
 		<Unit filename="../include/plugin/mip_parameter.h" />
@@ -538,7 +537,6 @@
 		<Unit filename="../include/plugin/vst3/mip_vst3_utils.h" />
 		<Unit filename="../source/apps/clap-host/arguments.hpp" />
 		<Unit filename="../source/apps/clap-host/audio_file.hpp" />
-		<Unit filename="../source/apps/clap-host/clap-host" />
 		<Unit filename="../source/apps/clap-host/compile.sh" />
 		<Unit filename="../source/apps/clap-host/host.hpp" />
 		<Unit filename="../source/apps/clap-host/json.hpp" />
@@ -546,7 +544,6 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/apps/clap-host/midi1.mid" />
 		<Unit filename="../source/apps/clap-host/midi_file.hpp" />
 		<Unit filename="../source/apps/clap-host/midi_player.hpp" />
 		<Unit filename="../source/apps/clap-host/plugin.hpp" />
@@ -555,9 +552,10 @@
 		<Unit filename="../source/apps/clap-host/print.py" />
 		<Unit filename="../source/apps/clap-host/process.hpp" />
 		<Unit filename="../source/apps/clap-host/readme.txt" />
-		<Unit filename="../source/apps/clap-host/repro1.wav" />
-		<Unit filename="../source/apps/clap-host/test.json" />
-		<Unit filename="../source/apps/clap-host/test2.wav" />
+		<Unit filename="../source/apps/clap-host/test_midi.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../source/apps/clap-host/xjson.h" />
 		<Unit filename="../source/plugins/sa_botage.cpp">
 			<Option compile="0" />
