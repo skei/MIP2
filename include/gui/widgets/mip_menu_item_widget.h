@@ -2,7 +2,7 @@
 #define mip_menu_item_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/v0/mip_text_widget.h"
+#include "gui/widgets/mip_text_widget.h"
 
 #define MIP_MENU_NOTIFY_CLOSE 1
 

@@ -4,7 +4,7 @@
 
 // TODO:
 
-#include "gui/widgets/v0/mip_slider_widget.h"
+#include "gui/widgets/mip_slider_widget.h"
 
 //----------------------------------------------------------------------
 

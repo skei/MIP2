@@ -2,8 +2,8 @@
 #define mip_text_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/mip_widgets.h"
-//#include "gui/widgets/v0/mip_panel_widget.h"
+//#include "gui/mip_widgets.h"
+#include "gui/widgets/mip_panel_widget.h"
 
 //----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ protected:
 //------------------------------
 
   const char* MText           = "";
-  float       MTextSize       = 10;
+  float       MTextSize       = 12;
   uint32_t    MTextAlignment  = MIP_TEXT_ALIGN_LEFT;
   MIP_Color   MTextColor      = MIP_COLOR_BLACK;
   MIP_FRect   MTextOffset     = MIP_FRect(2,2,2,2);
@@ -61,6 +61,7 @@ public:
     if (MDrawText) {
       const char* txt = MText;
       if (MDrawParamName && (MParamIndex >= 0)) txt = MParamName;
+      APainter->setFontSize(MTextSize);
       APainter->drawText(rect,txt,MTextAlignment,MTextColor);
     }
   }
@@ -99,3 +100,4 @@ public:
 
 //----------------------------------------------------------------------
 #endif
+

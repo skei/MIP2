@@ -548,7 +548,6 @@ public: // MIP_Widget
   */
 
   void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
-    //MIP_PRINT;
     invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
   }
 

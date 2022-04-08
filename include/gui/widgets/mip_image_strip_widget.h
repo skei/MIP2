@@ -2,7 +2,7 @@
 #define mip_template_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/v0/mip_drag_value_widget.h"
+#include "gui/widgets/mip_drag_value_widget.h"
 
 MIP_Surface*    MSurface           = nullptr;
 //bool            MImageSurfaceAllocated  = false;

@@ -2,10 +2,10 @@
 #define mip_main_menu_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/v0/mip_menu_widget.h"
-#include "gui/widgets/v0/mip_menu_item_widget.h"
-//#include "gui/widgets/v0/mip_panel_widget.h"
-#include "gui/widgets/v0/mip_button_widget.h"
+#include "gui/widgets/mip_menu_widget.h"
+#include "gui/widgets/mip_menu_item_widget.h"
+//#include "gui/widgets/mip_panel_widget.h"
+#include "gui/widgets/mip_button_widget.h"
 
 typedef MIP_Array<MIP_MenuWidget*> MIP_MenuWidgets;
 

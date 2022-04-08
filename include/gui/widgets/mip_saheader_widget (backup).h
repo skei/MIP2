@@ -1,12 +1,17 @@
-#ifndef mip_saheader_widget_included
-#define mip_saheader_widget_included
+#ifndef mip_saheader_widget0_included
+#define mip_saheader_widget0_included
 //----------------------------------------------------------------------
+
+#include "gui/widgets.h"
+
+//class MIP_SAHeaderWidget0
+//: public MIP_PanelWidget {
 
 //#include "gui/widgets/mip_panel_widget.h"
 //
 ////----------
 //
-//class MIP_SAHeaderWidget
+//class MIP_SAHeaderWidget0
 //: public MIP_PanelWidget {
 //
 ////------------------------------
@@ -21,7 +26,7 @@
 //public:
 ////------------------------------
 //
-//  MIP_SAHeaderWidget(MIP_FRect ARect/*, const char* AName, const char* AVersion, MIP_Drawable* ATarget*/)
+//  MIP_SAHeaderWidget0(MIP_FRect ARect/*, const char* AName, const char* AVersion, MIP_Drawable* ATarget*/)
 //  : MIP_PanelWidget(ARect) {
 //
 //    setName("MIP_SAHeaderWidget");
@@ -50,7 +55,7 @@
 //
 //  }
 //
-////  virtual ~MIP_SAHeaderWidget() {
+////  virtual ~MIP_SAHeaderWidget0() {
 ////  }
 //
 ////------------------------------

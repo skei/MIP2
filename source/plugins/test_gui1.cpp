@@ -13,6 +13,8 @@
 #include "gui/mip_widgets.h"
 
 #include "../data/img/knob4_60x60_131.h"
+#include "../data/img/sa_logo_40_trans_black.h"
+#include "../data/img/mip2_trans_129x34.h"
 
 //----------------------------------------------------------------------
 //
@@ -21,6 +23,8 @@
 //----------------------------------------------------------------------
 
 #define NUM_GRAPH_MODULES 8
+const char* buttonrow_text[6] = { "1", "2", "3", "four", "5", "6" };
+
 //----------
 
 const char* myFeatures[] = {
@@ -65,9 +69,9 @@ private:
       nullptr,
       "Param1",
       "Params",
-      0.0,
-      1.0,
-      0.5
+      0.1,
+      4.0,
+      1.0
     },
     { 1,
       CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE,
@@ -92,8 +96,14 @@ private:
   //----------
 
   MIP_Widget*   MEditorWidget = nullptr;
+
   MIP_Bitmap*   MKnobBitmap   = nullptr;
+  MIP_Bitmap*   MLogoBitmap   = nullptr;
+  MIP_Bitmap*   MMip2Bitmap   = nullptr;
+
   MIP_Surface*  MKnobSurface  = nullptr;
+  MIP_Surface*  MLogoSurface  = nullptr;
+  MIP_Surface*  MMip2Surface  = nullptr;
 
 //------------------------------
 public:
@@ -109,18 +119,79 @@ public:
   }
 
 //------------------------------
+public: // plugin
+//------------------------------
+
+  bool init() final {
+    for (uint32_t i=0; i<3; i++) {
+      appendParameter(new MIP_Parameter( &myParameters[i] ));
+    }
+    return MIP_Plugin::init();
+  }
+
+  //----------
+
+  const void* get_extension(const char *id) final {
+    if (strcmp(id,CLAP_EXT_GUI) == 0) return &MGui;
+    return MIP_Plugin::get_extension(id);
+  }
+
+  //----------
+
+
+  //----------
+
+  bool gui_create(const char *api, bool is_floating) final {
+    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) {
+      MIP_Print("not x11\n");
+      return false;
+    }
+    if (is_floating) {
+      MIP_Print("floating\n");
+      //return false;
+    }
+    return create_editor(is_floating);
+  }
+
+  //----------
+
+  void gui_destroy() final {
+    MIP_Plugin::gui_destroy();
+    destroy_editor();
+  }
+
+//------------------------------
 public:
 //------------------------------
 
-  //void handle_parameter_event(const clap_event_param_value_t* param_value) final {
-  //  MIP_Plugin::handle_parameter_event(param_value);
+//  void handle_parameter_event(clap_event_param_value_t* param_value) final {
+//    MIP_Plugin::handle_parameter_event(param_value);
+//    uint32_t i = param_value->param_id;
+//    if (i == 0) {
+//      if (MEditor && MEditorIsOpen) {
+//        float v = param_value->value;
+//        MIP_Window* window = MEditor->getWindow();
+//        window->setScale(v);
+//        window->alignWidgets();
+//        window->do_widget_redraw(window,window->getRect(),0);
+//      }
+//    }
+//  }
+
+  //----------
+
+  //void handle_modulation_event(clap_event_param_mod_t* param_mod) final {
+  //  MIP_Plugin::handle_modulation_event(param_mod);
   //}
 
   //----------
 
-  //void handle_modulation_event(const clap_event_param_mod_t* param_mod) final {
-  //  MIP_Plugin::handle_modulation_event(param_mod);
-  //}
+  void handle_process(const clap_process_t *process) final {
+    float** inputs = process->audio_inputs[0].data32;
+    float** outputs = process->audio_outputs[0].data32;
+    uint32_t length = process->frames_count;
+    MIP_CopyStereoBuffer(outputs,inputs,length);
+  }
 
 //------------------------------
 public:
@@ -156,19 +227,45 @@ public:
     MEditor = new MIP_Editor(this,this,800,600,!is_floating);
 
     if (MEditor) {
+
       MEditor->setCanResize();
       MIP_Window* window = MEditor->getWindow();
 
-      // image strip (knob)
+      // bitmaps
+      MIP_Painter* painter;
 
+      // knob
       MKnobBitmap = new MIP_Bitmap(knob4_60x60_131,knob4_60x60_131_size);
       //knob_bitmap->convertRgbaToBgra();
       MKnobBitmap->premultAlpha(0x999999);
       MKnobSurface = new MIP_Surface(window,MKnobBitmap->getWidth(),MKnobBitmap->getHeight());
-      MIP_Painter* painter = new MIP_Painter(MKnobSurface);
+      painter = new MIP_Painter(MKnobSurface);
       painter->uploadBitmap(0,0,MKnobBitmap);
       painter->flush();
       delete painter;
+
+      // logo
+      MLogoBitmap = new MIP_Bitmap(sa_logo_40_trans_black,sa_logo_40_trans_black_size);
+      //knob_bitmap->convertRgbaToBgra();
+      MLogoBitmap->premultAlpha(0x808080);
+      MLogoSurface = new MIP_Surface(window,MLogoBitmap->getWidth(),MLogoBitmap->getHeight());
+      painter = new MIP_Painter(MLogoSurface);
+      painter->uploadBitmap(0,0,MLogoBitmap);
+      painter->flush();
+      delete painter;
+
+      // mip2
+      MMip2Bitmap = new MIP_Bitmap(mip2_trans_129x34,mip2_trans_129x34_size);
+      //knob_bitmap->convertRgbaToBgra();
+      MMip2Bitmap->scaleLayer(3,128);
+      MMip2Bitmap->premultAlpha(0x808080);
+      MMip2Surface = new MIP_Surface(window,MMip2Bitmap->getWidth(),MMip2Bitmap->getHeight());
+      painter = new MIP_Painter(MMip2Surface);
+      painter->uploadBitmap(0,0,MMip2Bitmap);
+      painter->flush();
+      delete painter;
+
+      //
 
       // (selector) menu
 
@@ -188,6 +285,11 @@ public:
       MEditorWidget->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
 
       /* */
+
+      // sa header
+
+      MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(MIP_FRect(60),MLogoSurface,MMip2Surface);
+      MEditorWidget->appendWidget(sa_header);
 
       MIP_PanelWidget* footer = new MIP_PanelWidget(MIP_FRect(20));
       MEditorWidget->appendWidget(footer);
@@ -213,7 +315,61 @@ public:
 
         //
 
+
+
         //
+
+        MIP_ButtonWidget* button = new MIP_ButtonWidget(MIP_FRect(20));
+        left_panel->appendWidget(button);
+        button->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        button->setIsToggle(false);
+
+        MIP_ButtonWidget* switch1 = new MIP_ButtonWidget(MIP_FRect(20));
+        left_panel->appendWidget(switch1);
+        switch1->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        switch1->setIsToggle(true);
+
+        MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
+        left_panel->appendWidget(slider);
+        slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_RangeSliderWidget* rangeslider = new MIP_RangeSliderWidget(MIP_FRect(20));
+        left_panel->appendWidget(rangeslider);
+        rangeslider->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        rangeslider->setValue(0.2);
+        rangeslider->setValue2(0.7);
+
+        MIP_ScrollBarWidget* scrollbar = new MIP_ScrollBarWidget(MIP_FRect(20));
+        left_panel->appendWidget(scrollbar);
+        scrollbar->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_TextEditWidget* textedit = new MIP_TextEditWidget(MIP_FRect(20));
+        left_panel->appendWidget(textedit);
+        textedit->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_GroupBoxWidget* groupbox = new MIP_GroupBoxWidget(MIP_FRect(100),true);
+        left_panel->appendWidget(groupbox);
+        groupbox->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+        groupbox->getTitleBar()->setDrawTriangle(true);
+        groupbox->close();
+
+          MIP_PanelWidget* group1 = new MIP_PanelWidget(MIP_FRect());
+          groupbox->appendWidget(group1);
+          group1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+          group1->setFillBackground(true);
+          //group1->setDrawBorder(true);
+          //group1->setRoundedCorners(MIP_CORNER_LEFT_BOTTOM+MIP_CORNER_RIGHT_BOTTOM);
+          //group1->setRoundedRadius(8);
+          group1->setBackgroundColor(MIP_COLOR_LIGHT_CYAN2);
+
+        MIP_SelectorWidget* selector = new MIP_SelectorWidget(MIP_FRect(110,20));
+        left_panel->appendWidget(selector);
+        selector->setMenu(selector_menu);
+        selector->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_GridWidget* grid = new MIP_GridWidget(MIP_FRect(80),5,5);
+        left_panel->appendWidget(grid);
+        grid->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
 
         MIP_ButtonRowWidget* button_row = new MIP_ButtonRowWidget(MIP_FRect(20), 6, buttonrow_text, MIP_BUTTON_ROW_MULTI );
         left_panel->appendWidget(button_row);
@@ -226,58 +382,17 @@ public:
         button_row2->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         button_row2->setButtonState(0,true);
 
-        MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
-        left_panel->appendWidget(slider);
-        slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-
-        MIP_SelectorWidget* selector = new MIP_SelectorWidget(MIP_FRect(110,20));
-        left_panel->appendWidget(selector);
-        selector->setMenu(selector_menu);
-        selector->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-
-        MIP_GroupBoxWidget* groupbox = new MIP_GroupBoxWidget(MIP_FRect(100),true);
-        left_panel->appendWidget(groupbox);
-        groupbox->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-        groupbox->getTitleBar()->setDrawTriangle(true);
-        groupbox->close();
-
-          MIP_PanelWidget* group1 = new MIP_PanelWidget(MIP_FRect());
-          groupbox->appendWidget(group1);
-          group1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-          group1->setFillBackground(true);
-          group1->setBackgroundColor(MIP_Color(0.6,0.6,0.65));
-
         MIP_KeyboardWidget* keyboard = new MIP_KeyboardWidget(MIP_FRect(40));
         left_panel->appendWidget(keyboard);
         keyboard->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-
-        MIP_ButtonWidget* button = new MIP_ButtonWidget(MIP_FRect(20));
-        left_panel->appendWidget(button);
-        button->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-        button->setIsToggle(false);
-
-        MIP_ButtonWidget* switch1 = new MIP_ButtonWidget(MIP_FRect(20));
-        left_panel->appendWidget(switch1);
-        switch1->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-        switch1->setIsToggle(true);
-
-        MIP_RangeSliderWidget* rangeslider = new MIP_RangeSliderWidget(MIP_FRect(20));
-        left_panel->appendWidget(rangeslider);
-        rangeslider->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-        rangeslider->setValue(0.2);
-        rangeslider->setValue2(0.7);
-
-        MIP_ScrollBarWidget* scrollbar = new MIP_ScrollBarWidget(MIP_FRect(20));
-        left_panel->appendWidget(scrollbar);
-        scrollbar->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
 
         MIP_SliderBankWidget* sliderbank = new MIP_SliderBankWidget(MIP_FRect(40),16);
         left_panel->appendWidget(sliderbank);
         sliderbank->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
 
-        MIP_TextEditWidget* textedit = new MIP_TextEditWidget(MIP_FRect(20));
-        left_panel->appendWidget(textedit);
-        textedit->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        MIP_ValueGraphWidget* valuegraph = new MIP_ValueGraphWidget(MIP_FRect(40),16);
+        left_panel->appendWidget(valuegraph);
+        valuegraph->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
 
         /*
         MIP_CircularWaveformWidget* circular = new MIP_CircularWaveformWidget(MIP_FRect(150));
@@ -289,15 +404,6 @@ public:
         circular->createBuffer(1024);
         for (uint32_t i=0; i<1024; i++) circular->setBuffer(i,MIP_RandomRange(-1,1));
         */
-
-        MIP_GridWidget* grid = new MIP_GridWidget(MIP_FRect(100),6,8);
-        left_panel->appendWidget(grid);
-        grid->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-
-        MIP_ValueGraphWidget* valuegraph = new MIP_ValueGraphWidget(MIP_FRect(40),16);
-        left_panel->appendWidget(valuegraph);
-        valuegraph->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-
 
 //----------
 
@@ -370,18 +476,94 @@ public:
       right_bottom_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
       right_bottom_panel->layout.spacing = 5;
 
-        MIP_ScrollBoxWidget* scrollbox1 = new MIP_ScrollBoxWidget(MIP_FRect(),true,false);
-        right_bottom_panel->appendWidget(scrollbox1);
-        scrollbox1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+//        MIP_ScrollBoxWidget* scrollbox1 = new MIP_ScrollBoxWidget(MIP_FRect(),true,false);
+//        right_bottom_panel->appendWidget(scrollbox1);
+//        scrollbox1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+//
+//        scrollbox1->getContentWidget()->layout.innerBorder = MIP_FRect(5,5,5,5);
+//        scrollbox1->getContentWidget()->layout.spacing = 5;
+//
+//        for (uint32_t i=0; i<100; i++) {
+//          MIP_KnobWidget* knob = new MIP_KnobWidget( MIP_FRect( 32,32 ));
+//          scrollbox1->appendWidget(knob);
+//          knob->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+//        }
 
-        scrollbox1->getContentWidget()->layout.innerBorder = MIP_FRect(5,5,5,5);
-        scrollbox1->getContentWidget()->layout.spacing = 5;
+          MIP_PanelWidget* p;
 
-        for (uint32_t i=0; i<100; i++) {
-          MIP_KnobWidget* knob = new MIP_KnobWidget( MIP_FRect( 32,32 ));
-          scrollbox1->appendWidget(knob);
-          knob->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-        }
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          p->setDrawBorder();
+          p->setFillBackground(false);
+
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          p->setDrawBorder();
+          p->setBorderEdges(MIP_EDGE_LEFT + MIP_EDGE_RIGHT);
+          p->setRoundedCorners(MIP_CORNER_LEFT_TOP + MIP_CORNER_RIGHT_TOP + MIP_CORNER_RIGHT_BOTTOM);
+          p->setFillBackground(false);
+
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          p->setFillBackground();
+
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          p->setFillGradient();
+
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          p->setFillGradient();
+          p->setDrawBorder();
+
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          p->setFillGradient();
+          p->setDrawBorder();
+          p->setRoundedCorners(MIP_CORNER_ALL);
+          p->setRoundedRadius(6);
+
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          p->setFillGradient();
+          p->setDrawBorder();
+          p->setRoundedCorners(MIP_CORNER_LEFT_TOP + MIP_CORNER_RIGHT_TOP);
+          p->setRoundedRadius(6);
+
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          //p->setFillBackground();
+          p->setFillGradient();
+          p->setDrawBorder();
+          p->setBorderThickness(2);
+          p->setBorderEdges(MIP_EDGE_LEFT + MIP_EDGE_TOP + MIP_EDGE_RIGHT);
+          p->setRoundedCorners(MIP_CORNER_LEFT_TOP);
+          p->setRoundedRadius(12);
+
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          p->setDrawBorder();
+          p->setRoundedCorners(MIP_CORNER_ALL);
+          p->setRoundedRadius(9);
+
+          p = new MIP_PanelWidget(MIP_FRect(100,25));
+          right_bottom_panel->appendWidget(p);
+          p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+          p->setFillGradient();
+          p->setGradientColor1(MIP_COLOR_LIGHT_GREEN);
+          p->setGradientColor2(MIP_COLOR_DARK_GREEN);
+          p->setDrawBorder();
+          p->setRoundedCorners(MIP_CORNER_ALL);
+          p->setRoundedRadius(11);
 
 //----------
 
@@ -414,95 +596,81 @@ public:
           page1->layout.innerBorder = MIP_FRect(10,10,10,10);
           page1->layout.spacing = 5;
 
-//            MIP_PanelWidget* p1 = new MIP_PanelWidget(MIP_FRect(100,25));
-//            p1->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-//            p1->setFillBackground(true);
-//            p1->setFillBackground(true);
-//            p1->setFillGradient();
-//            p1->setBackgroundColor(MIP_COLOR_LIGHT_GRAY);
-//            p1->setDrawBorder(true);
-//            p1->setBorderColor(MIP_COLOR_BLACK);
-//            p1->setBorderEdges(MIP_EDGE_ALL);
-//            p1->setBorderThickness(1);
-//            p1->setBorderRoundedCorners(MIP_CORNER_ALL);
-//            p1->setBorderRoundedRadius(10);
-//            page1->appendWidget(p1);
-
-            MIP_PanelWidget* p;
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            p->setDrawBorder();
-            p->setFillBackground(false);
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            p->setDrawBorder();
-            p->setBorderEdges(MIP_EDGE_LEFT + MIP_EDGE_RIGHT);
-            p->setRoundedCorners(MIP_CORNER_LEFT_TOP + MIP_CORNER_RIGHT_TOP + MIP_CORNER_RIGHT_BOTTOM);
-            p->setFillBackground(false);
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            p->setFillBackground();
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            p->setFillGradient();
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            p->setFillGradient();
-            p->setDrawBorder();
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            p->setFillGradient();
-            p->setDrawBorder();
-            p->setRoundedCorners(MIP_CORNER_ALL);
-            p->setRoundedRadius(6);
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            p->setFillGradient();
-            p->setDrawBorder();
-            p->setRoundedCorners(MIP_CORNER_LEFT_TOP + MIP_CORNER_RIGHT_TOP);
-            p->setRoundedRadius(6);
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            //p->setFillBackground();
-            p->setFillGradient();
-            p->setDrawBorder();
-            p->setBorderThickness(2);
-            p->setBorderEdges(MIP_EDGE_LEFT + MIP_EDGE_TOP + MIP_EDGE_RIGHT);
-            p->setRoundedCorners(MIP_CORNER_LEFT_TOP);
-            p->setRoundedRadius(12);
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            p->setDrawBorder();
-            p->setRoundedCorners(MIP_CORNER_ALL);
-            p->setRoundedRadius(9);
-
-            p = new MIP_PanelWidget(MIP_FRect(100,25));
-            page1->appendWidget(p);
-            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
-            p->setFillGradient();
-            p->setGradientColor1(MIP_COLOR_LIGHT_GREEN);
-            p->setGradientColor2(MIP_COLOR_DARK_GREEN);
-            p->setDrawBorder();
-            p->setRoundedCorners(MIP_CORNER_ALL);
-            p->setRoundedRadius(11);
+//            MIP_PanelWidget* p;
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p->setDrawBorder();
+//            p->setFillBackground(false);
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p->setDrawBorder();
+//            p->setBorderEdges(MIP_EDGE_LEFT + MIP_EDGE_RIGHT);
+//            p->setRoundedCorners(MIP_CORNER_LEFT_TOP + MIP_CORNER_RIGHT_TOP + MIP_CORNER_RIGHT_BOTTOM);
+//            p->setFillBackground(false);
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p->setFillBackground();
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p->setFillGradient();
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p->setFillGradient();
+//            p->setDrawBorder();
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p->setFillGradient();
+//            p->setDrawBorder();
+//            p->setRoundedCorners(MIP_CORNER_ALL);
+//            p->setRoundedRadius(6);
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p->setFillGradient();
+//            p->setDrawBorder();
+//            p->setRoundedCorners(MIP_CORNER_LEFT_TOP + MIP_CORNER_RIGHT_TOP);
+//            p->setRoundedRadius(6);
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            //p->setFillBackground();
+//            p->setFillGradient();
+//            p->setDrawBorder();
+//            p->setBorderThickness(2);
+//            p->setBorderEdges(MIP_EDGE_LEFT + MIP_EDGE_TOP + MIP_EDGE_RIGHT);
+//            p->setRoundedCorners(MIP_CORNER_LEFT_TOP);
+//            p->setRoundedRadius(12);
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p->setDrawBorder();
+//            p->setRoundedCorners(MIP_CORNER_ALL);
+//            p->setRoundedRadius(9);
+//
+//            p = new MIP_PanelWidget(MIP_FRect(100,25));
+//            page1->appendWidget(p);
+//            p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
+//            p->setFillGradient();
+//            p->setGradientColor1(MIP_COLOR_LIGHT_GREEN);
+//            p->setGradientColor2(MIP_COLOR_DARK_GREEN);
+//            p->setDrawBorder();
+//            p->setRoundedCorners(MIP_CORNER_ALL);
+//            p->setRoundedRadius(11);
 
           MIP_PanelWidget* page2 = new MIP_PanelWidget(MIP_FRect());
           page2->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
@@ -518,6 +686,19 @@ public:
           page3->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
           page3->setFillBackground(true);
           page3->setBackgroundColor(MIP_Color(0.6,0.6,0.65));
+
+            MIP_ScrollBoxWidget* scrollbox1 = new MIP_ScrollBoxWidget(MIP_FRect(),true,false);
+            page3->appendWidget(scrollbox1);
+            scrollbox1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+
+            scrollbox1->getContentWidget()->layout.innerBorder = MIP_FRect(5,5,5,5);
+            scrollbox1->getContentWidget()->layout.spacing = 5;
+
+            for (uint32_t i=0; i<100; i++) {
+              MIP_KnobWidget* knob = new MIP_KnobWidget( MIP_FRect( 32,32 ));
+              scrollbox1->appendWidget(knob);
+              knob->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+            }
 
         tabs->appendPage("Page1",page1);
         tabs->appendPage("Page2",page2);
@@ -540,70 +721,15 @@ public:
   //----------
 
   void destroy_editor() {
-    delete MKnobSurface;
     delete MKnobBitmap;
-  }
-
-
-//------------------------------
-public:
-//------------------------------
-
-  void handle_process(const clap_process_t *process) final {
-    float** inputs = process->audio_inputs[0].data32;
-    float** outputs = process->audio_outputs[0].data32;
-    uint32_t length = process->frames_count;
-    MIP_CopyStereoBuffer(outputs,inputs,length);
-  }
-
-//------------------------------
-public: // plugin
-//------------------------------
-
-  bool init() final {
-    for (uint32_t i=0; i<3; i++) {
-      appendParameter(new MIP_Parameter( &myParameters[i] ));
-    }
-    return MIP_Plugin::init();
-  }
-
-  //----------
-
-  const void* get_extension(const char *id) final {
-    if (strcmp(id,CLAP_EXT_GUI) == 0) return &MGui;
-    return MIP_Plugin::get_extension(id);
-  }
-
-  //----------
-
-  const char* buttonrow_text[6] = { "1", "2", "3", "four", "5", "6" };
-
-  //----------
-
-  bool gui_create(const char *api, bool is_floating) final {
-    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) {
-      MIP_Print("not x11\n");
-      return false;
-    }
-    if (is_floating) {
-      MIP_Print("floating\n");
-      //return false;
-    }
-    return create_editor(is_floating);
-  }
-
-  //----------
-
-  void gui_destroy() final {
-    MIP_Plugin::gui_destroy();
-    destroy_editor();
+    delete MLogoBitmap;
+    delete MMip2Bitmap;
+    delete MKnobSurface;
+    delete MLogoSurface;
+    delete MMip2Surface;
   }
 
 };
-
-//----------------------------------------------------------------------
-
-//#undef NUM_PARAMS
 
 //----------------------------------------------------------------------
 //

@@ -6,8 +6,8 @@
 #define MIP_IMAGE_WIDGET_DRAW_SURFACE  1
 #define MIP_IMAGE_WIDGET_DRAW_BITMAP   2
 
-//#include "gui/widgets/v0/mip_panel_widget.h"
-#include "gui/mip_widgets.h"
+#include "gui/widgets/mip_panel_widget.h"
+//#include "gui/mip_widgets.h"
 
 
 class MIP_ImageWidget

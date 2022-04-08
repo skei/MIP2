@@ -85,6 +85,8 @@ private:
   cairo_t*          MCairo            = nullptr;
   //cairo_device_t*   MCairoDevice      = nullptr;
 
+  float             MFontSize         = 0.0;
+
 //------------------------------
 public:
 //------------------------------
@@ -351,7 +353,11 @@ public: // set
   */
 
   void setFontSize(float ASize) override {
-    cairo_set_font_size(MCairo,ASize);
+    //if (!MIP_AlmostEqual(MFontSize,ASize,0.001)) {
+    if (ASize != MFontSize) {
+      MFontSize = ASize;
+      cairo_set_font_size(MCairo,ASize);
+    }
   }
 
   //----------

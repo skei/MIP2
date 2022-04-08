@@ -160,6 +160,7 @@ public: // clap.gui
   virtual bool setScale(double AScale) {
     //MIP_Print("%.2f\n",AScale);
     MScale = AScale;
+    //MWindow->setScale(AScale);
     return true;
   }
 
@@ -263,7 +264,6 @@ private: // window listener
     //MIP_Print("%i,%i\n",AWidth,AHeight);
     if (MListener) MListener->on_resizeFromEditor(AWidth,AHeight);
   }
-
 
 //------------------------------
 private: // timer listener
@@ -370,8 +370,9 @@ public:
   //----------
 
   void redrawChangedParameters() {
-    for (uint32_t i=0; i<MChangedParmeters.size(); i++) {
-      if (MEditorIsOpen && MWindow) {
+    if (MEditorIsOpen && MWindow) {
+      for (uint32_t i=0; i<MChangedParmeters.size(); i++) {
+      //if (MEditorIsOpen && MWindow) {
         MIP_Widget* widget = MChangedParmeters[i];
         //MWindow->paintWidget(widget);
         MWindow->do_widget_redraw(widget,widget->getRect(),0);
@@ -381,6 +382,15 @@ public:
     }
   }
 
+  //----------
+
+//  void redrawAll() {
+//    if (MEditorIsOpen && MWindow) {
+//      MWindow->do_widget_redraw(MWindow,MWindow->getRect(),0);
+//      //MWindow->redraw();
+//      //MWindow->paintWindow();
+//    }
+//  }
 
 };
 

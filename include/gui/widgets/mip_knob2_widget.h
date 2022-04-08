@@ -9,8 +9,8 @@
 #define TEXT_HEIGHT 16
 
 #include "gui/mip_widget.h"
-#include "gui/widgets/v0/mip_knob_widget.h"
-#include "gui/widgets/v0/mip_text_widget.h"
+#include "gui/widgets/mip_knob_widget.h"
+#include "gui/widgets/mip_text_widget.h"
 
 class MIP_Knob2Widget
 : public MIP_Widget {

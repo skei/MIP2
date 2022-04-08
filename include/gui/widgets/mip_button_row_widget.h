@@ -2,7 +2,7 @@
 #define mip_button_row_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/widgets/v0/mip_grid_widget.h"
+#include "gui/widgets/mip_grid_widget.h"
 
 #define MIP_MAX_STATES 32
 

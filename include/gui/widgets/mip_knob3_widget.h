@@ -11,7 +11,7 @@
 
 #define TEXT_HEIGHT 16
 
-#include "gui/mip_widget.h"
+#include "gui/widgets/mip_text_widget.h"
 
 class MIP_Knob3Widget
 : public MIP_Widget {
