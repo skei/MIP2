@@ -63,8 +63,8 @@ private:
     MEditing = true;
     MCaretPos = strlen(MText);
     //do_widget_update(this);
-//    do_widget_grabKeyboard(this);
-//    do_widget_grabModal(this);
+    do_widget_captureKeyboard(this);
+    do_widget_setModal(this);
     do_widget_redraw(this,getRect(),0);
   }
 
@@ -73,8 +73,8 @@ private:
   void stop_edit() {
     MEditing = false;
     //do_widget_update(this);
-//    do_widget_grabKeyboard(MIP_NULL);
-//    do_widget_grabModal(MIP_NULL);
+    do_widget_captureKeyboard(nullptr);
+    do_widget_setModal(nullptr);
     do_widget_redraw(this,getRect(),0);
   }
 

@@ -68,6 +68,8 @@ public:
     setHint("grid");
     setCursor(MIP_CURSOR_FINGER);
     setNumCells(AColumns,ARows);
+
+    setDrawBorder(true);
   }
 
   //----------

@@ -127,15 +127,15 @@ public:
 public:
 //------------------------------
 
-  virtual double fromInternal(double value) {
-    return value;
-  }
+  //virtual double fromInternal(double value) {
+  //  return value;
+  //}
 
   //----------
 
-  virtual double toInternal(double value) {
-    return value;
-  }
+  //virtual double toInternal(double value) {
+  //  return value;
+  //}
 
   //----------
 

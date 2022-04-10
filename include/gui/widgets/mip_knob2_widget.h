@@ -39,7 +39,9 @@ public:
     #define W getRect().w
     #define H getRect().h
     #define KS W
-    //sprintf(value_text,"%.3f",AValue);
+
+//    sprintf(value_text,"%.3f",MValue);
+
     wdg_label = (MIP_TextWidget*)appendWidget( new MIP_TextWidget( MIP_FRect(X,Y,      W, 16) ));
     wdg_knob  = (MIP_KnobWidget*)appendWidget( new MIP_KnobWidget( MIP_FRect(X,Y+16,   W, KS) ));
     wdg_value = (MIP_TextWidget*)appendWidget( new MIP_TextWidget( MIP_FRect(X,Y+16+KS,W, 16) ));
@@ -69,6 +71,10 @@ public:
     wdg_value->setDrawBorder(false);
     wdg_value->setTextColor(MIP_COLOR_BLACK);
     wdg_value->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+
+    sprintf(value_text,"%.3f",MValue);
+
+
     //wdg_value->setValue(AValue);
 
   }
@@ -99,7 +105,7 @@ public:
       //if (MParameter) {
       //  MIP_Parameter* par = (MIP_Parameter*)MParameter;
 
-//      MIP_Parameter* par = (MIP_Parameter*)getParameter();
+//      MIP_Parameter* par = (MIP_Parameter*)getParamIndex();//Parameter();
 //      if (par) {
 //        //MIP_String txt = par->getDisplayText(AValue);
 //        //wdg_value->setText(txt);
@@ -118,7 +124,7 @@ public:
 public:
 //------------------------------
 
-//  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex=0) override {
+//  void on_widget_connect(MIP_Parameter* AParameter) final {
 //    wdg_knob->setParameter(AParameter);
 //    if (AParameter) {
 //      wdg_label->setText( AParameter->getName() );
@@ -139,17 +145,20 @@ public:
     //if (MParent) MParent->do_widget_update(this);
     if (ASender == wdg_knob) {
       setValue( ASender->getValue() );
-//      MIP_Parameter* par = (MIP_Parameter*)getParameter();
-//      if (par) {
-//        par->displayText(value_text,getValue());
-//        wdg_value->setText(value_text);
-//      }
+      MIP_Parameter* par = (MIP_Parameter*)getParameter();
+      if (par) {
+        if (par->valueToText(MValue,value_text,32)) {
+          //displayText(value_text,getValue());
+          wdg_value->setText(value_text);
+        }
+
+      }
       do_widget_redraw(wdg_value,wdg_value->getRect(),0);
     }
-//    else {
+    //else {
       //if (MParent) MParent->do_widget_update(this);
       MIP_Widget::do_widget_update(this,AMode);
-//    }
+    //}
   }
 
 };

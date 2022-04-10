@@ -66,6 +66,7 @@ public:
     MPluginVersion  = new MIP_TextWidget( MIP_FRect(10,0,100,20) );
     MPluginVersion->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP_LEFT;
     MPluginVersion->setText("v0.0.0");
+    MPluginVersion->setTextSize(10);
     MPluginVersion->setTextColor(MIP_COLOR_DARK_GRAY);
     MPluginVersion->setFillBackground(false);
     appendWidget(MPluginVersion);

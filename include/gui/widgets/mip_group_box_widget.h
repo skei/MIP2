@@ -35,8 +35,12 @@ public:
     MTitleBar->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     MTitleBar->setIsToggle();
     MTitleBar->setText("Closed","Open");
-    MTitleBar->setBackgroundColor(MIP_Color(0.4),MIP_Color(0.4));
-    MTitleBar->setTextColor(MIP_Color(0.8),MIP_Color(0.8));
+    MTitleBar->setDrawBorder(false);
+    MTitleBar->setRoundedCorners(MIP_CORNER_NONE);
+    MTitleBar->setFillGradient(false);
+
+    MTitleBar->setBackgroundColors(MIP_Color(0.4),MIP_Color(0.4));
+    MTitleBar->setTextColors(MIP_Color(0.8),MIP_Color(0.8));
 
     MContainer = new MIP_PanelWidget();
     MContainer->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;

@@ -70,7 +70,10 @@ public:
     wdg_value->setDrawBorder(false);
     wdg_value->setTextColor(MIP_COLOR_BLACK);
     wdg_value->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
-    //wdg_value->setValue(AValue);
+
+    sprintf(value_text,"%.3f",MValue);
+    //wdg_value->setValue(MValue);
+
 
   }
 

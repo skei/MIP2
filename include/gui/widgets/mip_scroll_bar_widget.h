@@ -13,6 +13,7 @@ protected:
 
   MIP_Color  MBackgroundColor  = MIP_COLOR_DARK_GRAY;
   MIP_Color  MThumbColor       = MIP_COLOR_LIGHT_GRAY;
+  MIP_Color  MThumbBorderColor = MIP_COLOR_DARK_GRAY;
   MIP_Color  MInteractiveColor = MIP_COLOR_WHITE;
   float       MThumbPos         = 0.0f;
   float       MPrevThumbPos     = 0.0f;
@@ -92,7 +93,9 @@ public:
   //----------
 
   virtual void setThumbSize(float ASize, bool ARedraw=true) {
+    //MIP_PRINT;
     MThumbSize = ASize;
+    //MThumbSize = MIP_Max(0.05,ASize);
     if (MThumbSize >= 1.0f) {
       MPrevThumbPos = MThumbPos;
       MThumbPos = 0.0f;
@@ -114,6 +117,7 @@ public:
     MIP_FRect mrect = getRect();
     if (MDirection == MIP_VERTICAL) {
       float thumb = mrect.h * MThumbSize;
+      thumb = MIP_Max(20,thumb);
       float available = mrect.h - thumb;
       MThumbRect.x = mrect.x;
       MThumbRect.y = mrect.y + (MThumbPos * available);
@@ -122,6 +126,7 @@ public:
     }
     else {
       float thumb = mrect.w * MThumbSize;
+      thumb = MIP_Max(20,thumb);
       float available = mrect.w - thumb;
       MThumbRect.x = mrect.x + (MThumbPos * available);
       MThumbRect.y = mrect.y;
@@ -130,6 +135,38 @@ public:
     }
     //MIP_Trace("ThumbRect %.2f %.2f %.2f %.2f\n",MThumbRect.x,MThumbRect.y,MThumbRect.w,MThumbRect.h);
   }
+
+//------------------------------
+private:
+//------------------------------
+
+  void draw_background(MIP_Painter* APainter, MIP_FRect ARect) {
+    APainter->roundedRectangle(ARect,6,MIP_CORNER_ALL,MIP_EDGE_ALL);
+    APainter->setColor(MBackgroundColor);
+    APainter->fillPath();
+  }
+
+  //----------
+
+  void draw_thumb(MIP_Painter* APainter, MIP_FRect ARect, bool AVertical=true) {
+
+    //size
+    MIP_FRect rect = ARect;
+
+    // gradient
+    APainter->roundedRectangle(rect,5,MIP_CORNER_ALL,MIP_EDGE_ALL);
+    MIP_Color c1 = MThumbColor;
+    MIP_Color c2 = MThumbColor;
+    c1.blend(MIP_COLOR_WHITE,0.2);
+    c2.blend(MIP_COLOR_BLACK,0.2);
+    APainter->fillPathGradient(rect.x,rect.y,rect.x2(),rect.y2(),c1,c2,AVertical);
+    // border
+    APainter->setLineWidth(1);
+    APainter->setColor(MThumbBorderColor);
+    APainter->roundedRectangle(rect,5,MIP_CORNER_ALL,MIP_EDGE_ALL);
+    APainter->strokePath();
+  }
+
 
 //------------------------------
 public:
@@ -141,17 +178,17 @@ public:
   //void on_widget_setSize(float AWidth, float AHeight) final {
   //}
 
+  //----------
+
   void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) final {
-    //MIP_Widget::on_widget_paint(APainter,ARect,+);
     recalcThumbRect();
-    //APainter->setFillColor(MBackgroundColor);
-    //APainter->fillRectangle(MRect);
-    APainter->fillRectangle(getRect(),MBackgroundColor);
-    //if (MIsInteractive) APainter->setFillColor(MInteractiveColor);
-    //else APainter->setFillColor(MThumbColor);
-    //APainter->fillRectangle(MThumbRect);
-    APainter->fillRectangle(MThumbRect,MThumbColor);
+    draw_background(APainter,MRect);
+    bool vgrad = false;
+    if (MDirection == MIP_HORIZONTAL) vgrad = true;
+    draw_thumb(APainter,MThumbRect,vgrad);
   }
+
+  //----------
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
     MIP_FRect mrect = getRect();

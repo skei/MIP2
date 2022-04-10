@@ -23,9 +23,8 @@ protected:
   MIP_Color   MBackgroundColor      = MIP_COLOR_GRAY;
 
   bool        MFillGradient         = false;
-  MIP_Color   MGradientColor1       = MIP_Color(0.6);
-  MIP_Color   MGradientColor2       = MIP_Color(0.4);
   bool        MGradientVertical     = true;
+  float       MGradient             = 0.2;
 
   bool        MDrawBorder           = false;
   MIP_Color   MBorderColor          = MIP_COLOR_DARK_GRAY;
@@ -52,37 +51,39 @@ public:
 public:
 //------------------------------
 
-  virtual void setFillBackground(bool AFill=true)         { MFillBackground = AFill; }
-  virtual void setBackgroundColor(MIP_Color AColor)       { MBackgroundColor = AColor; }
+  virtual void setFillBackground(bool AFill=true)               { MFillBackground = AFill; }
+  virtual void setBackgroundColor(MIP_Color AColor)             { MBackgroundColor = AColor; }
 
-  virtual void setFillGradient(bool AFill=true)           { MFillGradient = AFill; }
-  virtual void setGradientColor1(MIP_Color AColor)        { MGradientColor1 = AColor; }
-  virtual void setGradientColor2(MIP_Color AColor)        { MGradientColor2 = AColor; }
-  virtual void setGradientVertical(bool AVertical)        { MGradientVertical = AVertical; }
+  virtual void setFillGradient(bool AFill=true)                 { MFillGradient = AFill; }
+  virtual void setGradient(float AGradient)                     { MGradient = AGradient; }
+  virtual void setGradientVertical(bool AVertical)              { MGradientVertical = AVertical; }
 
-  virtual void setDrawBorder(bool ADraw=true)             { MDrawBorder = ADraw; }
-  virtual void setBorderColor(MIP_Color AColor)           { MBorderColor = AColor; }
-  virtual void setBorderEdges(uint32_t AEdges)            { MBorderEdges = AEdges; }
-  virtual void setBorderThickness(float AThickness)       { MBorderThickness = AThickness; }
-  virtual void setRoundedCorners(uint32_t ACorners) { MRoundedCorners = ACorners; }
-  virtual void setRoundedRadius(float ARadius)      { MRoundedRadius = ARadius; }
+  virtual void setDrawBorder(bool ADraw=true)                   { MDrawBorder = ADraw; }
+  virtual void setBorderColor(MIP_Color AColor)                 { MBorderColor = AColor; }
+  virtual void setBorderEdges(uint32_t AEdges)                  { MBorderEdges = AEdges; }
+  virtual void setBorderThickness(float AThickness)             { MBorderThickness = AThickness; }
+  virtual void setRoundedCorners(uint32_t ACorners)             { MRoundedCorners = ACorners; }
+  virtual void setRoundedRadius(float ARadius)                  { MRoundedRadius = ARadius; }
 
   //----------
 
-  virtual void fillBackground(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
+  virtual void fillBackground(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MFillBackground) {
-      APainter->setColor(MBackgroundColor);
       APainter->roundedRectangle(MRect,MRoundedRadius,MRoundedCorners,MIP_EDGE_ALL/*MBorderEdges*/);
       if (MFillGradient) {
-        APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),MGradientColor1,MGradientColor2,MGradientVertical);
+        MIP_Color c1 = MBackgroundColor;
+        MIP_Color c2 = MBackgroundColor;
+        c1.blend(MIP_COLOR_WHITE,0.2);
+        c2.blend(MIP_COLOR_BLACK,0.2);
+        //APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),MGradientColor1,MGradientColor2,MGradientVertical);
+        APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),c1,c2,MGradientVertical);
       }
       else {
+        APainter->setColor(MBackgroundColor);
         APainter->fillPath();
       }
     }
   }
-
-
 
   //----------
 

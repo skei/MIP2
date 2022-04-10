@@ -58,7 +58,7 @@ public:
   }
 
 //------------------------------
-public:
+public: // resizing
 //------------------------------
 
   void resize(uint32_t AWidth, uint32_t AHeight) override {
@@ -70,7 +70,7 @@ public:
   }
 
 //------------------------------
-public:
+public: // clipping
 //------------------------------
 
   /*
@@ -120,6 +120,12 @@ public:
   MIP_FRect getClipRect() {
     return MClipRect;
   }
+
+//------------------------------
+public: // painting
+//------------------------------
+
+
 
 };
 

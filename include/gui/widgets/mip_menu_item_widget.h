@@ -13,7 +13,7 @@ class MIP_MenuItemWidget
 private:
 //------------------------------
 
-  MIP_Color  MNormalBackgroundColor  = MIP_COLOR_GRAY;
+  MIP_Color  MNormalBackgroundColor  = MIP_COLOR_LIGHT_GRAY;
   MIP_Color  MNormalTextColor        = MIP_COLOR_BLACK;
 
   MIP_Color  MHoverBackgroundColor  = MIP_COLOR_DARK_GRAY;
@@ -30,7 +30,7 @@ public:
     flags.autoCursor = false;
     setDrawText(true);
     setDrawBorder(false);
-    setFillBackground(false);
+    setFillBackground(true);
     setBackgroundColor(MNormalBackgroundColor);
     setTextColor(MNormalTextColor);
     setCursor(MIP_CURSOR_FINGER);

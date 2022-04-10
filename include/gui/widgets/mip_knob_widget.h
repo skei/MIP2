@@ -45,6 +45,7 @@ public:
     setName("MIP_KnobWidget");
     setHint("knob");
     setFillBackground(true);
+    setBackgroundColor(0.6);
     setDrawBorder(false);
     //MKnobSize = ARect.w * 0.2f;
   }

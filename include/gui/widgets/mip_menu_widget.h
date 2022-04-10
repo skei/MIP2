@@ -70,7 +70,8 @@ public:
     }
     setFillBackground();
     setBackgroundColor(MIP_COLOR_LIGHT_GRAY);
-    setDrawBorder();
+    setDrawBorder(true);
+    setBorderColor(MIP_COLOR_DARK_GRAY);
   }
 
   //----------

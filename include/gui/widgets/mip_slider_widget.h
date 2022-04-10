@@ -14,10 +14,21 @@ protected:
 //------------------------------
 
   bool      MDrawValueBar             = true;
-  MIP_Color MValueBarColor            = MIP_Color(0.7);
+  bool      MDrawValueBarGradient     = true;
+
+  bool      MDrawValueBarBorder       = true;
+  MIP_Color MValueBarBorderColor      = MIP_Color(0.2);
+  uint32_t  MValueBarBorderEdges      = MIP_EDGE_RIGHT;//ALL;
+  float     MValueBarBorderThickness  = 1;
+  uint32_t  MValueBarRoundedCorners   = MIP_CORNER_NONE;
+  float     MValueBarRoundedRadius    = 6.0;
+
+
+  MIP_Color MValueBarColor            = MIP_COLOR_LIGHT_GRAY;
+  float     MValueBarGradient         = 0.2;
   uint32_t  MValueBarDirection        = MIP_RIGHT;
   MIP_FRect MValueBarOffset           = MIP_FRect(1,1,1,1);
-  MIP_Color MInteractiveValueBarColor = MIP_Color(0.9);
+  MIP_Color MInteractiveValueBarColor = MIP_COLOR_WHITE;
   bool      MDrawQuantized            = false;
   MIP_Color MQuantizedColor           = MIP_Color(0.3);
   bool      MDrawSnap                 = false;
@@ -39,10 +50,15 @@ public:
     MText = AText;
     MValue = AValue;
     MDrawBorder       = true;
+    MRoundedCorners   = MIP_CORNER_NONE;
+    MRoundedRadius    = 6;
     MBackgroundColor  = MIP_Color(0.7);
     MTextColor        = MIP_Color(0);
     MValueTextColor   = MIP_Color(0);
     MTextOffset       = MIP_FRect(6,0,0,0);
+
+
+
   }
 
   virtual ~MIP_SliderWidget() {
@@ -54,6 +70,14 @@ public:
 
   virtual void setDrawValueBar(bool ADraw=true) {
     MDrawValueBar = ADraw;
+  }
+
+  virtual void setDrawValueBarGradient(bool AGradient=true) {
+    MDrawValueBarGradient = AGradient;
+  }
+
+  virtual void setDrawValueBarBorder(bool ABorder=true) {
+    MDrawValueBarBorder = ABorder;
   }
 
   virtual void setValueBarColor(MIP_Color AColor) {
@@ -82,13 +106,37 @@ public:
 
   //----------
 
+//  virtual void fillBackground(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
+//    if (MFillBackground) {
+//      APainter->roundedRectangle(MRect,MRoundedRadius,MRoundedCorners,MIP_EDGE_ALL/*MBorderEdges*/);
+//      if (MFillGradient) {
+//        MIP_Color c1 = MBackgroundColor;
+//        MIP_Color c2 = MBackgroundColor;
+//        c1.blend(MIP_COLOR_WHITE,0.2);
+//        c2.blend(MIP_COLOR_BLACK,0.2);
+//        //APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),MGradientColor1,MGradientColor2,MGradientVertical);
+//        APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),c1,c2,MGradientVertical);
+//      }
+//      else {
+//        APainter->setColor(MBackgroundColor);
+//        APainter->fillPath();
+//      }
+//    }
+//  }
+
+
   virtual void drawValueBar(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
+
     if (MDrawValueBar) {
-      MIP_FRect  rect  = getRect();
-      float       value = getValue();
+
+      MIP_FRect rect = getRect();
       rect.shrink(MValueBarOffset);
+
+      float value = getValue();
+
       float w = rect.w * value;
       float h = rect.h * value;
+
       switch (MValueBarDirection) {
         case MIP_LEFT:
           rect.x = rect.x2() - w;
@@ -105,39 +153,59 @@ public:
           rect.h = h;
           break;
       }
-      if (isDragging()) {
-        APainter->fillRectangle(rect,MInteractiveValueBarColor);
+
+      MIP_Color c;
+      if (isDragging()) c = MInteractiveValueBarColor;
+      else c = MValueBarColor;
+
+      APainter->roundedRectangle(rect,MRoundedRadius,MRoundedCorners,MIP_EDGE_ALL);
+
+      if (MDrawValueBarGradient) {
+        MIP_Color c1 = c;
+        MIP_Color c2 = c;
+        c1.blend(MIP_COLOR_WHITE,0.2);
+        c2.blend(MIP_COLOR_BLACK,0.2);
+        APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),c1,c2,MGradientVertical);
       }
       else {
-        APainter->fillRectangle(rect,MValueBarColor);
+        APainter->setColor(c);
+        //APainter->rectangle(rect);
+        APainter->fillPath();
       }
-      //if (getQuantize()) {
-        if (MDrawQuantized) {
-          uint32_t num = getQuantizeSteps();
-          if (num > 0) {
-            MIP_FRect r = getRect();
-            float step = r.w / (float)(num-1);
-            float x = r.x + step;
-            for (uint32_t i=0; i<num-1; i++) {
-//              APainter->setColor(MQuantizedColor);
-//              APainter->setLineWidth(1);
-//              APainter->moveTo(x,rect.y);
-//              APainter->lineTo(x,rect.y2());
-//              APainter->strokePath();
-              APainter->drawLine(x,rect.y,x,rect.y2(),MQuantizedColor,1);
-              x += step;
-            } // for
-          } // num > 0
-        } // draw q
-      //} // quantize
+
+      if (MDrawValueBarBorder) {
+        APainter->setColor(MValueBarBorderColor);
+        APainter->setLineWidth(MValueBarBorderThickness);
+        APainter->roundedRectangle(rect,MValueBarRoundedRadius,MValueBarRoundedCorners,MValueBarBorderEdges);
+        APainter->strokePath();
+      }
+
+      if (MDrawQuantized) {
+        uint32_t num = getQuantizeSteps();
+        if (num > 0) {
+          MIP_FRect r = getRect();
+          float step = r.w / (float)(num-1);
+          float x = r.x + step;
+          for (uint32_t i=0; i<num-1; i++) {
+            //APainter->setColor(MQuantizedColor);
+            //APainter->setLineWidth(1);
+            //APainter->moveTo(x,rect.y);
+            //APainter->lineTo(x,rect.y2());
+            //APainter->strokePath();
+            APainter->drawLine(x,rect.y,x,rect.y2(),MQuantizedColor,1);
+            x += step;
+          } // for
+        } // num > 0
+      } // draw quantized
+
       if (MDrawSnap) {
         MIP_FRect r = getRect();
         float x = r.x + (r.w * getSnapPos());
-//        APainter->setColor(MSnapColor);
-//        APainter->setLineWidth(1);
-//        APainter->moveTo(x,rect.y);
-//        APainter->lineTo(x,rect.y2());
-//        APainter->strokePath();
+        //APainter->setColor(MSnapColor);
+        //APainter->setLineWidth(1);
+        //APainter->moveTo(x,rect.y);
+        //APainter->lineTo(x,rect.y2());
+        //APainter->strokePath();
         APainter->drawLine(x,rect.y,x,rect.y2(),MSnapColor,1);
       } // draw snap
 

@@ -17,22 +17,26 @@ class MIP_ButtonRowWidget
 protected:
 //------------------------------
 
-  int32_t     MMode                     = 0;
-  int32_t     MSelected                 = 0;
-  bool        MStates[MIP_MAX_STATES]  = {0};
-  const char* MLabels[MIP_MAX_STATES]  = {0};
+  int32_t     MMode                   = 0;
+  int32_t     MSelected               = 0;
+  bool        MStates[MIP_MAX_STATES] = {0};
+  const char* MLabels[MIP_MAX_STATES] = {0};
 
-  MIP_Color  MTextColor                = MIP_Color(0.8);
-  MIP_Color  MActiveColor              = MIP_Color(0.4);
+  MIP_Color   MTextColor              = MIP_COLOR_DARK_GRAY;
+  MIP_Color   MActiveTextColor        = MIP_COLOR_BLACK;
 
-  bool        MValueIsBits              = false;
-  uint32_t    MNumBits                  = 0;
+  MIP_Color   MBackgroundCellColor    = MIP_COLOR_LIGHT_GRAY;
+  MIP_Color   MActiveCellColor        = MIP_COLOR_GRAY;
+
+  bool        MValueIsBits            = false;
+  uint32_t    MNumBits                = 0;
+
+  bool MDrawRoundedBottom = true;
+  float MRounded = 8;
 
 //------------------------------
 public:
 //------------------------------
-
-    //int32_t ANum, const char** ATxt, int32_t AMode=MIP_BUTTON_ROW_SINGLE)
 
   MIP_ButtonRowWidget(MIP_FRect ARect, int32_t ANum, const char** ATxt=nullptr, int32_t AMode=MIP_BUTTON_ROW_SINGLE)
   : MIP_GridWidget(ARect,ANum,1) {
@@ -40,29 +44,24 @@ public:
     MIP_GridWidget::setName("MIP_ButtonRowWidget");
     setHint("buttonrow");
     setCursor(MIP_CURSOR_FINGER);
-    //setBackgroundColor(MIP_GREY);
-    //setFlag(kwf_opaque);
-
     MMode                 = AMode;
     MSelected             = 0;
     MDrawSelectedCells    = false;
 
+    MDrawHorizontalLines  = false;
+    MDrawVerticalLines    = false;
 
-    // grid
-    //MDrawVerticalLines  = false;
-
-    //MWidth = ANum;//5;
-    //MHeight = 1;
-    //for (int32 i=0; i<MIP_MAX_STATES; i++) {
 
     if (ATxt) {
       for (int32_t i=0; i<ANum; i++) {
         MStates[i] = false;
-        //MLabels[i] = MIP_NULL;
         MLabels[i] = (char*)ATxt[i];
       }
     }
 
+    setFillBackground(true);
+    setBackgroundColor(0.6);
+    setDrawBorder(false);
   }
 
   //----------
@@ -74,20 +73,70 @@ public:
 public:
 //------------------------------
 
+  int32_t getSelected(void) {
+    return MSelected;
+  }
+
   void setValueIsBits(bool AIsBits=true, uint32_t ANumBits=8) {
     MValueIsBits = AIsBits;
     MNumBits = ANumBits;
   }
 
-  int32_t getSelected(void)         { return MSelected; }
-  bool    getState(uint32_t AIndex) { return MStates[AIndex]; }
+  void setDrawRoundedBottom(bool AState) {
+    MDrawRoundedBottom = AState;
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  void setNumButtons(uint32_t ANum) {
+    setNumColumns(ANum);
+  }
+
+  //----------
+
+  bool getButtonState(int32_t i) {
+    return MStates[i];
+  }
+
+  void setButtonState(int32_t i, bool s) {
+    MStates[i] = s;
+  }
+
+
+  //----------
+
+  uint32_t getButtonBits() {
+    uint32_t bits = 0;
+    for (uint32_t i=0; i<MNumBits; i++) {
+      if (MStates[i] == true) bits |= (1 << i);
+    }
+    return bits;
+  }
+
+  void setButtonBits(uint32_t ABits) {
+    for (uint32_t i=0; i<MNumBits; i++) {
+      bool b = ( ABits & (1 << i) );
+      MStates[i] = b;
+    }
+  }
+
+  //----------
+
+  const char* getButtonName(int32_t i) {
+    return MLabels[i];
+  }
+
+  void setButtonName(int32_t i, const char* AName) {
+    MLabels[i] = (char*)AName;
+  }
 
   //----------
 
   float getValue() override {
     if (MValueIsBits) {
       uint32_t bits = getButtonBits();
-      //MIP_Print("getButtonBits %i\n",bits);
       float v = (float)bits / 255.0;
       MIP_GridWidget::setValue(v);
       return v;
@@ -97,14 +146,11 @@ public:
     }
   }
 
-  //----------
-
   void setValue(float AValue) override {
     if (MValueIsBits) {
       float f = AValue * 255.0;
       int i = (int)f;
       setButtonBits(i);
-      //MIP_Print("setButtonBits %i\n",i);
       MIP_GridWidget::setValue(AValue);
     }
     else {
@@ -113,108 +159,36 @@ public:
     }
   }
 
+  //----------
+
+  void selectButton(int32_t index) {
+    MSelected = index;
+    if (MMode == MIP_BUTTON_ROW_SINGLE) {
+      for (int32_t i=0; i<MNumColumns; i++) {
+        if (i==MSelected) MStates[i] = true;
+        else MStates[i] = false;
+      }
+      float v = (float)MSelected / ((float)MNumColumns - 1.0f);
+      MIP_Widget::setValue(v);
+    }
+    else {
+      MStates[MSelected] = MStates[MSelected] ? false : true;
+    }
+  }
+
+  //----------
+
+  void selectValue(float AValue) {
+    float num = AValue * MNumColumns;
+    num = MIP_Min(num,float(MNumColumns-1));
+    selectButton( (int)num );
+  }
 
 //------------------------------
 public:
 //------------------------------
 
-    void setNumButtons(uint32_t ANum) {
-      setNumColumns(ANum);
-    }
-
-    bool getButtonState(int32_t i) {
-      return MStates[i];
-    }
-
-    //----------
-
-    void setButtonState(int32_t i, bool s) {
-      MStates[i] = s;
-    }
-
-    //----------
-
-    const char* getButtonName(int32_t i) {
-      return MLabels[i];
-    }
-
-    //----------
-
-    void setButtonName(int32_t i, const char* AName) {
-      MLabels[i] = (char*)AName;
-    }
-
-    //----------
-
-    void selectButton(int32_t index/*, bool ARedraw=false*/) {
-      MSelected = index;
-      //KTrace(['click cell: ',AX,',',AY,',',AB,MIP_CR]);
-      if (MMode == MIP_BUTTON_ROW_SINGLE) {
-        //for (int32 i=0; i<MWidth; i++) { // FHeight if vertical
-
-        for (int32_t i=0; i<MNumColumns; i++) { // FHeight if vertical
-          if (i==MSelected) MStates[i] = true;
-          else MStates[i] = false;
-        }
-
-        /*
-        5 steps => 0,1,2,3,4 => 0, 0.25, 0.50, 0.75, 1.0
-        selected/(steps-1)
-        */
-        float v = (float)MSelected / ((float)MNumColumns - 1.0f);
-        MIP_Widget::setValue(v);
-        //MIP_Trace("%0.3f\n",v);
-      }
-      else {
-        MStates[MSelected] = MStates[MSelected] ? false : true;
-      }
-      //if (ARedraw) do_redraw(this,MRect);
-    }
-
-    //----------
-
-    //function KWidget_ButtonRow.getValue: Single;
-    //begin
-    //  result := FValue;
-    //end;
-
-    void selectValue(float AValue) {
-      float num = AValue * MNumColumns; // 0 = 0, 1 = 4, 0.999 = 3
-      num = MIP_Min(num,float(MNumColumns-1));
-      selectButton( (int)num );
-      //do_redraw(self,FRect);
-      //do_update(self);
-    }
-
-    //----------
-
-    uint32_t getButtonBits() {
-      uint32_t bits = 0;
-      for (uint32_t i=0; i<MNumBits; i++) {
-        if (MStates[i] == true) bits |= (1 << i);
-      }
-      return bits;
-    }
-
-    //----------
-
-    // value 0..1
-    // valuee 0..255
-    // value int
-    // &  << i, MStates
-
-    void setButtonBits(uint32_t ABits) {
-      for (uint32_t i=0; i<MNumBits; i++) {
-        bool b = ( ABits & (1 << i) );
-        MStates[i] = b;
-      }
-    }
-
-//------------------------------
-public:
-//------------------------------
-
-  void on_clickCell(/*KWidget* AWidget,*/ int32_t AX, int32_t AY, int32_t AB) override {
+  void on_clickCell(int32_t AX, int32_t AY, int32_t AB) override {
     selectButton(AX);
     do_widget_update(this);
     do_widget_redraw(this,getRect(),0);
@@ -222,33 +196,52 @@ public:
 
   //----------
 
-  void on_paintCell(/*KWidget* AWidget,*/ MIP_Painter* APainter, MIP_FRect ARect, int32_t AX, int32_t AY) override {
-    //MIP_Print("%i %i\n",AX,AY);
-
+  void on_paintCell(MIP_Painter* APainter, MIP_FRect ARect, int32_t AX, int32_t AY) override {
     char buf[256];
-    //APainter->setPenSize(1);
-    //if (MStates[AX]) APainter->setFillColor( MActiveColor );
-    //else APainter->setFillColor( MBackgroundColor );
-    //APainter->fillRectangle(ARect);
+    uint32_t corners = MIP_CORNER_NONE;
 
-    if (MStates[AX]) APainter->fillRectangle(ARect,MActiveColor);
-    else APainter->fillRectangle(ARect,MBackgroundColor);
+    if (AX == 0) {
+      corners |= MIP_CORNER_LEFT_TOP;
+      if (MDrawRoundedBottom) corners |= MIP_CORNER_LEFT_BOTTOM;
+    }
+    if (AX == (MNumColumns-1)) {
+      corners |= MIP_CORNER_RIGHT_TOP;
+      if (MDrawRoundedBottom) corners |= MIP_CORNER_RIGHT_BOTTOM;
+    }
 
-    //if ((AX > 0) /*&& (AX < (MWidth-1))*/  ) {
-    //  APainter->setDrawColor( MBorderColor );
-    //  APainter->drawVLine(ARect.x,ARect.y,ARect.y2());
-    //}
+    APainter->roundedRectangle(ARect,MRounded,corners,MIP_EDGE_ALL);
 
-    //APainter->setTextColor(MTextColor);
+    MIP_Color c1,c2;
+    if (MStates[AX]) c1 = MActiveCellColor;
+    else c1 = MBackgroundCellColor;
+    c2 = c1;
+    c1.blend(MIP_COLOR_WHITE,0.2);
+    c2.blend(MIP_COLOR_BLACK,0.2);
+
+    APainter->fillPathGradient(ARect.x,ARect.y,ARect.x2(),ARect.y2(),c1,c2,true,false/*true*/);
+
+    uint32_t edges = MIP_EDGE_TOP;
+    if (MDrawRoundedBottom) edges |= MIP_EDGE_BOTTOM;
+    //if (AX == 0)
+      edges |= MIP_EDGE_LEFT;
+    if (AX == (MNumColumns-1)) edges |= MIP_EDGE_RIGHT;
+
+    APainter->roundedRectangle(ARect,MRounded,corners,edges);
+
+    APainter->setColor(MIP_COLOR_DARK_GRAY);
+    APainter->setLineWidth(1);
+    APainter->strokePath();
 
     const char* txt = MLabels[AX];
+    MIP_Color color = MTextColor;
+    if (MStates[AX]) color = MActiveTextColor;
+    else color = MTextColor;
     if (txt) {
-      APainter->drawText(ARect,txt,MIP_TEXT_ALIGN_CENTER,MTextColor);
+      APainter->drawText(ARect,txt,MIP_TEXT_ALIGN_CENTER,color);
     }
     else {
-      //MIP_IntToString(buf,AX);
       sprintf(buf,"%i",AX);
-      APainter->drawText(ARect,buf,MIP_TEXT_ALIGN_CENTER,MTextColor);
+      APainter->drawText(ARect,buf,MIP_TEXT_ALIGN_CENTER,color);
     }
 
   }

@@ -52,8 +52,11 @@ public:
   void setup(MIP_FRect ARect=MIP_FRect()) {
     setName("MIP_ScrollBoxWidget");
     setHint("scrollbox");
+
     setFillBackground(false);
-    setDrawBorder(true);
+    setDrawBorder(false);
+    layout.spacing = 5;
+
     if (showVerticalScrollBar) {
       MVerticalScrollBar = new MIP_ScrollBarWidget( MIP_FRect(10,10) );
       MVerticalScrollBar->layout.alignment = MIP_WIDGET_ALIGN_FILL_RIGHT;
@@ -75,6 +78,9 @@ public:
     //MContent->layout.spacing = 5;
     //MContent->layout.innerBorder = 0;
     MContent->setDrawBorder(false);
+    MContent->setFillBackground(true);
+    MContent->setBackgroundColor(0.6);
+
     MIP_PanelWidget::appendWidget(MContent);
 
   }

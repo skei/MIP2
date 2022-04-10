@@ -10,6 +10,7 @@
 #include "base/types/mip_rect.h"
 #include "plugin/mip_parameter.h"
 #include "gui/mip_painter.h"
+#include "gui/mip_skin.h"
 
 //----------------------------------------------------------------------
 
@@ -80,11 +81,16 @@ protected:
   float           MChildrenYOffset        = 0.0f;                 // -"-
   float           MModValue               = 0.0;                  //
   float           MValue                  = 0.0;                  //
+  float           MMinValue               = 0.0;                  //
+  float           MMaxValue               = 1.0;                  //
   float           MDefaultValue           = 0.0;                  //
+
   int32_t         MParamIndex             = -1;                   //
   char            MParamName[256]         = {0};                  //
-  //MIP_Parameter*  MParameter              = nullptr;              //
+  MIP_Parameter*  MParameter              = nullptr;              //
   //MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};       //
+
+  MIP_Skin*       MSkin                   = &MIP_DEFAULT_SKIN;
 
 //------------------------------
 public:
@@ -139,8 +145,10 @@ public: // set
   virtual void setChildrenOffset(float AX, float AY)        { MChildrenXOffset = AX; MChildrenYOffset = AY; }
   virtual void setChildrenXOffset(float AX)                 { MChildrenXOffset = AX; }
   virtual void setChildrenYOffset(float AY)                 { MChildrenYOffset = AY; }
-  virtual void setContentRect(MIP_FRect ARect)             { MContentRect = ARect; }
+  virtual void setContentRect(MIP_FRect ARect)              { MContentRect = ARect; }
   virtual void setCursor(int32_t ACursor)                   { MCursor = ACursor; }
+  virtual void setMinValue(float AValue)                    { MMinValue = AValue; }
+  virtual void setMaxValue(float AValue)                    { MMaxValue = AValue; }
   virtual void setDefaultValue(float AValue)                { MDefaultValue = AValue; }
   virtual void setHeight(float AHeight)                     { MRect.h = AHeight; }
   virtual void setHint(const char* AHint)                   { MHint = AHint; }
@@ -161,6 +169,7 @@ public: // set
   virtual void setValue(float AValue)                       { MValue = AValue; }
   virtual void setWidth(float AWidth)                       { MRect.w = AWidth; }
 
+  virtual void setParameter(MIP_Parameter* AParameter)      { MParameter = AParameter; }
   virtual void setParamIndex(int32_t AIndex)                { MParamIndex = AIndex; }
   virtual void setParamName(const char* AName)              { strcpy(MParamName,AName); }
 
@@ -183,6 +192,8 @@ public:
   virtual MIP_Widget*     getChild(uint32_t AIndex)   { return MChildren[AIndex]; }
   virtual MIP_FRect       getContentRect()            { return MContentRect; }
   virtual int32_t         getCursor()                 { return MCursor; }
+  virtual float           getMinValue()               { return MMinValue; }
+  virtual float           getMaxValue()               { return MMaxValue; }
   virtual float           getDefaultValue()           { return MDefaultValue; }
   virtual const char*     getHint()                   { return MHint; }
   virtual int32_t         getWidgetIndex()            { return MWidgetIndex; }
@@ -195,8 +206,8 @@ public:
   virtual float           getValue()                  { return MValue; }
 
   virtual int32_t         getParamIndex()             { return MParamIndex; }
+  MIP_Parameter*          getParameter()              { return MParameter; }
 
-  //MIP_Parameter*          getParameter()              { return MParameter; }
   //virtual int32_t         getSubParamIndex()          { return MSubParamIndex; }
 
 //------------------------------
@@ -690,6 +701,8 @@ public:
     }
   }
 
+  //----------
+
   //virtual void resize(float ADeltaX=0.0f, float ADeltaY=0.0f) {
   //  MRect.w += ADeltaX;
   //  MRect.h += ADeltaY;
@@ -708,12 +721,29 @@ public:
   //  }
   //}
 
+  //----------
+
   virtual void setOwnerWindow(MIP_Widget* AWindow, bool ARecursive=true) {
     MOwnerWindow = AWindow;
-    uint32_t num = MChildren.size();
-    for (uint32_t i=0; i<num; i++) {
-      MIP_Widget* child = MChildren[i];
-      child->setOwnerWindow(AWindow,ARecursive);
+    if (ARecursive) {
+      uint32_t num = MChildren.size();
+      for (uint32_t i=0; i<num; i++) {
+        MIP_Widget* child = MChildren[i];
+        child->setOwnerWindow(AWindow,ARecursive);
+      }
+    }
+  }
+
+  //----------
+
+  virtual void setSkin(MIP_Skin* ASkin, bool ARecursive=true) {
+    MSkin = ASkin;
+    if (ARecursive) {
+      uint32_t num = MChildren.size();
+      for (uint32_t i=0; i<num; i++) {
+        MIP_Widget* child = MChildren[i];
+        child->setSkin(ASkin,ARecursive);
+      }
     }
   }
 
@@ -803,9 +833,12 @@ public:
   }
 
   virtual void on_widget_connect(MIP_Parameter* AParameter) {
+    MParameter = AParameter;
     MParamIndex = AParameter->getIndex();
     strncpy(MParamName,AParameter->getName(),255);
     MValue = AParameter->getDefaultValue();
+    MMinValue = AParameter->getMinValue();
+    MMaxValue = AParameter->getMaxValue();
     MDefaultValue = AParameter->getDefaultValue();
   }
 

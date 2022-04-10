@@ -88,23 +88,23 @@ public:
     a *= color.a;
   }
 
-  void blend(MIP_Color color1, MIP_Color color2, float blend) {
-    MIP_Color result;
-    result.r = (color1.r * blend) + (color2.r * (1.0 - blend));
-    result.g = (color1.g * blend) + (color2.g * (1.0 - blend));
-    result.b = (color1.b * blend) + (color2.b * (1.0 - blend));
-    result.a = (color1.a * blend) + (color2.a * (1.0 - blend));
+//  void blend(MIP_Color color1, MIP_Color color2, float blend) {
+//    MIP_Color result;
+//    result.r = (color1.r * blend) + (color2.r * (1.0 - blend));
+//    result.g = (color1.g * blend) + (color2.g * (1.0 - blend));
+//    result.b = (color1.b * blend) + (color2.b * (1.0 - blend));
+//    result.a = (color1.a * blend) + (color2.a * (1.0 - blend));
+//  }
+
+  void blend(MIP_Color color, float alpha) {
+    r = (color.r * alpha) + (r * (1.0 - alpha));
+    g = (color.g * alpha) + (g * (1.0 - alpha));
+    b = (color.b * alpha) + (b * (1.0 - alpha));
+    a = 1;//(color.a * alpha) + (a * (1.0 - alpha));
   }
 
-  // color2 on top of color1 (alpha from color2)
-
-  void blend(MIP_Color color1, MIP_Color color2) {
-    MIP_Color result;
-    float blend = color2.a;
-    result.r = (color1.r * blend) + (color2.r * (1.0 - blend));
-    result.g = (color1.g * blend) + (color2.g * (1.0 - blend));
-    result.b = (color1.b * blend) + (color2.b * (1.0 - blend));
-    result.a = color1.a;// * blend) + (color2.a * (1.0 - blend));
+  void blend(MIP_Color color) {
+    blend(color,color.a);
   }
 
 };

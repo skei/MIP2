@@ -215,24 +215,30 @@ public:
 
   //----------
 
-  void connect(MIP_Widget* AWidget, int32_t AParamIndex) {
-    //MIP_Print("index %i\n",AParamIndex);
+  void connect(MIP_Widget* AWidget, MIP_Parameter* AParameter) {
+    int32_t index = AParameter->getIndex();
+    if (index >= 0) {
+      AWidget->setParamIndex(index);
+      MParamToWidget[index] = AWidget;
+      AWidget->on_widget_connect(AParameter);
+    }
+  }
 
+  //----------
+
+  void connect(MIP_Widget* AWidget, int32_t AParamIndex) {
     AWidget->setParamIndex(AParamIndex);
     MParamToWidget[AParamIndex] = AWidget;
-
     clap_param_info_t info;
     if (MPlugin->params_get_info(AParamIndex,&info)) {
       MIP_Parameter* parameter = (MIP_Parameter*)info.cookie;
       AWidget->on_widget_connect(parameter);
     }
-
-//    const char* name = info.name;
-//    float def_value = info.default_value;
-//    AWidget->setDefaultValue(def_value);
-//    AWidget->setValue(def_value);
-//    AWidget->setParamName(name);
-
+    //const char* name = info.name;
+    //float def_value = info.default_value;
+    //AWidget->setDefaultValue(def_value);
+    //AWidget->setValue(def_value);
+    //AWidget->setParamName(name);
   }
 
   //----------

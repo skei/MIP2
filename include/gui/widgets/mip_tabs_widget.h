@@ -26,8 +26,10 @@ public:
   : MIP_Widget(ARect) {
     setName("MIP_TabsWidget");
     setHint("tabs");
+    layout.spacing = 5;
     MHeader = new MIP_ButtonRowWidget(MIP_FRect(20,20),ANum);
     MHeader->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    MHeader->setDrawRoundedBottom(false);
     MPages = new MIP_PagesWidget(MIP_FRect());
     MPages->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     MNumPages = 0;

@@ -270,7 +270,7 @@ public: // clip
     //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     //resetClip();
     cairo_reset_clip(MCairo);
-    cairo_rectangle(MCairo,ARect.x-1,ARect.y-1,ARect.w+1,ARect.h+1);
+    cairo_rectangle(MCairo,ARect.x-1,ARect.y-1,ARect.w+2,ARect.h+2);
     cairo_clip(MCairo);
     //cairo_new_path(MCairo); // path not consumed by clip() ???
   }

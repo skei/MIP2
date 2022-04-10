@@ -17,7 +17,8 @@ class MIP_ImageWidget
 private:
 //------------------------------
 
-  MIP_Surface*  MSurface = nullptr;
+  MIP_Surface*  MImageSurface    = nullptr;
+  MIP_FRect     MImageRect  = {};
 
 //------------------------------
 public:
@@ -25,7 +26,18 @@ public:
 
   MIP_ImageWidget(MIP_FRect ARect, MIP_Surface* ASurface)
   : MIP_PanelWidget(ARect) {
-    MSurface = ASurface;
+    MImageRect = MIP_FRect(0,0,ASurface->getWidth(),ASurface->getHeight());
+    MImageSurface = ASurface;
+    setName("MIP_ImageWidget");
+    setHint("image");
+    setFillBackground(false);
+    setDrawBorder(false);
+  }
+
+  MIP_ImageWidget(MIP_FRect ARect, MIP_Surface* ASurface, MIP_FRect AImageRect)
+  : MIP_PanelWidget(ARect) {
+    MImageRect = AImageRect;
+    MImageSurface = ASurface;
     setName("MIP_ImageWidget");
     setHint("image");
     setFillBackground(false);
@@ -36,12 +48,9 @@ public:
 public:
 //------------------------------
 
-  //virtual void drawImage(MIP_BasePainter* APainter) {
   virtual void drawImage(MIP_Painter* APainter) {
-    //MIP_Surface* surface = getImageSurface();
-    if (MSurface) {
-      MIP_FRect rect = MIP_FRect(0,0,MSurface->getWidth(),MSurface->getHeight());
-      APainter->drawImage(getRect().x,getRect().y,MSurface,rect);
+    if (MImageSurface) {
+      APainter->drawImage(getRect().x,getRect().y,MImageSurface,MImageRect);
     }
   }
 
