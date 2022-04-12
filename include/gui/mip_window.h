@@ -344,8 +344,23 @@ public: // buffer
     //MIP_Print("%.0f,%.0f,%.0f,%.0f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     paintWidgets(MBufferPainter,ARect);
     MBufferPainter->flush();
+
     blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
-//    MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+
+    //MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+
+    //MIP_FRect src = ARect;
+    //MIP_FRect dst = ARect;
+    //src.x *= 0.5;
+    //src.y *= 0.5;
+    //src.w *= 0.5;
+    //src.h *= 0.5;
+    //dst.x *= 0.5;
+    //dst.y *= 0.5;
+    //dst.w *= 0.5;
+    //dst.h *= 0.5;
+    //MWindowPainter->drawImage(dst,MBufferSurface,src);
+
 //    MWindowPainter->flush();
 
   }

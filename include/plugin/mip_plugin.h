@@ -224,6 +224,10 @@ protected: // ??
       if (value != MParameterValues[index]) {
         MParameterValues[index] = value;
 
+
+//TODO
+//        on_plugin_parameter();
+
 //        // notify plugin (fake param_value event)
 //        clap_event_param_value_t event;
 //        event.param_id    = index;

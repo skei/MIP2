@@ -49,8 +49,16 @@ public:
 //------------------------------
 
   virtual void drawImage(MIP_Painter* APainter) {
+
+    //APainter->setColor(1);
+    //APainter->rectangle(MRect);
+    //APainter->fillPath();
+
     if (MImageSurface) {
-      APainter->drawImage(getRect().x,getRect().y,MImageSurface,MImageRect);
+      //APainter->drawImage(getRect().x,getRect().y,MImageSurface,MImageRect);
+      //MIP_Print("%.2f,%.2f : %.2f,%.2f\n",MRect.x,MRect.y,MRect.w,MRect.h);
+      //APainter->drawImage(MRect.x,MRect.y,MImageSurface,MImageRect);
+      APainter->drawImage(MRect,MImageSurface,MImageRect);
     }
   }
 

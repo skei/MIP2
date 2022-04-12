@@ -127,6 +127,7 @@ public: // plugin
       appendParameter(new MIP_Parameter( &myParameters[i] ));
     }
     return MIP_Plugin::init();
+    //setDefaultParameterValues();
   }
 
   //----------
@@ -165,11 +166,13 @@ public:
 //------------------------------
 
 //  void handle_parameter_event(clap_event_param_value_t* param_value) final {
+//    MIP_PRINT;
 //    MIP_Plugin::handle_parameter_event(param_value);
 //    uint32_t i = param_value->param_id;
 //    if (i == 0) {
 //      if (MEditor && MEditorIsOpen) {
 //        float v = param_value->value;
+//        v = MIP_Clamp(v,0.1,2);
 //        MIP_Window* window = MEditor->getWindow();
 //        window->setScale(v);
 //        window->alignWidgets();
@@ -248,6 +251,7 @@ public:
       MLogoBitmap = new MIP_Bitmap(sa_logo_40_trans_black,sa_logo_40_trans_black_size);
       //knob_bitmap->convertRgbaToBgra();
       MLogoBitmap->premultAlpha(0x808080);
+      //MLogoBitmap->fillLayer(3,255);
       MLogoSurface = new MIP_Surface(window,MLogoBitmap->getWidth(),MLogoBitmap->getHeight());
       painter = new MIP_Painter(MLogoSurface);
       painter->uploadBitmap(0,0,MLogoBitmap);
@@ -636,12 +640,20 @@ public:
         right_center_panel->appendWidget(tabs);
         tabs->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
 
+          // page 1
+
           MIP_PanelWidget* page1 = new MIP_PanelWidget(MIP_FRect());
           page1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-          page1->setFillBackground(true);
-          page1->setBackgroundColor(MIP_Color(0.65,0.6,0.6));
-          page1->layout.innerBorder = MIP_FRect(10,10,10,10);
-          page1->layout.spacing = 5;
+          page1->setFillBackground(false);
+          //page1->setBackgroundColor(MIP_Color(0.65,0.6,0.6));
+          //page1->layout.innerBorder = MIP_FRect(10,10,10,10);
+          //page1->layout.spacing = 5;
+
+            MIP_ImageWidget* image3 = new MIP_ImageWidget(MIP_FRect(50,50),MLogoSurface);
+            page1->appendWidget(image3);
+            image3->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+
+          // page 2
 
           MIP_PanelWidget* page2 = new MIP_PanelWidget(MIP_FRect());
           page2->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
@@ -652,6 +664,8 @@ public:
             page2->appendWidget(graph);
             graph->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
             add_modules(graph);
+
+          // page 3
 
           MIP_PanelWidget* page3 = new MIP_PanelWidget(MIP_FRect());
           page3->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
