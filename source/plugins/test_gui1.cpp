@@ -2,7 +2,7 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 //----------
@@ -676,16 +676,39 @@ public:
             page3->appendWidget(scrollbox1);
             scrollbox1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
             //scrollbox1->getContentWidget()->setDrawBorder(true);
-            scrollbox1->getContentWidget()->layout.innerBorder = MIP_FRect(5,5,5,5);
-            scrollbox1->getContentWidget()->layout.spacing = 25;
+            //scrollbox1->getContentWidget()->layout.innerBorder = MIP_FRect(5,5,5,5);
+            scrollbox1->getContentWidget()->layout.spacing = 5;
 
-            for (uint32_t i=0; i<100; i++) {
-              //MIP_KnobWidget* knob = new MIP_KnobWidget( MIP_FRect( 32,32 ));
-              //scrollbox1->appendWidget(knob);
-              //knob->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-              MIP_PanelWidget* ppp = new MIP_PanelWidget(MIP_FRect(32,32));
+            for (uint32_t i=0; i<128; i++) {
+              float r = (float)i / 127.0;
+              float g = 0.0;
+              float b = 0.0;
+              float a = 1.0;
+              MIP_PanelWidget* ppp = new MIP_PanelWidget(MIP_FRect(20,20));
               scrollbox1->appendWidget(ppp);
               ppp->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+              ppp->setFillBackground(true);
+              ppp->setBackgroundColor(MIP_Color(r,g,b,a));
+            }
+
+            //for (uint32_t i=0; i<128; i++) {
+            //  float r = 1.0;
+            //  float g = (float)i / 127.0;
+            //  float b = 0.0;
+            //  float a = 1.0;
+            //  MIP_PanelWidget* ppp = new MIP_PanelWidget(MIP_FRect(20,20));
+            //  scrollbox1->appendWidget(ppp);
+            //  ppp->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+            //  ppp->setFillBackground(true);
+            //  ppp->setBackgroundColor(MIP_Color(r,g,b,a));
+            //}
+
+            for (uint32_t i=0; i<128; i++) {
+              MIP_ButtonWidget* bbb = new MIP_ButtonWidget(MIP_FRect(20,20));
+              scrollbox1->appendWidget(bbb);
+              bbb->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+              bbb->setIsToggle(true);
+              bbb->setText("","X");
             }
 
         tabs->appendPage("Page1",page1);

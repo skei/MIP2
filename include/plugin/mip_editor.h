@@ -387,8 +387,10 @@ public:
         MIP_Widget* widget = MChangedParmeters[i];
         //MWindow->paintWidget(widget); // -> ->paint(widget)
 
-//        MWindow->do_widget_redraw(widget,widget->getRect(),0);
-        MWindow->paint(widget);
+//        MWindow->paint(widget);
+        MIP_FRect rect = widget->getRect();
+        MWindow->invalidate(rect.x,rect.y,rect.w + 0,rect.h + 0); // +1
+
 
         //invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
 
