@@ -632,7 +632,7 @@ public:
           //-----
 
           case MIP_WIDGET_ALIGN_STACK_HORIZ:
-            if ((stackx + rect.w + layout.innerBorder.w - layout.spacing.x) >= client.w) {
+            if ((stackx + rect.w /*+ layout.innerBorder.w - layout.spacing.x*/) >= client.w) {
               if (stackx != 0) {  // first widget..
                 stackx = 0;
                 stacky += stack_highest + layout.spacing.y;
@@ -646,7 +646,8 @@ public:
             break;
 
           case MIP_WIDGET_ALIGN_STACK_VERT:
-            if ((stacky + rect.h) >= client.h) {
+          //if ((stacky + rect.h) >= client.h) {
+            if ((stacky + rect.h /*+ layout.innerBorder.h - layout.spacing.y*/) >= client.h) {
               if (stacky != 0) {  // first widget..
                 stacky = 0;
                 stackx += stack_widest + layout.spacing.x;

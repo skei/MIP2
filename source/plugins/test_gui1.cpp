@@ -677,12 +677,15 @@ public:
             scrollbox1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
             //scrollbox1->getContentWidget()->setDrawBorder(true);
             scrollbox1->getContentWidget()->layout.innerBorder = MIP_FRect(5,5,5,5);
-            scrollbox1->getContentWidget()->layout.spacing = 5;
+            scrollbox1->getContentWidget()->layout.spacing = 25;
 
             for (uint32_t i=0; i<100; i++) {
-              MIP_KnobWidget* knob = new MIP_KnobWidget( MIP_FRect( 32,32 ));
-              scrollbox1->appendWidget(knob);
-              knob->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+              //MIP_KnobWidget* knob = new MIP_KnobWidget( MIP_FRect( 32,32 ));
+              //scrollbox1->appendWidget(knob);
+              //knob->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+              MIP_PanelWidget* ppp = new MIP_PanelWidget(MIP_FRect(32,32));
+              scrollbox1->appendWidget(ppp);
+              ppp->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
             }
 
         tabs->appendPage("Page1",page1);
