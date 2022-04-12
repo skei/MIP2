@@ -16,6 +16,8 @@ protected:
   bool        MIsToggle             = false;
   bool        MDrawTriangle         = false;
 
+  bool        MClicked              = false;
+
   const char* MOnText               = "On";
   MIP_Color   MOnBackgroundColor    = MIP_COLOR_LIGHT_YELLOW;
   MIP_Color   MOnBorderColor        = MIP_COLOR_BLACK;
@@ -143,6 +145,7 @@ public:
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
     if (AButton == MIP_BUTTON_LEFT) {
+      MClicked = true;
       if (MIsToggle) {
         setValue(1.0f - getValue());
       }
@@ -158,7 +161,10 @@ public:
 
   void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) final {
     if (AButton == MIP_BUTTON_LEFT) {
-      if (!MIsToggle) {
+      MClicked = false;
+      if (MIsToggle) {
+      }
+      else {
         setValue(0.0f);
         update();
         redraw();

@@ -106,7 +106,7 @@ public:
 
   //----------
 
-//  virtual void fillBackground(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
+//  virtual void fillBackground(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
 //    if (MFillBackground) {
 //      APainter->roundedRectangle(MRect,MRoundedRadius,MRoundedCorners,MIP_EDGE_ALL/*MBorderEdges*/);
 //      if (MFillGradient) {
@@ -125,7 +125,7 @@ public:
 //  }
 
 
-  virtual void drawValueBar(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
+  virtual void drawValueBar(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
 
     if (MDrawValueBar) {
 

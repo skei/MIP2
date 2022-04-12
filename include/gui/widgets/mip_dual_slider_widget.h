@@ -161,7 +161,7 @@ private:
 
   //----------
 
-  virtual void drawValueBar2(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
+  virtual void drawValueBar2(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     MIP_FRect mrect = getRect();
     float x1 = mrect.x + (mrect.w * getValue());
     float x2 = mrect.x + (mrect.w * getValue2()) - 1;

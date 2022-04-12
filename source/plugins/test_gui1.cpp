@@ -324,7 +324,39 @@ public:
 
         //
 
-        MIP_ButtonWidget* button = new MIP_ButtonWidget(MIP_FRect(20));
+        MIP_TextWidget* text = new MIP_TextWidget(20,"text");
+        left_scrollbox->appendWidget(text);
+        text->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        text->setFillBackground(true);
+        text->setBackgroundColor(0.55);
+
+        MIP_ValueWidget* value = new MIP_ValueWidget(20,"value");
+        left_scrollbox->appendWidget(value);
+        value->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        value->setFillBackground(true);
+        value->setBackgroundColor(0.55);
+
+        MIP_DragValueWidget* dragvalue = new MIP_DragValueWidget(MIP_FRect(20),"drag-value",0);
+        left_scrollbox->appendWidget(dragvalue);
+        dragvalue->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        dragvalue->setFillBackground(true);
+        dragvalue->setBackgroundColor(0.55);
+
+        MIP_SliderWidget* slider2 = new MIP_SliderWidget(MIP_FRect(110,20), "Slider2", 0.5 );
+        left_scrollbox->appendWidget(slider2);
+        slider2->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+        slider2->setDrawValueBarGradient(false);
+        slider2->setDrawValueBarBorder(false);
+
+        MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
+        left_scrollbox->appendWidget(slider);
+        slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_ScrollBarWidget* scrollbar = new MIP_ScrollBarWidget(MIP_FRect(20));
+        left_scrollbox->appendWidget(scrollbar);
+        scrollbar->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        MIP_ButtonWidget* button = new MIP_ButtonWidget(20);
         left_scrollbox->appendWidget(button);
         button->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         button->setIsToggle(false);
@@ -334,25 +366,11 @@ public:
         switch1->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         switch1->setIsToggle(true);
 
-        MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
-        left_scrollbox->appendWidget(slider);
-        slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-
-        MIP_SliderWidget* slider2 = new MIP_SliderWidget(MIP_FRect(110,20), "Slider2", 0.5 );
-        left_scrollbox->appendWidget(slider2);
-        slider2->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-        slider2->setDrawValueBarGradient(false);
-        slider2->setDrawValueBarBorder(false);
-
         MIP_RangeSliderWidget* rangeslider = new MIP_RangeSliderWidget(MIP_FRect(20));
         left_scrollbox->appendWidget(rangeslider);
         rangeslider->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         rangeslider->setValue(0.2);
         rangeslider->setValue2(0.7);
-
-        MIP_ScrollBarWidget* scrollbar = new MIP_ScrollBarWidget(MIP_FRect(20));
-        left_scrollbox->appendWidget(scrollbar);
-        scrollbar->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
 
         MIP_TextEditWidget* textedit = new MIP_TextEditWidget(MIP_FRect(20));
         left_scrollbox->appendWidget(textedit);

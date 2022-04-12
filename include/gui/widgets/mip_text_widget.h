@@ -55,7 +55,7 @@ public:
 
   //----------
 
-  virtual void drawText(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
+  virtual void drawText(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     MIP_FRect rect = getRect();
     rect.shrink(MTextOffset);
     if (MDrawText) {
@@ -70,10 +70,10 @@ public:
 public:
 //------------------------------
 
-//  void attachWindow(MIP_BaseWindow* AWindow) override {
+//  void attachWindow(MIP_Window* AWindow) override {
 //    if (AWindow) {
 //      if (flags.autoSize) {
-//        MIP_BasePainter* painter = AWindow->getPainter();
+//        MIP_Painter* painter = AWindow->getPainter();
 //        if (painter) {
 //          float w = painter->getTextWidth(MText) + 2;
 //          float h = painter->getTextHeight(MText);// + 1;

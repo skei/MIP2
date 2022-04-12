@@ -174,7 +174,7 @@ public: // set
   virtual void setParamName(const char* AName)              { strcpy(MParamName,AName); }
 
   //virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
-  //virtual void setOwner(MIP_BaseWindow* AOwner)             { MOwner = AOwner; }
+  //virtual void setOwner(MIP_Window* AOwner)             { MOwner = AOwner; }
   //virtual void setSelectedParameter(uint32_t AIndex)        { MSelectedParameter = AIndex; }
 
   //virtual void setParameter(MIP_Parameter* p) {
@@ -712,7 +712,7 @@ public:
 
   //----------
 
-  //virtual void attachWindow(MIP_BaseWindow* AWindow) {
+  //virtual void attachWindow(MIP_Window* AWindow) {
   //  //MOwner = AWindow;
   //  uint32_t num = MChildren.size();
   //  for (uint32_t i=0; i<num; i++) {

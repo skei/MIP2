@@ -89,7 +89,7 @@ public:
 public:
 //------------------------------
 
-  virtual void drawValueText(MIP_BasePainter* APainter, MIP_FRect ARect, uint32_t AMode) {
+  virtual void drawValueText(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
 
     if (MDrawValueText) {
 

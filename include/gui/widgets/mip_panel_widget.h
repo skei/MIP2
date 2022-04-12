@@ -69,13 +69,12 @@ public:
 
   virtual void fillBackground(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MFillBackground) {
-      APainter->roundedRectangle(MRect,MRoundedRadius,MRoundedCorners,MIP_EDGE_ALL/*MBorderEdges*/);
+      APainter->roundedRectangle(MRect,MRoundedRadius,MRoundedCorners,MIP_EDGE_ALL);
       if (MFillGradient) {
         MIP_Color c1 = MBackgroundColor;
         MIP_Color c2 = MBackgroundColor;
         c1.blend(MIP_COLOR_WHITE,0.2);
         c2.blend(MIP_COLOR_BLACK,0.2);
-        //APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),MGradientColor1,MGradientColor2,MGradientVertical);
         APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),c1,c2,MGradientVertical);
       }
       else {

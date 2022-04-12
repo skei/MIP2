@@ -8,12 +8,15 @@
     - MClickedValue could have changed becaouse of modulation
 */
 
+
 #include "mip.h"
 #include "base/system/mip_timer.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_utils.h"
 #include "gui/mip_window.h"
+
+#define MIP_EDITOR_TIMER_RATE 30
 
 //----------------------------------------------------------------------
 //
@@ -140,7 +143,7 @@ public: // clap.gui
     //MIP_PRINT;
     MWindow->setOwnerWindow(MWindow);
     MWindow->open();
-    MTimer->start(30);
+    MTimer->start(MIP_EDITOR_TIMER_RATE);
     MEditorIsOpen = true;
     return true;
   }
@@ -332,7 +335,7 @@ public:
         if (widget) {
           if (widget->getValue() != value)
           widget->setValue(value);
-          //MWindow->paintWidget(widget);
+          //MWindow->paintWidget(widget); // -> ->paint(widget)
           if (MChangedParmeters.findItem(widget) < 0) {
             MChangedParmeters.append(widget);
           }
@@ -358,7 +361,7 @@ public:
         if (widget) {
           //if (widget->getModValue() != value)
           widget->setModValue(valuemod);
-          //MWindow->paintWidget(widget);
+          //MWindow->paintWidget(widget); // -> ->paint(widget)
           if (MChangedParmeters.findItem(widget) < 0) {
             MChangedParmeters.append(widget);
           }
@@ -375,13 +378,18 @@ public:
 
   //----------
 
+  // called from on_timerCallback
+
   void redrawChangedParameters() {
     if (MEditorIsOpen && MWindow) {
       for (uint32_t i=0; i<MChangedParmeters.size(); i++) {
       //if (MEditorIsOpen && MWindow) {
         MIP_Widget* widget = MChangedParmeters[i];
-        //MWindow->paintWidget(widget);
-        MWindow->do_widget_redraw(widget,widget->getRect(),0);
+        //MWindow->paintWidget(widget); // -> ->paint(widget)
+
+//        MWindow->do_widget_redraw(widget,widget->getRect(),0);
+        MWindow->paint(widget);
+
         //invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
 
       }
