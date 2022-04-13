@@ -107,8 +107,8 @@ public:
 
   //-----
 
-  virtual void drawText(float AXpos, float AYpos, const char* AText, MIP_Color AColor) {}
-  virtual void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) {}
+  virtual void drawText(float AXpos, float AYpos, const char* AText/*, MIP_Color AColor*/) {}
+  virtual void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment/*, MIP_Color AColor*/) {}
 
   //-----
 

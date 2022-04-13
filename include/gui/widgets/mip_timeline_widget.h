@@ -1,10 +1,8 @@
-#if 0
-
 #ifndef mip_timeline_widget_included
 #define mip_timeline_widget_included
 //----------------------------------------------------------------------
 
-#include "base/mip_list.h"
+#include "base/types/mip_list.h"
 #include "gui/mip_widget.h"
 
 //----------
@@ -145,23 +143,23 @@ class MIP_TimelineWidget
     int32_t               MPrevMouseX       = 0;
     int32_t               MPrevMouseY       = 0;
   private:
-    MIP_TimelineTrack*   MHoverTrack       = MIP_NULL;
-    MIP_TimelineSegment* MHoverSegment     = MIP_NULL;
+    MIP_TimelineTrack*   MHoverTrack       = nullptr;
+    MIP_TimelineSegment* MHoverSegment     = nullptr;
     float                 MHoverTime        = -1.0f;
     bool                  MHoverLeft        = false;
     bool                  MHoverRight       = false;
   private:
-    MIP_TimelineSegment* MDraggingSegment  = MIP_NULL;
+    MIP_TimelineSegment* MDraggingSegment  = nullptr;
     bool                  MDraggingLeft     = false;
     bool                  MDraggingRight    = false;
   protected:
-    MIP_Color  MBackColor        = MIP_Grey;
-    MIP_Color  MTrackBackColor   = MIP_DarkGrey;
-    MIP_Color  MTrackTextColor   = MIP_LightGrey;
-    MIP_Color  MSegmentBackColor = MIP_LightGrey;
-    MIP_Color  MSegmentTextColor = MIP_DarkGrey;
-    MIP_Color  MBorderColor      = MIP_Black;
-    MIP_Color  MTextColor        = MIP_Red;
+    MIP_Color  MBackColor        = MIP_COLOR_GRAY;
+    MIP_Color  MTrackBackColor   = MIP_COLOR_DARK_GRAY;
+    MIP_Color  MTrackTextColor   = MIP_COLOR_LIGHT_GRAY;
+    MIP_Color  MSegmentBackColor = MIP_COLOR_LIGHT_GRAY;
+    MIP_Color  MSegmentTextColor = MIP_COLOR_DARK_GRAY;
+    MIP_Color  MBorderColor      = MIP_COLOR_BLACK;
+    MIP_Color  MTextColor        = MIP_COLOR_RED;
 
   private:
 
@@ -192,10 +190,10 @@ class MIP_TimelineWidget
 
   public:
 
-    MIP_TimelineWidget(MIP_Rect ARect)
+    MIP_TimelineWidget(MIP_FRect ARect)
     : MIP_Widget(ARect) {
       MName = "MIP_TimelineWidget";
-      setFlag(MIP_WIDGET_HOVER);
+      //setFlag(MIP_WIDGET_HOVER);
       //setFlag(MIP_WIDGET_CLIP);
     }
 
@@ -294,7 +292,7 @@ class MIP_TimelineWidget
 
     MIP_TimelineTrack* findTrack(int32_t AYpos) {
       int32_t y = AYpos - MRect.y;
-      if (y < 0) return MIP_NULL;
+      if (y < 0) return nullptr;
       int32_t t = y / TRACK_HEIGHT;
 
       MIP_ListNode* node = (MIP_ListNode*)MTracks.head();
@@ -325,7 +323,7 @@ class MIP_TimelineWidget
         if ( (ATime >= segment->getStart()) && (ATime <= segment->getEnd()) ) return segment;
         node = node->next();
       }
-      return MIP_NULL;
+      return nullptr;
 
       //MIP_TimelineSegments* segments = ATrack->getSegments();
       //MIP_TimelineSegments::iterator iter = segments->begin();
@@ -342,7 +340,7 @@ class MIP_TimelineWidget
 
   public:
 
-    void on_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState) override {
+    void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
       bool changed = false;
       if (AButton == MIP_BUTTON_LEFT) {
         MPrevMouseX = AXpos;
@@ -352,13 +350,13 @@ class MIP_TimelineWidget
         MDraggingLeft = MHoverLeft;
         MDraggingRight = MHoverRight;
       }
-      if (changed) do_redraw(this,MRect);
+      if (changed) do_widget_redraw(this,MRect);
       //KWidget::on_widgetMouseDown(AWidget,AXpos,AYpos,AButton,AState);
     }
 
     //----------
 
-    void on_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState) override {
+    void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
       bool changed = false;
       if (AButton == MIP_BUTTON_LEFT) {
         //if (!MDraggingSegment) return;
@@ -366,35 +364,22 @@ class MIP_TimelineWidget
         MDraggingLeft = false;
         MDraggingRight = false;
       }
-      if (changed) do_redraw(this,MRect);
+      if (changed) do_widget_redraw(this,MRect);
       //KWidget::on_widgetMouseUp(AWidget,AXpos,AYpos,AButton,AState);
     }
 
     //----------
 
-    void on_mouseMove(float AXpos, float AYpos, uint32_t AState) override {
-
-      //AXpos -= MRect.x;
-      //AYpos -= MRect.y;
-      //KTrace("AXpos %i AYpos %i\n",AXpos,AYpos);
-
-      //AXpos -= MPadding.x;
-      //AYpos -= MPadding.y;
-
+    void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp) override {
       bool changed = false;
       MIP_TimelineTrack* track = findTrack(AYpos);
       MIP_TimelineSegment* segment = nullptr;
-
       MHoverTime = calcTime(AXpos - MRect.x);
-      //KTrace("MHoverTime %.3f\n",MHoverTime);
-
       if (MDraggingSegment) {
-
         float mintime = calcLength(10); // minimum 10 pixels
         float diff = calcTimeDiff(AXpos,MPrevMouseX);
         float st = MDraggingSegment->getStart();
         float en = MDraggingSegment->getEnd();
-
         if (MDraggingLeft) {
           st += diff;
           st = MIP_Max(st,0.0f);
@@ -411,43 +396,18 @@ class MIP_TimelineWidget
           st = MIP_Max(st,0.0f);
           en = st + le;
         }
-
-//        MIP_TimelineSegment* prv = (MIP_TimelineSegment*)MDraggingSegment->prev();
-//        if (prv) {
-//          if (st <= prv->getEnd()) {
-//            float le = en - st;
-//            st = prv->getEnd(); //+ 0.0001;
-//            if (!MDraggingLeft) en = st + le;
-//          }
-//        }
-
-//        MIP_TimelineSegment* nxt = (MIP_TimelineSegment*)MDraggingSegment->next();
-//        if (nxt) {
-//          if (en >= nxt->getStart()) {
-//            float le = en - st;
-//            en = nxt->getStart(); //- 0.0001;
-//            if (!MDraggingRight) st = en - le;
-//          }
-//        }
-
         MDraggingSegment->setStart(st);
         MDraggingSegment->setEnd(en);
         changed = true;
       } // dragging
-
       else { // not dragging
-
         bool hoverleft = false;
         bool hoverright = false;
         if (track) {
           segment = findSegment(track,MHoverTime);
           if (segment) {
-
             int32_t leftx  = calcXpos(segment->getStart());
             int32_t rightx = calcXpos(segment->getEnd());
-
-            //KTrace("leftx %i AXpos %i DRAG_HANDLE_SIZE %i\n",leftx,AXpos,DRAG_HANDLE_SIZE);
-
             if ((AXpos-MRect.x) < (leftx+DRAG_HANDLE_SIZE)) hoverleft = true;
             if ((AXpos-MRect.x) >= (rightx-DRAG_HANDLE_SIZE)) hoverright = true;
           }
@@ -469,121 +429,134 @@ class MIP_TimelineWidget
           changed = true;
         }
       } // not dragging
-      if (changed) do_redraw(this,MRect);
+      if (changed) do_widget_redraw(this,MRect);
       MPrevMouseX = AXpos;
       MPrevMouseY = AYpos;
-      //KWidget::on_widgetMouseMove(AWidget,AXpos,AYpos,AState);
     }
 
     //----------
 
-    void on_paint(MIP_Painter* APainter, MIP_Rect ARect) override {
-      APainter->setFillColor(MBackColor);
-      APainter->fillRectangle(MRect.x,MRect.y,MRect.x2(),MRect.y2());
-      APainter->setDrawColor(MBorderColor);
-      //APainter->drawLine(MRect.x,MRect.y,MRect.x2(),MRect.y);
-      APainter->drawHLine(MRect.x,MRect.y,MRect.x2());
-      int32_t x1 = MRect.x;
-      //int32_t x2 := MRect.x2;
-      int32_t y1 = MRect.y;
+    void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode=0) override {
 
-      //MIP_ListNode* tnode = (MIP_ListNode*)MTracks.head();
-      //while (tnode) {
-        //MIP_TimelineTrack* track = (MIP_TimelineTrack*)tnode;
+      APainter->setLineWidth(1);
 
-      //MIP_TimelineTrack* track = MTracks.head();
+      APainter->setColor(MBackColor);
+      APainter->rectangle(MRect);
+      APainter->fillPath();
+      APainter->setColor(MBorderColor);
+      APainter->horizLine(MRect.x,MRect.y,MRect.x2());
+      APainter->strokePath();
+
+      float x1 = MRect.x;
+      float y1 = MRect.y;
+      float x2 = x1 + TRACK_WIDTH;
+      float y2 = y1 + TRACK_HEIGHT;
+
       MIP_TimelineTrack* track = (MIP_TimelineTrack*)MTracks.head();
       while (track) {
-        //MIP_Trace("track %p\n",track);
 
-        int32_t x2 = x1 + TRACK_WIDTH - 1;
-        int32_t y2 = y1 + TRACK_HEIGHT - 1;
+        MIP_FRect rect;
+
         // { track background }
-        if (track == MHoverTrack) APainter->setFillColor( MIP_Color(0.3,0.3,0.3) );
-        else APainter->setFillColor(MTrackBackColor);
-        APainter->fillRectangle(x1,y1,x2,y2);
+
+        if (track == MHoverTrack) APainter->setColor(0.3);
+        else APainter->setColor(MTrackBackColor);
+        rect = MIP_FRect(x1,y1,TRACK_WIDTH,TRACK_HEIGHT);
+        APainter->rectangle(rect);
+        APainter->fillPath();
+
         // { track name }
-        APainter->setTextColor(MTrackTextColor);
-        APainter->drawText(x1+2,y1,x2-2,y2,track->getName(), MIP_TEXT_ALIGN_CENTER);
+
+        APainter->setColor(MTrackTextColor);
+        rect.x += 5;
+        rect.w -= 5;
+        APainter->drawText(rect,track->getName(), MIP_TEXT_ALIGN_LEFT);//CENTER);
+
         // { track border }
-        APainter->setDrawColor(MBorderColor);   // below
 
-        //APainter->drawLine(x1,y2,MRect.x2(),y2);  // below
-        //APainter->drawLine(x2,y1,x2,y2);        // right
-
-        APainter->drawHLine(x1,y2,MRect.x2());  // below
-        APainter->drawVLine(x2,y1,y2);        // right
-
+        APainter->setColor(MBorderColor);       // below
+        APainter->horizLine(x1,y2,MRect.x2());  // below
+        APainter->vertLine(x2,y1,y2);           // right
+        APainter->strokePath();
 
         // { track segments }
 
-        //MIP_ListNode* snode = (MIP_ListNode*)track->getSegments()->head();
-        //while (snode) {
-        //  MIP_TimelineSegment* segment = (MIP_TimelineSegment*)snode;
-
-        //MIP_TimelineSegment* segment = track->getSegments()->head();
-      MIP_TimelineSegment* segment = (MIP_TimelineSegment*)track->getSegments();
-
+        MIP_TimelineSegment* segment = (MIP_TimelineSegment*)track->getSegments();
         while (segment) {
-          //MIP_Trace("track %p\n",track);
 
           float ss = segment->getStart() * MZoom * PIXELS_PER_SECOND;
           float se = segment->getEnd() * MZoom * PIXELS_PER_SECOND;
-          // { back }
-          if (segment == MHoverSegment) APainter->setFillColor( MIP_Color(0.7,0.7,0.7) );
-          else APainter->setFillColor(MSegmentBackColor);
-          APainter->fillRectangle(x2+1+trunc(ss),y1,x2+1+trunc(se),y2-1);
-          // { name }
-          APainter->setTextColor(MSegmentTextColor);
-          APainter->drawText(x2+1+MIP_Trunc(ss),y1,x2+1+MIP_Trunc(se),y2,segment->getName(),MIP_TEXT_ALIGN_CENTER);
-          // { border }
-          APainter->setDrawColor(MBorderColor);
-          //APainter->drawRectangle(x2+1+trunc(ss),y1,x2+1+trunc(se),y2);
+          float sw = se - ss;
 
-          //APainter->drawLine(x2+1+KTrunc(ss),y1,x2+1+KTrunc(ss),y2);
-          //APainter->drawLine(x2+1+KTrunc(se),y1,x2+1+KTrunc(se),y2);
-          APainter->drawVLine(x2+1+MIP_Trunc(ss),y1,y2);
-          APainter->drawVLine(x2+1+MIP_Trunc(se),y1,y2);
+          rect = MIP_FRect(x2+ss,y1,sw,TRACK_HEIGHT);
+
+          // { back }
+
+          if (segment == MHoverSegment) APainter->setColor(0.7);
+          else APainter->setColor(MSegmentBackColor);
+          APainter->rectangle(rect);
+          APainter->fillPath();
+
+          // { name }
+
+          APainter->setColor(MSegmentTextColor);
+          MIP_FRect rect2 = rect;
+          rect2.x += 5;
+          rect2.w -= 5;
+          APainter->drawText(rect2,segment->getName(),MIP_TEXT_ALIGN_LEFT);//CENTER);
+
+          // { border }
+
+          //APainter->setColor(MBorderColor);
+          //APainter->vertLine(x2+ss,y1,y2);
+          //APainter->strokePath();
+          //APainter->vertLine(x2+se,y1,y2);
+          //APainter->strokePath();
+
+          APainter->setColor(MBorderColor);
+          APainter->rectangle(rect);
+          APainter->strokePath();
 
           // { resize indicators }
+
           if (segment == MHoverSegment) {
-            APainter->setFillColor( MIP_DarkRed );
-            if (MHoverLeft)   APainter->fillRectangle(x2+1+MIP_Trunc(ss),y1,x2+1+MIP_Trunc(ss)+(DRAG_HANDLE_SIZE-1),y2);
-            if (MHoverRight)  APainter->fillRectangle(x2+1+MIP_Trunc(se)-(DRAG_HANDLE_SIZE-1),y1,x2+1+MIP_Trunc(se),y2);
+            APainter->setColor( MIP_COLOR_BRIGHT_BLUE1 );
+            if (MHoverLeft) {
+              rect = MIP_FRect(x2+ss,y1,DRAG_HANDLE_SIZE,TRACK_HEIGHT);
+              APainter->rectangle(rect);
+              APainter->fillPath();
+            }
+            if (MHoverRight) {
+              rect = MIP_FRect(x2+1+MIP_Trunc(se)-(DRAG_HANDLE_SIZE),y1,DRAG_HANDLE_SIZE,TRACK_HEIGHT);
+              APainter->rectangle(rect);
+              APainter->fillPath();
+            }
           }
 
-          //snode = snode->next();
           segment = (MIP_TimelineSegment*)segment->next();
         } // while segment
-
         y1 += TRACK_HEIGHT;
-
-        //tnode = tnode->next();
         track = (MIP_TimelineTrack*)track->next();
       } // while tnode
-
       float cur = MCursor * MZoom * PIXELS_PER_SECOND;
-      APainter->setDrawColor( MIP_LightRed );
-
-      //APainter->drawLine( MRect.x + KTrunc(cur), MRect.y, MRect.x + KTrunc(cur), MRect.y2() );
-      APainter->drawVLine( MRect.x + MIP_Trunc(cur), MRect.y, MRect.y2() );
-
-      //KWidget::on_widgetPaint(AWidget,APainter,ARect,AMode);
+      APainter->setColor( MIP_COLOR_LIGHT_RED );
+      APainter->vertLine( x2 + cur, MRect.y, MRect.y2() );
+      APainter->strokePath();
     }
 
     //----------
 
-    void on_leave(float AXpos, float AYpos, MIP_Widget* AFrom=nullptr) override {
+    void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo=nullptr) override {
       bool changed = false;
       if (MHoverTrack) {
-        MHoverTrack = MIP_NULL;
+        MHoverTrack = nullptr;
         changed = true;
       }
       if (MHoverSegment) {
-        MHoverSegment = MIP_NULL;
+        MHoverSegment = nullptr;
         changed = true;
       }
-      if (changed) do_redraw(this,MRect);
+      if (changed) do_widget_redraw(this,MRect);
       //KWidget::on_widgetLeave(AWidget, int32_t AXpos, int32_t AYpos);
     }
 
@@ -601,5 +574,3 @@ class MIP_TimelineWidget
 
 //----------------------------------------------------------------------
 #endif
-
-#endif // 0

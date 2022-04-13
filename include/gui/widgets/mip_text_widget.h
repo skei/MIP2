@@ -62,7 +62,8 @@ public:
       const char* txt = MText;
       if (MDrawParamName && (MParamIndex >= 0)) txt = MParamName;
       APainter->setFontSize(MTextSize);
-      APainter->drawText(rect,txt,MTextAlignment,MTextColor);
+      APainter->setColor(MTextColor);
+      APainter->drawText(rect,txt,MTextAlignment);
     }
   }
 

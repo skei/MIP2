@@ -121,10 +121,12 @@ public:
       }
 
       if (MDrawValueText) {
-        APainter->drawText(value_rect,MValueText,MValueTextAlignment,MValueTextColor);
+        APainter->setColor(MValueTextColor);
+        APainter->drawText(value_rect,MValueText,MValueTextAlignment);
       }
       if (MDrawLabel) {
-        APainter->drawText(label_rect,label,MValueTextAlignment,MLabelColor);
+        APainter->setColor(MLabelColor);
+        APainter->drawText(label_rect,label,MValueTextAlignment);
       }
     }
   }

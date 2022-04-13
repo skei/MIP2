@@ -92,7 +92,8 @@ public:
       //APainter->drawText(MRect.x+2,MRect.y,MRect.x2()-2,MRect.y2(),MText,MIP_TEXT_ALIGN_LEFT);
       r = mrect;
       r.shrink(2,0,2,0); // 2 = text border
-      APainter->drawText(r,MText,MIP_TEXT_ALIGN_LEFT,MTextColor);
+      APainter->setColor(MTextColor);
+      APainter->drawText(r,MText,MIP_TEXT_ALIGN_LEFT);
       char c = MText[MCaretPos];
       MText[MCaretPos] = 0;
       int32_t txtwidth = APainter->getTextWidth(MText);
@@ -100,14 +101,18 @@ public:
       int32_t x = getRect().x + 2 + txtwidth; // 2 = caret distance/width
       //APainter->setDrawColor(MCaretColor);
       //APainter->drawLine(x,MRect.y,x,MRect.y2());
-      APainter->drawLine(x,mrect.y,x,mrect.y2(),MCaretColor);
+      APainter->moveTo(x,mrect.y);
+      APainter->lineTo(x,mrect.y2());
+      APainter->setColor(MCaretColor);
+      APainter->strokePath();
     } // editing
     else {
       //APainter->setTextColor(MTextColor);
       //APainter->drawText(MRect.x+2,MRect.y,MRect.x2()-4,MRect.y2(),MText,MIP_TEXT_ALIGN_LEFT);
       r = mrect;
       r.shrink(2,0,4,0);
-      APainter->drawText(r,MText,MIP_TEXT_ALIGN_LEFT,MTextColor);
+      APainter->setColor(MTextColor);
+      APainter->drawText(r,MText,MIP_TEXT_ALIGN_LEFT);
     } // not editing
   }
 

@@ -171,11 +171,14 @@ public:
       //}
       if (MDrawValueText) {
 //        APainter->setFontSize(14);
-        APainter->drawText(value1_rect,MValue1Text,MValue1TextAlignment,MValue1TextColor);
-        APainter->drawText(value2_rect,MValue2Text,MValue2TextAlignment,MValue2TextColor);
+        APainter->setColor(MValue1TextColor);
+        APainter->drawText(value1_rect,MValue1Text,MValue1TextAlignment);
+        APainter->setColor(MValue2TextColor);
+        APainter->drawText(value2_rect,MValue2Text,MValue2TextAlignment);
       }
       if (MDrawLabel) {
-        APainter->drawText(label_rect,label,MIP_TEXT_ALIGN_CENTER,MLabelColor);
+        APainter->setColor(MLabelColor);
+        APainter->drawText(label_rect,label,MIP_TEXT_ALIGN_CENTER);
       }
     }
   }

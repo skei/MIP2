@@ -47,8 +47,8 @@ public:
   : MIP_DragValueWidget(ARect) {
     setName("MIP_SliderWidget");
     setHint("slider");
-    MText = AText;
-    MValue = AValue;
+    MText             = AText;
+    MValue            = AValue;
     MDrawBorder       = true;
     MRoundedCorners   = MIP_CORNER_NONE;
     MRoundedRadius    = 6;
@@ -187,12 +187,12 @@ public:
           float step = r.w / (float)(num-1);
           float x = r.x + step;
           for (uint32_t i=0; i<num-1; i++) {
-            //APainter->setColor(MQuantizedColor);
-            //APainter->setLineWidth(1);
-            //APainter->moveTo(x,rect.y);
-            //APainter->lineTo(x,rect.y2());
-            //APainter->strokePath();
-            APainter->drawLine(x,rect.y,x,rect.y2(),MQuantizedColor,1);
+            APainter->setColor(MQuantizedColor);
+            APainter->setLineWidth(1);
+            APainter->moveTo(x,rect.y);
+            APainter->lineTo(x,rect.y2());
+            APainter->strokePath();
+            //APainter->drawLine(x,rect.y,x,rect.y2(),MQuantizedColor,1);
             x += step;
           } // for
         } // num > 0
@@ -201,12 +201,12 @@ public:
       if (MDrawSnap) {
         MIP_FRect r = getRect();
         float x = r.x + (r.w * getSnapPos());
-        //APainter->setColor(MSnapColor);
-        //APainter->setLineWidth(1);
-        //APainter->moveTo(x,rect.y);
-        //APainter->lineTo(x,rect.y2());
-        //APainter->strokePath();
-        APainter->drawLine(x,rect.y,x,rect.y2(),MSnapColor,1);
+        APainter->setColor(MSnapColor);
+        APainter->setLineWidth(1);
+        APainter->moveTo(x,rect.y);
+        APainter->lineTo(x,rect.y2());
+        APainter->strokePath();
+        //APainter->drawLine(x,rect.y,x,rect.y2(),MSnapColor,1);
       } // draw snap
 
     }

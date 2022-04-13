@@ -362,7 +362,6 @@ public:
             client.h -= h;//
           }
         }
-
         if (prev_alignment == MIP_WIDGET_ALIGN_STACK_VERT) {
           if (alignment != MIP_WIDGET_ALIGN_STACK_VERT) {
             float w = (stackx + stack_widest + layout.spacing.x);
@@ -371,6 +370,27 @@ public:
 
           }
         }
+
+        //
+
+        if (alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) {
+          if (prev_alignment != MIP_WIDGET_ALIGN_STACK_HORIZ) {
+            stackx = 0;
+            stacky = 0;
+            stack_highest = 0;
+            stack_widest = 0;
+          }
+        }
+        if (alignment == MIP_WIDGET_ALIGN_STACK_VERT) {
+          if (prev_alignment != MIP_WIDGET_ALIGN_STACK_VERT) {
+            stackx = 0;
+            stacky = 0;
+            stack_highest = 0;
+            stack_widest = 0;
+          }
+        }
+
+        //
 
         prev_alignment = alignment;
 

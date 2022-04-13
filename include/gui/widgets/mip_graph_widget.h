@@ -597,7 +597,8 @@ public:
       //  MPainter->drawText(MIP_FRect(x,y,w,h),AModule->name,MIP_TEXT_ALIGN_CENTER,MModuleNameColor);
 
       if (AModule->selected) color = MSelectedModuleNameColor; else color = MModuleNameColor;
-      MPainter->drawText(module_body_rect,AModule->name,MIP_TEXT_ALIGN_CENTER,color);
+      MPainter->setColor(color);
+      MPainter->drawText(module_body_rect,AModule->name,MIP_TEXT_ALIGN_CENTER);
 
       // border
 

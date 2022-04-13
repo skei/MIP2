@@ -61,17 +61,19 @@ public:
   virtual void setKnobColor(MIP_Color AColor)            { MKnobColor = AColor; }
   virtual void setInteractiveKnobColor(MIP_Color AColor)            { MInteractiveKnobColor = AColor; }
   virtual void setKnobBackgroundColor(MIP_Color AColor)  { MKnobBack = AColor; }
-  virtual void setBipolar(bool bi=true)                   { MBipolar = bi; }
 
   //void setArcColor(MIP_Color AColor)           { MArcColor = AColor; }
   //void setArcBackgroundColor(MIP_Color AColor) { MArcBackgroundColor = AColor; }
-  void setArcThickness(float AThickness)        { MArcThickness = AThickness; }
-  void setNeedleLength(float ALength)           { MNeedleLength = ALength; }
-  void setNeedleThickness(float AThickness)     { MNeedleThickness = AThickness; }
-  void setNeedleColor(MIP_Color AColor)        { MNeedleColor = AColor; }
 
-  void setDrawSteppedArc(bool ADraw=true) { MDrawSteppedArc = ADraw; }
-  void setStepColor(MIP_Color AColor)    { MStepColor = AColor; }
+  virtual void setBipolar(bool bi=true)                   { MBipolar = bi; }
+
+  virtual void setArcThickness(float AThickness)        { MArcThickness = AThickness; }
+  virtual void setNeedleLength(float ALength)           { MNeedleLength = ALength; }
+  virtual void setNeedleThickness(float AThickness)     { MNeedleThickness = AThickness; }
+  virtual void setNeedleColor(MIP_Color AColor)        { MNeedleColor = AColor; }
+
+  virtual void setDrawSteppedArc(bool ADraw=true) { MDrawSteppedArc = ADraw; }
+  virtual void setStepColor(MIP_Color AColor)    { MStepColor = AColor; }
 
   //----------
 
@@ -173,7 +175,7 @@ public:
       if (getQuantize() && MDrawSteppedArc) {
         //APainter->setDrawColor(MStepColor);
         //APainter->setPenSize(1);
-        uint32_t num = getQuantizeSteps() + 1;//param->getNumSteps();
+        uint32_t num = getQuantizeSteps() ;//+ 1;//param->getNumSteps();
         if (num > 2) {
           float va = 1.0f / (float)(num - 1);
           float vv = va;

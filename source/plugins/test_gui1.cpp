@@ -3,7 +3,7 @@
 #define MIP_PAINTER_CAIRO
 
 #define MIP_DEBUG_PRINT_SOCKET
-//nc -U -l -k /tmp/mip.socket
+// nc -U -l -k /tmp/mip.socket
 
 //----------
 
@@ -70,11 +70,11 @@ private:
       "Param1",
       "Params",
       0.1,
-      4.0,
+      1.0,
       1.0
     },
     { 1,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,
       nullptr,
       "Param2",
       "Params",
@@ -250,8 +250,9 @@ public:
       // logo
       MLogoBitmap = new MIP_Bitmap(sa_logo_40_trans_black,sa_logo_40_trans_black_size);
       //knob_bitmap->convertRgbaToBgra();
+      //MLogoBitmap->premultAlpha(0x999999);
       MLogoBitmap->premultAlpha(0x808080);
-      //MLogoBitmap->fillLayer(3,255);
+      MLogoBitmap->fillLayer(3,255);
       MLogoSurface = new MIP_Surface(window,MLogoBitmap->getWidth(),MLogoBitmap->getHeight());
       painter = new MIP_Painter(MLogoSurface);
       painter->uploadBitmap(0,0,MLogoBitmap);
@@ -322,11 +323,180 @@ public:
         MIP_ScrollBoxWidget* left_scrollbox = new MIP_ScrollBoxWidget(MIP_FRect(),true,false);
         left_panel->appendWidget(left_scrollbox);
         left_scrollbox->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-
         left_scrollbox->getContentWidget()->layout.innerBorder = MIP_FRect(5,5,5,5);
         left_scrollbox->getContentWidget()->layout.spacing = 5;
 
         //
+
+        MIP_SymbolWidget* sym;
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_NONE);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_HLINE);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_VLINE);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_LINE);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_LINE2);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_CROSS);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_PLUS);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_RECT);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_FILL_RECT);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_DIAMOND);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_FILL_DIAMOND);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_TRI_UP);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_FILL_TRI_UP);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_TRI_DOWN);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_FILL_TRI_DOWN);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_TRI_LEFT);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_FILL_TRI_LEFT);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_TRI_RIGHT);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_FILL_TRI_RIGHT);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_ELLIPSE);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
+
+        sym = new MIP_SymbolWidget(MIP_FRect(15),MIP_SYMBOL_FILL_ELLIPSE);
+        left_scrollbox->appendWidget(sym);
+        sym->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        sym->setColor(MIP_COLOR_DARK_GRAY);
+        sym->setFillBackground(true);
+        sym->setBackgroundColor(0.65);
+        sym->setLineWidth(2);
 
         MIP_TextWidget* text = new MIP_TextWidget(20,"text");
         left_scrollbox->appendWidget(text);
@@ -340,21 +510,112 @@ public:
         value->setFillBackground(true);
         value->setBackgroundColor(0.55);
 
-        MIP_DragValueWidget* dragvalue = new MIP_DragValueWidget(MIP_FRect(20),"drag-value",0);
+        MIP_DragValueWidget* dragvalue;
+
+        dragvalue = new MIP_DragValueWidget(MIP_FRect(20),"drag-value",0);
         left_scrollbox->appendWidget(dragvalue);
         dragvalue->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         dragvalue->setFillBackground(true);
         dragvalue->setBackgroundColor(0.55);
 
-        MIP_SliderWidget* slider2 = new MIP_SliderWidget(MIP_FRect(110,20), "Slider2", 0.5 );
-        left_scrollbox->appendWidget(slider2);
-        slider2->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
-        slider2->setDrawValueBarGradient(false);
-        slider2->setDrawValueBarBorder(false);
+        dragvalue = new MIP_DragValueWidget(MIP_FRect(20),"drag-value (right)",0);
+        left_scrollbox->appendWidget(dragvalue);
+        dragvalue->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        dragvalue->setFillBackground(true);
+        dragvalue->setBackgroundColor(0.55);
+        dragvalue->setDragDirection(MIP_RIGHT);
 
-        MIP_SliderWidget* slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
+        dragvalue = new MIP_DragValueWidget(MIP_FRect(20),"drag-value (snap)",0);
+        left_scrollbox->appendWidget(dragvalue);
+        dragvalue->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        dragvalue->setFillBackground(true);
+        dragvalue->setBackgroundColor(0.55);
+        dragvalue->setSnap(true);
+        dragvalue->setSnapPos(0.5);
+        //dragvalue->setSnapMode(0);
+
+        dragvalue = new MIP_DragValueWidget(MIP_FRect(20),"drag-value (quant)",0);
+        left_scrollbox->appendWidget(dragvalue);
+        dragvalue->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        dragvalue->setFillBackground(true);
+        dragvalue->setBackgroundColor(0.55);
+        dragvalue->setQuantize(true);
+        dragvalue->setQuantizeMode(0);
+        dragvalue->setQuantizeSteps(5);
+
+
+        MIP_SliderWidget* slider;
+
+        slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
         left_scrollbox->appendWidget(slider);
         slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+        slider->setDrawValueBarGradient(false);
+        slider->setDrawValueBarBorder(false);
+
+        slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider", 0.5 );
+        left_scrollbox->appendWidget(slider);
+        slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+
+        slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider (left)", 0.5 );
+        left_scrollbox->appendWidget(slider);
+        slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+        slider->setValueBarColor(MIP_COLOR_LIGHT_YELLOW);
+        slider->setDrawValueBarGradient(false);
+        slider->setDrawValueBarBorder(false);
+        slider->setValueBarDirection(MIP_LEFT);
+        slider->setDragDirection(MIP_LEFT);
+
+        slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider (snap)", 0.5 );
+        left_scrollbox->appendWidget(slider);
+        slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+        slider->setDrawValueBarGradient(false);
+        slider->setDrawValueBarBorder(false);
+        slider->setSnap(true);
+        slider->setSnapPos(0.5);
+        slider->setDrawSnap(true);
+        //dragvalue->setSnapMode(0);
+
+        slider = new MIP_SliderWidget(MIP_FRect(110,20), "Slider (quant)", 0.5 );
+        left_scrollbox->appendWidget(slider);
+        slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
+        slider->setDrawValueBarGradient(false);
+        slider->setDrawValueBarBorder(false);
+        slider->setQuantize(true);
+        slider->setQuantizeSteps(5);
+        //slider->setQuantizeMode(0);
+        slider->setDrawQuantized();
+
+        MIP_KnobWidget* knob;
+
+        knob = new MIP_KnobWidget(MIP_FRect(40,40));
+        left_scrollbox->appendWidget(knob);
+        knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+
+        knob = new MIP_KnobWidget(MIP_FRect(40,40));
+        left_scrollbox->appendWidget(knob);
+        knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        knob->setBipolar(true);
+        knob->setValue(0.7);
+        knob->setSnap(true);
+        knob->setSnapPos(0.5);
+
+//        knob = new MIP_KnobWidget(MIP_FRect(40,40));
+//        left_scrollbox->appendWidget(knob);
+//        knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+//        knob->setBipolar(true);
+//        knob->setValue(0.5);
+//        knob->setSnap(true);
+//        knob->setSnapPos(0.5);
+//        //knob->drawSnap(true);
+
+        knob = new MIP_KnobWidget(MIP_FRect(40,40));
+        left_scrollbox->appendWidget(knob);
+        knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        knob->setQuantize(true);
+        knob->setQuantizeSteps(5);
+        knob->setDrawSteppedArc(true);
+        knob->setStepColor(0.6);
+
 
         MIP_ScrollBarWidget* scrollbar = new MIP_ScrollBarWidget(MIP_FRect(20));
         left_scrollbox->appendWidget(scrollbar);
@@ -455,19 +716,49 @@ public:
       MEditorWidget->appendWidget(right_top_panel);
       right_top_panel->setBackgroundColor(0.6);
       right_top_panel->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      right_top_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
-      right_top_panel->layout.spacing = 5;
+      right_top_panel->layout.innerBorder = MIP_FRect(5,5,5,5);
+      //right_top_panel->layout.spacing = 5;
+
+      MIP_ScrollBoxWidget* right_scrollbox = new MIP_ScrollBoxWidget(MIP_FRect(),true,false);
+      right_top_panel->appendWidget(right_scrollbox);
+      right_scrollbox->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+      right_scrollbox->getContentWidget()->layout.innerBorder = MIP_FRect(0,0,5,0);
+      right_scrollbox->getContentWidget()->layout.spacing = 5;
+
+        for (uint32_t i=0; i<32; i++) {
+          float r = (float)i / 31.0;
+          float g = 0.0;
+          float b = 0.0;
+          float a = 1.0;
+          MIP_PanelWidget* ppp = new MIP_PanelWidget(MIP_FRect(20,20));
+          right_scrollbox->appendWidget(ppp);
+          ppp->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+          ppp->setFillBackground(true);
+          ppp->setBackgroundColor(MIP_Color(r,g,b,a));
+        }
+
+        for (uint32_t i=0; i<32; i++) {
+          MIP_ButtonWidget* bbb = new MIP_ButtonWidget(MIP_FRect(20,20));
+          right_scrollbox->appendWidget(bbb);
+          bbb->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+          bbb->setIsToggle(true);
+          bbb->setText("","");
+        }
+
+        MIP_Widget* wdg = new MIP_Widget(0);
+        right_scrollbox->appendWidget(wdg);
+        wdg->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
 
         MIP_KnobWidget* knob1 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-        right_top_panel->appendWidget(knob1);
+        right_scrollbox->appendWidget(knob1);
         knob1->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
         MIP_KnobWidget* knob2 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-        right_top_panel->appendWidget(knob2);
+        right_scrollbox->appendWidget(knob2);
         knob2->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
         MIP_KnobWidget* knob3 = new MIP_KnobWidget( MIP_FRect( 50,50 ));
-        right_top_panel->appendWidget(knob3);
+        right_scrollbox->appendWidget(knob3);
         knob3->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
         MEditor->connect(knob1,0);
@@ -475,46 +766,46 @@ public:
         MEditor->connect(knob3,2);
 
         MIP_CurveWidget* curve1 = new MIP_CurveWidget( MIP_FRect( 50,50 ),false);
-        right_top_panel->appendWidget(curve1);
-        curve1->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        right_scrollbox->appendWidget(curve1);
+        curve1->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
         curve1->setValue(0.5);
 
         MIP_CurveWidget* curve2 = new MIP_CurveWidget( MIP_FRect( 50,50 ),true);
-        right_top_panel->appendWidget(curve2);
-        curve2->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+        right_scrollbox->appendWidget(curve2);
+        curve2->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
         curve2->setValue(0.5);
 
         MIP_ImageStripWidget* imagestrip = new MIP_ImageStripWidget(MIP_FRect(60));
-        right_top_panel->appendWidget(imagestrip);
+        right_scrollbox->appendWidget(imagestrip);
         imagestrip->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
         imagestrip->setup(1,131,MKnobSurface);
 
         //
 
         MIP_Knob2Widget* k2 = new MIP_Knob2Widget(MIP_FRect(50,82),"knob2");
-        right_top_panel->appendWidget(k2);
+        right_scrollbox->appendWidget(k2);
         k2->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
         MIP_Knob3Widget* k3 = new MIP_Knob3Widget(MIP_FRect(100,25));
-        right_top_panel->appendWidget(k3);
+        right_scrollbox->appendWidget(k3);
         k3->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
         MIP_Knob4Widget* k4 = new MIP_Knob4Widget(MIP_FRect(150,25));
-        right_top_panel->appendWidget(k4);
+        right_scrollbox->appendWidget(k4);
         k4->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
         //
 
         MIP_Knob5Widget* k5 = new MIP_Knob5Widget(MIP_FRect(60,90),"Knob5");
-        right_top_panel->appendWidget(k5);
+        right_scrollbox->appendWidget(k5);
         k5->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
         k5 = new MIP_Knob5Widget(MIP_FRect(120,75),"Knob5b");
-        right_top_panel->appendWidget(k5);
+        right_scrollbox->appendWidget(k5);
         k5->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
         k5 = new MIP_Knob5Widget(MIP_FRect(60,120),"Knob5c");
-        right_top_panel->appendWidget(k5);
+        right_scrollbox->appendWidget(k5);
         k5->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
 
 //----------
@@ -537,16 +828,22 @@ public:
       right_bottom_panel->layout.innerBorder = MIP_FRect(10,10,10,10);
       right_bottom_panel->layout.spacing = 5;
 
+      MIP_ScrollBoxWidget* bottom_scrollbox = new MIP_ScrollBoxWidget(MIP_FRect(),false,true);
+      right_bottom_panel->appendWidget(bottom_scrollbox);
+      bottom_scrollbox->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+      bottom_scrollbox->getContentWidget()->layout.innerBorder = MIP_FRect(0,0,0,5);
+      bottom_scrollbox->getContentWidget()->layout.spacing = 5;
+
           MIP_PanelWidget* p;
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           p->setDrawBorder();
           p->setFillBackground(false);
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           p->setDrawBorder();
           p->setBorderEdges(MIP_EDGE_LEFT + MIP_EDGE_RIGHT);
@@ -554,23 +851,23 @@ public:
           p->setFillBackground(false);
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           p->setFillBackground();
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           p->setFillGradient();
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           p->setFillGradient();
           p->setDrawBorder();
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           p->setFillGradient();
           p->setBackgroundColor(MIP_COLOR_LIGHT_BLUE1);
@@ -579,7 +876,7 @@ public:
           p->setRoundedRadius(6);
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           p->setFillGradient();
           p->setBackgroundColor(MIP_COLOR_LIGHT_BLUE2);
@@ -588,7 +885,7 @@ public:
           p->setRoundedRadius(6);
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           //p->setFillBackground();
           p->setFillGradient();
@@ -600,7 +897,7 @@ public:
           p->setRoundedRadius(12);
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           p->setDrawBorder();
           p->setRoundedCorners(MIP_CORNER_ALL);
@@ -608,7 +905,7 @@ public:
           p->setBackgroundColor(MIP_COLOR_LIGHT_CYAN2);
 
           p = new MIP_PanelWidget(MIP_FRect(100,25));
-          right_bottom_panel->appendWidget(p);
+          bottom_scrollbox->appendWidget(p);
           p->layout.alignment = MIP_WIDGET_ALIGN_STACK_VERT;
           p->setFillGradient();
           p->setBackgroundColor(MIP_COLOR_LIGHT_ORANGE);
@@ -679,37 +976,52 @@ public:
             //scrollbox1->getContentWidget()->layout.innerBorder = MIP_FRect(5,5,5,5);
             scrollbox1->getContentWidget()->layout.spacing = 5;
 
-            for (uint32_t i=0; i<128; i++) {
-              float r = (float)i / 127.0;
-              float g = 0.0;
-              float b = 0.0;
-              float a = 1.0;
-              MIP_PanelWidget* ppp = new MIP_PanelWidget(MIP_FRect(20,20));
-              scrollbox1->appendWidget(ppp);
-              ppp->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-              ppp->setFillBackground(true);
-              ppp->setBackgroundColor(MIP_Color(r,g,b,a));
-            }
+              //
 
-            //for (uint32_t i=0; i<128; i++) {
-            //  float r = 1.0;
-            //  float g = (float)i / 127.0;
-            //  float b = 0.0;
-            //  float a = 1.0;
-            //  MIP_PanelWidget* ppp = new MIP_PanelWidget(MIP_FRect(20,20));
-            //  scrollbox1->appendWidget(ppp);
-            //  ppp->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-            //  ppp->setFillBackground(true);
-            //  ppp->setBackgroundColor(MIP_Color(r,g,b,a));
-            //}
+              // timeline
 
-            for (uint32_t i=0; i<128; i++) {
-              MIP_ButtonWidget* bbb = new MIP_ButtonWidget(MIP_FRect(20,20));
-              scrollbox1->appendWidget(bbb);
-              bbb->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-              bbb->setIsToggle(true);
-              bbb->setText("","X");
-            }
+              MIP_TimelineWidget* timeline = new MIP_TimelineWidget(100);
+              scrollbox1->appendWidget(timeline);
+              timeline->layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
+
+              MIP_TimelineTrack* track;
+              //MIP_TimelineSegment* segment;
+
+              track = new MIP_TimelineTrack("Track 1");
+              timeline->addTrack(track);
+                track->addSegment(new MIP_TimelineSegment("S1",0,10));
+                track->addSegment(new MIP_TimelineSegment("S2",12,15));
+                track->addSegment(new MIP_TimelineSegment("S2",15,25));
+              track = new MIP_TimelineTrack("Track 2");
+              timeline->addTrack(track);
+                track->addSegment(new MIP_TimelineSegment("S3",2,7));
+                track->addSegment(new MIP_TimelineSegment("S4",7,11));
+              track = new MIP_TimelineTrack("Track 3");
+              timeline->addTrack(track);
+                track->addSegment(new MIP_TimelineSegment("A",0,15));
+                track->addSegment(new MIP_TimelineSegment("B",15,30));
+
+              //
+
+//              for (uint32_t i=0; i<32; i++) {
+//                float r = (float)i / 31.0;
+//                float g = 0.0;
+//                float b = 0.0;
+//                float a = 1.0;
+//                MIP_PanelWidget* ppp = new MIP_PanelWidget(MIP_FRect(20,20));
+//                scrollbox1->appendWidget(ppp);
+//                ppp->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+//                ppp->setFillBackground(true);
+//                ppp->setBackgroundColor(MIP_Color(r,g,b,a));
+//              }
+//
+//              for (uint32_t i=0; i<32; i++) {
+//                MIP_ButtonWidget* bbb = new MIP_ButtonWidget(MIP_FRect(20,20));
+//                scrollbox1->appendWidget(bbb);
+//                bbb->layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+//                bbb->setIsToggle(true);
+//                bbb->setText("","");
+//              }
 
         tabs->appendPage("Page1",page1);
         tabs->appendPage("Page2",page2);

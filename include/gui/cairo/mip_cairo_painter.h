@@ -756,16 +756,16 @@ public: // fill
 public: // text
 //------------------------------
 
-  void drawText(float AXpos, float AYpos, const char* AText, MIP_Color AColor) override {
-    setColor(AColor);
+  void drawText(float AXpos, float AYpos, const char* AText/*, MIP_Color AColor*/) override {
+    //setColor(AColor);
     cairo_move_to(MCairo,AXpos,AYpos);
     cairo_show_text(MCairo,AText);
   }
 
   //----------
 
-  void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {
-    setColor(AColor);
+  void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment/*, MIP_Color AColor*/) override {
+    //setColor(AColor);
     //MIP_Assert(AText);
     cairo_text_extents_t e;
     float xx,yy;
@@ -859,48 +859,27 @@ public: // image
   // with cairo_pattern_set_extend()).
 
   void drawImage(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) override {
-    float xscale = (float)ADst.w / (float)ASrc.w;
-    float yscale = (float)ADst.h / (float)ASrc.h;
+    float xscale = ADst.w / ASrc.w;
+    float yscale = ADst.h / ASrc.h;
     MIP_Assert(xscale > 0.0);
     MIP_Assert(yscale > 0.0);
     float inv_xscale = 1.0 / xscale;
     float inv_yscale = 1.0 / yscale;
     cairo_surface_t* srf = ASource->getCairoSurface();
     cairo_save(MCairo);
-    //cairo_identity_matrix(MCairo);
-    //cairo_translate(MCairo,ASrc.x,ASrc.y);
-    //cairo_scale(MCairo,xscale,yscale);
-    //ADst.x /= xscale;
-    //ADst.y /= yscale;
-    //ADst.w /= xscale;
-    //ADst.h /= yscale;
-    //cairo_translate(MCairo,-ADst.x,-ADst.y);
-    //cairo_translate(MCairo,ADst.x-ASrc.x,ADst.y-ASrc.y);
-    //cairo_translate(MCairo,ASrc.x-ADst.x,ASrc.y-ADst.y);
-    //cairo_translate(MCairo,-ADst.x,-ADst.y);
-
     cairo_scale(MCairo,xscale,yscale);
-    cairo_set_source_surface(MCairo,srf,ADst.x * inv_xscale,ADst.y * inv_yscale);//ASrc.x,ASrc.y);
-
-    //CAIRO_EXTEND_NONE     // pixels outside of the source pattern are fully transparent
-    //CAIRO_EXTEND_REPEAT   // the pattern is tiled by repeating
-    //CAIRO_EXTEND_REFLECT  // the pattern is tiled by reflecting at the edges (not implemented for surface patterns currently)
-    //CAIRO_EXTEND_PAD      // pixels outside of the pattern copy the closest pixel from the source (Since 1.2; not implemented for surface patterns currently)
+    cairo_set_source_surface(MCairo,srf,((ADst.x) * inv_xscale) - ASrc.x,((ADst.y) * inv_yscale) - ASrc.y);//ASrc.x,ASrc.y);
     cairo_pattern_t* pattern = cairo_get_source(MCairo);
-    cairo_pattern_set_extend(pattern,CAIRO_EXTEND_PAD);
-
-    //MIP_DPrint("ASrc - x %.2f y %.2f w %.2f h %.2f | ADst - x %.2f y %.2f w %.2f h %.2f\n",ASrc.x,ASrc.y,ASrc.w,ASrc.h,ADst.x,ADst.y,ADst.w,ADst.h);
+    cairo_pattern_set_extend(pattern,CAIRO_EXTEND_NONE);
     MIP_FRect dst = ADst;
     dst.x *= inv_xscale;
     dst.y *= inv_yscale;
     dst.w *= inv_xscale;
     dst.h *= inv_yscale;
     cairo_rectangle(MCairo,dst.x,dst.y,dst.w,dst.h);
-
     cairo_rectangle(MCairo,ADst.x * inv_xscale,ADst.y * inv_yscale,ADst.w,ADst.h);
     cairo_fill(MCairo);
     cairo_restore(MCairo);
-    //cairo_identity_matrix(MCairo);
   }
 
 

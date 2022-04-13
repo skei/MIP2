@@ -237,11 +237,15 @@ public:
     if (MStates[AX]) color = MActiveTextColor;
     else color = MTextColor;
     if (txt) {
-      APainter->drawText(ARect,txt,MIP_TEXT_ALIGN_CENTER,color);
+      //APainter->drawText(ARect,txt,MIP_TEXT_ALIGN_CENTER,color);
+      APainter->setColor(color);
+      APainter->drawText(ARect,txt,MIP_TEXT_ALIGN_CENTER);
     }
     else {
       sprintf(buf,"%i",AX);
-      APainter->drawText(ARect,buf,MIP_TEXT_ALIGN_CENTER,color);
+      //APainter->drawText(ARect,buf,MIP_TEXT_ALIGN_CENTER,color);
+      APainter->setColor(color);
+      APainter->drawText(ARect,buf,MIP_TEXT_ALIGN_CENTER);
     }
 
   }
