@@ -654,30 +654,33 @@ private:
 
       case XCB_EXPOSE: {
         MWindowExposed = true;
-        //MIP_Rect RECT;
+        MIP_FRect r;
         xcb_expose_event_t* expose = (xcb_expose_event_t *)AEvent;
-        int32_t x = expose->x;
-        int32_t y = expose->y;
-        int32_t w = expose->width;
-        int32_t h = expose->height;
-        //RECT = MIP_Rect(x,y,w,h);
+
+        r.x = expose->x;
+        r.y = expose->y;
+        r.w = expose->width;
+        r.h = expose->height;
+
+        //MIP_FRect RECT = MIP_FRect(x,y,w,h);
+
         //MIP_Print("XCB_EXPOSE_NOTIFY. event_x:%i event_y:%i width:%i height:%i\n",x,y,w,h);
 
         // https://cairographics.org/cookbook/xcbsurface.c/
         // Avoid extra redraws by checking if this is the last expose event in the sequence
         //if (expose->count != 0) break;
 
-        //while(expose->count != 0) {
-        //  xcb_generic_event_t* e2 = xcb_wait_for_event(MConnection);
-        //  xcb_expose_event_t* ex2 = (xcb_expose_event_t *)e2;
-        //  RECT.combine( MIP_Rect( ex2->x, ex2->y, ex2->width, ex2->height ) );
-        //}
+//        while(expose->count != 0) {
+//          xcb_generic_event_t* e2 = xcb_wait_for_event(MConnection);
+//          xcb_expose_event_t* ex2 = (xcb_expose_event_t *)e2;
+//          r.combine( MIP_FRect( ex2->x, ex2->y, ex2->width, ex2->height ) );
+//        }
 
-        if ((w < 1) || (h < 1)) {
+        if ((r.w < 1) || (r.h < 1)) {
         }
         else {
           beginPaint();
-          paint(x,y,w,h);
+          paint(r.x,r.y,r.w,r.h);
           endPaint();
         }
         break;

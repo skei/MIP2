@@ -62,7 +62,7 @@ public:
     MValue = AValue;
     flags.autoMouseLock   = true;
     flags.autoMouseHide   = true;
-    flags.autoMouseRedraw = true;
+    flags.redrawInteract  = true;
   }
 
   //----------
@@ -212,7 +212,7 @@ public:
       if (MCanDragValue) {
         if (flags.autoMouseLock)    do_widget_setMouseCursor(this,MIP_CURSOR_GRAB);
         if (flags.autoMouseHide)    do_widget_setMouseCursor(this,MIP_CURSOR_HIDE);
-        if (flags.autoMouseRedraw)  do_widget_redraw(this,getRect(),0);
+        if (flags.redrawInteract)   do_widget_redraw(this,getRect(),0);
         MPrevXpos     = AXpos;
         MPrevYpos     = AYpos;
         MIsDragging   = true;
@@ -239,7 +239,7 @@ public:
       if (AButton == MIP_BUTTON_LEFT) {
         if (flags.autoMouseHide)    do_widget_setMouseCursor(this,MIP_CURSOR_SHOW);
         if (flags.autoMouseLock)    do_widget_setMouseCursor(this,MIP_CURSOR_RELEASE);
-        if (flags.autoMouseRedraw)  do_widget_redraw(this,getRect(),0);
+        if (flags.redrawInteract)   do_widget_redraw(this,getRect(),0);
         MIsDragging = false;
         //setValue(MDragValue);
       }

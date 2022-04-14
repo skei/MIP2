@@ -52,11 +52,9 @@ public:
   void setup(MIP_FRect ARect=MIP_FRect()) {
     setName("MIP_ScrollBoxWidget");
     setHint("scrollbox");
-
-    setFillBackground(false);
+    setFillBackground(false);;
     setDrawBorder(false);
     layout.spacing = 5;
-
     if (showVerticalScrollBar) {
       MVerticalScrollBar = new MIP_ScrollBarWidget( MIP_FRect(10,10) );
       MVerticalScrollBar->layout.alignment = MIP_WIDGET_ALIGN_FILL_RIGHT;
@@ -77,13 +75,11 @@ public:
     MContent->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     //MContent->layout.spacing = 5;
     //MContent->layout.innerBorder = 0;
-
     MContent->setDrawBorder(false);
-    MContent->setFillBackground(true);
-    MContent->setBackgroundColor(0.6);
-
+    MContent->setFillBackground(false);
+    //MContent->setFillBackground(true);
+    //MContent->setBackgroundColor(MIP_COLOR_DARK_GREEN);
     MIP_PanelWidget::appendWidget(MContent);
-
   }
 
   //----------
@@ -94,28 +90,27 @@ public:
 
   //----------
 
-  void updateScroll(MIP_Widget* ASender, float visible, float pos, float prev=0) {
+  //virtual void setHorizontalScrollBar(bool AState=true) { showHorizontalScrollBar = AState; }
+  //virtual void setVerticalScrollBar(bool AState=true) { showVerticalScrollBar = AState; }
+
+  //----------
+
+  void updateScroll(MIP_Widget* ASender, float visible, float pos, float prev=0, bool draw=false) {
     if (ASender == MVerticalScrollBar) {
-      //float pos  = MVerticalScrollBar->getThumbPos();
-      //float prev = MVerticalScrollBar->getPrevThumbPos();
       float delta = prev - pos;
-      //float visible = MVerticalScrollBar->getThumbSize();
       float can_scroll = 1.0 - visible;
       can_scroll *= MContent->getContentRect().h;
-      float scroll = can_scroll * delta; // * pos;
+      float scroll = can_scroll * delta;
       MContent->scrollChildren(0,scroll);
-      do_widget_redraw(MContent,MContent->getRect(),0);
+      if (draw) MContent->redraw();
     }
     else if (ASender == MHorizontalScrollBar) {
-      //float pos  = MHorizontalScrollBar->getThumbPos();
-      //float prev = MHorizontalScrollBar->getPrevThumbPos();
       float delta = prev - pos;
-      //float visible = MHorizontalScrollBar->getThumbSize();
       float can_scroll = 1.0 - visible;
       can_scroll *= MContent->getContentRect().w;
-      float scroll = can_scroll * delta; // * pos;
+      float scroll = can_scroll * delta;
       MContent->scrollChildren(scroll,0);
-      do_widget_redraw(MContent,MContent->getRect(),0);
+      if (draw) MContent->redraw();
     }
   }
 
@@ -136,13 +131,13 @@ public:
     float rect_h = MContent->getRect().h;
     if (showVerticalScrollBar) {
       if (rect_h > 0) {
-        float thumb_ratio = rect_h / content.h;         // szize of thumb (0..1)
+        float thumb_ratio = rect_h / content.h;         // size of thumb (0..1)
         float thumb_size = MIP_Clamp(thumb_ratio,0,1);
         MVerticalScrollBar->setThumbSize(thumb_size,false);
         float visible = MVerticalScrollBar->getThumbSize();
         float pos     = MVerticalScrollBar->getThumbPos();
         float prev    = 0.0f; // MVerticalScrollBar->getPrevThumbPos();
-        updateScroll(MVerticalScrollBar,visible,pos,prev);
+        updateScroll(MVerticalScrollBar,visible,pos,prev,false);
       }
       else {
         MVerticalScrollBar->setThumbSize(1,false);
@@ -151,13 +146,13 @@ public:
 
     if (showHorizontalScrollBar) {
       if (rect_w > 0) {
-        float thumb_ratio = rect_w / content.w;         // szize of thumb (0..1)
+        float thumb_ratio = rect_w / content.w;         // size of thumb (0..1)
         float thumb_size = MIP_Clamp(thumb_ratio,0,1);
         MHorizontalScrollBar->setThumbSize(thumb_size,false);
         float visible = MHorizontalScrollBar->getThumbSize();
         float pos     = MHorizontalScrollBar->getThumbPos();
         float prev    = 0.0f; // MHorizontalScrollBar->getPrevThumbPos();
-        updateScroll(MHorizontalScrollBar,visible,pos,prev);
+        updateScroll(MHorizontalScrollBar,visible,pos,prev,false);
       }
       else {
         MHorizontalScrollBar->setThumbSize(1,false);
@@ -176,13 +171,13 @@ public:
       float visible = MVerticalScrollBar->getThumbSize();
       float pos     = MVerticalScrollBar->getThumbPos();
       float prev    = MVerticalScrollBar->getPrevThumbPos();
-      updateScroll(MVerticalScrollBar,visible,pos,prev);
+      updateScroll(MVerticalScrollBar,visible,pos,prev,true);
     }
     else if (ASender == MHorizontalScrollBar) {
       float visible = MHorizontalScrollBar->getThumbSize();
       float pos     = MHorizontalScrollBar->getThumbPos();
       float prev    = MHorizontalScrollBar->getPrevThumbPos();
-      updateScroll(MHorizontalScrollBar,visible,pos,prev);
+      updateScroll(MHorizontalScrollBar,visible,pos,prev,true);
     }
     else {
       MIP_PanelWidget::do_widget_update(ASender);
@@ -191,11 +186,10 @@ public:
 
   //----------
 
-  void do_widget_realign(MIP_Widget* ASender, bool ARecursive=true) override {
-    //MIP_PRINT;
-    alignWidgets(ARecursive);
-    redraw();
-  }
+  //void do_widget_realign(MIP_Widget* ASender, bool ARecursive=true) override {
+  //  //MIP_PRINT;
+  //  alignWidgets(ARecursive);
+  //}
 
 };
 

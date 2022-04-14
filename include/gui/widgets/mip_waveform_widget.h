@@ -92,6 +92,10 @@ public:
     MBufferSize = ASize;
   }
 
+  void setStereoMode(uint32_t AMode) {
+    MStereoMode = AMode;
+  }
+
   void setWaveColor(MIP_Color AColor) {
     MWaveColor = AColor;
   }
@@ -241,12 +245,15 @@ public:
             //if (MMono) s = MBuffer[index];
             //else s = ( MBuffer[ index*2 ] + MBuffer[ index*2 + 1 ] ) * 0.5;
             float s = 0.0f;
-            switch (MStereoMode) {
-              case 0: s =  MBuffer[ index * 2     ];                                    break; // mono
-              case 1: s = (MBuffer[ index * 2     ] + MBuffer[(index * 2) + 1]) * 0.5f; break; // stereo mixdown
-              case 2: s =  MBuffer[ index * 2     ];                                    break; // stereo left
-              case 3: s =  MBuffer[(index * 2) + 1] ;                                   break; // stereo right
-            }
+//            switch (MStereoMode) {
+//              case 0: s =  MBuffer[ index * 2     ];                                    break; // mono
+//              case 1: s = (MBuffer[ index * 2     ] + MBuffer[(index * 2) + 1]) * 0.5f; break; // stereo mixdown
+//              case 2: s =  MBuffer[ index * 2     ];                                    break; // stereo left
+//              case 3: s =  MBuffer[(index * 2) + 1] ;                                   break; // stereo right
+//            }
+
+            s = MBuffer[index];
+
             // todo: if (MDrawDb) s = KVolumeToDb(s);
 
             //s = 20.0 * log10(s);

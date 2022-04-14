@@ -13,8 +13,10 @@
 #include "gui/mip_widgets.h"
 
 
-//typedef vector<char*> MIP_MenuItems;
-typedef MIP_Array<char*> MIP_MenuItems;
+//typedef MIP_Array<char*>  MIP_MenuItems;
+typedef MIP_Array<char*>  MIP_CharPtrArray;
+
+//typedef MIP_Array<MIP_MenuWidget*> MIP_MenuWidgets;
 
 //----------------------------------------------------------------------
 
@@ -34,7 +36,7 @@ protected:
 //------------------------------
 
   MIP_MenuListener*   MListener     = nullptr;
-  MIP_MenuItems       MItems;
+  MIP_CharPtrArray    MItems;
   uint32_t            MBorderSize   = 5; //0; //1;
   float               MMenuWidth    = 0;//96;
   float               MMenuHeight   = 0;//16;
@@ -61,12 +63,12 @@ public:
 //    MMenuWidth  = ARect.w;
 //    MMenuHeight = ARect.h;
     if (MAlwaysOpen) {
-      flags.active = true;
-      flags.visible = true;
+      state.active = true;
+      state.visible = true;
     }
     else {
-      flags.active = false;
-      flags.visible = false;
+      state.active = false;
+      state.visible = false;
     }
     setFillBackground();
     setBackgroundColor(MIP_COLOR_LIGHT_GRAY);
@@ -162,8 +164,8 @@ public:
     }
     //MIsActive = true;
     //MIsVisible = true;
-    flags.active = true;
-    flags.visible = true;
+    state.active = true;
+    state.visible = true;
     //setWidth(MMenuWidth);
     //setHeight(MMenuHeight);
 
@@ -182,8 +184,8 @@ public:
     MListener = nullptr;
     //MIsActive = false;
     //MIsVisible = false;
-    flags.active = false;
-    flags.visible = false;
+    state.active = false;
+    state.visible = false;
     do_widget_redraw(this,getRect(),0);
     do_widget_setModal(nullptr);
     setWidth(0);

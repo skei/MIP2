@@ -21,8 +21,8 @@ public:
   : MIP_Widget(ARect) {
     setName("MIP_ContainerWidget");
     setHint("container");
-    flags.visible = false;
-    flags.active = false;
+    state.visible = false;
+    state.active = false;
     MContent = new MIP_Widget(ARect);
 
   }
@@ -35,9 +35,9 @@ public:
 //------------------------------
 
   virtual void showContainer(void) {
-    if (!MContent->flags.visible) {
-      MContent->flags.active = true;
-      MContent->flags.visible = true;
+    if (!MContent->state.visible) {
+      MContent->state.active = true;
+      MContent->state.visible = true;
 //      setHeight(MOpenSize);
 //      setInitialHeight(MOpenSize);
 //      do_widget_resized(this);
@@ -47,9 +47,9 @@ public:
   //----------
 
   virtual void hideContainer(void) {
-    if (MContent->flags.visible) {
-      MContent->flags.active = false;
-      MContent->flags.visible = false;
+    if (MContent->state.visible) {
+      MContent->state.active = false;
+      MContent->state.visible = false;
 //      setHeight(MClosedSize);
 //      setInitialHeight(MClosedSize);
 //      do_widget_resized(this);

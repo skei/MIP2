@@ -50,6 +50,7 @@
 #include "gui/widgets/mip_value_graph_widget.h"
 #include "gui/widgets/mip_value_widget.h"
 #include "gui/widgets/mip_waveform_widget.h"
+#include "gui/widgets/mip_xy_pad_widget.h"
 
 //----------------------------------------------------------------------
 #endif

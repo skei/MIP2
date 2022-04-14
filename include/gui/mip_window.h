@@ -8,6 +8,10 @@
   - buffering
   - resizing
   - mouse handling
+
+  MIP_NO_GUI
+  MIP_GUI_XCB
+  MIP_NO_WINDOW_BUFFERING
 */
 
 #include "mip.h"
@@ -175,7 +179,7 @@ public:
         if (MMouseHoverWidget) {
           MMouseHoverWidget->on_widget_mouseLeave(AXpos,AYpos,hover);
         }
-        if (hover->flags.active) {
+        if (hover->state.active) {
           MMouseHoverWidget = hover;
           MMouseHoverWidget->on_widget_mouseEnter(AXpos,AYpos,MMouseHoverWidget);
         }
@@ -206,7 +210,7 @@ public:
       AClicked->on_widget_mouseLeave(AXpos,AYpos,hover);
     }
     if (hover) {
-      if (hover->flags.active) {
+      if (hover->state.active) {
         hover->on_widget_mouseEnter(AXpos,AYpos,MMouseHoverWidget);
         MMouseHoverWidget = hover;
       }
@@ -217,11 +221,10 @@ public:
   }
 
 //------------------------------
-public: // widget
+public: // paint
 //------------------------------
 
   void paint() {
-    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",MRect.x,MRect.y,MRect.w,MRect.h);
     #ifdef MIP_NO_WINDOW_BUFFERING
     paintWindow(MRect);
     #else
@@ -232,7 +235,6 @@ public: // widget
   //----------
 
   void paint(MIP_FRect ARect) {
-    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     #ifdef MIP_NO_WINDOW_BUFFERING
     paintWindow(ARect);
     #else
@@ -242,10 +244,8 @@ public: // widget
 
   //----------
 
-  //void paintWidget(MIP_Widget* AWidget) {
   void paint(MIP_Widget* AWidget) {
     MIP_FRect rect = AWidget->getRect();
-    //MIP_Print("x %.2f y %.2f w %.2f h %.2f\n",rect.x,rect.y,rect.w,rect.h);
     #ifdef MIP_NO_WINDOW_BUFFERING
     paintWindow(rect);
     #else
@@ -258,23 +258,15 @@ public: // window
 //------------------------------
 
   void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
-    //MIP_Print("w %i h %i\n",AWidth,AHeight);
-
     #ifndef MIP_NO_WINDOW_BUFFERING
       resizeBuffer(AWidth,AHeight);
     #endif
-
     if (MWindowPainter) {
       MWindowPainter->resize(AWidth,AHeight);
     }
-
     MRect.w = AWidth;
     MRect.h = AHeight;
     alignWidgets();
-
-    //#ifdef MIP_EXE
-    //  paint();
-    //#endif
   }
 
   //----------
@@ -294,12 +286,6 @@ public: // window
     paintWidgets(MWindowPainter,ARect);
     MWindowPainter->flush();
   }
-
-  // use .paint()
-
-  //void paintWindow() {
-  //  paintWindow(MRect);
-  //}
 
 //------------------------------
 public: // buffer
@@ -344,25 +330,9 @@ public: // buffer
     //MIP_Print("%.0f,%.0f,%.0f,%.0f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     paintWidgets(MBufferPainter,ARect);
     MBufferPainter->flush();
-
     blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
-
     //MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
-
-    //MIP_FRect src = ARect;
-    //MIP_FRect dst = ARect;
-    //src.x *= 0.5;
-    //src.y *= 0.5;
-    //src.w *= 0.5;
-    //src.h *= 0.5;
-    //dst.x *= 0.5;
-    //dst.y *= 0.5;
-    //dst.w *= 0.5;
-    //dst.h *= 0.5;
-    //MWindowPainter->drawImage(dst,MBufferSurface,src);
-
-//    MWindowPainter->flush();
-
+    //MWindowPainter->flush();
   }
 
   #endif // MIP_NO_WINDOW_BUFFERING
@@ -393,14 +363,12 @@ public: // MIP_BaseWindow
 
   //----------
 
-  void on_window_move(int32_t AXpos, int32_t AYpos) override {
-    //MIP_Print("x %i y %i\n",AXpos,AYpos);
-  }
+  //void on_window_move(int32_t AXpos, int32_t AYpos) override {
+  //}
 
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    //MIP_Print("w %i h %i\n",AWidth,AHeight);
     resizeWindow(AWidth,AHeight);
   }
 
@@ -409,7 +377,6 @@ public: // MIP_BaseWindow
   //TODO: focus
 
   void on_window_keyPress(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp) override {
-    //MIP_Print("k %i s %i ts %i\n",AKey,AState,ATimeStamp);
     if (MKeyInputWidget) MKeyInputWidget->on_widget_keyPress(AKey,0,AState);
   }
 
@@ -418,23 +385,19 @@ public: // MIP_BaseWindow
   //TODO: focus
 
   void on_window_keyRelease(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp) override {
-    //MIP_Print("k %i s %i ts %i\n",AKey,AState,ATimeStamp);
     if (MKeyInputWidget) MKeyInputWidget->on_widget_keyRelease(AKey,0,AState);
   }
 
   //----------
 
   void on_window_mouseClick(int32_t AXpos, int32_t AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
-    //MIP_Print("x %i y %i b %i s %i ts %i\n",AXpos,AYpos,AButton,AState,ATimeStamp);
-    /*
-    bool double_click = false;
-    if ((ATimeStamp - MPrevClickTime) < MIP_GUI_DBLCLICK_MS) {
-      double_click = true;
-    }
-    MPrevClickTime = ATimeStamp;
-    */
-    MResizingWidth   = MRect.w;
-    MResizingHeight  = MRect.h;
+    //bool double_click = false;
+    //if ((ATimeStamp - MPrevClickTime) < MIP_GUI_DBLCLICK_MS) {
+    //  double_click = true;
+    //}
+    //MPrevClickTime  = ATimeStamp;
+    MResizingWidth  = MRect.w;
+    MResizingHeight = MRect.h;
     MMouseClickedX  = AXpos;
     MMouseClickedY  = AYpos;
     MMousePrevX     = AXpos;
@@ -442,7 +405,7 @@ public: // MIP_BaseWindow
     MMouseDragX     = AXpos;
     MMouseDragY     = AYpos;
     if (MMouseHoverWidget) {
-      if (MMouseHoverWidget->flags.active) {
+      if (MMouseHoverWidget->state.active) {
         grabMouseCursor();
         MMouseClickedWidget = MMouseHoverWidget;
         MMouseClickedWidget->on_widget_mouseClick(AXpos,AYpos,AButton,AState,ATimeStamp);
@@ -453,7 +416,6 @@ public: // MIP_BaseWindow
   //----------
 
   void on_window_mouseRelease(int32_t AXpos, int32_t AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
-    //MIP_Print("x %i y %i b %i s %i ts %i\n",AXpos,AYpos,AButton,AState,ATimeStamp);
     if (MMouseClickedWidget) {
       MMouseClickedWidget->on_widget_mouseRelease(AXpos,AYpos,AButton,AState,ATimeStamp);
       releaseMouseCursor();
@@ -465,7 +427,6 @@ public: // MIP_BaseWindow
   //----------
 
   void on_window_mouseMove(int32_t AXpos, int32_t AYpos, uint32_t AState, uint32_t ATimeStamp) override {
-    //MIP_Print("x %i y %i s %i ts %i\n",AXpos,AYpos,AState,ATimeStamp);
     MMouseX = AXpos;
     MMouseY = AYpos;
     if (MMouseClickedWidget) {
@@ -497,7 +458,6 @@ public: // MIP_BaseWindow
   //----------
 
   void on_window_mouseEnter(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) override {
-    //MIP_Print("x %i y %i ts %i\n",AXpos,AYpos,ATimeStamp);
     if (!MMouseClickedWidget) {
       MMouseHoverWidget = nullptr;
       updateHoverWidget(AXpos,AYpos,ATimeStamp);
@@ -509,7 +469,6 @@ public: // MIP_BaseWindow
   //TODO: if not dragging?
 
   void on_window_mouseLeave(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) override {
-    //MIP_Print("x %i y %i ts %i\n",AXpos,AYpos,ATimeStamp);
     if (!MMouseClickedWidget) {
       //MMouseHoverWidget = MIP_NULL;
       updateHoverWidget(AXpos,AYpos,ATimeStamp);
@@ -519,34 +478,29 @@ public: // MIP_BaseWindow
 
   //----------
 
-  void on_window_timer() override {
-    //MIP_Print("\n");
-  }
+  //void on_window_timer() override {
+  //}
 
   //----------
 
-  void on_window_idle() override {
-    //MIP_Print("\n");
-  }
+  //void on_window_idle() override {
+  //}
 
   //----------
 
-  void on_window_clientMessage(uint32_t AData, void* APtr) override {
-    //MIP_Print("data %i ptr %p\n",AData,APtr);
-  }
+  //void on_window_clientMessage(uint32_t AData, void* APtr) override {
+  //}
 
   //----------
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    //MIP_Print("x %i y %i w %i h %i\n",AXpos,AYpos,AWidth,AHeight);
     MIP_FRect rect = MIP_FRect(AXpos,AYpos,AWidth,AHeight);
     if (MFillWindowBackground) fillWindowBackground(rect);
     #ifdef MIP_NO_WINDOW_BUFFERING
-    paintWindow(rect);
+      paintWindow(rect);
     #else
-    paintBuffer(rect);
+      paintBuffer(rect);
     #endif
-    //MIP_Print("\n");
   }
 
 //------------------------------
@@ -557,7 +511,6 @@ public: // MIP_Widget
   // MListener = MIP_Editor
 
   void do_widget_update(MIP_Widget* AWidget, uint32_t AMode=0) override {
-    //MIP_PRINT;
     if (MListener) MListener->on_updateWidgetFromWindow(AWidget);
   }
 
@@ -571,13 +524,12 @@ public: // MIP_Widget
   */
 
   void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
-    invalidate(ARect.x,ARect.y,ARect.w + 1,ARect.h + 1);
+    invalidate(ARect.x,ARect.y,ARect.w,ARect.h);
   }
 
   //----------
 
   void do_widget_realign(MIP_Widget* AWidget, bool ARecursive=true) override {
-    //MIP_PRINT;
   }
 
   //----------
@@ -587,7 +539,6 @@ public: // MIP_Widget
   */
 
   void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) override {
-    //MIP_Print("%.2f, %.2f\n",ADeltaX,ADeltaY);
     MResizingWidth += ADeltaX;
     MResizingHeight += ADeltaY;
     if (MListener) MListener->on_resizeFromWindow(MResizingWidth,MResizingHeight);
@@ -626,7 +577,6 @@ public: // MIP_Widget
   //----------
 
   void do_widget_setHint(MIP_Widget* AWidget, const char* AHint, uint32_t AType) override {
-    //MIP_Print("%s\n",AHint);
   }
 
   //----------

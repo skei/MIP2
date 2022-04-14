@@ -13,17 +13,20 @@ class MIP_TextBoxWidget
 protected:
 //------------------------------
 
-  uint32_t  MTextHeight = 12;
+  float     MTextHeight = 15.0;
+  uint32_t  MNumLines   = 0;
+  uint32_t  MMaxLines   = 100;
 
 //------------------------------
 public:
 //------------------------------
 
   MIP_TextBoxWidget(MIP_FRect ARect)
-  : MIP_ScrollBoxWidget(ARect) {
+  : MIP_ScrollBoxWidget(ARect,true,false) {
     setName("MIP_TextBoxWidget");
     setHint("textbox");
     //MContent->layout.innerBorder = 0;
+    MContent->setDrawBorder(true);
   }
 
   //----------
@@ -35,12 +38,37 @@ public:
 public:
 //------------------------------
 
-  virtual void appendText(const char* AText) {
-    MIP_TextWidget* textwidget = new MIP_TextWidget( MIP_FRect(0,0,250,MTextHeight),AText);
-    textwidget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP_LEFT;
-    textwidget->flags.autoSize = true;
+  virtual void setMaxLines(uint32_t ANum) { MMaxLines = ANum; }
+  virtual void setTextHeight(float ASize) { MTextHeight = ASize; }
+
+//------------------------------
+public:
+//------------------------------
+
+  virtual void appendLine(const char* AText, bool ARedraw=true) {
+    if (MNumLines >= MMaxLines) { removeOldestLine(); }
+    //while (MNumLines >= MMaxLines) { removeOldestLine(); }
+    MIP_TextWidget* textwidget = new MIP_TextWidget( MIP_FRect(MTextHeight),AText);
+    textwidget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    //textwidget->flags.autoSize = true;
     textwidget->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     MContent->appendWidget(textwidget);
+    MNumLines += 1;
+    MContent->alignWidgets();
+    do_widget_redraw(MContent,MContent->getRect(),0);
+
+  }
+
+  //----------
+
+  void removeOldestLine() {
+    if (MNumLines > 0) {
+      MIP_Widgets* content = MContent->getChildren();
+      MIP_Widget* wdg = MContent->getChild(0);
+      content->remove(0);
+      delete wdg;
+      MNumLines -= 1;
+    }
   }
 
 };

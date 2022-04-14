@@ -15,23 +15,25 @@ class MIP_DualSliderWidget
 protected:
 //------------------------------
 
-  float       MValue2               = 0.5f;
-  char        MValue1Text[32]       = {0};
-  MIP_Color  MValue1TextColor      = MIP_Color(0.0f);
-  uint32_t    MValue1TextAlignment  = MIP_TEXT_ALIGN_LEFT;
-  MIP_FRect  MValue1TextOffset     = MIP_FRect(2,2,2,2);
+  char      MValue1Text[32]       = {0};
+  MIP_Color MValue1TextColor      = MIP_Color(0.0f);
+  uint32_t  MValue1TextAlignment  = MIP_TEXT_ALIGN_LEFT;
+  MIP_FRect MValue1TextOffset     = MIP_FRect(2,2,2,2);
 
-  char        MValue2Text[32]       = {0};
-  MIP_Color  MValue2TextColor      = MIP_Color(0.0f);
-  uint32_t    MValue2TextAlignment  = MIP_TEXT_ALIGN_RIGHT;
-  MIP_FRect  MValue2TextOffset     = MIP_FRect(2,2,2,2);
+  float     MValue2               = 0.5f;
 
-  MIP_Color  MEdgeColor            = MIP_COLOR_WHITE;
-  uint32_t    MEdgeWidth            = 3;
-  int32_t     MHoverEdge            = -1;
-  bool        MIsDragging1          = false;
-  bool        MIsDragging2          = false;
-  int32_t     MEdgeDistance         = 3;
+  char      MValue2Text[32]       = {0};
+  MIP_Color MValue2TextColor      = MIP_Color(0.0f);
+  uint32_t  MValue2TextAlignment  = MIP_TEXT_ALIGN_RIGHT;
+  MIP_FRect MValue2TextOffset     = MIP_FRect(2,2,2,2);
+
+  int32_t   MHoverEdge            = -1;
+  MIP_Color MEdgeColor            = MIP_COLOR_WHITE;
+  uint32_t  MEdgeWidth            = 3;
+  int32_t   MEdgeDistance         = 3;
+
+  bool      MIsDragging1          = false;
+  bool      MIsDragging2          = false;
 
 //------------------------------
 public:

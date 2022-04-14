@@ -28,8 +28,8 @@ struct  MIP_Graph;
 #define PIN_WIDTH       10
 #define PIN_XDIST       12
 
-#define PIN_HEIGHT      8
-#define PIN_YDIST       11
+#define PIN_HEIGHT      7
+#define PIN_YDIST       9
 
 #define MAX_PINS        16
 //#define BASE_HEIGHT     (MODULE_HEIGHT - (PIN_YDIST * 2) - 2)
@@ -142,6 +142,9 @@ protected:
 
     MIP_Color MModuleColor             = MIP_COLOR_LIGHT_GRAY;
     MIP_Color MSelectedModuleColor     = MIP_COLOR_DARK_GRAY;
+
+    MIP_Color MModuleBorder            = MIP_COLOR_DARK_GRAY;
+    MIP_Color MSelectedModuleBorder    = MIP_COLOR_LIGHT_GRAY;
 
     MIP_Color MSignalPinColor          = MIP_COLOR_LIGHT_GRAY;
     MIP_Color MDataPinColor            = MIP_COLOR_DARK_GRAY;
@@ -551,18 +554,31 @@ public:
       // body
 
       if (AModule->selected) color = MSelectedModuleColor; else color = MModuleColor;
-      MPainter->fillRectangle( module_body_rect, color );
+      //MPainter->fillRectangle( module_body_rect, color );
+      MPainter->rectangle(module_body_rect);
+      MPainter->setColor(color);
+      MPainter->setLineWidth(1);
+      MPainter->fillPath();
 
       // inputs
 
       for (int32_t i=0; i<AModule->numInputs; i++) {
         // fill
         if (AModule->inputs[i] == MIP_PIN_SIGNAL) color = MSignalPinColor; else color = MDataPinColor;
-        MPainter->fillRectangle( input_rect, color );
+        //MPainter->fillRectangle( input_rect, color );
+        MPainter->rectangle(input_rect);
+        MPainter->setColor(color);
+        MPainter->setLineWidth(1);
+        MPainter->fillPath();
+
         // border
         if ((AModule == MHoverModule) && (i == MHoverInput) && (!MDraggingModules)) {
           if (AModule->inputs[i] == MIP_PIN_SIGNAL) color = MSignalPinHoverColor; else color = MDataPinHoverColor;
-          MPainter->drawRectangle( input_rect, color );
+          //MPainter->drawRectangle( input_rect, color );
+          MPainter->rectangle(input_rect);
+          MPainter->setColor(color);
+          MPainter->setLineWidth(1);
+          MPainter->strokePath();
         }
         input_rect.x += PIN_XDIST;
       }
@@ -576,7 +592,12 @@ public:
         //else
         //  MPainter->fillRectangle(MIP_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MDataPinColor);
         if (AModule->outputs[i] == MIP_PIN_SIGNAL) color = MSignalPinColor; else color = MDataPinColor;
-        MPainter->fillRectangle( output_rect, color );
+        //MPainter->fillRectangle( output_rect, color );
+        MPainter->rectangle(output_rect);
+        MPainter->setColor(color);
+        MPainter->setLineWidth(1);
+        MPainter->fillPath();
+
         // border
         if ((AModule == MHoverModule) && (i == MHoverOutput) && (!MDraggingModules)) {
           //if (AModule->outputs[i] == kpt_signal)
@@ -584,7 +605,12 @@ public:
           //else if (AModule->outputs[i] == kpt_data)
           //  MPainter->drawRectangle(MIP_FRect(x+(i*PIN_XDIST),h-PIN_HEIGHT+1,PIN_WIDTH-1,PIN_HEIGHT+1),MDataPinHoverColor);
           if (AModule->outputs[i] == MIP_PIN_SIGNAL) color = MSignalPinHoverColor; else color = MDataPinHoverColor;
-          MPainter->drawRectangle( output_rect, color );
+          //MPainter->drawRectangle( output_rect, color );
+          MPainter->rectangle(output_rect);
+          MPainter->setColor(color);
+          MPainter->setLineWidth(1);
+          MPainter->strokePath();
+
         }
         output_rect.x += PIN_XDIST;
       }
@@ -602,11 +628,14 @@ public:
 
       // border
 
-      //if (AModule == MHoverModule) {
-      //  MPainter->setDrawColor(KLightRed);
-      //  MPainter->drawRectangle( x1, y1+PIN_YDIST, x2, y2-PIN_YDIST );
-      //}
-
+      /*if (AModule->selected) color = MSelectedModuleBorder;
+      else*/
+      color = MModuleBorder;
+      //MPainter->drawRectangle( module_body_rect, color,1 );
+      MPainter->rectangle(module_body_rect);
+      MPainter->setColor(color);
+      MPainter->setLineWidth(1);
+      MPainter->strokePath();
     }
 
     //----------
@@ -633,9 +662,14 @@ public:
       //  MPainter->drawLine(x1,y1,x2,y2,MDataWireColor,1);
 
       MIP_Color color;
-      if (AWire->outModule->outputs[AWire->outPin] == MIP_PIN_SIGNAL) color = MSignalWireColor; else color = MDataWireColor;
-      MPainter->drawLine(x1,y1,x2,y2,color,1);
-
+      if (AWire->outModule->outputs[AWire->outPin] == MIP_PIN_SIGNAL) color = MSignalWireColor;
+      else color = MDataWireColor;
+      //MPainter->drawLine(x1,y1,x2,y2,color,2);
+      MPainter->moveTo(x1,y1);
+      MPainter->lineTo(x2,y2);
+      MPainter->setColor(color);
+      MPainter->setLineWidth(2);
+      MPainter->strokePath();
     }
 
     //----------
@@ -674,12 +708,21 @@ public:
     drawModules();
     drawWires();
     if (MDraggingWire) {
-      APainter->drawLine(MDragWireX1,MDragWireY1,MDragWireX2,MDragWireY2,MIP_COLOR_WHITE,1);
+      //APainter->drawLine(MDragWireX1,MDragWireY1,MDragWireX2,MDragWireY2,MIP_COLOR_BRIGHT_YELLOW,1);
+      APainter->moveTo(MDragWireX1,MDragWireY1);
+      APainter->lineTo(MDragWireX2,MDragWireY2);
+      APainter->setColor(MIP_COLOR_BLACK);
+      APainter->setLineWidth(0.5);
+      APainter->strokePath();
     }
     if (MDraggingSelect) {
       float w = MDragSelectX2 - MDragSelectX1;
       float h = MDragSelectY2 - MDragSelectY1;
-      APainter->drawRectangle(MIP_FRect(MDragSelectX1,MDragSelectY1,w,h),MIP_COLOR_LIGHT_YELLOW,1);
+      //APainter->drawRectangle(MIP_FRect(MDragSelectX1,MDragSelectY1,w,h),MIP_COLOR_BRIGHT_YELLOW,1);
+      APainter->rectangle(MIP_FRect(MDragSelectX1,MDragSelectY1,w,h));
+      APainter->setColor(MIP_COLOR_WHITE);
+      APainter->setLineWidth(0.5);
+      APainter->strokePath();
     }
     APainter->popClip();
   }

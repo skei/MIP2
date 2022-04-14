@@ -88,17 +88,6 @@ public:
 //------------------------------
 
   void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) final {
-    //if (MMode == MIP_SIZER_WINDOW) {
-    //  APainter->fillRectangle( MIP_FRect( MRect.x2()-1, MRect.y, MRect.x2()-1, MRect.y2()-1, MRect.x, MRect.y2()-1 );
-    //}
-    //else {
-    //  APainter->fillRectangle(getRect(),MFillColor);
-    //}
-//    MIP_FRect rect = getRect();
-//    rect.overlap(ARect);
-//    APainter->fillRectangle(rect,MFillColor);
-    //APainter->fillRectangle(getRect(),MFillColor);
-
     if (MMode == MIP_SIZER_WINDOW) {
       APainter->fillTriangle( MRect.x2(), MRect.y, MRect.x2(), MRect.y2(), MRect.x, MRect.y2(), MFillColor );
     }

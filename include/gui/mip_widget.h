@@ -2,6 +2,14 @@
 #define mip_widget_included
 //----------------------------------------------------------------------
 
+/*
+  when resizing widgets, they notify their parents (to realign & redraw),
+  but if we use advanced stacking and fill alignments for the main window,
+  everything have to be redrawn when resizing one of the panels..
+  so it's better to split up panels as much as possible, so that only the
+  necessary widgets need to be redrawn..
+*/
+
 //#define MIP_WIDGET_MAX_PARAMS 8
 
 #include "mip.h"
@@ -20,18 +28,7 @@ typedef MIP_Array<MIP_Widget*> MIP_Widgets;
 //----------------------------------------------------------------------
 
 struct MIP_WidgetFlags {
-
-  //bool autoMouseCursor  = false;
-  //bool autoMouseHide    = false;
-  //bool autoMouseLock    = false;
-  //bool autoSendHint     = false;
-  ////bool canMove          = false;
-  ////bool canResize        = false;
-
-  bool active           = true;     // send events to widget
-  bool visible          = true;     // draw widget
   bool opaque           = false;    // fully covers its parent (no transparent areas)
-  bool interacting      = false;    // is currently interacting with widget
   bool sizePercent      = false;    // widget size is percent (of client area), not pixels
   bool posPercent       = false;    // widget pos is percent (of client area), not pixels
   bool autoCursor       = true;     // set mouse cursor automatically when hovering over a widget (entering)
@@ -40,9 +37,26 @@ struct MIP_WidgetFlags {
   bool autoSize         = false;    // set size to content (child widgets) size (not used yet)
   bool autoMouseLock    = false;    // lock/glue mouse position when interacting (hiding)
   bool autoMouseHide    = false;    // hide mouse cursor when interacting
-  bool autoMouseRedraw  = false;    // redraw widget at start/end of interaction
+  bool redrawHover      = false;
+  bool redrawInteract   = false;    // redraw widget at start/end of interaction
   bool canDrag          = false;    // not used yet
   bool canDrop          = false;    // not used yet
+  //bool autoMouseCursor  = false;
+  //bool autoMouseHide    = false;
+  //bool autoMouseLock    = false;
+  //bool autoSendHint     = false;
+  //bool canMove          = false;
+  //bool canResize        = false;
+};
+
+//----------
+
+struct MIP_WidgetState {
+  bool active           = true;     // send events to widget
+  bool visible          = true;     // draw widget
+  bool interacting      = false;    // is currently interacting with widget
+  bool hovering         = false;    // mouse cursor is hovering above widget
+  bool focused          = false;
 };
 
 //----------
@@ -102,6 +116,7 @@ public:
 
   MIP_WidgetFlags   flags   = {};
   MIP_WidgetLayout  layout  = {};
+  MIP_WidgetState   state   = {};
 
 //------------------------------
 public:
@@ -190,6 +205,7 @@ public:
 //------------------------------
 
   virtual MIP_Widget*     getChild(uint32_t AIndex)   { return MChildren[AIndex]; }
+  virtual MIP_Widgets*    getChildren()               { return &MChildren; }
   virtual MIP_FRect       getContentRect()            { return MContentRect; }
   virtual int32_t         getCursor()                 { return MCursor; }
   virtual float           getMinValue()               { return MMinValue; }
@@ -243,7 +259,7 @@ public:
     if (MChildren.size() > 0) {
       for (int32_t i = MChildren.size()-1; i >= 0; i--) {
         MIP_Widget* child = MChildren[i];
-        if (child->flags.active) {
+        if (child->state.active) {
           MIP_FRect rect = child->getRect();
           if (rect.contains(AXpos,AYpos)) {
             if (ARecursive) {
@@ -276,14 +292,16 @@ public:
     if (flags.autoClip) APainter->pushClip(clip_rect);
     for (uint32_t i=0; i<MChildren.size(); i++) {
       MIP_Widget* child = MChildren[i];
-      if (child->flags.visible) {
+      if (child->state.visible) {
         MIP_FRect child_rect = child->getRect();
         if (child_rect.isNotEmpty()) {
           //if (child_rect.touches(mrect)) {
             MIP_FRect overlap_rect = clip_rect;//mrect;
             overlap_rect.overlap(child_rect);
             if (overlap_rect.isNotEmpty()) {
+              //if (child->flags.autoClip) APainter->pushClip(child->getRect());
               child->on_widget_paint(APainter,overlap_rect,AMode);  // clip rect
+              //if (child->flags.autoClip) APainter->popClip();
             } // !overlap.empty
           //} // child.touches
         } // !child.empty
@@ -313,6 +331,11 @@ public:
 
   // content includes innerBorder?
 
+  // TODO:
+  // after aligning, go through widgets, and disable those that
+  // fall outside the parent rectangle
+  // (they don't need to be visible or active)
+
   virtual void alignWidgets(bool ARecursive=true) {
     MIP_FRect client   = getRect();
     MIP_FRect parent   = client;
@@ -332,7 +355,7 @@ public:
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* child = MChildren[i];
-      if (child->flags.visible) {
+      if (child->state.visible) {
 
         MIP_FRect rect      = child->getInitialRect();
         uint32_t  alignment = child->layout.alignment;
@@ -713,7 +736,7 @@ public:
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* child = MChildren[i];
-      if (child->flags.visible) {
+      if (child->state.visible) {
         //child->setChildrenOffset(AOffsetX,AOffsetY);
         child->MRect.x += AOffsetX;
         child->MRect.y += AOffsetY;
@@ -827,12 +850,16 @@ public:
 
   virtual void on_widget_mouseEnter(float AXpos, float AYpos, MIP_Widget* AFrom) {
     //MIP_Print("%s : x %.2f y %.2f from %s\n",MName,AXpos,AYpos,(AFrom)?AFrom->getName():"?");
+    state.hovering = true;
+    if (flags.redrawHover) do_widget_redraw(this,MRect,0/*MIP_PAINT_REDRAW*/);
     if (flags.autoCursor) do_widget_setMouseCursor(this,MCursor);
     if (flags.autoHint) do_widget_setHint(this,MHint,0);
   }
 
   virtual void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo) {
     //MIP_Print("%s : x %.2f y %.2f to %s\n",MName,AXpos,AYpos,(ATo)?ATo->getName():"?");
+    state.hovering = false;
+    if (flags.redrawHover) do_widget_redraw(this,MRect,0/*MIP_PAINT_REDRAW*/);
     if (flags.autoCursor) do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
     if (flags.autoHint) do_widget_setHint(this,"",0);
   }

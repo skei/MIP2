@@ -103,12 +103,12 @@ public:
   void open(void) {
     //if (MClosed) {
       MClosed = false;
-      MContainer->flags.active = true;
-      MContainer->flags.visible = true;
-//      setResized( MIP_Point(0,0) );
+      MContainer->state.active = true;
+      MContainer->state.visible = true;
+      //setResized( MIP_Point(0,0) );
       setHeight(MOpenSize);
       setInitialHeight(MOpenSize);
-      do_widget_resized(this/*,MRect.w,MOpenSize*/);
+      if (MParent) MParent->do_widget_resized(this/*,MRect.w,MOpenSize*/);
     //}
   }
 
@@ -117,13 +117,13 @@ public:
   void close(void) {
     //if (!MClosed) {
       MClosed = true;
-      MContainer->flags.active = false;
-      MContainer->flags.visible = false;
-//      float rs = MClosedSize - getInitialRect().h;
-//      setResized( MIP_Point(0,rs) );
+      MContainer->state.active = false;
+      MContainer->state.visible = false;
+      //float rs = MClosedSize - getInitialRect().h;
+      //setResized( MIP_Point(0,rs) );
       setHeight(MClosedSize);
       setInitialHeight(MClosedSize);
-      do_widget_resized(this/*,MRect.w,MClosedSize*/);
+      if (MParent) MParent->do_widget_resized(this/*,MRect.w,MClosedSize*/);
     //}
   }
 
@@ -151,11 +151,9 @@ public:
       if (MClosable) {
         if (MTitleBar->getValue() >= 0.5f) {
           open();
-          do_widget_realign(this);
         }
         else {
           close();
-          do_widget_realign(this);
         }
       }
     }
