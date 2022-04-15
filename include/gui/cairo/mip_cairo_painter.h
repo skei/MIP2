@@ -268,6 +268,7 @@ public: // clip
     //resetClip();
     cairo_reset_clip(MCairo);
     cairo_rectangle(MCairo,ARect.x-0.5,ARect.y-0.5,ARect.w+1,ARect.h+1);
+    //cairo_rectangle(MCairo,ARect.x-0.5,ARect.y-0.5,ARect.w+0.5,ARect.h+0.5);
     cairo_clip(MCairo);
     //cairo_new_path(MCairo); // path not consumed by clip() ???
   }

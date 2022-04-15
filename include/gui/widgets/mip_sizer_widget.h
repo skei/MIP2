@@ -23,12 +23,12 @@ class MIP_SizerWidget
   protected:
 //------------------------------
 
-    float         prevx = 0.0f;
-    float         prevy = 0.0f;
-    bool          MIsDragging =false;
-    MIP_Widget*  MTarget = nullptr;
-    uint32_t      MMode = MIP_SIZER_NONE;
-    MIP_Color    MFillColor = MIP_Color( 0.40f );
+    float       prevx = 0.0f;
+    float       prevy = 0.0f;
+    bool        MIsDragging =false;
+    MIP_Widget* MTarget = nullptr;
+    uint32_t    MMode = MIP_SIZER_NONE;
+    MIP_Color   MFillColor = MIP_Color( 0.45 );
 
 //------------------------------
 public:

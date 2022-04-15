@@ -3,7 +3,7 @@
 #define MIP_PAINTER_CAIRO
 //#define MIP_NO_WINDOW_BUFFERING
 
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket
 
 //----------
@@ -723,6 +723,7 @@ public:
       MIP_TextEditWidget* textedit = new MIP_TextEditWidget(MIP_FRect(20));
       left_scrollbox->appendWidget(textedit);
       textedit->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      textedit->setText("textedit");
 
       MIP_GroupBoxWidget* groupbox = new MIP_GroupBoxWidget(MIP_FRect(100),true);
       left_scrollbox->appendWidget(groupbox);
@@ -911,6 +912,8 @@ public:
         MIP_GraphWidget* graph = new MIP_GraphWidget(MIP_FRect());
         page2->appendWidget(graph);
         graph->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+        graph->setDrawBorder(true);
+        //graph->setBorderColor(0.5);
         add_modules(graph);
 
       // page 3
@@ -920,7 +923,7 @@ public:
       page3->setFillBackground(true);
       page3->setBackgroundColor(MIP_Color(0.6,0.6,0.65));
 
-        MIP_ScrollBoxWidget* scrollbox1 = new MIP_ScrollBoxWidget(MIP_FRect(),true,false);
+        MIP_ScrollBoxWidget* scrollbox1 = new MIP_ScrollBoxWidget(MIP_FRect(),true,true);
         page3->appendWidget(scrollbox1);
         scrollbox1->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
         //scrollbox1->getContentWidget()->setDrawBorder(true);
@@ -967,9 +970,9 @@ public:
             //  MWaveformBuffer[i] = MIP_RandomRange(-1,1);
             //}
 
-    tabs->appendPage("Page1",page1);
-    tabs->appendPage("Page2",page2);
-    tabs->appendPage("Page3",page3);
+    tabs->appendPage("Stretch",page1);
+    tabs->appendPage("Modular",page2);
+    tabs->appendPage("Timeline",page3);
     tabs->selectPage(0);
 
 //--------------------

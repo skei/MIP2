@@ -734,7 +734,7 @@
 	"plugin/clap/mip_clap_utils.h"
 	"gui/mip_window.h"
 
-1649965544 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1649983489 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/types/mip_rect.h"
 	"gui/mip_painter.h"
@@ -787,7 +787,7 @@
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_painter.h"
 
-1649968445 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1649984346 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"base/types/mip_array.h"
 	"base/types/mip_point.h"
@@ -898,7 +898,7 @@
 1649797107 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_slider_widget.h
 	"gui/widgets/mip_drag_value_widget.h"
 
-1649967859 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_graph_widget.h
+1649983120 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_graph_widget.h
 	"base/types/mip_list.h"
 	"gui/mip_widgets.h"
 	"gui/mip_widget.h"
@@ -1081,7 +1081,7 @@
 1644090437 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_rgba.h
 	"base/utils/mip_math.h"
 
-1649963604 /DISKS/sda2/code/git/MIP2/include/gui/cairo/mip_cairo_painter.h
+1649984463 /DISKS/sda2/code/git/MIP2/include/gui/cairo/mip_cairo_painter.h
 	"mip.h"
 	"gui/base/mip_base_painter.h"
 	"gui/cairo/mip_cairo.h"
@@ -1634,7 +1634,7 @@
 	"audio/mip_audio_utils.h"
 	"plugin/clap/mip_clap.h"
 
-1649976846 /DISKS/sda2/code/git/MIP2/source/plugins/test_gui1.cpp
+1649983192 /DISKS/sda2/code/git/MIP2/source/plugins/test_gui1.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"

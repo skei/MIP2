@@ -699,9 +699,10 @@ public:
 //------------------------------
 
   void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
-    MIP_PanelWidget::on_widget_paint(APainter,ARect,AMode);
-    MPainter    = APainter;
-    MPaintRect  = ARect;
+    fillBackground(APainter,ARect,AMode);
+    //paintWidgets(APainter,ARect,AMode);
+    MPainter = APainter;
+    MPaintRect = ARect;
     //ACanvas.setDrawColor(KLightGrey);
     //ACanvas.drawRectangle(FRect.x,FRect.y,FRect.x2,FRect.y2);
     APainter->pushClip(getRect());
@@ -724,6 +725,7 @@ public:
       APainter->setLineWidth(0.5);
       APainter->strokePath();
     }
+    drawBorder(APainter,ARect,AMode);
     APainter->popClip();
   }
 
