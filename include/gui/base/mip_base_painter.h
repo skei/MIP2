@@ -26,9 +26,10 @@ public:
 public:
 //------------------------------
 
-  virtual MIP_Drawable* getTarget() {
-    return nullptr;
-  }
+  //virtual MIP_Drawable* getTarget() { return nullptr; }
+
+  virtual void setScale(float AXscale, float AYscale) {}
+  virtual void resetScale() {}
 
   virtual void resize(uint32_t AWidth, uint32_t AHeight) {
   }

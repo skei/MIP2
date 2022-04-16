@@ -2,8 +2,9 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 //#define MIP_NO_WINDOW_BUFFERING
+//#define MIP_WINDOW_BUFFER_BITMAP
 
-#define MIP_DEBUG_PRINT_SOCKET
+//#define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket
 
 //----------
@@ -230,7 +231,9 @@ public:
   //----------
 
   bool create_editor(bool is_floating) {
+    //MIP_PRINT;
     //MEditorIsOpen = false;
+
     MEditor = new MIP_Editor(this,this,800,600,!is_floating);
 
     if (MEditor) {
@@ -782,15 +785,14 @@ public:
       left_scrollbox->appendWidget(valuegraph);
       valuegraph->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
 
-//      MIP_CircularWaveformWidget* circular = new MIP_CircularWaveformWidget(MIP_FRect(150));
-//      left_scrollbox->appendWidget(circular);
-//      circular->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-//      circular->setInnerRadius(0.5);
-//      circular->setOuterRadius(1);
-//      circular->setBipolar(true);
-//      circular->createBuffer(1024);
-//      for (uint32_t i=0; i<1024; i++) circular->setBuffer(i,MIP_RandomRange(-1,1));
-//
+      //MIP_CircularWaveformWidget* circular = new MIP_CircularWaveformWidget(MIP_FRect(150));
+      //left_scrollbox->appendWidget(circular);
+      //circular->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      //circular->setInnerRadius(0.5);
+      //circular->setOuterRadius(1);
+      //circular->setBipolar(true);
+      //circular->createBuffer(1024);
+      //for (uint32_t i=0; i<1024; i++) circular->setBuffer(i,MIP_RandomRange(-1,1));
 
 //--------------------
 // right panel
@@ -907,7 +909,7 @@ public:
       MIP_PanelWidget* page2 = new MIP_PanelWidget(MIP_FRect());
       page2->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
       page2->setFillBackground(false);
-      page2->setBackgroundColor(MIP_Color(0.6,0.65,0.6));
+      //page2->setBackgroundColor(0.6);
 
         MIP_GraphWidget* graph = new MIP_GraphWidget(MIP_FRect());
         page2->appendWidget(graph);
@@ -955,20 +957,20 @@ public:
             track->addSegment(new MIP_TimelineSegment("A",0,15));
             track->addSegment(new MIP_TimelineSegment("B",15,30));
 
-            // waveform
+          // waveform
 
-            //MIP_WaveformWidget* waveform = new MIP_WaveformWidget(50);
-            //scrollbox1->appendWidget(waveform);
-            //waveform->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-            //waveform->setBuffer(MWaveformBuffer);
-            //waveform->setBufferSize(1000);
-            //waveform->setFillBackground(true);
-            //waveform->setBackgroundColor(MIP_COLOR_GRAY);
-            //waveform->setWaveColor(MIP_COLOR_BLACK);
-            //
-            //for (uint32_t i=0; i<1000; i++) {
-            //  MWaveformBuffer[i] = MIP_RandomRange(-1,1);
-            //}
+          MIP_WaveformWidget* waveform = new MIP_WaveformWidget(50);
+          scrollbox1->appendWidget(waveform);
+          waveform->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+          waveform->setBuffer(MWaveformBuffer);
+          waveform->setBufferSize(1000);
+          waveform->setFillBackground(true);
+          waveform->setBackgroundColor(MIP_COLOR_GRAY);
+          waveform->setWaveColor(MIP_COLOR_BLACK);
+
+          for (uint32_t i=0; i<1000; i++) {
+            MWaveformBuffer[i] = MIP_RandomRange(-1,1);
+          }
 
     tabs->appendPage("Stretch",page1);
     tabs->appendPage("Modular",page2);

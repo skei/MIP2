@@ -2,6 +2,8 @@
 #define mip_window_included
 //----------------------------------------------------------------------
 
+//#define MIP_WINDOW_BUFFER_BITMAP
+
 /*
   handles:
   - painting
@@ -64,7 +66,11 @@ private:
   uint32_t            MBufferWidth            = 0;
   uint32_t            MBufferHeight           = 0;
   MIP_Painter*        MBufferPainter          = nullptr;
-  MIP_Surface*        MBufferSurface          = nullptr;
+  #ifdef MIP_WINDOW_BUFFER_BITMAP
+    MIP_Bitmap*       MBufferBitmap           = nullptr;
+  #else
+    MIP_Surface*      MBufferSurface          = nullptr;
+  #endif
   #endif
 
   MIP_Widget*         MMouseHoverWidget       = nullptr;
@@ -258,6 +264,7 @@ public: // window
 //------------------------------
 
   void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
     #ifndef MIP_NO_WINDOW_BUFFERING
       resizeBuffer(AWidth,AHeight);
     #endif
@@ -283,7 +290,9 @@ public: // window
   //----------
 
   void paintWindow(MIP_FRect ARect) {
+    //MWindowPainter->setScale(2,2);
     paintWidgets(MWindowPainter,ARect);
+    //MWindowPainter->resetScale();
     MWindowPainter->flush();
   }
 
@@ -294,9 +303,19 @@ public: // buffer
   #ifndef MIP_NO_WINDOW_BUFFERING
 
   bool createBuffer(uint32_t AWidth, uint32_t AHeight) {
-    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
-    MIP_Assert(MBufferSurface);
-    MBufferPainter = new MIP_Painter(MBufferSurface);
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
+
+    //MIP_DumpCallStack;
+
+    #ifdef MIP_WINDOW_BUFFER_BITMAP
+      MBufferBitmap = new MIP_Bitmap(AWidth,AHeight);
+      MIP_Assert(MBufferBitmap);
+      MBufferPainter = new MIP_Painter(MBufferBitmap);
+    #else
+      MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+      MIP_Assert(MBufferSurface);
+      MBufferPainter = new MIP_Painter(MBufferSurface);
+    #endif
     MIP_Assert(MBufferPainter);
     MBufferWidth = AWidth;
     MBufferHeight = AHeight;
@@ -306,15 +325,22 @@ public: // buffer
   //----------
 
   void deleteBuffer() {
+    //MIP_PRINT;
     delete MBufferPainter;
-    delete MBufferSurface;
     MBufferPainter = nullptr;
+    #ifdef MIP_WINDOW_BUFFER_BITMAP
+    delete MBufferBitmap;
+    MBufferBitmap = nullptr;
+    #else
+    delete MBufferSurface;
     MBufferSurface = nullptr;
+    #endif
   }
 
   //----------
 
   bool resizeBuffer(uint32_t AWidth, uint32_t AHeight) {
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
     uint32_t w = MIP_NextPowerOfTwo(AWidth);
     uint32_t h = MIP_NextPowerOfTwo(AHeight);
     if ((w != MBufferWidth) || (h != MBufferHeight)) {
@@ -328,11 +354,20 @@ public: // buffer
 
   void paintBuffer(MIP_FRect ARect) {
     //MIP_Print("%.0f,%.0f,%.0f,%.0f\n",ARect.x,ARect.y,ARect.w,ARect.h);
+    //MBufferPainter->setScale(2,2);
     paintWidgets(MBufferPainter,ARect);
+    //MBufferPainter->resetScale();
     MBufferPainter->flush();
-    blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
-    //MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+    #ifdef MIP_WINDOW_BUFFER_BITMAP
+      MWindowPainter->uploadBitmap(ARect.x,ARect.y,MBufferBitmap);
+    #else
+      MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+      //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
+    #endif
+
     //MWindowPainter->flush();
+
+
   }
 
   #endif // MIP_NO_WINDOW_BUFFERING
@@ -343,6 +378,8 @@ public:
 
   void open() override {
     setOwnerWindow(this);
+    //setSkin();
+    //setScale(1.5,true); // clipping isn't scfaled...
     alignWidgets();
     MIP_ImplementedWindow::open();
   }
@@ -369,6 +406,7 @@ public: // MIP_BaseWindow
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
     resizeWindow(AWidth,AHeight);
   }
 

@@ -108,8 +108,14 @@ public:
 
       //APainter->drawEllipse(rec2,MIP_COLOR_WHITE,1);
 
+
+
       //if (MBuffer) {
+
+        APainter->setColor(MLineColor);
+
         if (MBipolar) {
+          APainter->moveTo(xcenter+prevx,ycenter+prevy);
           for (int32_t i=0; i<MBufferSize; i++) {
             vv = (MBuffer[i] + 1.0f) * 0.5f;      // 0..1
             v  = MInnerRadius + (vv * r_range);   // 0.5 + (vv*0.5) = 0.5+0..0.5+0.5 = 0.5..1
@@ -117,7 +123,8 @@ public:
             yy = sinf(angle*MIP_PI2);
             float x = xx * v * radius * 0.5;
             float y = yy * v * radius * 0.5;
-            APainter->drawLine(xcenter+prevx,ycenter+prevy,xcenter+x,ycenter+y,MLineColor);
+            //APainter->drawLine(xcenter+prevx,ycenter+prevy,xcenter+x,ycenter+y,MLineColor);
+            APainter->lineTo(xcenter+x,ycenter+y);
             prevx = x;
             prevy = y;
             angle += angleadd;
@@ -136,13 +143,19 @@ public:
             yy = sinf(angle*MIP_PI2);
             float x2 = xx * v * radius * 0.5;
             float y2 = yy * v * radius * 0.5;
-            APainter->drawLine(xcenter+x1,ycenter+y1,xcenter+x2,ycenter+y2,MLineColor);
+
+            APainter->moveTo(xcenter+x1,ycenter+y1);
+            APainter->lineTo(xcenter+x2,ycenter+y2);
+
             //APainter->drawPoint(xcenter+x1,ycenter+y1);
             //prevx = x;
             //prevy = y;
             angle += angleadd;
           }
         } // bipolar
+
+        APainter->strokePath();
+
       //} // buffer
 
 //      APainter->drawEllipse(rec2,MIP_COLOR_WHITE,1);

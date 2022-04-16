@@ -110,9 +110,7 @@ public:
     memset(MGuiParamVal,0,size);
     memset(MGuiParamMod,0,size);
     MTimer = new MIP_Timer(this);
-
     MWindow = new MIP_EditorWindow(AWidth,AHeight,this,AEmbedded);
-
   }
 
   //----------

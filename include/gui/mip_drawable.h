@@ -22,11 +22,14 @@ struct MIP_Drawable {
   virtual bool              isSurface()           { return false; }
   virtual bool              isWindow()            { return false; }
   virtual bool              isCairo()             { return false; }
+  virtual bool              isBitmap()            { return false; }
 
   virtual uint32_t          getWidth()            { return 0; }
   virtual uint32_t          getHeight()           { return 0; }
   virtual uint32_t          getDepth()            { return 0; }
   virtual uint32_t          getStride()           { return 0; }
+  virtual uint32_t          getBuffer()           { return 0; }
+  virtual uint32_t          getBufferSize()       { return 0; }
   virtual MIP_Bitmap*       getBitmap()           { return nullptr; }
 
   #ifdef MIP_USE_XCB

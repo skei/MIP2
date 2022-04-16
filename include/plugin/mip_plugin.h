@@ -838,6 +838,7 @@ public: // gui
   //----------
 
   bool gui_create(const char *api, bool is_floating) override {
+    MIP_PRINT;
     if (is_floating) return false;
     MEditor = new MIP_Editor(this,this,256,256,false);
     if (MEditor) return true;

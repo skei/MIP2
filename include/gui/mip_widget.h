@@ -289,25 +289,27 @@ public:
     clip_rect.shrink(layout.innerBorder);
     clip_rect.overlap(ARect);
     if (clip_rect.isEmpty()) return;
-    if (flags.autoClip) APainter->pushClip(clip_rect);
-    for (uint32_t i=0; i<MChildren.size(); i++) {
-      MIP_Widget* child = MChildren[i];
-      if (child->state.visible) {
-        MIP_FRect child_rect = child->getRect();
-        if (child_rect.isNotEmpty()) {
-          //if (child_rect.touches(mrect)) {
-            MIP_FRect overlap_rect = clip_rect;//mrect;
-            overlap_rect.overlap(child_rect);
-            if (overlap_rect.isNotEmpty()) {
-              //if (child->flags.autoClip) APainter->pushClip(child->getRect());
-              child->on_widget_paint(APainter,overlap_rect,AMode);  // clip rect
-              //if (child->flags.autoClip) APainter->popClip();
-            } // !overlap.empty
-          //} // child.touches
-        } // !child.empty
-      } // child.visible
-    } // for all children
-    if (flags.autoClip) APainter->popClip();
+    if (MChildren.size() > 0) {
+      if (flags.autoClip) APainter->pushClip(clip_rect);
+      for (uint32_t i=0; i<MChildren.size(); i++) {
+        MIP_Widget* child = MChildren[i];
+        if (child->state.visible) {
+          MIP_FRect child_rect = child->getRect();
+          if (child_rect.isNotEmpty()) {
+            //if (child_rect.touches(mrect)) {
+              MIP_FRect overlap_rect = clip_rect;//mrect;
+              overlap_rect.overlap(child_rect);
+              if (overlap_rect.isNotEmpty()) {
+                //if (child->flags.autoClip) APainter->pushClip(child->getRect());
+                child->on_widget_paint(APainter,overlap_rect,AMode);  // clip rect
+                //if (child->flags.autoClip) APainter->popClip();
+              } // !overlap.empty
+            //} // child.touches
+          } // !child.empty
+        } // child.visible
+      } // for all children
+      if (flags.autoClip) APainter->popClip();
+    }
   }
 
   //----------
@@ -708,20 +710,24 @@ public:
         rect.w = MIP_Clamp(rect.w, child->layout.minSize.w, child->layout.maxSize.w);
         rect.h = MIP_Clamp(rect.h, child->layout.minSize.h, child->layout.maxSize.h);
         rect.shrink(child->layout.extraBorder);
-        content.combine(rect);
+
+        content.combine(rect); // scale?
 
         child->MRect.x = rect.x + MChildrenXOffset;
         child->MRect.y = rect.y + MChildrenYOffset;
         child->MRect.w = rect.w;
         child->MRect.h = rect.h;
+
         child->MRect.scale(child->layout.scale);
+
         if (ARecursive) child->alignWidgets(ARecursive);
 
       } // child visible
     } // for all children
+
     if (layout.contentBorder) {
-      content.w += layout.innerBorder.w;
-      content.h += layout.innerBorder.h;
+      content.w += layout.innerBorder.w; // scale?
+      content.h += layout.innerBorder.h; // scale?
     }
     MContentRect = content;
     //if (flags.autoSize) {
@@ -791,9 +797,8 @@ public:
     }
   }
 
-//------------------------------
-public:
-//------------------------------
+  //----------
+
 
   virtual void update() {
     do_widget_update(this);
@@ -804,20 +809,6 @@ public:
   virtual void redraw() {
     do_widget_redraw(this,getRect(),0);
   }
-
-//------------------------------
-public:
-//------------------------------
-
-  //virtual void updateValue(float AValue) {
-  //  MIP_PRINT;
-  //}
-
-  //----------
-
-  //virtual void redraw() {
-  //  MIP_PRINT;
-  //}
 
 //------------------------------
 public:

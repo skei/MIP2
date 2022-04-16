@@ -33,7 +33,8 @@
 #ifndef MIP_NO_GUI
 
 class MIP_ExeWindow
-: public MIP_Window {
+//: public MIP_Window {
+: public MIP_ImplementedWindow {
 
 private:
 
@@ -43,11 +44,14 @@ private:
 public:
 
   MIP_ExeWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener, bool AEmbedded)
-  : MIP_Window(AWidth,AHeight,AListener,AEmbedded) {
+  //: MIP_Window(AWidth,AHeight,AListener,AEmbedded) {
+  : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded) {
   }
 
   virtual ~MIP_ExeWindow() {
   }
+
+public:
 
   void setup (const clap_plugin_t* APlugin, const clap_plugin_gui_t* AGui) {
     plugin = APlugin;
@@ -55,7 +59,7 @@ public:
   }
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    MIP_Window::on_window_resize(AWidth,AHeight);
+    //MIP_Window::on_window_resize(AWidth,AHeight);
     gui->set_size(plugin,AWidth,AHeight);
   }
 

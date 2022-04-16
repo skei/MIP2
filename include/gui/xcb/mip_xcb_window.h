@@ -72,6 +72,10 @@ private:
   bool                        MWindowMapped                 = false;
   bool                        MWindowExposed                = false;
 
+  //bool MWindowIsMoving    = false;
+  //bool MWindowIsResizing  = false;
+  //bool MWindowIsPainting  = false;
+
   xcb_atom_t                  MWMProtocolsAtom              = XCB_NONE; // KWantQuitEvents
   xcb_atom_t                  MWMDeleteWindowAtom           = XCB_NONE; // KWantQuitEvents
 
@@ -108,6 +112,88 @@ private:
 //------------------------------
 private:
 //------------------------------
+
+  /*
+    cursors = (
+        ('X_cursor', 0),
+        ('arrow', 2),
+        ('based_arrow_down', 4),
+        ('based_arrow_up', 6),
+        ('boat', 8),
+        ('bogosity', 10),
+        ('bottom_left_corner', 12),
+        ('bottom_right_corner', 14),
+        ('bottom_side', 16),
+        ('bottom_tee', 18),
+        ('box_spiral', 20),
+        ('center_ptr', 22),
+        ('circle', 24),
+        ('clock', 26),
+        ('coffee_mug', 28),
+        ('cross', 30),
+        ('cross_reverse', 32),
+        ('crosshair', 34),
+        ('diamond_cross', 36),
+        ('dot', 38),
+        ('dotbox', 40),
+        ('double_arrow', 42),
+        ('draft_large', 44),
+        ('draft_small', 46),
+        ('draped_box', 48),
+        ('exchange', 50),
+        ('fleur', 52),
+        ('gobbler', 54),
+        ('gumby', 56),
+        ('hand1', 58),
+        ('hand2', 60),
+        ('heart', 62),
+        ('icon', 64),
+        ('iron_cross', 66),
+        ('left_ptr', 68),
+        ('left_side', 70),
+        ('left_tee', 72),
+        ('leftbutton', 74),
+        ('ll_angle', 76),
+        ('lr_angle', 78),
+        ('man', 80),
+        ('middlebutton', 82),
+        ('mouse', 84),
+        ('pencil', 86),
+        ('pirate', 88),
+        ('plus', 90),
+        ('question_arrow', 92),
+        ('right_ptr', 94),
+        ('right_side', 96),
+        ('right_tee', 98),
+        ('rightbutton', 100),
+        ('rtl_logo', 102),
+        ('sailboat', 104),
+        ('sb_down_arrow', 106),
+        ('sb_h_double_arrow', 108),
+        ('sb_left_arrow', 110),
+        ('sb_right_arrow', 112),
+        ('sb_up_arrow', 114),
+        ('sb_v_double_arrow', 116),
+        ('shuttle', 118),
+        ('sizing', 120),
+        ('spider', 122),
+        ('spraycan', 124),
+        ('star', 126),
+        ('target', 128),
+        ('tcross', 130),
+        ('top_left_arrow', 132),
+        ('top_left_corner', 134),
+        ('top_right_corner', 136),
+        ('top_side', 138),
+        ('top_tee', 140),
+        ('trek', 142),
+        ('ul_angle', 144),
+        ('umbrella', 146),
+        ('ur_angle', 148),
+        ('watch', 150),
+        ('xterm', 152)
+    )
+  */
 
   const char* MIP_XCB_WM_CURSORS[20] = {
     "left_ptr",           // 0 MIP_CURSOR_DEFAULT
@@ -636,14 +722,20 @@ private:
         //}
 
         if ((x != MWindowXpos) || (y != MWindowYpos)) {
+          //if (MWindowIsMoving) { MIP_Print("ouch! we're already moving\n"); }
+          //MWindowIsMoving = true;
           MWindowXpos = x;
           MWindowYpos = y;
           on_window_move(x,y);
+          //MWindowIsMoving = false;
         }
         if ((w != MWindowWidth) || (h != MWindowHeight)) {
+          //if (MWindowIsResizing) { MIP_Print("ouch! we're already resizing\n"); }
+          //MWindowIsResizing = true;
           MWindowWidth = w;
           MWindowHeight = h;
           on_window_resize(w,h);
+          //MWindowIsResizing = false;
         }
         break;
 
@@ -668,20 +760,24 @@ private:
 
         // https://cairographics.org/cookbook/xcbsurface.c/
         // Avoid extra redraws by checking if this is the last expose event in the sequence
+
         //if (expose->count != 0) break;
 
-//        while(expose->count != 0) {
-//          xcb_generic_event_t* e2 = xcb_wait_for_event(MConnection);
-//          xcb_expose_event_t* ex2 = (xcb_expose_event_t *)e2;
-//          r.combine( MIP_FRect( ex2->x, ex2->y, ex2->width, ex2->height ) );
-//        }
+        //while(expose->count != 0) {
+        //  xcb_generic_event_t* e2 = xcb_wait_for_event(MConnection);
+        //  xcb_expose_event_t* ex2 = (xcb_expose_event_t *)e2;
+        //  r.combine( MIP_FRect( ex2->x, ex2->y, ex2->width, ex2->height ) );
+        //}
 
         if ((r.w < 1) || (r.h < 1)) {
         }
         else {
+          //if (MWindowIsPainting) { MIP_Print("ouch! we're already painting\n"); }
+          //MWindowIsPainting = true;
           beginPaint();
           paint(r.x,r.y,r.w,r.h);
           endPaint();
+          //MWindowIsPainting = false;
         }
         break;
       }

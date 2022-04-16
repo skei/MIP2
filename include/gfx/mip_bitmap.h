@@ -15,6 +15,7 @@
 #include "base/utils/mip_rgba.h"
 #include "base/utils/mip_integer_math.h"
 #include "base/utils/mip_random.h"
+#include "gui/mip_drawable.h"
 
 #ifdef MIP_USE_CAIRO
   #include "gui/cairo/mip_cairo.h"
@@ -155,12 +156,12 @@ public:
 public:
 //------------------------------
 
-  uint32_t  getWidth()      { return MWidth; }
-  uint32_t  getHeight()     { return MHeight; }
-  uint32_t  getDepth()      { return 32; }
-  uint32_t  getStride()     { return MStride; }
-  uint32_t* getBuffer()     { return MBuffer; }
-  uint32_t  getBufferSize() { return MBufferSize; }
+  virtual uint32_t  getWidth()      { return MWidth; }
+  virtual uint32_t  getHeight()     { return MHeight; }
+  virtual uint32_t  getDepth()      { return 32; }
+  virtual uint32_t  getStride()     { return MStride; }
+  virtual uint32_t* getBuffer()     { return MBuffer; }
+  virtual uint32_t  getBufferSize() { return MBufferSize; }
 
 //------------------------------
 public:

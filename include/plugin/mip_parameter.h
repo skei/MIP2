@@ -127,15 +127,19 @@ public:
 public:
 //------------------------------
 
-  //virtual double fromInternal(double value) {
-  //  return value;
-  //}
+  // for widgets, etc..
+
+  virtual double from01(double value) {
+    float range = info.max_value - info.min_value;
+    return info.min_value + (value * range);
+  }
 
   //----------
 
-  //virtual double toInternal(double value) {
-  //  return value;
-  //}
+  virtual double to01(double value) {
+    float range = info.max_value - info.min_value;
+    return (value - info.min_value) / range;
+  }
 
   //----------
 

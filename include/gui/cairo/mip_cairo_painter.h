@@ -77,13 +77,13 @@ class MIP_CairoPainter
 private:
 //------------------------------
 
-  bool              MCreatedSurface   = false;
-  cairo_surface_t*  MSurface          = nullptr;
-  cairo_t*          MCairo            = nullptr;
-  //cairo_device_t*   MCairoDevice      = nullptr;
-
-  float             MFontSize         = 0.0;
-
+  bool              MCreatedSurface = false;
+  cairo_surface_t*  MSurface        = nullptr;
+  cairo_t*          MCairo          = nullptr;
+  //cairo_device_t*   MCairoDevice    = nullptr;
+  float             MFontSize       = 0.0;
+  MIP_Drawable*     MTargetDrawable = nullptr;
+  MIP_Bitmap*       MTargetBitmap   = nullptr;
 //------------------------------
 public:
 //------------------------------
@@ -108,10 +108,12 @@ public:
   */
 
   MIP_CairoPainter(MIP_Drawable* ADrawable) {
+    MTargetDrawable = ADrawable;
     if (ADrawable->isCairo()) {
       MSurface = ADrawable->getCairoSurface();
       MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
-      MCreatedSurface = true;
+      //MCreatedSurface = true;
+      MCreatedSurface = false;
       MCairo = cairo_create(MSurface);
       MIP_CHECK_CAIRO_ERROR(MCairo);
       //cairo_set_line_width(MCairo,1);
@@ -124,30 +126,48 @@ public:
 
   //----------
 
+  MIP_CairoPainter(MIP_Bitmap* ABitmap) {
+    MTargetBitmap = ABitmap;
+    MSurface = ABitmap->createCairoSurface();
+    MIP_CHECK_CAIRO_SURFACE_ERROR(MSurface);
+    MCreatedSurface = true;
+    MCairo = cairo_create(MSurface);
+    MIP_CHECK_CAIRO_ERROR(MCairo);
+    //cairo_set_line_width(MCairo,1);
+    setFontSize(12);
+  }
+
+  //----------
+
   /*
     Decreases the reference count on cr by one. If the result is zero, then cr
     and all associated resources are freed.
   */
 
   virtual ~MIP_CairoPainter() {
-    cairo_destroy(MCairo);            // ref cunt error ??
+    #ifdef MIP_USE_CAIRO
+    if (MCreatedSurface) cairo_surface_destroy(MSurface);
+    #endif
   }
 
 //------------------------------
 public: // cairo surface
 //------------------------------
 
-  cairo_surface_t*  getSurface() { return MSurface; }
-  cairo_t*          getCairo()   { return MCairo; }
+  cairo_surface_t*  getSurface()        { return MSurface; }
+  cairo_t*          getCairo()          { return MCairo; }
+
+  MIP_Drawable*     getTargetDrawable() { return MTargetDrawable; }
+  MIP_Bitmap*       getTargetBitmap()   { return MTargetBitmap; }
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Drawable* getTarget() override {
-    MIP_Print("TODO!\n");
-    return nullptr;
-  }
+  //MIP_Drawable* getTarget() override {
+  //  MIP_Print("TODO!\n");
+  //  return nullptr;
+  //}
 
   //void destroy() override {
   //  cairo_device_finish(MDevice);
@@ -157,6 +177,20 @@ public:
 //------------------------------
 public: // surface
 //------------------------------
+
+  void setScale(float AXscale, float AYscale) override {
+    //cairo_save(MCairo);
+    cairo_identity_matrix(MCairo);
+    cairo_scale(MCairo,AXscale,AYscale);
+  }
+
+  //----------
+
+  void resetScale() override {
+    cairo_identity_matrix(MCairo);
+  }
+
+  //----------
 
   /*
     Informs cairo of the new size of the XCB drawable underlying the surface.
@@ -263,14 +297,48 @@ public: // clip
   - Calling cairo_clip() can only make the clip region smaller, never larger
   */
 
+  /*
+    https://www.cairographics.org/FAQ/#clipping_performance
+
+      The cairo_clip function can be used for two different operations. The
+    first is to restrict the set of pixels that need to be updated, (imagine
+    needing to draw only half of a window that was just uncovered by another
+    window). While the second is to modify what is being drawn with some
+    non-pixel-aligned shape (imagine a circular clip path, for example).
+      These two uses result in very different code paths inside cairo and in
+    the underlying window system. The first case can result in faster
+    performance compared to unclipped drawing, since the same drawing
+    operations can be performed but fewer pixels are updated. The second case
+    can actually result in slower performance as an extra compositing step must
+    be added to get the clipped result. This is because the pixels on the edge
+    of the mask will have different values than they would in the unclipped
+    case, (a non-pixel-aligned clip path results in antialiased clipping).
+      So there's a bit of a performance trap there as one might add clipping to
+    try to speed things up and inadvertently cause things to go slower. The
+    trick to get fast clipping is to ensure the path is always aligned with
+    integer positions on the device-pixel grid. And the easiest way to do that
+    is to use an identity transformation, (cairo_identity_matrix), and
+    construct the path by calling cairo_rectangle with integer values.
+  */
+
+  //snap to pixels
+  //  x = int(x + 0.5)
+  //  y = int(x + 0.5)
+  //  return ctx.device_to_user(x,y)
+
   void setClip(MIP_FRect ARect) override {
     //MIP_Print("%.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
-    //resetClip();
     cairo_reset_clip(MCairo);
-    cairo_rectangle(MCairo,ARect.x-0.5,ARect.y-0.5,ARect.w+1,ARect.h+1);
-    //cairo_rectangle(MCairo,ARect.x-0.5,ARect.y-0.5,ARect.w+0.5,ARect.h+0.5);
+    //float x = MIP_Trunc(ARect.x + 0.5);
+    //float y = MIP_Trunc(ARect.y + 0.5);
+    //float w = MIP_Trunc(ARect.w + 0.5);
+    //float h = MIP_Trunc(ARect.h + 0.5);
+    float x = ARect.x;
+    float y = ARect.y;
+    float w = ARect.w;
+    float h = ARect.h;
+    cairo_rectangle(MCairo,x,y,w,h);
     cairo_clip(MCairo);
-    //cairo_new_path(MCairo); // path not consumed by clip() ???
   }
 
   //----------
@@ -428,16 +496,16 @@ public:
   */
 
   void horizLine(float AX1, float AY1, float AX2) override {
-    cairo_move_to(MCairo,AX1,AY1+0.5);
-    cairo_line_to(MCairo,AX2,AY1+0.5);
+    cairo_move_to(MCairo,AX1,AY1);
+    cairo_line_to(MCairo,AX2,AY1);
     //cairo_stroke(MCairo);
   }
 
   //----------
 
   void vertLine(float AX1, float AY1, float AY2) override {
-    cairo_move_to(MCairo,AX1+0.5,AY1);
-    cairo_line_to(MCairo,AX1+0.5,AY2);
+    cairo_move_to(MCairo,AX1,AY1);
+    cairo_line_to(MCairo,AX1,AY2);
     //cairo_stroke(MCairo);
   }
 
@@ -810,6 +878,7 @@ public: // image
 //------------------------------
 
   void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
+    //MIP_PRINT;
     cairo_surface_t* srf = ABitmap->createCairoSurface();
     cairo_save(MCairo);
     cairo_set_source_surface(MCairo,srf,0,0);
@@ -828,12 +897,14 @@ public: // image
   //----------
 
   void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) override {
-    cairo_surface_t* srf = ASource->getCairoSurface();
-    cairo_save(MCairo);
-    cairo_set_source_surface(MCairo,srf,AXpos-ASrc.x,AYpos-ASrc.y);
-    cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
-    cairo_fill(MCairo);
-    cairo_restore(MCairo);
+    if (ASource->isCairo()) {
+      cairo_surface_t* srf = ASource->getCairoSurface();
+      cairo_save(MCairo);
+      cairo_set_source_surface(MCairo,srf,AXpos-ASrc.x,AYpos-ASrc.y);
+      cairo_rectangle(MCairo,AXpos,AYpos,ASrc.w,ASrc.h);
+      cairo_fill(MCairo);
+      cairo_restore(MCairo);
+    }
   }
 
   //----------

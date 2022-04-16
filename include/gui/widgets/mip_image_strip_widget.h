@@ -2,6 +2,9 @@
 #define mip_template_widget_included
 //----------------------------------------------------------------------
 
+// deprecated?
+// use MIP_ImageWidget and the tiling features instead
+
 #include "gui/widgets/mip_drag_value_widget.h"
 
 MIP_Surface*    MSurface           = nullptr;

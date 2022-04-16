@@ -54,6 +54,15 @@ public:
 
   //----------
 
+  MIP_Painter(MIP_Bitmap* ATarget)
+  : MIP_ImplementedPainter(ATarget) {
+    MClipRect = MIP_FRect( ATarget->getWidth()-1, ATarget->getHeight()-1 );
+    //MIP_Print("cliprect: %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
+    //MClipStack.push(MClipRect);
+  }
+
+  //----------
+
   virtual ~MIP_Painter() {
   }
 

@@ -2,6 +2,10 @@
 #define mip_waveform_widget_included
 //----------------------------------------------------------------------
 
+/*
+  use cached pixmap when resizing?
+*/
+
 #include "audio/mip_audio_math.h"
 #include "gui/mip_widgets.h"
 
@@ -226,53 +230,32 @@ public:
 
   //----------
 
+  /*
+    faster to render to image surface, and then blit to screen?
+    is strokePath on pixmap slow?
+  */
+
   virtual void drawWaveform(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     MIP_FRect mrect = getRect();
     if (mrect.w > 0 ) {
       float h2 = (float)mrect.h * 0.5;
-      int32_t midy = mrect.y + (mrect.h * 0.5f);
+      float midy = mrect.y + (mrect.h * 0.5f);
       if (MBufferSize > 0) {
         if (MBuffer) {
           float xadd = (float)MBufferSize / (float)mrect.w;
           float x = 0;
-          #ifdef MIP_GUI_CAIRO
-            APainter->setColor(MWaveColor);
-            APainter->moveTo(mrect.x,midy);
-          #endif
+          float xi = MIP_Trunc(mrect.x);
+          APainter->moveTo(mrect.x+0.5,midy+0.5);
           for (int32_t i=0; i<mrect.w; i++) {
             int32_t index = x;
-            //float s;// = 0;
-            //if (MMono) s = MBuffer[index];
-            //else s = ( MBuffer[ index*2 ] + MBuffer[ index*2 + 1 ] ) * 0.5;
-            float s = 0.0f;
-//            switch (MStereoMode) {
-//              case 0: s =  MBuffer[ index * 2     ];                                    break; // mono
-//              case 1: s = (MBuffer[ index * 2     ] + MBuffer[(index * 2) + 1]) * 0.5f; break; // stereo mixdown
-//              case 2: s =  MBuffer[ index * 2     ];                                    break; // stereo left
-//              case 3: s =  MBuffer[(index * 2) + 1] ;                                   break; // stereo right
-//            }
-
-            s = MBuffer[index];
-
-            // todo: if (MDrawDb) s = KVolumeToDb(s);
-
-            //s = 20.0 * log10(s);
-            //s = MIP_VolumeToDb(s) * (1.0/90.0);
-            //s = MIP_Curve(s,0.33);
-
-            s *=  h2;
-            int32_t ix = mrect.x + i;
-            int32_t iy = s;
-            #ifdef MIP_GUI_CAIRO
-              APainter->lineTo(ix,midy-iy);
-            #else
-              APainter->drawLine( ix, midy, ix, midy-iy, MWaveColor,1 );
-            #endif
+            float s = MBuffer[index];
+            s *= h2;
+            APainter->lineTo(xi+0.5,midy-s+0.5);
             x += xadd;
+            xi += 1;
           } // for w
-          #ifdef MIP_GUI_CAIRO
-            APainter->strokePath();
-          #endif
+          APainter->setColor(MWaveColor);
+          APainter->strokePath();
         } // buffer
       } // buffersize > 0
     } // w > 0
@@ -281,13 +264,19 @@ public:
   //----------
 
   virtual void drawMarkers(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
-    MIP_FRect mrect = getRect();
-    for (int32_t i=0; i<MNumMarkers; i++) {
-      if (MMarkers[i].visible) {
-        float x = MMarkers[i].pos;// / (float)MBufferSize;
-        if ((x >= 0.0f) && (x <= 1.0f)) {
-          float ix = mrect.x + ( x * mrect.w );
-          APainter->drawLine( ix, mrect.y, ix, mrect.y2(), MMarkers[i].color, MMarkerWidth );
+    if (MNumMarkers > 0) {
+      APainter->setLineWidth(MMarkerWidth);
+      MIP_FRect mrect = getRect();
+      for (int32_t i=0; i<MNumMarkers; i++) {
+        if (MMarkers[i].visible) {
+          float x = MMarkers[i].pos;
+          if ((x >= 0.0f) && (x <= 1.0f)) {
+            float ix = mrect.x + ( x * mrect.w );
+            APainter->moveTo(ix,mrect.y);
+            APainter->lineTo(ix,mrect.y2());
+            APainter->setColor(MMarkers[i].color);
+            APainter->strokePath();
+          }
         }
       }
     }
@@ -296,27 +285,20 @@ public:
   //----------
 
   virtual void drawGrid(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
-    MIP_FRect mrect = getRect();
     if (MNumGrid > 1) {
+      MIP_FRect mrect = getRect();
       float xadd = (float)mrect.w / (float)MNumGrid;
       float x = mrect.x + xadd;
-
-      //APainter->setDrawColor(MGridColor);
-
       for (int32_t i=1; i<MNumGrid; i++) {
         int32_t ix = x;
-
-        //if ((i % MNumGridSub) == 0) APainter->setColor(MGridSubColor);
-        //else APainter->setColor(MGridColor);
         MIP_Color color = MGridColor;
         if ((i % MNumGridSub) == 0) color = MGridSubColor;
-        //APainter->moveTo( ix, mrect.y);
-        //APainter->lineTo( ix, mrect.y2());
-        //APainter->strokePath();
-        APainter->drawLine( ix, mrect.y, ix, mrect.y2(), color );
+        APainter->moveTo(ix,mrect.y);
+        APainter->lineTo(ix,mrect.y2());
+        APainter->setColor(color);
+        APainter->strokePath();
         x += xadd;
       }
-
     }
   }
 
@@ -325,7 +307,10 @@ public:
   virtual void drawZeroLine(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     MIP_FRect mrect = getRect();
     int32_t midy = mrect.y + (mrect.h * 0.5f);
-    APainter->drawLine( mrect.x, midy,mrect.x2(),midy, MZeroColor );
+    APainter->moveTo(mrect.x,midy);
+    APainter->lineTo(mrect.x2(),midy);
+    APainter->setColor(MZeroColor);
+    APainter->strokePath();
   }
 
 //------------------------------
@@ -333,7 +318,6 @@ public:
 //------------------------------
 
   void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
-//    APainter->setLineWidth(1);
     fillBackground(APainter,ARect,AMode);
     drawAreas(APainter,ARect,AMode);
     drawWaveform(APainter,ARect,AMode);
