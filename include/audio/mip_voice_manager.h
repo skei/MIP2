@@ -42,8 +42,10 @@
 // one voice context per note port
 
 struct MIP_VoiceContext {
-  const clap_process_t*   process     = nullptr;
-  double                  samplerate  = 0.0;
+  const clap_process_t*   process         = nullptr;
+  double                  samplerate      = 0.0;
+  float*                  voicebuffer     = nullptr;
+  //float*                  voicebuffer[2]  = {0};
 };
 
 //----------------------------------------------------------------------
@@ -83,13 +85,14 @@ private:
   float           MTickBuffer[BUFFERSIZE] = {0};  // todo: alignment --"--
   //uint32_t        MOverSample;
   //float           MPitchBendRange;
-  int32_t         MNumEvents = 0;
-  int32_t         MNextEvent = 0;
-  int32_t         MCurrEvent = 0;
+
   //s2_voice_event  MEvents[MAX_EVENTS]; // todo: alignment (S2_ALIGNMENT_CACHE/_SIMD)
 
   const clap_input_events_t*  MInEvents     = nullptr;
   uint32_t                    MNumInEvents  = 0;
+  uint32_t                    MNextInEvent  = 0;
+  uint32_t                    MCurrInEvent  = 0;
+
 
 //------------------------------
 public:
@@ -786,21 +789,21 @@ public:
 private: // buffer
 //------------------------------
 
-  void clearBuffer(float* ABuffer, uint32_t ASize) {
-    memset(ABuffer,0,ASize*sizeof(float));
+  void clearBuffer(float* ADst, uint32_t ASize) {
+    memset(ADst,0,ASize*sizeof(float));
   }
 
   //----------
 
-  void copyBuffer(float* ABuffer, float* ABuffer2, uint32_t ASize) {
-    memcpy(ABuffer,ABuffer2,ASize*sizeof(float));
+  void copyBuffer(float* ADst, float* ASrc, uint32_t ASize) {
+    memcpy(ADst,ASrc,ASize*sizeof(float));
   }
 
   //----------
 
-  void addBuffer(float* ABuffer, float* ABuffer2, uint32_t ASize) {
+  void addBuffer(float* ADst, float* ASrc, uint32_t ASize) {
     for (uint32_t i=0; i<ASize; i++) {
-      ABuffer[i] += ABuffer2[i];
+      ADst[i] += ASrc[i];
     }
   }
 
@@ -814,14 +817,14 @@ private: // buffer
 
   //----------
 
-  void copyBuffer(float* ABuffer, float* ABuffer2) {
-    copyBuffer(ABuffer,ABuffer2,TICKSIZE);
+  void copyBuffer(float* ADst, float* ASrc) {
+    copyBuffer(ADst,ASrc,TICKSIZE);
   }
 
   //----------
 
-  void addBuffer(float* ABuffer, float* ABuffer2) {
-    addBuffer(ABuffer,ABuffer2,TICKSIZE);
+  void addBuffer(float* ADst, float* ASrc) {
+    addBuffer(ADst,ASrc,TICKSIZE);
   }
 
 //------------------------------
@@ -829,19 +832,19 @@ private: // process
 //------------------------------
 
   void preProcessEvents() {
-    MCurrEvent = 0;
+    MCurrInEvent = 0;
     if (MNumInEvents > 0) {
       //MNextEvent = MEvents[0].ofs;
       const clap_event_header* header = MInEvents->get(MInEvents,0);
-      MNextEvent = header->time;
+      MNextInEvent = header->time;
     }
-    else MNextEvent = MIP_INT32_MAX;
+    else MNextInEvent = MIP_INT32_MAX;
   }
 
   //----------
 
   void postProcessEvents() {
-    MNumEvents = 0;
+    MNumInEvents = 0;
   }
 
   //----------
@@ -851,19 +854,19 @@ private: // process
     or S2_INT32_MAX if no more events
   */
 
-  int32_t processEvents(int32_t AOffset, int32_t ASize) {
-    while (MNextEvent < (AOffset + ASize)) {
-      const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrEvent);
+  uint32_t processEvents(uint32_t AOffset, uint32_t ASize) {
+    while (MNextInEvent < (AOffset + ASize)) {
+      const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrInEvent);
       on_event(header);
-      MCurrEvent++;
-      if (MCurrEvent < MNumInEvents) {
+      MCurrInEvent++;
+      if (MCurrInEvent < MNumInEvents) {
         //MNextEvent = MEvents[MCurrEvent].ofs;
-        const clap_event_header* header = MInEvents->get(MInEvents,MCurrEvent);
-        MNextEvent = header->time;
+        const clap_event_header* header = MInEvents->get(MInEvents,MCurrInEvent);
+        MNextInEvent = header->time;
       }
-      else MNextEvent = MIP_INT32_MAX;
+      else MNextInEvent = MIP_INT32_MAX;
     }
-    int32_t res = MNextEvent - AOffset;
+    uint32_t res = MNextInEvent - AOffset;
     return res;
   }
 
@@ -871,17 +874,21 @@ private: // process
 
   // TODO
 
-  int32_t processEvents(int32_t AOffset) {
+  uint32_t processEvents(uint32_t AOffset) {
     return processEvents(AOffset,TICKSIZE);
   }
 
   //----------
 
-  void processTick(int32_t ASize) {
+  void processTick(uint32_t ASize) {
     clearBuffer(MTickBuffer,ASize);
-    for (int32_t i=0; i<NUM; i++) {
-      if (MVoiceState[i] != MIP_VOICE_OFF) {
-        MVoices[i].process(0);
+    for (uint32_t i=0; i<NUM; i++) {
+      if (MVoiceState[i] == MIP_VOICE_PLAYING) {
+        MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING,ASize);
+        addBuffer(MTickBuffer,MVoiceBuffer,ASize);
+      }
+      if (MVoiceState[i] == MIP_VOICE_RELEASED) {
+        MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED,ASize);
         addBuffer(MTickBuffer,MVoiceBuffer,ASize);
       }
     }
@@ -897,22 +904,23 @@ private: // process
   }
 
 //------------------------------
+public:
 //------------------------------
 
   /*
     this could just as well be used for effects too, i guess?
-    with a different processTick()
-    or if we have 1 voice (1 audio-stream)
+    1 voice = 1 audio-stream
   */
 
   void processTicks(const clap_process_t *process) {
     MVoiceContext.process = process;
+    MVoiceContext.voicebuffer = MVoiceBuffer;
     MInEvents = process->in_events;
     MNumInEvents = MInEvents->size(MInEvents);
     float* out0 = process->audio_outputs->data32[0];
-    float* out1 = process->audio_outputs->data32[0];
-    int32_t offset = 0;
-    int32_t remaining = process->frames_count;
+    float* out1 = process->audio_outputs->data32[1];
+    uint32_t offset = 0;
+    uint32_t remaining = process->frames_count;
     preProcessEvents();
     while (remaining > 0) {
       if (remaining >= TICKSIZE) {

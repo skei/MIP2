@@ -181,8 +181,9 @@ public:
   //----------
 
   uint32_t process(uint32_t AState) {
-    float* output0 = context->process->audio_outputs[0].data32[0];
-    float* output1 = context->process->audio_outputs[0].data32[1];
+    //float* output0 = context->process->audio_outputs[0].data32[0];
+    //float* output1 = context->process->audio_outputs[0].data32[1];
+    float* output = context->voicebuffer;
     uint32_t length  = context->process->frames_count;
     for (uint32_t i=0; i<length; i++) {
       filter.setMode(MIP_SVF_LP);
@@ -193,8 +194,27 @@ public:
       ph = MIP_Fract(ph);
       float v = _onvel + _press;
       v = MIP_Clamp(v,0,1);
-      *output0++ += out * v;
-      *output1++ += out * v;
+      *output++ = out * v;
+      //*output++ += out * v;
+      //*output1++ += out * v;
+    }
+    return MIP_VOICE_PLAYING;
+  }
+
+  //----------
+
+  uint32_t process(uint32_t AState, uint32_t ASize) {
+    float* output = context->voicebuffer;
+    for (uint32_t i=0; i<ASize; i++) {
+      filter.setMode(MIP_SVF_LP);
+      filter.setFreq(ffreq * ffreq);
+      filter.setBW(1.0 - fres);
+      float out = filter.process(ph);
+      ph += phadd;
+      ph = MIP_Fract(ph);
+      float v = _onvel + _press;
+      v = MIP_Clamp(v,0,1);
+      *output++ = out * v;
     }
     return MIP_VOICE_PLAYING;
   }
@@ -424,12 +444,16 @@ public:
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
-    MVoices.process(process);
+
+    //MVoices.process(process);
+    MVoices.processTicks(process);
+
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);
     float r = v * (      p);
     MIP_ScaleStereoBuffer(outputs,l,r,length);
+
   }
 
 };
