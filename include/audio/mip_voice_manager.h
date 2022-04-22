@@ -28,6 +28,11 @@
 #define MIP_INV_MASTER_BEND_RANGE (1.0 / MIP_MASTER_BEND_RANGE)
 #define MIP_INV_VOICE_BEND_RANGE  (1.0 / MIP_VOICE_BEND_RANGE)
 
+#define TICKSIZE        16
+#define MAX_OVERSAMPLE  8
+#define BUFFERSIZE      (TICKSIZE * MAX_OVERSAMPLE)
+#define MAX_EVENTS      1024
+
 //----------------------------------------------------------------------
 //
 //
@@ -70,6 +75,22 @@ private:
 
 //uint32_t          MVoiceAge[NUM]                = {0};
 
+  //VOICE           MVoices[NUMVOICES];
+  //VOICE*          MNoteToVoice[128];
+  //VOICE*          MChannelToVoice[16];      // MPE
+  //uint32          MNoteToChannel[128];      // MPE
+  float           MVoiceBuffer[BUFFERSIZE] = {0}; // todo: alignment (S2_ALIGNMENT_CACHE/_SIMD)
+  float           MTickBuffer[BUFFERSIZE] = {0};  // todo: alignment --"--
+  //uint32_t        MOverSample;
+  //float           MPitchBendRange;
+  int32_t         MNumEvents = 0;
+  int32_t         MNextEvent = 0;
+  int32_t         MCurrEvent = 0;
+  //s2_voice_event  MEvents[MAX_EVENTS]; // todo: alignment (S2_ALIGNMENT_CACHE/_SIMD)
+
+  const clap_input_events_t*  MInEvents     = nullptr;
+  uint32_t                    MNumInEvents  = 0;
+
 //------------------------------
 public:
 //------------------------------
@@ -96,6 +117,17 @@ public:
       MVoiceNote[i] = -1;
       MVoiceChannel[i] = -1;
     }
+
+    //S2_Memset(MNoteToVoice,0,sizeof(MNoteToVoice));
+    //S2_Memset(MNoteToChannel,0,sizeof(MNoteToChannel));
+    //S2_Memset(MChannelToVoice,0,sizeof(MChannelToVoice));
+    //S2_Memset(MEvents,0,sizeof(MEvents));
+    //MOverSample     = 1;
+    //MPitchBendRange = 2;
+    //MNumEvents      = 0;
+    //MNextEvent      = S2_INT32_MAX;
+    //MCurrEvent      = 0;
+
   }
 
   //----------
@@ -595,7 +627,6 @@ public: //private:
 
 //------------------------------
 public: //private:
-
 //------------------------------
 
   int32_t find_voice(bool ATryReleased=true) {
@@ -673,7 +704,12 @@ public: //private:
 public: //private:
 //------------------------------
 
-  void preProcess() {
+  /*
+    returns number of samples until next event, or -1 for no more (all done)
+  */
+
+  uint32_t preProcess() {
+    return 0;
   }
 
   //----------
@@ -725,6 +761,10 @@ public:
 
   void process(const clap_process_t *process) {
     MVoiceContext.process = process;
+
+    //MInEvents = process->in_events;
+    //MNumInEvents = MInEvents->size(MInEvents);
+
     //prepare(MSampleRate);
     preProcess();
     //MVoiceContext.process = process;
@@ -738,6 +778,172 @@ public:
     postProcess();
   }
 
+//------------------------------------------------------------
+//
+//------------------------------------------------------------
+
+//------------------------------
+private: // buffer
+//------------------------------
+
+  void clearBuffer(float* ABuffer, uint32_t ASize) {
+    memset(ABuffer,0,ASize*sizeof(float));
+  }
+
+  //----------
+
+  void copyBuffer(float* ABuffer, float* ABuffer2, uint32_t ASize) {
+    memcpy(ABuffer,ABuffer2,ASize*sizeof(float));
+  }
+
+  //----------
+
+  void addBuffer(float* ABuffer, float* ABuffer2, uint32_t ASize) {
+    for (uint32_t i=0; i<ASize; i++) {
+      ABuffer[i] += ABuffer2[i];
+    }
+  }
+
+  //----------
+  //TODO  (hardcode size)
+  //----------
+
+  void clearBuffer(float* ABuffer) {
+    clearBuffer(ABuffer,TICKSIZE);
+  }
+
+  //----------
+
+  void copyBuffer(float* ABuffer, float* ABuffer2) {
+    copyBuffer(ABuffer,ABuffer2,TICKSIZE);
+  }
+
+  //----------
+
+  void addBuffer(float* ABuffer, float* ABuffer2) {
+    addBuffer(ABuffer,ABuffer2,TICKSIZE);
+  }
+
+//------------------------------
+private: // process
+//------------------------------
+
+  void preProcessEvents() {
+    MCurrEvent = 0;
+    if (MNumInEvents > 0) {
+      //MNextEvent = MEvents[0].ofs;
+      const clap_event_header* header = MInEvents->get(MInEvents,0);
+      MNextEvent = header->time;
+    }
+    else MNextEvent = MIP_INT32_MAX;
+  }
+
+  //----------
+
+  void postProcessEvents() {
+    MNumEvents = 0;
+  }
+
+  //----------
+
+  /*
+    returns number of samples until next event,
+    or S2_INT32_MAX if no more events
+  */
+
+  int32_t processEvents(int32_t AOffset, int32_t ASize) {
+    while (MNextEvent < (AOffset + ASize)) {
+      const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrEvent);
+      on_event(header);
+      MCurrEvent++;
+      if (MCurrEvent < MNumInEvents) {
+        //MNextEvent = MEvents[MCurrEvent].ofs;
+        const clap_event_header* header = MInEvents->get(MInEvents,MCurrEvent);
+        MNextEvent = header->time;
+      }
+      else MNextEvent = MIP_INT32_MAX;
+    }
+    int32_t res = MNextEvent - AOffset;
+    return res;
+  }
+
+  //----------
+
+  // TODO
+
+  int32_t processEvents(int32_t AOffset) {
+    return processEvents(AOffset,TICKSIZE);
+  }
+
+  //----------
+
+  void processTick(int32_t ASize) {
+    clearBuffer(MTickBuffer,ASize);
+    for (int32_t i=0; i<NUM; i++) {
+      if (MVoiceState[i] != MIP_VOICE_OFF) {
+        MVoices[i].process(0);
+        addBuffer(MTickBuffer,MVoiceBuffer,ASize);
+      }
+    }
+    // post-process per voice effects here..
+  }
+
+  //----------
+
+  // TODO (hardcode size)
+
+  void processTick(void) {
+    processTick(TICKSIZE);
+  }
+
+//------------------------------
+//------------------------------
+
+  /*
+    this could just as well be used for effects too, i guess?
+    with a different processTick()
+    or if we have 1 voice (1 audio-stream)
+  */
+
+  void processTicks(const clap_process_t *process) {
+    MVoiceContext.process = process;
+    MInEvents = process->in_events;
+    MNumInEvents = MInEvents->size(MInEvents);
+    float* out0 = process->audio_outputs->data32[0];
+    float* out1 = process->audio_outputs->data32[0];
+    int32_t offset = 0;
+    int32_t remaining = process->frames_count;
+    preProcessEvents();
+    while (remaining > 0) {
+      if (remaining >= TICKSIZE) {
+        processEvents(offset);
+        processTick();
+        copyBuffer(out0 + offset,MTickBuffer);
+        copyBuffer(out1 + offset,MTickBuffer);
+        remaining -= TICKSIZE;
+        offset += TICKSIZE;
+      }
+      else {
+        processEvents(offset,remaining);
+        processTick(remaining);
+        copyBuffer(out0 + offset,MTickBuffer,remaining);
+        copyBuffer(out1 + offset,MTickBuffer,remaining);
+        remaining = 0;
+      }
+    }
+    // post-process global effects here..
+    postProcessEvents();
+  }
+
+
+//------------------------------
+//------------------------------
+
+  #undef NUMVOICES
+  #undef TICKSIZE
+  #undef MAX_OVERSAMPLE
+  #undef BUFFERSIZE
+  #undef MAX_EVENTS
 
 };
 

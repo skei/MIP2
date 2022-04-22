@@ -3,11 +3,8 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-
-//#include "base/mip_rect.h"
 #include "gui/mip_painter.h"
 #include "gui/mip_widget.h"
-
 #include "gui/widgets/mip_drag_value_widget.h"
 
 //----------------------------------------------------------------------
@@ -19,15 +16,10 @@ class MIP_KnobWidget
 private:
 //------------------------------
 
-  //MIP_FPoint MKnobOffset   = MIP_FPoint(0,0);
-  //MIP_FPoint MLabelOffset  = MIP_FPoint(0,0);
-  //MIP_FPoint MValueOffset  = MIP_FPoint(0,0);
-
   bool        MDrawKnob             = true;
   MIP_Color   MKnobColor            = MIP_COLOR_LIGHT_GRAY;
   MIP_Color   MInteractiveKnobColor = MIP_COLOR_WHITE;
-  MIP_Color   MKnobBack             = MIP_Color(0.4);//MIP_COLOR_DARK_GRAY;
-  //uint32_t  MKnobSize             = 5.0f;
+  MIP_Color   MKnobBack             = MIP_Color(0.4);
   bool        MBipolar              = false;
   float       MArcThickness         = 0.20;
   float       MNeedleLength         = 0.25;
@@ -47,7 +39,6 @@ public:
     setFillBackground(true);
     setBackgroundColor(0.6);
     setDrawBorder(false);
-    //MKnobSize = ARect.w * 0.2f;
   }
 
   virtual ~MIP_KnobWidget() {
@@ -58,22 +49,16 @@ public:
 //------------------------------
 
   virtual void setDrawKnob(bool ADraw=true)               { MDrawKnob = ADraw; }
-  virtual void setKnobColor(MIP_Color AColor)            { MKnobColor = AColor; }
-  virtual void setInteractiveKnobColor(MIP_Color AColor)            { MInteractiveKnobColor = AColor; }
-  virtual void setKnobBackgroundColor(MIP_Color AColor)  { MKnobBack = AColor; }
-
-  //void setArcColor(MIP_Color AColor)           { MArcColor = AColor; }
-  //void setArcBackgroundColor(MIP_Color AColor) { MArcBackgroundColor = AColor; }
-
+  virtual void setKnobColor(MIP_Color AColor)             { MKnobColor = AColor; }
+  virtual void setInteractiveKnobColor(MIP_Color AColor)  { MInteractiveKnobColor = AColor; }
+  virtual void setKnobBackgroundColor(MIP_Color AColor)   { MKnobBack = AColor; }
   virtual void setBipolar(bool bi=true)                   { MBipolar = bi; }
-
-  virtual void setArcThickness(float AThickness)        { MArcThickness = AThickness; }
-  virtual void setNeedleLength(float ALength)           { MNeedleLength = ALength; }
-  virtual void setNeedleThickness(float AThickness)     { MNeedleThickness = AThickness; }
-  virtual void setNeedleColor(MIP_Color AColor)        { MNeedleColor = AColor; }
-
-  virtual void setDrawSteppedArc(bool ADraw=true) { MDrawSteppedArc = ADraw; }
-  virtual void setStepColor(MIP_Color AColor)    { MStepColor = AColor; }
+  virtual void setArcThickness(float AThickness)          { MArcThickness = AThickness; }
+  virtual void setNeedleLength(float ALength)             { MNeedleLength = ALength; }
+  virtual void setNeedleThickness(float AThickness)       { MNeedleThickness = AThickness; }
+  virtual void setNeedleColor(MIP_Color AColor)           { MNeedleColor = AColor; }
+  virtual void setDrawSteppedArc(bool ADraw=true)         { MDrawSteppedArc = ADraw; }
+  virtual void setStepColor(MIP_Color AColor)             { MStepColor = AColor; }
 
   //----------
 
@@ -83,99 +68,70 @@ public:
 
   virtual void drawKnob(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MDrawKnob) {
-
       float     value             = getValue();
       float     modvalue          = getModValue();
       float     S                 = (float)getRect().w;
       int32_t   arc_thickness     = S * MArcThickness;
       float     step_start        = S / 2.0f - arc_thickness;
       float     step_end          = S / 2.0f + 1.0f;
-      float     needle_length     = S * MNeedleLength; // / 4;
-      float     needle_thickness  = S * MNeedleThickness; // arc_thickness * 0.33f;
-
+      float     needle_length     = S * MNeedleLength;
+      float     needle_thickness  = S * MNeedleThickness;
+      if (MParameter) {
+        value     = MParameter->to01(value);
+        modvalue  = MParameter->to01(modvalue);
+      }
       MIP_FRect r = getRect();
       MIP_FRect rr = r;
-      //r.shrink(0.5f + MKnobSize * 0.5f);
       r.shrink((arc_thickness / 2.0f) + 1.0f);
       rr.shrink(2);
-
       float x = getRect().x + ((float)getRect().w * 0.5f);
       float y = getRect().y + ((float)getRect().h * 0.5f);
-
-      float a1;// = -0.4f;
-      float a2;// = value * 0.8f;
-
-      //APainter->setPenSize(arc_thickness);
-      //APainter->setDrawColor(MKnobBack);
-      //APainter->drawArc(r,-0.4f,0.8f);
-
       APainter->drawArc(r,-0.4f,0.8f,MKnobBack,arc_thickness);
-
+      float a1;
+      float a2;
       if (MBipolar) {
         float v = (value * 2.0f) - 1.0f;
         if (v < 0) {
           a1 = 0.4f * v;
-          a2 = -a1;//0.4f * -v;
+          a2 = -a1;
         }
         else {
-          a1 = 0.0f;          // start
-          a2 = 0.4f * v;      // length
+          a1 = 0.0f;
+          a2 = 0.4f * v;
         }
       }
       else {
-        a1 = -0.4;            // start
-        a2 =  0.8f * value;   // length
+        a1 = -0.4;
+        a2 =  0.8f * value;
       }
-
-      //APainter->setDrawColor(MKnobColor);
-      //APainter->drawArc(r,a1,a2);
-
-      //r.shrink(2.0f);
       if (isDragging()) {
         APainter->drawArc(r,a1,a2,MInteractiveKnobColor,arc_thickness);
       }
       else {
         APainter->drawArc(r,a1,a2,MKnobColor,arc_thickness);
       }
-
-// modulation
-
       float mvalue = MIP_Clamp(value + modvalue,0,1);
-
-//      MIP_Print("mvalue %f\n",mvalue);
-
-      float m1;// = -0.4f;
-      float m2;// = mvlue * 0.8f;
-
+      float m1;
+      float m2;
       if (MBipolar) {
         float m = (mvalue * 2.0f) - 1.0f;
         if (m < 0) {
           m1 = 0.4f * m;
-          m2 = -m1;//0.4f * -v;
+          m2 = -m1;
         }
         else {
-          m1 = 0.0f;          // start
-          m2 = 0.4f * m;      // length
+          m1 = 0.0f;
+          m2 = 0.4f * m;
         }
       }
       else {
-        m1 = -0.4;            // start
-        m2 =  0.8f * mvalue;   // length
+        m1 = -0.4;
+        m2 =  0.8f * mvalue;
       }
-
-      APainter->drawArc(rr,m1,m2,MIP_COLOR_BLACK,2);//arc_thickness / 3);
-
-//
+      APainter->drawArc(rr,m1,m2,MIP_COLOR_BLACK,2);
       // steps
-
-      //MIP_Parameter* param;
-      //if (MParameter) param = (MIP_Parameter*)MParameter;
-      //else param = MIP_NULL;
-
       if (getQuantize() && MDrawSteppedArc) {
-        //APainter->setDrawColor(MStepColor);
-        //APainter->setPenSize(1);
-        uint32_t num = getQuantizeSteps() ;//+ 1;//param->getNumSteps();
+        uint32_t num = getQuantizeSteps();
         if (num > 2) {
           float va = 1.0f / (float)(num - 1);
           float vv = va;
@@ -192,36 +148,15 @@ public:
           }
         } // > 2
       }
-
       // value 'needle'
-
-      //if (!MDrawSteppedNeedle) {
-      //  value = getValue();
-      //}
-
-      float v = ((1.0f - value) * 0.8f) + 0.1f; // 0.1 = (1.0 - 0.8) / 2.0
+      float v = ((1.0f - value) * 0.8f) + 0.1f;
       float a = sinf( v * MIP_PI2  );
       float b = cosf( v * MIP_PI2 );
       float x1  = x;
       float y1  = y;
       float x2  = x + (a * needle_length);
       float y2  = y + (b * needle_length);
-      //APainter->setDrawColor(MNeedleColor);
-      //APainter->setPenSize(arc_thickness/2);
-      //APainter->drawLine(x1,y1,x2,y2);
       APainter->drawLine(x1,y1,x2,y2,MNeedleColor,needle_thickness);
-
-      //
-
-      /*
-      APainter->setDrawColor(MIP_Red);
-      APainter->setPenSize(1);
-      r.shrink(arc_thickness);
-      value = getDragValue();
-      a2 = value * 0.8f;
-      APainter->drawArc(r,-0.4f,a2);
-      */
-
     }
   }
 

@@ -3,6 +3,8 @@
 //----------------------------------------------------------------------
 
 
+
+
 //----------------------------------------------------------------------
 //
 //
@@ -54,8 +56,8 @@ private:
   bool    MNeedRecalc   = false;
   float   MSampleRate   = 0.0;
 
-  int32_t MNoteBuffer[128*16];
-  int32_t MChanBuffer[128*16];
+  int32_t MNoteBuffer[128*16]; // index = incoming note, value = outgoing note
+  //int32_t MChanBuffer[128*16];
 
 //------------------------------
 public:

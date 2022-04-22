@@ -15,6 +15,14 @@
 
 //----------------------------------------------------------------------
 
+#define MIP_XCB_PATH_NONE     0
+#define MIP_XCB_PATH_LINE     1
+#define MIP_XCB_PATH_RECT     2
+#define MIP_XCB_PATH_ELLIPSE  3
+#define MIP_XCB_PATH_ARC      4
+
+//----------------------------------------------------------------------
+
 class MIP_XcbPainter
 : public MIP_BasePainter {
 
@@ -42,6 +50,8 @@ private:
 
   xcb_font_t        MFont         = XCB_NONE;
 
+  intptr_t          MPath[1024]   = {};
+  uint32_t          MPathPos      = 0;
 
 //------------------------------
 public:
@@ -87,6 +97,12 @@ public:
       xcb_flush(MConnection);
     }
   }
+
+  //----------
+
+  MIP_XcbPainter(MIP_Bitmap* ATarget) {
+  }
+
 
   //----------
 
@@ -208,7 +224,7 @@ private:
 public:
 //------------------------------
 
-  MIP_Drawable* getTarget() override {
+  MIP_Drawable* getTarget() /*override*/ {
     return MTarget;
   }
 
@@ -288,7 +304,7 @@ public:
 public:
 //------------------------------
 
-  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawLine(float AXpos1, float AYpos1, float AXpos2, float AYpos2, MIP_Color AColor, float AWidth=1) override {
     set_color(AColor);
     set_line_width(AWidth);
     xcb_point_t polyline[] =  {
@@ -300,7 +316,7 @@ public:
 
   //----------
 
-  void drawRectangle(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawRectangle(MIP_FRect ARect, MIP_Color AColor, float AWidth=1) override {
     set_color(AColor);
     set_line_width(AWidth);
     xcb_rectangle_t rectangles[] = {{
@@ -315,8 +331,7 @@ public:
   //----------
 
   // todo: no color/size per call
-
-  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges, MIP_Color AColor, float AWidth=1) override {
     //set_color(AColor);
     //set_line_width(AWidth);
     float r  = ARadius;// - 1;
@@ -342,7 +357,7 @@ public:
     angle 2 = 'distance' 0..1, counter-clockwise
   */
 
-  void drawArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawArc(MIP_FRect ARect, float AAngle1, float AAngle2, MIP_Color AColor, float AWidth=1) override {
     set_color(AColor);
     set_line_width(AWidth);
     // start angle = 12 o'clock
@@ -363,7 +378,7 @@ public:
 
   //----------
 
-  void drawEllipse(MIP_FRect ARect, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawEllipse(MIP_FRect ARect, MIP_Color AColor, float AWidth=1) override {
     set_color(AColor);
     set_line_width(AWidth);
     xcb_arc_t arcs[] = {
@@ -379,7 +394,7 @@ public:
 
   //----------
 
-  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor, uint32_t AWidth=1) override {
+  void drawTriangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3, MIP_Color AColor, float AWidth=1) override {
     xcb_point_t polyline[] =  {
       (int16_t)AX1, (int16_t)AY1, (int16_t)AX2, (int16_t)AY2,
       (int16_t)AX2, (int16_t)AY2, (int16_t)AX3, (int16_t)AY3,
@@ -408,7 +423,7 @@ public:
 
   // todo: no color/size per call
 
-  void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, MIP_Color AColor) override {
+  void fillRoundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges, MIP_Color AColor) override {
     //set_color(AColor);
     //set_line_width(AWidth);
     float r  = ARadius;// - 1;
@@ -480,8 +495,7 @@ public:
 public:
 //------------------------------
 
-  void drawText(float AXpos, float AYpos, const char* AText, MIP_Color AColor) override {
-    set_color(AColor);
+  void drawText(float AXpos, float AYpos, const char* AText) override {
     uint8_t buffer[512];
     MIP_XcbPolyText8 pt;
     pt.data = buffer;
@@ -492,7 +506,7 @@ public:
 
   //----------
 
-  void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {
+  void drawText(MIP_FRect ARect, const char* AText, uint32_t AAlignment) override {
     measure_string(AText);
     float x,y,w;
     if (AAlignment & MIP_TEXT_ALIGN_TOP) y = ARect.y    + MFontAscent;
@@ -502,7 +516,7 @@ public:
     if (AAlignment & MIP_TEXT_ALIGN_LEFT) x = ARect.x;
     else if (AAlignment & MIP_TEXT_ALIGN_RIGHT) x = ARect.x2() - w;
     else x = ARect.x + (ARect.w * 0.5f) - (w * 0.5f);
-    drawText(x,y,AText,AColor);
+    drawText(x,y,AText);
   }
 
 //------------------------------
@@ -643,7 +657,92 @@ public:
   void drawImage(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) override {
   }
 
+//------------------------------
+public: // path
+//------------------------------
+
+  void strokePath(bool APreserve=false) override {
+    //MIP_Print("TODO\n");
+  }
+
   //----------
+
+  void fillPath(bool APreserve=false) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void fillPathGradient(float AX1, float AY1, float AX2, float AY2, MIP_Color AColor1, MIP_Color AColor2, bool AVertical, bool APreserve=false) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void moveTo(float AX, float AY) {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void lineTo(float AX, float AY) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void curveTo(float AX2, float AY2, float AX3, float AY3, float AX4, float AY4) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void horizLine(float AX1, float AY1, float AX2) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void vertLine(float AX1, float AY1, float AY2) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void rectangle(MIP_FRect ARect) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void roundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void ellipse(MIP_FRect ARect) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void arc(float AX1, float AY1, float AX2, float AY2, float AAngle1, float AAngle2) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void triangle(float AX1, float AY1, float AX2, float AY2, float AX3, float AY3) override {
+    //MIP_Print("TODO\n");
+  }
+
+  //----------
+
+  void text(float AXpos, float AYpos, const char* AText) {
+    //MIP_Print("TODO\n");
+  }
+
 
 };
 

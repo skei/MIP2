@@ -69,13 +69,18 @@ public:
 
   virtual void fillBackground(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MFillBackground) {
-      APainter->roundedRectangle(MRect,MRoundedRadius,MRoundedCorners,MIP_EDGE_ALL);
+      MIP_FRect rect = MRect;
+      //rect.add(0.5,0.5,-1,-1);
+      //rect.add(1,1,0,0);
+      //APainter->roundedRectangle(MRect,MRoundedRadius,MRoundedCorners,MIP_EDGE_ALL);
+      APainter->roundedRectangle(rect,MRoundedRadius,MRoundedCorners,MIP_EDGE_ALL);
       if (MFillGradient) {
         MIP_Color c1 = MBackgroundColor;
         MIP_Color c2 = MBackgroundColor;
         c1.blend(MIP_COLOR_WHITE,0.2);
         c2.blend(MIP_COLOR_BLACK,0.2);
-        APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),c1,c2,MGradientVertical);
+        //APainter->fillPathGradient(MRect.x,MRect.y,MRect.x2(),MRect.y2(),c1,c2,MGradientVertical);
+        APainter->fillPathGradient(rect.x,rect.y,rect.x2(),rect.y2(),c1,c2,MGradientVertical);
       }
       else {
         APainter->setColor(MBackgroundColor);
@@ -88,9 +93,13 @@ public:
 
   virtual void drawBorder(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MDrawBorder) {
+      MIP_FRect rect = MRect;
+      //rect.add(0.5,0.5,-1,-1);
+      //rect.add(1,1,0,0);
       APainter->setColor(MBorderColor);
       APainter->setLineWidth(MBorderThickness);
-      APainter->roundedRectangle(MIP_FRect(MRect.x,MRect.y,MRect.w,MRect.h),MRoundedRadius,MRoundedCorners,MBorderEdges);
+      //APainter->roundedRectangle(MIP_FRect(MRect.x,MRect.y,MRect.w,MRect.h),MRoundedRadius,MRoundedCorners,MBorderEdges);
+      APainter->roundedRectangle(rect,MRoundedRadius,MRoundedCorners,MBorderEdges);
       APainter->strokePath();
     }
   }

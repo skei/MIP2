@@ -224,7 +224,6 @@ protected: // ??
       if (value != MParameterValues[index]) {
         MParameterValues[index] = value;
 
-
 //TODO
 //        on_plugin_parameter();
 
@@ -329,6 +328,8 @@ public: // editor listener
 
   //----------
 
+  //TODO: fix this.. (newer clap)
+
   // Resizing the window (initiated by the plugin, if embedded):
   // 1. Plugins calls clap_host_gui->request_resize()
   // 2. If the host returns true the new size is accepted,
@@ -409,6 +410,10 @@ public: // handle
 
   //----------
 
+  /*
+    why is the above called ..inProcess, while the below is ..fromHost?
+  */
+
   virtual void handle_modulation_event(clap_event_param_mod_t* param_mod) {
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
@@ -423,6 +428,8 @@ public: // handle
 
   virtual void handle_process(const clap_process_t *process) {
 
+    // (a)
+
     //float* in0 = process->audio_inputs[0].data32[0];
     //float* in1 = process->audio_inputs[0].data32[1];
     //float* out0 = process->audio_outputs[0].data32[0];
@@ -432,6 +439,8 @@ public: // handle
     //  *out0++ = *in0++;
     //  *out1++ = *in1++;
     //}
+
+    // (b)
 
     //float** inputs = process->audio_inputs[0].data32;
     //float** outputs = process->audio_outputs[0].data32;
@@ -590,7 +599,6 @@ public: // plugin
   }
 
   //----------
-
 
   //TODO: MIP_EditorListener -> MIP_Plugin
 
@@ -840,7 +848,7 @@ public: // gui
   bool gui_create(const char *api, bool is_floating) override {
     MIP_PRINT;
     if (is_floating) return false;
-    MEditor = new MIP_Editor(this,this,256,256,false);
+    MEditor = new MIP_Editor(this,this,256,256,false); // ???
     if (MEditor) return true;
     return false;
   }
