@@ -114,7 +114,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-std=c++14" />
+			<Add option="-std=c++17" />
 			<Add option="-Wl,--as-needed" />
 			<Add directory="../include" />
 			<Add directory="../include/extern/vst3" />

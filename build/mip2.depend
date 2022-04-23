@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1650671148 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+1650730839 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
 	"../source/plugins/test_synth1.cpp"
 
 1643950248 /DISKS/sda2/code/git/MIP2/source/test/test.cpp
@@ -1632,7 +1632,7 @@
 	"plugin/mip_editor.h"
 	"gui/mip_widgets.h"
 
-1650680876 /DISKS/sda2/code/git/MIP2/include/audio/mip_voice_manager.h
+1650725832 /DISKS/sda2/code/git/MIP2/include/audio/mip_voice_manager.h
 	"mip.h"
 	"audio/mip_audio_utils.h"
 	"plugin/clap/mip_clap.h"
@@ -1655,12 +1655,13 @@
 
 1648646406 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage/sa_botage_logo.h
 
-1650682573 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1.cpp
+1650734580 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1.cpp
 	"mip.h"
 	"audio/mip_voice_manager.h"
 	"audio/mip_audio_math.h"
 	"audio/filters/mip_svf_filter.h"
 	"audio/modulation/mip_envelope.h"
+	"audio/waveforms/mip_polyblep_waveform.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
 	"gui/mip_widgets.h"
@@ -1677,10 +1678,12 @@
 1648766921 /DISKS/sda2/code/git/MIP2/include/audio/filters/mip_svf_filter.h
 	"base/utils/mip_math.h"
 
-1649527490 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_sa_header_widget.h
+1650733958 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_sa_header_widget.h
 	"gui/widgets/mip_image_widget.h"
 	"gui/widgets/mip_panel_widget.h"
 	"gui/widgets/mip_text_widget.h"
+	"../data/img/sa_logo_40_trans_black.h"
+	"../data/img/mip2_trans_129x34.h"
 
 1585572916 /DISKS/sda2/code/git/MIP2/data/img/sa_logo_40_trans_black.h
 
@@ -1730,4 +1733,7 @@
 
 1650680603 /DISKS/sda2/code/git/MIP2/include/audio/modulation/mip_envelope.h
 	<math.h>
+
+1650683327 /DISKS/sda2/code/git/MIP2/include/audio/waveforms/mip_polyblep_waveform.h
+	"base/utils/mip_math.h"
 
