@@ -449,6 +449,12 @@ public: // plugin
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
     MVoices.prepare(sample_rate);
+
+    for (uint32_t i=0; i<NUM_PARAMS; i++) {
+      float v = MParameterValues[i];
+      MVoices.handle_master_param(i,v);
+    }
+
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
   }
 
@@ -471,8 +477,17 @@ public: // gui
     return (MEditor);
   }
 
+  //----------
+
+  void handle_editor_parameter(uint32_t AIndex, float AValue) override {
+    //MIP_PRINT;
+    //MVoices.handle_voice_param(-1,-1,AIndex,AValue);
+    MVoices.handle_master_param(AIndex,AValue);
+
+  }
+
 //------------------------------
-public:
+public: // events
 //------------------------------
 
 //  void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
@@ -543,15 +558,18 @@ public:
     MVoices.on_parameter_modulation(event);
   }
 
-  //----------
+//------------------------------
+public: // process
+//------------------------------
 
   void handle_process(const clap_process_t *process) final {
 
     // todo: fix this..
     // send freq/res to voices..
-    for (uint32_t i=2; i<12; i++) {
-      MVoices.handle_master_param(i,MParameterValues[i]);
-    }
+
+//    for (uint32_t i=2; i<12; i++) {
+//      MVoices.handle_master_param(i,MParameterValues[i]);
+//    }
 
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;

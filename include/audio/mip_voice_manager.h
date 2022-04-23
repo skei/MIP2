@@ -445,6 +445,9 @@ public:
     float value = event->value;
     int32_t channel = event->channel;
     int32_t key = event->key;
+
+//MIP_Print("channel %i key %i\n",channel,key);
+
     if ((channel >= 0) && (key >= 0)) {
       handle_voice_param(channel,key,index,value);
     }
@@ -653,6 +656,7 @@ public: //private:
   // amount will already include the monophonic signal.
 
   void handle_voice_param(int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
+    //MIP_Print("channel %i key %i index %i value %.3f\n",AChannel,AKey,AIndex,AValue);
     int32_t voice = MNoteToVoice[(AChannel * 128) + AKey];
     if (voice >= 0) {
       MVoices[voice].parameter(AIndex,AValue);

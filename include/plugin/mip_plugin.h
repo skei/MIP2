@@ -324,6 +324,11 @@ public: // editor listener
     queueAudioParam(AIndex);
     MHostParamVal[AIndex] = AValue;
     queueHostParam(AIndex);
+
+//qwe
+
+    handle_editor_parameter(AIndex,AValue);
+
   }
 
   //----------
@@ -447,6 +452,10 @@ public: // handle
     //uint32_t length = process->frames_count;
     //MIP_CopyStereoBuffer(outputs,inputs,length);
 
+  }
+
+  virtual void handle_editor_parameter(uint32_t AIndex, float AValue) {
+    //qwe
   }
 
 //------------------------------
