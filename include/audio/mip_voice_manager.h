@@ -4,12 +4,9 @@
 
 /*
   TODO:
-  - sample accurate events (in & out)
+  - handle all note expressions (vol, pan, etc)
   - send event_mod events (end, choke?)
-  - note end? when MIP_VOICE_FINISHED (so host can turn off voice/modulation)
   - handle note_choke/end?
-  - handle note expressions (vol, pan, etc)
-
 */
 
 //----------------------------------------------------------------------
@@ -39,7 +36,7 @@
 //
 //----------------------------------------------------------------------
 
-// one voice context per note port
+// one voice context per note port?
 
 struct MIP_VoiceContext {
   const clap_process_t* process     = nullptr;
@@ -56,13 +53,10 @@ struct MIP_VoiceContext {
 /*
   2 buffers, each 16 samples (64 bytes)
   = 1 cache line each..
-  each voice fills the voice buffer, whihc is then added to the
-  tick buffer
-  hardcoded and unrolled, plus optimizer magic..
-
+  each voice fills the voice buffer, which is then added to the tick buffer
+  (..hardcoded and unrolled, plus optimizer magic..)
   events for each 16-sample block are handled at the beginning of the block,
   so we might get some jittering (max 15 samples)..
-
 */
 
 __MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
@@ -88,6 +82,9 @@ void MIP_AddVoiceToTickBuffer(uint32_t ASize) {
 }
 
 //----------
+
+// the optimizer will probably automatically unroll the loop if we pass a const
+// as length?
 
 void MIP_ClearTickBuffer() {
   //MIP_ClearTickBuffer(MIP_VOICE_TICKSIZE);
@@ -225,7 +222,6 @@ public:
 
   void on_event(const clap_event_header_t* header) {
     clap_event_note_expression_t* event;
-    //MIP_Print("Event: %i\n",header->type);
     switch (header->type) {
       case CLAP_EVENT_NOTE_ON:
         on_note_on((clap_event_note_t*)header);
@@ -255,7 +251,6 @@ public:
       //  break;
       case CLAP_EVENT_NOTE_EXPRESSION:
         event = (clap_event_note_expression_t*)header;
-        //MIP_Print("Note Expression: %i\n",event->expression_id);
         switch (event->expression_id) {
           case CLAP_NOTE_EXPRESSION_VOLUME:     on_note_volume_expression(event);     break;
           case CLAP_NOTE_EXPRESSION_PAN:        on_note_pan_expression(event);        break;
@@ -276,7 +271,6 @@ public:
   // CLAP_NOTE_DIALECT_CLAP
 
   void on_note_on(clap_event_note* event) {
-    //MIP_PRINT;
     int32_t channel = event->channel;
     int32_t key = event->key;
     float velocity = event->velocity;
@@ -284,7 +278,6 @@ public:
   }
 
   void on_note_off(clap_event_note* event) {
-    //MIP_PRINT;
     int32_t channel = event->channel;
     int32_t key = event->key;
     float velocity = event->velocity;
@@ -432,7 +425,6 @@ public:
   //----------
 
   void on_midi_sysex(clap_event_midi_sysex_t* event) {
-    //MIP_Print("todo\n");
   }
 
 //------------------------------
@@ -442,7 +434,6 @@ public:
   // CLAP_NOTE_DIALECT_MIDI2
 
   void on_midi2(clap_event_midi2_t* event) {
-    //MIP_Print("todo\n");
   }
 
 //------------------------------
@@ -454,7 +445,6 @@ public:
     float value = event->value;
     int32_t channel = event->channel;
     int32_t key = event->key;
-    //MIP_Print("index %i value %.2f channel %i key %i\n",index,value,channel,key);
     if ((channel >= 0) && (key >= 0)) {
       handle_voice_param(channel,key,index,value);
     }
@@ -494,7 +484,7 @@ public: //private:
   /*
     todo:
       consider note already playing.. (multiple keyboards)
-      note to voice only handles one voicenote
+      note to voice only handles one voice/note
   */
 
   // assumes AChannel >= 0
@@ -723,13 +713,11 @@ public: //private:
 
   int32_t find_voice(bool ATryReleased=true) {
     for (uint32_t i=0; i<NUM; i++) {
-      //MIP_Print("voice %i state %i\n",i,MVoiceState[i]);
       if (MVoiceState[i] == MIP_VOICE_OFF) return i;
       if (MVoiceState[i] == MIP_VOICE_FINISHED) return i;
     }
     if (ATryReleased) {
       for (uint32_t i=0; i<NUM; i++) {
-        //MIP_Print("(released) voice %i state %i\n",i,MVoiceState[i]);
         if (MVoiceState[i] == MIP_VOICE_RELEASED) return i;
       }
     }
@@ -740,36 +728,29 @@ public: //private:
 
   int32_t start_voice(int32_t AChannel, int32_t AKey, float AVelocity) {
     uint32_t note = (AChannel * 128) + AKey;
-
     // kill potentially already playing voice
     int32_t prev_voice = MNoteToVoice[note];
     if (prev_voice >= 0) kill_voice(prev_voice);
-
     int32_t voice = find_voice(true);
     if (voice >= 0) {
-      //MIP_Print("%i\n",voice);
       MNoteToVoice[note] = voice;
       MVoiceNote[voice] = AKey;
       MVoiceChannel[voice] = AChannel;
       MVoiceState[voice] = MVoices[voice].note_on(AKey,AVelocity);
       return voice;
     }
-    //MIP_Print("no voices!\n");
     return -1;
   }
 
   //----------
 
   void kill_voice(int32_t voice) {
-//    MIP_Print("%i\n",voice);
     if (voice < 0) return;
-
     int32_t key = MVoiceNote[voice];
     int32_t channel = MVoiceChannel[voice];
     if (key < 0) return;
     if (channel < 0) return;
     uint32_t note = (channel * 128) + key;
-
     MVoiceNote[voice] = -1;
     MVoiceChannel[voice] = -1;
     MVoiceState[voice] = MIP_VOICE_OFF;
@@ -813,10 +794,8 @@ public: //private:
   void postProcess() {
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceState[i] == MIP_VOICE_FINISHED) {
-        //MIP_Print("voice finished\n");
         kill_voice(i);
         send_note_end(i);
-        //MVoiceState[i] = MIP_VOICE_OFF;
       }
       //TODO: send PARAM_MOD events
     }
@@ -889,15 +868,13 @@ private: // process
 
   /*
     returns number of samples until next event,
-    or S2_INT32_MAX if no more events
+    or MIP_INT32_MAX if no more events
   */
 
-  //uint32_t samplesUntilNextEvent(uint32_t AOffset, uint32_t ASize) {
+  //uint32_t samplesUntilNextEvent...
+
   uint32_t processEvents(uint32_t AOffset, uint32_t ASize) {
     while (MNextInEvent < (AOffset + ASize)) {
-      //const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrInEvent);
-      //MIP_Print("offset %i event.time: %i\n",AOffset,header->time);
-      //on_event(header);
       MCurrInEvent++;
       if (MCurrInEvent < MNumInEvents) {
         const clap_event_header* header = MInEvents->get(MInEvents,MCurrInEvent);
@@ -951,9 +928,6 @@ private: // process
         MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED);
         MIP_AddVoiceToTickBuffer();
       }
-      //if (MVoiceState[i] == MIP_VOICE_FINISHED) {
-      //  MVoiceState[i] == MIP_VOICE_OFF;
-      //}
     }
     // post-process per voice effects here..
   }
@@ -973,13 +947,6 @@ public:
     preProcess();
     MInEvents = process->in_events;
     MNumInEvents = MInEvents->size(MInEvents);
-
-    //char temp[17] = {0};
-    //for (uint32_t i=0; i<NUM; i++) {
-    //  temp[i] = '0' + MVoiceState[i];
-    //}
-    //MIP_Print("%s\n",temp);
-
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
     uint32_t offset = 0;
@@ -1009,12 +976,6 @@ public:
 
 //------------------------------
 //------------------------------
-
-  //#undef NUMVOICES
-  //#undef TICKSIZE
-  //#undef MAX_OVERSAMPLE
-  //#undef BUFFERSIZE
-  //undef MAX_EVENTS
 
 };
 
