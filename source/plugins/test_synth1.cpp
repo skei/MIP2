@@ -1,3 +1,5 @@
+// -faligned=new
+
 
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
@@ -11,6 +13,8 @@
 #include "audio/mip_voice_manager.h"
 #include "audio/mip_audio_math.h"
 #include "audio/filters/mip_svf_filter.h"
+#include "audio/modulation/mip_envelope.h"
+#include "audio/waveforms/mip_polyblep_waveform.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
@@ -21,7 +25,7 @@
 //
 //----------------------------------------------------------------------
 
-#define NUM_PARAMS 4
+#define NUM_PARAMS 12
 
 //#define SUPPORTED_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
 //#define SUPPORTED_DIALECTS  CLAP_NOTE_DIALECT_CLAP
@@ -64,11 +68,21 @@ class myVoice {
 private:
 //------------------------------
 
-  MIP_VoiceContext* context = nullptr;
-  MIP_SvfFilter     filter  = {};
+  MIP_VoiceContext*   context   = nullptr;
+  MIP_SvfFilter       filter    = {};
+  MIP_ExpAdsrEnvelope amp_env  = {};
+  MIP_ExpAdsrEnvelope flt_env  = {};
 
   float   ffreq   = 0.5;
   float   fres    = 0.5;
+
+  float   ffreq_mod = 0.0;
+  float   fres_mod  = 0.0;
+
+  //float   envatt = 0.0;
+  //float   envdec = 0.0;
+  //float   envsus = 1.0;
+  //float   envrel = 0.0;
 
   float   hz      = 0.0;  // note hz
   float   ph      = 0.0;  // phase
@@ -91,6 +105,10 @@ public:
 
   void prepare(MIP_VoiceContext* AContext) {
     context = AContext;
+    amp_env.setSampleRate(context->samplerate);
+    flt_env.setSampleRate(context->samplerate);
+    //amp_env.setADSR(0,0,1,0);
+    //flt_env.setADSR(0,0,1,0);
   }
 
   //----------
@@ -101,6 +119,9 @@ public:
     ph = 0.0;
     hz = MIP_NoteToHz(key);
     phadd = hz / context->samplerate;
+    amp_env.noteOn();
+    flt_env.noteOn();
+    //MIP_Print("amp_env note on\n");
     return MIP_VOICE_PLAYING;
   }
 
@@ -108,7 +129,11 @@ public:
 
   uint32_t note_off(float velocity) {
     _offvel = velocity;
-    return MIP_VOICE_FINISHED;
+    amp_env.noteOff();
+    flt_env.noteOff();
+    //MIP_Print("amp_env note off\n");
+    //return MIP_VOICE_FINISHED;
+    return MIP_VOICE_RELEASED;
   }
 
   //----------
@@ -168,55 +193,103 @@ public:
 
   void parameter(uint32_t index, float value) {
     switch (index) {
-      case 2: ffreq = value; break;
-      case 3: fres = value; break;
+      case 2:  ffreq = value; break;
+      case 3:  fres = value; break;
+      case 4:  amp_env.setAttack(value * 5); break;
+      case 5:  amp_env.setDecay(value * 5); break;
+      case 6:  amp_env.setSustain(value); break;
+      case 7:  amp_env.setRelease(value * 5); break;
+      case 8:  flt_env.setAttack(value * 5); break;
+      case 9:  flt_env.setDecay(value * 5); break;
+      case 10: flt_env.setSustain(value); break;
+      case 11: flt_env.setRelease(value * 5); break;
     }
   }
 
   //----------
 
   void modulation(uint32_t index, float value) {
+    switch (index) {
+      case 2: ffreq_mod = value; break;
+      //case 3: fres_mod = value; break;
+    }
+  }
+
+  //----------
+
+//  uint32_t process(uint32_t AState) {
+//    //float* output0 = context->process->audio_outputs[0].data32[0];
+//    //float* output1 = context->process->audio_outputs[0].data32[1];
+//    float* output = context->voicebuffer;
+//    uint32_t length  = context->process->frames_count;
+//    for (uint32_t i=0; i<length; i++) {
+//      filter.setMode(MIP_SVF_LP);
+//      filter.setFreq(ffreq * ffreq);
+//      filter.setBW(1.0 - fres);
+//      float out = filter.process(ph);
+//      ph += phadd;
+//      ph = MIP_Fract(ph);
+//      float v = _onvel + _press;
+//      v = MIP_Clamp(v,0,1);
+//      *output++ = out * v;
+//      //*output++ += out * v;
+//      //*output1++ += out * v;
+//    }
+//    return MIP_VOICE_PLAYING;
+//  }
+
+  //----------
+
+  uint32_t process(uint32_t AState, uint32_t ASize) {
+    //float* output = context->voicebuffer;
+    float* output = MIP_VoiceBuffer;
+    for (uint32_t i=0; i<ASize; i++) {
+
+      //float o = ph - MIP_PolyBlep(t,dt);
+
+      float t1 = ph + 0.5f;
+      t1 = MIP_Fract(t1);
+      float o = 2.0f * t1 - 1.0f;
+      o -= MIP_PolyBlep(t1,phadd);
+
+      float ae = amp_env.process();
+      float fe = flt_env.process();
+
+      float ff = MIP_Clamp(ffreq + ffreq_mod, 0,1);
+      float fr = MIP_Clamp(fres + fres_mod, 0,1);
+
+      ff *= fe;
+
+      filter.setMode(MIP_SVF_LP);
+      filter.setFreq(ff * ff);
+      filter.setBW(1.0 - fr);
+
+
+      o = filter.process(o);
+      o *= (_onvel + _press);
+      o *= ae;
+
+      *output++ = o;
+
+      ph += phadd;
+      ph = MIP_Fract(ph);
+
+    }
+    uint32_t stage = amp_env.getStage();
+    //MIP_DPrint("e %.3f stage %i\n",amp_env,es);
+
+    if (stage == MIP_ENVELOPE_FINISHED) {
+      //MIP_Print("amp_env finished\n");
+      //amp_env.reset();
+      return MIP_VOICE_FINISHED;
+    }
+    else return MIP_VOICE_PLAYING;
   }
 
   //----------
 
   uint32_t process(uint32_t AState) {
-    //float* output0 = context->process->audio_outputs[0].data32[0];
-    //float* output1 = context->process->audio_outputs[0].data32[1];
-    float* output = context->voicebuffer;
-    uint32_t length  = context->process->frames_count;
-    for (uint32_t i=0; i<length; i++) {
-      filter.setMode(MIP_SVF_LP);
-      filter.setFreq(ffreq * ffreq);
-      filter.setBW(1.0 - fres);
-      float out = filter.process(ph);
-      ph += phadd;
-      ph = MIP_Fract(ph);
-      float v = _onvel + _press;
-      v = MIP_Clamp(v,0,1);
-      *output++ = out * v;
-      //*output++ += out * v;
-      //*output1++ += out * v;
-    }
-    return MIP_VOICE_PLAYING;
-  }
-
-  //----------
-
-  uint32_t process(uint32_t AState, uint32_t ASize) {
-    float* output = context->voicebuffer;
-    for (uint32_t i=0; i<ASize; i++) {
-      filter.setMode(MIP_SVF_LP);
-      filter.setFreq(ffreq * ffreq);
-      filter.setBW(1.0 - fres);
-      float out = filter.process(ph);
-      ph += phadd;
-      ph = MIP_Fract(ph);
-      float v = _onvel + _press;
-      v = MIP_Clamp(v,0,1);
-      *output++ = out * v;
-    }
-    return MIP_VOICE_PLAYING;
+    return process(AState,MIP_VOICE_TICKSIZE);
   }
 
 };
@@ -250,29 +323,60 @@ public:
     MEditorPanel->layout.innerBorder = MIP_FRect(10,10,10,10);
     MEditorPanel->layout.spacing = 5;
     // vol
-    MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Vol");
+    MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
     MEditorPanel->appendWidget(vol_knob);
-    vol_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
     connect(vol_knob,0);
     // pan
-    MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Pan");
+    MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
     MEditorPanel->appendWidget(pan_knob);
-    pan_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
     connect(pan_knob,1);
     // freq
-    MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Freq");
+    MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Freq");
     MEditorPanel->appendWidget(freq_knob);
-    freq_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
     connect(freq_knob,2);
     // res
-    MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Res");
+    MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(190,10,50,82),"Res");
     MEditorPanel->appendWidget(res_knob);
-    res_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
     connect(res_knob,3);
-    // test
-    MIP_Knob2Widget* test_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Test");
-    MEditorPanel->appendWidget(test_knob);
-    test_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
+
+    // att
+    MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"A.Att");
+    MEditorPanel->appendWidget(amp_att_knob);
+    connect(amp_att_knob,4);
+    // dec
+    MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"A.Dec");
+    MEditorPanel->appendWidget(amp_dec_knob);
+    connect(amp_dec_knob,5);
+    // sus
+    MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"A.Sus");
+    MEditorPanel->appendWidget(amp_sus_knob);
+    connect(amp_sus_knob,6);
+    // rel
+    MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"A.Rel");
+    MEditorPanel->appendWidget(amp_rel_knob);
+    connect(amp_rel_knob,7);
+
+    // att
+    MIP_Knob2Widget* flt_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"F.Att");
+    MEditorPanel->appendWidget(flt_att_knob);
+    connect(flt_att_knob,8);
+    // dec
+    MIP_Knob2Widget* flt_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"F.Dec");
+    MEditorPanel->appendWidget(flt_dec_knob);
+    connect(flt_dec_knob,9);
+    // sus
+    MIP_Knob2Widget* flt_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"F.Sus");
+    MEditorPanel->appendWidget(flt_sus_knob);
+    connect(flt_sus_knob,10);
+    // rel
+    MIP_Knob2Widget* flt_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"F.Rel");
+    MEditorPanel->appendWidget(flt_rel_knob);
+    connect(flt_rel_knob,11);
+
+//    // test
+//    MIP_Knob2Widget* test_knob = new MIP_Knob2Widget( MIP_FRect(50,82),"Test");
+//    MEditorPanel->appendWidget(test_knob);
+//    test_knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
     //
     window->appendWidget(MEditorPanel);
   }
@@ -298,16 +402,24 @@ private:
 //------------------------------
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Vol",  "", 0.0, 1.0, 0.5 },
-    { 1, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Pan",  "", 0.0, 1.0, 0.5 },
-    { 2, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Freq", "", 0.0, 1.0, 0.5 },
-    { 3, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Res",  "", 0.0, 1.0, 0.5 }
+    { 0,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Vol",  "", 0.0, 1.0, 0.5 },
+    { 1,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Pan",  "", 0.0, 1.0, 0.5 },
+    { 2,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL, nullptr, "Freq", "", 0.0, 1.0, 0.7 },
+    { 3,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Res",  "", 0.0, 1.0, 0.5 },
+    { 4,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "A.Att",  "", 0.0, 1.0, 0.05 },
+    { 5,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "A.Dec",  "", 0.0, 1.0, 0.5 },
+    { 6,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "A.Sus",  "", 0.0, 1.0, 0.5 },
+    { 7,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "A.Rel",  "", 0.0, 1.0, 0.5 },
+    { 8,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Att",  "", 0.0, 1.0, 0.05 },
+    { 9,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Dec",  "", 0.0, 1.0, 0.5 },
+    { 10, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Sus",  "", 0.0, 1.0, 0.5 },
+    { 11, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Rel",  "", 0.0, 1.0, 0.5 }
   };
 
   MIP_VoiceManager<myVoice,16>  MVoices = {};
 
-  uint32_t MDefaultEditorWidth  = 400;
-  uint32_t MDefaultEditorHeight = 400;
+  uint32_t MDefaultEditorWidth  = 270;
+  uint32_t MDefaultEditorHeight = 296;
 
 //------------------------------
 public:
@@ -381,6 +493,7 @@ public:
   //----------
 
   void handle_note_on_event(clap_event_note_t* event) final {
+    //MIP_PRINT;
     MVoices.on_note_on(event);
   }
 
@@ -425,10 +538,12 @@ public:
     }
 
   void handle_parameter_event(clap_event_param_value_t* event) final {
+    MIP_Plugin::handle_parameter_event(event);
     MVoices.on_parameter_value(event);
   }
 
   void handle_modulation_event(clap_event_param_mod_t* event) final {
+    MIP_Plugin::handle_modulation_event(event);
     MVoices.on_parameter_modulation(event);
   }
 
@@ -436,10 +551,11 @@ public:
 
   void handle_process(const clap_process_t *process) final {
 
-    // send freq/res to voices..
     // todo: fix this..
-    MVoices.handle_master_param(2,MParameterValues[2]);
-    MVoices.handle_master_param(3,MParameterValues[3]);
+    // send freq/res to voices..
+    for (uint32_t i=2; i<12; i++) {
+      MVoices.handle_master_param(i,MParameterValues[i]);
+    }
 
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
@@ -453,6 +569,10 @@ public:
     float l = v * (1.0 - p);
     float r = v * (      p);
     MIP_ScaleStereoBuffer(outputs,l,r,length);
+
+//      if (amp_env.getStage() == MIP_ENVELOPE_FINISHED) {
+//        //result = MIP_VOICE_FINISHED;
+//      }
 
   }
 

@@ -28,10 +28,10 @@
 #define MIP_INV_MASTER_BEND_RANGE (1.0 / MIP_MASTER_BEND_RANGE)
 #define MIP_INV_VOICE_BEND_RANGE  (1.0 / MIP_VOICE_BEND_RANGE)
 
-#define TICKSIZE        16
-#define MAX_OVERSAMPLE  8
-#define BUFFERSIZE      (TICKSIZE * MAX_OVERSAMPLE)
-#define MAX_EVENTS      1024
+#define MIP_VOICE_TICKSIZE        16
+#define MIP_VOICE_MAX_OVERSAMPLE  1
+#define MIP_VOICE_BUFFERSIZE      (MIP_VOICE_TICKSIZE * MIP_VOICE_MAX_OVERSAMPLE)
+#define MIP_VOICE_MAX_EVENTS      1024
 
 //----------------------------------------------------------------------
 //
@@ -42,10 +42,9 @@
 // one voice context per note port
 
 struct MIP_VoiceContext {
-  const clap_process_t*   process         = nullptr;
-  double                  samplerate      = 0.0;
-  float*                  voicebuffer     = nullptr;
-  //float*                  voicebuffer[2]  = {0};
+  const clap_process_t* process     = nullptr;
+  double                samplerate  = 0.0;
+  float*                voicebuffer = nullptr;
 };
 
 //----------------------------------------------------------------------
@@ -54,6 +53,110 @@ struct MIP_VoiceContext {
 //
 //----------------------------------------------------------------------
 
+/*
+  2 buffers, each 16 samples (64 bytes)
+  = 1 cache line each..
+  each voice fills the voice buffer, whihc is then added to the
+  tick buffer
+  hardcoded and unrolled, plus optimizer magic..
+
+  events for each 16-sample block are handled at the beginning of the block,
+  so we might get some jittering (max 15 samples)..
+
+*/
+
+__MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
+float MIP_VoiceBuffer[MIP_VOICE_BUFFERSIZE] = {0};
+
+__MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
+float MIP_TickBuffer[MIP_VOICE_BUFFERSIZE] = {0};
+
+//----------
+
+void MIP_ClearTickBuffer(uint32_t ASize) {
+  memset(MIP_TickBuffer,0,ASize*sizeof(float));
+}
+
+void MIP_CopyTickBuffer(float* ADst, uint32_t ASize) {
+  memcpy(ADst,MIP_TickBuffer,ASize*sizeof(float));
+}
+
+void MIP_AddVoiceToTickBuffer(uint32_t ASize) {
+  for (uint32_t i=0; i<ASize; i++) {
+    MIP_TickBuffer[i] += MIP_VoiceBuffer[i];
+  }
+}
+
+//----------
+
+void MIP_ClearTickBuffer() {
+  //MIP_ClearTickBuffer(MIP_VOICE_TICKSIZE);
+  float* dst = MIP_TickBuffer;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst++ = 0.0;
+  *dst   = 0.0;
+}
+
+//----------
+
+void MIP_CopyTickBuffer(float* ADst) {
+  //MIP_CopyTickBuffer(ADst,MIP_VOICE_TICKSIZE);
+  float* src = MIP_TickBuffer;
+  float* dst = ADst;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst++ = *src++;
+  *dst   = *src;
+}
+
+//----------
+
+void MIP_AddVoiceToTickBuffer() {
+  //MIP_AddVoiceToTickBuffer(MIP_VOICE_TICKSIZE);
+  float* src = MIP_VoiceBuffer;;
+  float* dst = MIP_TickBuffer;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst++ += *src++;
+  *dst   += *src;
+}
 
 //----------------------------------------------------------------------
 //
@@ -75,24 +178,10 @@ private:
   int32_t           MVoiceChannel[NUM]            = {0};
   int32_t           MNoteToVoice[MIP_VOICE_NOTES] = {0};
 
-//uint32_t          MVoiceAge[NUM]                = {0};
-
-  //VOICE           MVoices[NUMVOICES];
-  //VOICE*          MNoteToVoice[128];
-  //VOICE*          MChannelToVoice[16];      // MPE
-  //uint32          MNoteToChannel[128];      // MPE
-  float           MVoiceBuffer[BUFFERSIZE] = {0}; // todo: alignment (S2_ALIGNMENT_CACHE/_SIMD)
-  float           MTickBuffer[BUFFERSIZE] = {0};  // todo: alignment --"--
-  //uint32_t        MOverSample;
-  //float           MPitchBendRange;
-
-  //s2_voice_event  MEvents[MAX_EVENTS]; // todo: alignment (S2_ALIGNMENT_CACHE/_SIMD)
-
   const clap_input_events_t*  MInEvents     = nullptr;
   uint32_t                    MNumInEvents  = 0;
   uint32_t                    MNextInEvent  = 0;
   uint32_t                    MCurrInEvent  = 0;
-
 
 //------------------------------
 public:
@@ -120,17 +209,6 @@ public:
       MVoiceNote[i] = -1;
       MVoiceChannel[i] = -1;
     }
-
-    //S2_Memset(MNoteToVoice,0,sizeof(MNoteToVoice));
-    //S2_Memset(MNoteToChannel,0,sizeof(MNoteToChannel));
-    //S2_Memset(MChannelToVoice,0,sizeof(MChannelToVoice));
-    //S2_Memset(MEvents,0,sizeof(MEvents));
-    //MOverSample     = 1;
-    //MPitchBendRange = 2;
-    //MNumEvents      = 0;
-    //MNextEvent      = S2_INT32_MAX;
-    //MCurrEvent      = 0;
-
   }
 
   //----------
@@ -199,6 +277,7 @@ public:
   // CLAP_NOTE_DIALECT_CLAP
 
   void on_note_on(clap_event_note* event) {
+    //MIP_PRINT;
     int32_t channel = event->channel;
     int32_t key = event->key;
     float velocity = event->velocity;
@@ -206,6 +285,7 @@ public:
   }
 
   void on_note_off(clap_event_note* event) {
+    //MIP_PRINT;
     int32_t channel = event->channel;
     int32_t key = event->key;
     float velocity = event->velocity;
@@ -421,6 +501,7 @@ public: //private:
   // assumes AChannel >= 0
 
   void handle_voice_note_on(int32_t AChannel, int32_t AKey, float AVelocity) {
+    //MIP_PRINT;
     start_voice(AChannel,AKey,AVelocity);
   }
 
@@ -429,6 +510,7 @@ public: //private:
   // assumes AChannel >= 0
 
   void handle_voice_note_off(int32_t AChannel, int32_t AKey, float AVelocity) {
+    //MIP_PRINT;
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -598,6 +680,9 @@ public: //private:
   //------------------------------
 
   void handle_master_ctrl(uint32_t AIndex, uint32_t AValue) {
+    for (uint32_t i=0; i<NUM; i++) {
+      MVoices[i].ctrl(AIndex,AValue);
+    }
   }
 
   //----------
@@ -612,6 +697,9 @@ public: //private:
   //----------
 
   void handle_master_mod(uint32_t AIndex, float AValue) {
+    for (uint32_t i=0; i<NUM; i++) {
+      MVoices[i].modulation(AIndex,AValue);
+    }
   }
 
   //----------
@@ -651,6 +739,7 @@ public: //private:
   //----------
 
   int32_t start_voice(int32_t AChannel, int32_t AKey, float AVelocity) {
+    //MIP_Print("ch %i k %i v %.3f\n",AChannel,AKey,AVelocity);
     uint32_t note = (AChannel * 128) + AKey;
 
     // kill potentially already playing voice
@@ -665,12 +754,14 @@ public: //private:
       MVoiceState[voice] = MVoices[voice].note_on(AKey,AVelocity);
       return voice;
     }
+    //MIP_Print("no voices!\n");
     return -1;
   }
 
   //----------
 
   void kill_voice(int32_t voice) {
+    //MIP_Print("voice %i\n",voice);
     if (voice < 0) return;
     MVoiceNote[voice] = -1;
     MVoiceChannel[voice] = -1;
@@ -720,9 +811,10 @@ public: //private:
   void postProcess() {
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceState[i] == MIP_VOICE_FINISHED) {
+        //MIP_Print("voice finished\n");
         kill_voice(i);
-        // shound be sample-time at event...
         send_note_end(i);
+        //MVoiceState[i] = MIP_VOICE_OFF;
       }
       //TODO: send PARAM_MOD events
     }
@@ -753,28 +845,15 @@ public:
 //------------------------------
 
   /*
-    TODO:
-    * sample-accurate
-      - split block? 16/64 samples?
-
     assumes output buffer is already cleared
     (voices adds to it)
-
   */
 
   void process(const clap_process_t *process) {
     MVoiceContext.process = process;
-
-    //MInEvents = process->in_events;
-    //MNumInEvents = MInEvents->size(MInEvents);
-
-    //prepare(MSampleRate);
     preProcess();
-    //MVoiceContext.process = process;
     float** outputs = process->audio_outputs->data32;
     uint32_t length = process->frames_count;
-    //MVoiceContext.buffers = outputs;
-    //MVoiceContext.length = length;
     MIP_ClearStereoBuffer(outputs,length);
     processPlayingVoices();
     processReleasedVoices();
@@ -782,50 +861,8 @@ public:
   }
 
 //------------------------------------------------------------
-//
+// ticks
 //------------------------------------------------------------
-
-//------------------------------
-private: // buffer
-//------------------------------
-
-  void clearBuffer(float* ADst, uint32_t ASize) {
-    memset(ADst,0,ASize*sizeof(float));
-  }
-
-  //----------
-
-  void copyBuffer(float* ADst, float* ASrc, uint32_t ASize) {
-    memcpy(ADst,ASrc,ASize*sizeof(float));
-  }
-
-  //----------
-
-  void addBuffer(float* ADst, float* ASrc, uint32_t ASize) {
-    for (uint32_t i=0; i<ASize; i++) {
-      ADst[i] += ASrc[i];
-    }
-  }
-
-  //----------
-  //TODO  (hardcode size)
-  //----------
-
-  void clearBuffer(float* ABuffer) {
-    clearBuffer(ABuffer,TICKSIZE);
-  }
-
-  //----------
-
-  void copyBuffer(float* ADst, float* ASrc) {
-    copyBuffer(ADst,ASrc,TICKSIZE);
-  }
-
-  //----------
-
-  void addBuffer(float* ADst, float* ASrc) {
-    addBuffer(ADst,ASrc,TICKSIZE);
-  }
 
 //------------------------------
 private: // process
@@ -834,7 +871,6 @@ private: // process
   void preProcessEvents() {
     MCurrInEvent = 0;
     if (MNumInEvents > 0) {
-      //MNextEvent = MEvents[0].ofs;
       const clap_event_header* header = MInEvents->get(MInEvents,0);
       MNextInEvent = header->time;
     }
@@ -854,13 +890,14 @@ private: // process
     or S2_INT32_MAX if no more events
   */
 
+  //uint32_t samplesUntilNextEvent(uint32_t AOffset, uint32_t ASize) {
   uint32_t processEvents(uint32_t AOffset, uint32_t ASize) {
     while (MNextInEvent < (AOffset + ASize)) {
-      const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrInEvent);
-      on_event(header);
+      //const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrInEvent);
+      //MIP_Print("offset %i event.time: %i\n",AOffset,header->time);
+      //on_event(header);
       MCurrInEvent++;
       if (MCurrInEvent < MNumInEvents) {
-        //MNextEvent = MEvents[MCurrEvent].ofs;
         const clap_event_header* header = MInEvents->get(MInEvents,MCurrInEvent);
         MNextInEvent = header->time;
       }
@@ -875,21 +912,21 @@ private: // process
   // TODO
 
   uint32_t processEvents(uint32_t AOffset) {
-    return processEvents(AOffset,TICKSIZE);
+    return processEvents(AOffset,MIP_VOICE_TICKSIZE);
   }
 
   //----------
 
   void processTick(uint32_t ASize) {
-    clearBuffer(MTickBuffer,ASize);
+    MIP_ClearTickBuffer(ASize);
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceState[i] == MIP_VOICE_PLAYING) {
         MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING,ASize);
-        addBuffer(MTickBuffer,MVoiceBuffer,ASize);
+        MIP_AddVoiceToTickBuffer(ASize);
       }
       if (MVoiceState[i] == MIP_VOICE_RELEASED) {
         MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED,ASize);
-        addBuffer(MTickBuffer,MVoiceBuffer,ASize);
+        MIP_AddVoiceToTickBuffer(ASize);
       }
     }
     // post-process per voice effects here..
@@ -899,8 +936,22 @@ private: // process
 
   // TODO (hardcode size)
 
-  void processTick(void) {
-    processTick(TICKSIZE);
+  void processTick() {
+    MIP_ClearTickBuffer();
+    for (uint32_t i=0; i<NUM; i++) {
+      if (MVoiceState[i] == MIP_VOICE_PLAYING) {
+        MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING);
+        MIP_AddVoiceToTickBuffer();
+      }
+      if (MVoiceState[i] == MIP_VOICE_RELEASED) {
+        MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED);
+        MIP_AddVoiceToTickBuffer();
+      }
+      //if (MVoiceState[i] == MIP_VOICE_FINISHED) {
+      //  MVoiceState[i] == MIP_VOICE_OFF;
+      //}
+    }
+    // post-process per voice effects here..
   }
 
 //------------------------------
@@ -914,7 +965,8 @@ public:
 
   void processTicks(const clap_process_t *process) {
     MVoiceContext.process = process;
-    MVoiceContext.voicebuffer = MVoiceBuffer;
+    MVoiceContext.voicebuffer = MIP_VoiceBuffer;
+    preProcess();
     MInEvents = process->in_events;
     MNumInEvents = MInEvents->size(MInEvents);
     float* out0 = process->audio_outputs->data32[0];
@@ -923,35 +975,35 @@ public:
     uint32_t remaining = process->frames_count;
     preProcessEvents();
     while (remaining > 0) {
-      if (remaining >= TICKSIZE) {
+      if (remaining >= MIP_VOICE_TICKSIZE) {
         processEvents(offset);
         processTick();
-        copyBuffer(out0 + offset,MTickBuffer);
-        copyBuffer(out1 + offset,MTickBuffer);
-        remaining -= TICKSIZE;
-        offset += TICKSIZE;
+        MIP_CopyTickBuffer(out0 + offset);
+        MIP_CopyTickBuffer(out1 + offset);
+        remaining -= MIP_VOICE_TICKSIZE;
+        offset += MIP_VOICE_TICKSIZE;
       }
       else {
         processEvents(offset,remaining);
         processTick(remaining);
-        copyBuffer(out0 + offset,MTickBuffer,remaining);
-        copyBuffer(out1 + offset,MTickBuffer,remaining);
+        MIP_CopyTickBuffer(out0 + offset,remaining);
+        MIP_CopyTickBuffer(out1 + offset,remaining);
         remaining = 0;
       }
     }
-    // post-process global effects here..
     postProcessEvents();
+    postProcess();
   }
 
 
 //------------------------------
 //------------------------------
 
-  #undef NUMVOICES
-  #undef TICKSIZE
-  #undef MAX_OVERSAMPLE
-  #undef BUFFERSIZE
-  #undef MAX_EVENTS
+  //#undef NUMVOICES
+  //#undef TICKSIZE
+  //#undef MAX_OVERSAMPLE
+  //#undef BUFFERSIZE
+  //undef MAX_EVENTS
 
 };
 

@@ -44,7 +44,7 @@ pos()         = position arrived at speed in samples
 #include <math.h>
 
 #define mip_env_rate_scale     10.0f // 30.0f
-#define mip_env_threshold      MIP_TINY
+#define mip_env_threshold      0.001 //MIP_TINY
 
 #define MIP_ENVELOPE_OFF       0
 #define MIP_ENVELOPE_ATTACK    1
@@ -68,18 +68,18 @@ struct MIP_EnvelopeStage {
 
 //----------------------------------------------------------------------
 
-class MIP_ExponentialAdsrEnvelope {
+class MIP_ExpAdsrEnvelope {
 
   private:
 
     float               MSampleRate = 0;// = 44100;
     float               MValue = 0;
     int32_t             MStage = 0;
-    MIP_EnvelopeStage  MStages[5]; // -,a,d,s,r
+    MIP_EnvelopeStage   MStages[5]; // -,a,d,s,r
 
   public:
 
-    MIP_ExponentialAdsrEnvelope() {
+    MIP_ExpAdsrEnvelope() {
       //MScale = 50.0f;//6.0f;
       MStage = MIP_ENVELOPE_OFF;
       MValue = 0.0f;
@@ -93,6 +93,11 @@ class MIP_ExponentialAdsrEnvelope {
 
   public:
 
+    void reset() {
+      MStage = MIP_ENVELOPE_OFF;
+      MValue = 0.0f;
+    }
+
     /*
       ???
       we cheat a little, and multiply the ms value by 5..
@@ -104,19 +109,14 @@ class MIP_ExponentialAdsrEnvelope {
       //return expf(-1 / (ms * MSampleRate));
       //ms = (ms*ms); // a little hack to make the knob more 'sensitive' to short durations..
       //ms *= 2.0f;
-//      float rate = 1.0f - expf(-1.0f / (ms*MSampleRate));
+      //float rate = 1.0f - expf(-1.0f / (ms*MSampleRate));
       //KTrace("ms %.3f rate %f\n",ms,rate);
-
       //float rate = 1.0f;
       //if (ms > 0) rate = 1.0f - expf(-1.0f / ms*1000.0f);
       //else rate = 0;
-
       //return rate;
-
       //return 1.0f / (ms*1000.0f)
-
       //return 1.0f - expf(-2.0f * MIP_PI * ms / MSampleRate);
-
       float a = ms * mip_env_rate_scale; // 0..1 -> 0..25
       a = (a*a*a);  // 0..25 -> 0..625 (a*a*a = 15625)
       a += 1.0f;
@@ -222,19 +222,14 @@ class MIP_ExponentialAdsrEnvelope {
 
     float processSteps(int32_t ASteps) {
       if (ASteps==0) return MValue;
-
       float result = process();
-
       //if (ASteps>1) for (int32 i=1; i<ASteps; i++) process();
-
       float target = MStages[MStage].target;
       float rate   = MStages[MStage].rate;
       MValue += (target - MValue) * (1 - pow(1 - rate, ASteps));
-
       //if (fabs(target-MValue) <= mip_env_threshold) {
       //  MStage += 1;
       //}
-
       return result;
     }
 

@@ -2,7 +2,7 @@
 #define mip_waveform_polyblep_included
 //----------------------------------------------------------------------
 
-#include "base/mip_math.h"
+#include "base/utils/mip_math.h"
 
 /*
 
