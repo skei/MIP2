@@ -96,28 +96,24 @@ public:
 
   void setValue(float AValue) override {
     MIP_Widget::setValue(AValue);
-    //MIP_Assert(wdg_knob != MIP_NULL);
     if (wdg_knob) {
       wdg_knob->setValue(AValue);
     }
     if (wdg_value) {
-
-      //if (MParameter) {
-      //  MIP_Parameter* par = (MIP_Parameter*)MParameter;
-
-//      MIP_Parameter* par = (MIP_Parameter*)getParamIndex();//Parameter();
-//      if (par) {
-//        //MIP_String txt = par->getDisplayText(AValue);
-//        //wdg_value->setText(txt);
-//        par->displayText(value_text,AValue);
-//        wdg_value->setText(value_text);
-//      }
-//      else {
-        //MIP_FloatToString(value_text,AValue);
-        sprintf(value_text,"%.3f",AValue);
-        wdg_value->setText(value_text);
-//      }
+      sprintf(value_text,"%.3f",AValue);
+      wdg_value->setText(value_text);
     }
+  }
+
+  void setModValue(float AValue) override {
+    MIP_Widget::setModValue(AValue);
+    if (wdg_knob) {
+      wdg_knob->setModValue(AValue);
+    }
+    //if (wdg_value) {
+    //  sprintf(value_text,"%.3f",AValue);
+    //  wdg_value->setText(value_text);
+    //}
   }
 
 //------------------------------
