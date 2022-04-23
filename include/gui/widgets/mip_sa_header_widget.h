@@ -6,6 +6,10 @@
 #include "gui/widgets/mip_panel_widget.h"
 #include "gui/widgets/mip_text_widget.h"
 
+#include "../data/img/sa_logo_40_trans_black.h"
+#include "../data/img/mip2_trans_129x34.h"
+
+
 //----------
 
 class MIP_SAHeaderWidget
@@ -14,6 +18,12 @@ class MIP_SAHeaderWidget
 //------------------------------
 private:
 //------------------------------
+
+  MIP_Bitmap*   MLogoBitmap   = nullptr;
+  MIP_Bitmap*   MMip2Bitmap   = nullptr;
+
+  MIP_Surface*  MLogoSurface  = nullptr;
+  MIP_Surface*  MMip2Surface  = nullptr;
 
   MIP_ImageWidget*  MLogoImage      = nullptr;
   MIP_ImageWidget*  MMip2Image      = nullptr;
@@ -28,7 +38,8 @@ private:
 public:
 //------------------------------
 
-  MIP_SAHeaderWidget(MIP_FRect ARect, MIP_Surface* ALogoSurface, MIP_Surface* AMip2Surface/*, const char* AName, const char* AVersion, MIP_Drawable* ATarget*/)
+  //MIP_SAHeaderWidget(MIP_FRect ARect, MIP_Surface* ALogoSurface, MIP_Surface* AMip2Surface)
+  MIP_SAHeaderWidget(MIP_FRect ARect, MIP_Window* AWindow)
   : MIP_PanelWidget(ARect) {
 
     setName("MIP_SAHeaderWidget");
@@ -37,11 +48,38 @@ public:
     layout.innerBorder = MIP_FRect(10,10,10,10);
     //layout.spacing = MIP_FPoint(10,0);
 
-    MLogoImage = new MIP_ImageWidget( MIP_FRect(40,40), ALogoSurface );
+    MIP_Painter* painter;
+
+    // logo
+    MLogoBitmap = new MIP_Bitmap(sa_logo_40_trans_black,sa_logo_40_trans_black_size);
+    //knob_bitmap->convertRgbaToBgra();
+    //MLogoBitmap->premultAlpha(0x999999);
+    MLogoBitmap->premultAlpha(0x808080);
+    MLogoBitmap->fillLayer(3,255);
+    MLogoSurface = new MIP_Surface(AWindow,MLogoBitmap->getWidth(),MLogoBitmap->getHeight());
+    painter = new MIP_Painter(MLogoSurface);
+    painter->uploadBitmap(0,0,MLogoBitmap);
+    painter->flush();
+    delete painter;
+
+    // mip2
+    MMip2Bitmap = new MIP_Bitmap(mip2_trans_129x34,mip2_trans_129x34_size);
+    //knob_bitmap->convertRgbaToBgra();
+    MMip2Bitmap->scaleLayer(3,128);
+    MMip2Bitmap->premultAlpha(0x808080);
+    MMip2Surface = new MIP_Surface(AWindow,MMip2Bitmap->getWidth(),MMip2Bitmap->getHeight());
+    painter = new MIP_Painter(MMip2Surface);
+    painter->uploadBitmap(0,0,MMip2Bitmap);
+    painter->flush();
+    delete painter;
+
+    //
+
+    MLogoImage = new MIP_ImageWidget( MIP_FRect(40,40), MLogoSurface );
     MLogoImage->layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT_TOP;
     appendWidget(MLogoImage);
 
-    MMip2Image = new MIP_ImageWidget( MIP_FRect(129,34), AMip2Surface );
+    MMip2Image = new MIP_ImageWidget( MIP_FRect(129,34), MMip2Surface );
     MMip2Image->layout.alignment = MIP_WIDGET_ALIGN_RIGHT_TOP;
     appendWidget(MMip2Image);
 
