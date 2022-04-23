@@ -114,7 +114,7 @@ public:
       footer->appendWidget(window_sizer);
       window_sizer->layout.alignment = MIP_WIDGET_ALIGN_BOTTOM_RIGHT;
       //window_sizer->setTarget(window);
-      window_sizer->flags.active = false;
+      window_sizer->state.active = false;
 
 
     //----------
