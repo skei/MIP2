@@ -138,7 +138,11 @@ private:
 public: // clap plugin
 //------------------------------
 
-  virtual const void* get_extension(const char *extension_id) { return nullptr; }
+  virtual const void* get_extension(const char *extension_id) {
+    if (strcmp(extension_id,CLAP_EXT_LOG) == 0) return &MLog;
+    return nullptr;
+  }
+
   virtual void request_restart() {}
   virtual void request_process() {}
   virtual void request_callback() {}
@@ -165,7 +169,21 @@ public: // extensions
   virtual void gui_closed(bool was_destroyed) {}
 
   virtual void latency_changed() {}
-  virtual void log_log(clap_log_severity severity, const char *msg) {}
+
+  virtual void log_log(clap_log_severity severity, const char *msg) {
+    const char* sev = "?";
+    switch (severity) {
+      case CLAP_LOG_DEBUG: sev = "DEBUG"; break;
+      case CLAP_LOG_INFO: sev = "INFO"; break;
+      case CLAP_LOG_WARNING: sev = "WARNING"; break;
+      case CLAP_LOG_ERROR: sev = "ERROR"; break;
+      case CLAP_LOG_FATAL: sev = "FATAL"; break;
+      case CLAP_LOG_HOST_MISBEHAVING: sev = "HOST MISBEHAVING"; break;
+      case CLAP_LOG_PLUGIN_MISBEHAVING: sev = "PLUGIN MISBEHAVING"; break;
+    }
+    printf("%s: %s\n",sev,msg);
+  }
+
   virtual void midi_mappings_changed() {}
   virtual void note_name_changed() {}
   virtual uint32_t supported_dialects() { return 0; }
