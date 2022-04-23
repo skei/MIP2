@@ -90,12 +90,12 @@ typedef std::vector<MidiEvent*> MidiEvents;
 
 struct MidiTrack {
 
-  char*           name        = nullptr;
-  uint32_t        num_events  = 0;
+  char*       name        = nullptr;
+  uint32_t    num_events  = 0;
   MidiEvents  events      = {};
-  //uint32_t        next_event  = 0;
-  //bool            active      = 0;
-  float           length      = 0.0;
+  //uint32_t    next_event  = 0;
+  //bool        active      = 0;
+  float       length      = 0.0;
 
   //----------
 

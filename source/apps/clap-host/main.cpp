@@ -47,6 +47,7 @@ uint32_t              arg_num_audio_inputs  = 2;
 uint32_t              arg_num_audio_outputs = 2;
 float                 arg_sample_rate       = 44100.0;
 uint32_t              arg_block_size        = 256;
+float                 arg_tempo             = 120.0;
 const char*           arg_midi_input_file   = "";
 const char*           arg_midi_output_file  = "";
 const char*           arg_audio_input_file  = "";
@@ -85,6 +86,7 @@ void print_help() {
   printf("  -s  --sample_rate       <samples>         \n");
   printf("  -b  --block_size        <samples>         \n");
   printf("  -c  --channels          <inputs:outputs>  \n");
+  printf("  -t  --tempo             <tempo/bpm>       \n");
   printf("  -d  --decay-seconds     <seconds>         \n");
   printf("  -r  --remap             <cc:param_id>     \n");
   printf("  -j  --json              <file>            \n");
@@ -135,6 +137,7 @@ int main(int argc, char** argv) {
   arg_block_size        = arg_parser.getArgInt(                  "-b",   "--block_size");
   arg_num_audio_inputs  = arg_parser.getArgInt(                  "-c",   "--channels");
   arg_num_audio_outputs = arg_parser.getArgIntAfterSymbol( ':',  "-c",   "--channels");
+  arg_tempo             = arg_parser.getArgFloat(                "-t",   "--tempo");
   arg_decay_seconds     = arg_parser.getArgFloat(                "-d",   "--decay-seconds");
 
   arg_list_plugins      = arg_parser.hasOption(                  "-pl",  "--list-plugins");

@@ -181,15 +181,17 @@ private:
   */
 
   void prepare_transport() {
-    
-    double tempo = 120.0; // bpm
+
+    //double tempo = 120.0; // bpm
+    double tempo = arg_tempo; // seeMMidiSequence.tempo
+
     double speedFactor = tempo / 60.0;
     double beatsPosFloat = MCurrentTime * speedFactor;
-      
+
     //printf("prepare_transport: beatsPosFloat: %f\n", beatsPosFloat);
-      
+
     clap_beattime bTime = round(CLAP_BEATTIME_FACTOR * beatsPosFloat);
-      
+
     MContextTransport.header.size = sizeof(clap_event_transport);
     MContextTransport.header.time         = 0;
     MContextTransport.header.space_id     = 0;
@@ -480,7 +482,7 @@ public:
     while (num_samples > 0) {
 
     prepare_transport();
-        
+
       // block size
 
       uint32_t block_size = arg_block_size;
