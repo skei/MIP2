@@ -144,7 +144,7 @@ struct MidiSequence {
   uint32_t    tpq           = 0;
   MidiTracks  tracks        = {};
   float       length        = 0.0;
-  uint32_t    tempo         = 120;
+  uint32_t    tempo         = (60.0/120.0) * 1000000; // in microseconds per MIDI quarter-note, setting 120 bpm as default
   uint32_t    timesig_num   = 4;
   uint32_t    timesig_denom = 4;
 

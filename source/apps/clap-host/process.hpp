@@ -181,15 +181,24 @@ private:
   */
 
   void prepare_transport() {
+    
+    double tempo = 120.0; // bpm
+    double speedFactor = tempo / 60.0;
+    double beatsPosFloat = MCurrentTime * speedFactor;
+      
+    //printf("prepare_transport: beatsPosFloat: %f\n", beatsPosFloat);
+      
+    clap_beattime bTime = round(CLAP_BEATTIME_FACTOR * beatsPosFloat);
+      
     MContextTransport.header.size = sizeof(clap_event_transport);
     MContextTransport.header.time         = 0;
     MContextTransport.header.space_id     = 0;
     MContextTransport.header.type         = CLAP_EVENT_TRANSPORT;
     MContextTransport.header.flags        = 0; // CLAP_EVENT_IS_LIVE;
-    MContextTransport.flags               = CLAP_TRANSPORT_IS_PLAYING;
-    MContextTransport.song_pos_beats      = 0;
+    MContextTransport.flags               = CLAP_TRANSPORT_IS_PLAYING | CLAP_TRANSPORT_HAS_BEATS_TIMELINE | CLAP_TRANSPORT_HAS_TEMPO;
+    MContextTransport.song_pos_beats      = bTime;
     MContextTransport.song_pos_seconds    = 0;
-    MContextTransport.tempo               = 120.0;
+    MContextTransport.tempo               = tempo;
     MContextTransport.tempo_inc           = 0.0;
     MContextTransport.bar_start           = 0;
     MContextTransport.bar_number          = 0;
@@ -457,7 +466,6 @@ public:
     }
 
     // prepare
-    prepare_transport();
     prepare_audio_inputs(arg_num_audio_inputs,0);
     prepare_audio_outputs(arg_num_audio_outputs,0);
     prepare_event_inputs();
@@ -471,6 +479,8 @@ public:
 
     while (num_samples > 0) {
 
+    prepare_transport();
+        
       // block size
 
       uint32_t block_size = arg_block_size;
