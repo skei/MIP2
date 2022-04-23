@@ -171,17 +171,16 @@ class MIP_VoiceManager {
 private:
 //------------------------------
 
-  MIP_VoiceContext  MVoiceContext                 = {0};
-  VOICE             MVoices[NUM]                  = {};
-  uint32_t          MVoiceState[NUM]              = {0};
-  int32_t           MVoiceNote[NUM]               = {0};
-  int32_t           MVoiceChannel[NUM]            = {0};
-  int32_t           MNoteToVoice[MIP_VOICE_NOTES] = {0};
-
-  const clap_input_events_t*  MInEvents     = nullptr;
-  uint32_t                    MNumInEvents  = 0;
-  uint32_t                    MNextInEvent  = 0;
-  uint32_t                    MCurrInEvent  = 0;
+  MIP_VoiceContext            MVoiceContext                 = {0};
+  VOICE                       MVoices[NUM]                  = {};
+  uint32_t                    MVoiceState[NUM]              = {0};
+  int32_t                     MVoiceNote[NUM]               = {0};
+  int32_t                     MVoiceChannel[NUM]            = {0};
+  int32_t                     MNoteToVoice[MIP_VOICE_NOTES] = {0};
+  const clap_input_events_t*  MInEvents                     = nullptr;
+  uint32_t                    MNumInEvents                  = 0;
+  uint32_t                    MNextInEvent                  = 0;
+  uint32_t                    MCurrInEvent                  = 0;
 
 //------------------------------
 public:
@@ -515,7 +514,7 @@ public: //private:
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
       MVoiceState[voice] = MVoices[voice].note_off(AVelocity);
-      MNoteToVoice[note] = -1;
+//      MNoteToVoice[note] = -1;
     }
   }
 
@@ -527,6 +526,7 @@ public: //private:
   // assumes AChannel >= 0
 
   void handle_voice_note_choke(int32_t AChannel, int32_t AKey) {
+    MIP_PRINT;
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -545,6 +545,7 @@ public: //private:
   // assumes AChannel >= 0
 
   void handle_voice_note_end(int32_t AChannel, int32_t AKey) {
+    MIP_PRINT;
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -722,15 +723,14 @@ public: //private:
 
   int32_t find_voice(bool ATryReleased=true) {
     for (uint32_t i=0; i<NUM; i++) {
+      //MIP_Print("voice %i state %i\n",i,MVoiceState[i]);
       if (MVoiceState[i] == MIP_VOICE_OFF) return i;
       if (MVoiceState[i] == MIP_VOICE_FINISHED) return i;
     }
     if (ATryReleased) {
       for (uint32_t i=0; i<NUM; i++) {
-        if (MVoiceState[i] == MIP_VOICE_RELEASED) {
-          //kill_voice(i);
-          return i;
-        }
+        //MIP_Print("(released) voice %i state %i\n",i,MVoiceState[i]);
+        if (MVoiceState[i] == MIP_VOICE_RELEASED) return i;
       }
     }
     return -1;
@@ -739,7 +739,6 @@ public: //private:
   //----------
 
   int32_t start_voice(int32_t AChannel, int32_t AKey, float AVelocity) {
-    //MIP_Print("ch %i k %i v %.3f\n",AChannel,AKey,AVelocity);
     uint32_t note = (AChannel * 128) + AKey;
 
     // kill potentially already playing voice
@@ -748,6 +747,7 @@ public: //private:
 
     int32_t voice = find_voice(true);
     if (voice >= 0) {
+      //MIP_Print("%i\n",voice);
       MNoteToVoice[note] = voice;
       MVoiceNote[voice] = AKey;
       MVoiceChannel[voice] = AChannel;
@@ -761,16 +761,18 @@ public: //private:
   //----------
 
   void kill_voice(int32_t voice) {
-    //MIP_Print("voice %i\n",voice);
+//    MIP_Print("%i\n",voice);
     if (voice < 0) return;
-    MVoiceNote[voice] = -1;
-    MVoiceChannel[voice] = -1;
-    MVoiceState[voice] = MIP_VOICE_OFF;
+
     int32_t key = MVoiceNote[voice];
     int32_t channel = MVoiceChannel[voice];
     if (key < 0) return;
     if (channel < 0) return;
     uint32_t note = (channel * 128) + key;
+
+    MVoiceNote[voice] = -1;
+    MVoiceChannel[voice] = -1;
+    MVoiceState[voice] = MIP_VOICE_OFF;
     MNoteToVoice[note] = -1;
   }
 
@@ -919,6 +921,7 @@ private: // process
 
   void processTick(uint32_t ASize) {
     MIP_ClearTickBuffer(ASize);
+
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceState[i] == MIP_VOICE_PLAYING) {
         MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING,ASize);
@@ -938,6 +941,7 @@ private: // process
 
   void processTick() {
     MIP_ClearTickBuffer();
+
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceState[i] == MIP_VOICE_PLAYING) {
         MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING);
@@ -969,6 +973,13 @@ public:
     preProcess();
     MInEvents = process->in_events;
     MNumInEvents = MInEvents->size(MInEvents);
+
+    //char temp[17] = {0};
+    //for (uint32_t i=0; i<NUM; i++) {
+    //  temp[i] = '0' + MVoiceState[i];
+    //}
+    //MIP_Print("%s\n",temp);
+
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
     uint32_t offset = 0;

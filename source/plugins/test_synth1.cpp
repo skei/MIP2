@@ -25,7 +25,8 @@
 //
 //----------------------------------------------------------------------
 
-#define NUM_PARAMS 12
+#define NUM_PARAMS  12
+#define NUM_VOICES  16
 
 //#define SUPPORTED_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
 //#define SUPPORTED_DIALECTS  CLAP_NOTE_DIALECT_CLAP
@@ -114,6 +115,7 @@ public:
   //----------
 
   uint32_t note_on(int32_t key, float velocity) {
+    //MIP_Print("key %i valocity %.3f\n",key,velocity);
     _key = key;
     _onvel = velocity;
     ph = 0.0;
@@ -128,6 +130,7 @@ public:
   //----------
 
   uint32_t note_off(float velocity) {
+    //MIP_Print("velocity %.3f\n",velocity);
     _offvel = velocity;
     amp_env.noteOff();
     flt_env.noteOff();
@@ -283,7 +286,7 @@ public:
       //amp_env.reset();
       return MIP_VOICE_FINISHED;
     }
-    else return MIP_VOICE_PLAYING;
+    else return AState;//MIP_VOICE_PLAYING;
   }
 
   //----------
@@ -416,7 +419,7 @@ private:
     { 11, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Rel",  "", 0.0, 1.0, 0.5 }
   };
 
-  MIP_VoiceManager<myVoice,16>  MVoices = {};
+  MIP_VoiceManager<myVoice,NUM_VOICES>  MVoices = {};
 
   uint32_t MDefaultEditorWidth  = 270;
   uint32_t MDefaultEditorHeight = 296;
