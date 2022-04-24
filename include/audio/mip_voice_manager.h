@@ -268,7 +268,9 @@ public:
 public:
 //------------------------------
 
-  // CLAP_NOTE_DIALECT_CLAP
+// CLAP_NOTE_DIALECT_CLAP
+
+//------------------------------
 
   void on_note_on(clap_event_note* event) {
     int32_t channel = event->channel;
@@ -349,8 +351,10 @@ public:
 public:
 //------------------------------
 
-  // CLAP_NOTE_DIALECT_MIDI
-  // CLAP_NOTE_DIALECT_MIDI_MPE
+// CLAP_NOTE_DIALECT_MIDI
+// CLAP_NOTE_DIALECT_MIDI_MPE
+
+//------------------------------
 
   void on_midi(clap_event_midi_t* event) {
     /*
@@ -433,6 +437,8 @@ public:
 
   // CLAP_NOTE_DIALECT_MIDI2
 
+//------------------------------
+
   void on_midi2(clap_event_midi2_t* event) {
   }
 
@@ -472,7 +478,7 @@ public:
   }
 
 //------------------------------
-public: //private:
+public:
 //------------------------------
 
   /*
@@ -712,7 +718,7 @@ public: //private:
   }
 
 //------------------------------
-public: //private:
+private:
 //------------------------------
 
   int32_t find_voice(bool ATryReleased=true) {
@@ -762,7 +768,8 @@ public: //private:
   }
 
 //------------------------------
-public: //private:
+//public:
+private:
 //------------------------------
 
   void send_note_end(uint32_t index) {
@@ -782,7 +789,7 @@ public: //private:
   }
 
 //------------------------------
-public: //private:
+private:
 //------------------------------
 
   /*
@@ -807,23 +814,23 @@ public: //private:
 
   //----------
 
-  void processPlayingVoices() {
-    for (uint32_t i=0; i<NUM; i++) {
-      if (MVoiceState[i] == MIP_VOICE_PLAYING) {
-        MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING);
-      }
-    }
-  }
+//  void processPlayingVoices() {
+//    for (uint32_t i=0; i<NUM; i++) {
+//      if (MVoiceState[i] == MIP_VOICE_PLAYING) {
+//        MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING);
+//      }
+//    }
+//  }
 
   //----------
 
-  void processReleasedVoices() {
-    for (uint32_t i=0; i<NUM; i++) {
-      if (MVoiceState[i] == MIP_VOICE_RELEASED) {
-        MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED);
-      }
-    }
-  }
+//  void processReleasedVoices() {
+//    for (uint32_t i=0; i<NUM; i++) {
+//      if (MVoiceState[i] == MIP_VOICE_RELEASED) {
+//        MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED);
+//      }
+//    }
+//  }
 
 //------------------------------
 public:
@@ -834,16 +841,16 @@ public:
     (voices adds to it)
   */
 
-  void process(const clap_process_t *process) {
-    MVoiceContext.process = process;
-    preProcess();
-    float** outputs = process->audio_outputs->data32;
-    uint32_t length = process->frames_count;
-    MIP_ClearStereoBuffer(outputs,length);
-    processPlayingVoices();
-    processReleasedVoices();
-    postProcess();
-  }
+//  void process(const clap_process_t *process) {
+//    MVoiceContext.process = process;
+//    preProcess();
+//    float** outputs = process->audio_outputs->data32;
+//    uint32_t length = process->frames_count;
+//    MIP_ClearStereoBuffer(outputs,length);
+//    processPlayingVoices();
+//    processReleasedVoices();
+//    postProcess();
+//  }
 
 //------------------------------------------------------------
 // ticks
@@ -875,13 +882,13 @@ private: // process
     or MIP_INT32_MAX if no more events
   */
 
-  //uint32_t samplesUntilNextEvent...
-
   uint32_t processEvents(uint32_t AOffset, uint32_t ASize) {
     while (MNextInEvent < (AOffset + ASize)) {
-      MCurrInEvent++;
+      //MCurrInEvent++;
       if (MCurrInEvent < MNumInEvents) {
         const clap_event_header* header = MInEvents->get(MInEvents,MCurrInEvent);
+        on_event(header);
+        MCurrInEvent++;
         MNextInEvent = header->time;
       }
       else MNextInEvent = MIP_INT32_MAX;

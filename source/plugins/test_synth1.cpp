@@ -262,8 +262,8 @@ public:
       ph += phadd;
       ph = MIP_Fract(ph);
     }
-    uint32_t stage = amp_env.getStage();
-    if (stage == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
+    if (amp_env.getStage() == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
+    //else if (flt_env.getStage() == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
     else return AState;
   }
 
@@ -501,6 +501,10 @@ public: // events
 //    }
 //  }
 
+  //
+
+  // these are called from MIP_Plugin.handle_input_events
+
   //----------
 
   void handle_note_on_event(clap_event_note_t* event) final {
@@ -562,32 +566,26 @@ public: // events
 public: // process
 //------------------------------
 
-  void handle_process(const clap_process_t *process) final {
+  clap_process_status process(const clap_process_t *process) final {
+    flushAudioParams();
+    //handle_input_events(process->in_events,process->out_events);
+    handle_tick_process(process);
+    handle_output_events(process->in_events,process->out_events);
+    return CLAP_PROCESS_CONTINUE;
+  }
 
-    // todo: fix this..
-    // send freq/res to voices..
+  //----------
 
-//    for (uint32_t i=2; i<12; i++) {
-//      MVoices.handle_master_param(i,MParameterValues[i]);
-//    }
-
+  void handle_tick_process(const clap_process_t *process) {
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
-
-    //MVoices.process(process);
     MVoices.processTicks(process);
-
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);
     float r = v * (      p);
     MIP_ScaleStereoBuffer(outputs,l,r,length);
-
-//      if (amp_env.getStage() == MIP_ENVELOPE_FINISHED) {
-//        //result = MIP_VOICE_FINISHED;
-//      }
-
   }
 
 };
