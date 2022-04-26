@@ -36,7 +36,7 @@
 //
 //----------------------------------------------------------------------
 
-// one voice context per note port?
+// one voice context per note port..  ??
 
 struct MIP_VoiceContext {
   const clap_process_t* process     = nullptr;
@@ -83,76 +83,73 @@ void MIP_AddVoiceToTickBuffer(uint32_t ASize) {
 
 //----------
 
-// the optimizer will probably automatically unroll the loop if we pass a const
-// as length?
-
 void MIP_ClearTickBuffer() {
-  //MIP_ClearTickBuffer(MIP_VOICE_TICKSIZE);
-  float* dst = MIP_TickBuffer;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst++ = 0.0;
-  *dst   = 0.0;
+  MIP_ClearTickBuffer(MIP_VOICE_TICKSIZE);
+  //float* dst = MIP_TickBuffer;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst++ = 0.0;
+  //*dst   = 0.0;
 }
 
 //----------
 
 void MIP_CopyTickBuffer(float* ADst) {
-  //MIP_CopyTickBuffer(ADst,MIP_VOICE_TICKSIZE);
-  float* src = MIP_TickBuffer;
-  float* dst = ADst;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst++ = *src++;
-  *dst   = *src;
+  MIP_CopyTickBuffer(ADst,MIP_VOICE_TICKSIZE);
+  //float* src = MIP_TickBuffer;
+  //float* dst = ADst;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst++ = *src++;
+  //*dst   = *src;
 }
 
 //----------
 
 void MIP_AddVoiceToTickBuffer() {
-  //MIP_AddVoiceToTickBuffer(MIP_VOICE_TICKSIZE);
-  float* src = MIP_VoiceBuffer;;
-  float* dst = MIP_TickBuffer;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst++ += *src++;
-  *dst   += *src;
+  MIP_AddVoiceToTickBuffer(MIP_VOICE_TICKSIZE);
+  //float* src = MIP_VoiceBuffer;;
+  //float* dst = MIP_TickBuffer;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst++ += *src++;
+  //*dst   += *src;
 }
 
 //----------------------------------------------------------------------
@@ -886,10 +883,13 @@ private: // process
     while (MNextInEvent < (AOffset + ASize)) {
       //MCurrInEvent++;
       if (MCurrInEvent < MNumInEvents) {
-        const clap_event_header* header = MInEvents->get(MInEvents,MCurrInEvent);
-        on_event(header);
-        MCurrInEvent++;
-        MNextInEvent = header->time;
+        const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrInEvent);
+        //TODO: check if 'correct' event, etc?
+        if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+          on_event(header);
+          MCurrInEvent++;
+          MNextInEvent = header->time;
+        }
       }
       else MNextInEvent = MIP_INT32_MAX;
     }
@@ -906,6 +906,9 @@ private: // process
   }
 
   //----------
+
+  // process all voices (for one tick)
+  // irregular length
 
   void processTick(uint32_t ASize) {
     MIP_ClearTickBuffer(ASize);
@@ -925,7 +928,8 @@ private: // process
 
   //----------
 
-  // TODO (hardcode size)
+  // process all voices (for one tick)
+  // const length
 
   void processTick() {
     MIP_ClearTickBuffer();
@@ -940,7 +944,7 @@ private: // process
         MIP_AddVoiceToTickBuffer();
       }
     }
-    // post-process per voice effects here..
+    // post-process per voice effects?
   }
 
 //------------------------------
@@ -948,6 +952,8 @@ public:
 //------------------------------
 
   /*
+    process entire audio buffer
+
     this could just as well be used for effects too, i guess?
     1 voice = 1 audio-stream
   */

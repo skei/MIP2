@@ -113,7 +113,10 @@ public:
 
   //-----
 
-  virtual void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) {}
+  virtual void drawBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) {}
+  virtual void drawBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap, MIP_FRect ASrc) {}
+  virtual void drawBitmap(MIP_FRect ADst, MIP_Bitmap* ABitmap, MIP_FRect ASrc ) {}
+
   virtual void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource) {}
   virtual void drawImage(float AXpos, float AYpos, MIP_Drawable* ASource, MIP_FRect ASrc) {}
   virtual void drawImage(MIP_FRect ADst, MIP_Drawable* ASource, MIP_FRect ASrc) {}

@@ -359,7 +359,7 @@ public: // buffer
     //MBufferPainter->resetScale();
     MBufferPainter->flush();
     #ifdef MIP_WINDOW_BUFFER_BITMAP
-      MWindowPainter->uploadBitmap(ARect.x,ARect.y,MBufferBitmap);
+      MWindowPainter->drawBitmap(ARect.x,ARect.y,MBufferBitmap);
     #else
       MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
       //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);

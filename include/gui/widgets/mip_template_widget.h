@@ -58,7 +58,7 @@ public:
     //if (flags.autoHint) do_widget_setHint(this,"");
   }
 
-  void on_widget_connect(MIP_Parameter* AParameter, uint32_t ASubIndex) override {
+  void on_widget_connect(MIP_Parameter* AParameter) override {
   }
 
 //------------------------------
@@ -101,8 +101,8 @@ public:
     MIP_Widget::do_widget_setMouseCursorPos(ASender,AXpos,AYpos);
   }
 
-  void do_widget_setHint(MIP_Widget* ASender, const char* AHint) final {
-    MIP_Widget::do_widget_setHint(ASender,AHint);
+  void do_widget_setHint(MIP_Widget* ASender, const char* AHint, uint32_t AMode=0) final {
+    MIP_Widget::do_widget_setHint(ASender,AHint,AMode);
   }
 
   void do_widget_notify(MIP_Widget* AWidget, uint32_t AValue=0) final {

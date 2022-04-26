@@ -58,7 +58,7 @@ public:
     MLogoBitmap->fillLayer(3,255);
     MLogoSurface = new MIP_Surface(AWindow,MLogoBitmap->getWidth(),MLogoBitmap->getHeight());
     painter = new MIP_Painter(MLogoSurface);
-    painter->uploadBitmap(0,0,MLogoBitmap);
+    painter->drawBitmap(0,0,MLogoBitmap);
     painter->flush();
     delete painter;
 
@@ -69,7 +69,7 @@ public:
     MMip2Bitmap->premultAlpha(0x808080);
     MMip2Surface = new MIP_Surface(AWindow,MMip2Bitmap->getWidth(),MMip2Bitmap->getHeight());
     painter = new MIP_Painter(MMip2Surface);
-    painter->uploadBitmap(0,0,MMip2Bitmap);
+    painter->drawBitmap(0,0,MMip2Bitmap);
     painter->flush();
     delete painter;
 

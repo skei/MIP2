@@ -324,11 +324,7 @@ public: // editor listener
     queueAudioParam(AIndex);
     MHostParamVal[AIndex] = AValue;
     queueHostParam(AIndex);
-
-//qwe
-
     handle_editor_parameter(AIndex,AValue);
-
   }
 
   //----------
@@ -358,7 +354,80 @@ public: // editor listener
   #endif
 
 //------------------------------
-public: // handle
+protected:
+//------------------------------
+
+  virtual void handle_process(const clap_process_t *process) {
+
+    // (a)
+
+    //float* in0 = process->audio_inputs[0].data32[0];
+    //float* in1 = process->audio_inputs[0].data32[1];
+    //float* out0 = process->audio_outputs[0].data32[0];
+    //float* out1 = process->audio_outputs[0].data32[1];
+    //uint32_t num = process->frames_count;
+    //for (uint32_t i=0; i<num; i++) {
+    //  *out0++ = *in0++;
+    //  *out1++ = *in1++;
+    //}
+
+    // (b)
+
+    //float** inputs = process->audio_inputs[0].data32;
+    //float** outputs = process->audio_outputs[0].data32;
+    //uint32_t length = process->frames_count;
+    //MIP_CopyStereoBuffer(outputs,inputs,length);
+
+  }
+
+//------------------------------
+protected:
+//------------------------------
+
+  virtual void handle_editor_parameter(uint32_t AIndex, float AValue) {
+    //qwe
+  }
+
+//------------------------------
+protected: // handle
+//------------------------------
+
+  virtual void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+    uint32_t num_events = in_events->size(in_events);
+    for (uint32_t i=0; i<num_events; i++) {
+      const clap_event_header_t* header = in_events->get(in_events,i);
+      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+        switch (header->type) {
+          case CLAP_EVENT_NOTE_ON:          handle_note_on_event((clap_event_note_t*)header); break;
+          case CLAP_EVENT_NOTE_OFF:         handle_note_off_event((clap_event_note_t*)header); break;
+          case CLAP_EVENT_NOTE_END:         handle_note_end_event((clap_event_note_t*)header); break;
+          case CLAP_EVENT_NOTE_CHOKE:       handle_note_choke_event((clap_event_note_t*)header); break;
+          case CLAP_EVENT_NOTE_EXPRESSION:  handle_note_expression_event((clap_event_note_expression_t*)header); break;
+          case CLAP_EVENT_PARAM_VALUE:      handle_parameter_event((clap_event_param_value_t*)header); break;
+          case CLAP_EVENT_PARAM_MOD:        handle_modulation_event((clap_event_param_mod_t*)header); break;
+          case CLAP_EVENT_MIDI:             handle_midi_event((clap_event_midi_t*)header); break;
+          case CLAP_EVENT_MIDI2:            handle_midi2_event((clap_event_midi2_t*)header); break;
+          case CLAP_EVENT_MIDI_SYSEX:       handle_midi_sysex_event((clap_event_midi_sysex_t*)header); break;
+          case CLAP_EVENT_TRANSPORT:        handle_transport_event((clap_event_transport_t*)header); break;
+        }
+      }
+    }
+  }
+
+  //----------
+
+  virtual void handle_output_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+    #ifndef MIP_NO_GUI
+    //if (MEditor && MIsEditorOpen) {
+      //flushHostBeginGestures(out_events);
+      flushHostParams(out_events);
+      //flushHostEndGestures(out_events);
+    //}
+    #endif
+  }
+
+//------------------------------
+protected:
 //------------------------------
 
   /*
@@ -401,7 +470,8 @@ public: // handle
     //MIP_Print("\n");
   }
 
-  //----------
+//------------------------------
+//------------------------------
 
   virtual void handle_parameter_event(clap_event_param_value_t* param_value) {
     uint32_t i = param_value->param_id;
@@ -426,73 +496,6 @@ public: // handle
     setParameterModulation(i,v);
     #ifndef MIP_NO_GUI
     if (MEditor && MEditorIsOpen) MEditor->updateModulationFromHost(i,v);
-    #endif
-  }
-
-  //----------
-
-  virtual void handle_process(const clap_process_t *process) {
-
-    // (a)
-
-    //float* in0 = process->audio_inputs[0].data32[0];
-    //float* in1 = process->audio_inputs[0].data32[1];
-    //float* out0 = process->audio_outputs[0].data32[0];
-    //float* out1 = process->audio_outputs[0].data32[1];
-    //uint32_t num = process->frames_count;
-    //for (uint32_t i=0; i<num; i++) {
-    //  *out0++ = *in0++;
-    //  *out1++ = *in1++;
-    //}
-
-    // (b)
-
-    //float** inputs = process->audio_inputs[0].data32;
-    //float** outputs = process->audio_outputs[0].data32;
-    //uint32_t length = process->frames_count;
-    //MIP_CopyStereoBuffer(outputs,inputs,length);
-
-  }
-
-  virtual void handle_editor_parameter(uint32_t AIndex, float AValue) {
-    //qwe
-  }
-
-//------------------------------
-protected: // handle
-//------------------------------
-
-  virtual void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
-    uint32_t num_events = in_events->size(in_events);
-    for (uint32_t i=0; i<num_events; i++) {
-      const clap_event_header_t* header = in_events->get(in_events,i);
-      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-        switch (header->type) {
-          case CLAP_EVENT_NOTE_ON:          handle_note_on_event((clap_event_note_t*)header); break;
-          case CLAP_EVENT_NOTE_OFF:         handle_note_off_event((clap_event_note_t*)header); break;
-          case CLAP_EVENT_NOTE_END:         handle_note_end_event((clap_event_note_t*)header); break;
-          case CLAP_EVENT_NOTE_CHOKE:       handle_note_choke_event((clap_event_note_t*)header); break;
-          case CLAP_EVENT_NOTE_EXPRESSION:  handle_note_expression_event((clap_event_note_expression_t*)header); break;
-          case CLAP_EVENT_PARAM_VALUE:      handle_parameter_event((clap_event_param_value_t*)header); break;
-          case CLAP_EVENT_PARAM_MOD:        handle_modulation_event((clap_event_param_mod_t*)header); break;
-          case CLAP_EVENT_MIDI:             handle_midi_event((clap_event_midi_t*)header); break;
-          case CLAP_EVENT_MIDI2:            handle_midi2_event((clap_event_midi2_t*)header); break;
-          case CLAP_EVENT_MIDI_SYSEX:       handle_midi_sysex_event((clap_event_midi_sysex_t*)header); break;
-          case CLAP_EVENT_TRANSPORT:        handle_transport_event((clap_event_transport_t*)header); break;
-        }
-      }
-    }
-  }
-
-  //----------
-
-  virtual void handle_output_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
-    #ifndef MIP_NO_GUI
-    //if (MEditor && MIsEditorOpen) {
-      //flushHostBeginGestures(out_events);
-      flushHostParams(out_events);
-      //flushHostEndGestures(out_events);
-    //}
     #endif
   }
 
@@ -562,6 +565,17 @@ protected: // setup
       MAudioInputs.append(info);
     }
   }
+
+  //MIP_AudioPort* appendAudioInput(MIP_AudioPort* APort) {
+  //  MAudioInputs.append(APort);
+  //  return APort;
+  //}
+
+  //void deleteAudioInputs() {
+  //  for (uint32_t i=0; i<MAudioInputs.size(); i++) {
+  //    delete MAudioInputs[i];
+  //  }
+  //}
 
   //----------
 

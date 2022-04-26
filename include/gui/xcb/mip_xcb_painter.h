@@ -523,7 +523,7 @@ public:
 public:
 //------------------------------
 
-  void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
+  void drawBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
     uint32_t width      = ABitmap->getWidth();
     uint32_t height     = ABitmap->getHeight();
     uint32_t buffersize = ABitmap->getBufferSize();

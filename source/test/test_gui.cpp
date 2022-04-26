@@ -100,7 +100,7 @@ public:
     MKnobBitmap->premultAlpha(color);//0x808080);
     MKnobSurface = new MIP_Surface(this,MKnobBitmap->getWidth(),MKnobBitmap->getHeight());
     MIP_Painter* painter = new MIP_Painter(MKnobSurface);
-    painter->uploadBitmap(0,0,MKnobBitmap);
+    painter->drawBitmap(0,0,MKnobBitmap);
     painter->flush();
     delete painter;
 

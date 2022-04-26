@@ -253,7 +253,7 @@ public:
       MKnobBitmap->premultAlpha(0x999999);
       MKnobSurface = new MIP_Surface(window,MKnobBitmap->getWidth(),MKnobBitmap->getHeight());
       painter = new MIP_Painter(MKnobSurface);
-      painter->uploadBitmap(0,0,MKnobBitmap);
+      painter->drawBitmap(0,0,MKnobBitmap);
       painter->flush();
       delete painter;
 
@@ -265,7 +265,7 @@ public:
       MLogoBitmap->fillLayer(3,255);
       MLogoSurface = new MIP_Surface(window,MLogoBitmap->getWidth(),MLogoBitmap->getHeight());
       painter = new MIP_Painter(MLogoSurface);
-      painter->uploadBitmap(0,0,MLogoBitmap);
+      painter->drawBitmap(0,0,MLogoBitmap);
       painter->flush();
       delete painter;
 
@@ -276,7 +276,7 @@ public:
       MMip2Bitmap->premultAlpha(0x808080);
       MMip2Surface = new MIP_Surface(window,MMip2Bitmap->getWidth(),MMip2Bitmap->getHeight());
       painter = new MIP_Painter(MMip2Surface);
-      painter->uploadBitmap(0,0,MMip2Bitmap);
+      painter->drawBitmap(0,0,MMip2Bitmap);
       painter->flush();
       delete painter;
 

@@ -877,7 +877,7 @@ public: // text
 public: // image
 //------------------------------
 
-  void uploadBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
+  void drawBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap) override {
     //MIP_PRINT;
     cairo_surface_t* srf = ABitmap->createCairoSurface();
     cairo_save(MCairo);
@@ -886,6 +886,12 @@ public: // image
     cairo_fill(MCairo);
     cairo_restore(MCairo);
     cairo_surface_destroy(srf);
+  }
+
+  void drawBitmap(float AXpos, float AYpos, MIP_Bitmap* ABitmap, MIP_FRect ASrc) override {
+  }
+
+  void drawBitmap(MIP_FRect ADst, MIP_Bitmap* ABitmap, MIP_FRect ASrc ) override {
   }
 
   //----------

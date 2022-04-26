@@ -3,9 +3,11 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "gui/widgets/mip_template_widget.h"
 
 //----------------------------------------------------------------------
 
+#include "gui/widgets/mip_bitmap_widget.h"
 #include "gui/widgets/mip_button_widget.h"
 #include "gui/widgets/mip_button_row_widget.h"
 #include "gui/widgets/mip_cached_widget.h"
@@ -51,6 +53,7 @@
 #include "gui/widgets/mip_value_widget.h"
 #include "gui/widgets/mip_waveform_widget.h"
 #include "gui/widgets/mip_xy_pad_widget.h"
+
 
 //----------------------------------------------------------------------
 #endif

@@ -25,7 +25,12 @@
 //
 //----------------------------------------------------------------------
 
-#define NUM_PARAMS    12
+#define NUM_PARAMS        12
+#define NUM_AUDIO_INPUTS  0
+#define NUM_AUDIO_OUTPUTS 2
+#define NUM_NOTE_INPUTS   1
+#define NUM_NOTE_OUTPUTS  0
+
 #define NUM_VOICES    16
 #define EDITOR_WIDTH  270+150
 #define EDITOR_HEIGHT 296+60
@@ -418,6 +423,22 @@ private:
     { 11, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Rel",  "", 0.0, 1.0, 0.5 }
   };
 
+  //clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
+  //  { 0, "Audio In", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  //};
+
+  clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
+    { 0, "Audio Out", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  clap_note_port_info_t  myNoteInputs[NUM_NOTE_INPUTS] = {
+    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "Note In" }
+  };
+
+  //clap_note_port_info_t  myNoteOutputs[NUM_NOTE_OUTPUTS] = {
+  //  { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "Note Out" }
+  //};
+
   MIP_VoiceManager<myVoice,NUM_VOICES>  MVoices = {};
 
   //uint32_t MDefaultEditorWidth  = 270;
@@ -442,6 +463,10 @@ public: // plugin
 
   bool init() final {
     setupParameters(myParameters,NUM_PARAMS);
+    //setupAudioInputs(myAudioInputs,NUM_AUDIO_INPUTS);
+    setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
+    setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
+    //setupNoteOutputs(myNoteOutputs,NUM_NOTE_OUTPUTS);
     return MIP_Plugin::init();
   }
 
@@ -462,6 +487,8 @@ public: // plugin
 
   const void* get_extension(const char *id) final {
     if (strcmp(id,CLAP_EXT_GUI) == 0) return &MGui;
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
+    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0) return &MNotePorts;
     return MIP_Plugin::get_extension(id);
   }
 
@@ -470,8 +497,8 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) final {
-    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) { MIP_Print("not x11\n");  return false; }
-    if (is_floating)                          { MIP_Print("floating\n"); return false; }
+    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) { MIP_Print("error.. !x11\n");  return false; }
+    if (is_floating) { MIP_Print("error.. is_floating\n"); return false; }
     MEditorIsOpen = false;
     MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true);
     return (MEditor);

@@ -1,5 +1,5 @@
-#ifndef mip_template_widget_includedbutton
-#define mip_template_widget_included
+#ifndef mip_image_strip_widget_included
+#define mip_image_strip_widget_included
 //----------------------------------------------------------------------
 
 // deprecated?
@@ -46,7 +46,7 @@ public:
 //    MImageSurface = new MIP_Surface(ATarget,ABitmap->getWidth(),ABitmap->getHeight());
 //    MImageSurfaceAllocated = true;
 //    MIP_Painter* painter = new MIP_Painter(MImageSurface);
-//    painter->uploadBitmap(0,0,ABitmap);
+//    painter->drawBitmap(0,0,ABitmap);
 //    //painter->flush();
 //    delete painter;
 //  }

@@ -424,6 +424,7 @@
 		<Unit filename="../include/gui/nogui/mip_nogui_painter.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui_surface.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui_window.h" />
+		<Unit filename="../include/gui/widgets/mip_bitmap_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_button_row_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_button_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_cached_widget.h" />
