@@ -31,9 +31,9 @@
 #define NUM_NOTE_INPUTS   1
 #define NUM_NOTE_OUTPUTS  0
 
-#define NUM_VOICES    16
-#define EDITOR_WIDTH  270+150
-#define EDITOR_HEIGHT 296+60
+#define NUM_VOICES        16
+#define EDITOR_WIDTH      (270 + 150)
+#define EDITOR_HEIGHT     (296 + 60)
 
 //#define SUPPORTED_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
 
@@ -300,6 +300,7 @@ public:
 //------------------------------
 
   myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
+  //: MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
   : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
     MIP_Window* window = getWindow();
     // panel
@@ -409,18 +410,18 @@ private:
 //------------------------------
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Vol",  "", 0.0, 1.0, 0.5 },
-    { 1,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Pan",  "", 0.0, 1.0, 0.5 },
-    { 2,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE, nullptr, "Freq", "", 0.0, 1.0, 0.7 },
-    { 3,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Res",  "", 0.0, 1.0, 0.5 },
-    { 4,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "A.Att",  "", 0.0, 1.0, 0.05 },
-    { 5,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "A.Dec",  "", 0.0, 1.0, 0.5 },
-    { 6,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "A.Sus",  "", 0.0, 1.0, 0.5 },
-    { 7,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "A.Rel",  "", 0.0, 1.0, 0.5 },
-    { 8,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Att",  "", 0.0, 1.0, 0.05 },
-    { 9,  CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Dec",  "", 0.0, 1.0, 0.5 },
-    { 10, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Sus",  "", 0.0, 1.0, 0.5 },
-    { 11, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "F.Rel",  "", 0.0, 1.0, 0.5 }
+    { 0,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "Vol",    "", 0.0, 1.0, 0.5  },
+    { 1,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "Pan",    "", 0.0, 1.0, 0.5  },
+    { 2,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "F.Freq", "", 0.0, 1.0, 0.7  },
+    { 3,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "F.Res",  "", 0.0, 1.0, 0.5  },
+    { 4,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "A.Att",  "", 0.0, 1.0, 0.05 },
+    { 5,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "A.Dec",  "", 0.0, 1.0, 0.5  },
+    { 6,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "A.Sus",  "", 0.0, 1.0, 0.5  },
+    { 7,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "A.Rel",  "", 0.0, 1.0, 0.5  },
+    { 8,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "F.Att",  "", 0.0, 1.0, 0.05 },
+    { 9,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "F.Dec",  "", 0.0, 1.0, 0.5  },
+    { 10, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "F.Sus",  "", 0.0, 1.0, 0.5  },
+    { 11, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "F.Rel",  "", 0.0, 1.0, 0.5  }
   };
 
   //clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
@@ -458,7 +459,7 @@ public:
   }
 
 //------------------------------
-public: // plugin
+public: // clap
 //------------------------------
 
   bool init() final {
@@ -474,12 +475,10 @@ public: // plugin
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
     MVoices.prepare(sample_rate);
-
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
       float v = MParameterValues[i];
       MVoices.handle_master_param(i,v);
     }
-
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
   }
 
@@ -490,6 +489,16 @@ public: // plugin
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
     if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0) return &MNotePorts;
     return MIP_Plugin::get_extension(id);
+  }
+
+  //----------
+
+  clap_process_status process(const clap_process_t *process) final {
+    flushAudioParams();
+    handle_input_events(process->in_events,process->out_events);
+    handle_tick_process(process);
+    handle_output_events(process->in_events,process->out_events);
+    return CLAP_PROCESS_CONTINUE;
   }
 
 //------------------------------
@@ -504,10 +513,39 @@ public: // gui
     return (MEditor);
   }
 
+//------------------------------
+public:
+//------------------------------
+
+  void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
+    uint32_t num_events = in_events->size(in_events);
+    for (uint32_t i=0; i<num_events; i++) {
+      const clap_event_header_t* header = in_events->get(in_events,i);
+      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+        switch (header->type) {
+          //case CLAP_EVENT_NOTE_ON:          handle_note_on_event((clap_event_note_t*)header); break;
+          //case CLAP_EVENT_NOTE_OFF:         handle_note_off_event((clap_event_note_t*)header); break;
+          //case CLAP_EVENT_NOTE_END:         handle_note_end_event((clap_event_note_t*)header); break;
+          //case CLAP_EVENT_NOTE_CHOKE:       handle_note_choke_event((clap_event_note_t*)header); break;
+          //case CLAP_EVENT_NOTE_EXPRESSION:  handle_note_expression_event((clap_event_note_expression_t*)header); break;
+          case CLAP_EVENT_PARAM_VALUE:      MIP_Plugin::handle_parameter_event((clap_event_param_value_t*)header); break;
+          case CLAP_EVENT_PARAM_MOD:        MIP_Plugin::handle_modulation_event((clap_event_param_mod_t*)header); break;
+          //case CLAP_EVENT_MIDI:             handle_midi_event((clap_event_midi_t*)header); break;
+          //case CLAP_EVENT_MIDI2:            handle_midi2_event((clap_event_midi2_t*)header); break;
+          //case CLAP_EVENT_MIDI_SYSEX:       handle_midi_sysex_event((clap_event_midi_sysex_t*)header); break;
+          //case CLAP_EVENT_TRANSPORT:        handle_transport_event((clap_event_transport_t*)header); break;
+        }
+      }
+    }
+  }
+
   //----------
+
+  // called from MIP_Plugin.on_updateParameterFromEditor
 
   void handle_editor_parameter(uint32_t AIndex, float AValue) override {
     //MIP_PRINT;
+    //MIP_Plugin::handle_editor_parameter(AIndex,AValue); // default is no-op
     //MVoices.handle_voice_param(-1,-1,AIndex,AValue);
     MVoices.handle_master_param(AIndex,AValue);
 
@@ -517,25 +555,24 @@ public: // gui
 public: // events
 //------------------------------
 
-//  void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
-//    MIP_Plugin::handle_input_events(in_events,out_events);
-//    uint32_t num_events = in_events->size(in_events);
-//    for (uint32_t i=0; i<num_events; i++) {
-//      const clap_event_header_t* header = in_events->get(in_events,i);
-//      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-//        MVoices.on_event(header);
-//      }
-//    }
-//  }
+  //void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
+  //  MIP_Plugin::handle_input_events(in_events,out_events);
+  //  uint32_t num_events = in_events->size(in_events);
+  //  for (uint32_t i=0; i<num_events; i++) {
+  //    const clap_event_header_t* header = in_events->get(in_events,i);
+  //    if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+  //      MVoices.on_event(header);
+  //    }
+  //  }
+  //}
 
-  //
+//------------------------------
 
-  // these are called from MIP_Plugin.handle_input_events
+  // called from MIP_Plugin.handle_input_events
 
   //----------
 
   void handle_note_on_event(clap_event_note_t* event) final {
-    //MIP_PRINT;
     MVoices.on_note_on(event);
   }
 
@@ -585,6 +622,7 @@ public: // events
   }
 
   void handle_modulation_event(clap_event_param_mod_t* event) final {
+    MIP_PRINT;
     MIP_Plugin::handle_modulation_event(event);
     MVoices.on_parameter_modulation(event);
   }
@@ -592,14 +630,6 @@ public: // events
 //------------------------------
 public: // process
 //------------------------------
-
-  clap_process_status process(const clap_process_t *process) final {
-    flushAudioParams();
-    //handle_input_events(process->in_events,process->out_events);
-    handle_tick_process(process);
-    handle_output_events(process->in_events,process->out_events);
-    return CLAP_PROCESS_CONTINUE;
-  }
 
   //----------
 

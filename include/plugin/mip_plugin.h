@@ -251,14 +251,20 @@ protected: // ??
 
   //----------
 
-  // queued in on_updateParameterFromEditor()
-  // called from handle_events_output (end of process), flush
+  /*
+    queued in on_updateParameterFromEditor()
+    called from handle_events_output (end of process), flush
+
+    TODO:
+      send GESTURE_BEGIN when mouse click
+      send GESTURE_END when mouse release
+  */
 
   void flushHostParams(const clap_output_events_t* out_events) {
     uint32_t index = 0;
     while (MHostParamQueue.read(&index)) {
       float value = MHostParamVal[index];
-      //todo: check if value reallyt changed (if multiple events)
+      //todo: check if value really changed (if multiple events)
       send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_BEGIN,out_events);
       send_param_value_event(index,value,out_events);
       send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_END,out_events);
@@ -269,33 +275,33 @@ protected: // ??
 
   // gestures
 
-//  void queueHostBeginGesture(uint32_t AIndex) {
-//    MHostBeginGestureQueue.write(AIndex);
-//  }
-//
-//  //----------
-//
-//  void queueHostEndGesture(uint32_t AIndex) {
-//    MHostEndGestureQueue.write(AIndex);
-//  }
-//
-//  //----------
-//
-//  void flushHostBeginGestures(const clap_output_events_t* out_events) {
-//    uint32_t index = 0;
-//    while (MHostBeginGestureQueue.read(&index)) {
-//      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_BEGIN,out_events);
-//    }
-//  }
-//
-//  //----------
-//
-//  void flushHostEndGestures(const clap_output_events_t* out_events) {
-//    uint32_t index = 0;
-//    while (MHostEndGestureQueue.read(&index)) {
-//      send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_END,out_events);
-//    }
-//  }
+  //void queueHostBeginGesture(uint32_t AIndex) {
+  //  MHostBeginGestureQueue.write(AIndex);
+  //}
+
+  //----------
+
+  //void queueHostEndGesture(uint32_t AIndex) {
+  //  MHostEndGestureQueue.write(AIndex);
+  //}
+
+  //----------
+
+  //void flushHostBeginGestures(const clap_output_events_t* out_events) {
+  //  uint32_t index = 0;
+  //  while (MHostBeginGestureQueue.read(&index)) {
+  //    send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_BEGIN,out_events);
+  //  }
+  //}
+
+  //----------
+
+  //void flushHostEndGestures(const clap_output_events_t* out_events) {
+  //  uint32_t index = 0;
+  //  while (MHostEndGestureQueue.read(&index)) {
+  //    send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_END,out_events);
+  //  }
+  //}
 
 //------------------------------
 public: // editor listener
@@ -385,7 +391,6 @@ protected:
 //------------------------------
 
   virtual void handle_editor_parameter(uint32_t AIndex, float AValue) {
-    //qwe
   }
 
 //------------------------------
@@ -485,17 +490,15 @@ protected:
 
   //----------
 
-  /*
-    why is the above called ..inProcess, while the below is ..fromHost?
-  */
-
   virtual void handle_modulation_event(clap_event_param_mod_t* param_mod) {
+    //MIP_PRINT;
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
     //MIP_Print("%i = %.3f\n",i,v);
     setParameterModulation(i,v);
     #ifndef MIP_NO_GUI
-    if (MEditor && MEditorIsOpen) MEditor->updateModulationFromHost(i,v);
+    //if (MEditor && MEditorIsOpen) MEditor->updateModulationFromHost(i,v);
+    if (MEditor && MEditorIsOpen) MEditor->updateModulationInProcess(i,v);
     #endif
   }
 

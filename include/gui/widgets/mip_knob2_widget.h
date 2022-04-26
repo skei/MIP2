@@ -100,12 +100,13 @@ public:
       wdg_knob->setValue(AValue);
     }
     if (wdg_value) {
-      sprintf(value_text,"%.3f",AValue);
+      sprintf(value_text,"%.3f",AValue); // todo: parameter.valueToText
       wdg_value->setText(value_text);
     }
   }
 
   void setModValue(float AValue) override {
+    //MIP_Print("%.3f\n",AValue);
     MIP_Widget::setModValue(AValue);
     if (wdg_knob) {
       wdg_knob->setModValue(AValue);
@@ -147,7 +148,6 @@ public:
           //displayText(value_text,getValue());
           wdg_value->setText(value_text);
         }
-
       }
       do_widget_redraw(wdg_value,wdg_value->getRect(),0);
     }

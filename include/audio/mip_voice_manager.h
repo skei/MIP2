@@ -444,6 +444,7 @@ public:
 //------------------------------
 
   void on_parameter_value(clap_event_param_value_t* event) {
+    //MIP_Plugin::handle_parameter_event(event);
     uint32_t index = event->param_id;
     float value = event->value;
     int32_t channel = event->channel;
@@ -462,6 +463,7 @@ public:
   //----------
 
   void on_parameter_modulation(clap_event_param_mod_t* event) {
+    //MIP_Plugin::handle_modulation_event(event);
     uint32_t index = event->param_id;
     float amount = event->amount;
     int32_t channel = event->channel;

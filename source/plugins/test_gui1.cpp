@@ -15,8 +15,8 @@
 #include "gui/mip_widgets.h"
 
 #include "../data/img/knob4_60x60_131.h"
-#include "../data/img/sa_logo_40_trans_black.h"
-#include "../data/img/mip2_trans_129x34.h"
+//#include "../data/img/sa_logo_40_trans_black.h"
+//#include "../data/img/mip2_trans_129x34.h"
 
 //----------------------------------------------------------------------
 //
@@ -71,7 +71,7 @@ private:
       nullptr,
       "Param1",
       "Params",
-      0.1,
+      0.0,
       1.0,
       1.0
     },
@@ -305,7 +305,7 @@ public:
 
       // sa header
 
-      MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(MIP_FRect(60),MLogoSurface,MMip2Surface);
+      MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(MIP_FRect(60),window);//,MLogoSurface,MMip2Surface);
       MEditorWidget->appendWidget(sa_header);
 
       // main menu
