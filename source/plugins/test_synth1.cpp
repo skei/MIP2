@@ -289,11 +289,11 @@ public:
 //------------------------------
 
   myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
-  //: MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
   : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
-    MIP_Window* window = getWindow();
-    // panel
 
+    MIP_Window* window = getWindow();
+
+    // panel
     MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_FRect());
     MEditorPanel->setDrawBorder(false);
     MEditorPanel->setFillBackground(false);
@@ -302,13 +302,15 @@ public:
     //MEditorPanel->layout.innerBorder = MIP_FRect(10,10,10,10);
     //MEditorPanel->layout.spacing = 5;
 
-    //
+    // header
 
     MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(60,window);
     MEditorPanel->appendWidget(sa_header);
     sa_header->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     sa_header->setPluginName("test_synth1");
     sa_header->setPluginVersion("v0.0.1");
+
+    // controls panel (knobs)
 
     MIP_PanelWidget* controls = new MIP_PanelWidget(MIP_FRect());
     MEditorPanel->appendWidget(controls);
@@ -326,49 +328,62 @@ public:
     MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
     controls->appendWidget(vol_knob);
     connect(vol_knob,0);
+
     // pan
     MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
     controls->appendWidget(pan_knob);
     connect(pan_knob,1);
+
     // freq
     MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Freq");
     controls->appendWidget(freq_knob);
     connect(freq_knob,2);
+
     // res
     MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(190,10,50,82),"Res");
     controls->appendWidget(res_knob);
     connect(res_knob,3);
 
-    // att
+    //
+
+    // ampl att
     MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"A.Att");
     controls->appendWidget(amp_att_knob);
     connect(amp_att_knob,4);
-    // dec
+
+    // ampl dec
     MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"A.Dec");
     controls->appendWidget(amp_dec_knob);
     connect(amp_dec_knob,5);
-    // sus
+
+    // ampl sus
     MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"A.Sus");
     controls->appendWidget(amp_sus_knob);
     connect(amp_sus_knob,6);
-    // rel
+
+    // ampl rel
     MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"A.Rel");
     controls->appendWidget(amp_rel_knob);
     connect(amp_rel_knob,7);
 
-    // att
+    //
+
+    // flt att
     MIP_Knob2Widget* flt_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"F.Att");
     controls->appendWidget(flt_att_knob);
     connect(flt_att_knob,8);
-    // dec
+
+    // flt dec
     MIP_Knob2Widget* flt_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"F.Dec");
     controls->appendWidget(flt_dec_knob);
     connect(flt_dec_knob,9);
-    // sus
+
+    // flt sus
     MIP_Knob2Widget* flt_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"F.Sus");
     controls->appendWidget(flt_sus_knob);
     connect(flt_sus_knob,10);
-    // rel
+
+    // flt rel
     MIP_Knob2Widget* flt_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"F.Rel");
     controls->appendWidget(flt_rel_knob);
     connect(flt_rel_knob,11);
@@ -611,7 +626,6 @@ public: // events
   }
 
   void handle_modulation_event(clap_event_param_mod_t* event) final {
-    //MIP_PRINT;
     MIP_Plugin::handle_modulation_event(event);
     MVoices.on_parameter_modulation(event);
   }
