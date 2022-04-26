@@ -1,5 +1,16 @@
-// -faligned=new
 
+/*
+  todo / maybe-do:
+  * parameter/modulation dezipping
+  * polyphonic parameter modulation (should in theory already work, but can't test it)
+  * note off velocity, timbre expression
+  * examine -faligned=new (tick/cache processing, buffers)
+  * clap extensions: quick controls, note ports
+  * better synthesis? (probably not)
+  * trim down event handling (handle_input_events)
+*/
+
+//----------------------------------------------------------------------
 
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
