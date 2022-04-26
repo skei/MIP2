@@ -5,9 +5,10 @@
   * polyphonic parameter modulation (should in theory already work, but can't test it)
   * note off velocity, timbre expression
   * examine -faligned=new (tick/cache processing, buffers)
-  * clap extensions: quick controls, note ports
+  * clap extensions: quick controls, note ports (no host suppors it yet)
   * better synthesis? (probably not)
   * trim down event handling (handle_input_events)
+  * zoomable editor (widget scaling and bitmap stretching is in there, but need to connect everything together)
 */
 
 //----------------------------------------------------------------------
