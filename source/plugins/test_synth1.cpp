@@ -599,7 +599,7 @@ public: // events
   }
 
   void handle_modulation_event(clap_event_param_mod_t* event) final {
-    MIP_PRINT;
+    //MIP_PRINT;
     MIP_Plugin::handle_modulation_event(event);
     MVoices.on_parameter_modulation(event);
   }
