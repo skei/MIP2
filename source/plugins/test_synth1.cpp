@@ -215,32 +215,9 @@ public:
   void modulation(uint32_t index, float value) {
     switch (index) {
       case 2: filter_freq_mod = value; break;
-      //case 3: fres_mod = value; break;
+      case 3: filter_res_mod = value; break;
     }
   }
-
-  //----------
-
-//  uint32_t process(uint32_t AState) {
-//    //float* output0 = context->process->audio_outputs[0].data32[0];
-//    //float* output1 = context->process->audio_outputs[0].data32[1];
-//    float* output = context->voicebuffer;
-//    uint32_t length  = context->process->frames_count;
-//    for (uint32_t i=0; i<length; i++) {
-//      filter.setMode(MIP_SVF_LP);
-//      filter.setFreq(ffreq * ffreq);
-//      filter.setBW(1.0 - fres);
-//      float out = filter.process(ph);
-//      ph += phadd;
-//      ph = MIP_Fract(ph);
-//      float v = _onvel + _press;
-//      v = MIP_Clamp(v,0,1);
-//      *output++ = out * v;
-//      //*output++ += out * v;
-//      //*output1++ += out * v;
-//    }
-//    return MIP_VOICE_PLAYING;
-//  }
 
   //----------
 
@@ -425,25 +402,41 @@ private:
   };
 
   //clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
-  //  { 0, "Audio In", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  //  { 0,
+  //    "Audio In",
+  //    CLAP_AUDIO_PORT_IS_MAIN,
+  //    2, CLAP_PORT_STEREO,
+  //    CLAP_INVALID_ID
+  //  }
   //};
 
   clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
-    { 0, "Audio Out", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+    { 0,
+      "Audio Out",
+      CLAP_AUDIO_PORT_IS_MAIN,
+      2,
+      CLAP_PORT_STEREO,
+      CLAP_INVALID_ID
+    }
   };
 
-  clap_note_port_info_t  myNoteInputs[NUM_NOTE_INPUTS] = {
-    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "Note In" }
+  clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
+    { 0,
+      CLAP_NOTE_DIALECT_CLAP,
+      CLAP_NOTE_DIALECT_CLAP,
+      "Note In"
+    }
   };
 
-  //clap_note_port_info_t  myNoteOutputs[NUM_NOTE_OUTPUTS] = {
-  //  { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "Note Out" }
+  //clap_note_port_info_t myNoteOutputs[NUM_NOTE_OUTPUTS] = {
+  //  { 0,
+  //    CLAP_NOTE_DIALECT_CLAP,
+  //   CLAP_NOTE_DIALECT_CLAP,
+  //    "Note Out"
+  //  }
   //};
 
   MIP_VoiceManager<myVoice,NUM_VOICES>  MVoices = {};
-
-  //uint32_t MDefaultEditorWidth  = 270;
-  //uint32_t MDefaultEditorHeight = 296;
 
 //------------------------------
 public:
@@ -517,23 +510,23 @@ public: // gui
 public:
 //------------------------------
 
+  /*
+    if param or mod changes, we need to update the editor
+    the rest of the events are handled by the voice manager
+  */
+
   void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
       if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
         switch (header->type) {
-          //case CLAP_EVENT_NOTE_ON:          handle_note_on_event((clap_event_note_t*)header); break;
-          //case CLAP_EVENT_NOTE_OFF:         handle_note_off_event((clap_event_note_t*)header); break;
-          //case CLAP_EVENT_NOTE_END:         handle_note_end_event((clap_event_note_t*)header); break;
-          //case CLAP_EVENT_NOTE_CHOKE:       handle_note_choke_event((clap_event_note_t*)header); break;
-          //case CLAP_EVENT_NOTE_EXPRESSION:  handle_note_expression_event((clap_event_note_expression_t*)header); break;
-          case CLAP_EVENT_PARAM_VALUE:      MIP_Plugin::handle_parameter_event((clap_event_param_value_t*)header); break;
-          case CLAP_EVENT_PARAM_MOD:        MIP_Plugin::handle_modulation_event((clap_event_param_mod_t*)header); break;
-          //case CLAP_EVENT_MIDI:             handle_midi_event((clap_event_midi_t*)header); break;
-          //case CLAP_EVENT_MIDI2:            handle_midi2_event((clap_event_midi2_t*)header); break;
-          //case CLAP_EVENT_MIDI_SYSEX:       handle_midi_sysex_event((clap_event_midi_sysex_t*)header); break;
-          //case CLAP_EVENT_TRANSPORT:        handle_transport_event((clap_event_transport_t*)header); break;
+          case CLAP_EVENT_PARAM_VALUE:
+            MIP_Plugin::handle_parameter_event((clap_event_param_value_t*)header);
+            break;
+          case CLAP_EVENT_PARAM_MOD:
+            MIP_Plugin::handle_modulation_event((clap_event_param_mod_t*)header);
+            break;
         }
       }
     }
@@ -541,11 +534,12 @@ public:
 
   //----------
 
-  // called from MIP_Plugin.on_updateParameterFromEditor
+  /*
+    called from MIP_Plugin.on_updateParameterFromEditor
+    widget has changed, so we need to notify the voices..
+  */
 
   void handle_editor_parameter(uint32_t AIndex, float AValue) override {
-    //MIP_PRINT;
-    //MIP_Plugin::handle_editor_parameter(AIndex,AValue); // default is no-op
     //MVoices.handle_voice_param(-1,-1,AIndex,AValue);
     MVoices.handle_master_param(AIndex,AValue);
 
@@ -554,23 +548,6 @@ public:
 //------------------------------
 public: // events
 //------------------------------
-
-  //void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
-  //  MIP_Plugin::handle_input_events(in_events,out_events);
-  //  uint32_t num_events = in_events->size(in_events);
-  //  for (uint32_t i=0; i<num_events; i++) {
-  //    const clap_event_header_t* header = in_events->get(in_events,i);
-  //    if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-  //      MVoices.on_event(header);
-  //    }
-  //  }
-  //}
-
-//------------------------------
-
-  // called from MIP_Plugin.handle_input_events
-
-  //----------
 
   void handle_note_on_event(clap_event_note_t* event) final {
     MVoices.on_note_on(event);

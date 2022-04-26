@@ -22,8 +22,8 @@
 
 //#include "../source/plugins/sa_hexwave.cpp"
 
-//#include "../source/plugins/test_gui1.cpp"
-#include "../source/plugins/test_synth1.cpp"
+#include "../source/plugins/test_gui1.cpp"
+//#include "../source/plugins/test_synth1.cpp"
 
 //----------------------------------------------------------------------
 //
