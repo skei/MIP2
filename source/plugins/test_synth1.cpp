@@ -394,6 +394,18 @@ public: // clap
     return (MEditor);
   }
 
+  clap_process_status process(const clap_process_t *process) final {
+    flushAudioParams();
+    handle_input_events(process->in_events,process->out_events);
+    handle_process(process);
+    handle_output_events(process->in_events,process->out_events);
+    return CLAP_PROCESS_CONTINUE;
+  }
+
+//------------------------------
+public:
+//------------------------------
+
   /*
     if param or mod changes, we need to update the editor
     the rest of the events are handled by the voice manager
@@ -415,18 +427,6 @@ public: // clap
       }
     }
   }
-
-  clap_process_status process(const clap_process_t *process) final {
-    flushAudioParams();
-    handle_input_events(process->in_events,process->out_events);
-    handle_process(process);
-    handle_output_events(process->in_events,process->out_events);
-    return CLAP_PROCESS_CONTINUE;
-  }
-
-//------------------------------
-public:
-//------------------------------
 
   void handle_process(const clap_process_t *process) final {
     float** outputs = process->audio_outputs[0].data32;
