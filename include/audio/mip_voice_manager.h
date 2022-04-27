@@ -25,9 +25,9 @@
 #define MIP_INV_MASTER_BEND_RANGE (1.0 / MIP_MASTER_BEND_RANGE)
 #define MIP_INV_VOICE_BEND_RANGE  (1.0 / MIP_VOICE_BEND_RANGE)
 
-#define MIP_VOICE_TICKSIZE        16
+#define MIP_VOICE_SLICE_SIZE      16
 #define MIP_VOICE_MAX_OVERSAMPLE  1
-#define MIP_VOICE_BUFFERSIZE      (MIP_VOICE_TICKSIZE * MIP_VOICE_MAX_OVERSAMPLE)
+#define MIP_VOICE_BUFFERSIZE      (MIP_VOICE_SLICE_SIZE * MIP_VOICE_MAX_OVERSAMPLE)
 #define MIP_VOICE_MAX_EVENTS      1024
 
 //----------------------------------------------------------------------
@@ -51,38 +51,46 @@ struct MIP_VoiceContext {
 
 /*
   16 samples, 64 bytes, 1 cache line each..
-  each voice adds to the tick buffer
+  each voice adds to the slice buffer
   (..hardcoded and unrolled, plus optimizer magic..)
   events are handled inbetween each 16-sample block
   so we might get some jittering (max 15 samples)..
 */
 
 __MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
-float MIP_TickBuffer[MIP_VOICE_BUFFERSIZE] = {0};
+float MIP_VoiceSliceBuffer[MIP_VOICE_BUFFERSIZE] = {0};
 
 //----------------------------------------------------------------------
 
-void MIP_ClearTickBuffer(uint32_t ASize) {
-  memset(MIP_TickBuffer,0,ASize*sizeof(float));
+void MIP_ClearVoiceSliceBuffer(uint32_t ASize) {
+  memset(MIP_VoiceSliceBuffer,0,ASize*sizeof(float));
 }
 
-void MIP_CopyTickBuffer(float* ADst, uint32_t ASize) {
-  memcpy(ADst,MIP_TickBuffer,ASize*sizeof(float));
+void MIP_CopyVoiceSliceBuffer(float* ADst, uint32_t ASize) {
+  memcpy(ADst,MIP_VoiceSliceBuffer,ASize*sizeof(float));
 }
 
 //----------
 
-void MIP_ClearTickBuffer() {
-  MIP_ClearTickBuffer(MIP_VOICE_TICKSIZE);
+void MIP_ClearVoiceSliceBuffer() {
+  MIP_ClearVoiceSliceBuffer(MIP_VOICE_SLICE_SIZE);
 }
 
-void MIP_CopyTickBuffer(float* ADst) {
-  MIP_CopyTickBuffer(ADst,MIP_VOICE_TICKSIZE);
+void MIP_CopyVoiceSliceBuffer(float* ADst) {
+  MIP_CopyVoiceSliceBuffer(ADst,MIP_VOICE_SLICE_SIZE);
 }
 
-//void MIP_AddVoiceToTickBuffer() {
-//  MIP_AddVoiceToTickBuffer(MIP_VOICE_TICKSIZE);
+//void MIP_AddVoiceToVoiceSliceBuffer() {
+//  MIP_AddVoiceToVoiceSliceBuffer(MIP_VOICE_SLICE_SIZE);
 //}
+
+/*
+  consider:
+  similar global/const functions for other dsp
+  16 samples = 4 simd
+  or 4 voices at a time
+  avx/256/512...
+*/
 
 //----------------------------------------------------------------------
 //
@@ -746,7 +754,7 @@ private:
   //TODO
 
   uint32_t processEvents(uint32_t AOffset) {
-    return processEvents(AOffset,MIP_VOICE_TICKSIZE);
+    return processEvents(AOffset,MIP_VOICE_SLICE_SIZE);
   }
 
   //----------
@@ -765,25 +773,11 @@ private:
 
   //----------
 
-  void postProcessVoices() {
-    for (uint32_t i=0; i<NUM; i++) {
-      if (MVoiceState[i] == MIP_VOICE_FINISHED) {
-        kill_voice(i);
-        send_note_end(i);
-      }
-      //TODO: send PARAM_MOD events
-    }
-  }
-
-//------------------------------
-private:
-//------------------------------
-
-  // process all voices (for one tick)
+  // process all voices (for one slice)
   // irregular length
 
   void processVoices(uint32_t ASize) {
-    MIP_ClearTickBuffer(ASize);
+    MIP_ClearVoiceSliceBuffer(ASize);
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceState[i] == MIP_VOICE_PLAYING){
         MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING,ASize);
@@ -797,8 +791,22 @@ private:
   //----------
 
   void processVoices() {
-    processVoices(MIP_VOICE_TICKSIZE);
+    processVoices(MIP_VOICE_SLICE_SIZE);
   }
+
+  //----------
+
+  void postProcessVoices() {
+    for (uint32_t i=0; i<NUM; i++) {
+      if (MVoiceState[i] == MIP_VOICE_FINISHED) {
+        kill_voice(i);
+        send_note_end(i);
+      }
+      //TODO: send PARAM_MOD events
+    }
+  }
+
+
 
 //------------------------------
 public:
@@ -806,14 +814,14 @@ public:
 
   /*
     process entire audio buffer..
-    voices fill TickBuffer
+    voices fill VoiceSliceBuffer
     this could just as well be used for effects too, i guess?
     (1 voice = 1 audio-stream)
   */
 
   void process(const clap_process_t *process) {
     MVoiceContext.process = process;
-    //MVoiceContext.tickbuffer = MIP_TickBuffer;
+    //MVoiceContext.slicebuffer = MIP_VoiceSliceBuffer;
     //preProcessVoices();
     MInEvents = process->in_events;
     MNumInEvents = MInEvents->size(MInEvents);
@@ -823,19 +831,19 @@ public:
     uint32_t remaining = process->frames_count;
     preProcessEvents();
     while (remaining > 0) {
-      if (remaining >= MIP_VOICE_TICKSIZE) {
+      if (remaining >= MIP_VOICE_SLICE_SIZE) {
         processEvents(offset);
         processVoices();
-        MIP_CopyTickBuffer(out0 + offset);
-        MIP_CopyTickBuffer(out1 + offset);
-        remaining -= MIP_VOICE_TICKSIZE;
-        offset += MIP_VOICE_TICKSIZE;
+        MIP_CopyVoiceSliceBuffer(out0 + offset);
+        MIP_CopyVoiceSliceBuffer(out1 + offset);
+        remaining -= MIP_VOICE_SLICE_SIZE;
+        offset += MIP_VOICE_SLICE_SIZE;
       }
       else {
         processEvents(offset,remaining);
         processVoices(remaining);
-        MIP_CopyTickBuffer(out0 + offset,remaining);
-        MIP_CopyTickBuffer(out1 + offset,remaining);
+        MIP_CopyVoiceSliceBuffer(out0 + offset,remaining);
+        MIP_CopyVoiceSliceBuffer(out1 + offset,remaining);
         remaining = 0;
       }
     }

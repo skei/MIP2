@@ -4,7 +4,7 @@
   * parameter/modulation dezipping
   * polyphonic parameter modulation (should in theory already work, but can't test it)
   * note off velocity, timbre expression
-  * examine -faligned=new (tick/cache processing, buffers)
+  * examine -faligned=new (slice/cache processing, buffers)
   * clap extensions: quick controls, note ports (no host suppors it yet)
   * better synthesis? (probably not)
   * trim down event handling (handle_input_events)
@@ -232,8 +232,7 @@ public:
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
   uint32_t process(uint32_t AState, uint32_t ASize) {
-    //float* output = context->tickbuffer;
-    float* output = MIP_TickBuffer;
+    float* output = MIP_VoiceSliceBuffer;
     for (uint32_t i = 0; i < ASize; i++) {
       float t = ph + 0.5f;
       t = MIP_Fract(t);
@@ -263,7 +262,7 @@ public:
   //----------
 
   uint32_t process(uint32_t AState) {
-    return process(AState,MIP_VOICE_TICKSIZE);
+    return process(AState,MIP_VOICE_SLICE_SIZE);
   }
 
 };
@@ -323,69 +322,69 @@ public:
 
     //
 
-    // vol
-    MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
-    controls->appendWidget(vol_knob);
-    connect(vol_knob,0);
+      // vol
+      MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
+      controls->appendWidget(vol_knob);
+      connect(vol_knob,0);
 
-    // pan
-    MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
-    controls->appendWidget(pan_knob);
-    connect(pan_knob,1);
+      // pan
+      MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
+      controls->appendWidget(pan_knob);
+      connect(pan_knob,1);
 
-    // freq
-    MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Freq");
-    controls->appendWidget(freq_knob);
-    connect(freq_knob,2);
+      // freq
+      MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Freq");
+      controls->appendWidget(freq_knob);
+      connect(freq_knob,2);
 
-    // res
-    MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(190,10,50,82),"Res");
-    controls->appendWidget(res_knob);
-    connect(res_knob,3);
+      // res
+      MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(190,10,50,82),"Res");
+      controls->appendWidget(res_knob);
+      connect(res_knob,3);
 
-    //
+      //
 
-    // ampl att
-    MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"A.Att");
-    controls->appendWidget(amp_att_knob);
-    connect(amp_att_knob,4);
+      // ampl att
+      MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"A.Att");
+      controls->appendWidget(amp_att_knob);
+      connect(amp_att_knob,4);
 
-    // ampl dec
-    MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"A.Dec");
-    controls->appendWidget(amp_dec_knob);
-    connect(amp_dec_knob,5);
+      // ampl dec
+      MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"A.Dec");
+      controls->appendWidget(amp_dec_knob);
+      connect(amp_dec_knob,5);
 
-    // ampl sus
-    MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"A.Sus");
-    controls->appendWidget(amp_sus_knob);
-    connect(amp_sus_knob,6);
+      // ampl sus
+      MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"A.Sus");
+      controls->appendWidget(amp_sus_knob);
+      connect(amp_sus_knob,6);
 
-    // ampl rel
-    MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"A.Rel");
-    controls->appendWidget(amp_rel_knob);
-    connect(amp_rel_knob,7);
+      // ampl rel
+      MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"A.Rel");
+      controls->appendWidget(amp_rel_knob);
+      connect(amp_rel_knob,7);
 
-    //
+      //
 
-    // flt att
-    MIP_Knob2Widget* flt_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"F.Att");
-    controls->appendWidget(flt_att_knob);
-    connect(flt_att_knob,8);
+      // flt att
+      MIP_Knob2Widget* flt_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"F.Att");
+      controls->appendWidget(flt_att_knob);
+      connect(flt_att_knob,8);
 
-    // flt dec
-    MIP_Knob2Widget* flt_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"F.Dec");
-    controls->appendWidget(flt_dec_knob);
-    connect(flt_dec_knob,9);
+      // flt dec
+      MIP_Knob2Widget* flt_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"F.Dec");
+      controls->appendWidget(flt_dec_knob);
+      connect(flt_dec_knob,9);
 
-    // flt sus
-    MIP_Knob2Widget* flt_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"F.Sus");
-    controls->appendWidget(flt_sus_knob);
-    connect(flt_sus_knob,10);
+      // flt sus
+      MIP_Knob2Widget* flt_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"F.Sus");
+      controls->appendWidget(flt_sus_knob);
+      connect(flt_sus_knob,10);
 
-    // flt rel
-    MIP_Knob2Widget* flt_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"F.Rel");
-    controls->appendWidget(flt_rel_knob);
-    connect(flt_rel_knob,11);
+      // flt rel
+      MIP_Knob2Widget* flt_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"F.Rel");
+      controls->appendWidget(flt_rel_knob);
+      connect(flt_rel_knob,11);
 
     //
 
@@ -394,8 +393,8 @@ public:
 
   //----------
 
-  virtual ~myEditor() {
-  }
+  //virtual ~myEditor() {
+  //}
 
 };
 
@@ -427,40 +426,13 @@ private:
     { 11, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "F.Rel",  "", 0.0, 1.0, 0.5  }
   };
 
-  //clap_audio_port_info_t myAudioInputs[NUM_AUDIO_INPUTS] = {
-  //  { 0,
-  //    "Audio In",
-  //    CLAP_AUDIO_PORT_IS_MAIN,
-  //    2, CLAP_PORT_STEREO,
-  //    CLAP_INVALID_ID
-  //  }
-  //};
-
   clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
-    { 0,
-      "Audio Out",
-      CLAP_AUDIO_PORT_IS_MAIN,
-      2,
-      CLAP_PORT_STEREO,
-      CLAP_INVALID_ID
-    }
+    { 0, "Audio Out", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
-    { 0,
-      CLAP_NOTE_DIALECT_CLAP,
-      CLAP_NOTE_DIALECT_CLAP,
-      "Note In"
-    }
+    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "Note In" }
   };
-
-  //clap_note_port_info_t myNoteOutputs[NUM_NOTE_OUTPUTS] = {
-  //  { 0,
-  //    CLAP_NOTE_DIALECT_CLAP,
-  //   CLAP_NOTE_DIALECT_CLAP,
-  //    "Note Out"
-  //  }
-  //};
 
   MIP_VoiceManager<myVoice,NUM_VOICES>  MVoices = {};
 
@@ -474,8 +446,8 @@ public:
 
   //----------
 
-  virtual ~myPlugin() {
-  }
+  //virtual ~myPlugin() {
+  //}
 
 //------------------------------
 public: // clap
@@ -483,10 +455,8 @@ public: // clap
 
   bool init() final {
     setupParameters(myParameters,NUM_PARAMS);
-    //setupAudioInputs(myAudioInputs,NUM_AUDIO_INPUTS);
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
-    //setupNoteOutputs(myNoteOutputs,NUM_NOTE_OUTPUTS);
     return MIP_Plugin::init();
   }
 
@@ -515,7 +485,7 @@ public: // clap
   clap_process_status process(const clap_process_t *process) final {
     flushAudioParams();
     handle_input_events(process->in_events,process->out_events);
-    handle_tick_process(process);
+    handle_process(process);
     handle_output_events(process->in_events,process->out_events);
     return CLAP_PROCESS_CONTINUE;
   }
@@ -566,7 +536,6 @@ public:
   */
 
   void handle_editor_parameter(uint32_t AIndex, float AValue) final {
-    //MVoices.handle_voice_param(-1,-1,AIndex,AValue);
     MVoices.handle_master_param(AIndex,AValue);
 
   }
@@ -575,7 +544,7 @@ public:
 public: // process
 //------------------------------
 
-  void handle_tick_process(const clap_process_t *process) {
+  void handle_process(const clap_process_t *process) {
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
