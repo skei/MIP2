@@ -121,11 +121,7 @@ public:
     context = AContext;
     amp_env.setSampleRate(context->samplerate);
     flt_env.setSampleRate(context->samplerate);
-    //amp_env.setADSR(0,0,1,0);
-    //flt_env.setADSR(0,0,1,0);
   }
-
-  //----------
 
   uint32_t note_on(int32_t key, float velocity) {
     note_key = key;
@@ -138,69 +134,47 @@ public:
     return MIP_VOICE_PLAYING;
   }
 
-  //----------
-
   uint32_t note_off(float velocity) {
     note_offvel = velocity;
     amp_env.noteOff();
     flt_env.noteOff();
-    return MIP_VOICE_RELEASED; //MIP_VOICE_FINISHED;
+    return MIP_VOICE_RELEASED;
   }
-
-  //----------
 
   void note_choke() {
   }
 
-  //----------
-
   void note_end() {
   }
-
-  //----------
 
   void tuning(float amount) {
     hz = MIP_NoteToHz(note_key + amount);
     phadd = hz / context->samplerate;
   }
 
-  //----------
-
   void volume(float amount) {
     note_vol = amount;
   }
-
-  //----------
 
   void pan(float amount) {
     note_pan = amount;
   }
 
-  //----------
-
   void vibrato(float amount) {
     note_vibr = amount;
   }
-
-  //----------
 
   void expression(float amount) {
     note_expr = amount;
   }
 
-  //----------
-
   void brightness(float amount) {
     note_bright = amount;
   }
 
-  //----------
-
   void pressure(float amount) {
     note_press = amount;
   }
-
-  //----------
 
   void parameter(uint32_t index, float value) {
     switch (index) {
@@ -217,16 +191,12 @@ public:
     }
   }
 
-  //----------
-
   void modulation(uint32_t index, float value) {
     switch (index) {
       case  2:  filter_freq_mod = value;  break;
       case  3:  filter_res_mod = value;   break;
     }
   }
-
-  //----------
 
   // ASize  = 0..15
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
@@ -259,8 +229,6 @@ public:
     else return AState;
   }
 
-  //----------
-
   uint32_t process(uint32_t AState) {
     return process(AState,MIP_VOICE_SLICE_SIZE);
   }
@@ -275,12 +243,6 @@ public:
 
 class myEditor
 : public MIP_Editor {
-
-//------------------------------
-private:
-//------------------------------
-
-
 
 //------------------------------
 public:
@@ -391,11 +353,6 @@ public:
     window->appendWidget(MEditorPanel);
   }
 
-  //----------
-
-  //virtual ~myEditor() {
-  //}
-
 };
 
 //----------------------------------------------------------------------
@@ -444,11 +401,6 @@ public:
   : MIP_Plugin(ADescriptor,AHost) {
   }
 
-  //----------
-
-  //virtual ~myPlugin() {
-  //}
-
 //------------------------------
 public: // clap
 //------------------------------
@@ -460,8 +412,6 @@ public: // clap
     return MIP_Plugin::init();
   }
 
-  //----------
-
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
     MVoices.prepare(sample_rate);
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
@@ -471,16 +421,12 @@ public: // clap
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
   }
 
-  //----------
-
   const void* get_extension(const char *id) final {
     if (strcmp(id,CLAP_EXT_GUI) == 0) return &MGui;
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
     if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0) return &MNotePorts;
     return MIP_Plugin::get_extension(id);
   }
-
-  //----------
 
   clap_process_status process(const clap_process_t *process) final {
     flushAudioParams();
@@ -528,8 +474,6 @@ public:
     }
   }
 
-  //----------
-
   /*
     called from MIP_Plugin.on_updateParameterFromEditor
     widget has changed, so we need to notify the voices..
@@ -567,8 +511,6 @@ public: // process
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
   ARegistry->appendPlugin(&myDescriptor);
 }
-
-//----------
 
 MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
   switch (AIndex) {
