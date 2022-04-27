@@ -128,7 +128,6 @@ public:
   //----------
 
   uint32_t note_on(int32_t key, float velocity) {
-    //MIP_Print("key %i valocity %.3f\n",key,velocity);
     note_key = key;
     note_onvel = velocity;
     ph = 0.0;
@@ -136,20 +135,16 @@ public:
     phadd = hz / context->samplerate;
     amp_env.noteOn();
     flt_env.noteOn();
-    //MIP_Print("amp_env note on\n");
     return MIP_VOICE_PLAYING;
   }
 
   //----------
 
   uint32_t note_off(float velocity) {
-    //MIP_Print("velocity %.3f\n",velocity);
     note_offvel = velocity;
     amp_env.noteOff();
     flt_env.noteOff();
-    //MIP_Print("amp_env note off\n");
-    //return MIP_VOICE_FINISHED;
-    return MIP_VOICE_RELEASED;
+    return MIP_VOICE_RELEASED; //MIP_VOICE_FINISHED;
   }
 
   //----------
@@ -209,16 +204,16 @@ public:
 
   void parameter(uint32_t index, float value) {
     switch (index) {
-      case 2:  filter_freq = value; break;
-      case 3:  filter_res = value; break;
-      case 4:  amp_env.setAttack(value * 5); break;
-      case 5:  amp_env.setDecay(value * 5); break;
-      case 6:  amp_env.setSustain(value); break;
-      case 7:  amp_env.setRelease(value * 5); break;
-      case 8:  flt_env.setAttack(value * 5); break;
-      case 9:  flt_env.setDecay(value * 5); break;
-      case 10: flt_env.setSustain(value); break;
-      case 11: flt_env.setRelease(value * 5); break;
+      case  2:  filter_freq = value;            break;
+      case  3:  filter_res = value;             break;
+      case  4:  amp_env.setAttack(value * 5);   break;
+      case  5:  amp_env.setDecay(value * 5);    break;
+      case  6:  amp_env.setSustain(value);      break;
+      case  7:  amp_env.setRelease(value * 5);  break;
+      case  8:  flt_env.setAttack(value * 5);   break;
+      case  9:  flt_env.setDecay(value * 5);    break;
+      case 10:  flt_env.setSustain(value);      break;
+      case 11:  flt_env.setRelease(value * 5);  break;
     }
   }
 
@@ -226,8 +221,8 @@ public:
 
   void modulation(uint32_t index, float value) {
     switch (index) {
-      case 2: filter_freq_mod = value; break;
-      case 3: filter_res_mod = value; break;
+      case  2:  filter_freq_mod = value;  break;
+      case  3:  filter_res_mod = value;   break;
     }
   }
 
@@ -237,14 +232,15 @@ public:
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
   uint32_t process(uint32_t AState, uint32_t ASize) {
-    //float* output = context->voicebuffer;
-    //float* output = MIP_VoiceBuffer;
+    //float* output = context->tickbuffer;
     float* output = MIP_TickBuffer;
     for (uint32_t i = 0; i < ASize; i++) {
       float t = ph + 0.5f;
       t = MIP_Fract(t);
       float o = 2.0 * t - 1.0;
       o -= MIP_PolyBlep(t,phadd);
+      ph += phadd;
+      ph = MIP_Fract(ph);
       float ae = amp_env.process();
       float fe = flt_env.process();
       float ff = MIP_Clamp(filter_freq + filter_freq_mod, 0,1);
@@ -256,12 +252,8 @@ public:
       o = filter.process(o);
       o *= (note_onvel + note_press);
       o *= ae;
-
-      //*output++ = o;
       *output++ += o;
 
-      ph += phadd;
-      ph = MIP_Fract(ph);
     }
     if (amp_env.getStage() == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
     //else if (flt_env.getStage() == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
@@ -587,7 +579,7 @@ public: // process
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
-    MVoices.processTicks(process);
+    MVoices.process(process);
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);

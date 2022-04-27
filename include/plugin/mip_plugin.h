@@ -403,17 +403,17 @@ protected: // handle
       const clap_event_header_t* header = in_events->get(in_events,i);
       if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
         switch (header->type) {
+          case CLAP_EVENT_PARAM_VALUE:      handle_parameter_event((clap_event_param_value_t*)header); break;
+          case CLAP_EVENT_PARAM_MOD:        handle_modulation_event((clap_event_param_mod_t*)header); break;
+          case CLAP_EVENT_TRANSPORT:        handle_transport_event((clap_event_transport_t*)header); break;
           case CLAP_EVENT_NOTE_ON:          handle_note_on_event((clap_event_note_t*)header); break;
           case CLAP_EVENT_NOTE_OFF:         handle_note_off_event((clap_event_note_t*)header); break;
           case CLAP_EVENT_NOTE_END:         handle_note_end_event((clap_event_note_t*)header); break;
           case CLAP_EVENT_NOTE_CHOKE:       handle_note_choke_event((clap_event_note_t*)header); break;
           case CLAP_EVENT_NOTE_EXPRESSION:  handle_note_expression_event((clap_event_note_expression_t*)header); break;
-          case CLAP_EVENT_PARAM_VALUE:      handle_parameter_event((clap_event_param_value_t*)header); break;
-          case CLAP_EVENT_PARAM_MOD:        handle_modulation_event((clap_event_param_mod_t*)header); break;
           case CLAP_EVENT_MIDI:             handle_midi_event((clap_event_midi_t*)header); break;
           case CLAP_EVENT_MIDI2:            handle_midi2_event((clap_event_midi2_t*)header); break;
           case CLAP_EVENT_MIDI_SYSEX:       handle_midi_sysex_event((clap_event_midi_sysex_t*)header); break;
-          case CLAP_EVENT_TRANSPORT:        handle_transport_event((clap_event_transport_t*)header); break;
         }
       }
     }
@@ -433,49 +433,6 @@ protected: // handle
 
 //------------------------------
 protected:
-//------------------------------
-
-  /*
-    called from process (audio thread)
-  */
-
-  virtual void handle_note_on_event(clap_event_note_t* event) {
-    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
-  }
-
-  virtual void handle_note_off_event(clap_event_note_t* event) {
-    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
-  }
-
-  virtual void handle_note_end_event(clap_event_note_t* event) {
-    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
-  }
-
-  virtual void handle_note_choke_event(clap_event_note_t* event) {
-    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
-  }
-
-  virtual void handle_note_expression_event(clap_event_note_expression_t* event) {
-    //MIP_Print("port %i channel %i key %i expr %i value %.3f\n",event->port_index,event->channel,event->key,event->expression_id,event->value);
-  }
-
-  virtual void handle_midi_event(clap_event_midi_t* event) {
-    //MIP_Print("\n");
-  }
-
-  virtual void handle_midi2_event(clap_event_midi2_t* event) {
-    //MIP_Print("\n");
-  }
-
-  virtual void handle_midi_sysex_event(clap_event_midi_sysex_t* event) {
-    //MIP_Print("\n");
-  }
-
-  virtual void handle_transport_event(clap_event_transport_t* event) {
-    //MIP_Print("\n");
-  }
-
-//------------------------------
 //------------------------------
 
   virtual void handle_parameter_event(clap_event_param_value_t* param_value) {
@@ -501,6 +458,56 @@ protected:
     if (MEditor && MEditorIsOpen) MEditor->updateModulationInProcess(i,v);
     #endif
   }
+
+  //----------
+
+  virtual void handle_transport_event(clap_event_transport_t* event) {
+    //MIP_Print("\n");
+  }
+
+  //----------
+
+  /*
+    called from process (audio thread)
+  */
+
+  virtual void handle_note_on_event(clap_event_note_t* event) {
+    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
+  }
+
+  virtual void handle_note_off_event(clap_event_note_t* event) {
+    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
+  }
+
+  virtual void handle_note_end_event(clap_event_note_t* event) {
+    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
+  }
+
+  virtual void handle_note_choke_event(clap_event_note_t* event) {
+    //MIP_Print("port %i channel %i key %i\n",event->port_index,event->channel,event->key);
+  }
+
+  virtual void handle_note_expression_event(clap_event_note_expression_t* event) {
+    //MIP_Print("port %i channel %i key %i expr %i value %.3f\n",event->port_index,event->channel,event->key,event->expression_id,event->value);
+  }
+
+  //----------
+
+  virtual void handle_midi_event(clap_event_midi_t* event) {
+    //MIP_Print("\n");
+  }
+
+  virtual void handle_midi2_event(clap_event_midi2_t* event) {
+    //MIP_Print("\n");
+  }
+
+  virtual void handle_midi_sysex_event(clap_event_midi_sysex_t* event) {
+    //MIP_Print("\n");
+  }
+
+
+//------------------------------
+//------------------------------
 
 //------------------------------
 protected: // setup

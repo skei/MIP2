@@ -709,35 +709,6 @@ private:
 private:
 //------------------------------
 
-  /*
-    returns number of samples until next event,
-    or -1 for no more (all done)
-  */
-
-  uint32_t preProcess() {
-    return 0;
-  }
-
-  //----------
-
-  void postProcess() {
-    for (uint32_t i=0; i<NUM; i++) {
-      if (MVoiceState[i] == MIP_VOICE_FINISHED) {
-        kill_voice(i);
-        send_note_end(i);
-      }
-      //TODO: send PARAM_MOD events
-    }
-  }
-
-//------------------------------------------------------------
-// ticks
-//------------------------------------------------------------
-
-//------------------------------
-private: // process
-//------------------------------
-
   void preProcessEvents() {
     MCurrInEvent = 0;
     if (MNumInEvents > 0) {
@@ -745,12 +716,6 @@ private: // process
       MNextInEvent = header->time;
     }
     else MNextInEvent = MIP_INT32_MAX;
-  }
-
-  //----------
-
-  void postProcessEvents() {
-    MNumInEvents = 0;
   }
 
   //----------
@@ -778,7 +743,7 @@ private: // process
 
   //----------
 
-  // TODO
+  //TODO
 
   uint32_t processEvents(uint32_t AOffset) {
     return processEvents(AOffset,MIP_VOICE_TICKSIZE);
@@ -786,10 +751,38 @@ private: // process
 
   //----------
 
+  void postProcessEvents() {
+    MNumInEvents = 0;
+  }
+
+//------------------------------
+private:
+//------------------------------
+
+  //uint32_t preProcessVoices() {
+  //  return 0;
+  //}
+
+  //----------
+
+  void postProcessVoices() {
+    for (uint32_t i=0; i<NUM; i++) {
+      if (MVoiceState[i] == MIP_VOICE_FINISHED) {
+        kill_voice(i);
+        send_note_end(i);
+      }
+      //TODO: send PARAM_MOD events
+    }
+  }
+
+//------------------------------
+private:
+//------------------------------
+
   // process all voices (for one tick)
   // irregular length
 
-  void processTick(uint32_t ASize) {
+  void processVoices(uint32_t ASize) {
     MIP_ClearTickBuffer(ASize);
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceState[i] == MIP_VOICE_PLAYING){
@@ -803,8 +796,8 @@ private: // process
 
   //----------
 
-  void processTick() {
-    processTick(MIP_VOICE_TICKSIZE);
+  void processVoices() {
+    processVoices(MIP_VOICE_TICKSIZE);
   }
 
 //------------------------------
@@ -812,16 +805,16 @@ public:
 //------------------------------
 
   /*
-    process entire audio buffer
+    process entire audio buffer..
     voices fill TickBuffer
-
     this could just as well be used for effects too, i guess?
-    1 voice = 1 audio-stream
+    (1 voice = 1 audio-stream)
   */
 
-  void processTicks(const clap_process_t *process) {
+  void process(const clap_process_t *process) {
     MVoiceContext.process = process;
-    preProcess();
+    //MVoiceContext.tickbuffer = MIP_TickBuffer;
+    //preProcessVoices();
     MInEvents = process->in_events;
     MNumInEvents = MInEvents->size(MInEvents);
     float* out0 = process->audio_outputs->data32[0];
@@ -832,7 +825,7 @@ public:
     while (remaining > 0) {
       if (remaining >= MIP_VOICE_TICKSIZE) {
         processEvents(offset);
-        processTick();
+        processVoices();
         MIP_CopyTickBuffer(out0 + offset);
         MIP_CopyTickBuffer(out1 + offset);
         remaining -= MIP_VOICE_TICKSIZE;
@@ -840,14 +833,14 @@ public:
       }
       else {
         processEvents(offset,remaining);
-        processTick(remaining);
+        processVoices(remaining);
         MIP_CopyTickBuffer(out0 + offset,remaining);
         MIP_CopyTickBuffer(out1 + offset,remaining);
         remaining = 0;
       }
     }
     postProcessEvents();
-    postProcess();
+    postProcessVoices();
   }
 
 
