@@ -2,7 +2,14 @@
 #define mip_clap_registry_included
 //----------------------------------------------------------------------
 
-//----------
+/*
+  MIP_CLAP_REGISTRY is global/static, so it should be initialized before any
+  functions in the .so is called.. in the constructor, we call MIP_Register()
+  so that the user can register plugins (and factories)..
+  we could move the MIP_Register call to MIP_Plugin.init() ...
+*/
+
+//----------------------------------------------------------------------
 
 #include "mip.h"
 #include "base/types/mip_array.h"
@@ -45,7 +52,7 @@ private:
     //#ifdef MIP_PLUGIN_USE_INVALIDATION
     //clap_invalidation_sources MInvalidationSources;
     //#endif
-    //mip_clap_plugins          MPluginInstances;
+    //mip_clap_plugins MPluginInstances;
 
 //------------------------------
 public:

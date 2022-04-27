@@ -88,9 +88,16 @@ protected:
   MIP_Widget*     MParent                 = nullptr;              //
   MIP_Widgets     MChildren               = {};                   //
   int32_t         MWidgetIndex            = -1;                   //
+
   MIP_FRect       MRect                   = {};                   //
   MIP_FRect       MInitialRect            = MIP_FRect(0,0);       // starting rect (used by layout/alignment
   MIP_FRect       MContentRect            = MIP_FRect(0,0);       // rect containing/surrounding child widgets
+
+  //MIP_FRect       MEventRect
+  //MIP_FRect       MLayoutRect
+  //MIP_FRect       MCreatedRect
+  //MIP_FRect       MContentRect
+
   float           MChildrenXOffset        = 0.0f;                 // offset (relative to parent rect)
   float           MChildrenYOffset        = 0.0f;                 // -"-
   float           MModValue               = 0.0;                  //

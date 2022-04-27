@@ -573,75 +573,15 @@ public:
     widget has changed, so we need to notify the voices..
   */
 
-  void handle_editor_parameter(uint32_t AIndex, float AValue) override {
+  void handle_editor_parameter(uint32_t AIndex, float AValue) final {
     //MVoices.handle_voice_param(-1,-1,AIndex,AValue);
     MVoices.handle_master_param(AIndex,AValue);
 
   }
 
 //------------------------------
-public: // events
-//------------------------------
-
-  void handle_note_on_event(clap_event_note_t* event) final {
-    MVoices.on_note_on(event);
-  }
-
-  void handle_note_off_event(clap_event_note_t* event) final {
-    MVoices.on_note_off(event);
-  }
-
-  void handle_note_end_event(clap_event_note_t* event) final {
-    MVoices.on_note_end(event);
-  }
-
-  void handle_note_choke_event(clap_event_note_t* event) final {
-    MVoices.on_note_choke(event);
-  }
-
-  void handle_note_expression_event(clap_event_note_expression_t* event) final {
-    switch (event->expression_id) {
-      case CLAP_NOTE_EXPRESSION_VOLUME:     MVoices.on_note_volume_expression(event);     break;
-      case CLAP_NOTE_EXPRESSION_PAN:        MVoices.on_note_pan_expression(event);        break;
-      case CLAP_NOTE_EXPRESSION_TUNING:     MVoices.on_note_tuning_expression(event);     break;
-      case CLAP_NOTE_EXPRESSION_VIBRATO:    MVoices.on_note_vibrato_expression(event);    break;
-      case CLAP_NOTE_EXPRESSION_EXPRESSION: MVoices.on_note_expression_expression(event); break;
-      case CLAP_NOTE_EXPRESSION_BRIGHTNESS: MVoices.on_note_brightness_expression(event); break;
-      case CLAP_NOTE_EXPRESSION_PRESSURE:   MVoices.on_note_pressure_expression(event);   break;
-    }
-  }
-
-  void handle_midi_event(clap_event_midi_t* event) final {
-    MVoices.on_midi(event);
-  }
-
-  void handle_midi2_event(clap_event_midi2_t* event) final {
-    MVoices.on_midi2(event);
-  }
-
-  void handle_midi_sysex_event(clap_event_midi_sysex_t* event) final {
-    MVoices.on_midi_sysex(event);
-  }
-
-  void handle_transport_event(clap_event_transport_t* event) final {
-    //MVoices.transport(event);
-    }
-
-  void handle_parameter_event(clap_event_param_value_t* event) final {
-    MIP_Plugin::handle_parameter_event(event);
-    MVoices.on_parameter_value(event);
-  }
-
-  void handle_modulation_event(clap_event_param_mod_t* event) final {
-    MIP_Plugin::handle_modulation_event(event);
-    MVoices.on_parameter_modulation(event);
-  }
-
-//------------------------------
 public: // process
 //------------------------------
-
-  //----------
 
   void handle_tick_process(const clap_process_t *process) {
     float** outputs = process->audio_outputs[0].data32;
@@ -656,11 +596,6 @@ public: // process
   }
 
 };
-
-//----------------------------------------------------------------------
-
-#undef NUM_PARAMS
-#undef ALL_DIALECTS
 
 //----------------------------------------------------------------------
 //

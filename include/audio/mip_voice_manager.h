@@ -41,7 +41,6 @@
 struct MIP_VoiceContext {
   const clap_process_t* process     = nullptr;
   double                samplerate  = 0.0;
-//float*                voicebuffer = nullptr;
 };
 
 //----------------------------------------------------------------------
@@ -51,16 +50,12 @@ struct MIP_VoiceContext {
 //----------------------------------------------------------------------
 
 /*
-  2 buffers, each 16 samples (64 bytes)
-  = 1 cache line each..
-  each voice fills the voice buffer, which is then added to the tick buffer
+  16 samples, 64 bytes, 1 cache line each..
+  each voice adds to the tick buffer
   (..hardcoded and unrolled, plus optimizer magic..)
-  events for each 16-sample block are handled at the beginning of the block,
+  events are handled inbetween each 16-sample block
   so we might get some jittering (max 15 samples)..
 */
-
-//__MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
-//float MIP_VoiceBuffer[MIP_VOICE_BUFFERSIZE] = {0};
 
 __MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
 float MIP_TickBuffer[MIP_VOICE_BUFFERSIZE] = {0};
@@ -74,12 +69,6 @@ void MIP_ClearTickBuffer(uint32_t ASize) {
 void MIP_CopyTickBuffer(float* ADst, uint32_t ASize) {
   memcpy(ADst,MIP_TickBuffer,ASize*sizeof(float));
 }
-
-//void MIP_AddVoiceToTickBuffer(uint32_t ASize) {
-//  for (uint32_t i=0; i<ASize; i++) {
-//    MIP_TickBuffer[i] += MIP_VoiceBuffer[i];
-//  }
-//}
 
 //----------
 
@@ -460,7 +449,6 @@ public:
   // assumes AChannel >= 0
 
   void handle_voice_note_choke(int32_t AChannel, int32_t AKey) {
-    MIP_PRINT;
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -479,7 +467,6 @@ public:
   // assumes AChannel >= 0
 
   void handle_voice_note_end(int32_t AChannel, int32_t AKey) {
-    MIP_PRINT;
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -574,8 +561,6 @@ public:
   }
 
   //----------
-
-  // TODO:
 
   void handle_voice_ctrl(int32_t AChannel, int32_t AKey, uint32_t AIndex, uint32_t AValue) {
     uint32_t note = (AChannel * 128) + AKey;
@@ -701,7 +686,6 @@ private:
   }
 
 //------------------------------
-//public:
 private:
 //------------------------------
 
@@ -726,7 +710,8 @@ private:
 //------------------------------
 
   /*
-    returns number of samples until next event, or -1 for no more (all done)
+    returns number of samples until next event,
+    or -1 for no more (all done)
   */
 
   uint32_t preProcess() {
@@ -744,46 +729,6 @@ private:
       //TODO: send PARAM_MOD events
     }
   }
-
-  //----------
-
-//  void processPlayingVoices() {
-//    for (uint32_t i=0; i<NUM; i++) {
-//      if (MVoiceState[i] == MIP_VOICE_PLAYING) {
-//        MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING);
-//      }
-//    }
-//  }
-
-  //----------
-
-//  void processReleasedVoices() {
-//    for (uint32_t i=0; i<NUM; i++) {
-//      if (MVoiceState[i] == MIP_VOICE_RELEASED) {
-//        MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED);
-//      }
-//    }
-//  }
-
-//------------------------------
-public:
-//------------------------------
-
-  /*
-    assumes output buffer is already cleared
-    (voices adds to it)
-  */
-
-//  void process(const clap_process_t *process) {
-//    MVoiceContext.process = process;
-//    preProcess();
-//    float** outputs = process->audio_outputs->data32;
-//    uint32_t length = process->frames_count;
-//    MIP_ClearStereoBuffer(outputs,length);
-//    processPlayingVoices();
-//    processReleasedVoices();
-//    postProcess();
-//  }
 
 //------------------------------------------------------------
 // ticks
@@ -817,10 +762,8 @@ private: // process
 
   uint32_t processEvents(uint32_t AOffset, uint32_t ASize) {
     while (MNextInEvent < (AOffset + ASize)) {
-      //MCurrInEvent++;
       if (MCurrInEvent < MNumInEvents) {
         const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrInEvent);
-        //TODO: check if 'correct' event, etc?
         if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
           on_event(header);
           MCurrInEvent++;
@@ -848,40 +791,20 @@ private: // process
 
   void processTick(uint32_t ASize) {
     MIP_ClearTickBuffer(ASize);
-
     for (uint32_t i=0; i<NUM; i++) {
-      if (MVoiceState[i] == MIP_VOICE_PLAYING) {
+      if (MVoiceState[i] == MIP_VOICE_PLAYING){
         MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING,ASize);
-        //MIP_AddVoiceToTickBuffer(ASize);
       }
       if (MVoiceState[i] == MIP_VOICE_RELEASED) {
         MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED,ASize);
-        //MIP_AddVoiceToTickBuffer(ASize);
       }
     }
-    // post-process per voice effects here..
   }
 
   //----------
 
-  // process all voices (for one tick)
-  // fills TickBuffer
-  // const length
-
   void processTick() {
-    MIP_ClearTickBuffer();
-
-    for (uint32_t i=0; i<NUM; i++) {
-      if (MVoiceState[i] == MIP_VOICE_PLAYING) {
-        MVoiceState[i] = MVoices[i].process(MIP_VOICE_PLAYING);
-        //MIP_AddVoiceToTickBuffer();
-      }
-      if (MVoiceState[i] == MIP_VOICE_RELEASED) {
-        MVoiceState[i] = MVoices[i].process(MIP_VOICE_RELEASED);
-        //MIP_AddVoiceToTickBuffer();
-      }
-    }
-    // post-process per voice effects?
+    processTick(MIP_VOICE_TICKSIZE);
   }
 
 //------------------------------
@@ -898,7 +821,6 @@ public:
 
   void processTicks(const clap_process_t *process) {
     MVoiceContext.process = process;
-    //MVoiceContext.voicebuffer = MIP_VoiceBuffer;
     preProcess();
     MInEvents = process->in_events;
     MNumInEvents = MInEvents->size(MInEvents);
