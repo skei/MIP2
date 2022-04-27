@@ -1,25 +1,7 @@
-
-/*
-  todo / maybe-do:
-  * parameter/modulation dezipping
-  * polyphonic parameter modulation (should in theory already work, but can't test it)
-  * note off velocity, timbre expression
-  * examine -faligned=new (slice/cache processing, buffers)
-  * clap extensions: quick controls, note ports (no host suppors it yet)
-  * better synthesis? (probably not)
-  * trim down event handling (handle_input_events)
-  * zoomable editor (widget scaling and bitmap stretching is in there, but need to connect everything together)
-*/
-
-//----------------------------------------------------------------------
-
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
-
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
-
-//----------
 
 #include "mip.h"
 #include "audio/mip_voice_manager.h"
@@ -38,16 +20,12 @@
 //----------------------------------------------------------------------
 
 #define NUM_PARAMS        12
-#define NUM_AUDIO_INPUTS  0
 #define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
-#define NUM_NOTE_OUTPUTS  0
 
 #define NUM_VOICES        16
 #define EDITOR_WIDTH      (270 + 150)
 #define EDITOR_HEIGHT     (296 + 60)
-
-//#define SUPPORTED_DIALECTS (CLAP_NOTE_DIALECT_CLAP | CLAP_NOTE_DIALECT_MIDI | CLAP_NOTE_DIALECT_MIDI_MPE | CLAP_NOTE_DIALECT_MIDI2)
 
 //----------------------------------------------------------------------
 //
@@ -60,8 +38,6 @@ const char* myFeatures[] = {
   nullptr
 };
 
-//----------
-
 const clap_plugin_descriptor_t myDescriptor = {
   CLAP_VERSION,
   "skei.audio/test_synth1",
@@ -73,6 +49,109 @@ const clap_plugin_descriptor_t myDescriptor = {
   "0.0.1",
   "simple mip2 test synth",
   myFeatures
+};
+
+//----------------------------------------------------------------------
+//
+// editor
+//
+//----------------------------------------------------------------------
+
+class myEditor
+: public MIP_Editor {
+
+//------------------------------
+public:
+//------------------------------
+
+  myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
+  : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
+
+    MIP_Window* window = getWindow();
+
+    // panel
+    MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_FRect());
+    MEditorPanel->setDrawBorder(false);
+    MEditorPanel->setFillBackground(false);
+    //MEditorPanel->setBackgroundColor(0.6);
+    MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    //MEditorPanel->layout.innerBorder = MIP_FRect(10,10,10,10);
+    //MEditorPanel->layout.spacing = 5;
+
+    // header
+
+    MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(60,window);
+    MEditorPanel->appendWidget(sa_header);
+    sa_header->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    sa_header->setPluginName("test_synth1");
+    sa_header->setPluginVersion("v0.0.1");
+
+    // controls panel (knobs)
+
+    MIP_PanelWidget* controls = new MIP_PanelWidget(MIP_FRect());
+    MEditorPanel->appendWidget(controls);
+    controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    controls->setDrawBorder(false);
+    controls->setFillBackground(true);
+    controls->setBackgroundColor(0.6);
+    controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    //controls->layout.innerBorder = MIP_FRect(10,10,10,10);
+    //controls->layout.spacing = 5;
+
+      // vol
+      MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
+      controls->appendWidget(vol_knob);
+      connect(vol_knob,0);
+      // pan
+      MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
+      controls->appendWidget(pan_knob);
+      connect(pan_knob,1);
+      // freq
+      MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Freq");
+      controls->appendWidget(freq_knob);
+      connect(freq_knob,2);
+      // res
+      MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(190,10,50,82),"Res");
+      controls->appendWidget(res_knob);
+      connect(res_knob,3);
+
+      // ampl att
+      MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"A.Att");
+      controls->appendWidget(amp_att_knob);
+      connect(amp_att_knob,4);
+      // ampl dec
+      MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"A.Dec");
+      controls->appendWidget(amp_dec_knob);
+      connect(amp_dec_knob,5);
+      // ampl sus
+      MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"A.Sus");
+      controls->appendWidget(amp_sus_knob);
+      connect(amp_sus_knob,6);
+      // ampl rel
+      MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"A.Rel");
+      controls->appendWidget(amp_rel_knob);
+      connect(amp_rel_knob,7);
+
+      // flt att
+      MIP_Knob2Widget* flt_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"F.Att");
+      controls->appendWidget(flt_att_knob);
+      connect(flt_att_knob,8);
+      // flt dec
+      MIP_Knob2Widget* flt_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"F.Dec");
+      controls->appendWidget(flt_dec_knob);
+      connect(flt_dec_knob,9);
+      // flt sus
+      MIP_Knob2Widget* flt_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"F.Sus");
+      controls->appendWidget(flt_sus_knob);
+      connect(flt_sus_knob,10);
+      // flt rel
+      MIP_Knob2Widget* flt_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"F.Rel");
+      controls->appendWidget(flt_rel_knob);
+      connect(flt_rel_knob,11);
+
+    window->appendWidget(MEditorPanel);
+  }
+
 };
 
 //----------------------------------------------------------------------
@@ -111,7 +190,6 @@ private:
   float   note_expr   = 0.0;
   float   note_bright = 0.0;
   float   note_press  = 0.0;
-
 
 //------------------------------
 public:
@@ -237,126 +315,6 @@ public:
 
 //----------------------------------------------------------------------
 //
-// editor
-//
-//----------------------------------------------------------------------
-
-class myEditor
-: public MIP_Editor {
-
-//------------------------------
-public:
-//------------------------------
-
-  myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
-  : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
-
-    MIP_Window* window = getWindow();
-
-    // panel
-    MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_FRect());
-    MEditorPanel->setDrawBorder(false);
-    MEditorPanel->setFillBackground(false);
-    //MEditorPanel->setBackgroundColor(0.6);
-    MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    //MEditorPanel->layout.innerBorder = MIP_FRect(10,10,10,10);
-    //MEditorPanel->layout.spacing = 5;
-
-    // header
-
-    MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(60,window);
-    MEditorPanel->appendWidget(sa_header);
-    sa_header->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    sa_header->setPluginName("test_synth1");
-    sa_header->setPluginVersion("v0.0.1");
-
-    // controls panel (knobs)
-
-    MIP_PanelWidget* controls = new MIP_PanelWidget(MIP_FRect());
-    MEditorPanel->appendWidget(controls);
-    controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    controls->setDrawBorder(false);
-    controls->setFillBackground(true);
-    controls->setBackgroundColor(0.6);
-    controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    //controls->layout.innerBorder = MIP_FRect(10,10,10,10);
-    //controls->layout.spacing = 5;
-
-    //
-
-      // vol
-      MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
-      controls->appendWidget(vol_knob);
-      connect(vol_knob,0);
-
-      // pan
-      MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
-      controls->appendWidget(pan_knob);
-      connect(pan_knob,1);
-
-      // freq
-      MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Freq");
-      controls->appendWidget(freq_knob);
-      connect(freq_knob,2);
-
-      // res
-      MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(190,10,50,82),"Res");
-      controls->appendWidget(res_knob);
-      connect(res_knob,3);
-
-      //
-
-      // ampl att
-      MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"A.Att");
-      controls->appendWidget(amp_att_knob);
-      connect(amp_att_knob,4);
-
-      // ampl dec
-      MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"A.Dec");
-      controls->appendWidget(amp_dec_knob);
-      connect(amp_dec_knob,5);
-
-      // ampl sus
-      MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"A.Sus");
-      controls->appendWidget(amp_sus_knob);
-      connect(amp_sus_knob,6);
-
-      // ampl rel
-      MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"A.Rel");
-      controls->appendWidget(amp_rel_knob);
-      connect(amp_rel_knob,7);
-
-      //
-
-      // flt att
-      MIP_Knob2Widget* flt_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"F.Att");
-      controls->appendWidget(flt_att_knob);
-      connect(flt_att_knob,8);
-
-      // flt dec
-      MIP_Knob2Widget* flt_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"F.Dec");
-      controls->appendWidget(flt_dec_knob);
-      connect(flt_dec_knob,9);
-
-      // flt sus
-      MIP_Knob2Widget* flt_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"F.Sus");
-      controls->appendWidget(flt_sus_knob);
-      connect(flt_sus_knob,10);
-
-      // flt rel
-      MIP_Knob2Widget* flt_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"F.Rel");
-      controls->appendWidget(flt_rel_knob);
-      connect(flt_rel_knob,11);
-
-    //
-
-    window->appendWidget(MEditorPanel);
-  }
-
-};
-
-//----------------------------------------------------------------------
-//
 // plugin
 //
 //----------------------------------------------------------------------
@@ -428,18 +386,6 @@ public: // clap
     return MIP_Plugin::get_extension(id);
   }
 
-  clap_process_status process(const clap_process_t *process) final {
-    flushAudioParams();
-    handle_input_events(process->in_events,process->out_events);
-    handle_process(process);
-    handle_output_events(process->in_events,process->out_events);
-    return CLAP_PROCESS_CONTINUE;
-  }
-
-//------------------------------
-public: // gui
-//------------------------------
-
   bool gui_create(const char *api, bool is_floating) final {
     if (strcmp(api,CLAP_WINDOW_API_X11) != 0) { MIP_Print("error.. !x11\n");  return false; }
     if (is_floating) { MIP_Print("error.. is_floating\n"); return false; }
@@ -447,10 +393,6 @@ public: // gui
     MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true);
     return (MEditor);
   }
-
-//------------------------------
-public:
-//------------------------------
 
   /*
     if param or mod changes, we need to update the editor
@@ -474,18 +416,16 @@ public:
     }
   }
 
-  /*
-    called from MIP_Plugin.on_updateParameterFromEditor
-    widget has changed, so we need to notify the voices..
-  */
-
-  void handle_editor_parameter(uint32_t AIndex, float AValue) final {
-    MVoices.handle_master_param(AIndex,AValue);
-
+  clap_process_status process(const clap_process_t *process) final {
+    flushAudioParams();
+    handle_input_events(process->in_events,process->out_events);
+    handle_process(process);
+    handle_output_events(process->in_events,process->out_events);
+    return CLAP_PROCESS_CONTINUE;
   }
 
 //------------------------------
-public: // process
+public:
 //------------------------------
 
   void handle_process(const clap_process_t *process) final {
@@ -500,6 +440,15 @@ public: // process
     MIP_ScaleStereoBuffer(outputs,l,r,length);
   }
 
+  /*
+    called from MIP_Plugin.on_updateParameterFromEditor
+    widget has changed, so we need to notify the voices..
+  */
+
+  void handle_editor_parameter(uint32_t AIndex, float AValue) final {
+    MVoices.handle_master_param(AIndex,AValue);
+  }
+
 };
 
 //----------------------------------------------------------------------
@@ -511,8 +460,6 @@ public: // process
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
   ARegistry->appendPlugin(&myDescriptor);
 }
-
-//----------
 
 MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
   switch (AIndex) {
