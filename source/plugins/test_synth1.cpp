@@ -233,9 +233,13 @@ public:
 
   //----------
 
+  // ASize  = 0..15
+  // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
+
   uint32_t process(uint32_t AState, uint32_t ASize) {
     //float* output = context->voicebuffer;
-    float* output = MIP_VoiceBuffer;
+    //float* output = MIP_VoiceBuffer;
+    float* output = MIP_TickBuffer;
     for (uint32_t i = 0; i < ASize; i++) {
       float t = ph + 0.5f;
       t = MIP_Fract(t);
@@ -252,7 +256,10 @@ public:
       o = filter.process(o);
       o *= (note_onvel + note_press);
       o *= ae;
-      *output++ = o;
+
+      //*output++ = o;
+      *output++ += o;
+
       ph += phadd;
       ph = MIP_Fract(ph);
     }
@@ -414,8 +421,8 @@ private:
 //------------------------------
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "Vol",    "", 0.0, 1.0, 0.5  },
-    { 1,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "Pan",    "", 0.0, 1.0, 0.5  },
+    { 0,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Vol",    "", 0.0, 1.0, 0.5  },
+    { 1,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Pan",    "", 0.0, 1.0, 0.5  },
     { 2,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "F.Freq", "", 0.0, 1.0, 0.7  },
     { 3,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "F.Res",  "", 0.0, 1.0, 0.5  },
     { 4,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "A.Att",  "", 0.0, 1.0, 0.05 },
