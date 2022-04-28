@@ -247,7 +247,9 @@ public:
   }
 
   void brightness(float amount) {
-    note_bright = amount;
+    //MIP_Print("%.3f\n",amount);
+    note_bright = (amount * 2.0) - 1.0;
+    note_bright *= 2.0;
   }
 
   void pressure(float amount) {
@@ -290,8 +292,14 @@ public:
       ph = MIP_Fract(ph);
       float ae = amp_env.process();
       float fe = flt_env.process();
-      float ff = MIP_Clamp(filter_freq + filter_freq_mod, 0,1);
-      float fr = MIP_Clamp(filter_res + filter_res_mod, 0,1);
+
+      //float br = (note_bright * 2.0) - 1.0;
+      float br = note_bright;
+
+      float ff = filter_freq + filter_freq_mod + br;
+      ff = MIP_Clamp(ff,0,1);
+      float fr = filter_res + filter_res_mod;
+      fr = MIP_Clamp(fr,0,1);
       ff *= fe;
       filter.setMode(MIP_SVF_LP);
       filter.setFreq(ff * ff);
