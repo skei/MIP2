@@ -43,13 +43,13 @@
 //  #include "plugin/lv2/mip_lv2_entry.h"
 //#endif
 
-//#ifdef MIP_VST2
-//  #include "plugin/vst2/mip_vst2_entry.h"
-//#endif
+#ifdef MIP_VST2
+  #include "plugin/vst2/mip_vst2_entry.h"
+#endif
 
-//#ifdef MIP_VST3
-//  #include "plugin/vst3/mip_vst3_entry.h"
-//#endif
+#ifdef MIP_VST3
+  #include "plugin/vst3/mip_vst3_entry.h"
+#endif
 
 //----------------------------------------------------------------------
 //
@@ -451,7 +451,9 @@ protected:
     //MIP_PRINT;
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
+
     //MIP_Print("%i = %.3f\n",i,v);
+
     setParameterModulation(i,v);
     #ifndef MIP_NO_GUI
     //if (MEditor && MEditorIsOpen) MEditor->updateModulationFromHost(i,v);
@@ -789,6 +791,7 @@ public: // plugin
     //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)         return &MThreadPool;
     //if (strcmp(id,CLAP_EXT_TIMER_SUPPORT) == 0)       return &MTimerSupport;
     //if (strcmp(id,CLAP_EXT_TRACK_INFO) == 0)          return &MTrackInfo;
+    if (strcmp(id,CLAP_EXT_VOICE_INFO) == 0)          return &MVoiceInfo;
     return nullptr;
   }
 
@@ -879,7 +882,7 @@ public: // gui
   //----------
 
   bool gui_create(const char *api, bool is_floating) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (is_floating) return false;
     MEditor = new MIP_Editor(this,this,256,256,false); // ???
     if (MEditor) return true;

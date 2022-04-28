@@ -2,10 +2,10 @@
 #define mip_vst2_host_included
 //----------------------------------------------------------------------
 
-#include "plugin/clap/mip_clap_host.h"
+#include "plugin/clap/mip_clap_host_implementation.h"
 
 class MIP_Vst2Host
-: public MIP_ClapHost {
+: public MIP_ClapHostImplementation {
 
 //------------------------------
 private:
@@ -75,6 +75,7 @@ public: // clap plugin
 public: // extensions
 //------------------------------
 
+  /*
   void ambisonic_changed() override {}
   uint32_t audio_ports_get_preferred_sample_size() override { return 0; }
   void audio_ports_rescan(uint32_t flags) override {}
@@ -108,6 +109,7 @@ public: // extensions
   bool timer_support_unregister_timer(clap_id timer_id) override { return false; }
   bool track_info_get(clap_track_info *info) override { return false; }
   double tuning_get(int32_t key, int32_t channel) override { return 0.0; }
+  */
 
 };
 

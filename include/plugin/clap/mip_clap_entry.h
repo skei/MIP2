@@ -24,6 +24,7 @@
 */
 
 bool clap_entry_init_callback(const char *plugin_path) {
+  MIP_Print("clap_entry_init_callback\n");
   return true;
 }
 

@@ -3,6 +3,9 @@
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
+//#define MIP_VST2
+//#define MIP_VST3
+
 #include "mip.h"
 #include "audio/mip_voice_manager.h"
 #include "audio/mip_audio_math.h"
@@ -23,7 +26,7 @@
 #define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
 
-#define NUM_VOICES        16
+#define NUM_VOICES        4
 #define EDITOR_WIDTH      (270 + 150)
 #define EDITOR_HEIGHT     (296 + 60)
 
@@ -53,12 +56,60 @@ const clap_plugin_descriptor_t myDescriptor = {
 
 //----------------------------------------------------------------------
 //
+// voice widget
+//
+//----------------------------------------------------------------------
+
+class MIP_VoiceWidget
+: public MIP_PanelWidget {
+
+public:
+
+  MIP_VoiceWidget(MIP_FRect ARect)
+  : MIP_PanelWidget(ARect) {
+    setFillBackground(false);
+  }
+
+  virtual ~MIP_VoiceWidget() {
+  }
+
+public:
+
+  uint32_t voice_state[NUM_VOICES]  = {0};
+
+  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) final {
+    MIP_FRect rect = MIP_FRect(MRect.x,MRect.y,MRect.w / NUM_VOICES, MRect.h);
+    MIP_Color color = MIP_COLOR_DARK_GRAY;
+    for (uint32_t i=0; i<NUM_VOICES; i++) {
+      APainter->rectangle(rect);
+      switch (voice_state[i]) {
+        case MIP_VOICE_OFF:       color = MIP_COLOR_BLACK;      break;
+        case MIP_VOICE_PLAYING:   color = MIP_COLOR_WHITE;      break;
+        case MIP_VOICE_RELEASED:  color = MIP_COLOR_GRAY;       break;
+        case MIP_VOICE_FINISHED:  color = MIP_COLOR_DARK_GRAY;  break;
+      }
+      APainter->setColor(color);
+      APainter->fillPath();
+      rect.x += 8;
+    }
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
 // editor
 //
 //----------------------------------------------------------------------
 
 class myEditor
 : public MIP_Editor {
+
+//------------------------------
+public:
+//------------------------------
+
+  MIP_VoiceWidget* MVoiceWidget = nullptr;
 
 //------------------------------
 public:
@@ -97,6 +148,10 @@ public:
     controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     //controls->layout.innerBorder = MIP_FRect(10,10,10,10);
     //controls->layout.spacing = 5;
+
+      // voice widget
+      MVoiceWidget = new MIP_VoiceWidget( MIP_FRect(250,10,NUM_VOICES*8,8) );
+      controls->appendWidget(MVoiceWidget);
 
       // vol
       MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
@@ -152,6 +207,16 @@ public:
     window->appendWidget(MEditorPanel);
   }
 
+  //----------
+
+  void on_timerCallback(void) final {
+    //MIP_PRINT;
+    //for (uint32_t i=0; i<NUM_VOICES; i++) {
+    //  MVoiceWidget->voice_state[i] = voice_state[i];
+    //}
+    MVoiceWidget->redraw();
+    MIP_Editor::on_timerCallback();
+  }
 };
 
 //----------------------------------------------------------------------
@@ -272,6 +337,7 @@ public:
   }
 
   void modulation(uint32_t index, float value) {
+    //MIP_PRINT;
     switch (index) {
       case  2:  filter_freq_mod = value;  break;
       case  3:  filter_res_mod = value;   break;
@@ -335,18 +401,24 @@ private:
 //------------------------------
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Vol",    "", 0.0, 1.0, 0.5  },
-    { 1,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "Pan",    "", 0.0, 1.0, 0.5  },
-    { 2,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "F.Freq", "", 0.0, 1.0, 0.7  },
-    { 3,  CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE, nullptr, "F.Res",  "", 0.0, 1.0, 0.5  },
-    { 4,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "A.Att",  "", 0.0, 1.0, 0.05 },
-    { 5,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "A.Dec",  "", 0.0, 1.0, 0.5  },
-    { 6,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "A.Sus",  "", 0.0, 1.0, 0.5  },
-    { 7,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "A.Rel",  "", 0.0, 1.0, 0.5  },
-    { 8,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "F.Att",  "", 0.0, 1.0, 0.05 },
-    { 9,  CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "F.Dec",  "", 0.0, 1.0, 0.5  },
-    { 10, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "F.Sus",  "", 0.0, 1.0, 0.5  },
-    { 11, CLAP_PARAM_IS_AUTOMATABLE,                             nullptr, "F.Rel",  "", 0.0, 1.0, 0.5  }
+    { 0,  CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE,              nullptr, "Vol",    "", 0.0, 1.0, 0.5  },
+    { 1,  CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE,              nullptr, "Pan",    "", 0.0, 1.0, 0.5  },
+    { 2,  CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE
+        | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,  nullptr, "F.Freq", "", 0.0, 1.0, 0.7  },
+    { 3,  CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE,              nullptr, "F.Res",  "", 0.0, 1.0, 0.5  },
+    { 4,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "A.Att",  "", 0.0, 1.0, 0.05 },
+    { 5,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "A.Dec",  "", 0.0, 1.0, 0.5  },
+    { 6,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "A.Sus",  "", 0.0, 1.0, 0.5  },
+    { 7,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "A.Rel",  "", 0.0, 1.0, 0.5  },
+    { 8,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "F.Att",  "", 0.0, 1.0, 0.05 },
+    { 9,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "F.Dec",  "", 0.0, 1.0, 0.5  },
+    { 10, CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "F.Sus",  "", 0.0, 1.0, 0.5  },
+    { 11, CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "F.Rel",  "", 0.0, 1.0, 0.5  }
   };
 
   clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
@@ -365,6 +437,7 @@ public:
 
   myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
+    MIP_Print("Hello world!\n");
   }
 
 //------------------------------
@@ -388,6 +461,7 @@ public: // clap
   }
 
   const void* get_extension(const char *id) final {
+    MIP_Print("host wants: %s\n",id);
     if (strcmp(id,CLAP_EXT_GUI) == 0) return &MGui;
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
     if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0) return &MNotePorts;
@@ -402,11 +476,27 @@ public: // clap
     return (MEditor);
   }
 
+  bool voice_info_get(clap_voice_info_t *info) final {
+    //MIP_Print("info->voice_count = %i\n",NUM_VOICES);
+    //MIP_Print("info->voice_capacity = %i\n",NUM_VOICES);
+    info->voice_count = NUM_VOICES;
+    info->voice_capacity = NUM_VOICES;
+    return true;
+  }
+
   clap_process_status process(const clap_process_t *process) final {
     flushAudioParams();
     handle_input_events(process->in_events,process->out_events);
     handle_process(process);
     handle_output_events(process->in_events,process->out_events);
+
+    for (uint32_t i=0; i<NUM_VOICES; i++) {
+      uint32_t state = MVoices.getVoiceState(i);
+      if (MEditor && MEditorIsOpen) {
+        ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
+      }
+    }
+
     return CLAP_PROCESS_CONTINUE;
   }
 

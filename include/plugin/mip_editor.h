@@ -259,7 +259,7 @@ private: // window listener
 
   // [gui]
 
-  void on_updateWidgetFromWindow(MIP_Widget* AWidget) final {
+  void on_updateWidgetFromWindow(MIP_Widget* AWidget) override {
     int32_t index = AWidget->getParamIndex();
     if (index >= 0) {
       float value = AWidget->getValue();
@@ -269,18 +269,18 @@ private: // window listener
 
   //----------
 
-  void on_resizeFromWindow(uint32_t AWidth, uint32_t AHeight) final {
+  void on_resizeFromWindow(uint32_t AWidth, uint32_t AHeight) override {
     //MIP_Print("%i,%i\n",AWidth,AHeight);
     if (MListener) MListener->on_resizeFromEditor(AWidth,AHeight);
   }
 
 //------------------------------
-private: // timer listener
+protected: // timer listener
 //------------------------------
 
   // [timer]
 
-  void on_timerCallback(void) final {
+  void on_timerCallback(void) override {
     //clearChangedParameters();
     clearDirtyWidgets();
     flushGuiParams();

@@ -116,6 +116,8 @@ public: // drafts
   virtual void      surround_changed() {}
   virtual void      track_info_changed() {}
 
+  virtual bool      voice_info_get(clap_voice_info_t *info) { return false; }
+
 //------------------------------
 // callbacks
 //------------------------------
@@ -785,6 +787,23 @@ protected:
 
   clap_plugin_track_info_t MTrackInfo = {
     clap_plugin_track_info_changed_callback
+  };
+
+  //--------------------
+  // clap.voice-info.draft/0
+  //--------------------
+
+private:
+
+  static bool clap_plugin_voice_info_get_callback(const clap_plugin_t *plugin, clap_voice_info_t *info) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->voice_info_get(info);
+  }
+
+protected:
+
+  clap_plugin_voice_info_t MVoiceInfo = {
+    clap_plugin_voice_info_get_callback
   };
 
 };

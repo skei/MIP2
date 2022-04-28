@@ -105,12 +105,16 @@ class MIP_VoiceManager {
 private:
 //------------------------------
 
-  MIP_VoiceContext            MVoiceContext                 = {0};
-  VOICE                       MVoices[NUM]                  = {};
   uint32_t                    MVoiceState[NUM]              = {0};
-  int32_t                     MVoiceNote[NUM]               = {0};
+
+  int32_t                     MVoicePort[NUM]               = {0};
   int32_t                     MVoiceChannel[NUM]            = {0};
+  int32_t                     MVoiceNote[NUM]               = {0};
   int32_t                     MNoteToVoice[MIP_VOICE_NOTES] = {0};
+  MIP_VoiceContext            MVoiceContext                 = {0};
+
+  VOICE                       MVoices[NUM]                  = {};
+
   const clap_input_events_t*  MInEvents                     = nullptr;
   uint32_t                    MNumInEvents                  = 0;
   uint32_t                    MNextInEvent                  = 0;
@@ -138,9 +142,10 @@ public:
       MNoteToVoice[i] = -1;
     }
     for (uint32_t i=0; i<NUM; i++) {
-      MVoiceState[i] = MIP_VOICE_OFF;
-      MVoiceNote[i] = -1;
-      MVoiceChannel[i] = -1;
+      MVoiceState[i]    = MIP_VOICE_OFF;
+      MVoicePort[i]     = -1;
+      MVoiceChannel[i]  = -1;
+      MVoiceNote[i]     = -1;
     }
   }
 
@@ -151,6 +156,23 @@ public:
     for (uint32_t i=0; i<NUM; i++) {
       MVoices[i].prepare(&MVoiceContext);
     }
+  }
+
+  //----------
+
+  uint32_t  getVoiceState(uint32_t v)   { return MVoiceState[v]; }
+  int32_t   getVoicePort(uint32_t v)    { return MVoicePort[v]; }
+  int32_t   getVoiceChannel(uint32_t v) { return MVoiceChannel[v]; }
+  int32_t   getVoiceNote(uint32_t v)    { return MVoiceNote[v]; }
+
+  //----------
+
+  int32_t getVoice(int32_t APort, int32_t AChannel, int32_t AKey) {
+    //if (APort < 0) return -1;
+    if (AChannel < 0) return -1;
+    if (AKey < 0) return -1;
+    uint32_t note = (AChannel * 128) + AKey;
+    return MNoteToVoice[note];
   }
 
 //------------------------------
@@ -176,6 +198,7 @@ public:
         on_parameter_value((clap_event_param_value_t*)header);
         break;
       case CLAP_EVENT_PARAM_MOD:
+        //MIP_PRINT;
         on_parameter_modulation((clap_event_param_mod_t*)header);
         break;
       //case CLAP_EVENT_MIDI:
@@ -210,78 +233,89 @@ public:
 //------------------------------
 
   void on_note_on(clap_event_note* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    float velocity = event->velocity;
-    handle_voice_note_on(channel,key,velocity);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    float   velocity  = event->velocity;
+    handle_voice_note_on(port,channel,key,velocity);
   }
 
   void on_note_off(clap_event_note* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    float velocity = event->velocity;
-    handle_voice_note_off(channel,key,velocity);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    float   velocity  = event->velocity;
+    handle_voice_note_off(port,channel,key,velocity);
   }
 
   void on_note_choke(clap_event_note* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    handle_voice_note_choke(channel,key);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    handle_voice_note_choke(port,channel,key);
   }
 
   void on_note_end(clap_event_note* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    handle_voice_note_end(channel,key);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    handle_voice_note_end(port,channel,key);
   }
 
   void on_note_tuning_expression(clap_event_note_expression_t* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    float tuning = event->value;
-    handle_voice_tuning(channel,key,tuning);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    float   tuning    = event->value;
+    handle_voice_tuning(port,channel,key,tuning);
   }
 
   void on_note_pressure_expression(clap_event_note_expression_t* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    float press = event->value;
-    handle_voice_pressure(channel,key,press);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    float   press     = event->value;
+    handle_voice_pressure(port,channel,key,press);
   }
 
   void on_note_brightness_expression(clap_event_note_expression_t* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    float brightness = event->value;
-    handle_voice_brightness(channel,key,brightness);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    float brightness  = event->value;
+    handle_voice_brightness(port,channel,key,brightness);
   }
 
   void on_note_volume_expression(clap_event_note_expression_t* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    float volume = event->value;
-    handle_voice_volume(channel,key,volume);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    float   volume    = event->value;
+    handle_voice_volume(port,channel,key,volume);
   }
 
   void on_note_pan_expression(clap_event_note_expression_t* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    float pan = event->value;
-    handle_voice_pan(channel,key,pan);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    float   pan       = event->value;
+    handle_voice_pan(port,channel,key,pan);
   }
 
   void on_note_vibrato_expression(clap_event_note_expression_t* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    float vibrato = event->value;
-    handle_voice_vibrato(channel,key,vibrato);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    float   vibrato   = event->value;
+    handle_voice_vibrato(port,channel,key,vibrato);
   }
 
   void on_note_expression_expression(clap_event_note_expression_t* event) {
-    int32_t channel = event->channel;
-    int32_t key = event->key;
-    float expression = event->value;
-    handle_voice_expression(channel,key,expression);
+    int32_t port      = event->port_index;
+    int32_t channel   = event->channel;
+    int32_t key       = event->key;
+    float expression  = event->value;
+    handle_voice_expression(port,channel,key,expression);
   }
 
 //------------------------------
@@ -384,12 +418,13 @@ public:
 //------------------------------
 
   void on_parameter_value(clap_event_param_value_t* event) {
-    uint32_t index = event->param_id;
-    float value = event->value;
-    int32_t channel = event->channel;
-    int32_t key = event->key;
+    int32_t   port    = event->port_index;
+    int32_t   channel = event->channel;
+    int32_t   key     = event->key;
+    uint32_t  index   = event->param_id;
+    float     value   = event->value;
     if ((channel >= 0) && (key >= 0)) {
-      handle_voice_param(channel,key,index,value);
+      handle_voice_param(port,channel,key,index,value);
     }
     else {
       handle_master_param(index,value);
@@ -399,14 +434,19 @@ public:
   //----------
 
   void on_parameter_modulation(clap_event_param_mod_t* event) {
-    uint32_t index = event->param_id;
-    float amount = event->amount;
-    int32_t channel = event->channel;
-    int32_t key = event->key;
+    //MIP_PRINT;
+    int32_t   port    = event->port_index;
+    int32_t   channel = event->channel;
+    int32_t   key     = event->key;
+    uint32_t  index   = event->param_id;
+    float     amount  = event->amount;
+    //MIP_Print("channel %i key %i index %i amount %.2f\n",channel,key,amount,index);
     if ((channel >= 0) && (key >= 0)) {
-      handle_voice_mod(channel,key,index,amount);
+      //MIP_PRINT;
+      handle_voice_mod(port,channel,key,index,amount);
     }
     else {
+      //MIP_PRINT;
       handle_master_mod(index,amount);
     }
   }
@@ -432,15 +472,17 @@ public:
 
   // assumes AChannel >= 0
 
-  void handle_voice_note_on(int32_t AChannel, int32_t AKey, float AVelocity) {
-    start_voice(AChannel,AKey,AVelocity);
+  void handle_voice_note_on(int32_t APort, int32_t AChannel, int32_t AKey, float AVelocity) {
+    uint32_t voice = start_voice(APort,AChannel,AKey,AVelocity);
+    if (voice < 0) {
+    }
   }
 
   //----------
 
   // assumes AChannel >= 0
 
-  void handle_voice_note_off(int32_t AChannel, int32_t AKey, float AVelocity) {
+  void handle_voice_note_off(int32_t APort, int32_t AChannel, int32_t AKey, float AVelocity) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -456,7 +498,7 @@ public:
 
   // assumes AChannel >= 0
 
-  void handle_voice_note_choke(int32_t AChannel, int32_t AKey) {
+  void handle_voice_note_choke(int32_t APort, int32_t AChannel, int32_t AKey) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -474,7 +516,7 @@ public:
 
   // assumes AChannel >= 0
 
-  void handle_voice_note_end(int32_t AChannel, int32_t AKey) {
+  void handle_voice_note_end(int32_t APort, int32_t AChannel, int32_t AKey) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -488,7 +530,7 @@ public:
 
   // with 0 < x <= 4, plain = 20 * log(x)
 
-  void handle_voice_volume(int32_t AChannel, int32_t AKey, float AVolume) {
+  void handle_voice_volume(int32_t APort, int32_t AChannel, int32_t AKey, float AVolume) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -500,7 +542,7 @@ public:
 
   // pan, 0 left, 0.5 center, 1 right
 
-  void handle_voice_pan(int32_t AChannel, int32_t AKey, float APan) {
+  void handle_voice_pan(int32_t APort, int32_t AChannel, int32_t AKey, float APan) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -512,7 +554,7 @@ public:
 
   // relative tuning in semitone, from -120 to +120
 
-  void handle_voice_tuning(int32_t AChannel, int32_t AKey, float ABend) {
+  void handle_voice_tuning(int32_t APort, int32_t AChannel, int32_t AKey, float ABend) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -524,7 +566,7 @@ public:
 
   // 0..1
 
-  void handle_voice_vibrato(int32_t AChannel, int32_t AKey, float AVibrato) {
+  void handle_voice_vibrato(int32_t APort, int32_t AChannel, int32_t AKey, float AVibrato) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -536,7 +578,7 @@ public:
 
   // 0..1
 
-  void handle_voice_expression(int32_t AChannel, int32_t AKey, float AExpression) {
+  void handle_voice_expression(int32_t APort, int32_t AChannel, int32_t AKey, float AExpression) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -548,7 +590,7 @@ public:
 
   // 0..1
 
-  void handle_voice_brightness(int32_t AChannel, int32_t AKey, float ABrightness) {
+  void handle_voice_brightness(int32_t APort, int32_t AChannel, int32_t AKey, float ABrightness) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -560,7 +602,7 @@ public:
 
   // 0..1
 
-  void handle_voice_pressure(int32_t AChannel, int32_t AKey, float APress) {
+  void handle_voice_pressure(int32_t APort, int32_t AChannel, int32_t AKey, float APress) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -570,7 +612,7 @@ public:
 
   //----------
 
-  void handle_voice_ctrl(int32_t AChannel, int32_t AKey, uint32_t AIndex, uint32_t AValue) {
+  void handle_voice_ctrl(int32_t APort, int32_t AChannel, int32_t AKey, uint32_t AIndex, uint32_t AValue) {
     uint32_t note = (AChannel * 128) + AKey;
     int32_t voice = MNoteToVoice[note];
     if (voice >= 0) {
@@ -589,7 +631,7 @@ public:
   // the voice should only use the polyphonic one and the polyphonic modulation
   // amount will already include the monophonic signal.
 
-  void handle_voice_param(int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
+  void handle_voice_param(int32_t APort, int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
     int32_t voice = MNoteToVoice[(AChannel * 128) + AKey];
     if (voice >= 0) {
       MVoices[voice].parameter(AIndex,AValue);
@@ -598,7 +640,9 @@ public:
 
   //----------
 
-  void handle_voice_mod(int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
+  void handle_voice_mod(int32_t APort, int32_t AChannel, uint32_t AKey, uint32_t AIndex, float AValue) {
+    //MIP_PRINT;
+    //MIP_Print("channel %i key %i index %i value %.3f\n",AChannel,AKey,AIndex,AValue);
     int32_t voice = MNoteToVoice[(AChannel * 128) + AKey];
     if (voice >= 0) {
       MVoices[voice].modulation(AIndex,AValue);
@@ -624,6 +668,7 @@ public:
   //----------
 
   void handle_master_mod(uint32_t AIndex, float AValue) {
+    //MIP_PRINT;
     for (uint32_t i=0; i<NUM; i++) {
       MVoices[i].modulation(AIndex,AValue);
     }
@@ -662,18 +707,24 @@ private:
 
   //----------
 
-  int32_t start_voice(int32_t AChannel, int32_t AKey, float AVelocity) {
+  int32_t start_voice(int32_t APort, int32_t AChannel, int32_t AKey, float AVelocity) {
     uint32_t note = (AChannel * 128) + AKey;
-    // kill potentially already playing voice
-    int32_t prev_voice = MNoteToVoice[note];
-    if (prev_voice >= 0) kill_voice(prev_voice);
-    int32_t voice = find_voice(true);
-    if (voice >= 0) {
-      MNoteToVoice[note] = voice;
-      MVoiceNote[voice] = AKey;
-      MVoiceChannel[voice] = AChannel;
-      MVoiceState[voice] = MVoices[voice].note_on(AKey,AVelocity);
-      return voice;
+    int32_t new_voice = find_voice(true);
+    if (new_voice >= 0) {
+      // if we stole a released voice..
+      if (MVoiceState[new_voice] == MIP_VOICE_RELEASED) {
+        int32_t prev_voice = MNoteToVoice[note];
+        if (prev_voice >= 0) {
+          send_note_end(prev_voice);
+          kill_voice(prev_voice);
+        }
+      }
+      MNoteToVoice[note]        = new_voice;
+      MVoicePort[new_voice]     = APort;
+      MVoiceChannel[new_voice]  = AChannel;
+      MVoiceNote[new_voice]     = AKey;
+      MVoiceState[new_voice]    = MVoices[new_voice].note_on(AKey,AVelocity);
+      return new_voice;
     }
     return -1;
   }
@@ -682,14 +733,26 @@ private:
 
   void kill_voice(int32_t voice) {
     if (voice < 0) return;
-    int32_t key = MVoiceNote[voice];
+    //switch (MVoiceState[voice]) {
+    //  case MIP_VOICE_OFF:
+    //    break;
+    //  case MIP_VOICE_PLAYING:
+    //    break;
+    //  case MIP_VOICE_RELEASED:
+    //    break;
+    //  case MIP_VOICE_FINISHED:
+    //    break;
+    //}
+    MVoicePort[voice]     = -1;
+    MVoiceChannel[voice]  = -1;
+    MVoiceNote[voice]     = -1;
+    MVoiceState[voice]    = MIP_VOICE_OFF;
+    //int32_t port    = MVoiceNote[voice];
+    int32_t key     = MVoiceNote[voice];
     int32_t channel = MVoiceChannel[voice];
     if (key < 0) return;
     if (channel < 0) return;
     uint32_t note = (channel * 128) + key;
-    MVoiceNote[voice] = -1;
-    MVoiceChannel[voice] = -1;
-    MVoiceState[voice] = MIP_VOICE_OFF;
     MNoteToVoice[note] = -1;
   }
 
@@ -697,17 +760,17 @@ private:
 private:
 //------------------------------
 
-  void send_note_end(uint32_t index) {
+  void send_note_end(uint32_t voice) {
     clap_event_note_t event;
     clap_event_header_t* header = (clap_event_header_t*)&event;
     header->size      = sizeof(clap_event_note_t);
-    header->time      = MVoiceContext.process->frames_count - 1;
+    header->time      = MVoiceContext.process->frames_count;// - 1;
     header->space_id  = CLAP_CORE_EVENT_SPACE_ID;
     header->type      = CLAP_EVENT_NOTE_END;
     header->flags     = 0;
-    event.port_index  = 0;
-    event.key         = MVoiceNote[index];
-    event.channel     = MVoiceChannel[index];
+    event.port_index  = MVoicePort[voice];
+    event.key         = MVoiceNote[voice];
+    event.channel     = MVoiceChannel[voice];
     event.velocity    = 0.0;
     const clap_output_events_t* out_events = MVoiceContext.process->out_events;
     out_events->try_push(out_events,header);
@@ -799,8 +862,8 @@ private:
   void postProcessVoices() {
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceState[i] == MIP_VOICE_FINISHED) {
-        kill_voice(i);
         send_note_end(i);
+        kill_voice(i);
       }
       //TODO: send PARAM_MOD events
     }

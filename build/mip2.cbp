@@ -301,6 +301,7 @@
 		<Unit filename="../include/extern/clap/ext/draft/track-info.h" />
 		<Unit filename="../include/extern/clap/ext/draft/transport-control.h" />
 		<Unit filename="../include/extern/clap/ext/draft/tuning.h" />
+		<Unit filename="../include/extern/clap/ext/draft/voice-info.h" />
 		<Unit filename="../include/extern/clap/ext/event-filter.h" />
 		<Unit filename="../include/extern/clap/ext/event-registry.h" />
 		<Unit filename="../include/extern/clap/ext/gui.h" />

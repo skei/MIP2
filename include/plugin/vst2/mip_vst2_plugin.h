@@ -47,7 +47,7 @@ private:
   const clap_plugin_descriptor_t* MDescriptor       = nullptr;
 
   const clap_plugin_gui_t*        MGui              = nullptr;
-  const clap_plugin_gui_x11_t*    MGuiX11           = nullptr;
+  //const clap_plugin_gui_x11_t*    MGuiX11           = nullptr;
   const clap_plugin_params_t*     MParams           = nullptr;
 
 
@@ -114,7 +114,7 @@ public:
     MAudioMaster  = audioMaster;
 
     MGui          = (const clap_plugin_gui_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_GUI);
-    MGuiX11       = (const clap_plugin_gui_x11_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_GUI_X11);
+    //MGuiX11       = (const clap_plugin_gui_x11_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_GUI_X11);
     MParams       = (const clap_plugin_params_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_PARAMS);
 
     uint32_t num_params = MParams->count(MPlugin);
@@ -586,18 +586,18 @@ public: // vst2
       case effEditOpen: // 14
         //MIP_Vst2Trace("vst2: dispatcher/effEditOpen\n");
         #ifndef MIP_NO_GUI
-          if (MGui) {
-            if (!MIsEditorOpen) {
-              MIsEditorOpen = true;
-              MGui->create(MPlugin);
-              MGui->set_scale(MPlugin,1.0);
-              MGui->set_size(MPlugin,640,480);
-              MGuiX11->attach(MPlugin,"",(unsigned long)ptr);
-              //updateAllEditorParameters(MEditor,false);
-              MGui->show(MPlugin);
-              return 1;
-            }
-          }
+//          if (MGui) {
+//            if (!MIsEditorOpen) {
+//              MIsEditorOpen = true;
+//              MGui->create(MPlugin);
+//              MGui->set_scale(MPlugin,1.0);
+//              MGui->set_size(MPlugin,640,480);
+//              MGuiX11->attach(MPlugin,"",(unsigned long)ptr);
+//              //updateAllEditorParameters(MEditor,false);
+//              MGui->show(MPlugin);
+//              return 1;
+//            }
+//          }
         #endif // MIP_NO_GUI
         break;
 
@@ -609,14 +609,14 @@ public: // vst2
       case effEditClose: // 15
         //MIP_Vst2Trace("vst2: dispatcher/effEditClose\n");
         #ifndef MIP_NO_GUI
-          if (MGui) {
-            if (MIsEditorOpen) {
-              MIsEditorOpen = false;
-              MGui->hide(MPlugin);
-              MGui->destroy(MPlugin);
-              return 1;
-            }
-          }
+//          if (MGui) {
+//            if (MIsEditorOpen) {
+//              MIsEditorOpen = false;
+//              MGui->hide(MPlugin);
+//              MGui->destroy(MPlugin);
+//              return 1;
+//            }
+//          }
         #endif // MIP_NO_GUI
         break;
 
@@ -636,13 +636,13 @@ public: // vst2
       case effEditIdle: // 19
         //MIP_Vst2Trace("vst2: dispatcher/effEditIdle\n");
         #ifndef MIP_NO_GUI
-          if (MGui) {
-            if (MIsEditorOpen) {
-              //MIP_Assert(MEditor);
-//              MInstance->on_plugin_updateEditor(MEditor);
-              updateEditorInIdle();
-            }
-          }
+//          if (MGui) {
+//            if (MIsEditorOpen) {
+//              //MIP_Assert(MEditor);
+////              MInstance->on_plugin_updateEditor(MEditor);
+//              updateEditorInIdle();
+//            }
+//          }
         #endif // MIP_NO_GUI
         break;
 

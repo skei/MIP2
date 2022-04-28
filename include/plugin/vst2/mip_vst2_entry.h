@@ -43,51 +43,43 @@ public:
 
   AEffect* entry(audioMasterCallback audioMaster) {
     //MIP_Print("MIP_Vst2Entry.entry\n");
-
-    MIP_Vst2Host*                   host        = new MIP_Vst2Host(audioMaster); // deleted in MIP_Vst2Plugin destructor
-    const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
-    const clap_plugin_t*            plugin      = MIP_CreatePlugin(host->ptr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
-
-//    MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
-
-    MIP_Vst2Plugin*                 vst2plugin  = new MIP_Vst2Plugin(host,plugin,audioMaster); // deleted in vst2_dispatcher_callback(effClose)
-
+    MIP_Vst2Host* host = new MIP_Vst2Host(audioMaster); // deleted in MIP_Vst2Plugin destructor
+    //const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
+    const clap_plugin_descriptor_t* descriptor  = MIP_CLAP_REGISTRY.getPlugin(0);
+    //const clap_plugin_t*            plugin      = MIP_CreatePlugin(host->ptr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
+    MIP_ClapPlugin* plugin = MIP_CreatePlugin(0,descriptor,host->ptr());
+    const clap_plugin_t* clap_plugin = plugin->ptr();
+    //MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
+    MIP_Vst2Plugin* vst2plugin  = new MIP_Vst2Plugin(host,clap_plugin/*plugin->ptr()*/,audioMaster); // deleted in vst2_dispatcher_callback(effClose)
     /*
       assumes stereo in & out
       TODO: check clap.audio-ports
       use number of channels in port with 'is_main'
     */
-
     uint32_t  num_inputs  = 2;
     uint32_t  num_outputs = 2;
     uint32_t  num_params  = 0;
     int32_t   flags       = effFlagsCanReplacing;
-
     /*
     if (strstr(descriptor->features,"instrument")) {
       flags |= effFlagsIsSynth;
       num_inputs = 0;
     }
     */
-
-    const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(plugin,CLAP_EXT_GUI);
+    const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(CLAP_EXT_GUI);
     if (gui) {
       flags |= effFlagsHasEditor;
     }
-
-    const clap_plugin_params_t* params = (const clap_plugin_params_t*)plugin->get_extension(plugin,CLAP_EXT_PARAMS);
+    const clap_plugin_params_t* params = (const clap_plugin_params_t*)plugin->get_extension(CLAP_EXT_PARAMS);
     if (params) {
-      num_params = params->count(plugin);
+      num_params = params->count(clap_plugin/*plugin->ptr()*/);
     }
-
     // flags |= effFlagsProgramChunks;
     // flags |= effFlagsNoSoundInStop;
     // flags |= effFlagsCanDoubleReplacing;
-
     AEffect* effect = vst2plugin->getAEffect();
     host->setAEffect(effect);
     memset(effect,0,sizeof(AEffect));
-
     effect->magic                     = kEffectMagic;
     effect->uniqueID                  = 0x00000000;
     effect->flags                     = flags;
@@ -104,7 +96,6 @@ public:
     effect->getParameter              = vst2_getParameter_callback;
     effect->processReplacing          = vst2_process_callback;
     effect->processDoubleReplacing    = vst2_processDouble_callback;
-
     return effect;
   }
 
@@ -175,7 +166,7 @@ MIP_Vst2Entry GLOBAL_VST2_PLUGIN_ENTRY;
 //__MIP_EXPORT
 __attribute__ ((visibility ("default")))
 AEffect* mip_vst2_entry(audioMasterCallback audioMaster) {
-  //MIP_Print("VSTPluginMain\n");
+  MIP_Print("VSTPluginMain\n");
   if (!audioMaster(0,audioMasterVersion,0,0,0,0)) return 0;
   return GLOBAL_VST2_PLUGIN_ENTRY.entry(audioMaster);
 }
