@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "audio/mip_audio_utils.h"
 #include "base/types/mip_queue.h"
 #include "plugin/clap/mip_clap.h"
 
@@ -238,12 +239,13 @@ public: // events
   //----------
 
   void handleNoteExpressionEvent(clap_event_note_expression_t* event) {
-    int32_t channel = event->channel;
-    int32_t key     = event->key;
-    //uint32_t note   = (channel * MIP_NOTE_MAX_NOTES) + key;
-    voiceExpression(channel,key,event->value);
+    int32_t channel     = event->channel;
+    int32_t key         = event->key;
+    //uint32_t note       = (channel * MIP_NOTE_MAX_NOTES) + key;
+    uint32_t expression = event->expression_id;
+    float value         = event->value;
+    voiceExpression(channel,key,expression,value);
   }
-
 
   //----------
 
@@ -396,18 +398,44 @@ public: // voices
 
   //----------
 
-  void voiceExpression(int32_t AChannel, int32_t AKey, float AVelocity) {
+  void voiceExpression(int32_t AChannel, int32_t AKey, uint32_t AExpression, float AValue) {
+    if ((AChannel == -1) || (AKey == -1)) {
+      for (uint32_t i=0; i<NUM; i++) {
+        // send to all
+      }
+    }
+    else {
+      int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
+      int32_t voice = MNoteToVoice[note];
+      if (voice >= 0) {
+        switch (AExpression) {
+          case CLAP_NOTE_EXPRESSION_VOLUME:     MVoices[voice].volume(AValue);      break;
+          case CLAP_NOTE_EXPRESSION_PAN:        MVoices[voice].pan(AValue);         break;
+          case CLAP_NOTE_EXPRESSION_TUNING:     MVoices[voice].tuning(AValue);      break;
+          case CLAP_NOTE_EXPRESSION_VIBRATO:    MVoices[voice].vibrato(AValue);     break;
+          case CLAP_NOTE_EXPRESSION_EXPRESSION: MVoices[voice].expression(AValue);  break;
+          case CLAP_NOTE_EXPRESSION_BRIGHTNESS: MVoices[voice].brightness(AValue);  break;
+          case CLAP_NOTE_EXPRESSION_PRESSURE:   MVoices[voice].pressure(AValue);    break;
+        }
+      }
+    }
   }
 
   //----------
 
   void voiceParamValue(int32_t AChannel, int32_t AKey, uint32_t AIndex, float AValue) {
-    int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
-    int32_t voice = MNoteToVoice[note];
-    if (voice >= 0) {
-      MVoices[voice].parameter(AIndex,AValue);
+    if ((AChannel == -1) || (AKey == -1)) {
+      for (uint32_t i=0; i<NUM; i++) {
+        MVoices[i].parameter(AIndex,AValue);
+      }
     }
-
+    else {
+      int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
+      int32_t voice = MNoteToVoice[note];
+      if (voice >= 0) {
+        MVoices[voice].parameter(AIndex,AValue);
+      }
+    }
   }
 
   //----------
@@ -419,10 +447,12 @@ public: // voices
         MVoices[i].modulation(AIndex,AValue);
       }
     }
-    int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
-    int32_t voice = MNoteToVoice[note];
-    if (voice >= 0) {
-      MVoices[voice].modulation(AIndex,AValue);
+    else {
+      int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
+      int32_t voice = MNoteToVoice[note];
+      if (voice >= 0) {
+        MVoices[voice].modulation(AIndex,AValue);
+      }
     }
   }
 

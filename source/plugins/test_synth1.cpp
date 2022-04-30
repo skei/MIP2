@@ -31,7 +31,7 @@
 #define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
 
-#define NUM_VOICES        4
+#define NUM_VOICES        8
 #define EDITOR_WIDTH      (270 + 150)
 #define EDITOR_HEIGHT     (296 + 60)
 
@@ -299,17 +299,17 @@ public:
   void note_end() {
   }
 
-  void tuning(float amount) {
-    hz = MIP_NoteToHz(note_key + amount);
-    phadd = hz / context->samplerate;
-  }
-
   void volume(float amount) {
     note_vol = amount;
   }
 
   void pan(float amount) {
     note_pan = amount;
+  }
+
+  void tuning(float amount) {
+    hz = MIP_NoteToHz(note_key + amount);
+    phadd = hz / context->samplerate;
   }
 
   void vibrato(float amount) {
