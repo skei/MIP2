@@ -1,11 +1,10 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
-#define MIP_DEBUG_PRINT_SOCKET
 
 //#define MIP_DEBUG_PRINT_TIME
 //#define MIP_DEBUG_CALLSTACK
 //#define MIP_DEBUG_CRASH_HANDLER
-
+#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 //#define MIP_VST2
@@ -31,7 +30,7 @@
 #define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
 
-#define NUM_VOICES        8
+#define NUM_VOICES        16
 #define EDITOR_WIDTH      (270 + 150)
 #define EDITOR_HEIGHT     (296 + 60)
 
@@ -368,6 +367,7 @@ public:
       float ae = amp_env.process();
       float fe = flt_env.process();
 
+      // test
       //float br = (note_bright * 2.0) - 1.0;
       float br = note_bright;
 
@@ -419,35 +419,136 @@ private:
 //------------------------------
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
-    { 0,  CLAP_PARAM_IS_AUTOMATABLE
-        | CLAP_PARAM_IS_MODULATABLE,              nullptr, "Vol",    "", 0.0, 1.0, 0.5  },
-    { 1,  CLAP_PARAM_IS_AUTOMATABLE
-        | CLAP_PARAM_IS_MODULATABLE,              nullptr, "Pan",    "", 0.0, 1.0, 0.5  },
-    { 2,  CLAP_PARAM_IS_AUTOMATABLE
-        | CLAP_PARAM_IS_MODULATABLE
-        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE
-        | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,  nullptr, "F.Freq", "", 0.0, 1.0, 0.7  },
-    { 3,  CLAP_PARAM_IS_AUTOMATABLE
-        | CLAP_PARAM_IS_MODULATABLE,              nullptr, "F.Res",  "", 0.0, 1.0, 0.5  },
-    { 4,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "A.Att",  "", 0.0, 1.0, 0.05 },
-    { 5,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "A.Dec",  "", 0.0, 1.0, 0.5  },
-    { 6,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "A.Sus",  "", 0.0, 1.0, 0.5  },
-    { 7,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "A.Rel",  "", 0.0, 1.0, 0.5  },
-    { 8,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "F.Att",  "", 0.0, 1.0, 0.05 },
-    { 9,  CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "F.Dec",  "", 0.0, 1.0, 0.5  },
-    { 10, CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "F.Sus",  "", 0.0, 1.0, 0.5  },
-    { 11, CLAP_PARAM_IS_AUTOMATABLE,              nullptr, "F.Rel",  "", 0.0, 1.0, 0.5  }
+    { 0,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,
+      nullptr,
+      "Vol",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+    { 1,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,
+      nullptr,
+      "Pan",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+    { 2,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+      nullptr,
+      "F.Freq",
+      "",
+      0.0,
+      1.0,
+      0.7
+    },
+    { 3,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+      nullptr,
+      "F.Res",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    { 4,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "A.Att",
+      "",
+      0.0,
+      1.0,
+      0.05
+    },
+    { 5,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "A.Dec",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+    { 6,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "A.Sus",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+    { 7,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "A.Rel",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+    { 8,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "F.Att",
+      "",
+      0.0,
+      1.0,
+      0.05
+    },
+    { 9,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "F.Dec",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+    { 10,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "F.Sus",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+    { 11,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "F.Rel",
+      "",
+      0.0,
+      1.0,
+      0.5
+    }
   };
 
   clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
-    { 0, "Audio Out", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+    { 0,
+      "Audio Out",
+      CLAP_AUDIO_PORT_IS_MAIN,
+      2,
+      CLAP_PORT_STEREO,
+      CLAP_INVALID_ID
+    }
   };
 
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
-    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "Note In" }
+    { 0,
+      CLAP_NOTE_DIALECT_CLAP,
+      CLAP_NOTE_DIALECT_CLAP,
+      "Note In"
+    }
   };
 
-  myVoiceManager   MVoiceManager = {};
+  myVoiceManager MVoiceManager = {};
 
   //MIP_VoiceManager<myVoice,NUM_VOICES>  MVoices = {};
   //MIP_NoteManager<MIP_VoiceManager>     MNotes = {};
