@@ -1,6 +1,11 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 #define MIP_DEBUG_PRINT_SOCKET
+
+//#define MIP_DEBUG_PRINT_TIME
+//#define MIP_DEBUG_CALLSTACK
+//#define MIP_DEBUG_CRASH_HANDLER
+
 //nc -U -l -k /tmp/mip.socket
 
 //#define MIP_VST2
@@ -267,13 +272,16 @@ public:
   }
 
   uint32_t note_on(int32_t key, float velocity) {
+    //MIP_Print("key %i velocity %.3f\n",key,velocity);
     note_key = key;
+    //MIP_Print("note_key %i\n",note_key);
     note_onvel = velocity;
     ph = 0.0;
     hz = MIP_NoteToHz(key);
     phadd = hz / context->samplerate;
     amp_env.noteOn();
     flt_env.noteOn();
+    //MIP_Print("ok\n");
     return MIP_VOICE_PLAYING;
   }
 
@@ -282,6 +290,7 @@ public:
     amp_env.noteOff();
     flt_env.noteOff();
     return MIP_VOICE_RELEASED;
+    //return MIP_VOICE_OFF;
   }
 
   void note_choke() {
@@ -389,6 +398,15 @@ public:
 
 //----------------------------------------------------------------------
 //
+//
+//
+//----------------------------------------------------------------------
+
+typedef MIP_VoiceManager<myVoice,NUM_VOICES>  myVoiceManager;
+//typedef MIP_NoteManager<myVoiceManager>       myNoteManager;
+
+//----------------------------------------------------------------------
+//
 // plugin
 //
 //----------------------------------------------------------------------
@@ -429,7 +447,10 @@ private:
     { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "Note In" }
   };
 
-  MIP_VoiceManager<myVoice,NUM_VOICES>  MVoices = {};
+  myVoiceManager   MVoiceManager = {};
+
+  //MIP_VoiceManager<myVoice,NUM_VOICES>  MVoices = {};
+  //MIP_NoteManager<MIP_VoiceManager>     MNotes = {};
 
 //------------------------------
 public:
@@ -445,6 +466,7 @@ public: // clap
 //------------------------------
 
   bool init() final {
+    //MVoiceManager = MNoteManager.getVoiceManager();
     setupParameters(myParameters,NUM_PARAMS);
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
@@ -452,10 +474,10 @@ public: // clap
   }
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
-    MVoices.prepare(sample_rate);
+    MVoiceManager.prepareVoices(sample_rate);
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
       float v = MParameterValues[i];
-      MVoices.handle_master_param(i,v);
+      MVoiceManager.voiceParameter(i,v);
     }
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
   }
@@ -477,8 +499,6 @@ public: // clap
   }
 
   bool voice_info_get(clap_voice_info_t *info) final {
-    //MIP_Print("info->voice_count = %i\n",NUM_VOICES);
-    //MIP_Print("info->voice_capacity = %i\n",NUM_VOICES);
     info->voice_count = NUM_VOICES;
     info->voice_capacity = NUM_VOICES;
     return true;
@@ -489,14 +509,18 @@ public: // clap
     handle_input_events(process->in_events,process->out_events);
     handle_process(process);
     handle_output_events(process->in_events,process->out_events);
+    uint32_t time = 0;//process->frames_count - 1;
 
+//    MVoiceManager.flushVoices();
+    MVoiceManager.flushNoteEnds(time,process->out_events);
+
+    // update voice widget
     for (uint32_t i=0; i<NUM_VOICES; i++) {
-      uint32_t state = MVoices.getVoiceState(i);
+      uint32_t state = MVoiceManager.getVoiceState(i);
       if (MEditor && MEditorIsOpen) {
         ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
       }
     }
-
     return CLAP_PROCESS_CONTINUE;
   }
 
@@ -509,28 +533,33 @@ public:
     the rest of the events are handled by the voice manager
   */
 
+  /*
   void handle_input_events(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
       if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-        switch (header->type) {
-          case CLAP_EVENT_PARAM_VALUE:
-            MIP_Plugin::handle_parameter_event((clap_event_param_value_t*)header);
-            break;
-          case CLAP_EVENT_PARAM_MOD:
-            MIP_Plugin::handle_modulation_event((clap_event_param_mod_t*)header);
-            break;
-        }
+//        switch (header->type) {
+//          case CLAP_EVENT_PARAM_VALUE:
+//            MIP_Plugin::handle_parameter_event((clap_event_param_value_t*)header);
+//            break;
+//          case CLAP_EVENT_PARAM_MOD:
+//            MIP_Plugin::handle_modulation_event((clap_event_param_mod_t*)header);
+//            break;
+//        }
       }
     }
   }
+  */
 
   void handle_process(const clap_process_t *process) final {
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
-    MVoices.process(process);
+
+    //MVoiceManager.processEvents(0,length,process->in_events);
+    MVoiceManager.processVoices(0,length,process);
+
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);
@@ -544,7 +573,8 @@ public:
   */
 
   void handle_editor_parameter(uint32_t AIndex, float AValue) final {
-    MVoices.handle_master_param(AIndex,AValue);
+//    MVoices.handle_master_param(AIndex,AValue);
+    MVoiceManager.voiceParameter(AIndex,AValue);
   }
 
 };
