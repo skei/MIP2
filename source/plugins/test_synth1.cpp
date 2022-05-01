@@ -11,11 +11,14 @@
 //#define MIP_VST3
 
 #include "mip.h"
+
 #include "audio/mip_voice_manager.h"
 #include "audio/mip_audio_math.h"
+#include "audio/filters/mip_rc_filter.h"
 #include "audio/filters/mip_svf_filter.h"
 #include "audio/modulation/mip_envelope.h"
 #include "audio/waveforms/mip_polyblep_waveform.h"
+
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/mip_widgets.h"
@@ -229,6 +232,9 @@ public:
 //
 //----------------------------------------------------------------------
 
+#define SMOOTHER_FACTOR (1.0 / 200.0)
+//#define SMOOTHER_FACTOR (1.0 / 2.0)
+
 class myVoice {
 
 //------------------------------
@@ -236,9 +242,13 @@ private:
 //------------------------------
 
   MIP_VoiceContext*   context   = nullptr;
-  MIP_SvfFilter       filter    = {};
-  MIP_ExpAdsrEnvelope amp_env  = {};
-  MIP_ExpAdsrEnvelope flt_env  = {};
+
+  MIP_SvfFilter       filter            = {};
+  MIP_ExpAdsrEnvelope amp_env           = {};
+  MIP_ExpAdsrEnvelope flt_env           = {};
+  MIP_RcFilter        flt_freq_smoother = {};
+  MIP_RcFilter        flt_res_smoother  = {};
+  MIP_RcFilter        vol_smoother      = {};
 
   float   filter_freq   = 0.5;
   float   filter_res    = 0.5;
@@ -268,6 +278,9 @@ public:
     context = AContext;
     amp_env.setSampleRate(context->samplerate);
     flt_env.setSampleRate(context->samplerate);
+    flt_freq_smoother.setup(0,filter_freq, SMOOTHER_FACTOR);
+    flt_res_smoother.setup(0,filter_res, SMOOTHER_FACTOR);
+    vol_smoother.setup(0,0,SMOOTHER_FACTOR);
   }
 
   uint32_t note_on(int32_t key, float velocity) {
@@ -280,7 +293,16 @@ public:
     phadd = hz / context->samplerate;
     amp_env.noteOn();
     flt_env.noteOn();
-    //MIP_Print("ok\n");
+    //flt_freq_smoother.setValue(filter_freq);
+    //flt_freq_smoother.setTarget(filter_freq);
+    //flt_res_smoother.setValue(filter_res);
+    //flt_res_smoother.setTarget(filter_res);
+    //vol_smoother.setValue(0);
+    //vol_smoother.setTarget(0);
+    filter_freq_mod = 0.0;
+    filter_res_mod  = 0.0;
+    note_bright = 0.0;
+    note_press = 0.0;
     return MIP_VOICE_PLAYING;
   }
 
@@ -358,30 +380,39 @@ public:
   uint32_t process(uint32_t AState, uint32_t ASize) {
     float* output = MIP_VoiceSliceBuffer;
     for (uint32_t i = 0; i < ASize; i++) {
+
       float t = ph + 0.5f;
       t = MIP_Fract(t);
       float o = 2.0 * t - 1.0;
       o -= MIP_PolyBlep(t,phadd);
       ph += phadd;
       ph = MIP_Fract(ph);
+
       float ae = amp_env.process();
       float fe = flt_env.process();
 
-      // test
-      //float br = (note_bright * 2.0) - 1.0;
-      float br = note_bright;
-
-      float ff = filter_freq + filter_freq_mod + br;
+      float ff = filter_freq + filter_freq_mod + note_bright;
+      ff *= fe;
+      ff *= ff;
       ff = MIP_Clamp(ff,0,1);
+      ff = flt_freq_smoother.process(ff);
+
       float fr = filter_res + filter_res_mod;
       fr = MIP_Clamp(fr,0,1);
-      ff *= fe;
+      fr = 1.0 - fr; // hack: bw -> res
+      fr = flt_res_smoother.process(fr);
+
       filter.setMode(MIP_SVF_LP);
-      filter.setFreq(ff * ff);
-      filter.setBW(1.0 - fr);
+      filter.setFreq(ff);
+      filter.setBW(fr);
       o = filter.process(o);
-      o *= (note_onvel + note_press);
-      o *= ae;
+
+      float v = (note_onvel + note_press) * ae;
+      v = vol_smoother.process(v);
+
+      o *= v;
+      //o *= ae;
+
       *output++ += o;
 
     }
@@ -420,7 +451,7 @@ private:
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
     { 0,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
       "Vol",
       "",
@@ -429,7 +460,7 @@ private:
       0.5
     },
     { 1,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
       "Pan",
       "",
@@ -444,7 +475,7 @@ private:
       "",
       0.0,
       1.0,
-      0.7
+      0.5
     },
     { 3,
       CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
@@ -453,7 +484,7 @@ private:
       "",
       0.0,
       1.0,
-      0.5
+      0.0
     },
 
     { 4,
@@ -463,7 +494,7 @@ private:
       "",
       0.0,
       1.0,
-      0.05
+      0.0
     },
     { 5,
       CLAP_PARAM_IS_AUTOMATABLE,
@@ -472,7 +503,7 @@ private:
       "",
       0.0,
       1.0,
-      0.5
+      0.0
     },
     { 6,
       CLAP_PARAM_IS_AUTOMATABLE,
@@ -481,7 +512,7 @@ private:
       "",
       0.0,
       1.0,
-      0.5
+      1.0
     },
     { 7,
       CLAP_PARAM_IS_AUTOMATABLE,
@@ -490,7 +521,7 @@ private:
       "",
       0.0,
       1.0,
-      0.5
+      0.0
     },
     { 8,
       CLAP_PARAM_IS_AUTOMATABLE,
@@ -499,7 +530,7 @@ private:
       "",
       0.0,
       1.0,
-      0.05
+      0.0
     },
     { 9,
       CLAP_PARAM_IS_AUTOMATABLE,
@@ -508,7 +539,7 @@ private:
       "",
       0.0,
       1.0,
-      0.5
+      0.0
     },
     { 10,
       CLAP_PARAM_IS_AUTOMATABLE,
@@ -517,7 +548,7 @@ private:
       "",
       0.0,
       1.0,
-      0.5
+      1.0
     },
     { 11,
       CLAP_PARAM_IS_AUTOMATABLE,
@@ -526,7 +557,7 @@ private:
       "",
       0.0,
       1.0,
-      0.5
+      1.0
     }
   };
 
@@ -657,10 +688,8 @@ public:
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
-
     //MVoiceManager.processEvents(0,length,process->in_events);
     MVoiceManager.processVoices(0,length,process);
-
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);
