@@ -29,14 +29,13 @@
 //
 //----------------------------------------------------------------------
 
-//#define NUM_PARAMS        12
-#define NUM_PARAMS        8
+#define NUM_PARAMS        10
 #define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
 
 #define NUM_VOICES        16
 #define EDITOR_WIDTH      420
-#define EDITOR_HEIGHT     296
+#define EDITOR_HEIGHT     350
 
 //----------------------------------------------------------------------
 //
@@ -173,31 +172,40 @@ public:
       MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
       controls->appendWidget(pan_knob);
       connect(pan_knob,1);
+
       // freq
-      MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Freq");
+      MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"Freq");
       controls->appendWidget(freq_knob);
       connect(freq_knob,2);
       // res
-      MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(190,10,50,82),"Res");
+      MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"Res");
       controls->appendWidget(res_knob);
       connect(res_knob,3);
+      // squ
+      MIP_Knob2Widget* squ_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"SawSqu");
+      controls->appendWidget(squ_knob);
+      connect(squ_knob,4);
+      // width
+      MIP_Knob2Widget* width_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"Width");
+      controls->appendWidget(width_knob);
+      connect(width_knob,5);
 
       // ampl att
-      MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"A.Att");
+      MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"A.Att");
       controls->appendWidget(amp_att_knob);
-      connect(amp_att_knob,4);
+      connect(amp_att_knob,6);
       // ampl dec
-      MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"A.Dec");
+      MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"A.Dec");
       controls->appendWidget(amp_dec_knob);
-      connect(amp_dec_knob,5);
+      connect(amp_dec_knob,7);
       // ampl sus
-      MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"A.Sus");
+      MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"A.Sus");
       controls->appendWidget(amp_sus_knob);
-      connect(amp_sus_knob,6);
+      connect(amp_sus_knob,8);
       // ampl rel
-      MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"A.Rel");
+      MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"A.Rel");
       controls->appendWidget(amp_rel_knob);
-      connect(amp_rel_knob,7);
+      connect(amp_rel_knob,9);
 
     window->appendWidget(MEditorPanel);
   }
@@ -241,6 +249,11 @@ private:
   float   ph              = 0.0;  // phase
   float   phadd           = 0.0;  // phase add
 
+  float   width           = 0.5;
+  float   sawsqu          = 1.0;
+  float   width_mod       = 0.0;
+  float   sawsqu_mod      = 0.0;
+
   int32_t note_key    = -1;
   float   note_onvel  = 0.0;
   float   note_offvel = 0.0;
@@ -268,14 +281,16 @@ public:
   uint32_t note_on(int32_t key, float velocity) {
     note_key    = key;
     note_onvel  = velocity;
-    note_press  = 0.0;
-    note_bright = 0.0;
     ph          = 0.0;
     hz          = MIP_NoteToHz(key);
     phadd       = hz / context->samplerate;
     amp_env.noteOn();
+    note_press      = 0.0;
+    note_bright     = 0.0;
     filter_freq_mod = 0.0;
     filter_res_mod  = 0.0;
+    width_mod       = 0.0;
+    sawsqu_mod      = 0.0;
     return MIP_VOICE_PLAYING;
   }
 
@@ -346,10 +361,12 @@ public:
     switch (index) {
       case  2:  filter_freq = value;            break;
       case  3:  filter_res = value;             break;
-      case  4:  amp_env.setAttack(value * 5);   break;
-      case  5:  amp_env.setDecay(value * 5);    break;
-      case  6:  amp_env.setSustain(value);      break;
-      case  7:  amp_env.setRelease(value * 5);  break;
+      case  4:  sawsqu = value;                 break;
+      case  5:  width = value;                  break;
+      case  6:  amp_env.setAttack(value * 5);   break;
+      case  7:  amp_env.setDecay(value * 5);    break;
+      case  8:  amp_env.setSustain(value);      break;
+      case  9:  amp_env.setRelease(value * 5);  break;
     }
   }
 
@@ -357,6 +374,8 @@ public:
     switch (index) {
       case  2:  filter_freq_mod = value;  break;
       case  3:  filter_res_mod = value;   break;
+      case  4:  sawsqu = value;           break;
+      case  5:  width_mod = value;        break;
     }
   }
 
@@ -366,15 +385,27 @@ public:
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
   uint32_t process(uint32_t AState, uint32_t ASize) {
+
     float* output = MIP_VoiceSliceBuffer;
     for (uint32_t i = 0; i < ASize; i++) {
 
-      float t = ph + 0.5f;
-      t = MIP_Fract(t);
-      float osc = 2.0 * t - 1.0;
-      osc -= MIP_PolyBlep(t,phadd);
-      ph += phadd;
-      ph = MIP_Fract(ph);
+      float t1 = ph + 0.5f;
+      t1 = MIP_Fract(t1);
+      float saw1 = 2.0 * t1 - 1.0;
+      saw1 -= MIP_PolyBlep(t1,phadd);
+
+      float w = width + width_mod;
+      w = MIP_Clamp(w,0,1);
+
+      float t2 = t1 + w;
+      t2 = MIP_Fract(t2);
+      float saw2 = 2.0 * t2 - 1.0;
+      saw2 -= MIP_PolyBlep(t2,phadd);
+
+      float sq = sawsqu + sawsqu_mod;
+      sq = MIP_Clamp(sq,0,1);
+
+      float squ = saw1 - (saw2 * sq);
 
       float ff = filter_freq + filter_freq_mod;
       ff += note_bright;
@@ -395,9 +426,14 @@ public:
       filter.setMode(MIP_SVF_LP);
       filter.setFreq(ff);
       filter.setBW(fr);
-      float f = filter.process(osc);
 
-      *output++ += (f * v);
+      //float out = saw1;
+      float out = squ;
+
+      *output++ += (filter.process(out) * v);
+
+      ph += phadd;
+      ph = MIP_Fract(ph);
 
     }
     if (amp_env.getStage() == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
@@ -434,6 +470,7 @@ private:
 //------------------------------
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
+
     { 0,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
@@ -452,6 +489,7 @@ private:
       1.0,
       0.5
     },
+
     { 2,
       CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
       nullptr,
@@ -459,7 +497,7 @@ private:
       "",
       0.0,
       1.0,
-      0.5
+      0.75
     },
     { 3,
       CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
@@ -470,17 +508,35 @@ private:
       1.0,
       0.0
     },
-
     { 4,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+      nullptr,
+      "SawSqu",
+      "",
+      0.0,
+      1.0,
+      1.0
+    },
+    { 5,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+      nullptr,
+      "Width",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    { 6,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
       "A.Att",
       "",
       0.0,
       1.0,
-      0.0
+      0.01
     },
-    { 5,
+    { 7,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
       "A.Dec",
@@ -489,7 +545,7 @@ private:
       1.0,
       0.0
     },
-    { 6,
+    { 8,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
       "A.Sus",
@@ -498,14 +554,14 @@ private:
       1.0,
       1.0
     },
-    { 7,
+    { 9,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
       "A.Rel",
       "",
       0.0,
       1.0,
-      0.0
+      0.5
     }
   };
 
