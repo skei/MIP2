@@ -18,16 +18,13 @@
 #define MIP_NOTE_MAX_NOTE_ENDS   128
 #define MIP_NOTE_BUFFERSIZE      (MIP_NOTE_MAX_CHANNELS * MIP_NOTE_MAX_NOTES)
 
-//#define MIP_MASTER_BEND_RANGE     2.0f
-//#define MIP_VOICE_BEND_RANGE      48.0f
-//#define MIP_INV_MASTER_BEND_RANGE (1.0 / MIP_MASTER_BEND_RANGE)
-//#define MIP_INV_VOICE_BEND_RANGE  (1.0 / MIP_VOICE_BEND_RANGE)
-
 #define MIP_VOICE_SLICE_SIZE        16
 #define MIP_VOICE_MAX_OVERSAMPLE    1
 #define MIP_VOICE_NUM_SLICE_BUFFERS 1
 #define MIP_VOICE_BUFFERSIZE        (MIP_VOICE_SLICE_SIZE * MIP_VOICE_MAX_OVERSAMPLE * MIP_VOICE_NUM_SLICE_BUFFERS)
 #define MIP_VOICE_MAX_EVENTS        1024
+
+//----------
 
 struct MIP_VoiceContext {
   const clap_process_t* process     = nullptr;
@@ -78,24 +75,24 @@ class MIP_VoiceManager {
 private:
 //------------------------------
 
-  int32_t           MNotePortIndex                    = 0;
-  uint32_t          MNumActiveVoices                  = 0;
-  uint32_t          MNumActiveNotes                   = 0;
-  MIP_NoteEndQueue  MNoteEndQueue                     = {};
-  MIP_VoiceContext  MVoiceContext                     = {};
+  int32_t                     MNotePortIndex                    = 0;
+  uint32_t                    MNumActiveVoices                  = 0;
+  uint32_t                    MNumActiveNotes                   = 0;
+  MIP_NoteEndQueue            MNoteEndQueue                     = {};
+  MIP_VoiceContext            MVoiceContext                     = {};
 
-  uint32_t          MNoteStates[MIP_NOTE_BUFFERSIZE]  = {0};  // index (chan*128)+key, 0=off, 1=on/held
-  int32_t           MNoteToVoice[MIP_NOTE_BUFFERSIZE] = {0};  // 128*16, chan/key -> voice, -1 = empty
-  VOICE             MVoices[NUM]                      = {};   // 0..15
-  uint32_t          MVoiceStates[NUM]                 = {0};  // off, playing, released, finished
-  int32_t           MVoiceNotes[NUM]                  = {0};  // off, playing, released, finished
+  uint32_t                    MNoteStates[MIP_NOTE_BUFFERSIZE]  = {0};  // index (chan*128)+key, 0=off, 1=on/held
+  int32_t                     MNoteToVoice[MIP_NOTE_BUFFERSIZE] = {0};  // 128*16, chan/key -> voice, -1 = empty
+  VOICE                       MVoices[NUM]                      = {};   // 0..15
+  uint32_t                    MVoiceStates[NUM]                 = {0};  // off, playing, released, finished
+  int32_t                     MVoiceNotes[NUM]                  = {0};  // off, playing, released, finished
 
-  const clap_output_events_t* MOutEvents                    = nullptr;
-  const clap_input_events_t*  MInEvents                     = nullptr;
-  uint32_t                    MNumInEvents                  = 0;
-  uint32_t                    MNextInEvent                  = 0;
-  uint32_t                    MCurrInEvent                  = 0;
-  uint32_t                    MCurrentTime                  = 0;
+  const clap_output_events_t* MOutEvents                        = nullptr;
+  const clap_input_events_t*  MInEvents                         = nullptr;
+  uint32_t                    MNumInEvents                      = 0;
+  uint32_t                    MNextInEvent                      = 0;
+  uint32_t                    MCurrInEvent                      = 0;
+  uint32_t                    MCurrentTime                      = 0;
 
 
 //------------------------------
@@ -201,9 +198,9 @@ public: // events
 //------------------------------
 
   void handleNoteOnEvent(clap_event_note_t* event) {
-    int32_t channel = event->channel;
-    int32_t key     = event->key;
-    uint32_t note   = (channel * MIP_NOTE_MAX_NOTES) + key;
+    int32_t   channel = event->channel;
+    int32_t   key     = event->key;
+    uint32_t  note    = (channel * MIP_NOTE_MAX_NOTES) + key;
     MNoteStates[note] = 1;
     MNumActiveNotes += 1;
     if (!voiceStart(channel,key,event->velocity)) {
@@ -216,13 +213,12 @@ public: // events
   //----------
 
   void handleNoteOffEvent(clap_event_note_t* event) {
-    int32_t channel   = event->channel;
-    int32_t key       = event->key;
-    uint32_t note     = (channel * MIP_NOTE_MAX_NOTES) + key;
+    int32_t   channel = event->channel;
+    int32_t   key     = event->key;
+    uint32_t  note    = (channel * MIP_NOTE_MAX_NOTES) + key;
     MNoteStates[note] = 0;
     MNumActiveNotes  -= 1;
     voiceRelease(channel,key,event->velocity);
-    //queueNoteEnd(channel,key); // called in voiceRelease
   }
 
   //----------
@@ -241,7 +237,6 @@ public: // events
   void handleNoteExpressionEvent(clap_event_note_expression_t* event) {
     int32_t channel     = event->channel;
     int32_t key         = event->key;
-    //uint32_t note       = (channel * MIP_NOTE_MAX_NOTES) + key;
     uint32_t expression = event->expression_id;
     float value         = event->value;
     voiceExpression(channel,key,expression,value);
@@ -262,21 +257,19 @@ public: // events
   //----------
 
   void handleParamValueEvent(clap_event_param_value_t* event) {
-    int32_t channel = event->channel;
-    int32_t key     = event->key;
-    //uint32_t note   = (channel * MIP_NOTE_MAX_NOTES) + key;
-    uint32_t index  = event->param_id;
-    float value     = event->value;
+    int32_t   channel = event->channel;
+    int32_t   key     = event->key;
+    uint32_t  index   = event->param_id;
+    float     value   = event->value;
     voiceParamValue(channel,key,index,value);
   }
   //----------
 
   void handleParamModEvent(clap_event_param_mod_t* event) {
-    int32_t channel = event->channel;
-    int32_t key     = event->key;
-    //uint32_t note   = (channel * MIP_NOTE_MAX_NOTES) + key;
-    uint32_t index  = event->param_id;
-    float amount    = event->amount;
+    int32_t   channel = event->channel;
+    int32_t   key     = event->key;
+    uint32_t  index   = event->param_id;
+    float     amount  = event->amount;
     voiceParamMod(channel,key,index,amount);
   }
 
@@ -333,35 +326,30 @@ public: // voices
   //----------
 
   bool voiceStart(int32_t AChannel, int32_t AKey, float AVelocity) {
-    //MIP_Print("start voice\n");
     int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
     int32_t voice = MNoteToVoice[note];
-    // did a voice alreay play for this chan/key
+
     if (voice >= 0) {
-      // then steal it
-      //MIP_Print("note already playing\n");
+      // a voice is alreay play for this chan/key
+      // steal it
     }
     else {
-      // else find a non-playing, or released voice
-      //MIP_Print("find voice\n");
-      voice = findVoice();
+      // find a non-playing, or released voice
       voice = findVoice();
     }
-    // do we have a voice?
+
     if (voice >= 0) {
-      // did we steal a released voice?
+
       if (MVoiceStates[voice] == MIP_VOICE_RELEASED) {
-        //MIP_Print("was RELEASED\n");
+        // we stole a released voice
       }
       MNoteToVoice[note]  = voice;
       MVoiceStates[voice] = MVoices[voice].note_on(AKey,AVelocity);
       MVoiceNotes[voice]  = note;
-      //return MIP_VOICE_PLAYING;
       return true;
     }
     else {
-      // no voice
-      //MIP_Print("no voice\n");
+        // no voice
       return false;
     }
   }
@@ -369,10 +357,8 @@ public: // voices
   //----------
 
   void voiceRelease(int32_t AChannel, int32_t AKey, float AVelocity) {
-    //MIP_Print("release voice\n");
     int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
     if (note >= 0) {
-
       int32_t voice = MNoteToVoice[note];
       if (voice >= 0) {
         MVoiceStates[voice] = MVoices[voice].note_off(AVelocity);
@@ -381,13 +367,11 @@ public: // voices
       MNoteToVoice[note]  = -1;
       queueNoteEnd(AChannel,AKey);
     }
-
   }
 
   //----------
 
   void voiceChoke(int32_t AChannel, int32_t AKey, float AVelocity) {
-    //MIP_Print("choke voice\n");
     int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
     int32_t voice = MNoteToVoice[note];
     MNoteToVoice[note] = -1;
@@ -441,7 +425,6 @@ public: // voices
   //----------
 
   void voiceParamMod(int32_t AChannel, int32_t AKey, uint32_t AIndex, float AValue) {
-    //MIP_Print("chan %i key %i index %i value %.2f\n",AChannel,AKey,AIndex,AValue);
     if ((AChannel == -1) || (AKey == -1)) {
       for (uint32_t i=0; i<NUM; i++) {
         MVoices[i].modulation(AIndex,AValue);
@@ -456,8 +439,12 @@ public: // voices
     }
   }
 
+  //----------
+
   //void handle_master_param(uint32_t AIndex, float AValue) {
   //}
+
+  //----------
 
   //uint32_t  getVoiceState(uint32_t v) {
   //  return 0;
@@ -530,16 +517,6 @@ public: // process
 
   //----------
 
-  //void processEvents(uint32_t AOffset, uint32_t ASize, const clap_input_events_t* in_events) {
-  //  uint32_t num = in_events->size(in_events);
-  //  for (uint32_t i=0; i<num; i++) {
-  //    const clap_event_header_t* header = in_events->get(in_events,i);
-  //    if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-  //      handleEvent(header);
-  //    }
-  //  }
-  //}
-
   /*
     returns number of samples until next event,
     or MIP_INT32_MAX if no more events
@@ -550,10 +527,7 @@ public: // process
       if (MCurrInEvent < MNumInEvents) {
         const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrInEvent);
         if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-
-//          on_event(header);
           handleEvent(header);
-
           MCurrInEvent++;
           MNextInEvent = header->time;
         }
@@ -613,18 +587,9 @@ private:
   void postProcessVoices() {
     for (uint32_t i=0; i<NUM; i++) {
       if (MVoiceStates[i] == MIP_VOICE_FINISHED) {
-        //send_note_end(i);
-//        uint32_t channel = MVoiceChannel[i];
-//        uint32_t key = MVoiceNote[i];
-//        uint32_t index = (channel * 128) + key;
-//        queueNoteEnd(index);
-
-          uint32_t note = MVoiceNotes[i];
-          queueNoteEnd(note);
-          MVoiceStates[i] = MIP_VOICE_OFF;
-
-        //MVoiceState[i] = MIP_VOICE_OFF;
-//        reset_voice(i);
+        uint32_t note = MVoiceNotes[i];
+        queueNoteEnd(note);
+        MVoiceStates[i] = MIP_VOICE_OFF;
       }
     }
   }
@@ -635,14 +600,12 @@ public:
 
   void processVoices(uint32_t AOffset, uint32_t ASize, const clap_process_t* process) {
     MVoiceContext.process = process;
-    //MVoiceContext.slicebuffer = MIP_VoiceSliceBuffer;
     preProcessVoices();
     MInEvents = process->in_events;
     MOutEvents = process->out_events;
     MNumInEvents = MInEvents->size(MInEvents);
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
-    //uint32_t offset = 0;
     MCurrentTime = 0;
     uint32_t remaining = process->frames_count;
     preProcessEvents();
