@@ -1031,29 +1031,29 @@ public: // note-ports
 public: // quick-controls
 //------------------------------
 
-  uint32_t quick_controls_count() override {
-    MIP_PRINT;
-    return MQuickControls.size();
-  }
+  //uint32_t quick_controls_count() override {
+  //  MIP_PRINT;
+  //  return MQuickControls.size();
+  //}
 
   //----------
 
-  bool quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) override {
-    MIP_PRINT;
-    memcpy(page,MQuickControls[page_index],sizeof(clap_quick_controls_page_t));
-    return true;
-  }
+  //bool quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) override {
+  //  MIP_PRINT;
+  //  memcpy(page,MQuickControls[page_index],sizeof(clap_quick_controls_page_t));
+  //  return true;
+  //}
 
   //----------
 
   //void quick_controls_select(clap_id page_id) override {
-  //  //MIP_PRINT;
+  //  MIP_PRINT;
   //}
 
   //----------
 
   //clap_id quick_controls_get_selected() override {
-  //  //MIP_PRINT;
+  //  MIP_PRINT;
   //  return 0;
   //}
 
@@ -1110,6 +1110,23 @@ public: // latency
   //uint32_t latency_get() override {
   //  return 0;
   //};
+
+//------------------------------
+public: // render
+//------------------------------
+
+  //bool render_has_hard_realtime_requirement() {
+  //  MIP_PRINT;
+  //  return false;
+  //}
+
+  //CLAP_RENDER_REALTIME = 0
+  //CLAP_RENDER_OFFLINE = 1,
+
+  //bool render_set(clap_plugin_render_mode mode) {
+  //  MIP_Print("mode: %i\n",mode);
+  //  return true;
+  //}
 
 };
 

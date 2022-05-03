@@ -1,6 +1,5 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
-
 //#define MIP_DEBUG_PRINT_TIME
 //#define MIP_DEBUG_CALLSTACK
 //#define MIP_DEBUG_CRASH_HANDLER
@@ -12,8 +11,8 @@
 
 #include "mip.h"
 
-#include "audio/mip_voice_manager.h"
 #include "audio/mip_audio_math.h"
+#include "audio/mip_voice_manager.h"
 #include "audio/filters/mip_rc_filter.h"
 #include "audio/filters/mip_svf_filter.h"
 #include "audio/modulation/mip_envelope.h"
@@ -21,6 +20,7 @@
 
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
+
 #include "gui/mip_widgets.h"
 
 //----------------------------------------------------------------------
@@ -279,11 +279,11 @@ public:
   //----------
 
   uint32_t note_on(int32_t key, float velocity) {
-    note_key    = key;
-    note_onvel  = velocity;
-    ph          = 0.0;
-    hz          = MIP_NoteToHz(key);
-    phadd       = hz / context->samplerate;
+    note_key        = key;
+    note_onvel      = velocity;
+    ph              = 0.0;
+    hz              = MIP_NoteToHz(key);
+    phadd           = hz / context->samplerate;
     amp_env.noteOn();
     note_press      = 0.0;
     note_bright     = 0.0;
@@ -306,11 +306,6 @@ public:
 
   void note_choke() {
   }
-
-  //----------
-
-  //void note_end() {
-  //}
 
   //----------
 
@@ -346,7 +341,7 @@ public:
   //----------
 
   void brightness(float amount) {
-    note_bright = (amount * 2.0) - 1.0; // 0..1 -> -1..1
+    note_bright = (amount * 2.0) - 1.0;
   }
 
   //----------
@@ -385,56 +380,41 @@ public:
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
   uint32_t process(uint32_t AState, uint32_t ASize) {
-
     float* output = MIP_VoiceSliceBuffer;
     for (uint32_t i = 0; i < ASize; i++) {
-
       float t1 = ph + 0.5f;
       t1 = MIP_Fract(t1);
       float saw1 = 2.0 * t1 - 1.0;
       saw1 -= MIP_PolyBlep(t1,phadd);
-
       float w = width + width_mod;
       w = MIP_Clamp(w,0,1);
-
       float t2 = t1 + w;
       t2 = MIP_Fract(t2);
       float saw2 = 2.0 * t2 - 1.0;
       saw2 -= MIP_PolyBlep(t2,phadd);
-
       float sq = sawsqu + sawsqu_mod;
       sq = MIP_Clamp(sq,0,1);
-
       float squ = saw1 - (saw2 * sq);
-
       float ff = filter_freq + filter_freq_mod;
       ff += note_bright;
       ff = MIP_Clamp(ff,0,1);
-      ff *= ff; // hack
+      ff = (ff * ff); // ugh..
       ff = flt_freq_smoother.process(ff);
-
       float fr = filter_res + filter_res_mod;
       fr = MIP_Clamp(fr,0,1);
-      fr = 1.0 - fr; // hack: bw -> res-ish
+      fr = 1.0 - fr; // hhhh...
       fr = flt_res_smoother.process(fr);
-
-      float v = note_onvel + note_press;
-      v = MIP_Clamp(v,0,1);
-      v *= amp_env.process();;
-      v = vol_smoother.process(v);
-
+      float amp = note_onvel + note_press;
+      amp = MIP_Clamp(amp,0,1);
+      amp *= amp_env.process();
+      amp = vol_smoother.process(amp);
       filter.setMode(MIP_SVF_LP);
       filter.setFreq(ff);
       filter.setBW(fr);
-
-      //float out = saw1;
       float out = squ;
-
-      *output++ += (filter.process(out) * v);
-
+      *output++ += (filter.process(out) * amp);
       ph += phadd;
       ph = MIP_Fract(ph);
-
     }
     if (amp_env.getStage() == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
     else return AState;
@@ -615,6 +595,7 @@ public: // clap
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
     MVoiceManager.prepareVoices(sample_rate);
+    // send initial parameter values to the voices
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
       float v = MParameterValues[i];
       MVoiceManager.voiceParameter(i,v);
@@ -625,7 +606,7 @@ public: // clap
   //----------
 
   const void* get_extension(const char *id) final {
-    MIP_Print("host wants: %s\n",id);
+    //MIP_Print("host wants: %s\n",id);
     if (strcmp(id,CLAP_EXT_GUI) == 0) return &MGui;
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
     if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0) return &MNotePorts;
@@ -658,7 +639,7 @@ public: // clap
     handle_process(process);
     handle_output_events(process->in_events,process->out_events);
     MVoiceManager.flushNoteEnds(0,process->out_events);
-    // update voice widget
+    // update gui
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       uint32_t state = MVoiceManager.getVoiceState(i);
       if (MEditor && MEditorIsOpen) {
@@ -685,11 +666,6 @@ public:
   }
 
   //----------
-
-  /*
-    called from MIP_Plugin.on_updateParameterFromEditor
-    widget has changed, so we need to notify the voices..
-  */
 
   void handle_editor_parameter(uint32_t AIndex, float AValue) final {
     MVoiceManager.voiceParameter(AIndex,AValue);
