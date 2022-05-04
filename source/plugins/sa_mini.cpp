@@ -18,10 +18,10 @@
 //----------------------------------------------------------------------
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
-  ARegistry->appendPlugin(&sa_fibonacci_descriptor);
+  //ARegistry->appendPlugin(&sa_fibonacci_descriptor);
   ARegistry->appendPlugin(&sa_grains_descriptor);
   ARegistry->appendPlugin(&sa_pitch_descriptor);
-  ARegistry->appendPlugin(&sa_transpose_descriptor);
+  //ARegistry->appendPlugin(&sa_transpose_descriptor);
 }
 
 //----------
@@ -33,10 +33,12 @@ void MIP_Register(MIP_ClapRegistry* ARegistry) {
 
 MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
   switch (AIndex) {
-    case 0:  return new sa_fibonacci_plugin(ADescriptor,AHost);
-    case 1:  return new sa_grains_plugin(ADescriptor,AHost);
-    case 2:  return new sa_pitch_plugin(ADescriptor,AHost);
-    case 3:  return new sa_transpose_plugin(ADescriptor,AHost);
+    //case 0:  return new sa_fibonacci_plugin(ADescriptor,AHost);
+    //case 1:  return new sa_grains_plugin(ADescriptor,AHost);
+    //case 2:  return new sa_pitch_plugin(ADescriptor,AHost);
+    //case 3:  return new sa_transpose_plugin(ADescriptor,AHost);
+    case 0:  return new sa_grains_plugin(ADescriptor,AHost);
+    case 1:  return new sa_pitch_plugin(ADescriptor,AHost);
   }
   return nullptr;
 }
