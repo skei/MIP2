@@ -81,7 +81,8 @@ private:
   MIP_NoteEndQueue            MNoteEndQueue                     = {};
   MIP_VoiceContext            MVoiceContext                     = {};
 
-  uint32_t                    MNoteStates[MIP_NOTE_BUFFERSIZE]  = {0};  // index (chan*128)+key, 0=off, 1=on/held
+  uint32_t                    MNotes[MIP_NOTE_BUFFERSIZE]       = {0};  // index (chan*128)+key, 0=off, 1=on/held
+
   int32_t                     MNoteToVoice[MIP_NOTE_BUFFERSIZE] = {0};  // 128*16, chan/key -> voice, -1 = empty
   VOICE                       MVoices[NUM]                      = {};   // 0..15
   uint32_t                    MVoiceStates[NUM]                 = {0};  // off, playing, released, finished
@@ -102,7 +103,7 @@ public:
   MIP_VoiceManager(uint32_t APortIndex=0) {
     MNotePortIndex = APortIndex;
     for (uint32_t i=0; i<MIP_NOTE_MAX_NOTES; i++) {
-      MNoteStates[i] = 0;
+      MNotes[i] = 0;
       MNoteToVoice[i] = -1;
     }
   }
@@ -123,7 +124,7 @@ public: // set/get
   }
 
   uint32_t* getNoteStates() {
-    return MNoteStates;
+    return MNotes;
   }
 
   int32_t getNotePortIndex()  {
@@ -135,21 +136,21 @@ public: // set/get
   }
 
   uint32_t getNoteState(uint32_t AIndex) {
-    return MNoteStates[AIndex];
+    return MNotes[AIndex];
   }
 
   uint32_t getNoteState(uint32_t AChannel, uint32_t AKey) {
     uint32_t index = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
-    return MNoteStates[index];
+    return MNotes[index];
   }
 
   void setNoteState(uint32_t AIndex, uint32_t AState) {
-    MNoteStates[AIndex] = AState;
+    MNotes[AIndex] = AState;
   }
 
   void setNoteState(uint32_t AChannel, uint32_t AKey, uint32_t AState) {
     uint32_t index = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
-    MNoteStates[index] = AState;
+    MNotes[index] = AState;
   }
 
   // voices
@@ -201,13 +202,10 @@ public: // events
     int32_t   channel = event->channel;
     int32_t   key     = event->key;
     uint32_t  note    = (channel * MIP_NOTE_MAX_NOTES) + key;
-    MNoteStates[note] = 1;
+    //MIP_Print("chan %i key %i note %i\n",channel,key,note);
+    MNotes[note] = 1;
     MNumActiveNotes += 1;
-    if (!voiceStart(channel,key,event->velocity)) {
-      // no voice were started, so we tell the host that it can shut down
-      // the modulation voice for this chan/key
-      queueNoteEnd(channel,key);
-    }
+    voiceStart(channel,key,event->velocity);
   }
 
   //----------
@@ -216,7 +214,7 @@ public: // events
     int32_t   channel = event->channel;
     int32_t   key     = event->key;
     uint32_t  note    = (channel * MIP_NOTE_MAX_NOTES) + key;
-    MNoteStates[note] = 0;
+    MNotes[note] = 0;
     MNumActiveNotes  -= 1;
     voiceRelease(channel,key,event->velocity);
   }
@@ -227,7 +225,7 @@ public: // events
     int32_t channel   = event->channel;
     int32_t key       = event->key;
     uint32_t note     = (channel * MIP_NOTE_MAX_NOTES) + key;
-    MNoteStates[note] = 0;
+    MNotes[note] = 0;
     MNumActiveNotes  -= 1;
     voiceChoke(channel,key,event->velocity);
   }
@@ -295,6 +293,7 @@ public: // NOTE_END
     while (MNoteEndQueue.read(&index)) {
       uint32_t key = index & 127;
       uint32_t channel = index >> 7;
+      MIP_Print("NOTE_END.. chan %i key %i\n",channel,key);
       clap_event_note_t event;
       clap_event_header_t* header = (clap_event_header_t*)&event;
       header->size      = sizeof(clap_event_note_t);
@@ -325,46 +324,58 @@ public: // voices
 
   //----------
 
-  bool voiceStart(int32_t AChannel, int32_t AKey, float AVelocity) {
+  //bool voiceStart(int32_t AChannel, int32_t AKey, float AVelocity) {
+  void voiceStart(int32_t AChannel, int32_t AKey, float AVelocity) {
     int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
-    int32_t voice = MNoteToVoice[note];
 
-    if (voice >= 0) {
-      // a voice is alreay play for this chan/key
-      // steal it
-    }
-    else {
-      // find a non-playing, or released voice
-      voice = findVoice();
-    }
+    int32_t prev_voice = MNoteToVoice[note];
 
-    if (voice >= 0) {
-
-      if (MVoiceStates[voice] == MIP_VOICE_RELEASED) {
-        // we stole a released voice
+    if (prev_voice >= 0) {
+      if ((MVoiceStates[prev_voice] == MIP_VOICE_PLAYING)
+        || (MVoiceStates[prev_voice] == MIP_VOICE_RELEASED)) {
+        MIP_Print("stealing voice.. chan %i key %i\n",AChannel,AKey);
+        // kill previous voice
+        MVoices[prev_voice].note_off(AVelocity);
+        // start new voice
+        MNoteToVoice[note]  = prev_voice;
+        MVoiceStates[prev_voice] = MVoices[prev_voice].note_on(AKey,AVelocity);
+        MVoiceNotes[prev_voice]  = note;
+        // this ends modulation for all voices for this chan/key
+        //queueNoteEnd(note);
       }
-      MNoteToVoice[note]  = voice;
-      MVoiceStates[voice] = MVoices[voice].note_on(AKey,AVelocity);
-      MVoiceNotes[voice]  = note;
-      return true;
     }
+
     else {
-        // no voice
-      return false;
+      int32_t new_voice = findVoice(false);
+      if (new_voice >= 0) {
+        MIP_Print("starting voice.. chan %i key %i\n",AChannel,AKey);
+        MNoteToVoice[note]  = new_voice;
+        MVoiceStates[new_voice] = MVoices[new_voice].note_on(AKey,AVelocity);
+        MVoiceNotes[new_voice]  = note;
+      }
+      else {
+        queueNoteEnd(AChannel,AKey);
+      }
     }
+
   }
 
   //----------
 
   void voiceRelease(int32_t AChannel, int32_t AKey, float AVelocity) {
+    MIP_Assert(AChannel >= 0);
+    MIP_Assert(AKey >= 0);
     int32_t note = (AChannel * MIP_NOTE_MAX_NOTES) + AKey;
     if (note >= 0) {
       int32_t voice = MNoteToVoice[note];
       if (voice >= 0) {
         MVoiceStates[voice] = MVoices[voice].note_off(AVelocity);
-        MVoiceNotes[voice]  = -1;
+        //MNoteToVoice[note]  = -1;
       }
-      MNoteToVoice[note]  = -1;
+      else {
+        MIP_Print("ouch! voice < 0\n");
+
+      }
       queueNoteEnd(AChannel,AKey);
     }
   }
@@ -377,6 +388,7 @@ public: // voices
     MNoteToVoice[note] = -1;
     MVoiceStates[voice] = MIP_VOICE_OFF;
     MVoiceNotes[voice]  = -1;
+    //MIP_Print("queueNoteEnd chan %i key %i\n",AChannel,AKey);
     queueNoteEnd(AChannel,AKey);
   }
 
@@ -496,8 +508,15 @@ public:
       if (MVoiceStates[i] == MIP_VOICE_FINISHED) {
         MVoiceStates[i] = MIP_VOICE_OFF;
         uint32_t note = MVoiceNotes[i];
+        //MIP_Print("VOICE_FINISHED voice %i note %i\n",i,note);
         //queueNoteEnd(channel,key);
-        queueNoteEnd(note);
+
+// we sent them when we received note_off
+//        queueNoteEnd(note);
+
+        MVoiceStates[i] = MIP_VOICE_OFF;
+        MVoiceNotes[i] = -1;
+        MNoteToVoice[note] = -1;
       }
     }
   }
@@ -585,13 +604,17 @@ private:
   //----------
 
   void postProcessVoices() {
-    for (uint32_t i=0; i<NUM; i++) {
-      if (MVoiceStates[i] == MIP_VOICE_FINISHED) {
-        uint32_t note = MVoiceNotes[i];
-        queueNoteEnd(note);
-        MVoiceStates[i] = MIP_VOICE_OFF;
-      }
-    }
+    flushVoices();
+    //for (uint32_t i=0; i<NUM; i++) {
+    //  if (MVoiceStates[i] == MIP_VOICE_FINISHED) {
+    //    uint32_t note = MVoiceNotes[i];
+    //    MIP_Print("VOICE_FINISHED voice %i note %i\n",i,note);
+    //    queueNoteEnd(note);
+    //    MVoiceStates[i] = MIP_VOICE_OFF;
+    //    MVoiceNotes[i] = -1;
+    //    MNoteToVoice[note] = -1;
+    //  }
+    //}
   }
 
 //------------------------------
