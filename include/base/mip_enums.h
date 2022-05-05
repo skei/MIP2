@@ -310,6 +310,7 @@ enum MIP_EPluginPortDirection {
 
 enum MIP_EVoiceState {
   MIP_VOICE_OFF      = 0,
+  MIP_VOICE_ON       = 1,
   MIP_VOICE_PLAYING  = 1,
   MIP_VOICE_RELEASED = 2,
   MIP_VOICE_FINISHED = 3
@@ -324,6 +325,11 @@ enum MIP_ENoteExpression {
   MIP_NOTE_EXPRESSION_BREATH      = 5,
   MIP_NOTE_EXPRESSION_PRESSURE    = 6,
   MIP_NOTE_EXPRESSION_TIMBRE      = 7
+};
+
+enum MIP_ENoteStates {
+  MIP_NOTE_IS_OFF = 0,
+  MIP_NOTE_IS_ON  = 1
 };
 
 //----------------------------------------------------------------------

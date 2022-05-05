@@ -30,7 +30,7 @@ public:
 public:
 //------------------------------
 
-  const clap_plugin_t* ptr() {
+  const clap_plugin_t* clap_plugin_ptr() {
     return &MPlugin;
   }
 

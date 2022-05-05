@@ -13,6 +13,7 @@
 
 #include "audio/mip_audio_math.h"
 #include "audio/mip_voice_manager.h"
+//#include "audio/mip_voice_manager2.h"
 #include "audio/filters/mip_rc_filter.h"
 #include "audio/filters/mip_svf_filter.h"
 #include "audio/modulation/mip_envelope.h"
@@ -33,7 +34,7 @@
 #define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
 
-#define NUM_VOICES        16
+#define NUM_VOICES        8
 #define EDITOR_WIDTH      420
 #define EDITOR_HEIGHT     350
 
@@ -241,28 +242,28 @@ private:
   MIP_RcFilter        flt_res_smoother  = {};
   MIP_RcFilter        vol_smoother      = {};
 
-  float   filter_freq   = 0.5;
-  float   filter_res    = 0.5;
-  float   filter_freq_mod = 0.0;
-  float   filter_res_mod  = 0.0;
+  int32_t note_key        = -1;
+  float   note_onvel      = 0.0;
+  float   note_offvel     = 0.0;
+  float   note_vol        = 0.0;
+  float   note_pan        = 0.0;
+  float   note_vibr       = 0.0;
+  float   note_expr       = 0.0;
+  float   note_bright     = 0.0;
+  float   note_press      = 0.0;
+
   float   hz              = 0.0;  // note hz
   float   ph              = 0.0;  // phase
   float   phadd           = 0.0;  // phase add
-
   float   width           = 0.5;
   float   sawsqu          = 1.0;
+  float   filter_freq     = 0.5;
+  float   filter_res      = 0.5;
+
   float   width_mod       = 0.0;
   float   sawsqu_mod      = 0.0;
-
-  int32_t note_key    = -1;
-  float   note_onvel  = 0.0;
-  float   note_offvel = 0.0;
-  float   note_vol    = 0.0;
-  float   note_pan    = 0.0;
-  float   note_vibr   = 0.0;
-  float   note_expr   = 0.0;
-  float   note_bright = 0.0;
-  float   note_press  = 0.0;
+  float   filter_freq_mod = 0.0;
+  float   filter_res_mod  = 0.0;
 
 //------------------------------
 public:
@@ -429,10 +430,6 @@ public:
 };
 
 //----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
 
 typedef MIP_VoiceManager<myVoice,NUM_VOICES>  myVoiceManager;
 
@@ -569,7 +566,7 @@ private:
 
   //----------
 
-  myVoiceManager MVoiceManager = {};
+  myVoiceManager  MVoiceManager = myVoiceManager(0);
 
 //------------------------------
 public:
@@ -598,6 +595,7 @@ public: // clap
     // send initial parameter values to the voices
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
       float v = MParameterValues[i];
+      //MNoteManager.voiceParameter(i,v);
       MVoiceManager.voiceParameter(i,v);
     }
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
@@ -616,8 +614,8 @@ public: // clap
   //----------
 
   bool gui_create(const char *api, bool is_floating) final {
-    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) { MIP_Print("error.. !x11\n");  return false; }
-    if (is_floating) { MIP_Print("error.. is_floating\n"); return false; }
+    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) { /*MIP_Print("error.. !x11\n");*/ return false; }
+    if (is_floating) { /*MIP_Print("error.. is_floating\n");*/ return false; }
     MEditorIsOpen = false;
     MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true);
     return (MEditor);
@@ -638,6 +636,12 @@ public: // clap
     handle_input_events(process->in_events,process->out_events);
     handle_process(process);
     handle_output_events(process->in_events,process->out_events);
+
+    //MNoteManager.handleInputEvents(process->in_events,process->out_events);
+    //MNoteManager.processNotes(process);
+    //MNoteManager.handleOutputEvents(process->in_events,process->out_events);
+
+    //MVoiceManager.flushNoteEnds(0,0,process->out_events);
     MVoiceManager.flushNoteEnds(0,process->out_events);
     // update gui
     for (uint32_t i=0; i<NUM_VOICES; i++) {
@@ -657,7 +661,8 @@ public:
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
-    MVoiceManager.processVoices(0,length,process);
+    //MNoteManager.processNotes(process,0,length);
+    MVoiceManager.processSlices(process,0,length);
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);

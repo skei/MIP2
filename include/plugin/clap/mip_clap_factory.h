@@ -49,7 +49,7 @@ const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugi
     int32_t index = MIP_CLAP_REGISTRY.findPluginById(plugin_id);
     const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getPlugin(index);
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,host);
-    return plugin->ptr();
+    return plugin->clap_plugin_ptr();
   }
   else {
     //MIP_Print("no MIP_CreatePlugin()\n");

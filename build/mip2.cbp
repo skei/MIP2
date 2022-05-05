@@ -172,8 +172,8 @@
 		<Unit filename="../include/audio/mip_audio_file.h" />
 		<Unit filename="../include/audio/mip_audio_math.h" />
 		<Unit filename="../include/audio/mip_audio_utils.h" />
+		<Unit filename="../include/audio/mip_note_manager.h" />
 		<Unit filename="../include/audio/mip_voice_manager.h" />
-		<Unit filename="../include/audio/mip_voice_manager1.h" />
 		<Unit filename="../include/audio/mip_voice_manager2.h" />
 		<Unit filename="../include/audio/modulation/mip_envelope.h" />
 		<Unit filename="../include/audio/modulation/mip_lfo.h" />
