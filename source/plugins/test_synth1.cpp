@@ -13,7 +13,6 @@
 
 #include "audio/mip_audio_math.h"
 #include "audio/mip_voice_manager.h"
-//#include "audio/mip_voice_manager2.h"
 #include "audio/filters/mip_rc_filter.h"
 #include "audio/filters/mip_svf_filter.h"
 #include "audio/modulation/mip_envelope.h"
@@ -34,7 +33,7 @@
 #define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
 
-#define NUM_VOICES        8
+#define NUM_VOICES        16
 #define EDITOR_WIDTH      420
 #define EDITOR_HEIGHT     350
 
@@ -231,10 +230,19 @@ public:
 class myVoice {
 
 //------------------------------
+public:
+//------------------------------
+
+  uint32_t  state = MIP_VOICE_OFF;
+  MIP_Note  note  = {};
+
+//------------------------------
 private:
 //------------------------------
 
   MIP_VoiceContext*   context   = nullptr;
+
+  //MIP_NoteInfo        noteinfo = {0};
 
   MIP_SvfFilter       filter            = {};
   MIP_ExpAdsrEnvelope amp_env           = {};
@@ -280,6 +288,7 @@ public:
   //----------
 
   uint32_t note_on(int32_t key, float velocity) {
+    //MIP_Print("key %i velocity %.3f\n",key,velocity);
     note_key        = key;
     note_onvel      = velocity;
     ph              = 0.0;
@@ -301,6 +310,7 @@ public:
     note_offvel = velocity;
     amp_env.noteOff();
     return MIP_VOICE_RELEASED;
+    //return MIP_VOICE_FINISHED;
   }
 
   //----------
@@ -381,7 +391,8 @@ public:
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
   uint32_t process(uint32_t AState, uint32_t ASize) {
-    float* output = MIP_VoiceSliceBuffer;
+    //float* output = MIP_VoiceSliceBuffer;
+    float* output = MIP_VoiceBuffer;
     for (uint32_t i = 0; i < ASize; i++) {
       float t1 = ph + 0.5f;
       t1 = MIP_Fract(t1);
@@ -468,7 +479,11 @@ private:
     },
 
     { 2,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        //| CLAP_PARAM_IS_MODULATABLE_PER_KEY
+        //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "F.Freq",
       "",
@@ -477,7 +492,11 @@ private:
       0.75
     },
     { 3,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        //| CLAP_PARAM_IS_MODULATABLE_PER_KEY
+        //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "F.Res",
       "",
@@ -486,7 +505,9 @@ private:
       0.0
     },
     { 4,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "SawSqu",
       "",
@@ -495,7 +516,9 @@ private:
       1.0
     },
     { 5,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Width",
       "",
@@ -595,7 +618,6 @@ public: // clap
     // send initial parameter values to the voices
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
       float v = MParameterValues[i];
-      //MNoteManager.voiceParameter(i,v);
       MVoiceManager.voiceParameter(i,v);
     }
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
@@ -624,8 +646,9 @@ public: // clap
   //----------
 
   bool voice_info_get(clap_voice_info_t *info) final {
-    info->voice_count = NUM_VOICES;
-    info->voice_capacity = NUM_VOICES;
+    info->voice_count     = NUM_VOICES;
+    info->voice_capacity  = NUM_VOICES;
+    info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;
     return true;
   }
 
@@ -633,23 +656,22 @@ public: // clap
 
   clap_process_status process(const clap_process_t *process) final {
     flushAudioParams();
+
     handle_input_events(process->in_events,process->out_events);
     handle_process(process);
     handle_output_events(process->in_events,process->out_events);
 
-    //MNoteManager.handleInputEvents(process->in_events,process->out_events);
-    //MNoteManager.processNotes(process);
-    //MNoteManager.handleOutputEvents(process->in_events,process->out_events);
+//    MVoiceManager.flushNoteEnds(0,process->out_events);
+//    MVoiceManager.flushVoices(process->out_events);
 
-    //MVoiceManager.flushNoteEnds(0,0,process->out_events);
-    MVoiceManager.flushNoteEnds(0,process->out_events);
-    // update gui
+    // update gui (state)
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       uint32_t state = MVoiceManager.getVoiceState(i);
       if (MEditor && MEditorIsOpen) {
         ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
       }
     }
+
     return CLAP_PROCESS_CONTINUE;
   }
 
@@ -661,8 +683,10 @@ public:
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
-    //MNoteManager.processNotes(process,0,length);
-    MVoiceManager.processSlices(process,0,length);
+
+//    MVoiceManager.processSlices(process,0,length);
+    MVoiceManager.process(process);
+
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);
