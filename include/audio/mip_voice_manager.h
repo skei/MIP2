@@ -17,9 +17,9 @@
 
 struct MIP_Note {
   int32_t port_index  =  0;
-  int32_t channel     =  0;  // 0..15
-  int32_t key         =  0;  // 0..127
-  int32_t note_id     = -1; // -1 if unspecified, otherwise >0
+  int32_t channel     =  0;   // 0..15
+  int32_t key         =  0;   // 0..127
+  int32_t note_id     = -1;   // -1 if unspecified, otherwise >0
   MIP_Note() {}
   MIP_Note(int32_t k, int32_t c, int32_t p=0, int32_t n=-1) {
     key         = k;
@@ -39,8 +39,9 @@ struct MIP_Voice {
 //----------
 
 struct MIP_VoiceContext {
-  const clap_process_t* process = nullptr;
-  double samplerate = 0.0;
+  const clap_process_t* process     = nullptr;
+  double                samplerate  = 0.0;
+  float*                voicebuffer = nullptr;
 };
 
 //----------
@@ -53,30 +54,32 @@ typedef MIP_Queue<MIP_Note,MIP_VOICE_NUM_NOTES> MIP_NoteQueue;
 //
 //----------------------------------------------------------------------
 
-__MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
-float MIP_VoiceBuffer[MIP_VOICE_BUFFERSIZE] = {0};
+// oops.. not global!!!
+// multiple instances...
 
-//----------
-
-__MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
-float MIP_VoiceSliceBuffer[MIP_VOICE_SLICE_SIZE * MIP_VOICE_MAX_VOICES] = {0};
-
-void MIP_ClearVoiceSliceBuffer(uint32_t ASize) {
-  memset(MIP_VoiceSliceBuffer,0,ASize*sizeof(float));
-}
-
-void MIP_CopyVoiceSliceBuffer(float* ADst, uint32_t ASize) {
-  memcpy(ADst,MIP_VoiceSliceBuffer,ASize*sizeof(float));
-}
-
-void MIP_ClearVoiceSliceBuffer() {
-  MIP_ClearVoiceSliceBuffer(MIP_VOICE_SLICE_SIZE);
-}
-
-void MIP_CopyVoiceSliceBuffer(float* ADst) {
-  MIP_CopyVoiceSliceBuffer(ADst,MIP_VOICE_SLICE_SIZE);
-}
-
+//__MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
+//float MIP_VoiceBuffer[MIP_VOICE_BUFFERSIZE] = {0};
+//
+////----------
+//
+//__MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
+//float MIP_VoiceSliceBuffer[MIP_VOICE_SLICE_SIZE * MIP_VOICE_MAX_VOICES] = {0};
+//
+//void MIP_ClearVoiceSliceBuffer(uint32_t ASize) {
+//  memset(MIP_VoiceSliceBuffer,0,ASize*sizeof(float));
+//}
+//
+//void MIP_CopyVoiceSliceBuffer(float* ADst, uint32_t ASize) {
+//  memcpy(ADst,MIP_VoiceSliceBuffer,ASize*sizeof(float));
+//}
+//
+//void MIP_ClearVoiceSliceBuffer() {
+//  MIP_ClearVoiceSliceBuffer(MIP_VOICE_SLICE_SIZE);
+//}
+//
+//void MIP_CopyVoiceSliceBuffer(float* ADst) {
+//  MIP_CopyVoiceSliceBuffer(ADst,MIP_VOICE_SLICE_SIZE);
+//}
 
 //----------------------------------------------------------------------
 //
@@ -105,6 +108,42 @@ public:
   //----------
 
   ~MIP_VoiceManager() {
+  }
+
+//------------------------------
+private:  // voice buffers
+//------------------------------
+
+  __MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
+  float MVoiceBuffer[MIP_VOICE_BUFFERSIZE] = {0};
+
+  float* getVoiceBuffer() {
+    return MVoiceBuffer;
+  }
+
+  //----------
+
+  __MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
+  float MVoiceSliceBuffer[MIP_VOICE_SLICE_SIZE * MIP_VOICE_MAX_VOICES] = {0};
+
+  float* getVoiceSliceBuffer() {
+    return MVoiceSliceBuffer;
+  }
+
+  void MIP_ClearVoiceSliceBuffer(uint32_t ASize) {
+    memset(MVoiceSliceBuffer,0,ASize*sizeof(float));
+  }
+
+  void MIP_CopyVoiceSliceBuffer(float* ADst, uint32_t ASize) {
+    memcpy(ADst,MVoiceSliceBuffer,ASize*sizeof(float));
+  }
+
+  void MIP_ClearVoiceSliceBuffer() {
+    MIP_ClearVoiceSliceBuffer(MIP_VOICE_SLICE_SIZE);
+  }
+
+  void MIP_CopyVoiceSliceBuffer(float* ADst) {
+    MIP_CopyVoiceSliceBuffer(ADst,MIP_VOICE_SLICE_SIZE);
   }
 
 //------------------------------
@@ -303,6 +342,13 @@ public: // voices
 
   void prepareVoices(double ASampleRate) {
     MVoiceContext.samplerate = ASampleRate;
+
+    #ifdef MIP_VOICE_USE_SLICES
+    MVoiceContext.voicebuffer = MVoiceSliceBuffer;
+    #else
+    MVoiceContext.voicebuffer = MVoiceBuffer;
+    #endif
+
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       MVoices[i].state = MIP_VOICE_OFF;
       MVoices[i].prepare(&MVoiceContext);
@@ -390,13 +436,13 @@ public: // process
     uint32_t length = process->frames_count;
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
-    MIP_ClearMonoBuffer(MIP_VoiceBuffer,length);
-    MIP_ClearMonoBuffer(MIP_VoiceBuffer,length);
+    MIP_ClearMonoBuffer(MVoiceBuffer,length);
+    MIP_ClearMonoBuffer(MVoiceBuffer,length);
     handleEvents(process);
     processPlayingVoices(0,length);
     processReleasedVoices(0,length);
-    MIP_CopyMonoBuffer(out0,MIP_VoiceBuffer,length);
-    MIP_CopyMonoBuffer(out1,MIP_VoiceBuffer,length);
+    MIP_CopyMonoBuffer(out0,MVoiceBuffer,length);
+    MIP_CopyMonoBuffer(out1,MVoiceBuffer,length);
     flushVoices();
     flushNoteEnds(process->out_events);
   }

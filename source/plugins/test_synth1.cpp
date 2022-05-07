@@ -37,7 +37,7 @@
 #define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
 
-#define NUM_VOICES        4
+#define NUM_VOICES        16
 #define EDITOR_WIDTH      420
 #define EDITOR_HEIGHT     350
 
@@ -402,11 +402,7 @@ public:
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
   uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ASize) {
-    #ifdef MIP_VOICE_USE_SLICES
-    float* output = MIP_VoiceSliceBuffer;
-    #else
-    float* output = MIP_VoiceBuffer;
-    #endif
+    float* output = context->voicebuffer;//MIP_VoiceSliceBuffer;
     for (uint32_t i = 0; i < ASize; i++) {
       float t1 = ph + 0.5f;
       t1 = MIP_Fract(t1);
@@ -632,6 +628,11 @@ public: // clap
   //----------
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
+//    #ifdef MIP_VOICE_USE_SLICES
+//    MVoiceManager.voicebuffer = MVoiceSliceBuffer;
+//    #else
+//    MVoiceManager.voicebuffer = MVoiceBuffer;
+//    #endif
     MVoiceManager.prepareVoices(sample_rate);
     // send initial parameter values to the voices
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
