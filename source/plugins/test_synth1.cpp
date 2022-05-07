@@ -182,9 +182,9 @@ public:
       controls->appendWidget(res_knob);
       connect(res_knob,3);
       // squ
-      MIP_Knob2Widget* squ_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"SawSqu");
-      controls->appendWidget(squ_knob);
-      connect(squ_knob,4);
+      MIP_Knob2Widget* pulse_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"Pulse");
+      controls->appendWidget(pulse_knob);
+      connect(pulse_knob,4);
       // width
       MIP_Knob2Widget* width_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"Width");
       controls->appendWidget(width_knob);
@@ -263,13 +263,13 @@ private:
   float   hz              = 0.0;  // note hz
   float   ph              = 0.0;  // phase
   float   phadd           = 0.0;  // phase add
+  float   pulse           = 1.0;
   float   width           = 0.5;
-  float   sawsqu          = 1.0;
   float   filter_freq     = 0.5;
   float   filter_res      = 0.5;
 
+  float   pulse_mod      = 0.0;
   float   width_mod       = 0.0;
-  float   sawsqu_mod      = 0.0;
   float   filter_freq_mod = 0.0;
   float   filter_res_mod  = 0.0;
 
@@ -299,8 +299,8 @@ public:
     note_bright     = 0.0;
     filter_freq_mod = 0.0;
     filter_res_mod  = 0.0;
+    pulse_mod      = 0.0;
     width_mod       = 0.0;
-    sawsqu_mod      = 0.0;
     return MIP_VOICE_PLAYING;
   }
 
@@ -367,7 +367,7 @@ public:
     switch (index) {
       case  2:  filter_freq = value;            break;
       case  3:  filter_res = value;             break;
-      case  4:  sawsqu = value;                 break;
+      case  4:  pulse = value;                 break;
       case  5:  width = value;                  break;
       case  6:  amp_env.setAttack(value * 5);   break;
       case  7:  amp_env.setDecay(value * 5);    break;
@@ -380,7 +380,7 @@ public:
     switch (index) {
       case  2:  filter_freq_mod = value;  break;
       case  3:  filter_res_mod = value;   break;
-      case  4:  sawsqu = value;           break;
+      case  4:  pulse = value;           break;
       case  5:  width_mod = value;        break;
     }
   }
@@ -404,7 +404,7 @@ public:
       t2 = MIP_Fract(t2);
       float saw2 = 2.0 * t2 - 1.0;
       saw2 -= MIP_PolyBlep(t2,phadd);
-      float sq = sawsqu + sawsqu_mod;
+      float sq = pulse + pulse_mod;
       sq = MIP_Clamp(sq,0,1);
       float squ = saw1 - (saw2 * sq);
       float ff = filter_freq + filter_freq_mod;
@@ -481,35 +481,37 @@ private:
     { 2,
       CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_MODULATABLE
-        //| CLAP_PARAM_IS_MODULATABLE_PER_KEY
-        //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+        | CLAP_PARAM_IS_MODULATABLE_PER_KEY
+        | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "F.Freq",
       "",
       0.0,
       1.0,
-      0.75
+      0.5
     },
     { 3,
       CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_MODULATABLE
-        //| CLAP_PARAM_IS_MODULATABLE_PER_KEY
-        //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL,
+        | CLAP_PARAM_IS_MODULATABLE_PER_KEY
+        | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "F.Res",
       "",
       0.0,
       1.0,
-      0.0
+      0.5
     },
     { 4,
       CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_KEY
+        | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
-      "SawSqu",
+      "Pulse",
       "",
       0.0,
       1.0,
@@ -518,13 +520,15 @@ private:
     { 5,
       CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_KEY
+        | CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Width",
       "",
       0.0,
       1.0,
-      0.5
+      0.7
     },
 
     { 6,

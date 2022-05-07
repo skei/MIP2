@@ -115,6 +115,8 @@ public: // events
 private: // events
 //------------------------------
 
+  // note_id: 16,32, 48, ...
+
   void handleNoteOnEvent(const clap_event_note_t* event) {
     //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->velocity);
     int32_t voice = findFreeVoice(true);
@@ -128,6 +130,8 @@ private: // events
   }
 
   //----------
+
+  // note_id is always -1..
 
   void handleNoteOff(const clap_event_note_t* event) {
     //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->velocity);
@@ -150,12 +154,13 @@ private: // events
 
   //----------
 
+  // note_id is always -1..
+
   void handleNoteExpression(const clap_event_note_expression_t* event) {
-    //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->velocity);
+    //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       //if (MVoices[i].note.note_id == event->note_id) {
         if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
-          //MVoices[i].expression(event->expression_id,event->value);
           switch (event->expression_id) {
             case CLAP_NOTE_EXPRESSION_VOLUME:     MVoices[i].volume(event->value);      break;
             case CLAP_NOTE_EXPRESSION_PAN:        MVoices[i].pan(event->value);         break;
@@ -172,6 +177,8 @@ private: // events
 
   //----------
 
+  // parameter.flags : CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID
+
   void handleParamValue(const clap_event_param_value_t* event) {
     //MIP_Print("id %i port %i chan %i key %i value %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
     for (uint32_t i=0; i<NUM_VOICES; i++) {
@@ -184,6 +191,8 @@ private: // events
   }
 
   //----------
+
+  // parameter.flags : CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID
 
   void handleParamMod(const clap_event_param_mod_t* event) {
     //MIP_Print("id %i port %i chan %i key %i amount %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->amount);
@@ -234,6 +243,8 @@ private: // note_end
     event.velocity    = 0.0;
     out_events->try_push(out_events,header);
   }
+
+  //----------
 
   void queueNoteEnd(MIP_Note ANote) {
     MNoteEndQueue.write(ANote);
@@ -292,9 +303,7 @@ private: // voices
       if (MVoices[i].state == MIP_VOICE_OFF) return i;
       //if (MVoices[i].state == MIP_VOICE_FINISHED) return i;
     }
-    /*
-      find released voice with lowest amp_env.getValue();
-    */
+    // todo: find released voice with lowest amp_env.getValue(), or oldest..
     if (ATryReleased) {
       for (uint32_t i=0; i<NUM_VOICES; i++) {
         if (MVoices[i].state == MIP_VOICE_RELEASED) return i;
@@ -309,12 +318,13 @@ private: // voices
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       if (MVoices[i].state == MIP_VOICE_FINISHED) {
         queueNoteEnd(MVoices[i].note);
-        //stopVoice(i);
         MVoices[i].state = MIP_VOICE_OFF;
         MVoices[i].note = MIP_Note();
       }
     }
   }
+
+  //----------
 
   void processPlayingVoices(uint32_t AOffset, uint32_t ALength) {
     for (uint32_t i=0; i<NUM_VOICES; i++) {
@@ -323,6 +333,8 @@ private: // voices
       }
     }
   }
+
+  //----------
 
   void processReleasedVoices(uint32_t AOffset, uint32_t ALength) {
     for (uint32_t i=0; i<NUM_VOICES; i++) {
