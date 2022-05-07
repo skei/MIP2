@@ -6,8 +6,12 @@
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
+#define MIP_VOICE_USE_SLICES
+
 //#define MIP_VST2
 //#define MIP_VST3
+
+//----------------------------------------------------------------------
 
 #include "mip.h"
 
@@ -33,7 +37,7 @@
 #define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
 
-#define NUM_VOICES        16
+#define NUM_VOICES        4
 #define EDITOR_WIDTH      420
 #define EDITOR_HEIGHT     350
 
@@ -234,7 +238,12 @@ public:
 //------------------------------
 
   uint32_t  state = MIP_VOICE_OFF;
-  MIP_Note  note  = {};
+  MIP_Note  note  = {
+    .note_id     = -1,
+    .port_index  = 0,
+    .channel     = 0,
+    .key         = 0
+  };
 
 //------------------------------
 private:
@@ -301,16 +310,18 @@ public:
     filter_res_mod  = 0.0;
     pulse_mod      = 0.0;
     width_mod       = 0.0;
+    state = MIP_VOICE_PLAYING;
     return MIP_VOICE_PLAYING;
   }
 
   //----------
 
   uint32_t note_off(float velocity) {
+    //MIP_Print("velocity %.3f\n",velocity);
     note_offvel = velocity;
     amp_env.noteOff();
     return MIP_VOICE_RELEASED;
-    //return MIP_VOICE_FINISHED;
+    //state = MIP_VOICE_RELEASED;
   }
 
   //----------
@@ -390,9 +401,12 @@ public:
   // ASize  = 0..15
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
-  uint32_t process(uint32_t AState, uint32_t ASize) {
-    //float* output = MIP_VoiceSliceBuffer;
+  uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ASize) {
+    #ifdef MIP_VOICE_USE_SLICES
+    float* output = MIP_VoiceSliceBuffer;
+    #else
     float* output = MIP_VoiceBuffer;
+    #endif
     for (uint32_t i = 0; i < ASize; i++) {
       float t1 = ph + 0.5f;
       t1 = MIP_Fract(t1);
@@ -434,8 +448,8 @@ public:
 
   //----------
 
-  uint32_t process(uint32_t AState) {
-    return process(AState,MIP_VOICE_SLICE_SIZE);
+  uint32_t process(uint32_t AIndex,uint32_t AState) {
+    return process(AIndex,AState,MIP_VOICE_SLICE_SIZE);
   }
 
 };
@@ -649,6 +663,12 @@ public: // clap
 
   //----------
 
+  /*
+    CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES
+      Allows the host to send overlapping NOTE_ON events.
+      The plugin will then rely upon the note_id to distinguish between them.
+  */
+
   bool voice_info_get(clap_voice_info_t *info) final {
     info->voice_count     = NUM_VOICES;
     info->voice_capacity  = NUM_VOICES;
@@ -664,9 +684,6 @@ public: // clap
     handle_input_events(process->in_events,process->out_events);
     handle_process(process);
     handle_output_events(process->in_events,process->out_events);
-
-//    MVoiceManager.flushNoteEnds(0,process->out_events);
-//    MVoiceManager.flushVoices(process->out_events);
 
     // update gui (state)
     for (uint32_t i=0; i<NUM_VOICES; i++) {
@@ -688,8 +705,11 @@ public:
     uint32_t length = process->frames_count;
     MIP_ClearStereoBuffer(outputs,length);
 
-//    MVoiceManager.processSlices(process,0,length);
+    #ifdef MIP_VOICE_USE_SLICES
+    MVoiceManager.processSlices(process);
+    #else
     MVoiceManager.process(process);
+    #endif
 
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan

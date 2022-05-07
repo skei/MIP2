@@ -9,17 +9,24 @@
 
 #define MIP_VOICE_NUM_CHANNELS  16
 #define MIP_VOICE_NUM_NOTES     128
-#define MIP_VOICE_MAX_NOTE_ENDS 128
+#define MIP_VOICE_MAX_VOICES    32
 #define MIP_VOICE_SLICE_SIZE    16
 #define MIP_VOICE_BUFFERSIZE    1024
 
 //----------------------------------------------------------------------
 
 struct MIP_Note {
+  int32_t port_index  =  0;
+  int32_t channel     =  0;  // 0..15
+  int32_t key         =  0;  // 0..127
   int32_t note_id     = -1; // -1 if unspecified, otherwise >0
-  int32_t port_index  = 0;
-  int32_t channel     = 0;  // 0..15
-  int32_t key         = 0;  // 0..127
+  MIP_Note() {}
+  MIP_Note(int32_t k, int32_t c, int32_t p=0, int32_t n=-1) {
+    key         = k;
+    channel     = c;
+    port_index  = p;
+    note_id     = n;
+  }
 };
 
 //----------
@@ -38,9 +45,7 @@ struct MIP_VoiceContext {
 
 //----------
 
-typedef MIP_Queue<MIP_Note,MIP_VOICE_MAX_NOTE_ENDS> MIP_NoteQueue;
-
-//----------
+typedef MIP_Queue<MIP_Note,MIP_VOICE_NUM_NOTES> MIP_NoteQueue;
 
 //----------------------------------------------------------------------
 //
@@ -50,6 +55,28 @@ typedef MIP_Queue<MIP_Note,MIP_VOICE_MAX_NOTE_ENDS> MIP_NoteQueue;
 
 __MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
 float MIP_VoiceBuffer[MIP_VOICE_BUFFERSIZE] = {0};
+
+//----------
+
+__MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
+float MIP_VoiceSliceBuffer[MIP_VOICE_SLICE_SIZE * MIP_VOICE_MAX_VOICES] = {0};
+
+void MIP_ClearVoiceSliceBuffer(uint32_t ASize) {
+  memset(MIP_VoiceSliceBuffer,0,ASize*sizeof(float));
+}
+
+void MIP_CopyVoiceSliceBuffer(float* ADst, uint32_t ASize) {
+  memcpy(ADst,MIP_VoiceSliceBuffer,ASize*sizeof(float));
+}
+
+void MIP_ClearVoiceSliceBuffer() {
+  MIP_ClearVoiceSliceBuffer(MIP_VOICE_SLICE_SIZE);
+}
+
+void MIP_CopyVoiceSliceBuffer(float* ADst) {
+  MIP_CopyVoiceSliceBuffer(ADst,MIP_VOICE_SLICE_SIZE);
+}
+
 
 //----------------------------------------------------------------------
 //
@@ -118,14 +145,23 @@ private: // events
   // note_id: 16,32, 48, ...
 
   void handleNoteOnEvent(const clap_event_note_t* event) {
-    //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->velocity);
+    MIP_Print("NOTE ON: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     int32_t voice = findFreeVoice(true);
     if (voice >= 0) {
-      MVoices[voice].note.note_id     = event->note_id;
-      MVoices[voice].note.port_index  = event->port_index;
-      MVoices[voice].note.channel     = event->channel;
+      if (MVoices[voice].state == MIP_VOICE_RELEASED) {
+        MIP_Print(">>> stealing voice; k %i c %i p %i id %i\n",MVoices[voice].note.key,MVoices[voice].note.channel,MVoices[voice].note.port_index,MVoices[voice].note.note_id);
+        // end previous  modulation voice
+        queueNoteEnd(MVoices[voice].note);
+      }
       MVoices[voice].note.key         = event->key;
+      MVoices[voice].note.channel     = event->channel;
+      MVoices[voice].note.port_index  = event->port_index;
+      MVoices[voice].note.note_id     = event->note_id;
       MVoices[voice].state            = MVoices[voice].note_on(event->key,event->velocity);
+    }
+    else {
+      // no voice started, so we don't want the (new) modulation voice..
+      queueNoteEnd(MIP_Note(event->key,event->channel,event->port_index,event->note_id));
     }
   }
 
@@ -134,7 +170,7 @@ private: // events
   // note_id is always -1..
 
   void handleNoteOff(const clap_event_note_t* event) {
-    //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->velocity);
+    MIP_Print("NOTE OFF: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       if (MVoices[i].state == MIP_VOICE_PLAYING) {
         //if (MVoices[i].note.note_id == event->note_id) {
@@ -149,7 +185,8 @@ private: // events
   //----------
 
   void handleNoteChoke(const clap_event_note_t* event) {
-    //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->velocity);
+    MIP_Print("NOTE CHOKE: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
+
   }
 
   //----------
@@ -228,7 +265,7 @@ private: // note_end
 //------------------------------
 
   void sendNoteEnd(MIP_Note ANote, const clap_output_events_t* out_events) {
-    //MIP_Print("NOTE_END id %i channel %i key %i\n",ANote.note_id,ANote.channel,ANote.key);
+    MIP_Print("NOTE_END: key %i channel %i port %i note_id %i\n",ANote.key,ANote.channel,ANote.port_index,ANote.note_id);
     clap_event_note_t event;
     clap_event_header_t* header = (clap_event_header_t*)&event;
     header->size      = sizeof(clap_event_note_t);
@@ -329,7 +366,7 @@ private: // voices
   void processPlayingVoices(uint32_t AOffset, uint32_t ALength) {
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       if (MVoices[i].state == MIP_VOICE_PLAYING) {
-        MVoices[i].state = MVoices[i].process(MIP_VOICE_PLAYING,ALength);
+        MVoices[i].state = MVoices[i].process(i,MIP_VOICE_PLAYING,ALength);
       }
     }
   }
@@ -339,7 +376,7 @@ private: // voices
   void processReleasedVoices(uint32_t AOffset, uint32_t ALength) {
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       if (MVoices[i].state == MIP_VOICE_RELEASED) {
-        MVoices[i].state = MVoices[i].process(MIP_VOICE_RELEASED,ALength);
+        MVoices[i].state = MVoices[i].process(i,MIP_VOICE_RELEASED,ALength);
       }
     }
   }
@@ -363,6 +400,142 @@ public: // process
     flushVoices();
     flushNoteEnds(process->out_events);
   }
+
+//------------------------------
+private: // slices
+//------------------------------
+
+  const clap_output_events_t* MOutEvents                        = nullptr;
+  const clap_input_events_t*  MInEvents                         = nullptr;
+  uint32_t                    MNumInEvents                      = 0;
+  uint32_t                    MNextInEvent                      = 0;
+  uint32_t                    MCurrInEvent                      = 0;
+  uint32_t                    MCurrentTime                      = 0;
+
+//------------------------------
+private:
+//------------------------------
+
+  void preProcessSliceEvents() {
+    MCurrInEvent = 0;
+    if (MNumInEvents > 0) {
+      const clap_event_header* header = MInEvents->get(MInEvents,0);
+      MNextInEvent = header->time;
+    }
+    else MNextInEvent = MIP_INT32_MAX;
+  }
+
+  //----------
+
+  /*
+    returns number of samples until next event,
+    or MIP_INT32_MAX if no more events
+  */
+
+  uint32_t processSliceEvents(uint32_t AOffset, uint32_t ASize) {
+    while (MNextInEvent < (AOffset + ASize)) {
+      if (MCurrInEvent < MNumInEvents) {
+        const clap_event_header_t* header = MInEvents->get(MInEvents,MCurrInEvent);
+        if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+          handleEvent(header);
+          MCurrInEvent++;
+          MNextInEvent = header->time;
+        }
+      }
+      else MNextInEvent = MIP_INT32_MAX;
+    }
+    uint32_t res = MNextInEvent - AOffset;
+    return res;
+  }
+
+  //----------
+
+  //TODO
+  uint32_t processSliceEvents(uint32_t AOffset) {
+    return processSliceEvents(AOffset,MIP_VOICE_SLICE_SIZE);
+  }
+
+  //----------
+
+  void postProcessSliceEvents() {
+    MNumInEvents = 0;
+  }
+
+//------------------------------
+
+  //void preProcessSliceVoices() {
+  //}
+
+  //----------
+
+  // process all voices (for one slice)
+  // irregular length
+
+  void processSliceVoices(uint32_t ASize) {
+    MIP_ClearVoiceSliceBuffer(ASize);
+    for (uint32_t i=0; i<NUM_VOICES; i++) {
+      if (MVoices[i].state == MIP_VOICE_PLAYING){
+        MVoices[i].state = MVoices[i].process(i,MIP_VOICE_PLAYING,ASize);
+      }
+      if (MVoices[i].state == MIP_VOICE_RELEASED) {
+        MVoices[i].state = MVoices[i].process(i,MIP_VOICE_RELEASED,ASize);
+      }
+    }
+  }
+
+  //----------
+
+  void processSliceVoices() {
+    processSliceVoices(MIP_VOICE_SLICE_SIZE);
+  }
+
+  //----------
+
+  void postProcessSliceVoices() {
+    flushVoices();
+  }
+
+//------------------------------
+public: // slices
+//------------------------------
+
+  // split block in slices (MIP_VOICE_SLICE_SIZE, currently 16 samples)
+  // handle all events within each slice at the start of the slice
+  // calculate all voices in slice sized pieces inbetween
+
+  void processSlices(const clap_process_t* process) {
+    MVoiceContext.process = process;
+    MInEvents = process->in_events;
+    MOutEvents = process->out_events;
+    MNumInEvents = MInEvents->size(MInEvents);
+    float* out0 = process->audio_outputs->data32[0];
+    float* out1 = process->audio_outputs->data32[1];
+    MCurrentTime = 0;
+    uint32_t remaining = process->frames_count;
+    //preProcessSliceVoices();
+    preProcessSliceEvents();
+    while (remaining > 0) {
+      if (remaining >= MIP_VOICE_SLICE_SIZE) {
+        processSliceEvents(MCurrentTime);
+        processSliceVoices();
+        MIP_CopyVoiceSliceBuffer(out0 + MCurrentTime);
+        MIP_CopyVoiceSliceBuffer(out1 + MCurrentTime);
+        remaining -= MIP_VOICE_SLICE_SIZE;
+        MCurrentTime += MIP_VOICE_SLICE_SIZE;
+      }
+      else {
+        processSliceEvents(MCurrentTime,remaining);
+        processSliceVoices(remaining);
+        MIP_CopyVoiceSliceBuffer(out0 + MCurrentTime,remaining);
+        MIP_CopyVoiceSliceBuffer(out1 + MCurrentTime,remaining);
+        remaining = 0;
+      }
+    }
+    postProcessSliceEvents();
+    postProcessSliceVoices();
+    flushNoteEnds(process->out_events);
+  }
+
 
 };
 
