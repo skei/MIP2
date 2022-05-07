@@ -76,7 +76,6 @@ public:
     timer_support       = (clap_host_timer_support_t*)AHost->get_extension(AHost,CLAP_EXT_TIMER_SUPPORT);
     track_info          = (clap_host_track_info_t*)AHost->get_extension(AHost,CLAP_EXT_TRACK_INFO);
     tuning              = (clap_host_tuning_t*)AHost->get_extension(AHost,CLAP_EXT_TUNING);
-
   }
 
   virtual ~MIP_ClapHost() {
