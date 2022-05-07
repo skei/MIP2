@@ -184,12 +184,12 @@ private: // events
   // note_id: 16,32, 48, ...
 
   void handleNoteOnEvent(const clap_event_note_t* event) {
-    MIP_Print("NOTE ON: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
+    //MIP_Print("NOTE ON: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     int32_t voice = findFreeVoice(true);
     if (voice >= 0) {
       if (MVoices[voice].state == MIP_VOICE_RELEASED) {
-        MIP_Print(">>> stealing voice; k %i c %i p %i id %i\n",MVoices[voice].note.key,MVoices[voice].note.channel,MVoices[voice].note.port_index,MVoices[voice].note.note_id);
-        // end previous  modulation voice
+        //MIP_Print(">>> stealing voice; k %i c %i p %i id %i\n",MVoices[voice].note.key,MVoices[voice].note.channel,MVoices[voice].note.port_index,MVoices[voice].note.note_id);
+        // end previous modulation voice
         queueNoteEnd(MVoices[voice].note);
       }
       MVoices[voice].note.key         = event->key;
@@ -209,7 +209,7 @@ private: // events
   // note_id is always -1..
 
   void handleNoteOff(const clap_event_note_t* event) {
-    MIP_Print("NOTE OFF: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
+    //MIP_Print("NOTE OFF: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       if (MVoices[i].state == MIP_VOICE_PLAYING) {
         //if (MVoices[i].note.note_id == event->note_id) {
@@ -224,8 +224,7 @@ private: // events
   //----------
 
   void handleNoteChoke(const clap_event_note_t* event) {
-    MIP_Print("NOTE CHOKE: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
-
+    //MIP_Print("NOTE CHOKE: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
   }
 
   //----------
@@ -304,7 +303,7 @@ private: // note_end
 //------------------------------
 
   void sendNoteEnd(MIP_Note ANote, const clap_output_events_t* out_events) {
-    MIP_Print("NOTE_END: key %i channel %i port %i note_id %i\n",ANote.key,ANote.channel,ANote.port_index,ANote.note_id);
+//    MIP_Print("NOTE_END: key %i channel %i port %i note_id %i\n",ANote.key,ANote.channel,ANote.port_index,ANote.note_id);
     clap_event_note_t event;
     clap_event_header_t* header = (clap_event_header_t*)&event;
     header->size      = sizeof(clap_event_note_t);
@@ -381,16 +380,33 @@ public: // voices
 private: // voices
 //------------------------------
 
+  int32_t findQuietestReleasedVoice() {
+    float lowest = 999999.0;
+    int32_t voice = -1;
+    for (uint32_t i=0; i<NUM_VOICES; i++) {
+      if (MVoices[i].state == MIP_VOICE_RELEASED) {
+        float env = MVoices[i].getEnvLevel();
+        if (env < lowest) {
+          voice = i;
+          lowest = env;
+        }
+      }
+    }
+    return voice;
+  }
+
+  //----------
+
   int32_t findFreeVoice(bool ATryReleased=false) {
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       if (MVoices[i].state == MIP_VOICE_OFF) return i;
       //if (MVoices[i].state == MIP_VOICE_FINISHED) return i;
     }
-    // todo: find released voice with lowest amp_env.getValue(), or oldest..
     if (ATryReleased) {
-      for (uint32_t i=0; i<NUM_VOICES; i++) {
-        if (MVoices[i].state == MIP_VOICE_RELEASED) return i;
-      }
+      //for (uint32_t i=0; i<NUM_VOICES; i++) {
+      //  if (MVoices[i].state == MIP_VOICE_RELEASED) return i;
+      //}
+      return findQuietestReleasedVoice();
     }
     return -1;
   }
