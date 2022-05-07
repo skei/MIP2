@@ -16,9 +16,9 @@
 //----------------------------------------------------------------------
 
 struct MIP_Note {
-  int32_t port_index  =  0;
-  int32_t channel     =  0;   // 0..15
   int32_t key         =  0;   // 0..127
+  int32_t channel     =  0;   // 0..15
+  int32_t port_index  =  0;
   int32_t note_id     = -1;   // -1 if unspecified, otherwise >0
   MIP_Note() {}
   MIP_Note(int32_t k, int32_t c, int32_t p=0, int32_t n=-1) {
@@ -39,9 +39,10 @@ struct MIP_Voice {
 //----------
 
 struct MIP_VoiceContext {
-  const clap_process_t* process     = nullptr;
-  double                samplerate  = 0.0;
-  float*                voicebuffer = nullptr;
+  const clap_process_t* process       = nullptr;
+  double                samplerate    = 0.0;
+  double                invsamplerate = 0.0;
+  float*                voicebuffer   = nullptr;
 };
 
 //----------
@@ -254,13 +255,23 @@ private: // events
 
   // parameter.flags : CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID
 
+  // called from event
+  // see also: voiceParameter (called from gui)
+
   void handleParamValue(const clap_event_param_value_t* event) {
     //MIP_Print("id %i port %i chan %i key %i value %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
-    for (uint32_t i=0; i<NUM_VOICES; i++) {
-      if (MVoices[i].note.note_id == event->note_id) {
-        //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
-          MVoices[i].parameter(event->param_id,event->value);
-        //}
+    if (event->note_id == -1) {
+      for (uint32_t i=0; i<NUM_VOICES; i++) {
+        MVoices[i].parameter(event->param_id,event->value);
+      }
+    }
+    else {
+      for (uint32_t i=0; i<NUM_VOICES; i++) {
+        if (MVoices[i].note.note_id == event->note_id) {
+          //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
+            MVoices[i].parameter(event->param_id,event->value);
+          //}
+        }
       }
     }
   }
@@ -271,11 +282,18 @@ private: // events
 
   void handleParamMod(const clap_event_param_mod_t* event) {
     //MIP_Print("id %i port %i chan %i key %i amount %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->amount);
-    for (uint32_t i=0; i<NUM_VOICES; i++) {
-      if (MVoices[i].note.note_id == event->note_id) {
-        //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
-          MVoices[i].modulation(event->param_id,event->amount);
-        //}
+    if (event->note_id == -1) {
+      for (uint32_t i=0; i<NUM_VOICES; i++) {
+        MVoices[i].modulation(event->param_id,event->amount);
+      }
+    }
+    else {
+      for (uint32_t i=0; i<NUM_VOICES; i++) {
+        if (MVoices[i].note.note_id == event->note_id) {
+          //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
+            MVoices[i].modulation(event->param_id,event->amount);
+          //}
+        }
       }
     }
   }
@@ -340,7 +358,9 @@ public: // voices
 //------------------------------
 
   void prepareVoices(double ASampleRate) {
+    MIP_Assert(ASampleRate > 0.0);
     MVoiceContext.samplerate = ASampleRate;
+    MVoiceContext.invsamplerate = 1.0 / ASampleRate;
 
     #ifdef MIP_VOICE_USE_SLICES
     MVoiceContext.voicebuffer = MVoiceSliceBuffer;
@@ -362,7 +382,11 @@ public: // voices
 
   //----------
 
+  // called from gui
+  // see also: handleParamValue (called from event)
+
   void voiceParameter(uint32_t AIndex, float AValue) {
+    //MIP_Print("%i = %.2f\n",AIndex,AValue);
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       MVoices[i].parameter(AIndex,AValue);
     }

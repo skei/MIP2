@@ -177,12 +177,12 @@ public:
       MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
       controls->appendWidget(pan_knob);
       connect(pan_knob,1);
-      // tune
-      MIP_Knob2Widget* tune_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Tune");
-      controls->appendWidget(tune_knob);
-      tune_knob->getKnobWidget()->setSnap(true);
-      tune_knob->getKnobWidget()->setSnapPos(0.5);
-      connect(tune_knob,10);
+      // pitch
+      MIP_Knob2Widget* pitch_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Pitch");
+      controls->appendWidget(pitch_knob);
+      pitch_knob->getKnobWidget()->setSnap(true);
+      pitch_knob->getKnobWidget()->setSnapPos(0.5);
+      connect(pitch_knob,10);
 
       // freq
       MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"Freq");
@@ -245,20 +245,21 @@ public:
 //------------------------------
 
   uint32_t  state = MIP_VOICE_OFF;
-  MIP_Note  note  = {
-    .note_id     = -1,
-    .port_index  = 0,
-    .channel     = 0,
-    .key         = 0
-  };
+
+  MIP_Note  note  = {}; // { -1,0,0,0 };
+
+  //MIP_Note  note  = {
+  //  .note_id     = -1,
+  //  .port_index  = 0,
+  //  .channel     = 0,
+  //  .key         = 0
+  //};
 
 //------------------------------
 private:
 //------------------------------
 
   MIP_VoiceContext*   context   = nullptr;
-
-  //MIP_NoteInfo        noteinfo = {0};
 
   MIP_SvfFilter       filter            = {};
   MIP_ExpAdsrEnvelope amp_env           = {};
@@ -284,13 +285,13 @@ private:
   float   width           = 0.5;
   float   filter_freq     = 0.5;
   float   filter_res      = 0.5;
-  float   tune            = 0.5;
+  float   pitch           = 0.5;
 
   float   pulse_mod       = 0.0;
   float   width_mod       = 0.0;
   float   filter_freq_mod = 0.0;
   float   filter_res_mod  = 0.0;
-  float   tune_mod        = 0.0;
+  float   pitch_mod       = 0.0;
 
 //------------------------------
 public:
@@ -313,24 +314,25 @@ public:
   //----------
 
   uint32_t note_on(int32_t key, float velocity) {
-    //MIP_Print("key %i velocity %.3f\n",key,velocity);
+
     note_key        = key;
     note_onvel      = velocity;
-    ph              = 0.0;
-    tune            = 0.5;
-    tune_mod        = 0.0;
-//    tuning(0);
-    //float t = (tune * 2) - 1;
-    //hz              = MIP_NoteToHz(key + (t*12));
-    //phadd           = hz / context->samplerate;
-    amp_env.noteOn();
     note_press      = 0.0;
     note_bright     = 0.0;
+    note_tuning     = 0.0;
+
+    //pitch = 0.5;
+    ph = 0.0;
+    //phadd =
+
     filter_freq_mod = 0.0;
     filter_res_mod  = 0.0;
     pulse_mod       = 0.0;
     width_mod       = 0.0;
-    state = MIP_VOICE_PLAYING;
+    pitch_mod       = 0.0;
+
+    amp_env.noteOn();
+    state = MIP_VOICE_PLAYING;    // todo: check MVoiceStaces[i].state..
     return MIP_VOICE_PLAYING;
   }
 
@@ -340,6 +342,7 @@ public:
     //MIP_Print("velocity %.3f\n",velocity);
     note_offvel = velocity;
     amp_env.noteOff();
+    //state = MIP_VOICE_RELEASED; // todo: check MVoiceStaces[i].state..
     return MIP_VOICE_RELEASED;
     //state = MIP_VOICE_RELEASED;
   }
@@ -364,13 +367,8 @@ public:
   //----------
 
   void tuning(float amount) {
+    //note_tuning = (amount * 2.0) - 1.0;
     note_tuning = amount;
-//    tune = amount;
-//    float t = (tune * 2) - 1; // -1..1
-//    t += tune_mod;
-//    //t *= 12;
-//    hz = MIP_NoteToHz(note_key + amount + t);
-//    phadd = hz / context->samplerate;
   }
 
   //----------
@@ -409,10 +407,7 @@ public:
       case  7:  amp_env.setDecay(value * 5);    break;
       case  8:  amp_env.setSustain(value);      break;
       case  9:  amp_env.setRelease(value * 5);  break;
-      case 10:
-        tune = value;
-        //tuning(0);
-        break;
+      case 10:  pitch = value;                  break;
     }
   }
 
@@ -422,10 +417,7 @@ public:
       case  3:  filter_res_mod = value;   break;
       case  4:  pulse = value;            break;
       case  5:  width_mod = value;        break;
-      case 10:
-        tune_mod = value;
-        //tuning(0);
-        break;
+      case 10:  pitch_mod = value;        break;
     }
   }
 
@@ -436,14 +428,13 @@ public:
 
   uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ASize) {
 
-    float t = tune + tune_mod;
-    t = (t * 2) - 1; // -1..1
-//    t += tune_mod;
+    float p = (pitch * 2.0) - 1.0;                            // 0..1 -> -1..1
+    p += pitch_mod;
+    //todo: smoother
+    hz = MIP_NoteToHz(note_key + note_tuning + p);  // pow !!
+    phadd = hz * context->invsamplerate;
 
-    hz = MIP_NoteToHz(note_key + note_tuning + t);
-    phadd = hz / context->samplerate;
-
-    float* output = context->voicebuffer;//MIP_VoiceSliceBuffer;
+    float* output = context->voicebuffer;
     for (uint32_t i = 0; i < ASize; i++) {
       float t1 = ph + 0.5f;
       t1 = MIP_Fract(t1);
@@ -626,7 +617,7 @@ private:
         //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
-      "Tune",
+      "Pitch",
       "",
       0.0,
       1.0,
@@ -689,11 +680,6 @@ public: // clap
   //----------
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
-    //#ifdef MIP_VOICE_USE_SLICES
-    //MVoiceManager.voicebuffer = MVoiceSliceBuffer;
-    //#else
-    //MVoiceManager.voicebuffer = MVoiceBuffer;
-    //#endif
     MVoiceManager.prepareVoices(sample_rate);
     // send initial parameter values to the voices
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
@@ -707,9 +693,10 @@ public: // clap
 
   const void* get_extension(const char *id) final {
     MIP_Print("host asks for: %s\n",id);
-    if (strcmp(id,CLAP_EXT_GUI) == 0) return &MGui;
+    if (strcmp(id,CLAP_EXT_GUI) == 0)         return &MGui;
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
-    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0) return &MNotePorts;
+    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)  return &MNotePorts;
+    if (strcmp(id,CLAP_EXT_VOICE_INFO) == 0)  return &MVoiceInfo;
     return MIP_Plugin::get_extension(id);
   }
 
@@ -742,11 +729,9 @@ public: // clap
 
   clap_process_status process(const clap_process_t *process) final {
     flushAudioParams();
-
     handle_input_events(process->in_events,process->out_events);
     handle_process(process);
     handle_output_events(process->in_events,process->out_events);
-
     // update gui (state)
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       uint32_t state = MVoiceManager.getVoiceState(i);
@@ -754,7 +739,6 @@ public: // clap
         ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
       }
     }
-
     return CLAP_PROCESS_CONTINUE;
   }
 
