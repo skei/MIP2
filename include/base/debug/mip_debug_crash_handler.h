@@ -60,7 +60,9 @@
   //----------
 
   void mip_crash_handler_callback(int sig) {
-    MIP_DPrint("\nmip_crash_handler_callback %i %s\n",sig,MIP_SignalNames[sig]);
+    MIP_DPrint("\nCRASH!\n");
+    MIP_DPrint("%i : %s\n",sig,MIP_SignalNames[sig]);
+    MIP_GLOBAL_WATCHES.printWatches("watched:");
     //MIP_DumpCallStackSkip(0); // 2
     MIP_DumpCallStack;
     exit(1); //_exit(1);

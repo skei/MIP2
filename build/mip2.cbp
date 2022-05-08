@@ -208,6 +208,7 @@
 		<Unit filename="../include/base/debug/mip_debug_crash_handler.h" />
 		<Unit filename="../include/base/debug/mip_debug_memory.h" />
 		<Unit filename="../include/base/debug/mip_debug_print.h" />
+		<Unit filename="../include/base/debug/mip_debug_watch.h" />
 		<Unit filename="../include/base/mip_attributes.h" />
 		<Unit filename="../include/base/mip_config.h" />
 		<Unit filename="../include/base/mip_const.h" />

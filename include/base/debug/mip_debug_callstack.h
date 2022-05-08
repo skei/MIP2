@@ -151,9 +151,9 @@
       int num = mip_callstack(0,adr,256);
       num_addresses = MIP_CallStackSymbols(adr,symbols,num,symbols_buffer,1024);
     }
-    MIP_DPrint("\n----------------------------------------------------------------------\n");
-    MIP_DPrint("callstack\n");
-    MIP_DPrint("----------------------------------------------------------------------\n");
+    //MIP_DPrint("\n----------------------------------------------------------------------\n");
+    MIP_DPrint("\ncallstack:\n");
+    //MIP_DPrint("----------------------------------------------------------------------\n");
 
     /*
       the last two entries are
@@ -167,7 +167,7 @@
       MIP_DPrint("      %s\n", symbols[i].file);
       MIP_DPrint("      line %i offset %i\n", symbols[i].line, symbols[i].ofs);
     }
-    MIP_DPrint("----------------------------------------------------------------------\n\n");
+    //MIP_DPrint("----------------------------------------------------------------------\n\n");
   }
 
   //----------

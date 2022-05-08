@@ -6,10 +6,11 @@
 #define MIP_DEBUG_CALLSTACK
 #define MIP_DEBUG_CRASH_HANDLER
 #define MIP_DEBUG_PRINT
-
-//#define MIP_DEBUG_PRINT_SOCKET
 //#define MIP_DEBUG_PRINT_THREAD
-//#define MIP_DEBUG_PRINT_TIME
+#define MIP_DEBUG_PRINT_TIME
+//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_WATCHES
+
 
 //----------------------------------------------------------------------
 
@@ -32,6 +33,7 @@
 
 #include "base/debug/mip_debug_print.h"
 #include "base/debug/mip_debug_assert.h"
+#include "base/debug/mip_debug_watch.h"
 #include "base/debug/mip_debug_callstack.h"
 #include "base/debug/mip_debug_crash_handler.h"
 
@@ -156,6 +158,7 @@ MIP_GlobalDebug MIP_GLOBAL_DEBUG;
 //----------------------------------------------------------------------
 
 #include "base/debug/mip_debug_memory.h"
+//#include "base/debug/mip_debug_watch.h"
 
 //----------------------------------------------------------------------
 #endif

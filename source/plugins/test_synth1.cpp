@@ -1,10 +1,12 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 #define MIP_DEBUG_PRINT_TIME
-//#define MIP_DEBUG_CALLSTACK
-//#define MIP_DEBUG_CRASH_HANDLER
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
+
+//#define MIP_DEBUG_WATCHES
+//#define MIP_DEBUG_CALLSTACK
+//#define MIP_DEBUG_CRASH_HANDLER
 
 #define MIP_VOICE_USE_SLICES
 
@@ -665,7 +667,16 @@ public:
 public: // clap
 //------------------------------
 
+// testing watches
+  uint32_t watch_var = 666;
+
+//----------
+
   bool init() final {
+
+// testing watches
+MIP_GLOBAL_WATCHES.addWatch(MIP_WATCH_UINT32,"watch_var",&watch_var);
+
     clap_version_t ver = MHost->host->clap_version;
     MIP_Print("host name: %s\n",MHost->host->name);
     MIP_Print("host version: %s\n",MHost->host->version);
@@ -719,6 +730,10 @@ public: // clap
   */
 
   bool voice_info_get(clap_voice_info_t *info) final {
+
+// testing watches
+MIP_GLOBAL_WATCHES.printWatch("watch_var","Watched: ");
+
     info->voice_count     = NUM_VOICES;
     info->voice_capacity  = NUM_VOICES;
     info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;
@@ -728,6 +743,11 @@ public: // clap
   //----------
 
   clap_process_status process(const clap_process_t *process) final {
+
+// testing crash handler (watches)
+uint32_t* a = nullptr;
+*a = 1;
+
     flushAudioParams();
     handle_input_events(process->in_events,process->out_events);
     handle_process(process);
