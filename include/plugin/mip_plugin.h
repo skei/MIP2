@@ -351,12 +351,12 @@ public: // editor listener
   */
 
   void on_updateParameterFromEditor(uint32_t AIndex, float AValue) override {
-    MIP_Print("%i = %.3f\n",AIndex,AValue);
+    //MIP_Print("%i = %.3f\n",AIndex,AValue);
     MAudioParamVal[AIndex] = AValue;
-//    queueAudioParam(AIndex);
-//    MHostParamVal[AIndex] = AValue;
-//    queueHostParam(AIndex);
-//    handle_editor_parameter(AIndex,AValue);         // this crashes if AIndex >= 8 ?????
+    queueAudioParam(AIndex);
+    MHostParamVal[AIndex] = AValue;
+    queueHostParam(AIndex);
+    handle_editor_parameter(AIndex,AValue);         // this crashes if AIndex >= 8 ?????
   }
 
   //----------

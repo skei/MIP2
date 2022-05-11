@@ -68,7 +68,7 @@ struct MIP_EnvelopeStage {
 
 //----------------------------------------------------------------------
 
-class MIP_ExpAdsrEnvelope {
+class MIP_Envelope {
 
   private:
 
@@ -79,10 +79,10 @@ class MIP_ExpAdsrEnvelope {
 
   public:
 
-    MIP_ExpAdsrEnvelope() {
-      //MScale = 50.0f;//6.0f;
+    MIP_Envelope() {
+      //MScale = 50.0;//6.0;
       MStage = MIP_ENVELOPE_OFF;
-      MValue = 0.0f;
+      MValue = 0.0;
     }
 
     //----------
@@ -95,7 +95,7 @@ class MIP_ExpAdsrEnvelope {
 
     void reset() {
       MStage = MIP_ENVELOPE_OFF;
-      MValue = 0.0f;
+      MValue = 0.0;
     }
 
     /*
@@ -108,21 +108,24 @@ class MIP_ExpAdsrEnvelope {
     float calcRate(float ms) {
       //return expf(-1 / (ms * MSampleRate));
       //ms = (ms*ms); // a little hack to make the knob more 'sensitive' to short durations..
-      //ms *= 2.0f;
+      //ms *= 2.0;
       //float rate = 1.0f - expf(-1.0f / (ms*MSampleRate));
       //KTrace("ms %.3f rate %f\n",ms,rate);
-      //float rate = 1.0f;
+      //float rate = 1.0;
       //if (ms > 0) rate = 1.0f - expf(-1.0f / ms*1000.0f);
       //else rate = 0;
       //return rate;
       //return 1.0f / (ms*1000.0f)
       //return 1.0f - expf(-2.0f * MIP_PI * ms / MSampleRate);
       float a = ms * mip_env_rate_scale; // 0..1 -> 0..25
-      a = (a*a*a);  // 0..25 -> 0..625 (a*a*a = 15625)
-      a += 1.0f;
+      a = (a*a*a);
+      a += 1.0;
       //if (a > 0) return 1.0f / a;
-      //else return 1.0f;
-      return 1.0f / a;
+      //else return 1.0;
+
+//      MIP_Print("ms %f -> %f\n",ms,1.0/a);
+
+      return 1.0 / a;
     }
 
     //----------
@@ -130,7 +133,7 @@ class MIP_ExpAdsrEnvelope {
     void setAttack(float AValue) {
       //float r1 = AValue * mip_env_rate_scale;
       //float r2 = (r1*r1*r1) + 1;
-      MStages[MIP_ENVELOPE_ATTACK].target = 1.0f;
+      MStages[MIP_ENVELOPE_ATTACK].target = 1.0;
       //MStages[MIP_ENVELOPE_ATTACK].rate   = 1.0f / r2;
       MStages[MIP_ENVELOPE_ATTACK].rate   = calcRate(AValue);
     }
@@ -150,13 +153,13 @@ class MIP_ExpAdsrEnvelope {
       //MStages[MIP_ENVELOPE_SUSTAIN].target = r2; // set in setSustain
       MStages[MIP_ENVELOPE_DECAY].target = AValue;
       MStages[MIP_ENVELOPE_SUSTAIN].target = AValue;
-      MStages[MIP_ENVELOPE_SUSTAIN].rate = 1.0f;
+      MStages[MIP_ENVELOPE_SUSTAIN].rate = 1.0;
     }
 
     void setRelease(float AValue) {
       //float r1 = AValue * mip_env_rate_scale;
       //float r2 = (r1*r1*r1) + 1;
-      MStages[MIP_ENVELOPE_RELEASE].target = 0.0f;
+      MStages[MIP_ENVELOPE_RELEASE].target = 0.0;
       //MStages[MIP_ENVELOPE_RELEASE].rate   = 1.0f / r2;
       MStages[MIP_ENVELOPE_RELEASE].rate = calcRate(AValue);
     }
@@ -179,7 +182,7 @@ class MIP_ExpAdsrEnvelope {
       //setStage(kes_decay,s,d);
       //setStage(kes_sustain,s,1,1);
       ////MStages[kes_sustain].target = s*s*s;
-      ////MStages[kes_sustain].rate   = 1.0f;
+      ////MStages[kes_sustain].rate   = 1.0;
       //setStage(kes_release,0.0f,r);
       setAttack(a);
       setDecay(d);
@@ -191,7 +194,7 @@ class MIP_ExpAdsrEnvelope {
 
     void noteOn(void) {
       MStage = MIP_ENVELOPE_ATTACK;
-      MValue = 0.0f;
+      MValue = 0.0;
 
     }
 
@@ -204,8 +207,8 @@ class MIP_ExpAdsrEnvelope {
     //----------
 
     float process(void) {
-      if (MStage == MIP_ENVELOPE_OFF) return 0.0f;
-      if (MStage == MIP_ENVELOPE_FINISHED) return 0.0f;
+      if (MStage == MIP_ENVELOPE_OFF) return 0.0;
+      if (MStage == MIP_ENVELOPE_FINISHED) return 0.0;
       if (MStage == MIP_ENVELOPE_SUSTAIN) return MValue;
       float target = MStages[MStage].target;
       float rate   = MStages[MStage].rate;
@@ -237,5 +240,7 @@ class MIP_ExpAdsrEnvelope {
 
 };
 
+
 //----------------------------------------------------------------------
 #endif
+

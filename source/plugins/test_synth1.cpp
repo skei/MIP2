@@ -2,7 +2,7 @@
 #define MIP_PAINTER_CAIRO
 #define MIP_DEBUG_PRINT_TIME
 
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 //#define MIP_DEBUG_WATCHES
@@ -265,7 +265,8 @@ private:
   MIP_VoiceContext*   context   = nullptr;
 
   MIP_SvfFilter       filter            = {};
-  MIP_ExpAdsrEnvelope amp_env           = {};
+  //MIP_ExpAdsrEnvelope amp_env           = {};
+  MIP_Envelope        amp_env           = {};
   MIP_RcFilter        flt_freq_smoother = {};
   MIP_RcFilter        flt_res_smoother  = {};
   MIP_RcFilter        vol_smoother      = {};
@@ -401,16 +402,19 @@ public:
   //----------
 
   void parameter(uint32_t index, float value) {
+    //MIP_Print("%i = %.3f\n",index,value);
+    float v2 = (value*value);
+    //float v3 = (value*value*value);
     switch (index) {
-      case  2:  filter_freq = value;            break;
-      case  3:  filter_res = value;             break;
-      case  4:  pulse = value;                  break;
-      case  5:  width = value;                  break;
-      case  6:  amp_env.setAttack(value * 5);   break;
-      case  7:  amp_env.setDecay(value * 5);    break;
-      case  8:  amp_env.setSustain(value);      break;
-      case  9:  amp_env.setRelease(value * 5);  break;
-      case 10:  pitch = value;                  break;
+      case  2:  filter_freq = value;          break;
+      case  3:  filter_res = value;           break;
+      case  4:  pulse = value;                break;
+      case  5:  width = value;                break;
+      case  6:  amp_env.setAttack(value*5);   break;
+      case  7:  amp_env.setDecay(value*5);    break;
+      case  8:  amp_env.setSustain(v2);       break;
+      case  9:  amp_env.setRelease(value*5);  break;
+      case 10:  pitch = value;                break;
     }
   }
 
@@ -777,7 +781,7 @@ public:
 protected:
 
   void handle_editor_parameter(uint32_t AIndex, float AValue) final {
-    MIP_Print("%i = %.3f\n",AIndex,AValue);
+    //MIP_Print("%i = %.3f\n",AIndex,AValue);
     MVoiceManager.voiceParameter(AIndex,AValue);
   }
 

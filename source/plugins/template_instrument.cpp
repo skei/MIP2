@@ -6,17 +6,14 @@
 
 #define MIP_VOICE_USE_SLICES
 
-
-#define EDITOR_WIDTH      640
-#define EDITOR_HEIGHT     480
-
 #define NUM_PARAMETERS    1
 #define NUM_AUDIO_OUTPUTS 1
 #define NUM_NOTE_INPUTS   1
-
 #define NUM_VOICES        16
+#define EDITOR_WIDTH      640
+#define EDITOR_HEIGHT     480
 
-//----------
+//----------------------------------------------------------------------
 
 #include "plugin/mip_plugin.h"
 
@@ -26,7 +23,6 @@
 #include "audio/mip_audio_math.h"
 #include "audio/mip_voice_manager.h"
 #include "audio/modulation/mip_envelope.h"
-
 
 //----------------------------------------------------------------------
 //
@@ -73,8 +69,8 @@ public:
 private:
 //------------------------------
 
-  MIP_VoiceContext*   context   = nullptr;
-  MIP_ExpAdsrEnvelope amp_env           = {};
+  MIP_VoiceContext* context = nullptr;
+  MIP_ExpAdsrEnvelope amp_env = {};
 
   int32_t note_key        = -1;
 
@@ -348,22 +344,6 @@ private:
     MIP_Plugin::handle_parameter_event(param_value);
     need_recalc = true;
   }
-
-  //----------
-
-//  void handle_process(const clap_process_t *process) final {
-//    //MIP_PRINT;
-//    if (need_recalc) recalc(MSampleRate);
-//    uint32_t len = process->frames_count;
-//    float* in0  = process->audio_inputs[0].data32[0];
-//    float* in1  = process->audio_inputs[0].data32[1];
-//    float* out0 = process->audio_outputs[0].data32[0];
-//    float* out1 = process->audio_outputs[0].data32[1];
-//    for (uint32_t i=0; i<len; i++) {
-//      *in0++ = *out0++;
-//      *in1++ = *out1++;
-//    }
-//  }
 
   //----------
 
