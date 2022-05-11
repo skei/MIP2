@@ -10,20 +10,28 @@
 
 //----------------------------------------------------------------------
 
-
 #include "mip.h"
 #include "base/types/mip_array.h"
 #include "base/types/mip_queue.h"
 #include "audio/mip_audio_utils.h"
+#include "plugin/mip_parameter.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_plugin.h"
 
-#include "plugin/mip_parameter.h"
-
 #ifndef MIP_NO_GUI
 #include "plugin/mip_editor.h"
 #endif
+
+//----------------------------------------------------------------------
+
+/*
+  max number of events per audio block..
+  (from gui)
+  see also same thing in MIP_Editor
+*/
+
+#define EVENTS_PER_BLOCK  128
 
 //----------------------------------------------------------------------
 //
@@ -96,15 +104,22 @@ class MIP_Plugin
 private:
 //------------------------------
 
-  MIP_ClapIntQueue                MAudioParamQueue        = {};
+  // gui -> plugin
+  // number of items per
+
+  //MIP_ClapIntQueue                MAudioParamQueue        = {};
+  //MIP_ClapIntQueue                MHostParamQueue         = {};
+  MIP_Queue<uint32_t,EVENTS_PER_BLOCK>  MAudioParamQueue        = {};
   float*                          MAudioParamVal          = nullptr;
 
-  MIP_ClapIntQueue                MHostParamQueue         = {};
+  // gui -> host
+
+  MIP_Queue<uint32_t,EVENTS_PER_BLOCK>  MHostParamQueue         = {};
   float*                          MHostParamVal           = nullptr;
   float*                          MHostParamMod           = nullptr;
 
-//  MIP_ClapIntQueue                MHostBeginGestureQueue  = {};
-//  MIP_ClapIntQueue                MHostEndGestureQueue    = {};
+  //MIP_ClapIntQueue                MHostBeginGestureQueue  = {};
+  //MIP_ClapIntQueue                MHostEndGestureQueue    = {};
 
 //------------------------------
 protected:
@@ -127,9 +142,11 @@ protected:
 
   #ifndef MIP_NO_GUI
   MIP_Editor*                     MEditor                 = nullptr;
-  bool                            MEditorIsOpen           = false;
   #endif
 
+  bool                            MEditorIsOpen           = false;
+  uint32_t                        MEditorDefaultWidth     = 640;
+  uint32_t                        MEditorDefaultHeight    = 480;
 
 //------------------------------
 public:
@@ -139,15 +156,22 @@ public:
   : MIP_ClapPlugin(ADescriptor,AHost) {
     MDescriptor = ADescriptor;
     MHost = new MIP_ClapHost(AHost);
-    //uint32_t num = params_count();
-    uint32_t num = MParameters.size();
-    uint32_t size = num * sizeof(float);
-    MAudioParamVal = (float*)malloc(size);
-    MHostParamVal = (float*)malloc(size);
-    MHostParamMod = (float*)malloc(size);
-    memset(MAudioParamVal,0,size);
-    memset(MHostParamVal,0,size);
-    memset(MHostParamMod,0,size);
+
+    // move to init()
+    // we haven't set up the parameters yet..
+
+
+//    //uint32_t num = params_count();
+//    uint32_t num = MParameters.size();
+//    uint32_t size = num * sizeof(float);
+//    //MIP_Print("MAudioParamVal num %i size %i\n",num,size); // num = 0
+//    MAudioParamVal = (float*)malloc(size);
+//    MHostParamVal = (float*)malloc(size);
+//    MHostParamMod = (float*)malloc(size);
+//    memset(MAudioParamVal,0,size);
+//    memset(MHostParamVal,0,size);
+//    memset(MHostParamMod,0,size);
+
   }
 
   //----------
@@ -157,9 +181,9 @@ public:
     deleteParameters();
     #endif
     delete MHost;
-    free (MAudioParamVal);
-    free (MHostParamVal);
-    free (MHostParamMod);
+    if (MAudioParamVal) free (MAudioParamVal);
+    if (MHostParamVal)  free (MHostParamVal);
+    if (MHostParamMod)  free (MHostParamMod);
   }
 
 //------------------------------
@@ -187,10 +211,10 @@ public:
     MParameterValues[AIndex] = AValue;
   }
 
-//  #ifndef MIP_NO_GUI
-//  MIP_Editor* getEditor() { return MEditor; }
-//  bool        isEditorOpen() { return MEditorIsOpen; }
-//  #endif
+  //#ifndef MIP_NO_GUI
+  //MIP_Editor* getEditor() { return MEditor; }
+  //bool        isEditorOpen() { return MEditorIsOpen; }
+  //#endif
 
 //------------------------------
 //private: // ??
@@ -223,6 +247,8 @@ protected: // ??
       // if we already set this, it should be (bit) identical?
       if (value != MParameterValues[index]) {
         MParameterValues[index] = value;
+
+        // notify voice manager...
 
 //TODO
 //        on_plugin_parameter();
@@ -325,12 +351,12 @@ public: // editor listener
   */
 
   void on_updateParameterFromEditor(uint32_t AIndex, float AValue) override {
-    //MIP_Print("%i = %.3f\n",AIndex,AValue);
+    MIP_Print("%i = %.3f\n",AIndex,AValue);
     MAudioParamVal[AIndex] = AValue;
-    queueAudioParam(AIndex);
-    MHostParamVal[AIndex] = AValue;
-    queueHostParam(AIndex);
-    handle_editor_parameter(AIndex,AValue);
+//    queueAudioParam(AIndex);
+//    MHostParamVal[AIndex] = AValue;
+//    queueHostParam(AIndex);
+//    handle_editor_parameter(AIndex,AValue);         // this crashes if AIndex >= 8 ?????
   }
 
   //----------
@@ -387,10 +413,11 @@ protected:
   }
 
 //------------------------------
-protected:
+//protected:
 //------------------------------
 
   virtual void handle_editor_parameter(uint32_t AIndex, float AValue) {
+    MIP_Print("AIndex %i AValue %.3f\n",AIndex,AValue);
   }
 
 //------------------------------
@@ -516,6 +543,7 @@ protected: // setup
 //------------------------------
 
   void setupParameters(clap_param_info_t* params, uint32_t num) {
+    //MIP_PRINT;
     for (uint32_t i=0; i<num; i++) {
       MIP_Parameter* parameter = new MIP_Parameter(&params[i]);
       appendParameter(parameter);
@@ -578,7 +606,7 @@ protected: // setup
     }
   }
 
-  //MIP_AudioPort* appendAudioInput(MIP_AudioPort* APort) {
+  //void appendAudioInput(clap_audio_port_info_t APort) {
   //  MAudioInputs.append(APort);
   //  return APort;
   //}
@@ -711,8 +739,17 @@ public: // plugin
 
   bool init() override {
     uint32_t num = MParameters.size();
-    MParameterValues = (float*)malloc(num * sizeof(float));
-    MParameterModulations = (float*)malloc(num * sizeof(float));
+    uint32_t size = num * sizeof(float);
+    MParameterValues = (float*)malloc(size);
+    MParameterModulations = (float*)malloc(size);
+
+    MAudioParamVal = (float*)malloc(size);
+    MHostParamVal = (float*)malloc(size);
+    MHostParamMod = (float*)malloc(size);
+    memset(MAudioParamVal,0,size);
+    memset(MHostParamVal,0,size);
+    memset(MHostParamMod,0,size);
+
     for (uint32_t i=0; i<num; i++) {
       float v = MParameters[i]->info.default_value;
       setParameterValue(i,v);
@@ -883,10 +920,13 @@ public: // gui
 
   bool gui_create(const char *api, bool is_floating) override {
     //MIP_PRINT;
-    if (is_floating) return false;
-    MEditor = new MIP_Editor(this,this,256,256,false); // ???
-    if (MEditor) return true;
-    return false;
+    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) { /*MIP_Print("error.. !x11\n");*/ return false; }
+    if (is_floating) { /*MIP_Print("error.. is_floating\n");*/ return false; }
+    MEditorIsOpen = false;
+    MEditor = new MIP_Editor(this,this,MEditorDefaultWidth,MEditorDefaultHeight,false); // ???
+    //if (MEditor) return true;
+    //return false;
+    return (MEditor);
   }
 
   //----------
@@ -1129,6 +1169,8 @@ public: // render
   //}
 
 };
+
+#undef EVENTS_PER_BLOCK
 
 //----------------------------------------------------------------------
 #endif

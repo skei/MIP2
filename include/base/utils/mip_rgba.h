@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "base/utils/mip_math.h"
+#include "base/types/mip_color.h"
 //typedef uint32_t MIP_RGBA;
 
 //----------------------------------------------------------------------
@@ -17,6 +18,14 @@ uint32_t MIP_RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a=255) {
     + ((uint32_t)r << 16)
     + ((uint32_t)g << 8 )
     + b;
+}
+
+uint32_t MIP_RGBA(MIP_Color AColor) {
+  uint8_t r = 255 * AColor.r;
+  uint8_t g = 255 * AColor.g;
+  uint8_t b = 255 * AColor.b;
+  uint8_t a = 255 * AColor.a;
+  return MIP_RGBA(r,g,b,a);
 }
 
 /*

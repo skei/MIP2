@@ -90,6 +90,7 @@ public: // extensions
   virtual bool      render_set(clap_plugin_render_mode mode) { return true; }
   virtual bool      state_save(const clap_ostream_t *stream) { return true; }
   virtual bool      state_load(const clap_istream_t *stream) { return true; }
+  virtual uint32_t  tail_get() { return 0; }
   virtual void      thread_pool_exec(uint32_t task_index) {}
   virtual void      timer_support_on_timer(clap_id timer_id) {}
 
@@ -179,8 +180,8 @@ protected:
 
   //const
   clap_plugin_t MPlugin = {
-    nullptr, //descriptor (set in constructor)
-    this,
+    nullptr,  // descriptor (set in constructor)
+    this,     // plugin_data
     clap_plugin_init_callback,
     clap_plugin_destroy_callback,
     clap_plugin_activate_callback,
@@ -543,6 +544,23 @@ protected:
   };
 
   //--------------------
+  // clap.tail
+  //--------------------
+
+private:
+
+  static uint32_t clap_plugin_tail_get_callback(const clap_plugin_t *plugin) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->tail_get();
+  }
+
+protected:
+
+  clap_plugin_tail_t MTail {
+    clap_plugin_tail_get_callback
+  };
+
+  //--------------------
   // clap.thread-pool
   //--------------------
 
@@ -602,11 +620,6 @@ protected:
   //--------------------
 
 private:
-
-  //static void clap_plugin_check_for_update_check_callback(const clap_plugin_t *plugin, bool include_beta) {
-  //  MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-  //  return plug->check_for_update_check(bool include_beta);
-  //}
 
   static void clap_plugin_check_for_update_check_callback(const clap_host_t *host, bool include_beta) {
   }

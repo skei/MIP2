@@ -60,8 +60,8 @@ public:
     setHint("dragvalue");
     MText = AText;
     MValue = AValue;
-    flags.autoMouseLock   = true;
-    flags.autoMouseHide   = true;
+//    flags.autoMouseLock   = true;
+//    flags.autoMouseHide   = true;
     flags.redrawInteract  = true;
   }
 

@@ -4,9 +4,9 @@
 
 //#define MIP_NO_BITMAP_PNG
 //#define MIP_NO_BITMAP_PNG_FILE
-#define MIP_NO_BITMAP_DRAW
-#define MIP_NO_BITMAP_FONT
-#define MIP_NO_BITMAP_PROC
+//#define MIP_NO_BITMAP_DRAW
+//#define MIP_NO_BITMAP_FONT
+//#define MIP_NO_BITMAP_PROC
 //#define MIP_NO_BITMAP_GEN
 
 //----------------------------------------------------------------------
@@ -15,6 +15,7 @@
 #include "base/utils/mip_rgba.h"
 #include "base/utils/mip_integer_math.h"
 #include "base/utils/mip_random.h"
+#include "base/types/mip_color.h"
 #include "gui/mip_drawable.h"
 
 #ifdef MIP_USE_CAIRO
@@ -71,6 +72,19 @@ public:
     MBufferSize = MStride * MHeight;
     MBuffer     = (uint32_t*)malloc(MBufferSize);
     MAllocated  = true;
+  }
+
+  //----------
+
+  // create new, provide buffer
+
+  MIP_Bitmap(uint32_t AWidth, uint32_t AHeight, uint32_t* ABuffer) {
+    MWidth      = AWidth;
+    MHeight     = AHeight;
+    MStride     = MWidth * 4;
+    MBufferSize = MStride * MHeight;
+    MBuffer     = ABuffer;
+    MAllocated  = false;
   }
 
   //----------
@@ -331,6 +345,11 @@ public:
   }
 
   #undef _alpha
+
+  void blendPixelF(uint32_t x, uint32_t y, uint32_t c, float AAlpha) {
+    uint8_t a = AAlpha = 255.0;
+    blendPixel(x,y,c,a);
+  }
 
 //------------------------------
 public:

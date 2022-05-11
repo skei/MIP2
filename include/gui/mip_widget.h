@@ -29,8 +29,10 @@ typedef MIP_Array<MIP_Widget*> MIP_Widgets;
 
 struct MIP_WidgetFlags {
   bool opaque           = false;    // fully covers its parent (no transparent areas)
-  bool sizePercent      = false;    // widget size is percent (of client area), not pixels
-  bool posPercent       = false;    // widget pos is percent (of client area), not pixels
+  //bool sizePercent      = false;    // widget size is percent (of client area), not pixels
+  //bool posPercent       = false;    // widget pos is percent (of client area), not pixels
+  bool sizeRatio        = false;    // widget size is percent (of client area), not pixels
+  bool posRatio         = false;    // widget pos is percent (of client area), not pixels
   bool autoCursor       = true;     // set mouse cursor automatically when hovering over a widget (entering)
   bool autoHint         = false;    // send hint automatically when hovering over a widget (entering)
   bool autoClip         = true;     // clip child widgets
@@ -369,13 +371,22 @@ public:
         MIP_FRect rect      = child->getInitialRect();
         uint32_t  alignment = child->layout.alignment;
 
-        if (child->flags.sizePercent) {
-          rect.w = client.w * (rect.w * 0.01f);
-          rect.h = client.h * (rect.h * 0.01f);
+        //if (child->flags.sizePercent) {
+        //  rect.w = client.w * (rect.w * 0.01f);
+        //  rect.h = client.h * (rect.h * 0.01f);
+        //}
+        //if (child->flags.posPercent) {
+        //  rect.x = client.w * (rect.x * 0.01f);
+        //  rect.y = client.w * (rect.y * 0.01f);
+        //}
+
+        if (child->flags.sizeRatio) {
+          rect.w = client.w * rect.w;
+          rect.h = client.h * rect.h;
         }
-        if (child->flags.posPercent) {
-          rect.x = client.w * (rect.x * 0.01f);
-          rect.y = client.w * (rect.y * 0.01f);
+        if (child->flags.posRatio) {
+          rect.x = client.w * rect.x;
+          rect.y = client.h * rect.y;
         }
 
         //----------

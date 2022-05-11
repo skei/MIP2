@@ -881,7 +881,8 @@ public: // image
     //MIP_PRINT;
     cairo_surface_t* srf = ABitmap->createCairoSurface();
     cairo_save(MCairo);
-    cairo_set_source_surface(MCairo,srf,0,0);
+    //cairo_set_source_surface(MCairo,srf,0,0);
+    cairo_set_source_surface(MCairo,srf,AXpos/*-ASrc.x*/,AYpos/*-ASrc.y*/);
     cairo_rectangle(MCairo,AXpos,AYpos,ABitmap->getWidth(),ABitmap->getHeight());
     cairo_fill(MCairo);
     cairo_restore(MCairo);

@@ -144,7 +144,8 @@ public:
       MIP_ClapPlugin* mipplugin = nullptr;
       if (MIP_CreatePlugin) {
         mipplugin = MIP_CreatePlugin(0,descriptor,host->ptr());
-        plugin = mipplugin->ptr();
+
+        plugin = mipplugin->clap_plugin_ptr();
         plugin->init(plugin);
         plugin->activate(plugin,44100,128,128);
         //plugin->start_processing(plugin);

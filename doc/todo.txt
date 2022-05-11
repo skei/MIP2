@@ -1,8 +1,25 @@
 
 
+
+(quick notes.. research...)
+
+* parameter smoothing in MIP_Parameter class
+* pre-process event stream -> individual voices
+
+
+
+
+
+
+
+
+//----------------------------------------------------------------------
+
+
+
 //----------------------------------------------------------------------
 //
-// general
+// GENERAL
 //
 //----------------------------------------------------------------------
 
@@ -10,7 +27,7 @@
 
 //----------------------------------------------------------------------
 //
-// base
+// /BASE
 //
 //----------------------------------------------------------------------
 
@@ -21,7 +38,7 @@
 
 //----------------------------------------------------------------------
 //
-// plugin
+// /PLUGIN
 //
 //----------------------------------------------------------------------
 
@@ -30,7 +47,7 @@
 
 //----------------------------------------------------------------------
 //
-// gui
+// /GUI
 //
 //----------------------------------------------------------------------
 
@@ -59,6 +76,17 @@
 
   a set of basic drawing functions you combine and use to drawing widgets?
   on_widget_paint..
+
+* window resizing
+
+  restrict number of resize events,
+  they can choke the event queue
+
+  resize event:
+  - save wanted size
+  - if there is a timer running: nothing
+  - else: start timer w/timeout (100ms?)
+  - when timeout: stop timer, send resize event (latest wanted size)
 
 
 

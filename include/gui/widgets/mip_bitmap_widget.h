@@ -2,6 +2,10 @@
 #define mip_bitmap_widget_included
 //----------------------------------------------------------------------
 
+
+#define MAXSIZE
+
+
 #include "gui/mip_widget.h"
 
 class MIP_BitmapWidget
@@ -17,7 +21,7 @@ private:
 public:
 //------------------------------
 
-  MIP_BitmapWidget(MIP_FRect ARect, MIP_Bitmap* ABitmap)
+  MIP_BitmapWidget(MIP_FRect ARect, MIP_Bitmap* ABitmap=nullptr)
   : MIP_Widget(ARect) {
     setName("MIP_BitmapWidget");
     setHint("bitmap");
@@ -27,6 +31,11 @@ public:
   //----------
 
   virtual ~MIP_BitmapWidget() {
+  }
+
+  //----------
+
+  virtual void drawBitmap(MIP_Bitmap* ABitmap, MIP_FRect ARect) {
   }
 
 //------------------------------
@@ -45,6 +54,15 @@ public:
     if (MBitmap) {
       MIP_FRect src_rect = MIP_FRect(0,0,MBitmap->getWidth(),MBitmap->getHeight());
       APainter->drawBitmap(MRect.x,MRect.y,MBitmap,src_rect);
+    }
+    else {
+      MIP_Bitmap* bitmap = new MIP_Bitmap(MRect.w,MRect.h);
+      drawBitmap(bitmap,ARect);
+      //MIP_FRect src_rect = MIP_FRect(0,0,MRect.w,MRect.h);
+      //APainter->drawBitmap(MRect.x,MRect.y,bitmap,src_rect);
+      APainter->drawBitmap(MRect.x,MRect.y,bitmap);
+      APainter->flush();
+      delete bitmap;
     }
   }
 

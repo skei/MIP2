@@ -1,7 +1,8 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 #define MIP_DEBUG_PRINT_TIME
-#define MIP_DEBUG_PRINT_SOCKET
+
+//#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 //#define MIP_DEBUG_WATCHES
@@ -203,19 +204,19 @@ public:
       controls->appendWidget(width_knob);
       connect(width_knob,5);
 
-      // ampl att
+      // amp att
       MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"A.Att");
       controls->appendWidget(amp_att_knob);
       connect(amp_att_knob,6);
-      // ampl dec
+      // amp dec
       MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"A.Dec");
       controls->appendWidget(amp_dec_knob);
       connect(amp_dec_knob,7);
-      // ampl sus
+      // amp sus
       MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"A.Sus");
       controls->appendWidget(amp_sus_knob);
       connect(amp_sus_knob,8);
-      // ampl rel
+      // amp rel
       MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"A.Rel");
       controls->appendWidget(amp_rel_knob);
       connect(amp_rel_knob,9);
@@ -433,10 +434,14 @@ public:
     float p = (pitch * 2.0) - 1.0;                            // 0..1 -> -1..1
     p += pitch_mod;
     //todo: smoother
+
+    MIP_Assert(note_key > 0);
     hz = MIP_NoteToHz(note_key + note_tuning + p);  // pow !!
     phadd = hz * context->invsamplerate;
 
     float* output = context->voicebuffer;
+    MIP_Assert(output);
+
     for (uint32_t i = 0; i < ASize; i++) {
       float t1 = ph + 0.5f;
       t1 = MIP_Fract(t1);
@@ -472,6 +477,7 @@ public:
       ph += phadd;
       ph = MIP_Fract(ph);
     }
+
     if (amp_env.getStage() == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
     else return AState;
   }
@@ -667,16 +673,7 @@ public:
 public: // clap
 //------------------------------
 
-// testing watches
-  uint32_t watch_var = 666;
-
-//----------
-
   bool init() final {
-
-// testing watches
-MIP_GLOBAL_WATCHES.addWatch(MIP_WATCH_UINT32,"watch_var",&watch_var);
-
     clap_version_t ver = MHost->host->clap_version;
     MIP_Print("host name: %s\n",MHost->host->name);
     MIP_Print("host version: %s\n",MHost->host->version);
@@ -730,10 +727,6 @@ MIP_GLOBAL_WATCHES.addWatch(MIP_WATCH_UINT32,"watch_var",&watch_var);
   */
 
   bool voice_info_get(clap_voice_info_t *info) final {
-
-// testing watches
-MIP_GLOBAL_WATCHES.printWatch("watch_var","Watched: ");
-
     info->voice_count     = NUM_VOICES;
     info->voice_capacity  = NUM_VOICES;
     info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;
@@ -743,11 +736,6 @@ MIP_GLOBAL_WATCHES.printWatch("watch_var","Watched: ");
   //----------
 
   clap_process_status process(const clap_process_t *process) final {
-
-// testing crash handler (watches)
-uint32_t* a = nullptr;
-*a = 1;
-
     flushAudioParams();
     handle_input_events(process->in_events,process->out_events);
     handle_process(process);
@@ -786,7 +774,10 @@ public:
 
   //----------
 
+protected:
+
   void handle_editor_parameter(uint32_t AIndex, float AValue) final {
+    MIP_Print("%i = %.3f\n",AIndex,AValue);
     MVoiceManager.voiceParameter(AIndex,AValue);
   }
 

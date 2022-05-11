@@ -11,6 +11,7 @@
 
 #include "mip.h"
 #include "base/system/mip_timer.h"
+#include "base/types/mip_queue.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_utils.h"
@@ -18,12 +19,21 @@
 
 #define MIP_EDITOR_TIMER_RATE 30
 
+/*
+  plugin/host -> gui
+  could potentially be all parameters
+  (loading preset..)
+*/
+
+#define EVENTS_PER_BLOCK 4096
+
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
 
+/*
 class MIP_EditorWindow
 : public MIP_Window {
 
@@ -47,6 +57,7 @@ public:
 //  }
 
 };
+*/
 
 //----------------------------------------------------------------------
 
@@ -72,25 +83,31 @@ class MIP_Editor
 private:
 //------------------------------
 
-  MIP_EditorListener* MListener         = nullptr;
-  MIP_ClapPlugin*     MPlugin           = nullptr;
-  uint32_t            MNumParams        = 0;
-  uint32_t            MWidth            = 0;
-  uint32_t            MHeight           = 0;
-  double              MScale            = 1.0;
-  bool                MCanResize        = false;
-  bool                MEmbedded         = false;
-  MIP_EditorWindow*   MWindow           = nullptr;
-  MIP_Timer*          MTimer            = nullptr;
-  MIP_Widget**        MParamToWidget    = nullptr;
-  MIP_ClapIntQueue    MGuiParamQueue    = {};
-  MIP_ClapIntQueue    MGuiModQueue      = {};
-  float*              MGuiParamVal      = nullptr;
-  float*              MGuiParamMod      = nullptr;
-  bool                MEditorIsOpen     = true;
+  MIP_EditorListener*       MListener         = nullptr;
+  MIP_ClapPlugin*           MPlugin           = nullptr;
+  uint32_t                  MNumParams        = 0;
+  uint32_t                  MWidth            = 0;
+  uint32_t                  MHeight           = 0;
+  double                    MScale            = 1.0;
+  bool                      MCanResize        = false;
+  bool                      MEmbedded         = false;
+  //MIP_EditorWindow*         MWindow           = nullptr;
+  MIP_Window*               MWindow           = nullptr;
+  MIP_Timer*                MTimer            = nullptr;
+  MIP_Widget**              MParamToWidget    = nullptr;
 
-  //MIP_Widgets         MChangedParmeters = {};
-  MIP_Widgets         MDirtyWidgets     = {};
+  //MIP_ClapIntQueue          MGuiParamQueue    = {};
+  //MIP_ClapIntQueue          MGuiModQueue      = {};
+  MIP_Queue<uint32_t,EVENTS_PER_BLOCK> MGuiParamQueue  = {};
+  MIP_Queue<uint32_t,EVENTS_PER_BLOCK> MGuiModQueue    = {};
+
+  float*                    MGuiParamVal      = nullptr;
+  float*                    MGuiParamMod      = nullptr;
+
+  bool                      MEditorIsOpen     = true;
+
+  //MIP_Widgets               MChangedParmeters = {};
+  MIP_Widgets               MDirtyWidgets     = {};
 
 //------------------------------
 public:
@@ -112,7 +129,8 @@ public:
     memset(MGuiParamVal,0,size);
     memset(MGuiParamMod,0,size);
     MTimer = new MIP_Timer(this);
-    MWindow = new MIP_EditorWindow(AWidth,AHeight,this,AEmbedded);
+    //MWindow = new MIP_EditorWindow(AWidth,AHeight,this,AEmbedded);
+    MWindow = new MIP_Window(AWidth,AHeight,this,AEmbedded);
   }
 
   //----------
@@ -427,6 +445,8 @@ public:
 //  }
 
 };
+
+#undef EVENTS_PER_BLOCK
 
 //----------------------------------------------------------------------
 #endif
