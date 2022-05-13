@@ -34,7 +34,7 @@
 
 #define NUM_PARAMS          11
 #define NUM_NOTE_INPUTS     1
-#define NUM_AUDIO_OUTPUTS   2
+#define NUM_AUDIO_OUTPUTS   1
 #define NUM_VOICES          16
 #define EDITOR_WIDTH        420
 #define EDITOR_HEIGHT       350
@@ -389,8 +389,6 @@ public:
 
   //----------
 
-  // AState = MIP_VOICE_PLAYING / MIP_VOICE_RELEASED
-
   uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ALength, uint32_t AOffset) {
     MIP_Assert(note_key >= 0);
     if (note_key >= 0) {
@@ -400,6 +398,9 @@ public:
       hz = MIP_NoteToHz(note_key + note_tuning + p);
       phadd = hz * context->invsamplerate;
       float* output = context->voicebuffer;
+
+      // this should already have been applied
+      // maybe when we setup the voicebuffer ptr (voice manager)
 
       #ifdef MIP_VOICE_PROCESS_THREADED
         output += (context->process->frames_count * AIndex);
