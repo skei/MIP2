@@ -450,6 +450,11 @@ public:
       phadd = hz * context->invsamplerate;
 
       float* output = context->voicebuffer;
+
+      #ifdef MIP_VOICE_PROCESS_THREADED
+      output += (MIP_VOICE_MAX_FRAMESIZE * AIndex);
+      #endif
+
       output += AOffset;
       MIP_Assert(output);
 
@@ -484,7 +489,13 @@ public:
         filter.setFreq(ff);
         filter.setBW(fr);
         float out = squ;
-        *output++ += (filter.process(out) * amp);
+
+        #ifdef MIP_VOICE_PROCESS_THREADED
+          *output++ = (filter.process(out) * amp);
+        #else
+          *output++ += (filter.process(out) * amp);
+        #endif
+
         ph += phadd;
         ph = MIP_Fract(ph);
       }
@@ -669,7 +680,7 @@ private:
 
   //----------
 
-  myVoiceManager  MVoiceManager = {};//myVoiceManager();
+  myVoiceManager  MVoiceManager                       = {};//myVoiceManager();
 
 //------------------------------
 public:
@@ -715,7 +726,7 @@ public: // clap
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
     if (strcmp(id,CLAP_EXT_GUI) == 0)         return &MGui;
     if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)  return &MNotePorts;
-    //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0) return &MThreadPool;
+    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0) return &MThreadPool;
     if (strcmp(id,CLAP_EXT_VOICE_INFO) == 0)  return &MVoiceInfo;
     return MIP_Plugin::get_extension(id);
   }
@@ -742,8 +753,8 @@ public: // clap
   //----------
 
   bool gui_create(const char *api, bool is_floating) final {
-    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) { /*MIP_Print("error.. !x11\n");*/ return false; }
-    if (is_floating) { /*MIP_Print("error.. is_floating\n");*/ return false; }
+    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) return false;
+    if (is_floating) return false;
     MEditorIsOpen = false;
     MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true);
     return (MEditor);
@@ -770,10 +781,9 @@ public: // clap
   // thread-pool
   //----------
 
-//  void thread_pool_exec(uint32_t task_index) final {
-//    MIP_PRINT;
-//    MVoiceManager.processVoice(task_index);
-//  }
+  void thread_pool_exec(uint32_t task_index) final {
+    MVoiceManager.processThread(task_index);
+  }
 
 //------------------------------
 public:
@@ -782,19 +792,12 @@ public:
   void handle_process(const clap_process_t *process) final {
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
-
-    //MIP_ClearStereoBuffer(outputs,length);
-
-    //#ifdef MIP_VOICE_USE_SLICES
-    //MVoiceManager.processSlices(process);
-    //#else
-
+    //MVoiceManager.process(process);
+    #ifdef MIP_VOICE_PROCESS_THREADED
+    MVoiceManager.processThreaded(process,MHost);
+    #else
     MVoiceManager.process(process);
-
-    //#endif
-
-//    bool result = MHost->thread_pool->request_exec(MHost->host,NUM_VOICES);
-
+    #endif
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);
@@ -813,12 +816,6 @@ protected:
 
 //------------------------------
 //------------------------------
-
-  //void prepareEventsForVoices(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
-  //  uint32_t num = in_events->size(in_events);
-  //  for (uint32_t i=0; i<num; i++) {
-  //  }
-  //}
 
 };
 

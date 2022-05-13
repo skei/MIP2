@@ -2,6 +2,11 @@
 #define mip_voice_manager_included
 //----------------------------------------------------------------------
 
+#define MIP_VOICE_SPLIT_EVENTS
+#define MIP_VOICE_PROCESS_THREADED
+
+//----------
+
 #include "mip.h"
 #include "audio/mip_audio_utils.h"
 #include "base/types/mip_queue.h"
@@ -19,12 +24,8 @@
 #define MIP_VOICE_NUM_CHANNELS  16
 #define MIP_VOICE_NUM_NOTES     128
 #define MIP_VOICE_MAX_VOICES    32
-#define MIP_VOICE_BUFFERSIZE    65536
-
-//#define MIP_VOICE_USE_SLICES
-//#define MIP_VOICE_USE_THREAD_POOL
-//#define MIP_VOICE_SPLIT_EVENTS
-
+#define MIP_VOICE_MAX_FRAMESIZE 4096
+#define MIP_VOICE_BUFFERSIZE    (MIP_VOICE_MAX_FRAMESIZE * MIP_VOICE_MAX_VOICES)
 
 //----------------------------------------------------------------------
 //
@@ -58,13 +59,18 @@ class MIP_VoiceManager {
 private:
 //------------------------------
 
-  MIP_VoiceContext  MVoiceContext             = {};
-  MIP_NoteQueue     MNoteEndQueue             = {};
-  MIP_Voice<VOICE>  MVoices[VOICE_COUNT]      = {};
+  MIP_VoiceContext      MVoiceContext                       = {};
+  MIP_NoteQueue         MNoteEndQueue                       = {};
+  MIP_Voice<VOICE>      MVoices[VOICE_COUNT]                = {};
+
 
   __MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
-  float MVoiceBuffer[MIP_VOICE_BUFFERSIZE] = {0};
+  float                 MVoiceBuffer[MIP_VOICE_BUFFERSIZE] = {0};
 
+  uint32_t              MThreadedVoiceCount                 = 0;
+  uint32_t              MThreadedVoices[256]                = {0};
+
+  //const clap_process_t* MClapProcess                        = nullptr;
 //------------------------------
 public:
 //------------------------------
@@ -128,6 +134,62 @@ public: // api
     flushNoteEnds();
     MIP_CopyMonoBuffer(out0,MVoiceBuffer,length);
     MIP_CopyMonoBuffer(out1,MVoiceBuffer,length);
+  }
+
+  //----------
+
+  void processThreaded(const clap_process_t *process, MIP_ClapHost* AHost) {
+    MVoiceContext.process = process;
+    float* out0 = process->audio_outputs->data32[0];
+    float* out1 = process->audio_outputs->data32[1];
+
+    MVoiceContext.voicebuffer = MVoiceBuffer;//out0;
+
+    uint32_t length = process->frames_count;
+
+    //MIP_ClearMonoBuffer(MVoiceBuffer,length);
+    MIP_ClearMonoBuffer(out0,length);
+
+    handleEvents(process);
+
+    //processPlayingVoices();
+    uint32_t num  = 0;
+    for (uint32_t i=0; i<VOICE_COUNT; i++) {
+      if ((MVoices[i].state == MIP_VOICE_PLAYING)
+        || (MVoices[i].state == MIP_VOICE_RELEASED)
+        || (MVoices[i].state == MIP_VOICE_WAITING)) {
+        MThreadedVoices[num++] = i;
+      }
+    }
+    if (num > 0) {
+      bool result = AHost->thread_pool->request_exec(AHost->host,num);
+      if (!result) {
+        // calc voices manually
+      }
+    }
+
+    for (uint32_t i=0; i<num; i++) {
+      int32_t voice = MThreadedVoices[i];
+      float* src = MVoiceBuffer + (MIP_VOICE_MAX_FRAMESIZE * voice);
+      MIP_AddMonoBuffer(out0,src,length);
+    }
+
+    flushFinishedVoices();
+    flushNoteEnds();
+    //MIP_CopyMonoBuffer(out0,MVoiceBuffer,length);
+    //MIP_CopyMonoBuffer(out1,MVoiceBuffer,length);
+    MIP_CopyMonoBuffer(out1,out0,length);
+
+  }
+
+  //----------
+
+  void processThread(uint32_t index) {
+    //const clap_process_t* process = MVoiceContext.process;
+    int32_t voice = MThreadedVoices[index];
+    if (voice >= 0) {
+      MVoices[voice].processPrepared(voice);
+    }
   }
 
 //------------------------------

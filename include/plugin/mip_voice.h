@@ -5,9 +5,8 @@
 #include "mip.h"
 #include "plugin/mip_note.h"
 
-#define MIP_VOICE_SPLIT_EVENTS
-
-#define MIP_VOICE_MAX_EVENTS_PER_BLOCK 65536
+//#define MIP_VOICE_SPLIT_EVENTS
+#define MIP_VOICE_MAX_EVENTS_PER_BLOCK  65536
 
 //----------------------------------------------------------------------
 
