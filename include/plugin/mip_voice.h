@@ -5,14 +5,11 @@
 #include "mip.h"
 #include "plugin/mip_note.h"
 
-//#define MIP_VOICE_SPLIT_EVENTS
-#define MIP_VOICE_MAX_EVENTS_PER_BLOCK  65536
-
 //----------------------------------------------------------------------
 
-/*
-  type
-*/
+#define MIP_VOICE_MAX_EVENTS_PER_BLOCK  65536
+
+//----------
 
 enum MIP_EVoiceEvents {
   MIP_VOICE_EVENT_NOTE_ON         = 0,
@@ -22,6 +19,8 @@ enum MIP_EVoiceEvents {
   MIP_VOICE_EVENT_PARAMETER       = 4,
   MIP_VOICE_EVENT_MODULATION      = 5
 };
+
+//----------
 
 struct MIP_VoiceEvent {
   uint32_t  type  = 0;
@@ -40,17 +39,16 @@ struct MIP_VoiceEvent {
 //----------
 
 struct MIP_VoiceContext {
-  float*                        voicebuffer   = nullptr;
-  const clap_process_t*         process       = nullptr;
-  float                         samplerate    = 0.0;
-  float                         invsamplerate = 0.0;
+  float*                voicebuffer   = nullptr;
+  const clap_process_t* process       = nullptr;
+  float                 samplerate    = 0.0;
+  float                 invsamplerate = 0.0;
 };
 
-//----------
-
-//typedef MIP_Queue<MIP_VoiceEvent,MAX_EVENTS> MIP_VoiceEvents;
-//typedef MIP_Queue<MIP_VoiceEvent,MAX_EVENTS> MIP_VoiceEvents;
-
+//----------------------------------------------------------------------
+//
+//
+//
 //----------------------------------------------------------------------
 
 template <class VOICE>
@@ -60,10 +58,10 @@ class MIP_Voice {
 public:
 //------------------------------
 
-  VOICE                         voice   = {};
-  MIP_VoiceContext*             context = nullptr;
-  uint32_t                      state   = MIP_VOICE_OFF;
-  MIP_Note                      note    = {};
+  VOICE             voice   = {};
+  MIP_VoiceContext* context = nullptr;
+  uint32_t          state   = MIP_VOICE_OFF;
+  MIP_Note          note    = {};
 
   MIP_Queue<MIP_VoiceEvent,MIP_VOICE_MAX_EVENTS_PER_BLOCK> events = {};
 
@@ -120,7 +118,6 @@ public:
 //------------------------------
 
   void prepare_note_on(uint32_t time, int32_t key, float velocity) {
-    //MIP_Print("time %i key %i velocity %.2f\n",time,key,velocity);
     MIP_VoiceEvent ev = MIP_VoiceEvent(MIP_VOICE_EVENT_NOTE_ON,time,key,velocity);
     events.write(ev);
     state = MIP_VOICE_WAITING;
@@ -183,15 +180,10 @@ public:
     while (remaining > 0) {
       if (events.read(&next_event)) {
         // we have more events
-        //if (next_event.type == MIP_VOICE_EVENT_NOTE_ON) {
-        //  MIP_Print("index %i time %i type %i value %.2f\n",next_event.index,next_event.time,next_event.type,next_event.value);
-        //}
-        //MIP_Print("event %i\n",next_event.type);
-        //if (next_event.type == MIP_VOICE_EVENT_NOTE_ON) { MIP_Print("note on\n"); }
         int32_t length = next_event.time - current_time;
         if (length > 0) {
           if (state != MIP_VOICE_WAITING) {
-            state = voice.process(AIndex,state,length,current_time); // if finished.. ???
+            state = voice.process(AIndex,state,length,current_time);
           }
           remaining -= length;
           current_time += length;
@@ -202,7 +194,7 @@ public:
         // no more events
         int32_t length = remaining;
         if (state != MIP_VOICE_WAITING) {
-          state = voice.process(AIndex,state,length,current_time); // if finished.. ???
+          state = voice.process(AIndex,state,length,current_time);
         }
         remaining -= length;
         current_time += length;

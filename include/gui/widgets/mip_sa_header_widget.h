@@ -2,6 +2,7 @@
 #define mip_saheader_widget_included
 //----------------------------------------------------------------------
 
+#include "gui/mip_window.h"
 #include "gui/widgets/mip_image_widget.h"
 #include "gui/widgets/mip_panel_widget.h"
 #include "gui/widgets/mip_text_widget.h"

@@ -1,26 +1,11 @@
-/*
-
-  ignore the dsp code!
-  that's not the focus of this example/test..
-
-  in a real plugin, you would probably split this up into multiple files
-
-    * plugin
-    * editor
-    * voice
-    * widgets
-
-*/
-
-//----------------------------------------------------------------------
 
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
-#define MIP_DEBUG_PRINT_TIME
 
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
+//#define MIP_DEBUG_PRINT_TIME
 //#define MIP_DEBUG_WATCHES
 //#define MIP_DEBUG_CALLSTACK
 //#define MIP_DEBUG_CRASH_HANDLER
@@ -31,38 +16,28 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-
 #include "audio/mip_audio_math.h"
-
 #include "audio/filters/mip_rc_filter.h"
 #include "audio/filters/mip_svf_filter.h"
-
 #include "audio/modulation/mip_envelope.h"
 #include "audio/waveforms/mip_polyblep_waveform.h"
-
+#include "gui/mip_widgets.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
-//#include "plugin/mip_voice_manager.h"
 #include "plugin/mip_voice_manager.h"
 
-#include "gui/mip_widgets.h"
-
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
 
-#define NUM_PARAMS        11
-
-#define NUM_NOTE_INPUTS   1
-#define NUM_AUDIO_OUTPUTS 2
-
-#define NUM_VOICES        16
-#define EDITOR_WIDTH      420
-#define EDITOR_HEIGHT     350
-
-//#define MAX_EVENTS        256
+#define NUM_PARAMS          11
+#define NUM_NOTE_INPUTS     1
+#define NUM_AUDIO_OUTPUTS   2
+#define NUM_VOICES          16
+#define EDITOR_WIDTH        420
+#define EDITOR_HEIGHT       350
 
 //----------------------------------------------------------------------
 //
@@ -161,25 +136,19 @@ public:
 
   myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
   : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
-
     MIP_Window* window = getWindow();
-
     // panel
     MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_FRect());
     MEditorPanel->setDrawBorder(false);
     MEditorPanel->setFillBackground(false);
     MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-
     // header
-
     MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(60,window);
     MEditorPanel->appendWidget(sa_header);
     sa_header->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     sa_header->setPluginName(myDescriptor.name);
     sa_header->setPluginVersion(myDescriptor.version);
-
     // controls panel (knobs)
-
     MIP_PanelWidget* controls = new MIP_PanelWidget(MIP_FRect());
     MEditorPanel->appendWidget(controls);
     controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
@@ -187,11 +156,9 @@ public:
     controls->setFillBackground(true);
     controls->setBackgroundColor(0.6);
     controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-
       // voice widget
       MVoiceWidget = new MIP_VoiceWidget( MIP_FRect(250,10,NUM_VOICES*8,8) );
       controls->appendWidget(MVoiceWidget);
-
       // vol
       MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
       controls->appendWidget(vol_knob);
@@ -206,7 +173,6 @@ public:
       pitch_knob->getKnobWidget()->setSnap(true);
       pitch_knob->getKnobWidget()->setSnapPos(0.5);
       connect(pitch_knob,10);
-
       // freq
       MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"Freq");
       controls->appendWidget(freq_knob);
@@ -223,7 +189,6 @@ public:
       MIP_Knob2Widget* width_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"Width");
       controls->appendWidget(width_knob);
       connect(width_knob,5);
-
       // amp att
       MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"Att");
       controls->appendWidget(amp_att_knob);
@@ -240,7 +205,6 @@ public:
       MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"Rel");
       controls->appendWidget(amp_rel_knob);
       connect(amp_rel_knob,9);
-
     window->appendWidget(MEditorPanel);
   }
 
@@ -250,6 +214,7 @@ public:
     MVoiceWidget->redraw();
     MIP_Editor::on_timerCallback();
   }
+
 };
 
 //----------------------------------------------------------------------
@@ -258,10 +223,9 @@ public:
 //
 //----------------------------------------------------------------------
 
-// todo: samplerate independent..
-#define SMOOTHER_FACTOR (1.0 / 250.0)
+// todo: redo the smoothing things..
 
-//typedef MIP_Queue<MIP_Note,256> MIP_NoteQueue = {};
+#define SMOOTHER_FACTOR (1.0 / 250.0)
 
 //----------
 
@@ -326,25 +290,18 @@ public:
   //----------
 
   uint32_t note_on(int32_t key, float velocity) {
-
     note_key        = key;
     note_onvel      = velocity;
     note_press      = 0.0;
     note_bright     = 0.0;
     note_tuning     = 0.0;
-
-    //pitch = 0.5;
-    ph = 0.0;
-    //phadd =
-
+    ph              = 0.0;
     filter_freq_mod = 0.0;
     filter_res_mod  = 0.0;
     pulse_mod       = 0.0;
     width_mod       = 0.0;
     pitch_mod       = 0.0;
-
     amp_env.noteOn();
-
     return MIP_VOICE_PLAYING;
   }
 
@@ -376,7 +333,6 @@ public:
   //----------
 
   void tuning(float amount) {
-    //note_tuning = (amount * 2.0) - 1.0;
     note_tuning = amount;
   }
 
@@ -433,31 +389,24 @@ public:
 
   //----------
 
-  // ASize  = 0..15
-  // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
+  // AState = MIP_VOICE_PLAYING / MIP_VOICE_RELEASED
 
   uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ALength, uint32_t AOffset) {
-
-
     MIP_Assert(note_key >= 0);
     if (note_key >= 0) {
-
-      float p = (pitch * 2.0) - 1.0;                            // 0..1 -> -1..1
+      float p = (pitch * 2.0) - 1.0;
       p += pitch_mod;
       //todo: smoother
-
-      hz = MIP_NoteToHz(note_key + note_tuning + p);  // pow !!
+      hz = MIP_NoteToHz(note_key + note_tuning + p);
       phadd = hz * context->invsamplerate;
-
       float* output = context->voicebuffer;
 
       #ifdef MIP_VOICE_PROCESS_THREADED
-      output += (MIP_VOICE_MAX_FRAMESIZE * AIndex);
+        output += (context->process->frames_count * AIndex);
       #endif
 
       output += AOffset;
       MIP_Assert(output);
-
       for (uint32_t i = 0; i < ALength; i++) {
         float t1 = ph + 0.5f;
         t1 = MIP_Fract(t1);
@@ -489,24 +438,17 @@ public:
         filter.setFreq(ff);
         filter.setBW(fr);
         float out = squ;
-
         #ifdef MIP_VOICE_PROCESS_THREADED
           *output++ = (filter.process(out) * amp);
         #else
           *output++ += (filter.process(out) * amp);
         #endif
-
         ph += phadd;
         ph = MIP_Fract(ph);
       }
-
-    } // key > 0
-
-    uint32_t stage = amp_env.getStage();
-    //if ((stage == MIP_ENVELOPE_OFF) || (stage == MIP_ENVELOPE_FINISHED)) {
-    if (stage == MIP_ENVELOPE_FINISHED) {
-      return MIP_VOICE_FINISHED;
     }
+    uint32_t stage = amp_env.getStage();
+    if (stage == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
     else return AState;
   }
 
@@ -680,7 +622,7 @@ private:
 
   //----------
 
-  myVoiceManager  MVoiceManager                       = {};//myVoiceManager();
+  myVoiceManager MVoiceManager = {};
 
 //------------------------------
 public:
@@ -696,11 +638,11 @@ public: // clap
 //------------------------------
 
   bool init() final {
-    clap_version_t ver = MHost->host->clap_version;
-    MIP_Print("host name: %s\n",MHost->host->name);
-    MIP_Print("host version: %s\n",MHost->host->version);
-    MIP_Print("host clap version: %i.%i.%i\n",ver.major,ver.minor,ver.revision);
-    MHost->printSupportedExtensions();
+    //clap_version_t ver = MHost->host->clap_version;
+    //MIP_Print("host name: %s\n",MHost->host->name);
+    //MIP_Print("host version: %s\n",MHost->host->version);
+    //MIP_Print("host clap version: %i.%i.%i\n",ver.major,ver.minor,ver.revision);
+    //MHost->printSupportedExtensions();
     setupParameters(myParameters,NUM_PARAMS);
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
@@ -722,7 +664,7 @@ public: // clap
   //----------
 
   const void* get_extension(const char *id) final {
-    MIP_Print("host asks for: %s\n",id);
+    //MIP_Print("host asks for: %s\n",id);
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
     if (strcmp(id,CLAP_EXT_GUI) == 0)         return &MGui;
     if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)  return &MNotePorts;
@@ -764,12 +706,6 @@ public: // clap
   // voice-info
   //----------
 
-  /*
-    CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES
-      Allows the host to send overlapping NOTE_ON events.
-      The plugin will then rely upon the note_id to distinguish between them.
-  */
-
   bool voice_info_get(clap_voice_info_t *info) final {
     info->voice_count     = NUM_VOICES;
     info->voice_capacity  = NUM_VOICES;
@@ -782,7 +718,7 @@ public: // clap
   //----------
 
   void thread_pool_exec(uint32_t task_index) final {
-    MVoiceManager.processThread(task_index);
+    MVoiceManager.processVoiceThread(task_index);
   }
 
 //------------------------------
@@ -792,11 +728,10 @@ public:
   void handle_process(const clap_process_t *process) final {
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
-    //MVoiceManager.process(process);
     #ifdef MIP_VOICE_PROCESS_THREADED
-    MVoiceManager.processThreaded(process,MHost);
+      MVoiceManager.processThreaded(process,MHost);
     #else
-    MVoiceManager.process(process);
+      MVoiceManager.process(process);
     #endif
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
@@ -809,13 +744,15 @@ public:
 protected:
 //------------------------------
 
+  /*
+    parameter has changed via gui
+    we need to tell the voices about it
+  */
+
   void handle_editor_parameter(uint32_t AIndex, float AValue) final {
     //MIP_Print("%i = %.3f\n",AIndex,AValue);
     MVoiceManager.setParameter(AIndex,AValue);
   }
-
-//------------------------------
-//------------------------------
 
 };
 
