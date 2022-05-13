@@ -774,3 +774,4 @@ MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t
   }
   return nullptr;
 }
+

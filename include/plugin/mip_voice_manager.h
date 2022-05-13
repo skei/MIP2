@@ -140,12 +140,15 @@ public: // api
       }
     }
     if (num > 0) {
-      bool result = AHost->thread_pool->request_exec(AHost->host,num);
-      //MIP_Assert(result);
-      if (!result) {
+      bool has_thread_pool = false;
+      if (AHost && AHost->thread_pool) {
+        has_thread_pool = AHost->thread_pool->request_exec(AHost->host,num);
+      }
+      if (!has_thread_pool) {
+        MIP_Assert(has_thread_pool);
         // calc voices manually
         for (uint32_t i=0; i<MThreadedVoiceCount; i++) {
-            processVoiceThread(i);
+          processVoiceThread(i);
         }
       }
     }
@@ -262,7 +265,7 @@ private: // events
 
   //----------
 
-  // note_id is always -1..
+  // note_id is always -1
 
   void handleNoteOff(const clap_event_note_t* event) {
     //MIP_Print("NOTE OFF: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
