@@ -60,7 +60,7 @@ const clap_plugin_descriptor_t myDescriptor = {
   "https://torhelgeskei.com",
   "",
   "",
-  "0.0.1b",
+  "0.0.2",
   "simple mip2 test synth",
   myFeatures
 };
