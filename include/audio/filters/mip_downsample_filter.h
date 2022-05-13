@@ -1,5 +1,5 @@
-#ifndef mip_filter_downsample_included
-#define mip_filter_downsample_included
+#ifndef mip_downsample_filter_included
+#define mip_downsample_filter_included
 //----------------------------------------------------------------------
 
 

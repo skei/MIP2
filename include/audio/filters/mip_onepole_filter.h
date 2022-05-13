@@ -1,5 +1,5 @@
-#ifndef mip_filter_onepole_included
-#define mip_filter_onepole_included
+#ifndef mip_onepole_filter_included
+#define mip_onepole_filter_included
 //----------------------------------------------------------------------
 
 // original author: lubomir i ivanov (for axonlib)

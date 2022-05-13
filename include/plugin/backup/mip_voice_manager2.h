@@ -13,6 +13,8 @@
 #define MIP_VOICE_SLICE_SIZE    16
 #define MIP_VOICE_BUFFERSIZE    1024
 
+#define MIP_VOICE_USE_SLICES
+
 //----------------------------------------------------------------------
 
 struct MIP_Note {
@@ -103,7 +105,7 @@ private:
 public:
 //------------------------------
 
-  MIP_VoiceManager(int dummy) {
+  MIP_VoiceManager(int dummy=0) {
   }
 
   //----------
@@ -501,6 +503,8 @@ public: // process
     flushNoteEnds(process->out_events);
   }
 
+  #ifdef MIP_VOICE_USE_SLICES
+
 //------------------------------
 private: // slices
 //------------------------------
@@ -636,6 +640,43 @@ public: // slices
     flushNoteEnds(process->out_events);
   }
 
+  #endif // MIP_VOICE_USE_SLICES
+
+//------------------------------
+
+//------------------------------
+
+//  void prepareEventsForVoices(const clap_process_t* process) {
+//    const clap_input_events_t* in_events = process->in_events;
+//    uint32_t num = in_events->size(in_events);
+//    for (uint32_t i=0; i<num; i++) {
+//      const clap_event_header_t* header = in_events->get(in_events,i);
+//      switch(header->type) {
+//      case CLAP_EVENT_NOTE_ON:
+//        case CLAP_EVENT_NOTE_OFF:
+//        case CLAP_EVENT_NOTE_END:
+//        case CLAP_EVENT_NOTE_CHOKE:
+//        case CLAP_EVENT_NOTE_EXPRESSION:
+//        case CLAP_EVENT_PARAM_VALUE:
+//        case CLAP_EVENT_PARAM_MOD:
+//        case CLAP_EVENT_TRANSPORT:
+//        case CLAP_EVENT_MIDI:
+//        case CLAP_EVENT_MIDI2:
+//        case CLAP_EVENT_MIDI_SYSEX:
+//          break;
+//      }
+//    }
+//  }
+//
+//  //----------
+//
+//  void ProcessVoice(MIP_VoiceContext* context, uint32_t index) {
+//  }
+//
+//  //----------
+//
+//  void ProcessVoiceSlices(MIP_VoiceContext* context, uint32_t index, uint32_t length) {
+//  }
 
 };
 

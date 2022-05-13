@@ -1,5 +1,5 @@
-#ifndef mip_waveform_dsf_included
-#define mip_waveform_dsf_included
+#ifndef mip_dsf_waveform_included
+#define mip_dsf_waveform_included
 //----------------------------------------------------------------------
 
 #include <math.h>

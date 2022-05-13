@@ -1,5 +1,5 @@
-#ifndef mip_filter_rc2_included
-#define mip_filter_rc2_included
+#ifndef mip_rc2_filter_included
+#define mip_rc2_filter_included
 //----------------------------------------------------------------------
 
 // http://musicdsp.org/showArchiveComment.php?ArchiveID=185

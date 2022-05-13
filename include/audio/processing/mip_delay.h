@@ -1,5 +1,5 @@
-#ifndef mip_audio_delay_included
-#define mip_audio_delay_included
+#ifndef mip_delay_included
+#define mip_delay_included
 //----------------------------------------------------------------------
 
 #include "base/mip_math.h"

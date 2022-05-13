@@ -1,5 +1,5 @@
-#ifndef mip_waveform_rochebois_included
-#define mip_waveform_rochebois_included
+#ifndef mip_rochebois_waveform_included
+#define mip_rochebois_waveform_included
 //----------------------------------------------------------------------
 
 //----------------------------------------------------------------------

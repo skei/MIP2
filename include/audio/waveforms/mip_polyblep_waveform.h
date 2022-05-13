@@ -1,5 +1,5 @@
-#ifndef mip_waveform_polyblep_included
-#define mip_waveform_polyblep_included
+#ifndef mip_polyblep_waveform_included
+#define mip_polyblep_waveform_included
 //----------------------------------------------------------------------
 
 #include "base/utils/mip_math.h"

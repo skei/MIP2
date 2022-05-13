@@ -1,5 +1,5 @@
-#ifndef mip_filter_dc_included
-#define mip_filter_dc_included
+#ifndef mip_dc_filter_included
+#define mip_dc_filter_included
 //----------------------------------------------------------------------
 
 // original author: lubomir i ivanov (for axonlib)

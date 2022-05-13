@@ -1,5 +1,5 @@
-#ifndef mip_filter_farrow_included
-#define mip_filter_farrow_included
+#ifndef mip_farrow_filter_included
+#define mip_farrow_filter_included
 //----------------------------------------------------------------------
 
 class MIP_FarrowFilter {

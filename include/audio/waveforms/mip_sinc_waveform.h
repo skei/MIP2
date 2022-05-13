@@ -1,5 +1,5 @@
-#ifndef mip_waveform_sinc
-#define mip_waveform_sinc
+#ifndef mip_sinc_waveform_included
+#define mip_sinc_waveform_included
 //----------------------------------------------------------------------
 
 // can't get this to work..

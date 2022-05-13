@@ -1,5 +1,5 @@
-#ifndef mip_filter_linkwitzriley_included
-#define mip_filter_linkwitzriley_included
+#ifndef mip_linkwitz_riley_filter_included
+#define mip_linkwitz_riley_filter_included
 //----------------------------------------------------------------------
 
 /*

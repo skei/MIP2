@@ -1,5 +1,5 @@
-#ifndef mip_filter_hiir_included
-#define mip_filter_hiir_included
+#ifndef mip_hiir_filter_included
+#define mip_hiir_filter_included
 //----------------------------------------------------------------------
 
 /*

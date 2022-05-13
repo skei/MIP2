@@ -1,5 +1,5 @@
-#ifndef mip_filter_karlsen_included
-#define mip_filter_karlsen_included
+#ifndef mip_karlsen_filter_included
+#define mip_karlsen_filter_included
 //----------------------------------------------------------------------
 
 //#define sDenorm (1.0e-24);

@@ -1,5 +1,5 @@
-#ifndef mip_waveform_druttis
-#define mip_waveform_druttis
+#ifndef mip_druttis_waveform_included
+#define mip_druttis_waveform_included
 //----------------------------------------------------------------------
 
 #include <math.h>

@@ -1,5 +1,5 @@
-#ifndef mip_filter_rbj_included
-#define mip_filter_rbj_included
+#ifndef mip_rbj_filter_included
+#define mip_rbj_filter_included
 //----------------------------------------------------------------------
 
 // biquad

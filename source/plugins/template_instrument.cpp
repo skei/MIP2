@@ -70,7 +70,7 @@ private:
 //------------------------------
 
   MIP_VoiceContext* context = nullptr;
-  MIP_ExpAdsrEnvelope amp_env = {};
+  MIP_Envelope amp_env = {};
 
   int32_t note_key        = -1;
 

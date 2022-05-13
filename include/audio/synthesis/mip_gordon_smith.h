@@ -1,5 +1,5 @@
-#ifndef mip_gordonsmith_included
-#define mip_gordonsmith_included
+#ifndef mip_gordon_smith_included
+#define mip_gordon_smith_included
 //----------------------------------------------------------------------
 
 // unfinished

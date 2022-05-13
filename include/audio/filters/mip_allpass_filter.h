@@ -1,5 +1,5 @@
-#ifndef mip_filter_allpass_included
-#define mip_filter_allpass_included
+#ifndef mip_allpass_filter_included
+#define mip_allpass_filter_included
 //----------------------------------------------------------------------
 
 //#include "base/mip_math.h" // KKillDenorm

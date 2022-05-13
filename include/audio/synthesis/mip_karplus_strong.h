@@ -1,5 +1,5 @@
-#ifndef mip_karplusstrong_included
-#define mip_karplusstrong_included
+#ifndef mip_karplus_strong_included
+#define mip_karplus_strong_included
 //----------------------------------------------------------------------
 
 #if 0

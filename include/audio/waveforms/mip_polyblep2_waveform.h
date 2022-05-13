@@ -1,5 +1,5 @@
-#ifndef mip_waveform_polyblep2_incuded
-#define mip_waveform_polyblep2_included
+#ifndef mip_polyblep2_waveform_included
+#define mip_polyblep2_waveform_included
 //----------------------------------------------------------------------
 
 float MIP_PolyBlep(float t) {

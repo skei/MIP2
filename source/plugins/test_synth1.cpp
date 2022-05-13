@@ -1,3 +1,19 @@
+/*
+
+  ignore the dsp code!
+  that's not the focus of this example/test..
+
+  in a real plugin, you would probably split this up into multiple files
+
+    * plugin
+    * editor
+    * voice
+    * widgets
+
+*/
+
+//----------------------------------------------------------------------
+
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 #define MIP_DEBUG_PRINT_TIME
@@ -9,8 +25,6 @@
 //#define MIP_DEBUG_CALLSTACK
 //#define MIP_DEBUG_CRASH_HANDLER
 
-#define MIP_VOICE_USE_SLICES
-
 //#define MIP_VST2
 //#define MIP_VST3
 
@@ -19,14 +33,17 @@
 #include "mip.h"
 
 #include "audio/mip_audio_math.h"
-#include "audio/mip_voice_manager.h"
+
 #include "audio/filters/mip_rc_filter.h"
 #include "audio/filters/mip_svf_filter.h"
+
 #include "audio/modulation/mip_envelope.h"
 #include "audio/waveforms/mip_polyblep_waveform.h"
 
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
+//#include "plugin/mip_voice_manager.h"
+#include "plugin/mip_voice_manager.h"
 
 #include "gui/mip_widgets.h"
 
@@ -38,12 +55,14 @@
 
 #define NUM_PARAMS        11
 
-#define NUM_AUDIO_OUTPUTS 2
 #define NUM_NOTE_INPUTS   1
+#define NUM_AUDIO_OUTPUTS 2
 
 #define NUM_VOICES        16
 #define EDITOR_WIDTH      420
 #define EDITOR_HEIGHT     350
+
+//#define MAX_EVENTS        256
 
 //----------------------------------------------------------------------
 //
@@ -107,10 +126,11 @@ public:
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       APainter->rectangle(rect);
       switch (voice_state[i]) {
-        case MIP_VOICE_OFF:       color = MIP_COLOR_BLACK;      break;
-        case MIP_VOICE_PLAYING:   color = MIP_COLOR_WHITE;      break;
-        case MIP_VOICE_RELEASED:  color = MIP_COLOR_GRAY;       break;
-        case MIP_VOICE_FINISHED:  color = MIP_COLOR_DARK_GRAY;  break;
+        case MIP_VOICE_OFF:       color = MIP_COLOR_DARK_GRAY;    break;
+        case MIP_VOICE_WAITING:   color = MIP_COLOR_YELLOW;       break;
+        case MIP_VOICE_PLAYING:   color = MIP_COLOR_BRIGHT_GREEN; break;
+        case MIP_VOICE_RELEASED:  color = MIP_COLOR_GREEN;        break;
+        case MIP_VOICE_FINISHED:  color = MIP_COLOR_LIGHT_GRAY;   break;
       }
       APainter->setColor(color);
       APainter->fillPath();
@@ -155,8 +175,8 @@ public:
     MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(60,window);
     MEditorPanel->appendWidget(sa_header);
     sa_header->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    sa_header->setPluginName("test_synth1");
-    sa_header->setPluginVersion("v0.0.1");
+    sa_header->setPluginName(myDescriptor.name);
+    sa_header->setPluginVersion(myDescriptor.version);
 
     // controls panel (knobs)
 
@@ -205,19 +225,19 @@ public:
       connect(width_knob,5);
 
       // amp att
-      MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"A.Att");
+      MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"Att");
       controls->appendWidget(amp_att_knob);
       connect(amp_att_knob,6);
       // amp dec
-      MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"A.Dec");
+      MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"Dec");
       controls->appendWidget(amp_dec_knob);
       connect(amp_dec_knob,7);
       // amp sus
-      MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"A.Sus");
+      MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"Sus");
       controls->appendWidget(amp_sus_knob);
       connect(amp_sus_knob,8);
       // amp rel
-      MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"A.Rel");
+      MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"Rel");
       controls->appendWidget(amp_rel_knob);
       connect(amp_rel_knob,9);
 
@@ -241,61 +261,49 @@ public:
 // todo: samplerate independent..
 #define SMOOTHER_FACTOR (1.0 / 250.0)
 
+//typedef MIP_Queue<MIP_Note,256> MIP_NoteQueue = {};
+
+//----------
+
 class myVoice {
-
-//------------------------------
-public:
-//------------------------------
-
-  uint32_t  state = MIP_VOICE_OFF;
-
-  MIP_Note  note  = {}; // { -1,0,0,0 };
-
-  //MIP_Note  note  = {
-  //  .note_id     = -1,
-  //  .port_index  = 0,
-  //  .channel     = 0,
-  //  .key         = 0
-  //};
 
 //------------------------------
 private:
 //------------------------------
 
-  MIP_VoiceContext*   context   = nullptr;
+  MIP_VoiceContext* context           = nullptr;
 
-  MIP_SvfFilter       filter            = {};
-  //MIP_ExpAdsrEnvelope amp_env           = {};
-  MIP_Envelope        amp_env           = {};
-  MIP_RcFilter        flt_freq_smoother = {};
-  MIP_RcFilter        flt_res_smoother  = {};
-  MIP_RcFilter        vol_smoother      = {};
+  MIP_SvfFilter     filter            = {};
+  MIP_Envelope      amp_env           = {};
+  MIP_RcFilter      flt_freq_smoother = {};
+  MIP_RcFilter      flt_res_smoother  = {};
+  MIP_RcFilter      vol_smoother      = {};
 
-  int32_t note_key        = -1;
-  float   note_onvel      = 0.0;
-  float   note_offvel     = 0.0;
-  float   note_vol        = 0.0;
-  float   note_pan        = 0.0;
-  float   note_tuning     = 0.0;
-  float   note_vibr       = 0.0;
-  float   note_expr       = 0.0;
-  float   note_bright     = 0.0;
-  float   note_press      = 0.0;
+  int32_t           note_key          = -1;
+  float             note_onvel        = 0.0;
+  float             note_offvel       = 0.0;
+  float             note_vol          = 0.0;
+  float             note_pan          = 0.0;
+  float             note_tuning       = 0.0;
+  float             note_vibr         = 0.0;
+  float             note_expr         = 0.0;
+  float             note_bright       = 0.0;
+  float             note_press        = 0.0;
 
-  float   hz              = 0.0;  // note hz
-  float   ph              = 0.0;  // phase
-  float   phadd           = 0.0;  // phase add
-  float   pulse           = 1.0;
-  float   width           = 0.5;
-  float   filter_freq     = 0.5;
-  float   filter_res      = 0.5;
-  float   pitch           = 0.5;
+  float             hz                = 0.0;  // note hz
+  float             ph                = 0.0;  // phase
+  float             phadd             = 0.0;  // phase add
+  float             pulse             = 1.0;
+  float             width             = 0.5;
+  float             filter_freq       = 0.5;
+  float             filter_res        = 0.5;
+  float             pitch             = 0.5;
 
-  float   pulse_mod       = 0.0;
-  float   width_mod       = 0.0;
-  float   filter_freq_mod = 0.0;
-  float   filter_res_mod  = 0.0;
-  float   pitch_mod       = 0.0;
+  float             pulse_mod         = 0.0;
+  float             width_mod         = 0.0;
+  float             filter_freq_mod   = 0.0;
+  float             filter_res_mod    = 0.0;
+  float             pitch_mod         = 0.0;
 
 //------------------------------
 public:
@@ -336,19 +344,16 @@ public:
     pitch_mod       = 0.0;
 
     amp_env.noteOn();
-    state = MIP_VOICE_PLAYING;    // todo: check MVoiceStaces[i].state..
+
     return MIP_VOICE_PLAYING;
   }
 
   //----------
 
   uint32_t note_off(float velocity) {
-    //MIP_Print("velocity %.3f\n",velocity);
     note_offvel = velocity;
     amp_env.noteOff();
-    //state = MIP_VOICE_RELEASED; // todo: check MVoiceStaces[i].state..
     return MIP_VOICE_RELEASED;
-    //state = MIP_VOICE_RELEASED;
   }
 
   //----------
@@ -403,18 +408,16 @@ public:
 
   void parameter(uint32_t index, float value) {
     //MIP_Print("%i = %.3f\n",index,value);
-    float v2 = (value*value);
-    //float v3 = (value*value*value);
     switch (index) {
-      case  2:  filter_freq = value;          break;
-      case  3:  filter_res = value;           break;
-      case  4:  pulse = value;                break;
-      case  5:  width = value;                break;
-      case  6:  amp_env.setAttack(value*5);   break;
-      case  7:  amp_env.setDecay(value*5);    break;
-      case  8:  amp_env.setSustain(v2);       break;
-      case  9:  amp_env.setRelease(value*5);  break;
-      case 10:  pitch = value;                break;
+      case  2:  filter_freq = value;              break;
+      case  3:  filter_res = value;               break;
+      case  4:  pulse = value;                    break;
+      case  5:  width = value;                    break;
+      case  6:  amp_env.setAttack(value*5);       break;
+      case  7:  amp_env.setDecay(value*5);        break;
+      case  8:  amp_env.setSustain(value*value);  break;
+      case  9:  amp_env.setRelease(value*5);      break;
+      case 10:  pitch = value;                    break;
     }
   }
 
@@ -433,70 +436,74 @@ public:
   // ASize  = 0..15
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
-  uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ASize) {
+  uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ALength, uint32_t AOffset) {
 
-    float p = (pitch * 2.0) - 1.0;                            // 0..1 -> -1..1
-    p += pitch_mod;
-    //todo: smoother
 
-    MIP_Assert(note_key > 0);
-    hz = MIP_NoteToHz(note_key + note_tuning + p);  // pow !!
-    phadd = hz * context->invsamplerate;
+    MIP_Assert(note_key >= 0);
+    if (note_key >= 0) {
 
-    float* output = context->voicebuffer;
-    MIP_Assert(output);
+      float p = (pitch * 2.0) - 1.0;                            // 0..1 -> -1..1
+      p += pitch_mod;
+      //todo: smoother
 
-    for (uint32_t i = 0; i < ASize; i++) {
-      float t1 = ph + 0.5f;
-      t1 = MIP_Fract(t1);
-      float saw1 = 2.0 * t1 - 1.0;
-      saw1 -= MIP_PolyBlep(t1,phadd);
-      float w = width + width_mod;
-      w = MIP_Clamp(w,0,1);
-      float t2 = t1 + w;
-      t2 = MIP_Fract(t2);
-      float saw2 = 2.0 * t2 - 1.0;
-      saw2 -= MIP_PolyBlep(t2,phadd);
-      float sq = pulse + pulse_mod;
-      sq = MIP_Clamp(sq,0,1);
-      float squ = saw1 - (saw2 * sq);
-      float ff = filter_freq + filter_freq_mod;
-      ff += note_bright;
-      ff = MIP_Clamp(ff,0,1);
-      ff = (ff * ff); // ugh..
-      ff = flt_freq_smoother.process(ff);
-      float fr = filter_res + filter_res_mod;
-      fr = MIP_Clamp(fr,0,1);
-      fr = 1.0 - fr; // hhhh...
-      fr = flt_res_smoother.process(fr);
-      float amp = note_onvel + note_press;
-      amp = MIP_Clamp(amp,0,1);
-      amp *= amp_env.process();
-      amp = vol_smoother.process(amp);
-      filter.setMode(MIP_SVF_LP);
-      filter.setFreq(ff);
-      filter.setBW(fr);
-      float out = squ;
-      *output++ += (filter.process(out) * amp);
-      ph += phadd;
-      ph = MIP_Fract(ph);
+      hz = MIP_NoteToHz(note_key + note_tuning + p);  // pow !!
+      phadd = hz * context->invsamplerate;
+
+      float* output = context->voicebuffer;
+      output += AOffset;
+      MIP_Assert(output);
+
+      for (uint32_t i = 0; i < ALength; i++) {
+        float t1 = ph + 0.5f;
+        t1 = MIP_Fract(t1);
+        float saw1 = 2.0 * t1 - 1.0;
+        saw1 -= MIP_PolyBlep(t1,phadd);
+        float w = width + width_mod;
+        w = MIP_Clamp(w,0,1);
+        float t2 = t1 + w;
+        t2 = MIP_Fract(t2);
+        float saw2 = 2.0 * t2 - 1.0;
+        saw2 -= MIP_PolyBlep(t2,phadd);
+        float sq = pulse + pulse_mod;
+        sq = MIP_Clamp(sq,0,1);
+        float squ = saw1 - (saw2 * sq);
+        float ff = filter_freq + filter_freq_mod;
+        ff += note_bright;
+        ff = MIP_Clamp(ff,0,1);
+        ff = (ff * ff); // ugh..
+        ff = flt_freq_smoother.process(ff);
+        float fr = filter_res + filter_res_mod;
+        fr = MIP_Clamp(fr,0,1);
+        fr = 1.0 - fr; // hhhh...
+        fr = flt_res_smoother.process(fr);
+        float amp = note_onvel + note_press;
+        amp = MIP_Clamp(amp,0,1);
+        amp *= amp_env.process();
+        amp = vol_smoother.process(amp);
+        filter.setMode(MIP_SVF_LP);
+        filter.setFreq(ff);
+        filter.setBW(fr);
+        float out = squ;
+        *output++ += (filter.process(out) * amp);
+        ph += phadd;
+        ph = MIP_Fract(ph);
+      }
+
+    } // key > 0
+
+    uint32_t stage = amp_env.getStage();
+    //if ((stage == MIP_ENVELOPE_OFF) || (stage == MIP_ENVELOPE_FINISHED)) {
+    if (stage == MIP_ENVELOPE_FINISHED) {
+      return MIP_VOICE_FINISHED;
     }
-
-    if (amp_env.getStage() == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
     else return AState;
-  }
-
-  //----------
-
-  uint32_t process(uint32_t AIndex,uint32_t AState) {
-    return process(AIndex,AState,MIP_VOICE_SLICE_SIZE);
   }
 
 };
 
 //----------------------------------------------------------------------
 
-typedef MIP_VoiceManager<myVoice,NUM_VOICES>  myVoiceManager;
+typedef MIP_VoiceManager<myVoice,NUM_VOICES> myVoiceManager;
 
 //----------------------------------------------------------------------
 //
@@ -662,7 +669,7 @@ private:
 
   //----------
 
-  myVoiceManager  MVoiceManager = myVoiceManager(0);
+  myVoiceManager  MVoiceManager = {};//myVoiceManager();
 
 //------------------------------
 public:
@@ -696,7 +703,7 @@ public: // clap
     // send initial parameter values to the voices
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
       float v = MParameterValues[i];
-      MVoiceManager.voiceParameter(i,v);
+      MVoiceManager.setParameter(i,v);
     }
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
   }
@@ -705,36 +712,12 @@ public: // clap
 
   const void* get_extension(const char *id) final {
     MIP_Print("host asks for: %s\n",id);
-    if (strcmp(id,CLAP_EXT_GUI) == 0)         return &MGui;
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
+    if (strcmp(id,CLAP_EXT_GUI) == 0)         return &MGui;
     if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)  return &MNotePorts;
+    //if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0) return &MThreadPool;
     if (strcmp(id,CLAP_EXT_VOICE_INFO) == 0)  return &MVoiceInfo;
     return MIP_Plugin::get_extension(id);
-  }
-
-  //----------
-
-  bool gui_create(const char *api, bool is_floating) final {
-    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) { /*MIP_Print("error.. !x11\n");*/ return false; }
-    if (is_floating) { /*MIP_Print("error.. is_floating\n");*/ return false; }
-    MEditorIsOpen = false;
-    MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true);
-    return (MEditor);
-  }
-
-  //----------
-
-  /*
-    CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES
-      Allows the host to send overlapping NOTE_ON events.
-      The plugin will then rely upon the note_id to distinguish between them.
-  */
-
-  bool voice_info_get(clap_voice_info_t *info) final {
-    info->voice_count     = NUM_VOICES;
-    info->voice_capacity  = NUM_VOICES;
-    info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;
-    return true;
   }
 
   //----------
@@ -754,6 +737,44 @@ public: // clap
     return CLAP_PROCESS_CONTINUE;
   }
 
+  //----------
+  // gui
+  //----------
+
+  bool gui_create(const char *api, bool is_floating) final {
+    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) { /*MIP_Print("error.. !x11\n");*/ return false; }
+    if (is_floating) { /*MIP_Print("error.. is_floating\n");*/ return false; }
+    MEditorIsOpen = false;
+    MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true);
+    return (MEditor);
+  }
+
+  //----------
+  // voice-info
+  //----------
+
+  /*
+    CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES
+      Allows the host to send overlapping NOTE_ON events.
+      The plugin will then rely upon the note_id to distinguish between them.
+  */
+
+  bool voice_info_get(clap_voice_info_t *info) final {
+    info->voice_count     = NUM_VOICES;
+    info->voice_capacity  = NUM_VOICES;
+    info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;
+    return true;
+  }
+
+  //----------
+  // thread-pool
+  //----------
+
+//  void thread_pool_exec(uint32_t task_index) final {
+//    MIP_PRINT;
+//    MVoiceManager.processVoice(task_index);
+//  }
+
 //------------------------------
 public:
 //------------------------------
@@ -761,13 +782,18 @@ public:
   void handle_process(const clap_process_t *process) final {
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
-    MIP_ClearStereoBuffer(outputs,length);
 
-    #ifdef MIP_VOICE_USE_SLICES
-    MVoiceManager.processSlices(process);
-    #else
+    //MIP_ClearStereoBuffer(outputs,length);
+
+    //#ifdef MIP_VOICE_USE_SLICES
+    //MVoiceManager.processSlices(process);
+    //#else
+
     MVoiceManager.process(process);
-    #endif
+
+    //#endif
+
+//    bool result = MHost->thread_pool->request_exec(MHost->host,NUM_VOICES);
 
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
@@ -776,14 +802,23 @@ public:
     MIP_ScaleStereoBuffer(outputs,l,r,length);
   }
 
-  //----------
-
+//------------------------------
 protected:
+//------------------------------
 
   void handle_editor_parameter(uint32_t AIndex, float AValue) final {
     //MIP_Print("%i = %.3f\n",AIndex,AValue);
-    MVoiceManager.voiceParameter(AIndex,AValue);
+    MVoiceManager.setParameter(AIndex,AValue);
   }
+
+//------------------------------
+//------------------------------
+
+  //void prepareEventsForVoices(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+  //  uint32_t num = in_events->size(in_events);
+  //  for (uint32_t i=0; i<num; i++) {
+  //  }
+  //}
 
 };
 

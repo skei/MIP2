@@ -1,5 +1,5 @@
-#ifndef mip_waveform_blamp
-#define mip_waveform_blamp
+#ifndef mip_polyblamp_waveform_included
+#define mip_polyblamp_waveform_included
 //----------------------------------------------------------------------
 
 /*

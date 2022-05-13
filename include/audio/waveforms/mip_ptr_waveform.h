@@ -1,5 +1,5 @@
-#ifndef mip_waveform_ptr_included
-#define mip_waveform_ptr_included
+#ifndef mip_ptr_waveform_included
+#define mip_ptr_waveform_included
 //----------------------------------------------------------------------
 
 /*

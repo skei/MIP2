@@ -1,5 +1,5 @@
-#ifndef mip_filter_decimator_included
-#define mip_filter_decimator_included
+#ifndef mip_decimator_filter_included
+#define mip_decimator_filter_included
 //----------------------------------------------------------------------
 
 // Hiqh quality /2 decimators

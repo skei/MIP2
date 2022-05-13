@@ -1,5 +1,5 @@
-#ifndef mip_filter_apple_included
-#define mip_filter_apple_included
+#ifndef mip_apple_filter_included
+#define mip_apple_filter_included
 //----------------------------------------------------------------------
 
 // original author: lubomir i ivanov (for axonlib)

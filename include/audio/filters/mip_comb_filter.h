@@ -1,5 +1,5 @@
-#ifndef mip_filter_comb_included
-#define mip_filter_comb_included
+#ifndef mip_comb_filter_included
+#define mip_comb_filter_included
 //----------------------------------------------------------------------
 
 // https://github.com/rjeschke/cetonesynths/blob/master/cetoneorg/reverb.h

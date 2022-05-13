@@ -15,7 +15,7 @@ protected:
 //------------------------------
 
   const char* MText           = "";
-  float       MTextSize       = 12;
+  float       MTextSize       = 11;
   uint32_t    MTextAlignment  = MIP_TEXT_ALIGN_LEFT;
   MIP_Color   MTextColor      = MIP_COLOR_BLACK;
   MIP_FRect   MTextOffset     = MIP_FRect(2,2,2,2);

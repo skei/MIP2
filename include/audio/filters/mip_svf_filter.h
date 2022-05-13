@@ -1,5 +1,5 @@
-#ifndef mip_filter_svf_included
-#define mip_filter_svf_included
+#ifndef mip_svf_filter_included
+#define mip_svf_filter_included
 //----------------------------------------------------------------------
 
 #include "base/utils/mip_math.h"

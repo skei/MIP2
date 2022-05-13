@@ -1,5 +1,5 @@
 
-class MIP_PeakFollower {
+class MIP_EnvelopeFollower3 {
 };
 
 /*

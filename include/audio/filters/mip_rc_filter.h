@@ -1,5 +1,5 @@
-#ifndef mip_filter_rc_included
-#define mip_filter_rc_included
+#ifndef mip_rc_filter_included
+#define mip_rc_filter_included
 //----------------------------------------------------------------------
 
 #include <math.h> // expf

@@ -1,5 +1,5 @@
-#ifndef mip_filter_cytomic_included
-#define mip_filter_cytomic_included
+#ifndef mip_cytomic_filter_included
+#define mip_cytomic_filter_included
 //----------------------------------------------------------------------
 
 /*

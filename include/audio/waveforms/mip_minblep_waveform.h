@@ -1,5 +1,5 @@
-#ifndef mip_waveform_minblep_included
-#define mip_waveform_minblep_included
+#ifndef mip_minblep_waveform_included
+#define mip_minblep_waveform_included
 //----------------------------------------------------------------------
 
 class MIP_MinblepWaveform {

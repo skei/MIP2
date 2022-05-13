@@ -1,5 +1,5 @@
 
-class MIP_EnvelopeDetector {
+class MIP_EnvelopeFollower2 {
 };
 
 /*
