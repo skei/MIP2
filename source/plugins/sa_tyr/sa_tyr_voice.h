@@ -122,7 +122,7 @@ public:
   // ASize  = 0..15
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
-  uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ASize) {
+  uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ASize, uint32_t ATime) {
 
     hz = MIP_NoteToHz(note_key + note_tuning);
     phadd = hz * context->invsamplerate;

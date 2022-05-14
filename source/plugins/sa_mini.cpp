@@ -19,9 +19,9 @@
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
   //ARegistry->appendPlugin(&sa_fibonacci_descriptor);
-  ARegistry->appendPlugin(&sa_grains_descriptor);
-  ARegistry->appendPlugin(&sa_pitch_descriptor);
-  //ARegistry->appendPlugin(&sa_transpose_descriptor);
+  ARegistry->appendDescriptor(&sa_grains_descriptor);
+  ARegistry->appendDescriptor(&sa_pitch_descriptor);
+  //ARegistry->appendDescriptor(&sa_transpose_descriptor);
 }
 
 //----------

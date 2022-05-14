@@ -4,7 +4,7 @@
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
-#define MIP_VOICE_USE_SLICES
+//#define MIP_VOICE_USE_SLICES
 
 #define NUM_PARAMETERS    1
 #define NUM_AUDIO_OUTPUTS 1
@@ -15,14 +15,14 @@
 
 //----------------------------------------------------------------------
 
-#include "plugin/mip_plugin.h"
-
-#include "plugin/mip_editor.h"
-#include "gui/mip_widgets.h"
-
+#include "mip.h"
 #include "audio/mip_audio_math.h"
-#include "audio/mip_voice_manager.h"
 #include "audio/modulation/mip_envelope.h"
+#include "gui/mip_widgets.h"
+#include "plugin/mip_editor.h"
+#include "plugin/mip_plugin.h"
+#include "plugin/mip_voice_manager.h"
+
 
 //----------------------------------------------------------------------
 //
@@ -160,7 +160,7 @@ public:
   // ASize  = 0..15
   // AState = MIP_VOICE_PLAYING/MIP_VOICE_RELEASED
 
-  uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ASize) {
+  uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ASize, uint32_t AOffset) {
 
     hz = MIP_NoteToHz(note_key + note_tuning);
     phadd = hz * context->invsamplerate;
@@ -232,7 +232,7 @@ private:
 
   //----------
 
-  myVoiceManager  MVoiceManager = myVoiceManager(0);
+  myVoiceManager  MVoiceManager = {};
 
 //------------------------------
 public:
@@ -267,7 +267,7 @@ public: // plugin
     // send initial parameter values to the voices
     for (uint32_t i=0; i<NUM_PARAMETERS; i++) {
       float v = MParameterValues[i];
-      MVoiceManager.voiceParameter(i,v);
+      MVoiceManager.setParameter(i,v);
     }
     return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
   }
@@ -366,7 +366,7 @@ private:
   //----------
 
   void handle_editor_parameter(uint32_t AIndex, float AValue) final {
-    MVoiceManager.voiceParameter(AIndex,AValue);
+    MVoiceManager.setParameter(AIndex,AValue);
   }
 
 };
@@ -378,7 +378,7 @@ private:
 //----------------------------------------------------------------------
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
-  ARegistry->appendPlugin(&template_descriptor);
+  ARegistry->appendDescriptor(&template_descriptor);
 }
 
 //----------

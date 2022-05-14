@@ -7,8 +7,8 @@
 #include "plugin/mip_editor.h"
 
 //#include "../data/img/knob4_60x60_131.h"
-#include "../data/img/sa_logo_40_trans_black.h"
-#include "../data/img/mip2_trans_129x34.h"
+//#include "../data/img/sa_logo_40_trans_black.h"
+//#include "../data/img/mip2_trans_129x34.h"
 
 
 
@@ -95,7 +95,13 @@ public:
 
     // sa header
 
-    MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(MIP_FRect(60),MLogoSurface,MMip2Surface);
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    //MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(MIP_FRect(60),MLogoSurface,MMip2Surface);
+    MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(MIP_FRect(60),window);
+
+
     MEditorWidget->appendWidget(sa_header);
     sa_header->setPluginName("BOTAGE");
     sa_header->setPluginVersion("v0.0.11");

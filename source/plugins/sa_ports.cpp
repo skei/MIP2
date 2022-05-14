@@ -26,19 +26,19 @@
 //----------------------------------------------------------------------
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
-  ARegistry->appendPlugin(&sa_compciter_descriptor);
-  ARegistry->appendPlugin(&sa_event_horizon_descriptor);
-  ARegistry->appendPlugin(&sa_exciter_descriptor);
-  ARegistry->appendPlugin(&sa_exciter2_descriptor);
-  ARegistry->appendPlugin(&sa_hall_reverb_descriptor);
-  ARegistry->appendPlugin(&sa_hrtf_descriptor);
-  ARegistry->appendPlugin(&sa_large_room_reverb_descriptor);
-  ARegistry->appendPlugin(&sa_limiter_descriptor);
-  ARegistry->appendPlugin(&sa_saturation_descriptor);
-  ARegistry->appendPlugin(&sa_small_room_reverb_descriptor);
-  ARegistry->appendPlugin(&sa_sonic_maximizer_descriptor);
-  ARegistry->appendPlugin(&sa_tilteq_descriptor);
-  ARegistry->appendPlugin(&sa_transient_killer_descriptor);
+  ARegistry->appendDescriptor(&sa_compciter_descriptor);
+  ARegistry->appendDescriptor(&sa_event_horizon_descriptor);
+  ARegistry->appendDescriptor(&sa_exciter_descriptor);
+  ARegistry->appendDescriptor(&sa_exciter2_descriptor);
+  ARegistry->appendDescriptor(&sa_hall_reverb_descriptor);
+  ARegistry->appendDescriptor(&sa_hrtf_descriptor);
+  ARegistry->appendDescriptor(&sa_large_room_reverb_descriptor);
+  ARegistry->appendDescriptor(&sa_limiter_descriptor);
+  ARegistry->appendDescriptor(&sa_saturation_descriptor);
+  ARegistry->appendDescriptor(&sa_small_room_reverb_descriptor);
+  ARegistry->appendDescriptor(&sa_sonic_maximizer_descriptor);
+  ARegistry->appendDescriptor(&sa_tilteq_descriptor);
+  ARegistry->appendDescriptor(&sa_transient_killer_descriptor);
 }
 
 //----------

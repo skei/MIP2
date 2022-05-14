@@ -182,7 +182,7 @@ public: // plugin
 //----------------------------------------------------------------------
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
-  ARegistry->appendPlugin(&template_descriptor);
+  ARegistry->appendDescriptor(&template_descriptor);
 }
 
 //----------

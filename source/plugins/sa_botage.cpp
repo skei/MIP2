@@ -87,7 +87,7 @@ private:
       1.0
     },
     { 1,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE_ID,
       nullptr,
       "Param2",
       "Params",
@@ -96,7 +96,7 @@ private:
       0.5
     },
     { 2,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Param3",
       "Params",
@@ -234,7 +234,7 @@ public:
 //----------------------------------------------------------------------
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
-  ARegistry->appendPlugin(&myDescriptor);
+  ARegistry->appendDescriptor(&myDescriptor);
 }
 
 //----------
