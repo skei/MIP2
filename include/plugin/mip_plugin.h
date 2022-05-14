@@ -763,6 +763,11 @@ public: // plugin
   void destroy() override {
     free(MParameterValues);
     free(MParameterModulations);
+
+    free(MAudioParamVal);
+    free(MHostParamVal);
+    free(MHostParamMod);
+
   }
 
   //----------
