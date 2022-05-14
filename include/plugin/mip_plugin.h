@@ -857,7 +857,7 @@ public: // event-filter
         case CLAP_EVENT_PARAM_VALUE:      return true;
         case CLAP_EVENT_PARAM_MOD:        return true;
         case CLAP_EVENT_TRANSPORT:        return true;
-        case CLAP_EVENT_MIDI:             return true;
+        //case CLAP_EVENT_MIDI:             return true;
         //case CLAP_EVENT_MIDI_SYSEX:       return true;
         //case CLAP_EVENT_MIDI2:            return true;
       }
