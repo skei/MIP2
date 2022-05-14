@@ -52,7 +52,6 @@ const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugi
     return plugin->clap_plugin_ptr();
   }
   else {
-    //MIP_Print("no MIP_CreatePlugin()\n");
     return nullptr;
   }
 }

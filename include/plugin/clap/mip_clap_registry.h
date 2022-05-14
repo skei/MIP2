@@ -23,13 +23,10 @@ typedef MIP_Array<const clap_plugin_descriptor_t*> clap_descriptor_array;
 typedef MIP_Array<const void*> clap_factory_array;
 typedef MIP_Array<const char*> clap_factory_id_array;
 
-//----------
-
 class MIP_ClapRegistry;
 
 extern void MIP_Register(MIP_ClapRegistry* ARegistry) __MIP_WEAK;
 extern void MIP_Unregister(MIP_ClapRegistry* ARegistry) __MIP_WEAK;
-
 extern MIP_ClapPlugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) __MIP_WEAK;
 
 //----------------------------------------------------------------------

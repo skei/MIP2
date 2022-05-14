@@ -87,7 +87,6 @@ public: // extensions
 
   //virtual void ambisonic_changed() {}
   virtual uint32_t audio_ports_get_preferred_sample_size() { return 0; }
-  //virtual void audio_ports_rescan(uint32_t flags) {}
   static bool  audio_ports_is_rescan_flag_supported(uint32_t flag) { return false; }
   static void  audio_ports_rescan(uint32_t flags) {}
   virtual void audio_ports_config_rescan() {}
@@ -97,13 +96,11 @@ public: // extensions
   virtual bool event_registry_query(const char* space_name, uint16_t* space_id) { return false; }
   virtual void file_reference_changed() {}
   virtual void file_reference_set_dirty(clap_id resource_id) {}
-
   virtual void gui_resize_hints_changed() {}
   virtual bool gui_request_resize(uint32_t width, uint32_t height) { return false; }
   virtual bool gui_request_show() { return false; }
   virtual bool gui_request_hide() { return false; }
   virtual void gui_closed(bool was_destroyed) {}
-
   virtual void latency_changed() {}
   virtual void log_log(clap_log_severity severity, const char *msg) {}
   virtual void midi_mappings_changed() {}
