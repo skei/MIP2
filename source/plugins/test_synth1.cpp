@@ -381,7 +381,7 @@ public:
     switch (index) {
       case  2:  filter_freq_mod = value;  break;
       case  3:  filter_res_mod = value;   break;
-      case  4:  pulse = value;            break;
+      case  4:  pulse_mod = value;        break;
       case  5:  width_mod = value;        break;
       case 10:  pitch_mod = value;        break;
     }
