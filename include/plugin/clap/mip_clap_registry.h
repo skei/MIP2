@@ -81,25 +81,25 @@ public:
 public: // descriptors
 //------------------------------
 
-  void autoFreePlugin(const clap_plugin_descriptor_t* ADescriptor) {
+  void autoFreeDescriptor(const clap_plugin_descriptor_t* ADescriptor) {
     MAutoFreeDescriptors.push_back(ADescriptor);
   }
 
   //----------
 
-  void appendPlugin(const clap_plugin_descriptor_t* ADescriptor) {
+  void appendDescriptor(const clap_plugin_descriptor_t* ADescriptor) {
     MDescriptors.push_back(ADescriptor);
   }
 
   //----------
 
-  uint32_t getNumPlugins() {
+  uint32_t getNumDescriptors() {
     return MDescriptors.size();
   }
 
   //----------
 
-  const clap_plugin_descriptor_t* getPlugin(uint32_t AIndex) {
+  const clap_plugin_descriptor_t* getDescriptor(uint32_t AIndex) {
     return MDescriptors[AIndex];
   }
 
@@ -107,7 +107,7 @@ public: // descriptors
 
   // returns index of plugin with plugin_id, or -1 if not found
 
-  int32_t findPluginById(const char *plugin_id) {
+  int32_t findDescriptorById(const char *plugin_id) {
     for (uint32_t i=0; i<MDescriptors.size(); i++) {
       if (strcmp(plugin_id,MDescriptors[i]->id) == 0) return i;
     }

@@ -764,7 +764,7 @@ protected:
 //----------------------------------------------------------------------
 
 void MIP_Register(MIP_ClapRegistry* ARegistry) {
-  ARegistry->appendPlugin(&myDescriptor);
+  ARegistry->appendDescriptor(&myDescriptor);
 }
 
 //----------

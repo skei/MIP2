@@ -18,7 +18,7 @@
 */
 
 uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
-  return MIP_CLAP_REGISTRY.getNumPlugins();
+  return MIP_CLAP_REGISTRY.getNumDescriptors();
 }
 
 //----------
@@ -31,7 +31,7 @@ uint32_t clap_factory_get_plugin_count_callback(const struct clap_plugin_factory
 */
 
 const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
-  return MIP_CLAP_REGISTRY.getPlugin(index);
+  return MIP_CLAP_REGISTRY.getDescriptor(index);
 }
 
 //----------
@@ -46,8 +46,8 @@ const clap_plugin_descriptor_t* clap_factory_get_plugin_descriptor_callback(cons
 
 const clap_plugin_t* clap_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
   if (MIP_CreatePlugin) {
-    int32_t index = MIP_CLAP_REGISTRY.findPluginById(plugin_id);
-    const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getPlugin(index);
+    int32_t index = MIP_CLAP_REGISTRY.findDescriptorById(plugin_id);
+    const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getDescriptor(index);
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,host);
     return plugin->clap_plugin_ptr();
   }
