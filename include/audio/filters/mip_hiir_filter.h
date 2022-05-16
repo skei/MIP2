@@ -11,7 +11,7 @@
 /*
   TODO:
   - inline allpass filters (up to 12*6 = 72 state vars.. :-/
-  - try o get rid of memory load/stores
+  - try to get rid of memory load/stores
   - zeroes?
   - each allpass: 6 state vars + coeff
     6*6 + 6*6 VARS..

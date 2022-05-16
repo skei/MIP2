@@ -11,7 +11,6 @@
 //#define MIP_DEBUG_PRINT_SOCKET
 #define MIP_DEBUG_WATCHES
 
-
 //----------------------------------------------------------------------
 
 #ifdef MIP_WIN32

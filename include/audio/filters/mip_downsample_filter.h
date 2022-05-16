@@ -10,13 +10,6 @@
 // 32 tap polyphase brick wall FIR filter using Kaiser window.
 //----------------------------------------------------------------------
 
-/*
-  not very good..
-  ok-ish at 8* oversampling, dull at smaller, too aliased at higher..
-  specialized for 8* ?
-  or maybe i'm using it wrong?
-*/
-
 //----------
 
 #define BUFFER_SIZE   256

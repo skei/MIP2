@@ -531,6 +531,7 @@
 		<Unit filename="../include/plugin/mip_host.h" />
 		<Unit filename="../include/plugin/mip_note.h" />
 		<Unit filename="../include/plugin/mip_parameter.h" />
+		<Unit filename="../include/plugin/mip_parameter_manager.h" />
 		<Unit filename="../include/plugin/mip_plugin.h" />
 		<Unit filename="../include/plugin/mip_voice.h" />
 		<Unit filename="../include/plugin/mip_voice_manager.h" />

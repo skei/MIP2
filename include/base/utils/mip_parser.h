@@ -66,11 +66,11 @@ class MIP_Parser {
 
       for (uint32_t i=0; i<MBufLen; i++) {
         // replace any non-visual (<32) chars with '\0'
-        if (MBuffer[i]<32) {
+        if (MBuffer[i] < 32) {
           MBuffer[i] = 0;
         }
         // keep spaces inside "" -> one token
-        if (MBuffer[i]==32) { // space
+        if (MBuffer[i] == 32) { // space
           if (!quotes) MBuffer[i] = 0;
         }
         if (MBuffer[i] == 34 ) { // "

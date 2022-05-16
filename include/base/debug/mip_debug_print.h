@@ -3,8 +3,8 @@
 //----------------------------------------------------------------------
 
 /*
-see socket output by entering this in a console:
-nc -U -l -k /tmp/mip.socket
+  see the socket output by using this in a console:
+  nc -U -l -k /tmp/mip.socket
 */
 
 #include <stdarg.h>   // va_
@@ -166,7 +166,7 @@ void MIP_NoPrint(const char*,...) {}
     #endif
 
     _mip_debug_prefix_buffer[0] = 0;
-    va_end(args);
+    va_end(args); // move this up?
   }
 
   //----------
@@ -182,7 +182,7 @@ void MIP_NoPrint(const char*,...) {}
       printf("%s",_mip_debug_print_buffer);
     #endif
 
-    va_end(args);
+    va_end(args); // again, move this up?
   }
 
   //----------------------------------------------------------------------

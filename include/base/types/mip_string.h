@@ -16,10 +16,10 @@
 //
 //----------------------------------------------------------------------
 
-template <int SIZE>
+template <int SIZE=256>
 class MIP_StaticString
 //: public MIP_StaticBuffer<char,SIZE> {
-: public MIP_StaticBuffer<char,SIZE=256> {
+: public MIP_StaticBuffer<char,SIZE=> {
 };
 
 //

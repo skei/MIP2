@@ -44,7 +44,7 @@ struct MIP_Complex {
   //----------
 
   void inv(void) {
-    float a = (re*re) + (im*im);
+    float a = (re * re) + (im * im);
     re /= a;
     im /= a;
   }
@@ -61,8 +61,8 @@ struct MIP_Complex {
   void mul(float r, float i) {
     float rr = re;
     float ii = im;
-    re = (rr*r) - (ii*i);
-    im = (rr*i) + (ii*r);
+    re = (rr * r) - (ii * i);
+    im = (rr * i) + (ii * r);
   }
 
   //----------------------------------------
@@ -98,8 +98,8 @@ struct MIP_Complex {
   //----------
 
   void operator * (const MIP_Complex A1) {
-    float r = (re*A1.re) - (im*A1.im);
-    float i = (re*A1.im) + (im*A1.re);
+    float r = (re * A1.re) - (im * A1.im);
+    float i = (re * A1.im) + (im * A1.re);
     re = r;
     im = i;
   }

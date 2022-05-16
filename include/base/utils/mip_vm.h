@@ -63,17 +63,17 @@ class MIP_VirtualMachine {
 private:
 //------------------------------
 
-  int             MCodeSegment_size                       = 0;
-  MIP_Cell       MCodeSegment[MIP_VM_CODE_SEGMENT_SIZE] = {0};
-  MIP_Cell       MDataSegment[MIP_VM_DATA_SEGMENT_SIZE] = {0};
-  MIP_Cell       MRegisters[MIP_VM_NUM_REGISTERS]       = {0};
-  uint32_t        MNumExternals                           = 0;
-  MIP_External   MExternals[MIP_VM_MAX_EXTERNALS]       = {0};
-  int             MNumOpcodes                             = 0;
-  MIP_Opcode*    MOpcodes                                = nullptr;
-  MIP_Cell*      MIP                                     = nullptr;
-  MIP_CallStack  MCallStack;
-  MIP_DataStack  MDataStack;
+  int           MCodeSegment_size                       = 0;
+  MIP_Cell      MCodeSegment[MIP_VM_CODE_SEGMENT_SIZE]  = {0};
+  MIP_Cell      MDataSegment[MIP_VM_DATA_SEGMENT_SIZE]  = {0};
+  MIP_Cell      MRegisters[MIP_VM_NUM_REGISTERS]        = {0};
+  uint32_t      MNumExternals                           = 0;
+  MIP_External  MExternals[MIP_VM_MAX_EXTERNALS]        = {0};
+  int           MNumOpcodes                             = 0;
+  MIP_Opcode*   MOpcodes                                = nullptr;
+  MIP_Cell*     MIP                                     = nullptr;
+  MIP_CallStack MCallStack;
+  MIP_DataStack MDataStack;
 
 //------------------------------
 public:
@@ -91,9 +91,9 @@ public:
 public:
 //------------------------------
 
-MIP_Cell*  getRegisters()                  { return MRegisters; }
-MIP_Cell   getRegister(int i)              { return MRegisters[i]; }
-void        setRegister(int i, MIP_Cell v) { MRegisters[i] = v; }
+MIP_Cell* getRegisters()                  { return MRegisters; }
+MIP_Cell  getRegister(int i)              { return MRegisters[i]; }
+void      setRegister(int i, MIP_Cell v)  { MRegisters[i] = v; }
 
 //------------------------------
 public:
@@ -352,7 +352,7 @@ public:
     else if (APosition == -1) { // relocate
 
       //------------------------------
-      // translate
+      // translate (relocate?)
       //------------------------------
 
       // MOpcodes -> MCodeSegment ++ ...

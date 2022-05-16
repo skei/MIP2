@@ -1,4 +1,7 @@
 
+C = Compile
+L = link(
+----------)
 
 all:
 C -Wall

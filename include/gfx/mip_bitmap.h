@@ -32,10 +32,10 @@
   //#endif
 #endif
 
-#ifndef MIP_NO_BITMAP_FONT
-  #define STB_TRUETYPE_IMPLEMENTATION
-  #include "extern/stb/stb_truetype.h"
-#endif
+//#ifndef MIP_NO_BITMAP_FONT
+//  #define STB_TRUETYPE_IMPLEMENTATION
+//  #include "extern/stb/stb_truetype.h"
+//#endif
 
 //----------------------------------------------------------------------
 

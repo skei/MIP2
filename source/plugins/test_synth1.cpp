@@ -22,8 +22,9 @@
 #include "audio/modulation/mip_envelope.h"
 #include "audio/waveforms/mip_polyblep_waveform.h"
 #include "gui/mip_widgets.h"
-#include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
+#include "plugin/mip_parameter.h"
+#include "plugin/mip_plugin.h"
 #include "plugin/mip_voice_manager.h"
 
 //----------------------------------------------------------------------
@@ -439,11 +440,13 @@ public:
         filter.setFreq(ff);
         filter.setBW(fr);
         float out = squ;
+
         #ifdef MIP_VOICE_PROCESS_THREADED
           *output++ = (filter.process(out) * amp);
         #else
           *output++ += (filter.process(out) * amp);
         #endif
+
         ph += phadd;
         ph = MIP_Fract(ph);
       }
@@ -729,11 +732,13 @@ public:
   void handle_process(const clap_process_t *process) final {
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
+
     #ifdef MIP_VOICE_PROCESS_THREADED
       MVoiceManager.processThreaded(process,MHost);
     #else
       MVoiceManager.process(process);
     #endif
+
     float v = MParameterValues[0];  // vol
     float p = MParameterValues[1];  // pan
     float l = v * (1.0 - p);

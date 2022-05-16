@@ -1,20 +1,5 @@
 
-
-
-(quick notes.. research...)
-
-* parameter smoothing in MIP_Parameter class
-* pre-process event stream -> individual voices
-
-
-
-
-
-
-
-
-//----------------------------------------------------------------------
-
+...
 
 
 //----------------------------------------------------------------------
@@ -24,6 +9,12 @@
 //----------------------------------------------------------------------
 
 * windows version
+
+  mingw.64 ?
+  base: thread, timer, attributes,
+  debug: print_socket, crash_handler, call_stack
+  plugin: dll-entry
+  gui: window, painter, surface classes
 
 //----------------------------------------------------------------------
 //
@@ -42,7 +33,15 @@
 //
 //----------------------------------------------------------------------
 
+* parameter smoothing
+
+  MIP_Parameter:
+    setValue()
+    getValue()
+    getSmoothValue() ?
+
 * vst2/3 adapters
+
 * vst2/3 hosting
 
 //----------------------------------------------------------------------
@@ -53,6 +52,7 @@
 
 
 * widgets
+
   - combine Slider, DualRange, ScrollBar
   - path-based drawing (cairo)
 
@@ -67,26 +67,30 @@
 
 * stop modal when resizing window
 
-* widget flag: proportional
-  (knobs, circular widget, etc)
+* widget flags:
+  - proportional (knobs, circular widget, etc)
 
 * double clicking
+
+  start timer when clicking
+  new click before timeout = double click
+  if timeout = normal single click
 
 * MIP_Skin, MIP_Theme, MIP_Styling
 
   a set of basic drawing functions you combine and use to drawing widgets?
   on_widget_paint..
+  rounded rect, gradient, header, border, ..
+  settings?
 
 * window resizing
 
   restrict number of resize events,
   they can choke the event queue
-
   resize event:
   - save wanted size
   - if there is a timer running: nothing
   - else: start timer w/timeout (100ms?)
   - when timeout: stop timer, send resize event (latest wanted size)
-
 
 

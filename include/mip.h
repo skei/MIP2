@@ -2,6 +2,11 @@
 #define mip_included
 //----------------------------------------------------------------------
 
+// ordering is important!
+// be careful!
+
+//----------
+
 #include <dirent.h>
 #include <math.h>
 #include <memory.h>
@@ -10,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <vector>
+
+//----------
 
 // output may be truncated copying 255 bytes from a string of length 255 [-Wstringop-truncation]
 //#pragma GCC diagnostic push
@@ -25,19 +32,6 @@
 #include "base/mip_attributes.h"
 
 #include "base/debug/mip_debug.h"
-
-//#ifndef MIP_NO_PLUGIN
-//  #include "plugin/mip_plugin.h"
-//#endif
-
-//#define MIP_MIDI_NOTE_OFF            0x80
-//#define MIP_MIDI_NOTE_ON             0x90
-//#define MIP_MIDI_POLY_AFTERTOUCH     0xA0
-//#define MIP_MIDI_CONTROL_CHANGE      0xB0
-//#define MIP_MIDI_PROGRAM_CHANGE      0xC0
-//#define MIP_MIDI_CHANNEL_AFTERTOUCH  0xD0
-//#define MIP_MIDI_PITCHBEND           0xE0
-//#define MIP_MIDI_SYS                 0xF0
 
 //----------------------------------------------------------------------
 #endif

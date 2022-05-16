@@ -15,6 +15,7 @@
 #include "base/types/mip_queue.h"
 #include "audio/mip_audio_utils.h"
 #include "plugin/mip_parameter.h"
+#include "plugin/mip_parameter_manager.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_plugin.h"
@@ -65,26 +66,10 @@
 //
 //----------------------------------------------------------------------
 
-//struct MIP_AudioPort {
-//  const clap_audio_port_info_t* ptr = nullptr;
-//};
-//
-//struct MIP_NotePort {
-//  const clap_note_port_info_t* ptr = nullptr;
-//};
-//
-//struct MIP_QuickControl {
-//  const clap_quick_controls_page_t* ptr = nullptr;
-//};
-
-//----------
-
-typedef MIP_Array<MIP_Parameter*> MIP_Parameters;
-
 //typedef MIP_Array<const clap_param_info_t*>           MIP_Parameters;
-typedef MIP_Array<const clap_audio_port_info_t*>      MIP_AudioPorts;
-typedef MIP_Array<const clap_note_port_info_t*>       MIP_NotePorts;
-typedef MIP_Array<const clap_quick_controls_page_t*>  MIP_QuickControls;
+typedef MIP_Array<const clap_audio_port_info_t*>      MIP_AudioPortArray;
+typedef MIP_Array<const clap_note_port_info_t*>       MIP_NotePortArray;
+typedef MIP_Array<const clap_quick_controls_page_t*>  MIP_QuickControlArray;
 
 //----------------------------------------------------------------------
 //
@@ -105,48 +90,42 @@ private:
 //------------------------------
 
   // gui -> plugin
-  // number of items per
-
-  //MIP_ClapIntQueue                MAudioParamQueue        = {};
-  //MIP_ClapIntQueue                MHostParamQueue         = {};
   MIP_Queue<uint32_t,EVENTS_PER_BLOCK>  MAudioParamQueue        = {};
-  float*                          MAudioParamVal          = nullptr;
-
+  float*                                MAudioParamVal          = nullptr;
   // gui -> host
-
   MIP_Queue<uint32_t,EVENTS_PER_BLOCK>  MHostParamQueue         = {};
-  float*                          MHostParamVal           = nullptr;
-  float*                          MHostParamMod           = nullptr;
+  float*                                MHostParamVal           = nullptr;
+  float*                                MHostParamMod           = nullptr;
 
-  //MIP_ClapIntQueue                MHostBeginGestureQueue  = {};
-  //MIP_ClapIntQueue                MHostEndGestureQueue    = {};
+  //MIP_ClapIntQueue                      MHostBeginGestureQueue  = {};
+  //MIP_ClapIntQueue                      MHostEndGestureQueue    = {};
 
 //------------------------------
 protected:
 //------------------------------
 
-  const clap_plugin_descriptor_t* MDescriptor             = nullptr;
-  MIP_ClapHost*                   MHost                   = nullptr;
+  const clap_plugin_descriptor_t*       MDescriptor             = nullptr;
+  MIP_ClapHost*                         MHost                   = nullptr;
 
-  MIP_Parameters                  MParameters             = {};
-  MIP_AudioPorts                  MAudioInputs            = {};
-  MIP_AudioPorts                  MAudioOutputs           = {};
-  MIP_NotePorts                   MNoteInputs             = {};
-  MIP_NotePorts                   MNoteOutputs            = {};
-  MIP_QuickControls               MQuickControls          = {};
+  MIP_ParameterArray                    MParameters             = {};
+  MIP_AudioPortArray                    MAudioInputs            = {};
+  MIP_AudioPortArray                    MAudioOutputs           = {};
+  MIP_NotePortArray                     MNoteInputs             = {};
+  MIP_NotePortArray                     MNoteOutputs            = {};
+  MIP_QuickControlArray                 MQuickControls          = {};
 
-  float*                          MParameterValues        = nullptr;
-  float*                          MParameterModulations   = nullptr;
-  bool                            MIsProcessing           = false;
-  bool                            MIsActivated            = false;
+  float*                                MParameterValues        = nullptr;
+  float*                                MParameterModulations   = nullptr;
+  bool                                  MIsProcessing           = false;
+  bool                                  MIsActivated            = false;
 
   #ifndef MIP_NO_GUI
-  MIP_Editor*                     MEditor                 = nullptr;
+  MIP_Editor*                           MEditor                 = nullptr;
   #endif
 
-  bool                            MEditorIsOpen           = false;
-  uint32_t                        MEditorDefaultWidth     = 640;
-  uint32_t                        MEditorDefaultHeight    = 480;
+  bool                                  MEditorIsOpen           = false;
+  uint32_t                              MEditorDefaultWidth     = 640;
+  uint32_t                              MEditorDefaultHeight    = 480;
 
 //------------------------------
 public:
@@ -156,22 +135,6 @@ public:
   : MIP_ClapPlugin(ADescriptor,AHost) {
     MDescriptor = ADescriptor;
     MHost = new MIP_ClapHost(AHost);
-
-    // move to init()
-    // we haven't set up the parameters yet..
-
-
-//    //uint32_t num = params_count();
-//    uint32_t num = MParameters.size();
-//    uint32_t size = num * sizeof(float);
-//    //MIP_Print("MAudioParamVal num %i size %i\n",num,size); // num = 0
-//    MAudioParamVal = (float*)malloc(size);
-//    MHostParamVal = (float*)malloc(size);
-//    MHostParamMod = (float*)malloc(size);
-//    memset(MAudioParamVal,0,size);
-//    memset(MHostParamVal,0,size);
-//    memset(MHostParamMod,0,size);
-
   }
 
   //----------
@@ -190,11 +153,6 @@ public:
 public:
 //------------------------------
 
-  //#ifndef MIP_NO_GUI
-  //  MIP_Editor* getEditor() { return MEditor; }
-  //  bool isOpen() { return MEditorIsOpen; }
-  //#endif
-
   float getParameterModulation(uint32_t AIndex) {
     return MParameterModulations[AIndex];
   }
@@ -211,14 +169,8 @@ public:
     MParameterValues[AIndex] = AValue;
   }
 
-  //#ifndef MIP_NO_GUI
-  //MIP_Editor* getEditor() { return MEditor; }
-  //bool        isEditorOpen() { return MEditorIsOpen; }
-  //#endif
-
 //------------------------------
-//private: // ??
-protected: // ??
+protected:
 //------------------------------
 
   /*
@@ -247,22 +199,18 @@ protected: // ??
       // if we already set this, it should be (bit) identical?
       if (value != MParameterValues[index]) {
         MParameterValues[index] = value;
-
         // notify voice manager...
-
-//TODO
-//        on_plugin_parameter();
-
-//        // notify plugin (fake param_value event)
-//        clap_event_param_value_t event;
-//        event.param_id    = index;
-//        event.cookie      = nullptr;
-//        event.port_index  = -1;
-//        event.key         = -1;
-//        event.channel     = -1;
-//        event.value       = value;
-//        handle_parameter_event(&event);
-
+        //TODO
+        //on_plugin_parameter();
+        // notify plugin (fake param_value event)
+        //clap_event_param_value_t event;
+        //event.param_id    = index;
+        //event.cookie      = nullptr;
+        //event.port_index  = -1;
+        //event.key         = -1;
+        //event.channel     = -1;
+        //event.value       = value;
+        //handle_parameter_event(&event);
       }
     }
   }
@@ -389,10 +337,10 @@ public: // editor listener
 protected:
 //------------------------------
 
+  // keep this here, for copy/paste, we are lazy.. :-)
+
   virtual void handle_process(const clap_process_t *process) {
-
     // (a)
-
     //float* in0 = process->audio_inputs[0].data32[0];
     //float* in1 = process->audio_inputs[0].data32[1];
     //float* out0 = process->audio_outputs[0].data32[0];
@@ -402,9 +350,7 @@ protected:
     //  *out0++ = *in0++;
     //  *out1++ = *in1++;
     //}
-
     // (b)
-
     //float** inputs = process->audio_inputs[0].data32;
     //float** outputs = process->audio_outputs[0].data32;
     //uint32_t length = process->frames_count;
@@ -478,9 +424,7 @@ protected:
     //MIP_PRINT;
     uint32_t i = param_mod->param_id;
     float v = param_mod->amount;
-
     //MIP_Print("%i = %.3f\n",i,v);
-
     setParameterModulation(i,v);
     #ifndef MIP_NO_GUI
     //if (MEditor && MEditorIsOpen) MEditor->updateModulationFromHost(i,v);
