@@ -146,7 +146,7 @@ public: // api
       }
       if (!has_thread_pool) {
 
-MIP_Assert(has_thread_pool);
+        //MIP_Assert(has_thread_pool); // test...
 
         // calc voices manually
         for (uint32_t i=0; i<num; i++) {
