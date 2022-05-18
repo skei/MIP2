@@ -299,12 +299,12 @@ protected: // timer listener
   // [timer]
 
   void on_timerCallback(void) override {
-    //clearChangedParameters();
     clearDirtyWidgets();
     flushGuiParams();
     flushGuiMods();
-    //redrawChangedParameters();
-    redrawDirtyWidgets();
+    if (MEditorIsOpen) {
+      redrawDirtyWidgets();
+    }
   }
 
 //------------------------------
