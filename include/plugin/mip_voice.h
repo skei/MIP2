@@ -7,7 +7,9 @@
 
 //----------------------------------------------------------------------
 
-#define MIP_VOICE_MAX_EVENTS_PER_BLOCK  65536
+// per voice!
+//#define MIP_VOICE_MAX_EVENTS_PER_BLOCK  65536
+#define MIP_VOICE_MAX_EVENTS_PER_BLOCK    256
 
 //----------
 
@@ -63,7 +65,7 @@ public:
   uint32_t          state   = MIP_VOICE_OFF;
   MIP_Note          note    = {};
 
-  MIP_Queue<MIP_VoiceEvent,MIP_VOICE_MAX_EVENTS_PER_BLOCK> events = {};
+  MIP_Queue<MIP_VoiceEvent,MIP_VOICE_MAX_EVENTS_PER_BLOCK*2> events = {};
 
 //------------------------------
 public:

@@ -34,7 +34,10 @@
 //
 //----------------------------------------------------------------------
 
-typedef MIP_Queue<MIP_Note,MIP_VOICE_NUM_NOTES> MIP_NoteQueue;
+// this should be a little larger than max number, shouldn't it?
+// since the queue will never fill entirely up..
+
+typedef MIP_Queue<MIP_Note,MIP_VOICE_NUM_NOTES*2> MIP_NoteQueue;
 
 //----------
 
@@ -48,12 +51,12 @@ private:
   __MIP_ALIGNED(MIP_ALIGNMENT_CACHE) float MVoiceBuffer[MIP_VOICE_BUFFERSIZE]     = {0};
   __MIP_ALIGNED(MIP_ALIGNMENT_CACHE) float MFrameBuffer[MIP_VOICE_MAX_FRAMESIZE]  = {0};
 
-  MIP_VoiceContext      MVoiceContext                       = {};
-  MIP_NoteQueue         MNoteEndQueue                       = {};
-  MIP_Voice<VOICE>      MVoices[VOICE_COUNT]                = {};
+  MIP_VoiceContext      MVoiceContext                         = {};
+  MIP_NoteQueue         MNoteEndQueue                         = {};
+  MIP_Voice<VOICE>      MVoices[VOICE_COUNT]                  = {};
 
-  uint32_t              MThreadedVoiceCount                 = 0;
-  uint32_t              MThreadedVoices[256]                = {0};
+  uint32_t              MThreadedVoiceCount                   = 0;
+  uint32_t              MThreadedVoices[MIP_VOICE_MAX_VOICES] = {0};
 
 //------------------------------
 public:
@@ -146,7 +149,11 @@ public: // api
       }
       if (!has_thread_pool) {
 
-        //MIP_Assert(has_thread_pool); // test...
+        // test...
+        // make sure it crashes if it reaches here..
+        //MIP_Assert(has_thread_pool);
+        //int a = 5 / 0;
+        //printf("%i\n",a);
 
         // calc voices manually
         for (uint32_t i=0; i<num; i++) {
