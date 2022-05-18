@@ -668,6 +668,9 @@ public: // clap
 
   //----------
 
+  //TODO: auto?
+  // uint32_t MSupportedExtensions in MIP_Plugin ?
+
   const void* get_extension(const char *id) final {
     //MIP_Print("host asks for: %s\n",id);
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;

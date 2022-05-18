@@ -23,7 +23,6 @@
 
 #define MIP_VOICE_NUM_CHANNELS    16
 #define MIP_VOICE_NUM_NOTES       128
-
 #define MIP_VOICE_MAX_VOICES      256
 #define MIP_VOICE_MAX_FRAMESIZE   4096
 #define MIP_VOICE_BUFFERSIZE      (MIP_VOICE_MAX_VOICES * MIP_VOICE_MAX_FRAMESIZE)
@@ -126,7 +125,6 @@ public: // api
   //----------
 
   void processThreaded(const clap_process_t *process, MIP_ClapHost* AHost) {
-
     MVoiceContext.process = process;
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
@@ -148,13 +146,7 @@ public: // api
         has_thread_pool = AHost->thread_pool->request_exec(AHost->host,num);
       }
       if (!has_thread_pool) {
-
-        // test...
-        // make sure it crashes if it reaches here..
         //MIP_Assert(has_thread_pool);
-        //int a = 5 / 0;
-        //printf("%i\n",a);
-
         // calc voices manually
         for (uint32_t i=0; i<num; i++) {
           processVoiceThread(i);
