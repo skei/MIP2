@@ -24,7 +24,7 @@
 #define MIP_VOICE_NUM_CHANNELS    16
 #define MIP_VOICE_NUM_NOTES       128
 
-#define MIP_VOICE_MAX_VOICES      32
+#define MIP_VOICE_MAX_VOICES      256
 #define MIP_VOICE_MAX_FRAMESIZE   4096
 #define MIP_VOICE_BUFFERSIZE      (MIP_VOICE_MAX_VOICES * MIP_VOICE_MAX_FRAMESIZE)
 
@@ -145,9 +145,11 @@ public: // api
         has_thread_pool = AHost->thread_pool->request_exec(AHost->host,num);
       }
       if (!has_thread_pool) {
-        MIP_Assert(has_thread_pool);
+
+MIP_Assert(has_thread_pool);
+
         // calc voices manually
-        for (uint32_t i=0; i<MThreadedVoiceCount; i++) {
+        for (uint32_t i=0; i<num; i++) {
           processVoiceThread(i);
         }
       }

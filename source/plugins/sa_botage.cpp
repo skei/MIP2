@@ -21,7 +21,7 @@
 //----------------------------------------------------------------------
 
 #define EDITOR_WIDTH  546
-#define EDITOR_HEIGHT 626
+#define EDITOR_HEIGHT (556 + 20 + 60)
 
 //#define NUM_GRAPH_MODULES 8
 //const char* buttonrow_text[6] = { "1", "2", "3", "four", "5", "6" };
@@ -55,7 +55,7 @@ const clap_plugin_descriptor_t myDescriptor = {
   "https://torhelgeskei.com",
   "",
   "",
-  "0.0.11",
+  "0.0.12",
   "glitch/fsu effect",
   myFeatures
 };

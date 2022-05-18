@@ -10,6 +10,7 @@
 //#include "../data/img/sa_logo_40_trans_black.h"
 //#include "../data/img/mip2_trans_129x34.h"
 
+#include "sa_botage_widgets.h"
 
 
 class sa_botage_editor
@@ -146,72 +147,72 @@ public:
 
       panel->appendWidget(num_beats);
       panel->appendWidget(num_slices);
-//
-//                                                    appendWidget( new sa_botage_text_header1( KODE_FRect(  10, 200,  240, 20 ),"REPEAT"               ));
-//
-//    wdg_RepeatProb          = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect(  10, 250,   70, 70 )                        ));
-//
-//                                                    appendWidget( new sa_botage_text_small(   KODE_FRect( 100, 230,  150, 15 ),"Slices"               ));
-//    wdg_RepeatSliceBits     = (sa_botage_buttons*)  appendWidget( new sa_botage_buttons(      KODE_FRect( 100, 250,  150, 20 ), 8                     ));
-//                                                    appendWidget( new sa_botage_text_small(   KODE_FRect( 100, 275,  150, 15 ),"Split"                ));
-//    wdg_RepeatSplitBits     = (sa_botage_buttons*)  appendWidget( new sa_botage_buttons(      KODE_FRect( 100, 295,  150, 20 ), 8                     ));
-//
-//                                                    appendWidget( new sa_botage_text_header1( KODE_FRect( 270, 200,  126, 20 ),"Range"                ));
-//                                                    appendWidget( new sa_botage_text_header1( KODE_FRect( 410, 200,  126, 20 ),"Loop"                 ));
-//
-//                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 230,  264, 20 ),"Size"                 ));
-//    wdg_LoopsizeRangeProb   = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 260,   40, 40 )                        ));
-//    wdg_LoopsizeRangeMin    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 260,   74, 16 )                        ));
-//    wdg_LoopsizeRangeMax    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 280,   74, 16 )                        ));
-//    wdg_LoopsizeLoopProb    = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 260,   40, 40 )                        ));
-//    wdg_LoopsizeLoopMin     = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 260,   74, 16 )                        ));
-//    wdg_LoopsizeLoopMax     = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 280,   74, 16 )                        ));
-//
-//                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 310,  264, 20 ),"Speed"                ));
-//    wdg_LoopspeedRangeProb  = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 340,   40, 40 )                        ));
-//    wdg_LoopspeedRangeMin   = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 340,   74, 16 )                        ));
-//    wdg_LoopspeedRangeMax   = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 360,   74, 16 )                        ));
-//    wdg_LoopspeedLoopProb   = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 340,   40, 40 )                        ));
-//    wdg_LoopspeedLoopMin    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 340,   74, 16 )                        ));
-//    wdg_LoopspeedLoopMax    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 360,   74, 16 )                        ));
-//
-//                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 390,  264, 20 ),"Offset"               ));
-//    wdg_OffsetRangeProb     = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 420,   40, 40 )                        ));
-//    wdg_OffsetRangeMin      = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       KODE_FRect( 320, 420,   74, 16 )                        ));
-//    wdg_OffsetRangeMax      = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       KODE_FRect( 320, 440,   74, 16 )                        ));
-//    wdg_OffsetLoopProb      = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 420,   40, 40 )                        ));
-//    wdg_OffsetLoopMin       = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       KODE_FRect( 460, 420,   74, 16 )                        ));
-//    wdg_OffsetLoopMax       = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       KODE_FRect( 460, 440,   74, 16 )                        ));
-//
-//                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 470,  264, 20 ),"Reverse"              ));
-//    wdg_ReverseRangeProb    = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 500,   40, 40 )                        ));
-//    wdg_ReverseLoopProb     = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 500,   40, 40 )                        ));
-//
-//                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 550,  264, 20 ),"FX"                   ));
-//    wdg_FXMulti             = (sa_botage_switch*)   appendWidget( new sa_botage_switch(       KODE_FRect( 490, 550,   44, 17 )                        ));
-//    wdg_FXRangeProb         = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 580,   40, 40 )                        ));
-//    wdg_FXRangeMin          = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 580,   74, 16 )                        ));
-//    wdg_FXRangeMax          = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 600,   74, 16 )                        ));
-//    wdg_FXLoopProb          = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 580,   40, 40 )                        ));
-//    wdg_FXLoopMin           = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 580,   74, 16 )                        ));
-//    wdg_FXLoopMax           = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 600,   74, 16 )                        ));
-//
-//                                                  //appendWidget( new sa_botage_text_header1( KODE_FRect(  10, 396,  240, 20 ),"ENVELOPES"            ));
-//
-//                                                    appendWidget( new sa_botage_text_header2( KODE_FRect(  10, 336,  240, 20 ),"Loop Env"             ));
-//    wdg_EnvLoopAtt          = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      KODE_FRect(  10, 366,  115, 20 )                        ));
-//    wdg_EnvLoopDec          = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      KODE_FRect( 130, 366,  115, 20 )                        ));
-//
-//                                                    appendWidget( new sa_botage_text_header2( KODE_FRect(  10, 396,  240, 20 ),"Slice Env"            ));
-//    wdg_EnvSliceAtt         = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      KODE_FRect(  10, 426,  115, 20 )                        ));
-//    wdg_EnvSliceDec         = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      KODE_FRect( 130, 426,  115, 20 )                        ));
-//
-//                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 10, 520,  240, 20 ),"Filter"               ));
-//
-//    wdg_FXFilterType        = (KODE_SelectorWidget*)appendWidget( new KODE_SelectorWidget(    KODE_FRect( 10, 550,  240, 16 )                        ));
-//    wdg_FXFilterProb        = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 10, 570,   40, 40 )                        ));
-//    wdg_FXFilterFreq        = (KODE_SliderWidget*)  appendWidget( new KODE_SliderWidget(      KODE_FRect( 60, 570,  190, 16 )                        ));
-//    wdg_FXFilterBW          = (KODE_SliderWidget*)  appendWidget( new KODE_SliderWidget(      KODE_FRect( 60, 590,  190, 16 )                        ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header1( MIP_FRect(  10, 130,  240, 20 ),"REPEAT"               ));
+
+    sa_botage_knob*     wdg_RepeatProb          = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect(  10, 180,   70, 70 )                        ));
+
+                                                                        panel->appendWidget( new sa_botage_text_small(   MIP_FRect( 100, 160,  150, 15 ),"Slices"               ));
+    sa_botage_buttons*  wdg_RepeatSliceBits     = (sa_botage_buttons*)  panel->appendWidget( new sa_botage_buttons(      MIP_FRect( 100, 180,  150, 20 ), 8                     ));
+                                                                        panel->appendWidget( new sa_botage_text_small(   MIP_FRect( 100, 205,  150, 15 ),"Split"                ));
+    sa_botage_buttons*  wdg_RepeatSplitBits     = (sa_botage_buttons*)  panel->appendWidget( new sa_botage_buttons(      MIP_FRect( 100, 225,  150, 20 ), 8                     ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header1( MIP_FRect( 270, 130,  126, 20 ),"Range"                ));
+                                                                        panel->appendWidget( new sa_botage_text_header1( MIP_FRect( 410, 130,  126, 20 ),"Loop"                 ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 160,  264, 20 ),"Size"                 ));
+    sa_botage_knob*     wdg_LoopsizeRangeProb   = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 270, 190,   40, 40 )                        ));
+    sa_botage_slider*   wdg_LoopsizeRangeMin    = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 320, 190,   74, 16 )                        ));
+    sa_botage_slider*   wdg_LoopsizeRangeMax    = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 320, 210,   74, 16 )                        ));
+    sa_botage_knob*     wdg_LoopsizeLoopProb    = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 410, 190,   40, 40 )                        ));
+    sa_botage_slider*   wdg_LoopsizeLoopMin     = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 460, 190,   74, 16 )                        ));
+    sa_botage_slider*   wdg_LoopsizeLoopMax     = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 460, 210,   74, 16 )                        ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 240,  264, 20 ),"Speed"                ));
+    sa_botage_knob*     wdg_LoopspeedRangeProb  = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 270, 270,   40, 40 )                        ));
+    sa_botage_slider*   wdg_LoopspeedRangeMin   = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 320, 270,   74, 16 )                        ));
+    sa_botage_slider*   wdg_LoopspeedRangeMax   = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 320, 290,   74, 16 )                        ));
+    sa_botage_knob*     wdg_LoopspeedLoopProb   = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 410, 270,   40, 40 )                        ));
+    sa_botage_slider*   wdg_LoopspeedLoopMin    = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 460, 270,   74, 16 )                        ));
+    sa_botage_slider*   wdg_LoopspeedLoopMax    = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 460, 290,   74, 16 )                        ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 320,  264, 20 ),"Offset"               ));
+    sa_botage_knob*     wdg_OffsetRangeProb     = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 270, 350,   40, 40 )                        ));
+    sa_botage_slider2*  wdg_OffsetRangeMin      = (sa_botage_slider2*)  panel->appendWidget( new sa_botage_slider(       MIP_FRect( 320, 350,   74, 16 )                        ));
+    sa_botage_slider2*  wdg_OffsetRangeMax      = (sa_botage_slider2*)  panel->appendWidget( new sa_botage_slider(       MIP_FRect( 320, 370,   74, 16 )                        ));
+    sa_botage_knob*     wdg_OffsetLoopProb      = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 410, 350,   40, 40 )                        ));
+    sa_botage_slider2*  wdg_OffsetLoopMin       = (sa_botage_slider2*)  panel->appendWidget( new sa_botage_slider(       MIP_FRect( 460, 350,   74, 16 )                        ));
+    sa_botage_slider2*  wdg_OffsetLoopMax       = (sa_botage_slider2*)  panel->appendWidget( new sa_botage_slider(       MIP_FRect( 460, 370,   74, 16 )                        ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 400,  264, 20 ),"Reverse"              ));
+    sa_botage_knob*     wdg_ReverseRangeProb    = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 270, 430,   40, 40 )                        ));
+    sa_botage_knob*     wdg_ReverseLoopProb     = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 410, 430,   40, 40 )                        ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 480,  264, 20 ),"FX"                   ));
+    sa_botage_switch*   wdg_FXMulti             = (sa_botage_switch*)   panel->appendWidget( new sa_botage_switch(       MIP_FRect( 490, 480,   44, 17 )                        ));
+    sa_botage_knob*     wdg_FXRangeProb         = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 270, 510,   40, 40 )                        ));
+    sa_botage_slider*   wdg_FXRangeMin          = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 320, 510,   74, 16 )                        ));
+    sa_botage_slider*   wdg_FXRangeMax          = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 320, 530,   74, 16 )                        ));
+    sa_botage_knob*     wdg_FXLoopProb          = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect( 410, 510,   40, 40 )                        ));
+    sa_botage_slider*   wdg_FXLoopMin           = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 460, 510,   74, 16 )                        ));
+    sa_botage_slider*   wdg_FXLoopMax           = (sa_botage_slider*)   panel->appendWidget( new sa_botage_slider(       MIP_FRect( 460, 530,   74, 16 )                        ));
+
+                                                                      //panel->appendWidget( new sa_botage_text_header1( MIP_FRect(  10, 326,  240, 20 ),"ENVELOPES"            ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header2( MIP_FRect(  10, 266,  240, 20 ),"Loop Env"             ));
+    sa_botage_slider*   wdg_EnvLoopAtt        = (sa_botage_slider*)     panel->appendWidget( new sa_botage_slider2(      MIP_FRect(  10, 296,  115, 20 )                        ));
+    sa_botage_slider*   wdg_EnvLoopDec        = (sa_botage_slider*)     panel->appendWidget( new sa_botage_slider2(      MIP_FRect( 130, 296,  115, 20 )                        ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header2( MIP_FRect(  10, 326,  240, 20 ),"Slice Env"            ));
+    sa_botage_slider*   wdg_EnvSliceAtt       = (sa_botage_slider*)     panel->appendWidget( new sa_botage_slider2(      MIP_FRect(  10, 356,  115, 20 )                        ));
+    sa_botage_slider*   wdg_EnvSliceDec       = (sa_botage_slider*)     panel->appendWidget( new sa_botage_slider2(      MIP_FRect( 130, 356,  115, 20 )                        ));
+
+                                                                        panel->appendWidget( new sa_botage_text_header2( MIP_FRect(  10, 450,  240, 20 ),"Filter"               ));
+
+    MIP_SelectorWidget* wdg_FXFilterType        = (MIP_SelectorWidget*) panel->appendWidget( new MIP_SelectorWidget(    MIP_FRect(   10, 480,  240, 16 )                        ));
+    sa_botage_knob*     wdg_FXFilterProb        = (sa_botage_knob*)     panel->appendWidget( new sa_botage_knob(         MIP_FRect(  10, 500,   40, 40 )                        ));
+    MIP_SliderWidget*   wdg_FXFilterFreq        = (MIP_SliderWidget*)   panel->appendWidget( new MIP_SliderWidget(      MIP_FRect(   60, 500,  190, 16 )                        ));
+    MIP_SliderWidget*   wdg_FXFilterBW          = (MIP_SliderWidget*)   panel->appendWidget( new MIP_SliderWidget(      MIP_FRect(   60, 520,  190, 16 )                        ));
 
 
 //-----
@@ -585,79 +586,79 @@ public:
 
     //-----
 
-//    wdg_Header              = (sa_botage_header*)   appendWidget( new sa_botage_header(       KODE_FRect(   0,   0,  400, 60 ), this, KODE_Color(0.5) ));
-//                                                    appendWidget( new sa_botage_text_small2(  KODE_FRect( 436,  10,  100, 15 ), descriptor->getVersionText()               ));
+//    wdg_Header              = (sa_botage_header*)   appendWidget( new sa_botage_header(       MIP_FRect(   0,   0,  400, 60 ), this, MIP_Color(0.5) ));
+//                                                    appendWidget( new sa_botage_text_small2(  MIP_FRect( 436,  10,  100, 15 ), descriptor->getVersionText()               ));
 
-    wdg_Waveform            = (sa_botage_waveform*) appendWidget( new sa_botage_waveform(     KODE_FRect(  10,  70,  526, 70 )                        ));
+    wdg_Waveform            = (sa_botage_waveform*) appendWidget( new sa_botage_waveform(     MIP_FRect(  10,  70,  526, 70 )                        ));
 
-    wdg_BufferNumBeats      = (sa_botage_qslider*)  appendWidget( new sa_botage_qslider(      KODE_FRect(  10, 155,  260, 20 ), 8                     ));
-    wdg_BufferNumSlices     = (sa_botage_qslider*)  appendWidget( new sa_botage_qslider(      KODE_FRect( 276, 155,  260, 20 ), 8                     ));
+    wdg_BufferNumBeats      = (sa_botage_qslider*)  appendWidget( new sa_botage_qslider(      MIP_FRect(  10, 155,  260, 20 ), 8                     ));
+    wdg_BufferNumSlices     = (sa_botage_qslider*)  appendWidget( new sa_botage_qslider(      MIP_FRect( 276, 155,  260, 20 ), 8                     ));
 
-                                                    appendWidget( new sa_botage_text_header1( KODE_FRect(  10, 200,  240, 20 ),"REPEAT"               ));
+                                                    appendWidget( new sa_botage_text_header1( MIP_FRect(  10, 200,  240, 20 ),"REPEAT"               ));
 
-    wdg_RepeatProb          = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect(  10, 250,   70, 70 )                        ));
+    wdg_RepeatProb          = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect(  10, 250,   70, 70 )                        ));
 
-                                                    appendWidget( new sa_botage_text_small(   KODE_FRect( 100, 230,  150, 15 ),"Slices"               ));
-    wdg_RepeatSliceBits     = (sa_botage_buttons*)  appendWidget( new sa_botage_buttons(      KODE_FRect( 100, 250,  150, 20 ), 8                     ));
-                                                    appendWidget( new sa_botage_text_small(   KODE_FRect( 100, 275,  150, 15 ),"Split"                ));
-    wdg_RepeatSplitBits     = (sa_botage_buttons*)  appendWidget( new sa_botage_buttons(      KODE_FRect( 100, 295,  150, 20 ), 8                     ));
+                                                    appendWidget( new sa_botage_text_small(   MIP_FRect( 100, 230,  150, 15 ),"Slices"               ));
+    wdg_RepeatSliceBits     = (sa_botage_buttons*)  appendWidget( new sa_botage_buttons(      MIP_FRect( 100, 250,  150, 20 ), 8                     ));
+                                                    appendWidget( new sa_botage_text_small(   MIP_FRect( 100, 275,  150, 15 ),"Split"                ));
+    wdg_RepeatSplitBits     = (sa_botage_buttons*)  appendWidget( new sa_botage_buttons(      MIP_FRect( 100, 295,  150, 20 ), 8                     ));
 
-                                                    appendWidget( new sa_botage_text_header1( KODE_FRect( 270, 200,  126, 20 ),"Range"                ));
-                                                    appendWidget( new sa_botage_text_header1( KODE_FRect( 410, 200,  126, 20 ),"Loop"                 ));
+                                                    appendWidget( new sa_botage_text_header1( MIP_FRect( 270, 200,  126, 20 ),"Range"                ));
+                                                    appendWidget( new sa_botage_text_header1( MIP_FRect( 410, 200,  126, 20 ),"Loop"                 ));
 
-                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 230,  264, 20 ),"Size"                 ));
-    wdg_LoopsizeRangeProb   = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 260,   40, 40 )                        ));
-    wdg_LoopsizeRangeMin    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 260,   74, 16 )                        ));
-    wdg_LoopsizeRangeMax    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 280,   74, 16 )                        ));
-    wdg_LoopsizeLoopProb    = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 260,   40, 40 )                        ));
-    wdg_LoopsizeLoopMin     = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 260,   74, 16 )                        ));
-    wdg_LoopsizeLoopMax     = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 280,   74, 16 )                        ));
+                                                    appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 230,  264, 20 ),"Size"                 ));
+    wdg_LoopsizeRangeProb   = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 270, 260,   40, 40 )                        ));
+    wdg_LoopsizeRangeMin    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 320, 260,   74, 16 )                        ));
+    wdg_LoopsizeRangeMax    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 320, 280,   74, 16 )                        ));
+    wdg_LoopsizeLoopProb    = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 410, 260,   40, 40 )                        ));
+    wdg_LoopsizeLoopMin     = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 460, 260,   74, 16 )                        ));
+    wdg_LoopsizeLoopMax     = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 460, 280,   74, 16 )                        ));
 
-                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 310,  264, 20 ),"Speed"                ));
-    wdg_LoopspeedRangeProb  = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 340,   40, 40 )                        ));
-    wdg_LoopspeedRangeMin   = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 340,   74, 16 )                        ));
-    wdg_LoopspeedRangeMax   = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 360,   74, 16 )                        ));
-    wdg_LoopspeedLoopProb   = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 340,   40, 40 )                        ));
-    wdg_LoopspeedLoopMin    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 340,   74, 16 )                        ));
-    wdg_LoopspeedLoopMax    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 360,   74, 16 )                        ));
+                                                    appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 310,  264, 20 ),"Speed"                ));
+    wdg_LoopspeedRangeProb  = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 270, 340,   40, 40 )                        ));
+    wdg_LoopspeedRangeMin   = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 320, 340,   74, 16 )                        ));
+    wdg_LoopspeedRangeMax   = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 320, 360,   74, 16 )                        ));
+    wdg_LoopspeedLoopProb   = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 410, 340,   40, 40 )                        ));
+    wdg_LoopspeedLoopMin    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 460, 340,   74, 16 )                        ));
+    wdg_LoopspeedLoopMax    = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 460, 360,   74, 16 )                        ));
 
-                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 390,  264, 20 ),"Offset"               ));
-    wdg_OffsetRangeProb     = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 420,   40, 40 )                        ));
-    wdg_OffsetRangeMin      = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       KODE_FRect( 320, 420,   74, 16 )                        ));
-    wdg_OffsetRangeMax      = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       KODE_FRect( 320, 440,   74, 16 )                        ));
-    wdg_OffsetLoopProb      = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 420,   40, 40 )                        ));
-    wdg_OffsetLoopMin       = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       KODE_FRect( 460, 420,   74, 16 )                        ));
-    wdg_OffsetLoopMax       = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       KODE_FRect( 460, 440,   74, 16 )                        ));
+                                                    appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 390,  264, 20 ),"Offset"               ));
+    wdg_OffsetRangeProb     = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 270, 420,   40, 40 )                        ));
+    wdg_OffsetRangeMin      = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       MIP_FRect( 320, 420,   74, 16 )                        ));
+    wdg_OffsetRangeMax      = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       MIP_FRect( 320, 440,   74, 16 )                        ));
+    wdg_OffsetLoopProb      = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 410, 420,   40, 40 )                        ));
+    wdg_OffsetLoopMin       = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       MIP_FRect( 460, 420,   74, 16 )                        ));
+    wdg_OffsetLoopMax       = (sa_botage_slider2*)  appendWidget( new sa_botage_slider(       MIP_FRect( 460, 440,   74, 16 )                        ));
 
-                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 470,  264, 20 ),"Reverse"              ));
-    wdg_ReverseRangeProb    = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 500,   40, 40 )                        ));
-    wdg_ReverseLoopProb     = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 500,   40, 40 )                        ));
+                                                    appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 470,  264, 20 ),"Reverse"              ));
+    wdg_ReverseRangeProb    = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 270, 500,   40, 40 )                        ));
+    wdg_ReverseLoopProb     = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 410, 500,   40, 40 )                        ));
 
-                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 270, 550,  264, 20 ),"FX"                   ));
-    wdg_FXMulti             = (sa_botage_switch*)   appendWidget( new sa_botage_switch(       KODE_FRect( 490, 550,   44, 17 )                        ));
-    wdg_FXRangeProb         = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 270, 580,   40, 40 )                        ));
-    wdg_FXRangeMin          = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 580,   74, 16 )                        ));
-    wdg_FXRangeMax          = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 320, 600,   74, 16 )                        ));
-    wdg_FXLoopProb          = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 410, 580,   40, 40 )                        ));
-    wdg_FXLoopMin           = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 580,   74, 16 )                        ));
-    wdg_FXLoopMax           = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       KODE_FRect( 460, 600,   74, 16 )                        ));
+                                                    appendWidget( new sa_botage_text_header2( MIP_FRect( 270, 550,  264, 20 ),"FX"                   ));
+    wdg_FXMulti             = (sa_botage_switch*)   appendWidget( new sa_botage_switch(       MIP_FRect( 490, 550,   44, 17 )                        ));
+    wdg_FXRangeProb         = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 270, 580,   40, 40 )                        ));
+    wdg_FXRangeMin          = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 320, 580,   74, 16 )                        ));
+    wdg_FXRangeMax          = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 320, 600,   74, 16 )                        ));
+    wdg_FXLoopProb          = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 410, 580,   40, 40 )                        ));
+    wdg_FXLoopMin           = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 460, 580,   74, 16 )                        ));
+    wdg_FXLoopMax           = (sa_botage_slider*)   appendWidget( new sa_botage_slider(       MIP_FRect( 460, 600,   74, 16 )                        ));
 
-                                                  //appendWidget( new sa_botage_text_header1( KODE_FRect(  10, 396,  240, 20 ),"ENVELOPES"            ));
+                                                  //appendWidget( new sa_botage_text_header1( MIP_FRect(  10, 396,  240, 20 ),"ENVELOPES"            ));
 
-                                                    appendWidget( new sa_botage_text_header2( KODE_FRect(  10, 336,  240, 20 ),"Loop Env"             ));
-    wdg_EnvLoopAtt          = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      KODE_FRect(  10, 366,  115, 20 )                        ));
-    wdg_EnvLoopDec          = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      KODE_FRect( 130, 366,  115, 20 )                        ));
+                                                    appendWidget( new sa_botage_text_header2( MIP_FRect(  10, 336,  240, 20 ),"Loop Env"             ));
+    wdg_EnvLoopAtt          = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      MIP_FRect(  10, 366,  115, 20 )                        ));
+    wdg_EnvLoopDec          = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      MIP_FRect( 130, 366,  115, 20 )                        ));
 
-                                                    appendWidget( new sa_botage_text_header2( KODE_FRect(  10, 396,  240, 20 ),"Slice Env"            ));
-    wdg_EnvSliceAtt         = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      KODE_FRect(  10, 426,  115, 20 )                        ));
-    wdg_EnvSliceDec         = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      KODE_FRect( 130, 426,  115, 20 )                        ));
+                                                    appendWidget( new sa_botage_text_header2( MIP_FRect(  10, 396,  240, 20 ),"Slice Env"            ));
+    wdg_EnvSliceAtt         = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      MIP_FRect(  10, 426,  115, 20 )                        ));
+    wdg_EnvSliceDec         = (sa_botage_slider*)   appendWidget( new sa_botage_slider2(      MIP_FRect( 130, 426,  115, 20 )                        ));
 
-                                                    appendWidget( new sa_botage_text_header2( KODE_FRect( 10, 520,  240, 20 ),"Filter"               ));
+                                                    appendWidget( new sa_botage_text_header2( MIP_FRect( 10, 520,  240, 20 ),"Filter"               ));
 
-    wdg_FXFilterType        = (KODE_SelectorWidget*)appendWidget( new KODE_SelectorWidget(    KODE_FRect( 10, 550,  240, 16 )                        ));
-    wdg_FXFilterProb        = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         KODE_FRect( 10, 570,   40, 40 )                        ));
-    wdg_FXFilterFreq        = (KODE_SliderWidget*)  appendWidget( new KODE_SliderWidget(      KODE_FRect( 60, 570,  190, 16 )                        ));
-    wdg_FXFilterBW          = (KODE_SliderWidget*)  appendWidget( new KODE_SliderWidget(      KODE_FRect( 60, 590,  190, 16 )                        ));
+    wdg_FXFilterType        = (MIP_SelectorWidget*)appendWidget( new MIP_SelectorWidget(    MIP_FRect( 10, 550,  240, 16 )                        ));
+    wdg_FXFilterProb        = (sa_botage_knob*)     appendWidget( new sa_botage_knob(         MIP_FRect( 10, 570,   40, 40 )                        ));
+    wdg_FXFilterFreq        = (MIP_SliderWidget*)  appendWidget( new MIP_SliderWidget(      MIP_FRect( 60, 570,  190, 16 )                        ));
+    wdg_FXFilterBW          = (MIP_SliderWidget*)  appendWidget( new MIP_SliderWidget(      MIP_FRect( 60, 590,  190, 16 )                        ));
 
     //----------
 

@@ -392,11 +392,7 @@ public:
         //----------
 
         //  if we were stacking, but isn't now..
-
-        //bool is_stack   = ((alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) || (alignment == MIP_WIDGET_ALIGN_STACK_VERT));
-        //bool was_stack  = ((prev_alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) || (prev_alignment == MIP_WIDGET_ALIGN_STACK_VERT));
-        //if (was_stack && !is_stack) {
-        //}
+        // end stacking..
 
         if (prev_alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) {
           if (alignment != MIP_WIDGET_ALIGN_STACK_HORIZ) {
@@ -414,7 +410,7 @@ public:
           }
         }
 
-        //
+        // start new stacking run
 
         if (alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) {
           if (prev_alignment != MIP_WIDGET_ALIGN_STACK_HORIZ) {

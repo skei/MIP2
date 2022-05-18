@@ -36,7 +36,7 @@
 #define NUM_PARAMS          11
 #define NUM_NOTE_INPUTS     1
 #define NUM_AUDIO_OUTPUTS   1
-#define NUM_VOICES          16
+#define NUM_VOICES          256
 #define EDITOR_WIDTH        420
 #define EDITOR_HEIGHT       350
 
@@ -97,7 +97,8 @@ public:
   //----------
 
   void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) final {
-    MIP_FRect rect = MIP_FRect(MRect.x,MRect.y,MRect.w / NUM_VOICES, MRect.h);
+    float w = MRect.w / NUM_VOICES;
+    MIP_FRect rect = MIP_FRect(MRect.x,MRect.y,w, MRect.h);
     MIP_Color color = MIP_COLOR_DARK_GRAY;
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       APainter->rectangle(rect);
@@ -110,7 +111,7 @@ public:
       }
       APainter->setColor(color);
       APainter->fillPath();
-      rect.x += 8;
+      rect.x += w; // 8
     }
   }
 
@@ -158,7 +159,7 @@ public:
     controls->setBackgroundColor(0.6);
     controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
       // voice widget
-      MVoiceWidget = new MIP_VoiceWidget( MIP_FRect(250,10,NUM_VOICES*8,8) );
+      MVoiceWidget = new MIP_VoiceWidget( MIP_FRect(250,10,150,8) );
       controls->appendWidget(MVoiceWidget);
       // vol
       MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");

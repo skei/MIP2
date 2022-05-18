@@ -5,7 +5,6 @@
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
-
 #define EDITOR_WIDTH  640
 #define EDITOR_HEIGHT 480
 
@@ -89,11 +88,6 @@ public:
 //------------------------------
 private:
 //------------------------------
-
-  //void precalc() {
-  //}
-
-  //----------
 
   void recalc(float srate) {
     need_recalc = false;

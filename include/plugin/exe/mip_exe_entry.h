@@ -138,7 +138,7 @@ public:
     #endif
 
     uint32_t index = 0;
-    const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getPlugin(index);
+    const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getDescriptor(index);
     MIP_ExeHost* host = new MIP_ExeHost(argc,argv);
     if (host) {
       MIP_ClapPlugin* mipplugin = nullptr;
