@@ -4,6 +4,7 @@
 
 #define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
+//tail -F ~/.BitwigStudio/log/engine.log | pv --rate --bytes > /dev/null
 
 //#define MIP_DEBUG_PRINT_TIME
 //#define MIP_DEBUG_WATCHES

@@ -27,18 +27,15 @@
 #define MIP_VOICE_MAX_FRAMESIZE   4096
 #define MIP_VOICE_BUFFERSIZE      (MIP_VOICE_MAX_VOICES * MIP_VOICE_MAX_FRAMESIZE)
 
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-// this should be a little larger than max number, shouldn't it?
-// since the queue will never fill entirely up..
+//----------
 
 typedef MIP_Queue<MIP_Note,MIP_VOICE_NUM_NOTES*2> MIP_NoteQueue;
 
-//----------
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
 template <class VOICE, int VOICE_COUNT>
 class MIP_VoiceManager {
@@ -50,12 +47,11 @@ private:
   __MIP_ALIGNED(MIP_ALIGNMENT_CACHE) float MVoiceBuffer[MIP_VOICE_BUFFERSIZE]     = {0};
   __MIP_ALIGNED(MIP_ALIGNMENT_CACHE) float MFrameBuffer[MIP_VOICE_MAX_FRAMESIZE]  = {0};
 
-  MIP_VoiceContext      MVoiceContext                         = {};
-  MIP_NoteQueue         MNoteEndQueue                         = {};
-  MIP_Voice<VOICE>      MVoices[VOICE_COUNT]                  = {};
-
-  uint32_t              MThreadedVoiceCount                   = 0;
-  uint32_t              MThreadedVoices[MIP_VOICE_MAX_VOICES] = {0};
+  MIP_VoiceContext  MVoiceContext                         = {};
+  MIP_NoteQueue     MNoteEndQueue                         = {};
+  MIP_Voice<VOICE>  MVoices[VOICE_COUNT]                  = {};
+  uint32_t          MThreadedVoiceCount                   = 0;
+  uint32_t          MThreadedVoices[MIP_VOICE_MAX_VOICES] = {0};
 
 //------------------------------
 public:
