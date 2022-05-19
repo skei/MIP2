@@ -1104,18 +1104,18 @@ public: // latency
 public: // render
 //------------------------------
 
-  //bool render_has_hard_realtime_requirement() {
-  //  MIP_PRINT;
-  //  return false;
-  //}
+  bool render_has_hard_realtime_requirement() {
+    MIP_PRINT;
+    return false;
+  }
 
   //CLAP_RENDER_REALTIME = 0
   //CLAP_RENDER_OFFLINE = 1,
 
-  //bool render_set(clap_plugin_render_mode mode) {
-  //  MIP_Print("mode: %i\n",mode);
-  //  return true;
-  //}
+  bool render_set(clap_plugin_render_mode mode) {
+    MIP_Print("mode: %i\n",mode);
+    return true;
+  }
 
 };
 
