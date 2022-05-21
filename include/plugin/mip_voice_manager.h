@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------
 
 //#define MIP_VOICE_MAX_VOICES      NUM_VOICES
-#define MIP_VOICE_MAX_VOICES      1024
+#define MIP_VOICE_MAX_VOICES      2048
 
 #define MIP_VOICE_NUM_CHANNELS    16
 #define MIP_VOICE_NUM_NOTES       128
@@ -115,9 +115,7 @@ public: // api
     uint32_t length = process->frames_count;
     MIP_ClearMonoBuffer(MVoiceBuffer,length);
     handleEvents(process);
-
 //MIP_Print("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
-
     processPlayingVoices();
     flushFinishedVoices();
     flushNoteEnds();
@@ -129,7 +127,6 @@ public: // api
 
   void processThreaded(const clap_process_t *process, MIP_ClapHost* AHost) {
     MVoiceContext.process = process;
-
 //#ifdef MIP_DEBUG
 //  uint32_t _param_value_count = 0;
 //  uint32_t _param_mod_count   = 0;
@@ -151,7 +148,6 @@ public: // api
 //  }
 //  //MIP_DPrint("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
 //#endif
-
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
     MVoiceContext.voicebuffer = MVoiceBuffer;//out0;
@@ -170,16 +166,12 @@ public: // api
       bool has_thread_pool = false;
       if (AHost && AHost->thread_pool) {
         has_thread_pool = AHost->thread_pool->request_exec(AHost->host,num);
-
 //#ifdef MIP_DEBUG
 //  MIP_DPrint("request_exec(%i) = %s\n", num, has_thread_pool ? "true" : "false" );
 //#endif
-
       }
       if (!has_thread_pool) {
-
 //MIP_Assert(has_thread_pool);
-
         // calc voices manually
         for (uint32_t i=0; i<num; i++) {
           processVoiceThread(i);
@@ -246,6 +238,15 @@ private: // process
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
       if (MVoices[i].state == MIP_VOICE_FINISHED) {
         queueNoteEnd(MVoices[i].note);
+        MVoices[i].state = MIP_VOICE_OFF;
+        MVoices[i].note = MIP_Note();
+      }
+      if (MVoices[i].state == MIP_VOICE_WAITING) {
+        /*
+          wasn't started, or stopped again?
+          do we need to send note_end?
+          (are there dangling mod voices?)
+        */
         MVoices[i].state = MIP_VOICE_OFF;
         MVoices[i].note = MIP_Note();
       }

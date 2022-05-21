@@ -1,10 +1,12 @@
+
 /*
   TODO:
   - the voices are still in mono..
   - proper db and freq (params/mods)
-  - scalable gui
+  - scalable editor
 */
 
+//----------------------------------------------------------------------
 
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
@@ -23,9 +25,7 @@
 
 //----------------------------------------------------------------------
 
-#define NUM_VOICES            256
-//#define MIP_VOICE_MAX_VOICES  NUM_VOICES
-
+#define NUM_VOICES            2048
 #define NUM_PARAMS            11
 #define NUM_NOTE_INPUTS       1
 #define NUM_AUDIO_OUTPUTS     1
@@ -35,16 +35,13 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "audio/mip_audio_math.h"
-#include "audio/filters/mip_rc_filter.h"
-#include "audio/filters/mip_svf_filter.h"
-#include "audio/modulation/mip_envelope.h"
-#include "audio/waveforms/mip_polyblep_waveform.h"
-#include "gui/mip_widgets.h"
-#include "plugin/mip_editor.h"
-#include "plugin/mip_parameter.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_voice_manager.h"
+
+#include "test_synth1/test_synth1_voice.h"
+#include "test_synth1/test_synth1_editor.h"
+
+typedef MIP_VoiceManager<myVoice,NUM_VOICES> myVoiceManager;
 
 //----------------------------------------------------------------------
 //
@@ -71,402 +68,6 @@ const clap_plugin_descriptor_t myDescriptor = {
   "simple mip2 test synth",
   myFeatures
 };
-
-//----------------------------------------------------------------------
-//
-// voice widget
-//
-//----------------------------------------------------------------------
-
-class MIP_VoiceWidget
-: public MIP_PanelWidget {
-
-//------------------------------
-public:
-
-  MIP_VoiceWidget(MIP_FRect ARect)
-  : MIP_PanelWidget(ARect) {
-    setFillBackground(false);
-  }
-
-  //----------
-
-  virtual ~MIP_VoiceWidget() {
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-  uint32_t voice_state[NUM_VOICES]  = {0};
-
-  //----------
-
-  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) final {
-    float w = MRect.w / NUM_VOICES;
-    MIP_FRect rect = MIP_FRect(MRect.x,MRect.y,w, MRect.h);
-    MIP_Color color = MIP_COLOR_DARK_GRAY;
-    for (uint32_t i=0; i<NUM_VOICES; i++) {
-      APainter->rectangle(rect);
-      switch (voice_state[i]) {
-        case MIP_VOICE_OFF:       color = MIP_COLOR_BLACK;        break;
-        case MIP_VOICE_WAITING:   color = MIP_COLOR_LIGHT_YELLOW; break;
-        case MIP_VOICE_PLAYING:   color = MIP_COLOR_BRIGHT_GREEN; break;
-        case MIP_VOICE_RELEASED:  color = MIP_COLOR_GREEN;        break;
-        case MIP_VOICE_FINISHED:  color = MIP_COLOR_WHITE;        break;
-      }
-      APainter->setColor(color);
-      APainter->fillPath();
-      rect.x += w; // 8
-    }
-  }
-
-};
-
-//----------------------------------------------------------------------
-//
-// editor
-//
-//----------------------------------------------------------------------
-
-class myEditor
-: public MIP_Editor {
-
-//------------------------------
-public:
-//------------------------------
-
-  MIP_VoiceWidget* MVoiceWidget = nullptr;
-
-//------------------------------
-public:
-//------------------------------
-
-  myEditor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded)
-  : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
-    MIP_Window* window = getWindow();
-    // panel
-    MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_FRect());
-    MEditorPanel->setDrawBorder(false);
-    MEditorPanel->setFillBackground(false);
-    MEditorPanel->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    // header
-    MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(60,window);
-    MEditorPanel->appendWidget(sa_header);
-    sa_header->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    sa_header->setPluginName(myDescriptor.name);
-    sa_header->setPluginVersion(myDescriptor.version);
-    // controls panel (knobs)
-    MIP_PanelWidget* controls = new MIP_PanelWidget(MIP_FRect());
-    MEditorPanel->appendWidget(controls);
-    controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    controls->setDrawBorder(false);
-    controls->setFillBackground(true);
-    controls->setBackgroundColor(0.6);
-    controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-      // voice widget
-      MVoiceWidget = new MIP_VoiceWidget( MIP_FRect(250,10,256,8) );
-      controls->appendWidget(MVoiceWidget);
-      // vol
-      MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
-      controls->appendWidget(vol_knob);
-      connect(vol_knob,0);
-      // pan
-      MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
-      controls->appendWidget(pan_knob);
-      connect(pan_knob,1);
-      // pitch
-      MIP_Knob2Widget* pitch_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Pitch");
-      controls->appendWidget(pitch_knob);
-      pitch_knob->getKnobWidget()->setSnap(true);
-      pitch_knob->getKnobWidget()->setSnapPos(0.5);
-      connect(pitch_knob,10);
-      // freq
-      MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"Freq");
-      controls->appendWidget(freq_knob);
-      connect(freq_knob,2);
-      // res
-      MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"Res");
-      controls->appendWidget(res_knob);
-      connect(res_knob,3);
-      // squ
-      MIP_Knob2Widget* pulse_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"Pulse");
-      controls->appendWidget(pulse_knob);
-      connect(pulse_knob,4);
-      // width
-      MIP_Knob2Widget* width_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"Width");
-      controls->appendWidget(width_knob);
-      connect(width_knob,5);
-      // amp att
-      MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"Att");
-      controls->appendWidget(amp_att_knob);
-      connect(amp_att_knob,6);
-      // amp dec
-      MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"Dec");
-      controls->appendWidget(amp_dec_knob);
-      connect(amp_dec_knob,7);
-      // amp sus
-      MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"Sus");
-      controls->appendWidget(amp_sus_knob);
-      connect(amp_sus_knob,8);
-      // amp rel
-      MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"Rel");
-      controls->appendWidget(amp_rel_knob);
-      connect(amp_rel_knob,9);
-    window->appendWidget(MEditorPanel);
-  }
-
-  //----------
-
-  void on_timerCallback(void) final {
-    MVoiceWidget->redraw();
-    MIP_Editor::on_timerCallback();
-  }
-
-};
-
-//----------------------------------------------------------------------
-//
-// voice
-//
-//----------------------------------------------------------------------
-
-// todo: redo the smoothing things..
-
-#define SMOOTHER_FACTOR (1.0 / 250.0)
-
-//----------
-
-class myVoice {
-
-//------------------------------
-private:
-//------------------------------
-
-  MIP_VoiceContext* context           = nullptr;
-
-  MIP_SvfFilter     filter            = {};
-  MIP_Envelope      amp_env           = {};
-  MIP_RcFilter      flt_freq_smoother = {};
-  MIP_RcFilter      flt_res_smoother  = {};
-  MIP_RcFilter      vol_smoother      = {};
-
-  int32_t           note_key          = -1;
-  float             note_onvel        = 0.0;
-  float             note_offvel       = 0.0;
-  float             note_vol          = 0.0;
-  float             note_pan          = 0.0;
-  float             note_tuning       = 0.0;
-  float             note_vibr         = 0.0;
-  float             note_expr         = 0.0;
-  float             note_bright       = 0.0;
-  float             note_press        = 0.0;
-
-  float             hz                = 0.0;  // note hz
-  float             ph                = 0.0;  // phase
-  float             phadd             = 0.0;  // phase add
-  float             pulse             = 1.0;
-  float             width             = 0.5;
-  float             filter_freq       = 0.5;
-  float             filter_res        = 0.5;
-  float             pitch             = 0.5;
-
-  float             pulse_mod         = 0.0;
-  float             width_mod         = 0.0;
-  float             filter_freq_mod   = 0.0;
-  float             filter_res_mod    = 0.0;
-  float             pitch_mod         = 0.0;
-
-//------------------------------
-public:
-//------------------------------
-
-  float getEnvLevel() {
-    return amp_env.getValue();
-  }
-
-  //----------
-
-  void prepare(MIP_VoiceContext* AContext) {
-    context = AContext;
-    amp_env.setSampleRate(context->samplerate);
-    flt_freq_smoother.setup(filter_freq,filter_freq, SMOOTHER_FACTOR);
-    flt_res_smoother.setup(filter_res,filter_res, SMOOTHER_FACTOR);
-    vol_smoother.setup(0,0,SMOOTHER_FACTOR);
-  }
-
-  //----------
-
-  uint32_t note_on(int32_t key, float velocity) {
-    note_key        = key;
-    note_onvel      = velocity;
-    note_press      = 0.0;
-    note_bright     = 0.0;
-    note_tuning     = 0.0;
-    ph              = 0.0;
-    filter_freq_mod = 0.0;
-    filter_res_mod  = 0.0;
-    pulse_mod       = 0.0;
-    width_mod       = 0.0;
-    pitch_mod       = 0.0;
-    amp_env.noteOn();
-    return MIP_VOICE_PLAYING;
-  }
-
-  //----------
-
-  uint32_t note_off(float velocity) {
-    note_offvel = velocity;
-    amp_env.noteOff();
-    return MIP_VOICE_RELEASED;
-  }
-
-  //----------
-
-  void note_choke() {
-  }
-
-  //----------
-
-  void volume(float amount) {
-    note_vol = amount;
-  }
-
-  //----------
-
-  void pan(float amount) {
-    note_pan = amount;
-  }
-
-  //----------
-
-  void tuning(float amount) {
-    note_tuning = amount;
-  }
-
-  //----------
-
-  void vibrato(float amount) {
-    note_vibr = amount;
-  }
-
-  //----------
-
-  void expression(float amount) {
-    note_expr = amount;
-  }
-
-  //----------
-
-  void brightness(float amount) {
-    note_bright = (amount * 2.0) - 1.0;
-  }
-
-  //----------
-
-  void pressure(float amount) {
-    note_press = amount;
-  }
-
-  //----------
-
-  void parameter(uint32_t index, float value) {
-    //MIP_Print("%i = %.3f\n",index,value);
-    switch (index) {
-      case  2:  filter_freq = value;              break;
-      case  3:  filter_res = value;               break;
-      case  4:  pulse = value;                    break;
-      case  5:  width = value;                    break;
-      case  6:  amp_env.setAttack(value*5);       break;
-      case  7:  amp_env.setDecay(value*5);        break;
-      case  8:  amp_env.setSustain(value*value);  break;
-      case  9:  amp_env.setRelease(value*5);      break;
-      case 10:  pitch = value;                    break;
-    }
-  }
-
-  void modulation(uint32_t index, float value) {
-    switch (index) {
-      case  2:  filter_freq_mod = value;  break;
-      case  3:  filter_res_mod = value;   break;
-      case  4:  pulse_mod = value;        break;
-      case  5:  width_mod = value;        break;
-      case 10:  pitch_mod = value;        break;
-    }
-  }
-
-  //----------
-
-  uint32_t process(uint32_t AIndex, uint32_t AState, uint32_t ALength, uint32_t AOffset) {
-    MIP_Assert(note_key >= 0);
-    if (note_key >= 0) {
-      float p = (pitch * 2.0) - 1.0;
-      p += pitch_mod;
-      //todo: smoother
-      hz = MIP_NoteToHz(note_key + note_tuning + p);
-      phadd = hz * context->invsamplerate;
-      float* output = context->voicebuffer;
-
-      // should this already have been applied/prepared?
-      // maybe when we setup the voicebuffer ptr (voice manager)
-      #ifdef MIP_VOICE_PROCESS_THREADED
-        output += (context->process->frames_count * AIndex);
-      #endif
-
-      output += AOffset;
-      MIP_Assert(output);
-      for (uint32_t i = 0; i < ALength; i++) {
-        float t1 = ph + 0.5f;
-        t1 = MIP_Fract(t1);
-        float saw1 = 2.0 * t1 - 1.0;
-        saw1 -= MIP_PolyBlep(t1,phadd);
-        float w = width + width_mod;
-        w = MIP_Clamp(w,0,1);
-        float t2 = t1 + w;
-        t2 = MIP_Fract(t2);
-        float saw2 = 2.0 * t2 - 1.0;
-        saw2 -= MIP_PolyBlep(t2,phadd);
-        float sq = pulse + pulse_mod;
-        sq = MIP_Clamp(sq,0,1);
-        float squ = saw1 - (saw2 * sq);
-        float ff = filter_freq + filter_freq_mod;
-        ff += note_bright;
-        ff = MIP_Clamp(ff,0,1);
-        ff = (ff * ff); // ugh..
-        ff = flt_freq_smoother.process(ff);
-        float fr = filter_res + filter_res_mod;
-        fr = MIP_Clamp(fr,0,1);
-        fr = 1.0 - fr; // hhhh...
-        fr = flt_res_smoother.process(fr);
-        float amp = note_onvel + note_press;
-        amp = MIP_Clamp(amp,0,1);
-        amp *= amp_env.process();
-        amp = vol_smoother.process(amp);
-        filter.setMode(MIP_SVF_LP);
-        filter.setFreq(ff);
-        filter.setBW(fr);
-        float out = squ;
-
-        #ifdef MIP_VOICE_PROCESS_THREADED
-          *output++ = (filter.process(out) * amp);
-        #else
-          *output++ += (filter.process(out) * amp);
-        #endif
-
-        ph += phadd;
-        ph = MIP_Fract(ph);
-      }
-    }
-    uint32_t stage = amp_env.getStage();
-    if (stage == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
-    else return AState;
-  }
-
-};
-
-//----------------------------------------------------------------------
-
-typedef MIP_VoiceManager<myVoice,NUM_VOICES> myVoiceManager;
 
 //----------------------------------------------------------------------
 //
@@ -509,11 +110,11 @@ private:
         //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
-      "F.Freq",
+      "FltFreq",
       "",
       0.0,
       1.0,
-      0.5
+      1.0
     },
     { 3,
       CLAP_PARAM_IS_AUTOMATABLE
@@ -522,11 +123,11 @@ private:
         //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
-      "F.Res",
+      "FltRes",
       "",
       0.0,
       1.0,
-      0.5
+      0.0
     },
     { 4,
       CLAP_PARAM_IS_AUTOMATABLE
@@ -539,7 +140,7 @@ private:
       "",
       0.0,
       1.0,
-      1.0
+      0.0
     },
     { 5,
       CLAP_PARAM_IS_AUTOMATABLE
@@ -552,13 +153,13 @@ private:
       "",
       0.0,
       1.0,
-      0.7
+      0.5
     },
 
     { 6,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "A.Att",
+      "AmpAtt",
       "",
       0.0,
       1.0,
@@ -567,7 +168,7 @@ private:
     { 7,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "A.Dec",
+      "AmpDec",
       "",
       0.0,
       1.0,
@@ -576,7 +177,7 @@ private:
     { 8,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "A.Sus",
+      "AmpSus",
       "",
       0.0,
       1.0,
@@ -585,7 +186,7 @@ private:
     { 9,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "A.Rel",
+      "AmpRel",
       "",
       0.0,
       1.0,
@@ -694,13 +295,24 @@ public: // clap
     handle_input_events(process->in_events,process->out_events);
     handle_process(process);
     handle_output_events(process->in_events,process->out_events);
-    // update gui (state)
-    for (uint32_t i=0; i<NUM_VOICES; i++) {
-      uint32_t state = MVoiceManager.getVoiceState(i);
-      if (MEditor && MEditorIsOpen) {
+
+    // hack!!!!!
+    // update gui (state only) in process!
+
+    if (MEditor && MEditorIsOpen) {
+      uint32_t num_playing = 0;
+      uint32_t num_released = 0;
+      for (uint32_t i=0; i<NUM_VOICES; i++) {
+        uint32_t state = MVoiceManager.getVoiceState(i);
         ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
+        if (state == MIP_VOICE_PLAYING) num_playing += 1;
+        if (state == MIP_VOICE_RELEASED) num_released += 1;
       }
+      ((myEditor*)MEditor)->MPlayingVoicesWidget->setValue(num_playing);
+      ((myEditor*)MEditor)->MReleasedVoicesWidget->setValue(num_released);
+      ((myEditor*)MEditor)->MTotalVoicesWidget->setValue(num_playing + num_released);
     }
+
     return CLAP_PROCESS_CONTINUE;
   }
 
@@ -712,7 +324,7 @@ public: // clap
     if (strcmp(api,CLAP_WINDOW_API_X11) != 0) return false;
     if (is_floating) return false;
     MEditorIsOpen = false;
-    MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true);
+    MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true,&myDescriptor);
     return (MEditor);
   }
 
