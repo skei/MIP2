@@ -297,7 +297,7 @@ private: // events
       MVoices[voice].note.note_id     = event->note_id;
     }
     else {
-      MIP_Print("no note..\n");
+      //MIP_Print("no note..\n");
       MIP_Note note;
       note.key         = event->key;
       note.channel     = event->channel;

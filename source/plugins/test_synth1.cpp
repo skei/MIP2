@@ -23,6 +23,17 @@
 
 //----------------------------------------------------------------------
 
+#define NUM_VOICES            256
+//#define MIP_VOICE_MAX_VOICES  NUM_VOICES
+
+#define NUM_PARAMS            11
+#define NUM_NOTE_INPUTS       1
+#define NUM_AUDIO_OUTPUTS     1
+#define EDITOR_WIDTH          420 + 100
+#define EDITOR_HEIGHT         350
+
+//----------------------------------------------------------------------
+
 #include "mip.h"
 #include "audio/mip_audio_math.h"
 #include "audio/filters/mip_rc_filter.h"
@@ -34,19 +45,6 @@
 #include "plugin/mip_parameter.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_voice_manager.h"
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-#define NUM_PARAMS          11
-#define NUM_NOTE_INPUTS     1
-#define NUM_AUDIO_OUTPUTS   1
-#define NUM_VOICES          256
-#define EDITOR_WIDTH        420 + 100
-#define EDITOR_HEIGHT       350
 
 //----------------------------------------------------------------------
 //
