@@ -1,3 +1,10 @@
+/*
+  TODO:
+  - the voices are still in mono..
+  - proper db and freq (params/mods)
+  - scalable gui
+*/
+
 
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
@@ -38,7 +45,7 @@
 #define NUM_NOTE_INPUTS     1
 #define NUM_AUDIO_OUTPUTS   1
 #define NUM_VOICES          256
-#define EDITOR_WIDTH        420
+#define EDITOR_WIDTH        420 + 100
 #define EDITOR_HEIGHT       350
 
 //----------------------------------------------------------------------
@@ -104,11 +111,11 @@ public:
     for (uint32_t i=0; i<NUM_VOICES; i++) {
       APainter->rectangle(rect);
       switch (voice_state[i]) {
-        case MIP_VOICE_OFF:       color = MIP_COLOR_DARK_GRAY;    break;
-        case MIP_VOICE_WAITING:   color = MIP_COLOR_YELLOW;       break;
+        case MIP_VOICE_OFF:       color = MIP_COLOR_BLACK;        break;
+        case MIP_VOICE_WAITING:   color = MIP_COLOR_LIGHT_YELLOW; break;
         case MIP_VOICE_PLAYING:   color = MIP_COLOR_BRIGHT_GREEN; break;
         case MIP_VOICE_RELEASED:  color = MIP_COLOR_GREEN;        break;
-        case MIP_VOICE_FINISHED:  color = MIP_COLOR_LIGHT_GRAY;   break;
+        case MIP_VOICE_FINISHED:  color = MIP_COLOR_WHITE;        break;
       }
       APainter->setColor(color);
       APainter->fillPath();
@@ -160,7 +167,7 @@ public:
     controls->setBackgroundColor(0.6);
     controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
       // voice widget
-      MVoiceWidget = new MIP_VoiceWidget( MIP_FRect(250,10,150,8) );
+      MVoiceWidget = new MIP_VoiceWidget( MIP_FRect(250,10,256,8) );
       controls->appendWidget(MVoiceWidget);
       // vol
       MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
@@ -402,9 +409,8 @@ public:
       phadd = hz * context->invsamplerate;
       float* output = context->voicebuffer;
 
-      // this should already have been applied
+      // should this already have been applied/prepared?
       // maybe when we setup the voicebuffer ptr (voice manager)
-
       #ifdef MIP_VOICE_PROCESS_THREADED
         output += (context->process->frames_count * AIndex);
       #endif
@@ -669,8 +675,9 @@ public: // clap
 
   //----------
 
-  //TODO: auto?
+  //TODO: make more automatic..
   // uint32_t MSupportedExtensions in MIP_Plugin ?
+  // set bits in constructor, cgeck and return ptr in MIP_Plugin::getextension..
 
   const void* get_extension(const char *id) final {
     //MIP_Print("host asks for: %s\n",id);

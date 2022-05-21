@@ -29,6 +29,8 @@
 
 //----------
 
+// note_end queue
+
 typedef MIP_Queue<MIP_Note,MIP_VOICE_NUM_NOTES*2> MIP_NoteQueue;
 
 //----------------------------------------------------------------------
@@ -50,7 +52,7 @@ private:
   MIP_VoiceContext  MVoiceContext                         = {};
   MIP_NoteQueue     MNoteEndQueue                         = {};
   MIP_Voice<VOICE>  MVoices[VOICE_COUNT]                  = {};
-  uint32_t          MThreadedVoiceCount                   = 0;
+  //uint32_t          MThreadedVoiceCount                   = 0;
   uint32_t          MThreadedVoices[MIP_VOICE_MAX_VOICES] = {0};
 
 //------------------------------
@@ -103,7 +105,14 @@ public: // api
 
   //----------
 
+//  uint32_t _param_value_count = 0;
+//  uint32_t _param_mod_count = 0;
+
   void process(const clap_process_t *process) {
+
+//    _param_value_count = 0;
+//    _param_mod_count = 0;
+
     MVoiceContext.process = process;
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
@@ -111,6 +120,9 @@ public: // api
     uint32_t length = process->frames_count;
     MIP_ClearMonoBuffer(MVoiceBuffer,length);
     handleEvents(process);
+
+//    MIP_Print("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
+
     processPlayingVoices();
     flushFinishedVoices();
     flushNoteEnds();
@@ -122,6 +134,29 @@ public: // api
 
   void processThreaded(const clap_process_t *process, MIP_ClapHost* AHost) {
     MVoiceContext.process = process;
+
+#ifdef MIP_DEBUG
+  uint32_t _param_value_count = 0;
+  uint32_t _param_mod_count   = 0;
+  const clap_input_events_t* in_events = process->in_events;
+  uint32_t num_events = in_events->size(in_events);
+  for (uint32_t i=0; i<num_events; i++) {
+    const clap_event_header_t* header = in_events->get(in_events,i);
+    if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+      //handleEvent(header);
+      switch (header->type) {
+        case CLAP_EVENT_PARAM_VALUE:
+          _param_value_count += 1;
+          break;
+        case CLAP_EVENT_PARAM_MOD:
+          _param_mod_count += 1;
+          break;
+      }
+    }
+  }
+  MIP_Print("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
+#endif
+
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
     MVoiceContext.voicebuffer = MVoiceBuffer;//out0;
@@ -140,6 +175,9 @@ public: // api
       bool has_thread_pool = false;
       if (AHost && AHost->thread_pool) {
         has_thread_pool = AHost->thread_pool->request_exec(AHost->host,num);
+
+        MIP_Print("request_exec(%i) = %s\n", num, has_thread_pool ? "true" : "false" );
+
       }
       if (!has_thread_pool) {
         //MIP_Assert(has_thread_pool);
@@ -172,6 +210,8 @@ public: // api
 //------------------------------
 private: // process
 //------------------------------
+
+  // called per voice (separate thread) if threaded voices..
 
   void handleEvents(const clap_process_t* process) {
     const clap_input_events_t* in_events = process->in_events;

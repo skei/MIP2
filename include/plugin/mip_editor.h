@@ -402,6 +402,7 @@ public:
         MWindow->invalidate(rect.x,rect.y,rect.w + 0,rect.h + 0); // +1
       }
     }
+    //MDirtyWidgets.clear();
   }
 
 };

@@ -3,14 +3,13 @@
 //----------------------------------------------------------------------
 
 /*
+  note to self:
   when resizing widgets, they notify their parents (to realign & redraw),
   but if we use advanced stacking and fill alignments for the main window,
   everything have to be redrawn when resizing one of the panels..
   so it's better to split up panels as much as possible, so that only the
   necessary widgets need to be redrawn..
 */
-
-//#define MIP_WIDGET_MAX_PARAMS 8
 
 #include "mip.h"
 #include "base/types/mip_array.h"
@@ -29,8 +28,6 @@ typedef MIP_Array<MIP_Widget*> MIP_Widgets;
 
 struct MIP_WidgetFlags {
   bool opaque           = false;    // fully covers its parent (no transparent areas)
-  //bool sizePercent      = false;    // widget size is percent (of client area), not pixels
-  //bool posPercent       = false;    // widget pos is percent (of client area), not pixels
   bool sizeRatio        = false;    // widget size is percent (of client area), not pixels
   bool posRatio         = false;    // widget pos is percent (of client area), not pixels
   bool autoCursor       = true;     // set mouse cursor automatically when hovering over a widget (entering)
@@ -111,7 +108,6 @@ protected:
   int32_t         MParamIndex             = -1;                   //
   char            MParamName[256]         = {0};                  //
   MIP_Parameter*  MParameter              = nullptr;              //
-  //MIP_Parameter*  MParameters[MIP_WIDGET_MAX_PARAMS] = {0};       //
 
   MIP_Skin*       MSkin                   = &MIP_DEFAULT_SKIN;
 
@@ -119,9 +115,7 @@ protected:
 public:
 //------------------------------
 
-  // public to make it easier to access,
-  // and avoid needing tons and tons of setters/getters
-  // hacky/dangerous.. but, well..
+  // shouldn't be public, but we want easy access :-/
 
   MIP_WidgetFlags   flags   = {};
   MIP_WidgetLayout  layout  = {};
@@ -740,8 +734,10 @@ public:
     } // for all children
 
     if (layout.contentBorder) {
-      content.w += layout.innerBorder.w; // scale?
-      content.h += layout.innerBorder.h; // scale?
+      content.w += layout.innerBorder.w;
+      content.h += layout.innerBorder.h;
+      //content.w += (layout.innerBorder.w * layout.scale);
+      //content.h += (layout.innerBorder.h * layout.scale);
     }
     MContentRect = content;
     //if (flags.autoSize) {

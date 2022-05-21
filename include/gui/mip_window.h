@@ -2,7 +2,6 @@
 #define mip_window_included
 //----------------------------------------------------------------------
 
-//#define MIP_WINDOW_BUFFER_BITMAP
 
 /*
   handles:
@@ -11,10 +10,29 @@
   - resizing
   - mouse handling
 
-  MIP_NO_GUI
-  MIP_GUI_XCB
-  MIP_NO_WINDOW_BUFFERING
+
+
 */
+
+// don't include windows/surface/etc stuff..
+//#define MIP_NO_GUI
+
+// use xcb for lowlevel gui (window, surface)
+//#define MIP_GUI_XCB
+
+// draw directly to screen (no double buffering)
+//#define MIP_NO_WINDOW_BUFFERING
+
+// use bitmap (instead of surface) as backbuffer
+//#define MIP_WINDOW_BUFFER_BITMAP
+
+// scale window (events) instead of realign widgets
+// (not working yet)
+//#define MIP_WINDOW_SCALE_WINDOW
+
+//----------------------------------------------------------------------
+//
+//----------------------------------------------------------------------
 
 #include "mip.h"
 #include "base/types/mip_rect.h"
@@ -63,14 +81,14 @@ private:
   MIP_Painter*        MWindowPainter          = nullptr;
 
   #ifndef MIP_NO_WINDOW_BUFFERING
-  uint32_t            MBufferWidth            = 0;
-  uint32_t            MBufferHeight           = 0;
-  MIP_Painter*        MBufferPainter          = nullptr;
-  #ifdef MIP_WINDOW_BUFFER_BITMAP
-    MIP_Bitmap*       MBufferBitmap           = nullptr;
-  #else
-    MIP_Surface*      MBufferSurface          = nullptr;
-  #endif
+    uint32_t            MBufferWidth            = 0;
+    uint32_t            MBufferHeight           = 0;
+    MIP_Painter*        MBufferPainter          = nullptr;
+    #ifdef MIP_WINDOW_BUFFER_BITMAP
+      MIP_Bitmap*       MBufferBitmap           = nullptr;
+    #else
+      MIP_Surface*      MBufferSurface          = nullptr;
+    #endif
   #endif
 
   MIP_Widget*         MMouseHoverWidget       = nullptr;
@@ -94,6 +112,9 @@ private:
   uint32_t            MResizingWidth          = 0;
   uint32_t            MResizingHeight         = 0;
 
+  float               MWindowXScale           = 1.0;
+  float               MWindowYScale           = 1.0;
+
 //------------------------------
 public:
 //------------------------------
@@ -106,9 +127,10 @@ public:
     MWindowPainter = new MIP_Painter(this);
     MIP_Assert(MWindowPainter);
     #ifndef MIP_NO_WINDOW_BUFFERING
-    createBuffer(AWidth,AHeight);
+      createBuffer(AWidth,AHeight);
     #endif
     //
+
   }
 
   //----------
@@ -117,7 +139,7 @@ public:
     // to close() ?
     if (MWindowPainter) delete MWindowPainter;
     #ifndef MIP_NO_WINDOW_BUFFERING
-    deleteBuffer();
+      deleteBuffer();
     #endif
     //
   }
@@ -128,9 +150,9 @@ public:
 
   virtual bool isBuffered() {
     #ifdef MIP_NO_WINDOW_BUFFERING
-    return false;
+      return false;
     #else
-    return true;
+      return true;
     #endif
   }
 
@@ -140,17 +162,17 @@ public:
 
   MIP_Painter* getBufferPainter() {
     #ifdef MIP_NO_WINDOW_BUFFERING
-    return MWindowPainter;
+      return MWindowPainter;
     #else
-    return nullptr;
+      return nullptr;
     #endif
   }
 
   MIP_Painter* getPainter() {
     #ifdef MIP_NO_WINDOW_BUFFERING
-    return MWindowPainter;
+      return MWindowPainter;
     #else
-    return MBufferPainter;
+      return MBufferPainter;
     #endif
   }
 
@@ -232,9 +254,9 @@ public: // paint
 
   void paint() {
     #ifdef MIP_NO_WINDOW_BUFFERING
-    paintWindow(MRect);
+      paintWindow(MRect);
     #else
-    paintBuffer(MRect);
+      paintBuffer(MRect);
     #endif
   }
 
@@ -242,9 +264,9 @@ public: // paint
 
   void paint(MIP_FRect ARect) {
     #ifdef MIP_NO_WINDOW_BUFFERING
-    paintWindow(ARect);
+      paintWindow(ARect);
     #else
-    paintBuffer(ARect);
+      paintBuffer(ARect);
     #endif
   }
 
@@ -253,9 +275,9 @@ public: // paint
   void paint(MIP_Widget* AWidget) {
     MIP_FRect rect = AWidget->getRect();
     #ifdef MIP_NO_WINDOW_BUFFERING
-    paintWindow(rect);
+      paintWindow(rect);
     #else
-    paintBuffer(rect);
+      paintBuffer(rect);
     #endif
   };
 
@@ -264,16 +286,22 @@ public: // window
 //------------------------------
 
   void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
-    //MIP_Print("%i,%i\n",AWidth,AHeight);
-    #ifndef MIP_NO_WINDOW_BUFFERING
-      resizeBuffer(AWidth,AHeight);
+    MWindowXScale = AWidth / MRect.w;
+    MWindowYScale = AHeight / MRect.h;
+    //MIP_Print("%i,%i scale %.2f,%.2f\n",AWidth,AHeight,MWindowXScale,MWindowYScale);
+    //paint();
+    #ifndef MIP_WINDOW_SCALE_WINDOW
+      #ifndef MIP_NO_WINDOW_BUFFERING
+        resizeBuffer(AWidth,AHeight);
+      #endif
+      if (MWindowPainter) {
+        MWindowPainter->resize(AWidth,AHeight);
+      }
+      MRect.w = AWidth;
+      MRect.h = AHeight;
+      alignWidgets();
     #endif
-    if (MWindowPainter) {
-      MWindowPainter->resize(AWidth,AHeight);
-    }
-    MRect.w = AWidth;
-    MRect.h = AHeight;
-    alignWidgets();
+
   }
 
   //----------
@@ -304,9 +332,6 @@ public: // buffer
 
   bool createBuffer(uint32_t AWidth, uint32_t AHeight) {
     //MIP_Print("%i,%i\n",AWidth,AHeight);
-
-    //MIP_DumpCallStack;
-
     #ifdef MIP_WINDOW_BUFFER_BITMAP
       MBufferBitmap = new MIP_Bitmap(AWidth,AHeight);
       MIP_Assert(MBufferBitmap);
@@ -329,11 +354,11 @@ public: // buffer
     delete MBufferPainter;
     MBufferPainter = nullptr;
     #ifdef MIP_WINDOW_BUFFER_BITMAP
-    delete MBufferBitmap;
-    MBufferBitmap = nullptr;
+      delete MBufferBitmap;
+      MBufferBitmap = nullptr;
     #else
-    delete MBufferSurface;
-    MBufferSurface = nullptr;
+      delete MBufferSurface;
+      MBufferSurface = nullptr;
     #endif
   }
 
@@ -361,8 +386,12 @@ public: // buffer
     #ifdef MIP_WINDOW_BUFFER_BITMAP
       MWindowPainter->drawBitmap(ARect.x,ARect.y,MBufferBitmap);
     #else
-      MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
-      //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
+      #ifdef MIP_WINDOW_SCALE_WINDOW
+        MWindowPainter->drawImage(ARect,MBufferSurface,MRect);
+      #else
+        MWindowPainter->drawImage(ARect.x,ARect.y,MBufferSurface,ARect);
+        //blit(ARect.x,ARect.y,MBufferSurface,ARect.x,ARect.y,ARect.w,ARect.h);
+      #endif
     #endif
 
     //MWindowPainter->flush();
@@ -406,8 +435,10 @@ public: // MIP_BaseWindow
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    //MIP_Print("%i,%i\n",AWidth,AHeight);
-    resizeWindow(AWidth,AHeight);
+    //MIP_Print("%i,%i scale %.2f,%.2f\n",AWidth,AHeight,MWindowXScale,MWindowYScale);
+    //#ifndef MIP_WINDOW_SCALE_EVENTS
+      resizeWindow(AWidth,AHeight);
+    //#endif
   }
 
   //----------
@@ -428,12 +459,22 @@ public: // MIP_BaseWindow
 
   //----------
 
+  /*
+    * scale
+  */
+
   void on_window_mouseClick(int32_t AXpos, int32_t AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
+    //#ifdef MIP_WINDOW_SCALE_EVENTS
+    //  AXpos *= MWindowXScale;
+    //  AYpos *= MWindowXScale;
+    //#endif
+    //
     //bool double_click = false;
     //if ((ATimeStamp - MPrevClickTime) < MIP_GUI_DBLCLICK_MS) {
     //  double_click = true;
     //}
     //MPrevClickTime  = ATimeStamp;
+    //
     MResizingWidth  = MRect.w;
     MResizingHeight = MRect.h;
     MMouseClickedX  = AXpos;
@@ -453,7 +494,15 @@ public: // MIP_BaseWindow
 
   //----------
 
+  /*
+    * scale
+  */
+
   void on_window_mouseRelease(int32_t AXpos, int32_t AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp) override {
+    //#ifdef MIP_WINDOW_SCALE_EVENTS
+    //  AXpos *= MWindowXScale;
+    //  AYpos *= MWindowXScale;
+    //#endif
     if (MMouseClickedWidget) {
       MMouseClickedWidget->on_widget_mouseRelease(AXpos,AYpos,AButton,AState,ATimeStamp);
       releaseMouseCursor();
@@ -464,7 +513,15 @@ public: // MIP_BaseWindow
 
   //----------
 
+  /*
+    * scale
+  */
+
   void on_window_mouseMove(int32_t AXpos, int32_t AYpos, uint32_t AState, uint32_t ATimeStamp) override {
+    //#ifdef MIP_WINDOW_SCALE_EVENTS
+    //  AXpos *= MWindowXScale;
+    //  AYpos *= MWindowXScale;
+    //#endif
     MMouseX = AXpos;
     MMouseY = AYpos;
     if (MMouseClickedWidget) {
@@ -495,7 +552,15 @@ public: // MIP_BaseWindow
 
   //----------
 
+  /*
+    * scale
+  */
+
   void on_window_mouseEnter(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) override {
+    //#ifdef MIP_WINDOW_SCALE_EVENTS
+    //  AXpos *= MWindowXScale;
+    //  AYpos *= MWindowXScale;
+    //#endif
     if (!MMouseClickedWidget) {
       MMouseHoverWidget = nullptr;
       updateHoverWidget(AXpos,AYpos,ATimeStamp);
@@ -506,7 +571,15 @@ public: // MIP_BaseWindow
 
   //TODO: if not dragging?
 
+  /*
+    * scale
+  */
+
   void on_window_mouseLeave(int32_t AXpos, int32_t AYpos, uint32_t ATimeStamp) override {
+    //#ifdef MIP_WINDOW_SCALE_EVENTS
+    //  AXpos *= MWindowXScale;
+    //  AYpos *= MWindowXScale;
+    //#endif
     if (!MMouseClickedWidget) {
       //MMouseHoverWidget = MIP_NULL;
       updateHoverWidget(AXpos,AYpos,ATimeStamp);
@@ -531,7 +604,17 @@ public: // MIP_BaseWindow
 
   //----------
 
+  /*
+    * scale
+  */
+
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    //#ifdef MIP_WINDOW_SCALE_EVENTS
+    //  AXpos *= MWindowXScale;
+    //  AYpos *= MWindowXScale;
+    //  AWidth *= MWindowYScale;
+    //  AHeight *= MWindowYScale;
+    //#endif
     MIP_FRect rect = MIP_FRect(AXpos,AYpos,AWidth,AHeight);
     if (MFillWindowBackground) fillWindowBackground(rect);
     #ifdef MIP_NO_WINDOW_BUFFERING

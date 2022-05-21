@@ -89,14 +89,16 @@ class MIP_Plugin
 private:
 //------------------------------
 
-  // gui -> plugin
+  // gui -> audio
+
   MIP_Queue<uint32_t,EVENTS_PER_BLOCK>  MAudioParamQueue        = {};
   float*                                MAudioParamVal          = nullptr;
+
   // gui -> host
+
   MIP_Queue<uint32_t,EVENTS_PER_BLOCK>  MHostParamQueue         = {};
   float*                                MHostParamVal           = nullptr;
   float*                                MHostParamMod           = nullptr;
-
   //MIP_ClapIntQueue                      MHostBeginGestureQueue  = {};
   //MIP_ClapIntQueue                      MHostEndGestureQueue    = {};
 
@@ -107,25 +109,30 @@ protected:
   const clap_plugin_descriptor_t*       MDescriptor             = nullptr;
   MIP_ClapHost*                         MHost                   = nullptr;
 
-  MIP_ParameterArray                    MParameters             = {};
   MIP_AudioPortArray                    MAudioInputs            = {};
   MIP_AudioPortArray                    MAudioOutputs           = {};
   MIP_NotePortArray                     MNoteInputs             = {};
   MIP_NotePortArray                     MNoteOutputs            = {};
   MIP_QuickControlArray                 MQuickControls          = {};
 
-  float*                                MParameterValues        = nullptr;
-  float*                                MParameterModulations   = nullptr;
+  // state
+
   bool                                  MIsProcessing           = false;
   bool                                  MIsActivated            = false;
 
+  // parameters
+  MIP_ParameterArray                    MParameters             = {};
+  float*                                MParameterValues        = nullptr;
+  float*                                MParameterModulations   = nullptr;
+
+  // gui
+
   #ifndef MIP_NO_GUI
   MIP_Editor*                           MEditor                 = nullptr;
-  #endif
-
   bool                                  MEditorIsOpen           = false;
   uint32_t                              MEditorDefaultWidth     = 640;
   uint32_t                              MEditorDefaultHeight    = 480;
+  #endif
 
 //------------------------------
 public:
@@ -199,18 +206,7 @@ protected:
       // if we already set this, it should be (bit) identical?
       if (value != MParameterValues[index]) {
         MParameterValues[index] = value;
-        // notify voice manager...
-        //TODO
-        //on_plugin_parameter();
-        // notify plugin (fake param_value event)
-        //clap_event_param_value_t event;
-        //event.param_id    = index;
-        //event.cookie      = nullptr;
-        //event.port_index  = -1;
-        //event.key         = -1;
-        //event.channel     = -1;
-        //event.value       = value;
-        //handle_parameter_event(&event);
+        //TODO: on_plugin_parameter();
       }
     }
   }
@@ -287,9 +283,13 @@ public: // editor listener
   //  queueHostBeginGesture(AIndex);
   //}
 
+  //----------
+
   //void on_endUpdateParameterFromEditor(uint32_t AIndex) override {
   //  queueHostEndGesture(AIndex);
   //}
+
+  //----------
 
   /*
     called from editor when widget changes (gui thread)
@@ -304,12 +304,12 @@ public: // editor listener
     queueAudioParam(AIndex);
     MHostParamVal[AIndex] = AValue;
     queueHostParam(AIndex);
-    handle_editor_parameter(AIndex,AValue);         // this crashes if AIndex >= 8 ?????
+    handle_editor_parameter(AIndex,AValue);
   }
 
   //----------
 
-  //TODO: fix this.. (newer clap)
+  // request_resize always returns false
 
   // Resizing the window (initiated by the plugin, if embedded):
   // 1. Plugins calls clap_host_gui->request_resize()
@@ -337,33 +337,41 @@ public: // editor listener
 protected:
 //------------------------------
 
-  // keep this here, for copy/paste, we are lazy.. :-)
+  /*
+    float* in0 = process->audio_inputs[0].data32[0];
+    float* in1 = process->audio_inputs[0].data32[1];
+    float* out0 = process->audio_outputs[0].data32[0];
+    float* out1 = process->audio_outputs[0].data32[1];
+    uint32_t num = process->frames_count;
+    for (uint32_t i=0; i<num; i++) {
+      *out0++ = *in0++;
+      *out1++ = *in1++;
+    }
+  */
 
+  /*
+    float** inputs = process->audio_inputs[0].data32;
+    float** outputs = process->audio_outputs[0].data32;
+    uint32_t length = process->frames_count;
+    MIP_CopyStereoBuffer(outputs,inputs,length);
+  */
+
+  //----------
+
+  // overload this..
   virtual void handle_process(const clap_process_t *process) {
-    // (a)
-    //float* in0 = process->audio_inputs[0].data32[0];
-    //float* in1 = process->audio_inputs[0].data32[1];
-    //float* out0 = process->audio_outputs[0].data32[0];
-    //float* out1 = process->audio_outputs[0].data32[1];
-    //uint32_t num = process->frames_count;
-    //for (uint32_t i=0; i<num; i++) {
-    //  *out0++ = *in0++;
-    //  *out1++ = *in1++;
-    //}
-    // (b)
-    //float** inputs = process->audio_inputs[0].data32;
-    //float** outputs = process->audio_outputs[0].data32;
-    //uint32_t length = process->frames_count;
-    //MIP_CopyStereoBuffer(outputs,inputs,length);
-
+    //MIP_PRINT;
   }
 
 //------------------------------
 //protected:
 //------------------------------
 
+  // called from on_updateParameterFromEditor()
+  // overload this if your plugin needs to know if you turned a knob, etc
+
   virtual void handle_editor_parameter(uint32_t AIndex, float AValue) {
-    MIP_Print("AIndex %i AValue %.3f\n",AIndex,AValue);
+    //MIP_Print("AIndex %i AValue %.3f\n",AIndex,AValue);
   }
 
 //------------------------------

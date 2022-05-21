@@ -301,6 +301,8 @@ public:
       MEditorWidget = new MIP_Widget(MIP_FRect());
       MEditorWidget->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
 
+      //MEditorWidget->layout.scale = 0.5;
+
       /* */
 
       // sa header

@@ -75,7 +75,7 @@ public:
 
   //----------
 
-  MIP_Parameter(uint32_t id, uint32_t flags, const char* name, const char* module, float minval, float maxval, float defval) {
+  MIP_Parameter(uint32_t id, uint32_t flags, const char* name, const char* module, double minval, double maxval, double defval) {
 
     index               = -1;
 
@@ -130,14 +130,14 @@ public:
   // for widgets, etc..
 
   virtual double from01(double value) {
-    float range = info.max_value - info.min_value;
+    double range = info.max_value - info.min_value;
     return info.min_value + (value * range);
   }
 
   //----------
 
   virtual double to01(double value) {
-    float range = info.max_value - info.min_value;
+    double range = info.max_value - info.min_value;
     return (value - info.min_value) / range;
   }
 
@@ -151,7 +151,7 @@ public:
   //----------
 
   virtual bool textToValue(const char* text, double* value) {
-    float f = atof(text);
+    double f = atof(text);
     *value = f;
     return true;
   }
@@ -233,6 +233,272 @@ public:
 
 
 };
+
+//----------------------------------------------------------------------
+//
+// pow
+//
+//----------------------------------------------------------------------
+
+// value^n
+
+// appendParameter( new MIP_ParamPow( "pow/post", 440, 2, true,  20, 20000, 1 ));  // n^2 = 20.20000, default = 440
+// appendParameter( new MIP_ParamPow( "pow",      5,   2, false, 1,  10,    1 ));  // 1^2..10^2, default = 5^2
+
+class MIP_PowParameter
+: public MIP_Parameter {
+
+//------------------------------
+private:
+//------------------------------
+
+  double   MPower  = 1.0f;
+  bool    MPost   = true; // if true, calc ^n after range/scale conversion, else calc before..
+
+//------------------------------
+public:
+//------------------------------
+
+  //MIP_PowParameter(clap_param_info_t* param_info)
+  //: MIP_Parameter(param_info) {
+  //}
+
+  //----------
+
+  MIP_PowParameter(uint32_t id, uint32_t flags, const char* name, const char* module, double minval, double maxval, double defval, double APower, bool APost=false)
+  : MIP_Parameter(id,flags,name,module,minval,maxval,defval) {
+    MPower = APower;
+    MPost = APost;
+    //setup(defval);
+  }
+
+//------------------------------
+private:
+//------------------------------
+
+  /*
+  void setup(double AVal) {
+    //MDefValue = to01(MDefValue);
+    if (MPost) {
+      double n = ((AVal - MMinValue) * MInvRange);
+      if (MPower > 0) MDefValue = powf(n,1.0f/MPower);
+      else MDefValue = 0.0f;
+    }
+    else {
+      //if (MPower > 0) AVal = powf(AVal,1.0f/MPower);
+      MDefValue = ((AVal - MMinValue) * MInvRange);
+    }
+  }
+  */
+
+//------------------------------
+public:
+//------------------------------
+
+  double to01(double AValue) override {
+    double result = 0.0f;
+    if (MPost) {
+      double n = MIP_Parameter::to01(AValue);
+      if (MPower > 0) result = powf(n,1.0f/MPower);
+    }
+    else {
+      if (MPower > 0) AValue = powf(AValue,1.0f/MPower);
+      result = MIP_Parameter::to01(AValue);
+    }
+    return result;
+  }
+
+  //----------
+
+  double from01(double AValue) override {
+    double result = 0.0f;
+    if (MPost) {
+      double n = powf(AValue,MPower);
+      result = MIP_Parameter::from01(n);
+    }
+    else {
+      double n = MIP_Parameter::from01(AValue);
+      result = powf(n,MPower);
+    }
+    return result;
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+// pow2
+//
+//----------------------------------------------------------------------
+
+// 2^n
+
+// appendParameter( new KParamPow2("pow2", 4, 1, 16, 1 )); // (1..16)^2, default = 4^2
+
+class MIP_Pow2Parameter
+: public MIP_Parameter {
+
+//------------------------------
+private:
+//------------------------------
+
+  double   MPower  = 1.0f;
+
+//------------------------------
+public:
+//------------------------------
+
+  MIP_Pow2Parameter(uint32_t id, uint32_t flags, const char* name, const char* module, double minval, double maxval, double defval)
+  : MIP_Parameter(id,flags,name,module,minval,maxval,defval) {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  double to01(double AValue) override {
+    double result = 0.0f;
+    AValue = powf(AValue,0.5f);
+    result = MIP_Parameter::to01(AValue);
+    return result;
+  }
+
+  //----------
+
+  double from01(double AValue) override {
+    double result = 0.0f;
+    double n = MIP_Parameter::from01(AValue);
+    result = powf(2.0f,n);
+    return result;
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+// Db
+//
+//----------------------------------------------------------------------
+
+class MIP_DbParameter
+: public MIP_Parameter {
+
+//------------------------------
+public:
+//------------------------------
+
+  MIP_DbParameter(uint32_t id, uint32_t flags, const char* name, const char* module, double minval, double maxval, double defval)
+  : MIP_Parameter(id,flags,name,module,minval,maxval,defval) {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  /*
+
+    float MIP_DbToVolume(float db) {
+      return powf(10.0f,0.05f*db);
+    }
+
+    float MIP_DbToAmp(float g) {
+      if (g > -144.0) return exp(g * 0.115129254);
+      else return 0;
+    }
+
+    double dbtoa(double db) {
+      return pow(2, db/6);
+    }
+
+    //converts decibel value to linear
+    float amp_db = 20.f;         // 20 decibels
+    signal *= KDB2Lin(amp_db);  // *= ~10.079
+    #define MIP_Db2Lin(dB) ( MIP_Expf( DB2LOG*(dB) ) )
+
+    //
+
+    float MIP_VolumeToDb(float volume) {
+      return 20.0f * log10f(volume);
+    }
+
+    double atodb(double a) {
+      return 20*log10(a);
+    }
+
+    //converts linear value to decibel
+    float dc_signal = 1.f;
+    float amp_half = 0.5f;
+    dc_signal *= amp_half;                  // half the amplitude
+    float amp_db = KLin2DB(amp_half);      // amp_db = -6dbFS
+    #define MIP_Lin2DB(lin) ( LOG2DB*MIP_Logf( (lin) ) )
+
+  */
+
+   // with 0 < x <= 4, plain = 20 * log(x)
+
+
+  //----------
+
+  // AValue = db
+
+  double to01(double AValue) override {
+    double value = powf(10.0f, 0.05f * AValue);
+    return MIP_Parameter::to01(value);
+  }
+
+  //----------
+
+  // returns db
+
+  double from01(double AValue) override {
+    double value = MIP_Parameter::from01(AValue);
+    return 20.0f * log10f(value);
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+// Hz
+//
+//----------------------------------------------------------------------
+
+class MIP_HzParameter
+: public MIP_Parameter {
+
+//------------------------------
+private:
+//------------------------------
+
+//------------------------------
+public:
+//------------------------------
+
+  MIP_HzParameter(uint32_t id, uint32_t flags, const char* name, const char* module, double minval, double maxval, double defval)
+  : MIP_Parameter(id,flags,name,module,minval,maxval,defval) {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+//float MIP_NoteToHz(float ANote) {
+//  return 440 * pow(2.0,(ANote-69)*MIP_INV12F);
+//}
+
+
+  double to01(double AValue) override {
+    return MIP_Parameter::to01(AValue);
+  }
+
+  //----------
+
+  double from01(double AValue) override {
+    return MIP_Parameter::from01(AValue);
+  }
+
+};
+
 
 //----------------------------------------------------------------------
 #endif

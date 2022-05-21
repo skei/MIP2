@@ -28,7 +28,6 @@ protected:
   float*              MParameterValues        = nullptr;
   float*              MParameterModulations   = nullptr;
 
-
 //------------------------------
 public:
 //------------------------------
