@@ -21,9 +21,11 @@
 //
 //----------------------------------------------------------------------
 
+//#define MIP_VOICE_MAX_VOICES      NUM_VOICES
+#define MIP_VOICE_MAX_VOICES      1024
+
 #define MIP_VOICE_NUM_CHANNELS    16
 #define MIP_VOICE_NUM_NOTES       128
-#define MIP_VOICE_MAX_VOICES      256
 #define MIP_VOICE_MAX_FRAMESIZE   4096
 #define MIP_VOICE_BUFFERSIZE      (MIP_VOICE_MAX_VOICES * MIP_VOICE_MAX_FRAMESIZE)
 
@@ -105,14 +107,7 @@ public: // api
 
   //----------
 
-//  uint32_t _param_value_count = 0;
-//  uint32_t _param_mod_count = 0;
-
   void process(const clap_process_t *process) {
-
-//    _param_value_count = 0;
-//    _param_mod_count = 0;
-
     MVoiceContext.process = process;
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
@@ -121,7 +116,7 @@ public: // api
     MIP_ClearMonoBuffer(MVoiceBuffer,length);
     handleEvents(process);
 
-//    MIP_Print("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
+//MIP_Print("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
 
     processPlayingVoices();
     flushFinishedVoices();
@@ -135,27 +130,27 @@ public: // api
   void processThreaded(const clap_process_t *process, MIP_ClapHost* AHost) {
     MVoiceContext.process = process;
 
-#ifdef MIP_DEBUG
-  uint32_t _param_value_count = 0;
-  uint32_t _param_mod_count   = 0;
-  const clap_input_events_t* in_events = process->in_events;
-  uint32_t num_events = in_events->size(in_events);
-  for (uint32_t i=0; i<num_events; i++) {
-    const clap_event_header_t* header = in_events->get(in_events,i);
-    if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-      //handleEvent(header);
-      switch (header->type) {
-        case CLAP_EVENT_PARAM_VALUE:
-          _param_value_count += 1;
-          break;
-        case CLAP_EVENT_PARAM_MOD:
-          _param_mod_count += 1;
-          break;
-      }
-    }
-  }
-  MIP_Print("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
-#endif
+//#ifdef MIP_DEBUG
+//  uint32_t _param_value_count = 0;
+//  uint32_t _param_mod_count   = 0;
+//  const clap_input_events_t* in_events = process->in_events;
+//  uint32_t num_events = in_events->size(in_events);
+//  for (uint32_t i=0; i<num_events; i++) {
+//    const clap_event_header_t* header = in_events->get(in_events,i);
+//    if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+//      //handleEvent(header);
+//      switch (header->type) {
+//        case CLAP_EVENT_PARAM_VALUE:
+//          _param_value_count += 1;
+//          break;
+//        case CLAP_EVENT_PARAM_MOD:
+//          _param_mod_count += 1;
+//          break;
+//      }
+//    }
+//  }
+//  //MIP_DPrint("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
+//#endif
 
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
@@ -176,11 +171,15 @@ public: // api
       if (AHost && AHost->thread_pool) {
         has_thread_pool = AHost->thread_pool->request_exec(AHost->host,num);
 
-        MIP_Print("request_exec(%i) = %s\n", num, has_thread_pool ? "true" : "false" );
+//#ifdef MIP_DEBUG
+//  MIP_DPrint("request_exec(%i) = %s\n", num, has_thread_pool ? "true" : "false" );
+//#endif
 
       }
       if (!has_thread_pool) {
-        //MIP_Assert(has_thread_pool);
+
+//MIP_Assert(has_thread_pool);
+
         // calc voices manually
         for (uint32_t i=0; i<num; i++) {
           processVoiceThread(i);
@@ -273,9 +272,8 @@ private: // events
 
   //----------
 
-  // note_id: 16,32, 48, ...
-
   /*
+    note_id: 16,32, 48, ...
     start new voices at the start of the audio block
   */
 
@@ -297,6 +295,15 @@ private: // events
       MVoices[voice].note.channel     = event->channel;
       MVoices[voice].note.port_index  = event->port_index;
       MVoices[voice].note.note_id     = event->note_id;
+    }
+    else {
+      MIP_Print("no note..\n");
+      MIP_Note note;
+      note.key         = event->key;
+      note.channel     = event->channel;
+      note.port_index  = event->port_index;
+      note.note_id     = event->note_id;
+      queueNoteEnd(note);
     }
   }
 
@@ -348,10 +355,12 @@ private: // events
 
   //----------
 
-  // parameter.flags : CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID
+  /*
+    parameter.flags : CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID
 
-  // called from event
-  // see also: voiceParameter (called from gui)
+    called from event
+    see also: voiceParameter (called from gui)
+  */
 
   void handleParamValue(const clap_event_param_value_t* event) {
     //MIP_Print("param %i note %i port %i chan %i key %i value %.3f\n",event->param_id,event->note_id,event->port_index,event->channel,event->key,event->value);
