@@ -25,39 +25,39 @@ class myVoice {
 private:
 //------------------------------
 
-  MIP_VoiceContext* context           = nullptr;
+  MIP_VoiceContext*   context           = nullptr;
 
-  MIP_SvfFilter     filter            = {};
-  MIP_Envelope      amp_env           = {};
-  MIP_RcFilter      flt_freq_smoother = {};
-  MIP_RcFilter      flt_res_smoother  = {};
-  MIP_RcFilter      vol_smoother      = {};
+  MIP_SvfFilter       filter            = {};
+  MIP_Envelope        amp_env           = {};
+  MIP_RcFilter<float> flt_freq_smoother = {};
+  MIP_RcFilter<float> flt_res_smoother  = {};
+  MIP_RcFilter<float> vol_smoother      = {};
 
-  int32_t           note_key          = -1;
-  float             note_onvel        = 0.0;
-  float             note_offvel       = 0.0;
-  float             note_vol          = 0.0;
-  float             note_pan          = 0.0;
-  float             note_tuning       = 0.0;
-  float             note_vibr         = 0.0;
-  float             note_expr         = 0.0;
-  float             note_bright       = 0.0;
-  float             note_press        = 0.0;
+  int32_t             note_key          = -1;
+  float               note_onvel        = 0.0;
+  float               note_offvel       = 0.0;
+  float               note_vol          = 0.0;
+  float               note_pan          = 0.0;
+  float               note_tuning       = 0.0;
+  float               note_vibr         = 0.0;
+  float               note_expr         = 0.0;
+  float               note_bright       = 0.0;
+  float               note_press        = 0.0;
 
-  float             hz                = 0.0;  // note hz
-  float             ph                = 0.0;  // phase
-  float             phadd             = 0.0;  // phase add
-  float             pulse             = 1.0;
-  float             width             = 0.5;
-  float             filter_freq       = 0.5;
-  float             filter_res        = 0.5;
-  float             pitch             = 0.5;
+  float               hz                = 0.0;  // note hz
+  float               ph                = 0.0;  // phase
+  float               phadd             = 0.0;  // phase add
+  float               pulse             = 1.0;
+  float               width             = 0.5;
+  float               filter_freq       = 0.5;
+  float               filter_res        = 0.5;
+  float               pitch             = 0.5;
 
-  float             pulse_mod         = 0.0;
-  float             width_mod         = 0.0;
-  float             filter_freq_mod   = 0.0;
-  float             filter_res_mod    = 0.0;
-  float             pitch_mod         = 0.0;
+  float               pulse_mod         = 0.0;
+  float               width_mod         = 0.0;
+  float               filter_freq_mod   = 0.0;
+  float               filter_res_mod    = 0.0;
+  float               pitch_mod         = 0.0;
 
 //------------------------------
 public:

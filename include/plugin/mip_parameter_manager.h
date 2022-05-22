@@ -21,7 +21,7 @@
 class MIP_ParameterManager {
 
 //------------------------------
-protected:
+private:
 //------------------------------
 
   MIP_ParameterArray  MParameters             = {};
@@ -41,8 +41,8 @@ public:
     #ifndef MIP_NO_AUTODELETE
     deleteParameters();
     #endif
-    free(MParameterValues);
-    free(MParameterModulations);
+    if (MParameterValues)       free(MParameterValues);
+    if (MParameterModulations)  free(MParameterModulations);
   }
 
 //------------------------------
@@ -91,12 +91,24 @@ public:
 
   //----------
 
+  /*
+    oops..
+    if we call this directly:
+    we didn't create the MIP_Parameter, but it will/might be deleted
+    in the destructor..
+    for now, hide it :-)
+  */
+
+private:
+
   MIP_Parameter* appendParameter(MIP_Parameter* AParameter) {
     uint32_t index = MParameters.size();
     AParameter->setIndex(index);
     MParameters.append(AParameter);
     return AParameter;
   }
+
+public:
 
   //----------
 

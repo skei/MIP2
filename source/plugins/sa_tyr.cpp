@@ -196,7 +196,7 @@ private:
     #ifdef MIP_VOICE_USE_SLICES
     MVoiceManager.processSlices(process);
     #else
-    MVoiceManager.process(process);
+    MVoiceManager.processBlock(process);
     #endif
     //float v = MParameterValues[0];  // vol
     //float p = MParameterValues[1];  // pan

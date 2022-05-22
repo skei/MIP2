@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "base/types/mip_array.h"
+#include "audio/filters//mip_rc_filter.h"
 #include "plugin/clap/mip_clap.h"
 
 class MIP_Parameter;
@@ -51,11 +52,17 @@ typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
 class MIP_Parameter {
 
 //------------------------------
+private:
+//------------------------------
+
+//  MIP_RcFilter<double>  MDezipper = {};
+
+//------------------------------
 public:
 //------------------------------
 
   clap_param_info_t info  = {0};
-  int32_t          index  = -1;
+  int32_t           index = -1;
 
 //------------------------------
 public:
@@ -156,6 +163,22 @@ public:
     return true;
   }
 
+//------------------------------
+public:
+//------------------------------
+
+//  void setDezipperTime(double ms) {
+//    MDezipper.setTime(ms);
+//  }
+//
+//  void setDezipperValue(double value) {
+//    MDezipper.setTarget(value);
+//  }
+//
+//  // call this once (only) per sample
+//  double getDezipperValue() {
+//    return MDezipper.process();
+//  }
 
 };
 

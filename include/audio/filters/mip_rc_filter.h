@@ -6,24 +6,25 @@
 
 //----------
 
+template <class T>
 class MIP_RcFilter {
 
   private:
 
-    float MValue;
-    float MTarget;
-    float MWeight;
-    float MSampleRate;
+    T MValue;
+    T MTarget;
+    T MWeight;
+    T MSampleRate;
 
   public:
 
-    void  setSampleRate(float ARate) { MSampleRate = ARate; }
-    void  setValue(float AValue)     { MValue = AValue; }
-    void  setTarget(float AValue)    { MTarget = AValue; }
-    void  setWeight(float AValue)    { MWeight = AValue; }
-    float getValue(void)             { return MValue; }
-    float getTarget(void)            { return MTarget; }
-    float getWeight(void)            { return MWeight; }
+    void  setSampleRate(T ARate) { MSampleRate = ARate; }
+    void  setValue(T AValue)     { MValue = AValue; }
+    void  setTarget(T AValue)    { MTarget = AValue; }
+    void  setWeight(T AValue)    { MWeight = AValue; }
+    T getValue(void)             { return MValue; }
+    T getTarget(void)            { return MTarget; }
+    T getWeight(void)            { return MWeight; }
 
   public:
 
@@ -36,23 +37,23 @@ class MIP_RcFilter {
     ~MIP_RcFilter() {
     }
 
-    void setup(float AValue=0, float ATarget=0, float AWeight=0) {
+    void setup(T AValue=0, T ATarget=0, T AWeight=0) {
       MValue  = AValue;
       MTarget = ATarget;
       MWeight = AWeight;
     }
 
-    void setWeightInv(float w) {
+    void setWeightInv(T w) {
       if (w>0) MWeight = 1.0f / w;
       //else w = 1.0f; // cppcheck
       else MWeight = 1.0f;
     }
 
-    //void setSampleRate(float ARate) {
+    //void setSampleRate(T ARate) {
     //  MSampleRate = ARate;
     //}
 
-    void setFrequency(float AFrequency/*, float ASampleRate*/) {
+    void setFrequency(T AFrequency/*, T ASampleRate*/) {
       //if (ASampleRate > 0)
         MWeight = 1 - expf(-MIP_PI2 * AFrequency / MSampleRate );
       //else
@@ -64,22 +65,22 @@ class MIP_RcFilter {
       36.8% of its initial input or reach 63.2% of its final output.
     */
 
-    void setTime(float ATime) {
+    void setTime(T ATime) {
       if (ATime > 0) MWeight = 1 - expf(-1 / ATime);
       else MWeight = 0;
     }
 
-    float process(void) {
+    T process(void) {
       MValue += (MTarget - MValue) * MWeight;
       return MValue;
     }
 
-    float process(float AValue) {
+    T process(T AValue) {
       MTarget = AValue;
       return this->process();
     }
 
-    float process_hi(float AValue) {
+    T process_hi(T AValue) {
       MTarget = AValue;
       return AValue - this->process();
     }

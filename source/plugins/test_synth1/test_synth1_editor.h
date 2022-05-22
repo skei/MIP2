@@ -146,6 +146,11 @@ public:
 
   //----------
 
+  /*
+    redraw the voice info..
+    (then to the normal timer stuff)
+  */
+
   void on_timerCallback(void) final {
     MVoiceWidget->redraw();
     MPlayingVoicesWidget->redraw();

@@ -348,7 +348,7 @@ public: // clap
   }
 
 //------------------------------
-public:
+protected:
 //------------------------------
 
   void handle_process(const clap_process_t *process) final {
@@ -358,7 +358,7 @@ public:
     #ifdef MIP_VOICE_PROCESS_THREADED
       MVoiceManager.processThreaded(process,MHost);
     #else
-      MVoiceManager.process(process);
+      MVoiceManager.processBlock(process);
     #endif
 
     float v = MParameterValues[0];  // vol
@@ -368,9 +368,7 @@ public:
     MIP_ScaleStereoBuffer(outputs,l,r,length);
   }
 
-//------------------------------
-protected:
-//------------------------------
+  //----------
 
   /*
     parameter has changed via gui
