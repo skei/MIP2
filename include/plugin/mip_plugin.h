@@ -15,7 +15,7 @@
 #include "base/types/mip_queue.h"
 #include "audio/mip_audio_utils.h"
 #include "plugin/mip_parameter.h"
-#include "plugin/mip_parameter_manager.h"
+//#include "plugin/mip_parameter_manager.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_plugin.h"
@@ -108,7 +108,7 @@ private:
 
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS_PER_BLOCK> MHostParamQueue = {};
   float*                                MHostParamVal           = nullptr;
-  float*                                MHostParamMod           = nullptr;
+  //float*                                MHostParamMod           = nullptr;
 
   //MIP_ClapIntQueue                      MHostBeginGestureQueue  = {};
   //MIP_ClapIntQueue                      MHostEndGestureQueue    = {};
@@ -132,6 +132,7 @@ protected:
   bool                                  MIsActivated            = false;
 
   // parameters
+
   MIP_ParameterArray                    MParameters             = {};
   float*                                MParameterValues        = nullptr;
   float*                                MParameterModulations   = nullptr;
@@ -162,29 +163,26 @@ public:
     deleteParameters();
     #endif
     delete MHost;
-    if (MAudioParamVal) free (MAudioParamVal);
-    if (MHostParamVal)  free (MHostParamVal);
-    if (MHostParamMod)  free (MHostParamMod);
   }
 
 //------------------------------
 public: // get/set
 //------------------------------
 
-  float getParameterModulation(uint32_t AIndex) {
-    return MParameterModulations[AIndex];
-  }
-
   float getParameterValue(uint32_t AIndex) {
     return MParameterValues[AIndex];
   }
 
-  void setParameterModulation(uint32_t AIndex, float AValue) {
-    MParameterModulations[AIndex] = AValue;
+  float getParameterModulation(uint32_t AIndex) {
+    return MParameterModulations[AIndex];
   }
 
   void setParameterValue(uint32_t AIndex, float AValue) {
     MParameterValues[AIndex] = AValue;
+  }
+
+  void setParameterModulation(uint32_t AIndex, float AValue) {
+    MParameterModulations[AIndex] = AValue;
   }
 
 //------------------------------
@@ -194,21 +192,24 @@ public: // plugin
   bool init() override {
     uint32_t num = MParameters.size();
     uint32_t size = num * sizeof(float);
+
+    // parameters
     MParameterValues = (float*)malloc(size);
     MParameterModulations = (float*)malloc(size);
-
-    MAudioParamVal = (float*)malloc(size);
-    MHostParamVal = (float*)malloc(size);
-    MHostParamMod = (float*)malloc(size);
-    memset(MAudioParamVal,0,size);
-    memset(MHostParamVal,0,size);
-    memset(MHostParamMod,0,size);
-
     for (uint32_t i=0; i<num; i++) {
       float v = MParameters[i]->info.default_value;
       setParameterValue(i,v);
       setParameterModulation(i,0);
     }
+
+    // queues
+    MAudioParamVal = (float*)malloc(size);
+    MHostParamVal = (float*)malloc(size);
+    //MHostParamMod = (float*)malloc(size);
+    memset(MAudioParamVal,0,size);
+    memset(MHostParamVal,0,size);
+    //memset(MHostParamMod,0,size);
+
     return true;
   }
 
@@ -220,7 +221,7 @@ public: // plugin
 
     free(MAudioParamVal);
     free(MHostParamVal);
-    free(MHostParamMod);
+    //free(MHostParamMod);
 
   }
 

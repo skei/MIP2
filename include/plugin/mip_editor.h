@@ -26,7 +26,7 @@
   (loading preset..)
 */
 
-#define EVENTS_PER_BLOCK 4096
+#define MIP_EDITOR_MAX_EVENTS_PER_BLOCK 4096
 
 //----------------------------------------------------------------------
 //
@@ -98,8 +98,8 @@ private:
   MIP_Window*                           MWindow         = nullptr;
   MIP_Timer*                            MTimer          = nullptr;
   MIP_Widget**                          MParamToWidget  = nullptr;
-  MIP_Queue<uint32_t,EVENTS_PER_BLOCK>  MGuiParamQueue  = {};
-  MIP_Queue<uint32_t,EVENTS_PER_BLOCK>  MGuiModQueue    = {};
+  MIP_Queue<uint32_t,MIP_EDITOR_MAX_EVENTS_PER_BLOCK>  MGuiParamQueue  = {};
+  MIP_Queue<uint32_t,MIP_EDITOR_MAX_EVENTS_PER_BLOCK>  MGuiModQueue    = {};
   float*                                MGuiParamVal    = nullptr;
   float*                                MGuiParamMod    = nullptr;
   bool                                  MEditorIsOpen   = true;
@@ -318,11 +318,13 @@ public:
 
   // [audio thread]
   // called from handle_param_mod()
+  // todo: check if parameter is modulatable?
 
   void updateModulationInProcess(uint32_t AIndex, float AValue) {
     if (MWindow /*&& MEditorIsOpen*/) {
       MGuiParamMod[AIndex] = AValue;
       queueGuiMod(AIndex);
+      //MParamModulated[AIndex] = true; // or state? mono/poly/off
     }
   }
 

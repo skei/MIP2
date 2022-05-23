@@ -4,6 +4,10 @@
   - the voices are still in mono..
   - proper db and freq (params/mods)
   - scalable editor
+
+  - parameter modulation..
+  don't draw anything until we receives the first modulation event?
+
 */
 
 //----------------------------------------------------------------------
@@ -25,7 +29,7 @@
 
 //----------------------------------------------------------------------
 
-#define NUM_VOICES            2048
+#define NUM_VOICES            256
 #define NUM_PARAMS            11
 #define NUM_NOTE_INPUTS       1
 #define NUM_AUDIO_OUTPUTS     1
@@ -351,6 +355,18 @@ public: // clap
 protected:
 //------------------------------
 
+  /*
+    parameter has changed via gui
+    we need to tell the voices about it
+  */
+
+  void handle_editor_parameter(uint32_t AIndex, float AValue) final {
+    //MIP_Print("%i = %.3f\n",AIndex,AValue);
+    MVoiceManager.setParameter(AIndex,AValue);
+  }
+
+  //----------
+
   void handle_process(const clap_process_t *process) final {
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
@@ -366,18 +382,6 @@ protected:
     float l = v * (1.0 - p);
     float r = v * (      p);
     MIP_ScaleStereoBuffer(outputs,l,r,length);
-  }
-
-  //----------
-
-  /*
-    parameter has changed via gui
-    we need to tell the voices about it
-  */
-
-  void handle_editor_parameter(uint32_t AIndex, float AValue) final {
-    //MIP_Print("%i = %.3f\n",AIndex,AValue);
-    MVoiceManager.setParameter(AIndex,AValue);
   }
 
 };

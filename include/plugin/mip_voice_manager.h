@@ -69,7 +69,7 @@ public:
   }
 
 //------------------------------
-public: // api
+public:
 //------------------------------
 
   void prepareVoices(float ASampleRate) {
@@ -104,32 +104,9 @@ public: // api
     }
   }
 
-  //------------------------------
-  //
-  //------------------------------
-
-  /*
-    all events are handled at the beginning of the audioblock
-    then all voices (for entire block)..
-  */
-
-  void processBlock(const clap_process_t *process) {
-    MVoiceContext.process = process;
-    float* out0 = process->audio_outputs->data32[0];
-    float* out1 = process->audio_outputs->data32[1];
-    MVoiceContext.voicebuffer = MVoiceBuffer;//out0;
-    uint32_t length = process->frames_count;
-    MIP_ClearMonoBuffer(MVoiceBuffer,length);
-    handleEvents(process);
-    //MIP_Print("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
-    processPlayingVoices();
-    flushFinishedVoices();
-    flushNoteEnds();
-    MIP_CopyMonoBuffer(out0,MVoiceBuffer,length);
-    MIP_CopyMonoBuffer(out1,MVoiceBuffer,length);
-  }
-
-  //----------
+//------------------------------
+public: // process threaded
+//------------------------------
 
   /*
     voices are processed individually, bu host-provided thread pool
@@ -210,6 +187,31 @@ public: // api
     }
   }
 
+//------------------------------
+public: // process block
+//------------------------------
+
+  /*
+    all events are handled at the beginning of the audioblock
+    then all voices (for entire block)..
+  */
+
+  void processBlock(const clap_process_t *process) {
+    MVoiceContext.process = process;
+    float* out0 = process->audio_outputs->data32[0];
+    float* out1 = process->audio_outputs->data32[1];
+    MVoiceContext.voicebuffer = MVoiceBuffer;//out0;
+    uint32_t length = process->frames_count;
+    MIP_ClearMonoBuffer(MVoiceBuffer,length);
+    handleEvents(process);
+    //MIP_Print("param_value %i param_mod %i\n",_param_value_count,_param_mod_count);
+    processPlayingVoices();
+    flushFinishedVoices();
+    flushNoteEnds();
+    MIP_CopyMonoBuffer(out0,MVoiceBuffer,length);
+    MIP_CopyMonoBuffer(out1,MVoiceBuffer,length);
+  }
+
   //----------
 
   /*
@@ -241,9 +243,7 @@ public: // api
   }
   */
 
-//------------------------------
-private: // process
-//------------------------------
+  //----------
 
   // called from: processBlock
 
@@ -262,7 +262,9 @@ private: // process
     }
   }
 
-  //----------
+//------------------------------
+public: // post process
+//------------------------------
 
   void flushFinishedVoices() {
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
@@ -339,6 +341,7 @@ private: // events
       #else
         MVoices[voice].note_on(event->key,event->velocity);
       #endif
+      //MIP_Print("new note..\n");
       MVoices[voice].note.key         = event->key;
       MVoices[voice].note.channel     = event->channel;
       MVoices[voice].note.port_index  = event->port_index;
@@ -415,6 +418,7 @@ private: // events
     if (event->note_id == -1) {
       // global
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
+        if ((MVoices[i].state == MIP_VOICE_PLAYING) || (MVoices[i].state == MIP_VOICE_RELEASED)) {
         //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
           #ifdef MIP_VOICE_PREPARE_EVENTS
             MVoices[i].prepare_parameter(event->header.time,event->param_id,event->value);
@@ -422,6 +426,7 @@ private: // events
             MVoices[i].parameter(event->param_id,event->value);
           #endif
         //}
+        }
       }
     }
     else {
@@ -451,6 +456,7 @@ private: // events
     if (event->note_id == -1) {
       // global
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
+        if ((MVoices[i].state == MIP_VOICE_PLAYING) || (MVoices[i].state == MIP_VOICE_RELEASED)) {
         //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
           #ifdef MIP_VOICE_PREPARE_EVENTS
             MVoices[i].prepare_modulation(event->header.time,event->param_id,event->amount);
@@ -458,6 +464,7 @@ private: // events
             MVoices[i].modulation(event->param_id,event->amount);
           #endif
         //}
+        }
       }
     }
     else {
@@ -499,8 +506,6 @@ private: // events
 //------------------------------
 private: // voices
 //------------------------------
-
-  //----------
 
   int32_t findQuietestReleasedVoice() {
     float lowest = 999999.0;
