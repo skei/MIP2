@@ -2,7 +2,7 @@
 #define mip_delay_included
 //----------------------------------------------------------------------
 
-#include "base/mip_math.h"
+#include "base/utils/mip_math.h"
 //#include "audio/filters/mip_dc_filter.h"
 #include "audio/mip_audio_math.h"
 
@@ -71,7 +71,7 @@ class MIP_InterpolatedDelay {
     int         MCounter            = 0;
     float       MPhase              = 0.0f;
     bool        MWrapped            = false;
-    FBLOOPFX    MFBLoopFX;
+    FBLOOPFX    MFBLoopFX           = {};
     //MIP_DcFilter  MDC;
 
   public:
@@ -85,7 +85,7 @@ class MIP_InterpolatedDelay {
 
   public:
 
-    FBLOOPFX* getFeedbackFX(void) {
+    FBLOOPFX* getFeedbackFX() {
       return &MFBLoopFX;
     }
 
@@ -93,13 +93,13 @@ class MIP_InterpolatedDelay {
       return MWrapped;
     }
 
-    void reset(void) {
+    void reset() {
       MCounter = 0;
     }
 
-    void clear(void) {
+    void clear() {
       MCounter = 0;
-      MIP_Memset(MBuffer,0,MAX_DELAY*sizeof(float));
+      memset(MBuffer,0,MAX_DELAY*sizeof(float));
     }
 
     void start() {
@@ -140,6 +140,7 @@ class MIP_InterpolatedDelay {
 
       float fb = output * AFeedback;
       float flt = MFBLoopFX.process(fb);
+      //float flt = fb;
       float out = AInput + flt;
 
       //out = atan(out); // KClamp((AInput + flt), -1, 1);

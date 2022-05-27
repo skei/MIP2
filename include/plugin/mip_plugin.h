@@ -133,6 +133,7 @@ protected:
 
   // parameters
 
+  //MIP_ParameterManager                  MParameterManager       = {};
   MIP_ParameterArray                    MParameters             = {};
   float*                                MParameterValues        = nullptr;
   float*                                MParameterModulations   = nullptr;
@@ -190,8 +191,11 @@ public: // plugin
 //------------------------------
 
   bool init() override {
+
     uint32_t num = MParameters.size();
     uint32_t size = num * sizeof(float);
+
+    //MParameterManager.init();
 
     // parameters
     MParameterValues = (float*)malloc(size);

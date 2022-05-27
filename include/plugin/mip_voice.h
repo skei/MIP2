@@ -8,7 +8,7 @@
 //----------------------------------------------------------------------
 
 // per voice..
-#define MIP_VOICE_MAX_EVENTS_PER_BLOCK    256
+#define MIP_VOICE_MAX_EVENTS_PER_BLOCK 256
 
 //----------
 
@@ -166,12 +166,24 @@ public:
 public:
 //------------------------------
 
-  void processBuffer(uint32_t AIndex) {
+  void processBlock(uint32_t AIndex) {
     uint32_t length = context->process->frames_count;
     state = voice.process(AIndex,state,length,0);
   }
 
   //----------
+
+  /*
+    todo: add offset to current_time before calling voice.process
+    so we get rid of this in the voice:
+
+    #ifdef MIP_VOICE_PREPARE_EVENTS
+      MVoiceManager.processPrepared(process,MHost);
+    #else
+      MVoiceManager.processBlock(process);
+    #endif
+
+  */
 
   void processPrepared(uint32_t AIndex) {
     const clap_process_t* process = context->process;

@@ -10,6 +10,9 @@
 
 //----------------------------------------------------------------------
 
+#define EDITOR_WIDTH          536
+#define EDITOR_HEIGHT         530
+
 
 class myEditor
 : public MIP_Editor {
@@ -41,105 +44,265 @@ public:
     // header
 
     MIP_SAHeaderWidget* sa_header = new MIP_SAHeaderWidget(60,window);
-    MEditorPanel->appendWidget(sa_header);
     sa_header->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     sa_header->setPluginName(descriptor->name);
     sa_header->setPluginVersion(descriptor->version);
+    MEditorPanel->appendWidget(sa_header);
 
-    // controls panel (knobs)
+    // controls
 
     MIP_PanelWidget* controls = new MIP_PanelWidget(MIP_FRect());
-    MEditorPanel->appendWidget(controls);
     controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     controls->setDrawBorder(false);
     controls->setFillBackground(true);
     controls->setBackgroundColor(0.6);
     controls->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    MEditorPanel->appendWidget(controls);
+
+// left
+
+      // ----- osc1
+
+      MIP_PanelWidget* osc_panel = new MIP_PanelWidget(MIP_FRect(10,10,230,174) );
+      osc_panel->setFillBackground(true);
+      osc_panel->setBackgroundColor(0.55);
+      controls->appendWidget(osc_panel);
+
+        // pulse
+
+        MIP_Knob2Widget* pulse_knob = new MIP_Knob2Widget( MIP_FRect(0,0,50,82),"Pulse");
+        osc_panel->appendWidget(pulse_knob);
+        connect(pulse_knob,PAR_OSC1_PULSE);
+
+        // width
+
+        MIP_Knob2Widget* width_knob = new MIP_Knob2Widget( MIP_FRect(60,0,50,82),"Width");
+        width_knob->getKnobWidget()->setSnap(true);
+        width_knob->getKnobWidget()->setSnapPos(0.5);
+        width_knob->getKnobWidget()->setSnapDist(0.05);
+        width_knob->getKnobWidget()->setBipolar(true);
+        osc_panel->appendWidget(width_knob);
+        connect(width_knob,PAR_OSC1_WIDTH);
+
+        // tri
+
+        MIP_Knob2Widget* tri_knob = new MIP_Knob2Widget( MIP_FRect(120,0,50,82),"Tri");
+        osc_panel->appendWidget(tri_knob);
+        connect(tri_knob,PAR_OSC1_TRI);
+
+        // sin
+
+        MIP_Knob2Widget* sin_knob = new MIP_Knob2Widget( MIP_FRect(180,0,50,82),"Sin");
+        osc_panel->appendWidget(sin_knob);
+        connect(sin_knob,PAR_OSC1_SIN);
+
+//        // noise
+//
+//        MIP_Knob2Widget* noise_knob = new MIP_Knob2Widget( MIP_FRect(0,92,50,82),"Noise");
+//        osc_panel->appendWidget(noise_knob);
+//        connect(noise_knob,PAR_OSC1_NOISE);
+
+        // oct
+
+        MIP_Knob2Widget* osc_oct_knob = new MIP_Knob2Widget( MIP_FRect(60,92,50,82),"Oct");
+        osc_oct_knob->getKnobWidget()->setSnap(true);
+        osc_oct_knob->getKnobWidget()->setSnapPos(0.5);
+        osc_oct_knob->getKnobWidget()->setSnapDist(0.05);
+        osc_oct_knob->getKnobWidget()->setBipolar(true);
+        osc_panel->appendWidget(osc_oct_knob);
+        connect(osc_oct_knob,PAR_OSC1_OCT);
+
+        // semi
+
+        MIP_Knob2Widget* osc_semi_knob = new MIP_Knob2Widget( MIP_FRect(120,92,50,82),"Semi");
+        osc_semi_knob->getKnobWidget()->setSnap(true);
+        osc_semi_knob->getKnobWidget()->setSnapPos(0.5);
+        osc_semi_knob->getKnobWidget()->setSnapDist(0.05);
+        osc_semi_knob->getKnobWidget()->setBipolar(true);
+        osc_panel->appendWidget(osc_semi_knob);
+        connect(osc_semi_knob,PAR_OSC1_SEMI);
+
+        // cent
+
+        MIP_Knob2Widget* osc_cent_knob = new MIP_Knob2Widget( MIP_FRect(180,92,50,82),"Cent");
+        osc_cent_knob->getKnobWidget()->setSnap(true);
+        osc_cent_knob->getKnobWidget()->setSnapPos(0.5);
+        osc_cent_knob->getKnobWidget()->setSnapDist(0.05);
+        osc_cent_knob->getKnobWidget()->setBipolar(true);
+        osc_panel->appendWidget(osc_cent_knob);
+        connect(osc_cent_knob,PAR_OSC1_CENT);
+
+      // ----- res1 -----
+
+      MIP_PanelWidget* res_panel = new MIP_PanelWidget(MIP_FRect(10,194,230,174) );
+      res_panel->setBackgroundColor(0.55);
+      controls->appendWidget(res_panel);
+
+        // noise
+
+        MIP_Knob2Widget* res_noise_knob = new MIP_Knob2Widget( MIP_FRect(0,0,50,82),"Noise");
+        res_panel->appendWidget(res_noise_knob);
+        connect(res_noise_knob,PAR_RES1_NOISE);
+
+        // nshape
+
+        MIP_Knob2Widget* res_nshape_knob = new MIP_Knob2Widget( MIP_FRect(60,0,50,82),"NShape");
+        res_panel->appendWidget(res_nshape_knob);
+        connect(res_nshape_knob,PAR_RES1_NSHAPE);
+
+        // fb
+
+        MIP_Knob2Widget* res_fb_knob = new MIP_Knob2Widget( MIP_FRect(120,0,50,82),"FB");
+        res_panel->appendWidget(res_fb_knob);
+        connect(res_fb_knob,PAR_RES1_FB);
+
+        // damp
+
+        MIP_Knob2Widget* res_damp_knob = new MIP_Knob2Widget( MIP_FRect(180,0,50,82),"Damp");
+        res_panel->appendWidget(res_damp_knob);
+        connect(res_damp_knob,PAR_RES1_DAMP);
+
+        // oct
+
+        MIP_Knob2Widget* flt_oct_knob = new MIP_Knob2Widget( MIP_FRect(0,92,50,82),"Oct");
+        flt_oct_knob->getKnobWidget()->setSnap(true);
+        flt_oct_knob->getKnobWidget()->setSnapPos(0.5);
+        flt_oct_knob->getKnobWidget()->setSnapDist(0.05);
+        flt_oct_knob->getKnobWidget()->setBipolar(true);
+        res_panel->appendWidget(flt_oct_knob);
+        connect(flt_oct_knob,PAR_RES1_OCT);
+
+        // semi
+
+        MIP_Knob2Widget* flt_semi_knob = new MIP_Knob2Widget( MIP_FRect(60,92,50,82),"Semi");
+        flt_semi_knob->getKnobWidget()->setSnap(true);
+        flt_semi_knob->getKnobWidget()->setSnapPos(0.5);
+        flt_semi_knob->getKnobWidget()->setSnapDist(0.05);
+        flt_semi_knob->getKnobWidget()->setBipolar(true);
+        res_panel->appendWidget(flt_semi_knob);
+        connect(flt_semi_knob,PAR_RES1_SEMI);
+
+        // cent
+
+        MIP_Knob2Widget* flt_cent_knob = new MIP_Knob2Widget( MIP_FRect(120,92,50,82),"Cent");
+        flt_cent_knob->getKnobWidget()->setSnap(true);
+        flt_cent_knob->getKnobWidget()->setSnapPos(0.5);
+        flt_cent_knob->getKnobWidget()->setSnapDist(0.05);
+        flt_cent_knob->getKnobWidget()->setBipolar(true);
+        res_panel->appendWidget(flt_cent_knob);
+        connect(flt_cent_knob,PAR_RES1_CENT);
+
+      // ----- flt1 -----
+
+      MIP_PanelWidget* filter_panel = new MIP_PanelWidget(MIP_FRect(10,378,170,82) );
+      filter_panel->setBackgroundColor(0.55);
+      controls->appendWidget(filter_panel);
+
+        // type
+
+        MIP_Knob2Widget* type_knob = new MIP_Knob2Widget( MIP_FRect(0,0,50,82),"Type");
+        filter_panel->appendWidget(type_knob);
+        connect(type_knob,PAR_FLT1_TYPE);
+
+        // freq
+
+        MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(60,0,50,82),"Freq");
+        filter_panel->appendWidget(freq_knob);
+        connect(freq_knob,PAR_FLT1_FREQ);
+
+        // res
+
+        MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(120,0,50,82),"Res");
+        filter_panel->appendWidget(res_knob);
+        connect(res_knob,PAR_FLT1_RES);
+
+// right
 
       // voices
 
-      MVoiceWidget = new MIP_VoiceWidget( MIP_FRect(250,10,256,8) );
-      controls->appendWidget(MVoiceWidget);
+      MIP_PanelWidget* voice_panel = new MIP_PanelWidget(MIP_FRect(270,10,256,55) );
+      voice_panel->setBackgroundColor(0.55);
+      controls->appendWidget(voice_panel);
 
-      MPlayingVoicesWidget = new MIP_ValueWidget( MIP_FRect(250,20,150,15), "Playing voices:" );
-      controls->appendWidget(MPlayingVoicesWidget);
-      MPlayingVoicesWidget->setDigits(0);
+        MVoiceWidget = new MIP_VoiceWidget( MIP_FRect(0,0,256,8) );
+        voice_panel->appendWidget(MVoiceWidget);
 
-      MReleasedVoicesWidget = new MIP_ValueWidget( MIP_FRect(250,35,150,15), "Released voices:" );
-      controls->appendWidget(MReleasedVoicesWidget);
-      MReleasedVoicesWidget->setDigits(0);
+        MPlayingVoicesWidget = new MIP_ValueWidget( MIP_FRect(0,10,150,15), "Playing voices:" );
+        MPlayingVoicesWidget->setDigits(0);
+        voice_panel->appendWidget(MPlayingVoicesWidget);
 
-      MTotalVoicesWidget = new MIP_ValueWidget( MIP_FRect(250,50,150,15), "Total:" );
-      controls->appendWidget(MTotalVoicesWidget);
-      MTotalVoicesWidget->setDigits(0);
+        MReleasedVoicesWidget = new MIP_ValueWidget( MIP_FRect(0,25,150,15), "Released voices:" );
+        MReleasedVoicesWidget->setDigits(0);
+        voice_panel->appendWidget(MReleasedVoicesWidget);
 
-      // vol
+        MTotalVoicesWidget = new MIP_ValueWidget( MIP_FRect(0,40,150,15), "Total:" );
+        MTotalVoicesWidget->setDigits(0);
+        voice_panel->appendWidget(MTotalVoicesWidget);
 
-      MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(10,10,50,82),"Vol");
-      controls->appendWidget(vol_knob);
-      connect(vol_knob,0);
+      // ----- global -----
 
-      // pan
+      MIP_PanelWidget* global_panel = new MIP_PanelWidget(MIP_FRect(270,75,230,82) );
+      global_panel->setBackgroundColor(0.57);
+      controls->appendWidget(global_panel);
 
-      MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(70,10,50,82),"Pan");
-      controls->appendWidget(pan_knob);
-      connect(pan_knob,1);
+        // vol
 
-      // pitch
+        MIP_Knob2Widget* vol_knob = new MIP_Knob2Widget( MIP_FRect(0,0,50,82),"Vol");
+        global_panel->appendWidget(vol_knob);
+        connect(vol_knob,PAR_VOL);
 
-      MIP_Knob2Widget* pitch_knob = new MIP_Knob2Widget( MIP_FRect(130,10,50,82),"Pitch");
-      controls->appendWidget(pitch_knob);
-      pitch_knob->getKnobWidget()->setSnap(true);
-      pitch_knob->getKnobWidget()->setSnapPos(0.5);
-      connect(pitch_knob,10);
+        // pan
 
-      // freq
+        MIP_Knob2Widget* pan_knob = new MIP_Knob2Widget( MIP_FRect(60,0,50,82),"Pan");
+        pan_knob->getKnobWidget()->setSnap(true);
+        pan_knob->getKnobWidget()->setSnapPos(0.5);
+        pan_knob->getKnobWidget()->setSnapDist(0.05);
+        pan_knob->getKnobWidget()->setBipolar(true);
+        global_panel->appendWidget(pan_knob);
+        connect(pan_knob,PAR_PAN);
 
-      MIP_Knob2Widget* freq_knob = new MIP_Knob2Widget( MIP_FRect(10,102,50,82),"Freq");
-      controls->appendWidget(freq_knob);
-      connect(freq_knob,2);
+        // osc1 out
 
-      // res
+        MIP_Knob2Widget* osc1_out_knob = new MIP_Knob2Widget( MIP_FRect(120,0,50,82),"O1 out");
+        global_panel->appendWidget(osc1_out_knob);
+        connect(osc1_out_knob,PAR_OSC1_OUT);
 
-      MIP_Knob2Widget* res_knob = new MIP_Knob2Widget( MIP_FRect(70,102,50,82),"Res");
-      controls->appendWidget(res_knob);
-      connect(res_knob,3);
+        // res1 out
 
-      // squ
+        MIP_Knob2Widget* res1_out_knob = new MIP_Knob2Widget( MIP_FRect(180,0,50,82),"R1 out");
+        global_panel->appendWidget(res1_out_knob);
+        connect(res1_out_knob,PAR_RES1_OUT);
 
-      MIP_Knob2Widget* pulse_knob = new MIP_Knob2Widget( MIP_FRect(130,102,50,82),"Pulse");
-      controls->appendWidget(pulse_knob);
-      connect(pulse_knob,4);
+      // ----- env1
 
-      // width
+      MIP_PanelWidget* env_panel = new MIP_PanelWidget(MIP_FRect(270,75+10+82,230,82) );
+      env_panel->setFillBackground(true);
+      env_panel->setBackgroundColor(0.55);
+      controls->appendWidget(env_panel);
 
-      MIP_Knob2Widget* width_knob = new MIP_Knob2Widget( MIP_FRect(190,102,50,82),"Width");
-      controls->appendWidget(width_knob);
-      connect(width_knob,5);
+        // att
 
-      // amp att
+        MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(0,0,50,82),"Att");
+        env_panel->appendWidget(amp_att_knob);
+        connect(amp_att_knob,PAR_ENV1_ATT);
 
-      MIP_Knob2Widget* amp_att_knob = new MIP_Knob2Widget( MIP_FRect(10,194,50,82),"Att");
-      controls->appendWidget(amp_att_knob);
-      connect(amp_att_knob,6);
+        // dec
 
-      // amp dec
+        MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(60,0,50,82),"Dec");
+        env_panel->appendWidget(amp_dec_knob);
+        connect(amp_dec_knob,PAR_ENV1_DEC);
 
-      MIP_Knob2Widget* amp_dec_knob = new MIP_Knob2Widget( MIP_FRect(70,194,50,82),"Dec");
-      controls->appendWidget(amp_dec_knob);
-      connect(amp_dec_knob,7);
+        // sus
 
-      // amp sus
+        MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(120,0,50,82),"Sus");
+        env_panel->appendWidget(amp_sus_knob);
+        connect(amp_sus_knob,PAR_ENV1_SUS);
 
-      MIP_Knob2Widget* amp_sus_knob = new MIP_Knob2Widget( MIP_FRect(130,194,50,82),"Sus");
-      controls->appendWidget(amp_sus_knob);
-      connect(amp_sus_knob,8);
+        // rel
 
-      // amp rel
-
-      MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(190,194,50,82),"Rel");
-      controls->appendWidget(amp_rel_knob);
-      connect(amp_rel_knob,9);
+        MIP_Knob2Widget* amp_rel_knob = new MIP_Knob2Widget( MIP_FRect(180,0,50,82),"Rel");
+        env_panel->appendWidget(amp_rel_knob);
+        connect(amp_rel_knob,PAR_ENV1_REL);
 
     window->appendWidget(MEditorPanel);
   }

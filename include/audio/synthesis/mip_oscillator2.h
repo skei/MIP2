@@ -2,7 +2,7 @@
 #define mip_oscillator2_included
 //----------------------------------------------------------------------
 
-#include "base/mip_math.h"
+#include "base/utils/mip_math.h"
 #include "audio/waveforms/mip_polyblep_waveform.h"
 
 class MIP_Oscillator2 {

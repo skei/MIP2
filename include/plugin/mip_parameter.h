@@ -64,8 +64,8 @@ public:
   clap_param_info_t   info            = {0};
   int32_t             index           = -1;
 
-  bool                mono_modulated  = false;
-  bool                poly_modulated  = false;
+  //bool                mono_modulated  = false;
+  //bool                poly_modulated  = false;
 
 //------------------------------
 public:

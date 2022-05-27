@@ -29,12 +29,40 @@
 
 //----------------------------------------------------------------------
 
-#define NUM_VOICES            256
-#define NUM_PARAMS            11
-#define NUM_NOTE_INPUTS       1
-#define NUM_AUDIO_OUTPUTS     1
-#define EDITOR_WIDTH          420 + 100
-#define EDITOR_HEIGHT         350
+#define PAR_VOL         0
+#define PAR_PAN         1
+#define PAR_OSC1_OUT    2
+#define PAR_RES1_OUT    3
+
+#define PAR_OSC1_PULSE  4
+#define PAR_OSC1_WIDTH  5
+#define PAR_OSC1_TRI    6
+#define PAR_OSC1_SIN    7
+#define PAR_OSC1_OCT    8
+#define PAR_OSC1_SEMI   9
+#define PAR_OSC1_CENT   10
+
+#define PAR_RES1_NOISE  11
+#define PAR_RES1_NSHAPE 12
+#define PAR_RES1_FB     13
+#define PAR_RES1_DAMP   14
+#define PAR_RES1_OCT    15
+#define PAR_RES1_SEMI   16
+#define PAR_RES1_CENT   17
+
+#define PAR_FLT1_TYPE   18
+#define PAR_FLT1_FREQ   19
+#define PAR_FLT1_RES    20
+
+#define PAR_ENV1_ATT    21
+#define PAR_ENV1_DEC    22
+#define PAR_ENV1_SUS    23
+#define PAR_ENV1_REL    24
+
+//----------
+
+#define NUM_PARAMS      25
+#define NUM_VOICES      128
 
 //----------------------------------------------------------------------
 
@@ -63,12 +91,16 @@ const char* myFeatures[] = {
 const clap_plugin_descriptor_t myDescriptor = {
   CLAP_VERSION,
   "skei.audio/test_synth1",
-  "test_synth1",
+  #ifdef MIP_DEBUG
+    "test_synth1 (debug)",
+  #else
+    "test_synth1",
+  #endif
   "skei.audio",
   "https://torhelgeskei.com",
   "",
   "",
-  "0.0.3",
+  "0.0.4",
   "simple mip2 test synth",
   myFeatures
 };
@@ -88,7 +120,9 @@ private:
 
   clap_param_info_t myParameters[NUM_PARAMS] = {
 
-    { 0,
+    //---------- global ----------
+
+    { PAR_VOL,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
       "Vol",
@@ -97,7 +131,8 @@ private:
       1.0,
       0.5
     },
-    { 1,
+
+    { PAR_PAN,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
       "Pan",
@@ -107,37 +142,31 @@ private:
       0.5
     },
 
-    { 2,
-      CLAP_PARAM_IS_AUTOMATABLE
-        | CLAP_PARAM_IS_MODULATABLE
-        //| CLAP_PARAM_IS_MODULATABLE_PER_KEY
-        //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
-        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    { PAR_OSC1_OUT,
+      CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "FltFreq",
+      "O1",
       "",
       0.0,
       1.0,
-      1.0
+      0.5
     },
-    { 3,
-      CLAP_PARAM_IS_AUTOMATABLE
-        | CLAP_PARAM_IS_MODULATABLE
-        //| CLAP_PARAM_IS_MODULATABLE_PER_KEY
-        //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
-        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+
+    { PAR_RES1_OUT,
+      CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "FltRes",
+      "R1",
       "",
       0.0,
       1.0,
       0.0
     },
-    { 4,
+
+    //---------- osc1 ----------
+
+    { PAR_OSC1_PULSE,
       CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_MODULATABLE
-        //| CLAP_PARAM_IS_MODULATABLE_PER_KEY
-        //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Pulse",
@@ -146,11 +175,10 @@ private:
       1.0,
       0.0
     },
-    { 5,
+
+    { PAR_OSC1_WIDTH,
       CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_MODULATABLE
-        //| CLAP_PARAM_IS_MODULATABLE_PER_KEY
-        //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Width",
@@ -160,51 +188,217 @@ private:
       0.5
     },
 
-    { 6,
-      CLAP_PARAM_IS_AUTOMATABLE,
+    { PAR_OSC1_TRI,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
-      "AmpAtt",
-      "",
-      0.0,
-      1.0,
-      0.01
-    },
-    { 7,
-      CLAP_PARAM_IS_AUTOMATABLE,
-      nullptr,
-      "AmpDec",
+      "Tri",
       "",
       0.0,
       1.0,
       0.0
     },
-    { 8,
-      CLAP_PARAM_IS_AUTOMATABLE,
+
+    { PAR_OSC1_SIN,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
-      "AmpSus",
+      "Sin",
       "",
       0.0,
       1.0,
-      1.0
+      0.0
     },
-    { 9,
+
+//    { PAR_OSC1_NOISE,
+//      CLAP_PARAM_IS_AUTOMATABLE,
+//      nullptr,
+//      "Noise",
+//      "",
+//      0.0,
+//      1.0,
+//      0.0
+//    },
+
+    { PAR_OSC1_OCT,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "AmpRel",
+      "Oct",
       "",
       0.0,
       1.0,
       0.5
     },
 
-    { 10,
+    { PAR_OSC1_SEMI,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Semi",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    { PAR_OSC1_CENT,
       CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_MODULATABLE
-        //| CLAP_PARAM_IS_MODULATABLE_PER_KEY
-        //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
-      "Pitch",
+      "Cent",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    //---------- res1 ----------
+
+    { PAR_RES1_NOISE,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Noise",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
+    { PAR_RES1_NSHAPE,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "NShape",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
+    { PAR_RES1_FB,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "FB",
+      "",
+      0.0,
+      1.0,
+      0.9
+    },
+
+    { PAR_RES1_DAMP,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Damp",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    { PAR_RES1_OCT,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Oct",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    { PAR_RES1_SEMI,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Semi",
+      "",
+      0.0,
+      1.0,
+      0.5
+
+    },
+
+    { PAR_RES1_CENT,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Cent",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    //---------- flt1 ----------
+
+    { PAR_FLT1_TYPE,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Type",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
+    { PAR_FLT1_FREQ,
+      CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Freq",
+      "",
+      0.0,
+      1.0,
+      1.0
+    },
+
+    { PAR_FLT1_RES,
+      CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Res",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
+    //---------- env1 ----------
+
+    { PAR_ENV1_ATT,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Att",
+      "",
+      0.0,
+      1.0,
+      0.01
+    },
+
+    { PAR_ENV1_DEC,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Dec",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
+    { PAR_ENV1_SUS,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Sus",
+      "",
+      0.0,
+      1.0,
+      1.0
+    },
+
+    { PAR_ENV1_REL,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Rel",
       "",
       0.0,
       1.0,
@@ -214,6 +408,8 @@ private:
   };
 
   //----------
+
+  #define NUM_AUDIO_OUTPUTS 1
 
   clap_audio_port_info_t myAudioOutputs[NUM_AUDIO_OUTPUTS] = {
     { 0,
@@ -226,6 +422,8 @@ private:
   };
 
   //----------
+
+  #define NUM_NOTE_INPUTS 1
 
   clap_note_port_info_t myNoteInputs[NUM_NOTE_INPUTS] = {
     { 0,
@@ -371,14 +569,14 @@ protected:
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
 
-    #ifdef MIP_VOICE_PROCESS_THREADED
-      MVoiceManager.processThreaded(process,MHost);
+    #ifdef MIP_VOICE_PREPARE_EVENTS
+      MVoiceManager.processPrepared(process,MHost);
     #else
       MVoiceManager.processBlock(process);
     #endif
 
-    float v = MParameterValues[0];  // vol
-    float p = MParameterValues[1];  // pan
+    float v = MParameterValues[PAR_VOL];  // vol
+    float p = MParameterValues[PAR_PAN];  // pan
     float l = v * (1.0 - p);
     float r = v * (      p);
     MIP_ScaleStereoBuffer(outputs,l,r,length);

@@ -26,7 +26,7 @@ protected:
 
   // value text
   bool        MDrawValueText      = true;
-  MIP_Color   MValueTextColor     = MIP_COLOR_WHITE;
+  MIP_Color   MValueTextColor     = MIP_COLOR_BLACK;
   uint32_t    MValueTextAlignment = MIP_TEXT_ALIGN_RIGHT;
   MIP_FRect   MValueTextOffset    = MIP_FRect(2,2,2,2);
 
