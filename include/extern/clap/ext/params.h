@@ -167,10 +167,10 @@ typedef struct clap_param_info {
    // destroyed.
    void *cookie;
 
-   char name[CLAP_NAME_SIZE];     // the display name
-   char module[CLAP_MODULE_SIZE]; // the module containing the param, eg:
-                                  // "oscillators/wt1"; '/' will be used as a
-                                  // separator to show a tree like structure.
+   char name[CLAP_NAME_SIZE];   // the display name
+   char module[CLAP_PATH_SIZE]; // the module containing the param, eg:
+                                // "oscillators/wt1"; '/' will be used as a
+                                // separator to show a tree like structure.
 
    double min_value;     // minimum plain value
    double max_value;     // maximum plain value
@@ -273,7 +273,7 @@ typedef struct clap_host_params {
    // [main-thread]
    void (*rescan)(const clap_host_t *host, clap_param_rescan_flags flags);
 
-   // Clears references to a parameter
+   // Clears references to a parameter.
    // [main-thread]
    void (*clear)(const clap_host_t *host, clap_id param_id, clap_param_clear_flags flags);
 

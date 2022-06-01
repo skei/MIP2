@@ -5,25 +5,23 @@
 // ordering is important!
 // be careful!
 
-//----------
+//----------------------------------------------------------------------
+
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <dirent.h>
 #include <math.h>
 #include <memory.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+
 #include <vector>
 
-//----------
 
-// output may be truncated copying 255 bytes from a string of length 255 [-Wstringop-truncation]
-//#pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wstringop-truncation"
-//#pragma GCC diagnostic pop
-
-//----------
+//----------------------------------------------------------------------
 
 #include "base/mip_config.h"
 #include "base/mip_defines.h"
@@ -35,3 +33,4 @@
 
 //----------------------------------------------------------------------
 #endif
+

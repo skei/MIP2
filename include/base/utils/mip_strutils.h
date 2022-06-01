@@ -256,6 +256,13 @@ char* MIP_InsertChar(char* ABuffer, int32_t APos, char AChar) {
 
 //----------
 
+bool MIP_IsEqual(const char* str1, const char* str2) {
+  if (strcmp(str1,str2) == 0) return true;
+  return false;
+}
+
+//----------
+
 // A -> a
 
 void MIP_LowerCase(char* buffer) {

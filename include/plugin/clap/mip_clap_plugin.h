@@ -3,7 +3,8 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "plugin/clap/mip_clap.h"
+#include "extern/clap/clap.h"
+#include "plugin/clap/mip_clap_plugin.h"
 
 //----------------------------------------------------------------------
 //
@@ -17,8 +18,8 @@ class MIP_ClapPlugin {
 public:
 //------------------------------
 
-  MIP_ClapPlugin(const clap_plugin_descriptor_t* descriptor, const clap_host_t* AHost) {
-    MPlugin.desc = descriptor;
+  MIP_ClapPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
+    MPlugin.desc = ADescriptor;
   }
 
   //----------
@@ -26,16 +27,18 @@ public:
   virtual ~MIP_ClapPlugin() {
   }
 
-//------------------------------
-public:
-//------------------------------
+  //----------
 
-  const clap_plugin_t* clap_plugin_ptr() {
+  const clap_plugin_t* getPlugin() {
     return &MPlugin;
   }
 
+  const clap_plugin_descriptor_t* getDescriptor() {
+    return MPlugin.desc;
+  }
+
 //------------------------------
-public:
+public: // plugin
 //------------------------------
 
   virtual bool                init() { return true; }
@@ -46,84 +49,99 @@ public:
   virtual void                stop_processing() {}
   virtual void                reset() {}
   virtual clap_process_status process(const clap_process_t *process) { return CLAP_PROCESS_CONTINUE; }
-  virtual void                on_main_thread() {}
   virtual const void*         get_extension(const char *id) { return nullptr; }
+  virtual void                on_main_thread() {}
 
 //------------------------------
-public: // extensions
+public: // ext
 //------------------------------
 
-  virtual uint32_t  audio_ports_count(bool is_input) { return 0; }
-  virtual bool      audio_ports_get(uint32_t index, bool is_input, clap_audio_port_info_t* info) { return false; }
-  virtual uint32_t  audio_ports_config_count() { return 0; }
-  virtual bool      audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) { return false; }
-  virtual bool      audio_ports_config_select(clap_id config_id) { return true; }
-  virtual bool      event_filter_accepts(uint16_t space_id, uint16_t event_type) { return true; }
-  virtual bool      gui_is_api_supported(const char *api, bool is_floating) { return false; }
-  virtual bool      gui_get_preferred_api(const char **api, bool *is_floating) { return false; }
-  virtual bool      gui_create(const char *api, bool is_floating) { return false; }
-  virtual void      gui_destroy() {}
-  virtual bool      gui_set_scale(double scale) { return false; }
-  virtual bool      gui_get_size(uint32_t *width, uint32_t *height) { return false; }
-  virtual bool      gui_can_resize() { return false; }
-  virtual bool      gui_get_resize_hints(clap_gui_resize_hints_t *hints) { return false; }
-  virtual bool      gui_adjust_size(uint32_t *width, uint32_t *height) { return false; }
-  virtual bool      gui_set_size(uint32_t width, uint32_t height) { return false; }
-  virtual bool      gui_set_parent(const clap_window_t *window) { return false; }
-  virtual bool      gui_set_transient(const clap_window_t *window) { return false; }
-  virtual void      gui_suggest_title(const char *title) {}
-  virtual bool      gui_show() { return false; }
-  virtual bool      gui_hide() { return false; }
-  virtual uint32_t  latency_get() { return 0; }
-  virtual uint32_t  note_name_count() { return 0; }
-  virtual bool      note_name_get(uint32_t index, clap_note_name_t *note_name) { return false; }
-  virtual uint32_t  note_ports_count(bool is_input) { return 0; }
-  virtual bool      note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t *info) { return false; }
-  virtual uint32_t  params_count() { return 0; }
-  virtual bool      params_get_info(uint32_t param_index, clap_param_info_t* param_info) { return false; }
-  virtual bool      params_get_value(clap_id param_id, double *value) { return false; }
-  virtual bool      params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) { return false; }
-  virtual bool      params_text_to_value(clap_id param_id, const char *display, double *value) { return false; }
-  virtual void      params_flush(const clap_input_events_t* in, const clap_output_events_t* out) {}
-  virtual void      posix_fd_support_on_fd(int fd, int flags) {}
-  virtual bool      render_has_hard_realtime_requirement() { return false; }
-  virtual bool      render_set(clap_plugin_render_mode mode) { return true; }
-  virtual bool      state_save(const clap_ostream_t *stream) { return true; }
-  virtual bool      state_load(const clap_istream_t *stream) { return true; }
-  virtual uint32_t  tail_get() { return 0; }
-  virtual void      thread_pool_exec(uint32_t task_index) {}
-  virtual void      timer_support_on_timer(clap_id timer_id) {}
+  virtual uint32_t            audio_ports_config_count() { return 0; }
+  virtual bool                audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) { return false; }
+  virtual bool                audio_ports_config_select(clap_id config_id) { return false; }
+  virtual uint32_t            audio_ports_count(bool is_input) { return 0; }
+  virtual bool                audio_ports_get(uint32_t index,  bool is_input, clap_audio_port_info_t* info) { return false; }
+  virtual bool                gui_is_api_supported(const char *api, bool is_floating) { return false; }
+  virtual bool                gui_get_preferred_api(const char **api, bool *is_floating) { return false; }
+  virtual bool                gui_create(const char *api, bool is_floating) { return false; }
+  virtual void                gui_destroy() {}
+  virtual bool                gui_set_scale(double scale) { return false; }
+  virtual bool                gui_get_size(uint32_t *width, uint32_t *height) { return false; }
+  virtual bool                gui_can_resize() { return false; }
+  virtual bool                gui_get_resize_hints(clap_gui_resize_hints_t *hints) { return false; }
+  virtual bool                gui_adjust_size(uint32_t *width, uint32_t *height) { return false; }
+  virtual bool                gui_set_size(uint32_t width, uint32_t height) { return false; }
+  virtual bool                gui_set_parent(const clap_window_t *window) { return false; }
+  virtual bool                gui_set_transient(const clap_window_t *window) { return false; }
+  virtual void                gui_suggest_title(const char *title) {}
+  virtual bool                gui_show() { return false; }
+  virtual bool                gui_hide() { return false; }
+  virtual uint32_t            latency_get() { return 0; }
+  virtual uint32_t            note_name_count() { return 0; }
+  virtual bool                note_name_get(uint32_t index, clap_note_name_t *note_name) { return false; }
+  virtual uint32_t            note_ports_count(bool is_input) { return 0; }
+  virtual bool                note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t *info) { return false; }
+  virtual uint32_t            params_count() { return 0; }
+  virtual bool                params_get_info(uint32_t param_index, clap_param_info_t* param_info) { return false; }
+  virtual bool                params_get_value(clap_id param_id, double *value) { *value = 0.0; return true; }
+  virtual bool                params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) { return false; }
+  virtual bool                params_text_to_value(clap_id param_id, const char* display, double* value) { return false; }
+  virtual void                params_flush(const clap_input_events_t  *in, const clap_output_events_t *out) {}
+  virtual void                posix_fd_support_on_fd(int fd, clap_posix_fd_flags_t flags) {}
+  virtual bool                render_has_hard_realtime_requirement() { return false; }
+  virtual bool                render_set(clap_plugin_render_mode mode) { return false; }
+  virtual bool                state_save(const clap_ostream_t *stream) { return false; }
+  virtual bool                state_load(const clap_istream_t *stream) { return false; }
+  virtual uint32_t            tail_get() { return 0; }
+  virtual void                thread_pool_exec(uint32_t task_index) {}
+  virtual void                timer_support_on_timer(clap_id timer_id) {}
 
 //------------------------------
-public: // drafts
+public: // draft
 //------------------------------
 
-  virtual bool      ambisonic_get_info(bool is_input, uint32_t port_index, clap_ambisonic_info_t* info) { return false; }
-  virtual void      check_for_update_check(bool include_beta) {}
-  virtual uint32_t  cv_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index) { return CLAP_CV_VALUE; }
-  virtual uint32_t  file_reference_count() { return 0; }
-  virtual bool      file_reference_get(uint32_t index, clap_file_reference_t *file_reference) { return false; }
-  virtual bool      file_reference_get_hash(clap_id resource_id, clap_hash hash, uint8_t* digest, uint32_t digest_size) { return false; }
-  virtual bool      file_reference_update_path(clap_id resource_id, const char *path) { return false; }
-  virtual bool      file_reference_save_resources() { return false; }
-  virtual uint32_t  midi_mappings_count() { return 0; }
-  virtual bool      midi_mappings_get(uint32_t index, clap_midi_mapping_t *mapping) { return false; }
-  virtual bool      preset_load_from_file(const char *path) { return true; }
-  virtual uint32_t  quick_controls_count() { return 0; }
-  virtual bool      quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) { return false; }
-  virtual void      quick_controls_select(clap_id page_id) {}
-  virtual clap_id   quick_controls_get_selected() { return 0; }
-  virtual uint32_t  surround_get_channel_map(bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) { return 0; }
-  virtual void      surround_changed() {}
-  virtual void      track_info_changed() {}
-
-  virtual bool      voice_info_get(clap_voice_info_t *info) { return false; }
+  virtual bool                ambisonic_get_info(bool is_input, uint32_t port_index, clap_ambisonic_info_t *info) { return false; }
+  //virtual void                check_for_update_check(bool include_beta) {}
+  virtual bool                cv_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index, uint32_t* channel_type) { return 0; }
+  virtual uint32_t            file_reference_count() { return 0; }
+  virtual bool                file_reference_get(uint32_t index, clap_file_reference_t *file_reference) { return false; }
+  virtual bool                file_reference_get_blake3_digest(clap_id resource_id, uint8_t *digest) { return false; }
+  virtual bool                file_reference_get_file_size(clap_id resource_id, uint64_t *size) { return false; }
+  virtual bool                file_reference_update_path(clap_id resource_id, const char *path) { return false; }
+  virtual bool                file_reference_save_resources() { return false; }
+  virtual uint32_t            midi_mappings_count() { return 0; }
+  virtual bool                midi_mappings_get(uint32_t index, clap_midi_mapping_t *mapping) { return false; }
+  virtual bool                preset_load_from_file(const char *path) { return false; }
+  virtual uint32_t            quick_controls_count() { return 0; }
+  virtual bool                quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) { return false; }
+  virtual void                quick_controls_select(clap_id page_id) {}
+  virtual clap_id             quick_controls_get_selected() { return 0; }
+  virtual uint32_t            surround_get_channel_map(bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) { return 0; }
+  virtual void                surround_changed() {}
+  virtual void                track_info_changed() {}
+  virtual void                tuning_changed() {}
+  virtual bool                voice_info_get(clap_voice_info_t *info) { return false; }
 
 //------------------------------
-// callbacks
+protected: // plugin
 //------------------------------
 
-private:
+  clap_host_t*  MHost = nullptr;
+
+  clap_plugin_t MPlugin = {
+    .desc             = nullptr,
+    .plugin_data      = this,
+    .init             = clap_plugin_init_callback,
+    .destroy          = clap_plugin_destroy_callback,
+    .activate         = clap_plugin_activate_callback,
+    .deactivate       = clap_plugin_deactivate_callback,
+    .start_processing = clap_plugin_start_processing_callback,
+    .stop_processing  = clap_plugin_stop_processing_callback,
+    .reset            = clap_plugin_reset_callback,
+    .process          = clap_plugin_process_callback,
+    .get_extension    = clap_plugin_get_extension_callback,
+    .on_main_thread   = clap_plugin_on_main_thread_callback
+  };
 
   static bool clap_plugin_init_callback(const struct clap_plugin *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -133,7 +151,6 @@ private:
   static void clap_plugin_destroy_callback(const struct clap_plugin *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     plug->destroy();
-    delete plug;
   }
 
   static bool clap_plugin_activate_callback(const struct clap_plugin *plugin, double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) {
@@ -156,14 +173,14 @@ private:
     plug->stop_processing();
   }
 
+  static void clap_plugin_reset_callback(const struct clap_plugin *plugin) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    plug->reset();
+  }
+
   static clap_process_status clap_plugin_process_callback(const struct clap_plugin *plugin, const clap_process_t *process) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->process(process);
-  }
-
-  static void clap_plugin_reset_callback(const struct clap_plugin *plugin) {
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->reset();
   }
 
   static const void* clap_plugin_get_extension_callback(const struct clap_plugin *plugin, const char *id) {
@@ -173,105 +190,78 @@ private:
 
   static void clap_plugin_on_main_thread_callback(const struct clap_plugin *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->on_main_thread();
+    plug->on_main_thread();
   }
 
-protected:
-
-  //const
-  clap_plugin_t MPlugin = {
-    nullptr,  // descriptor (set in constructor)
-    this,     // plugin_data
-    clap_plugin_init_callback,
-    clap_plugin_destroy_callback,
-    clap_plugin_activate_callback,
-    clap_plugin_deactivate_callback,
-    clap_plugin_start_processing_callback,
-    clap_plugin_stop_processing_callback,
-    clap_plugin_reset_callback,
-    clap_plugin_process_callback,
-    clap_plugin_get_extension_callback,
-    clap_plugin_on_main_thread_callback
-  };
-
 //------------------------------
-// extensions
+protected: // ext
 //------------------------------
 
   //--------------------
-  // clap.audio-ports
+  // audio_ports_config
   //--------------------
 
-private:
-
-  static uint32_t clap_plugin_audio_ports_count_callback(const clap_plugin_t* plugin, bool is_input) {
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->audio_ports_count(is_input);
-  }
-
-  static bool clap_plugin_audio_ports_get_callback(const clap_plugin_t* plugin, uint32_t index, bool is_input, clap_audio_port_info_t* info) {
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->audio_ports_get(index,is_input,info);
-  }
-
-protected:
-
-  clap_plugin_audio_ports_t MAudioPorts = {
-    clap_plugin_audio_ports_count_callback,
-    clap_plugin_audio_ports_get_callback
+  clap_plugin_audio_ports_config_t MAudioPortsConfig = {
+    .count  = clap_plugin_audio_ports_config_count_callback,
+    .get    = clap_plugin_audio_ports_config_get_callback,
+    .select = clap_plugin_audio_ports_config_select_callback
   };
-
-  //--------------------
-  // clap.audio-ports-config
-  //--------------------
-
-private:
 
   static uint32_t clap_plugin_audio_ports_config_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->audio_ports_config_count();
+   return plug->audio_ports_config_count();
   }
 
   static bool clap_plugin_audio_ports_config_get_callback(const clap_plugin_t *plugin, uint32_t index, clap_audio_ports_config_t *config) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->audio_ports_config_get(index,config);
+   return plug->audio_ports_config_get(index,config);
   }
 
   static bool clap_plugin_audio_ports_config_select_callback(const clap_plugin_t *plugin, clap_id config_id) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->audio_ports_config_select(config_id);
+   return plug->audio_ports_config_select(config_id);
   }
 
-protected:
+  //--------------------
+  // audio_ports
+  //--------------------
 
-  clap_plugin_audio_ports_config_t MAudioPortsConfig = {
-    clap_plugin_audio_ports_config_count_callback,
-    clap_plugin_audio_ports_config_get_callback,
-    clap_plugin_audio_ports_config_select_callback
+  clap_plugin_audio_ports_t MAudioPorts = {
+    .count  = clap_plugin_audio_ports_count_callback,
+    .get    = clap_plugin_audio_ports_get_callback
   };
 
-  //--------------------
-  // clap.event-filter
-  //--------------------
-
-private:
-
-  static bool clap_plugin_event_filter_accepts_callback(const clap_plugin_t *plugin, uint16_t space_id, uint16_t event_type) {
+  static uint32_t clap_plugin_audio_ports_count_callback(const clap_plugin_t *plugin, bool is_input) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->event_filter_accepts(space_id,event_type);
+   return plug->audio_ports_count(is_input);
   }
 
-protected:
+  static bool clap_plugin_audio_ports_get_callback(const clap_plugin_t* plugin, uint32_t index, bool is_input, clap_audio_port_info_t *info) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+   return plug->audio_ports_get(index,is_input,info);
+  }
 
-  clap_plugin_event_filter_t MEventFilter = {
-    clap_plugin_event_filter_accepts_callback
+  //--------------------
+  // gui
+  //--------------------
+
+  clap_plugin_gui_t MGui = {
+    .is_api_supported   = clap_plugin_gui_is_api_supported_callback,
+    .get_preferred_api  = clap_plugin_gui_get_preferred_api_callback,
+    .create             = clap_plugin_gui_create_callback,
+    .destroy            = clap_plugin_gui_destroy_callback,
+    .set_scale          = clap_plugin_gui_set_scale_callback,
+    .get_size           = clap_plugin_gui_get_size_callback,
+    .can_resize         = clap_plugin_gui_can_resize_callback,
+    .get_resize_hints   = clap_plugin_gui_get_resize_hints_callback,
+    .adjust_size        = clap_plugin_gui_adjust_size_callback,
+    .set_size           = clap_plugin_gui_set_size_callback,
+    .set_parent         = clap_plugin_gui_set_parent_callback,
+    .set_transient      = clap_plugin_gui_set_transient_callback,
+    .suggest_title      = clap_plugin_gui_suggest_title_callback,
+    .show               = clap_plugin_gui_show_callback,
+    .hide               = clap_plugin_gui_hide_callback
   };
-
-  //--------------------
-  // clap.gui
-  //--------------------
-
-private:
 
   static bool clap_plugin_gui_is_api_supported_callback(const clap_plugin_t *plugin, const char *api, bool is_floating) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -290,7 +280,7 @@ private:
 
   static void clap_plugin_gui_destroy_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    plug->gui_destroy();
+    return plug->gui_destroy();
   }
 
   static bool clap_plugin_gui_set_scale_callback(const clap_plugin_t *plugin, double scale) {
@@ -335,7 +325,7 @@ private:
 
   static void clap_plugin_gui_suggest_title_callback(const clap_plugin_t *plugin, const char *title) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    plug->gui_suggest_title(title);
+    return plug->gui_suggest_title(title);
   }
 
   static bool clap_plugin_gui_show_callback(const clap_plugin_t *plugin) {
@@ -348,50 +338,27 @@ private:
     return plug->gui_hide();
   }
 
+  //--------------------
+  // latency
+  //--------------------
 
-
-protected:
-
-  clap_plugin_gui_t MGui = {
-    clap_plugin_gui_is_api_supported_callback,
-    clap_plugin_gui_get_preferred_api_callback,
-    clap_plugin_gui_create_callback,
-    clap_plugin_gui_destroy_callback,
-    clap_plugin_gui_set_scale_callback,
-    clap_plugin_gui_get_size_callback,
-    clap_plugin_gui_can_resize_callback,
-    clap_plugin_gui_get_resize_hints_callback,
-    clap_plugin_gui_adjust_size_callback,
-    clap_plugin_gui_set_size_callback,
-    clap_plugin_gui_set_parent_callback,
-    clap_plugin_gui_set_transient_callback,
-    clap_plugin_gui_suggest_title_callback,
-    clap_plugin_gui_show_callback,
-    clap_plugin_gui_hide_callback
+  clap_plugin_latency_t MLatency = {
+    .get = clap_plugin_latency_get_callback
   };
-
-  //--------------------
-  // clap.latency
-  //--------------------
-
-private:
 
   static uint32_t clap_plugin_latency_get_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->latency_get();
   }
 
-protected:
+  //--------------------
+  // note_name
+  //--------------------
 
-  clap_plugin_latency_t MLatency = {
-    clap_plugin_latency_get_callback
+  clap_plugin_note_name MNoteName = {
+    .count  = clap_plugin_note_name_count_callback,
+    .get    = clap_plugin_note_name_get_callback
   };
-
-  //--------------------
-  // clap.note_name
-  //--------------------
-
-private:
 
   static uint32_t clap_plugin_note_name_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -403,18 +370,14 @@ private:
     return plug->note_name_get(index,note_name);
   }
 
-protected:
+  //--------------------
+  // note_ports
+  //--------------------
 
-  clap_plugin_note_name MNoteName = {
-    clap_plugin_note_name_count_callback,
-    clap_plugin_note_name_get_callback
+  clap_plugin_note_ports_t MNotePorts {
+    .count  = clap_plugin_note_ports_count_callback,
+    .get    = clap_plugin_note_ports_get_callback
   };
-
-  //--------------------
-  // clap.note_ports
-  //--------------------
-
-private:
 
   static uint32_t clap_plugin_note_ports_count_callback(const clap_plugin_t *plugin, bool is_input) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -426,18 +389,18 @@ private:
     return plug->note_ports_get(index,is_input,info);
   }
 
-protected:
+  //--------------------
+  // params
+  //--------------------
 
-  clap_plugin_note_ports_t MNotePorts = {
-    clap_plugin_note_ports_count_callback,
-    clap_plugin_note_ports_get_callback
+  clap_plugin_params_t MParams = {
+    clap_plugin_params_count_callback,
+    clap_plugin_params_get_info_callback,
+    clap_plugin_params_get_value_callback,
+    clap_plugin_params_value_to_text_callback,
+    clap_plugin_params_text_to_value_callback,
+    clap_plugin_params_flush_callback
   };
-
-  //--------------------
-  // clap.params
-  //--------------------
-
-private:
 
   static uint32_t clap_plugin_params_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -464,46 +427,34 @@ private:
     return plug->params_text_to_value(param_id,display,value);
   }
 
-  static void clap_plugin_params_flush_callback(const clap_plugin_t* plugin, const clap_input_events_t* in, const clap_output_events_t* out) {
+  static void clap_plugin_params_flush_callback(const clap_plugin_t *plugin, const clap_input_events_t  *in, const clap_output_events_t *out) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->params_flush(in,out);
   }
 
-protected:
-
-  clap_plugin_params_t MParams = {
-    clap_plugin_params_count_callback,
-    clap_plugin_params_get_info_callback,
-    clap_plugin_params_get_value_callback,
-    clap_plugin_params_value_to_text_callback,
-    clap_plugin_params_text_to_value_callback,
-    clap_plugin_params_flush_callback
-  };
-
   //--------------------
-  // clap.posix-fd-support
+  // posix_fd_support
   //--------------------
-
-private:
-
-  static void clap_plugin_posix_fd_support_on_fd_callback(const clap_plugin_t *plugin, int fd, int flags) {
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->posix_fd_support_on_fd(fd,flags);
-  }
-
-protected:
 
   clap_plugin_posix_fd_support MPosixFdSupport = {
     clap_plugin_posix_fd_support_on_fd_callback
   };
 
+  static void clap_plugin_posix_fd_support_on_fd_callback(const clap_plugin_t *plugin, int fd, clap_posix_fd_flags_t flags) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->posix_fd_support_on_fd(fd,flags);
+  }
+
   //--------------------
-  // clap.render
+  // render
   //--------------------
 
-private:
+  clap_plugin_render_t MRender = {
+    clap_plugin_render_has_hard_realtime_requirement_callback,
+    clap_plugin_render_set_callback
+  };
 
-  static bool clap_plugin_has_hard_realtime_requirement(const clap_plugin_t *plugin) {
+  static bool clap_plugin_render_has_hard_realtime_requirement_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->render_has_hard_realtime_requirement();
   }
@@ -513,18 +464,14 @@ private:
     return plug->render_set(mode);
   }
 
-protected:
+  //--------------------
+  // state
+  //--------------------
 
-  clap_plugin_render_t MRender = {
-    clap_plugin_has_hard_realtime_requirement,
-    clap_plugin_render_set_callback
+  clap_plugin_state_t MState = {
+    clap_plugin_state_save_callback,
+    clap_plugin_state_load_callback
   };
-
-  //--------------------
-  // clap.state
-  //--------------------
-
-private:
 
   static bool clap_plugin_state_save_callback(const clap_plugin_t *plugin, const clap_ostream_t *stream) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -536,122 +483,102 @@ private:
     return plug->state_load(stream);
   }
 
-protected:
+  //--------------------
+  // tail
+  //--------------------
 
-  clap_plugin_state_t MState {
-    clap_plugin_state_save_callback,
-    clap_plugin_state_load_callback
+  clap_plugin_tail_t MTail = {
+    clap_plugin_tail_get_callback
   };
-
-  //--------------------
-  // clap.tail
-  //--------------------
-
-private:
 
   static uint32_t clap_plugin_tail_get_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->tail_get();
   }
 
-protected:
+  //--------------------
+  // thread_pool
+  //--------------------
 
-  clap_plugin_tail_t MTail {
-    clap_plugin_tail_get_callback
+  clap_plugin_thread_pool_t MThreadPool = {
+    clap_plugin_thread_pool_exec_callback
   };
-
-  //--------------------
-  // clap.thread-pool
-  //--------------------
-
-private:
 
   static void clap_plugin_thread_pool_exec_callback(const clap_plugin_t *plugin, uint32_t task_index) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->thread_pool_exec(task_index);
   }
 
-protected:
+  //--------------------
+  // timer_support
+  //--------------------
 
-  clap_plugin_thread_pool_t MThreadPool = {
-    clap_plugin_thread_pool_exec_callback
+  clap_plugin_timer_support_t MTimerSupport = {
+    .on_timer = clap_plugin_timer_support_on_timer
   };
 
-  //--------------------
-  // clap.timer-support
-  //--------------------
-
-private:
-
-  static void clap_plugin_timer_support_on_timer_callback(const clap_plugin_t *plugin, clap_id timer_id) {
+  static void clap_plugin_timer_support_on_timer(const clap_plugin_t *plugin, clap_id timer_id) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->timer_support_on_timer(timer_id);
   }
 
-protected:
+//------------------------------
+protected: // draft
+//------------------------------
 
-  clap_plugin_timer_support_t MTimerSupport = {
-    clap_plugin_timer_support_on_timer_callback
+  //--------------------
+  // ambisonic
+  //--------------------
+
+  clap_plugin_ambisonic_t MAmbisonic = {
+    .get_info = clap_plugin_ambisonic_get_info_callback
   };
 
-//------------------------------
-// drafts
-//------------------------------
-
-  //--------------------
-  // clap.ambisonic
-  //--------------------
-
-private:
-
-  static bool clap_plugin_ambisonic_get_info_callback(const clap_plugin_t* plugin, bool is_input, uint32_t port_index, clap_ambisonic_info_t* info) {
+  static bool clap_plugin_ambisonic_get_info_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, clap_ambisonic_info_t *info) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->ambisonic_get_info(is_input,port_index,info);
   }
 
-protected:
+  //--------------------
+  // check_for_update
+  //--------------------
 
-  clap_plugin_ambisonic_t MAmbisonic = {
-    clap_plugin_ambisonic_get_info_callback
+  //struct clap_plugin_check_for_update MCheckForUpdate = {
+  //  .check = clap_plugin_check_for_update_check_callback
+  //};
+  //
+  //static void clap_plugin_check_for_update_check_callback(const clap_plugin_t *plugin, bool include_preview) {
+  //  MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+  //  return plug->check_for_update_check(include_preview);
+  //}
+
+  //--------------------
+  // cv
+  //--------------------
+
+  clap_plugin_cv_t MCv = {
+    .get_channel_type = clap_plugin_cv_get_channel_type_callback
   };
 
-  //--------------------
-  // clap.check-for-update.draft/0
-  //--------------------
 
-private:
-
-  static void clap_plugin_check_for_update_check_callback(const clap_host_t *host, bool include_beta) {
-  }
-
-protected:
-
-  clap_plugin_check_for_update MCheckForUpdate = {
-    clap_plugin_check_for_update_check_callback
-  };
-
-  //--------------------
-  // clap.cv.draft/0
-  //--------------------
-
-private:
-
-  static uint32_t clap_plugin_cv_get_channel_type_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint32_t channel_index) {
+  static bool clap_plugin_cv_get_channel_type_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint32_t channel_index, uint32_t* channel_type) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->cv_get_channel_type(is_input,port_index,channel_index);
+    return plug->cv_get_channel_type(is_input,port_index,channel_index,channel_type);
   }
 
-protected:
+  //--------------------
+  // file_reference
+  //--------------------
 
-  clap_plugin_cv_t MCV = {
-    clap_plugin_cv_get_channel_type_callback
+  clap_plugin_file_reference_t MFileReference = {
+    .count              = clap_plugin_file_reference_count_callback,
+    .get                = clap_plugin_file_reference_get_callback,
+    .get_blake3_digest  = clap_plugin_file_reference_get_blake3_digest_callback,
+    .get_file_size      = clap_plugin_file_reference_get_file_size_callback,
+    .update_path        = clap_plugin_file_reference_update_path_callback,
+    .save_resources     = clap_plugin_file_reference_save_resources_callback
   };
 
-  //--------------------
-  // clap.file-reference.draft/0
-  //--------------------
-
-private:
 
   static uint32_t clap_plugin_file_reference_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -663,9 +590,14 @@ private:
     return plug->file_reference_get(index,file_reference);
   }
 
-  static bool clap_plugin_file_reference_get_hash_callback(const clap_plugin_t *plugin, clap_id resource_id, clap_hash hash, uint8_t* digest, uint32_t digest_size) {
+  static bool clap_plugin_file_reference_get_blake3_digest_callback(const clap_plugin_t *plugin, clap_id resource_id, uint8_t *digest) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->file_reference_get_hash(resource_id,hash,digest,digest_size);
+    return plug->file_reference_get_blake3_digest(resource_id,digest);
+  }
+
+  static bool clap_plugin_file_reference_get_file_size_callback(const clap_plugin_t *plugin, clap_id resource_id, uint64_t *size) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->file_reference_get_file_size(resource_id,size);
   }
 
   static bool clap_plugin_file_reference_update_path_callback(const clap_plugin_t *plugin, clap_id resource_id, const char *path) {
@@ -678,60 +610,46 @@ private:
     return plug->file_reference_save_resources();
   }
 
-protected:
+  //--------------------
+  // midi_mappings
+  //--------------------
 
-  clap_plugin_file_reference_t MFileReference = {
-    clap_plugin_file_reference_count_callback,
-    clap_plugin_file_reference_get_callback,
-    clap_plugin_file_reference_get_hash_callback,
-    clap_plugin_file_reference_update_path_callback,
-    clap_plugin_file_reference_save_resources_callback
+  clap_plugin_midi_mappings_t MMidiMappings = {
+    .count  = clap_plugin_midi_mappings_count_callback,
+    .get    = clap_plugin_midi_mappings_get_callback
   };
-
-  //--------------------
-  // clap.midi-mappings.draft/0
-  //--------------------
-
-private:
 
   static uint32_t clap_plugin_midi_mappings_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->midi_mappings_count();
   }
+
   static bool clap_plugin_midi_mappings_get_callback(const clap_plugin_t *plugin, uint32_t index, clap_midi_mapping_t *mapping) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->midi_mappings_get(index,mapping);
   }
 
-protected:
+  //--------------------
+  // preset_load
+  //--------------------
 
-  clap_plugin_midi_mappings_t MMidiMappings = {
-    clap_plugin_midi_mappings_count_callback,
-    clap_plugin_midi_mappings_get_callback
+  clap_plugin_preset_load_t MPresetLoad = {
+    .from_file = clap_plugin_preset_load_from_file_callback
   };
-
-  //--------------------
-  // clap.preset-load.draft/0
-  //--------------------
-
-private:
 
   static bool clap_plugin_preset_load_from_file_callback(const clap_plugin_t *plugin, const char *path) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->preset_load_from_file(path);
   }
 
-protected:
+  //--------------------
+  // quick_controls
+  //--------------------
 
-  clap_plugin_preset_load_t MPresetLoad = {
-    clap_plugin_preset_load_from_file_callback
+  clap_plugin_quick_controls_t MQuickControls = {
+    .count  = clap_plugin_quick_controls_count_callback,
+    .get    = clap_plugin_quick_controls_get_callback
   };
-
-  //--------------------
-  // clap.quick-controls.draft/0
-  //--------------------
-
-private:
 
   static uint32_t clap_plugin_quick_controls_count_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
@@ -743,81 +661,63 @@ private:
     return plug->quick_controls_get(page_index,page);
   }
 
-  static void clap_plugin_quick_controls_select_callback(const clap_plugin_t *plugin, clap_id page_id) {
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->quick_controls_select(page_id);
-  }
+  //--------------------
+  // surround
+  //--------------------
 
-  static clap_id clap_plugin_quick_controls_get_selected_callback(const clap_plugin_t *plugin) {
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->quick_controls_get_selected();
-  }
-
-protected:
-
-  clap_plugin_quick_controls_t MQuickControls = {
-    clap_plugin_quick_controls_count_callback,
-    clap_plugin_quick_controls_get_callback,
-    clap_plugin_quick_controls_select_callback,
-    clap_plugin_quick_controls_get_selected_callback
+  clap_plugin_surround_t MSurround = {
+    .get_channel_map  = clap_plugin_surround_get_channel_map_callback,
+    .changed          = clap_plugin_surround_changed_callback
   };
 
-  //--------------------
-  // clap.surround.draft/0
-  //--------------------
-
-private:
-
-  static uint32_t clap_plugin_surround_get_channel_map_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) {
+  static uint32_t clap_plugin_surround_get_channel_map_callback(const clap_plugin_t *plugin, bool is_input, uint32_t port_index, uint8_t* channel_map, uint32_t channel_map_capacity) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->surround_get_channel_map(is_input,port_index,channel_map,channel_map_capacity);
   }
 
   static void clap_plugin_surround_changed_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    plug->surround_changed();
+    return plug->surround_changed();
   }
 
-protected:
+  //--------------------
+  // track_info
+  //--------------------
 
-  clap_plugin_surround_t MSurround = {
-    clap_plugin_surround_get_channel_map_callback,
-    clap_plugin_surround_changed_callback
+  clap_plugin_track_info_t MTrackInfo = {
+    .changed  = clap_plugin_track_info_changed_callback
   };
-
-  //--------------------
-  // clap.track-info.draft/0
-  //--------------------
-
-private:
 
   static void clap_plugin_track_info_changed_callback(const clap_plugin_t *plugin) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->track_info_changed();
+    plug->track_info_changed();
   }
 
-protected:
+  //--------------------
+  // tuning
+  //--------------------
 
-  clap_plugin_track_info_t MTrackInfo = {
-    clap_plugin_track_info_changed_callback
+  clap_client_tuning_t MTuning = {
+    .changed = clap_plugin_tuning_changed_callback
   };
 
+  static void clap_plugin_tuning_changed_callback(const clap_plugin_t *plugin) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    plug->tuning_changed();
+  }
+
   //--------------------
-  // clap.voice-info.draft/0
+  // voice_info
   //--------------------
 
-private:
+  clap_plugin_voice_info_t MVoiceInfo = {
+    .get = clap_plugin_voice_info_get_callback
+  };
 
   static bool clap_plugin_voice_info_get_callback(const clap_plugin_t *plugin, clap_voice_info_t *info) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
     return plug->voice_info_get(info);
   }
-
-protected:
-
-  clap_plugin_voice_info_t MVoiceInfo = {
-    clap_plugin_voice_info_get_callback
-  };
 
 };
 

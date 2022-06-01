@@ -2,74 +2,31 @@
 #define mip_editor_included
 //----------------------------------------------------------------------
 
-/*
-  TODO:
-    widget/automation 'fighting'..
-    - MClickedValue could have changed becaouse of modulation
-*/
-
-//----------------------------------------------------------------------
+// aka MIP_GuiHandler
 
 #include "mip.h"
-#include "base/system/mip_timer.h"
 #include "base/types/mip_queue.h"
-#include "plugin/clap/mip_clap.h"
+#include "base/system/mip_timer.h"
+#include "plugin/mip_parameter.h"
+#include "plugin/mip_parameter_manager.h"
 #include "plugin/clap/mip_clap_plugin.h"
-#include "plugin/clap/mip_clap_utils.h"
+#include "gui/mip_widget.h"
 #include "gui/mip_window.h"
 
-#define MIP_EDITOR_TIMER_RATE 30
-
-/*
-  plugin/host -> gui
-  could potentially be all parameters
-  (loading preset..)
-*/
-
-#define MIP_EDITOR_MAX_EVENTS_PER_BLOCK 4096
-
+#define MIP_EDITOR_TIMER_RATE             25
+#define MIP_EDITOR_MAX_EVENTS_PER_BLOCK   4096
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
 
-/*
-
-class MIP_EditorWindow
-: public MIP_Window {
-
+class MIP_EditorListener {
 public:
-
-  MIP_EditorWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener, bool AEmbedded)
-  : MIP_Window(AWidth,AHeight,AListener,AEmbedded) {
-  }
-
-  virtual ~MIP_EditorWindow() {
-  }
-
-public:
-
-//  void do_widget_redraw(MIP_Widget* AWidget, MIP_FRect ARect, uint32_t AMode=0) override {
-//    //MIP_PRINT;
-//    //int32_t param_index = AWidget->getParamIndex();
-//    //if (param_index < 0) {
-//      MIP_Window::do_widget_redraw(AWidget,ARect,AMode);
-//    //}
-//  }
-
-};
-
-*/
-
-//----------------------------------------------------------------------
-
-class MIP_EditorListener{
-public:
-  virtual void on_beginUpdateParameterFromEditor(uint32_t AIndex) {}
-  virtual void on_updateParameterFromEditor(uint32_t AIndex, float AValue) {}
-  virtual void on_endUpdateParameterFromEditor(uint32_t AIndex) {}
-  virtual void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) {}
+  virtual void on_editor_listener_beginUpdateParameter(uint32_t AIndex) {}
+  virtual void on_editor_listener_parameter(uint32_t AIndex, double AValue) {}
+  virtual void on_editor_listener_endUpdateParameter(uint32_t AIndex) {}
+  virtual void on_editor_listener_resize(uint32_t AWidth, uint32_t AHeight) {}
 };
 
 //----------------------------------------------------------------------
@@ -82,34 +39,35 @@ class MIP_Editor
 : public MIP_WindowListener
 , public MIP_TimerListener {
 
-//------------------------------
 private:
-//------------------------------
 
-  MIP_EditorListener*                   MListener       = nullptr;
-  MIP_ClapPlugin*                       MPlugin         = nullptr;
-  uint32_t                              MNumParams      = 0;
-  uint32_t                              MWidth          = 0;
-  uint32_t                              MHeight         = 0;
-  double                                MScale          = 1.0;
-  bool                                  MCanResize      = false;
-  bool                                  MEmbedded       = false;
-  //MIP_EditorWindow*                     MWindow         = nullptr;
-  MIP_Window*                           MWindow         = nullptr;
-  MIP_Timer*                            MTimer          = nullptr;
-  MIP_Widget**                          MParamToWidget  = nullptr;
+  MIP_EditorListener* MListener         = nullptr;
+  MIP_ClapPlugin*     MPlugin           = nullptr;
+  uint32_t            MNumParams        = 0;
+  bool                MEmbedded         = false;
+  MIP_Window*         MWindow           = nullptr;
+  MIP_Timer*          MTimer            = nullptr;
+  MIP_Widget**        MParamToWidget    = nullptr;
+  double*             MGuiParamVal      = nullptr;
+  double*             MGuiParamMod      = nullptr;
+  MIP_WidgetArray     MDirtyWidgets     = {};
+  bool                MCanResize        = false;
+  uint32_t            MWidth            = 0;
+  uint32_t            MHeight           = 0;
+  double              MScale            = 1.0;
+  uint32_t            MParentWindow     = 0;
+  uint32_t            MTransientWindow  = 0;
+  bool                MIsOpen           = false;
+  const char*         MWindowTitle      = "";
+
   MIP_Queue<uint32_t,MIP_EDITOR_MAX_EVENTS_PER_BLOCK>  MGuiParamQueue  = {};
   MIP_Queue<uint32_t,MIP_EDITOR_MAX_EVENTS_PER_BLOCK>  MGuiModQueue    = {};
-  float*                                MGuiParamVal    = nullptr;
-  float*                                MGuiParamMod    = nullptr;
-  bool                                  MEditorIsOpen   = true;
-  MIP_Widgets                           MDirtyWidgets   = {};
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded) {
+  MIP_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded=true) {
     MListener = AListener;
     MPlugin = APlugin;
     MWidth = AWidth;
@@ -119,13 +77,12 @@ public:
     uint32_t size = MNumParams * sizeof(MIP_Widget*);
     MParamToWidget = (MIP_Widget**)malloc(size);
     memset(MParamToWidget,0,size);
-    size = MNumParams * sizeof(float);
-    MGuiParamVal = (float*)malloc(size);
-    MGuiParamMod = (float*)malloc(size);
+    size = MNumParams * sizeof(double);
+    MGuiParamVal = (double*)malloc(size);
+    MGuiParamMod = (double*)malloc(size);
     memset(MGuiParamVal,0,size);
     memset(MGuiParamMod,0,size);
     MTimer = new MIP_Timer(this);
-    //MWindow = new MIP_EditorWindow(AWidth,AHeight,this,AEmbedded);
     MWindow = new MIP_Window(AWidth,AHeight,this,AEmbedded);
   }
 
@@ -140,89 +97,98 @@ public:
   }
 
 //------------------------------
-public: // clap.gui
+public:
 //------------------------------
 
-  virtual bool attach(const char* ADisplay, uint32_t AWindow) {
-    //MIP_PRINT;
-    MWindow->reparent(AWindow);
+  virtual bool getSize(uint32_t* AWidth, uint32_t* AHeight) {
+    *AWidth = MWidth;
+    *AHeight = MHeight;
     return true;
   }
 
   //----------
 
-  virtual bool show() {
-    //MIP_PRINT;
-    MWindow->setOwnerWindow(MWindow);
-    MWindow->open();
-    MTimer->start(MIP_EDITOR_TIMER_RATE);
-    MEditorIsOpen = true;
-    return true;
-  }
-
-  //----------
-
-  virtual bool hide() {
-    //MIP_PRINT;
-    MEditorIsOpen = false;
-    MTimer->stop();
-    MWindow->close();
+  virtual bool setSize(uint32_t AWidth, uint32_t AHeight) {
+    MWidth = AWidth;
+    MHeight = AHeight;
+    MWindow->setWindowSize(AWidth,AHeight);
     return true;
   }
 
   //----------
 
   virtual bool setScale(double AScale) {
-    //MIP_Print("%.2f\n",AScale);
     MScale = AScale;
-    //MWindow->setScale(AScale);
-    return true;
-  }
-
-  //----------
-
-  virtual bool getSize(uint32_t *width, uint32_t *height) {
-    //MIP_Print("-> %i,%i\n",MWidth,MHeight);
-    *width = MWidth;
-    *height = MHeight;
     return true;
   }
 
   //----------
 
   virtual bool canResize() {
-    //MIP_Print("-> %s\n",MCanResize?"true":"false");
     return MCanResize;
   }
 
   //----------
 
-  virtual bool adjustSize(uint32_t *width, uint32_t *height) {
-    //MIP_Print("*width:%i *height:%i\n",*width,*height);
-    //*width = *width & 0xffc0;
-    //*height = *height & 0xffc0;
+  virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
+    //hints->preseve_aspect_ratio = false;
+    //hints->aspect_ratio_width = MWidth;
+    //hints->aspect_ratio_height = MHeight;
+    return false;
+  }
+
+  //----------
+
+  virtual bool adjustSize(uint32_t* AWidth, uint32_t* AHeight) {
+    //*AWidth = MWidth;
+    //*AHeight = MHeight;
+    //return true;
+    return false;
+  }
+
+  //----------
+
+  virtual bool setParent(const clap_window_t *window) {
+    MParentWindow = window->x11;
+    MWindow->reparent(MParentWindow);
     return true;
   }
 
   //----------
 
-  virtual bool setSize(uint32_t width, uint32_t height) {
-    //MIP_Print("%i,%i\n",width,height);
-    MWidth = width;
-    MHeight = height;
-    MWindow->setWindowSize(width,height);
+  virtual bool setTransient(const clap_window_t *window) {
+    MTransientWindow = window->x11;
+    return true;
+  }
+
+  //----------
+
+  virtual void suggestTitle(const char *title) {
+    MWindowTitle = title;
+  }
+
+  //----------
+
+  virtual bool show() {
+    //MWindow->setOwnerWindow(MWindow);
+    MWindow->open();
+    MTimer->start(MIP_EDITOR_TIMER_RATE);
+    MIsOpen = true;
+    return true;
+  }
+
+  //----------
+
+  virtual bool hide() {
+    MIsOpen = false;
+    MTimer->stop();
+    MWindow->close();
     return true;
   }
 
 //------------------------------
 public:
 //------------------------------
-
-  MIP_Window* getWindow() {
-    return MWindow;
-  }
-
-  //----------
 
   void setCanResize(bool AResize=true) {
     MCanResize = AResize;
@@ -231,63 +197,84 @@ public:
   //----------
 
   void connect(MIP_Widget* AWidget, MIP_Parameter* AParameter) {
-    int32_t index = AParameter->getIndex();
-    if (index >= 0) {
-      AWidget->setParamIndex(index);
-      MParamToWidget[index] = AWidget;
-      AWidget->on_widget_connect(AParameter);
-    }
+    uint32_t index = AParameter->getId();
+    //AWidget->setParamIndex(index);
+    MParamToWidget[index] = AWidget;
+    AWidget->on_widget_connect(AParameter);
   }
 
   //----------
 
   void connect(MIP_Widget* AWidget, int32_t AParamIndex) {
-    AWidget->setParamIndex(AParamIndex);
+    //AWidget->setParamIndex(AParamIndex);
     MParamToWidget[AParamIndex] = AWidget;
     clap_param_info_t info;
     if (MPlugin->params_get_info(AParamIndex,&info)) {
       MIP_Parameter* parameter = (MIP_Parameter*)info.cookie;
       AWidget->on_widget_connect(parameter);
     }
-    //const char* name = info.name;
-    //float def_value = info.default_value;
-    //AWidget->setDefaultValue(def_value);
-    //AWidget->setValue(def_value);
-    //AWidget->setParamName(name);
   }
 
   //----------
 
-  void setParameterValue(uint32_t AIndex, float AValue) {
+  void setParameterValue(uint32_t AIndex, double AValue, bool ARedraw=false) {
+    float value = AValue;
     MIP_Widget* widget = MParamToWidget[AIndex];
     if (widget) {
-      widget->setValue(AValue);
+      MIP_Parameter* param = widget->getParameter();
+      if (param) value = param->normalizeValue(value);
+      widget->setValue(value);
+      if (ARedraw) widget->redraw();
     }
+  }
+
+  //----------
+
+  void setParameterValues(MIP_ParameterManager* AParameters, bool ARedraw=false) {
+    for (uint32_t i=0; i<AParameters->parameterCount(); i++) {
+      MIP_Parameter* param = AParameters->getParameter(i);
+      double value = param->getValue();
+      //setParameterValue(i,value,ARedraw);
+      MIP_Widget* widget = MParamToWidget[i];
+      if (widget) {
+        value = param->normalizeValue(value);
+        widget->setValue(value);
+        if (ARedraw) widget->redraw();
+      }
+    }
+  }
+
+  //----------
+
+  MIP_Window* getWindow() {
+    return MWindow;
   }
 
 //------------------------------
 private: // window listener
 //------------------------------
 
-  // [gui]
+  // gui -> host
 
-  void on_updateWidgetFromWindow(MIP_Widget* AWidget) override {
-    int32_t index = AWidget->getParamIndex();
+  void on_window_listener_updateWidget(MIP_Widget* AWidget) override {
+    int32_t index = -1;
+    MIP_Parameter* param = AWidget->getParameter();
+    if (param) index = param->getId();
     if (index >= 0) {
-      float value = AWidget->getValue();
-      if (MListener) MListener->on_updateParameterFromEditor(index,value);
+      double value = AWidget->getValue();
+      value = param->denormalizeValue(value);
+      if (MListener) MListener->on_editor_listener_parameter(index,value);
     }
   }
 
   //----------
 
-  void on_resizeFromWindow(uint32_t AWidth, uint32_t AHeight) override {
-    //MIP_Print("%i,%i\n",AWidth,AHeight);
-    if (MListener) MListener->on_resizeFromEditor(AWidth,AHeight);
+  void on_window_listener_resize(uint32_t AWidth, uint32_t AHeight) override {
+    if (MListener) MListener->on_editor_listener_resize(AWidth,AHeight);
   }
 
 //------------------------------
-protected: // timer listener
+public: // timer listener
 //------------------------------
 
   // [timer]
@@ -296,7 +283,7 @@ protected: // timer listener
     clearDirtyWidgets();
     flushGuiParams();
     flushGuiMods();
-    if (MEditorIsOpen) {
+    if (MIsOpen) {
       redrawDirtyWidgets();
     }
   }
@@ -305,36 +292,16 @@ protected: // timer listener
 public:
 //------------------------------
 
-  // [audio thread]
+  // host -> gui
+  // called from MIP_Plugin.on_event_listener_parameter
 
-  void updateParameterInProcess(uint32_t AIndex, float AValue) {
-    if (MWindow /*&& MEditorIsOpen*/) {
-      MGuiParamVal[AIndex] = AValue;
-      queueGuiParam(AIndex);
-    }
-  }
-
-  //----------
-
-  // [audio thread]
-  // called from handle_param_mod()
-  // todo: check if parameter is modulatable?
-
-  void updateModulationInProcess(uint32_t AIndex, float AValue) {
-    if (MWindow /*&& MEditorIsOpen*/) {
-      MGuiParamMod[AIndex] = AValue;
-      queueGuiMod(AIndex);
-      //MParamModulated[AIndex] = true; // or state? mono/poly/off
-    }
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-  // called from updateParameterFromHost()
-
-  void queueGuiParam(uint32_t AIndex) {
+  void queueGuiParam(uint32_t AIndex, double AValue) {
+    double value = AValue;
+    MIP_Widget* widget = MParamToWidget[AIndex];
+    MIP_Assert(widget);
+    MIP_Parameter* param = widget->getParameter();
+    if (param) value = param->normalizeValue(value);
+    MGuiParamVal[AIndex] = value;
     MGuiParamQueue.write(AIndex);
   }
 
@@ -343,10 +310,10 @@ public:
   // [gui]
 
   void flushGuiParams() {
-    if (MEditorIsOpen && MWindow) {
+    if (MIsOpen && MWindow) {
       uint32_t index = 0;
       while (MGuiParamQueue.read(&index)) {
-        float value = MGuiParamVal[index];
+        double value = MGuiParamVal[index];
         MIP_Widget* widget = MParamToWidget[index];
         if (widget) {
           if (widget->getValue() != value)
@@ -361,17 +328,18 @@ public:
 
   //----------
 
-  void queueGuiMod(uint32_t AIndex) {
+  void queueGuiMod(uint32_t AIndex, double AValue) {
+    MGuiParamMod[AIndex] = AValue;
     MGuiModQueue.write(AIndex);
   }
 
   //----------
 
   void flushGuiMods() {
-    if (MEditorIsOpen) { // && MWindow?
+    if (MIsOpen) { // && MWindow?
       uint32_t index = 0;
       while (MGuiModQueue.read(&index)) {
-        float valuemod = MGuiParamMod[index];
+        double valuemod = MGuiParamMod[index];
         MIP_Widget* widget = MParamToWidget[index];
         if (widget) {
           if (widget->getModValue() != valuemod)
@@ -393,11 +361,8 @@ public:
 
   //----------
 
-  // called from on_timerCallback
-
-  //void redrawChangedParameters() {
   void redrawDirtyWidgets() {
-    if (MEditorIsOpen && MWindow) {
+    if (MIsOpen && MWindow) {
       for (uint32_t i=0; i<MDirtyWidgets.size(); i++) {
         MIP_Widget* widget = MDirtyWidgets[i];
         MIP_FRect rect = widget->getRect();
@@ -408,8 +373,6 @@ public:
   }
 
 };
-
-#undef EVENTS_PER_BLOCK
 
 //----------------------------------------------------------------------
 #endif

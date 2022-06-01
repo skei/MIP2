@@ -96,15 +96,9 @@ public:
         osc_panel->appendWidget(sin_knob);
         connect(sin_knob,PAR_OSC1_SIN);
 
-//        // noise
-//
-//        MIP_Knob2Widget* noise_knob = new MIP_Knob2Widget( MIP_FRect(0,92,50,82),"Noise");
-//        osc_panel->appendWidget(noise_knob);
-//        connect(noise_knob,PAR_OSC1_NOISE);
-
         // oct
 
-        MIP_Knob2Widget* osc_oct_knob = new MIP_Knob2Widget( MIP_FRect(60,92,50,82),"Oct");
+        MIP_Knob2Widget* osc_oct_knob = new MIP_Knob2Widget( MIP_FRect(0,92,50,82),"Oct");
         osc_oct_knob->getKnobWidget()->setSnap(true);
         osc_oct_knob->getKnobWidget()->setSnapPos(0.5);
         osc_oct_knob->getKnobWidget()->setSnapDist(0.05);
@@ -114,7 +108,7 @@ public:
 
         // semi
 
-        MIP_Knob2Widget* osc_semi_knob = new MIP_Knob2Widget( MIP_FRect(120,92,50,82),"Semi");
+        MIP_Knob2Widget* osc_semi_knob = new MIP_Knob2Widget( MIP_FRect(60,92,50,82),"Semi");
         osc_semi_knob->getKnobWidget()->setSnap(true);
         osc_semi_knob->getKnobWidget()->setSnapPos(0.5);
         osc_semi_knob->getKnobWidget()->setSnapDist(0.05);
@@ -124,7 +118,7 @@ public:
 
         // cent
 
-        MIP_Knob2Widget* osc_cent_knob = new MIP_Knob2Widget( MIP_FRect(180,92,50,82),"Cent");
+        MIP_Knob2Widget* osc_cent_knob = new MIP_Knob2Widget( MIP_FRect(120,92,50,82),"Cent");
         osc_cent_knob->getKnobWidget()->setSnap(true);
         osc_cent_knob->getKnobWidget()->setSnapPos(0.5);
         osc_cent_knob->getKnobWidget()->setSnapDist(0.05);
@@ -164,33 +158,39 @@ public:
 
         // oct
 
-        MIP_Knob2Widget* flt_oct_knob = new MIP_Knob2Widget( MIP_FRect(0,92,50,82),"Oct");
-        flt_oct_knob->getKnobWidget()->setSnap(true);
-        flt_oct_knob->getKnobWidget()->setSnapPos(0.5);
-        flt_oct_knob->getKnobWidget()->setSnapDist(0.05);
-        flt_oct_knob->getKnobWidget()->setBipolar(true);
-        res_panel->appendWidget(flt_oct_knob);
-        connect(flt_oct_knob,PAR_RES1_OCT);
+        MIP_Knob2Widget* res_oct_knob = new MIP_Knob2Widget( MIP_FRect(0,92,50,82),"Oct");
+        res_oct_knob->getKnobWidget()->setSnap(true);
+        res_oct_knob->getKnobWidget()->setSnapPos(0.5);
+        res_oct_knob->getKnobWidget()->setSnapDist(0.05);
+        res_oct_knob->getKnobWidget()->setBipolar(true);
+        res_panel->appendWidget(res_oct_knob);
+        connect(res_oct_knob,PAR_RES1_OCT);
 
         // semi
 
-        MIP_Knob2Widget* flt_semi_knob = new MIP_Knob2Widget( MIP_FRect(60,92,50,82),"Semi");
-        flt_semi_knob->getKnobWidget()->setSnap(true);
-        flt_semi_knob->getKnobWidget()->setSnapPos(0.5);
-        flt_semi_knob->getKnobWidget()->setSnapDist(0.05);
-        flt_semi_knob->getKnobWidget()->setBipolar(true);
-        res_panel->appendWidget(flt_semi_knob);
-        connect(flt_semi_knob,PAR_RES1_SEMI);
+        MIP_Knob2Widget* res_semi_knob = new MIP_Knob2Widget( MIP_FRect(60,92,50,82),"Semi");
+        res_semi_knob->getKnobWidget()->setSnap(true);
+        res_semi_knob->getKnobWidget()->setSnapPos(0.5);
+        res_semi_knob->getKnobWidget()->setSnapDist(0.05);
+        res_semi_knob->getKnobWidget()->setBipolar(true);
+        res_panel->appendWidget(res_semi_knob);
+        connect(res_semi_knob,PAR_RES1_SEMI);
 
         // cent
 
-        MIP_Knob2Widget* flt_cent_knob = new MIP_Knob2Widget( MIP_FRect(120,92,50,82),"Cent");
-        flt_cent_knob->getKnobWidget()->setSnap(true);
-        flt_cent_knob->getKnobWidget()->setSnapPos(0.5);
-        flt_cent_knob->getKnobWidget()->setSnapDist(0.05);
-        flt_cent_knob->getKnobWidget()->setBipolar(true);
-        res_panel->appendWidget(flt_cent_knob);
-        connect(flt_cent_knob,PAR_RES1_CENT);
+        MIP_Knob2Widget* res_cent_knob = new MIP_Knob2Widget( MIP_FRect(120,92,50,82),"Cent");
+        res_cent_knob->getKnobWidget()->setSnap(true);
+        res_cent_knob->getKnobWidget()->setSnapPos(0.5);
+        res_cent_knob->getKnobWidget()->setSnapDist(0.05);
+        res_cent_knob->getKnobWidget()->setBipolar(true);
+        res_panel->appendWidget(res_cent_knob);
+        connect(res_cent_knob,PAR_RES1_CENT);
+
+        // rough
+
+        MIP_Knob2Widget* res_rough_knob = new MIP_Knob2Widget( MIP_FRect(180,92,50,82),"Rough");
+        res_panel->appendWidget(res_rough_knob);
+        connect(res_rough_knob,PAR_RES1_ROUGH);
 
       // ----- flt1 -----
 

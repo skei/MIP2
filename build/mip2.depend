@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1653255898 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../source/plugins/test_synth1.cpp"
+1653725504 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/test/test_widget.cpp"
 
 1643950248 /DISKS/sda2/code/git/MIP2/source/test/test.cpp
 	"mip.h"
@@ -732,7 +732,7 @@
 
 1643479691 /DISKS/sda2/code/git/MIP2/include/plugin/wrapper/mip_vst3_wrapper.h
 
-1653332585 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
+1653725833 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"base/types/mip_queue.h"
@@ -794,7 +794,7 @@
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_painter.h"
 
-1653005828 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1653725681 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"base/types/mip_array.h"
 	"base/types/mip_point.h"
@@ -872,7 +872,7 @@
 1649695373 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_button_widget.h
 	"gui/widgets/mip_text_widget.h"
 
-1652303832 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_widget.h
+1653725925 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_widget.h
 	"gui/widgets/mip_panel_widget.h"
 
 1650034807 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_cached_widget.h
@@ -890,10 +890,10 @@
 1649450447 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_curve_widget.h
 	"gui/widgets/mip_drag_value_widget.h"
 
-1653240885 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_drag_value_widget.h
+1653727094 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_drag_value_widget.h
 	"gui/widgets/mip_value_widget.h"
 
-1653345648 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_value_widget.h
+1653688573 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_value_widget.h
 	"base/utils/mip_convert.h"
 	"gui/widgets/mip_text_widget.h"
 
@@ -906,7 +906,7 @@
 1649853586 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_dual_slider_widget.h
 	"gui/widgets/mip_slider_widget.h"
 
-1649797107 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_slider_widget.h
+1653727380 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_slider_widget.h
 	"gui/widgets/mip_drag_value_widget.h"
 
 1649983120 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_graph_widget.h
@@ -928,12 +928,12 @@
 1646955750 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_keyboard_widget.h
 	"gui/mip_widget.h"
 
-1652304126 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob2_widget.h
+1653679013 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob2_widget.h
 	"gui/mip_widget.h"
 	"gui/widgets/mip_knob_widget.h"
 	"gui/widgets/mip_text_widget.h"
 
-1650541928 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob_widget.h
+1653727168 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob_widget.h
 	"mip.h"
 	"gui/mip_painter.h"
 	"gui/mip_widget.h"
@@ -1571,7 +1571,7 @@
 	"mip.h"
 	"plugin/mip_plugin.h"
 
-1653351303 /DISKS/sda2/code/git/MIP2/include/plugin/mip_parameter.h
+1653688307 /DISKS/sda2/code/git/MIP2/include/plugin/mip_parameter.h
 	"mip.h"
 	"base/types/mip_array.h"
 	"audio/filters//mip_rc_filter.h"
@@ -1664,7 +1664,7 @@
 
 1648646406 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage/sa_botage_logo.h
 
-1653587350 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1.cpp
+1653678771 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_voice_manager.h"
@@ -1853,7 +1853,7 @@
 1652743485 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage/sa_botage_widgets.h
 	"gui/mip_widgets.h"
 
-1653486150 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1/test_synth1_voice.h
+1653673134 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1/test_synth1_voice.h
 	"mip.h"
 	"audio/mip_audio_math.h"
 	"audio/filters/mip_rc_filter.h"
@@ -1864,7 +1864,7 @@
 	"audio/waveforms/mip_polyblep_waveform.h"
 	"plugin/mip_voice_manager.h"
 
-1653587326 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1/test_synth1_editor.h
+1653675829 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1/test_synth1_editor.h
 	"mip.h"
 	"gui/mip_widgets.h"
 	"plugin/mip_editor.h"
@@ -1884,4 +1884,9 @@
 1653398119 /DISKS/sda2/code/git/MIP2/include/audio/processing/mip_delay.h
 	"base/utils/mip_math.h"
 	"audio/mip_audio_math.h"
+
+1653727492 /DISKS/sda2/code/git/MIP2/source/test/test_widget.cpp
+	"plugin/mip_plugin.h"
+	"plugin/mip_editor.h"
+	"gui/mip_widgets.h"
 

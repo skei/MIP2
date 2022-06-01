@@ -28,6 +28,7 @@
 #include "entry.h"
 #include "plugin-factory.h"
 #include "plugin-invalidation.h"
+#include "plugin-features.h"
 
 #include "plugin.h"
 #include "host.h"
@@ -45,7 +46,6 @@
 #include "ext/posix-fd-support.h"
 #include "ext/note-name.h"
 #include "ext/note-ports.h"
-#include "ext/event-filter.h"
 #include "ext/thread-pool.h"
 #include "ext/event-registry.h"
 #include "ext/tail.h"

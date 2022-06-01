@@ -14,15 +14,15 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_Host {
+class MIP_Host
 : public MIP_ClapHost {
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Host()
-  : MIP_ClapHost() {
+  MIP_Host(const clap_host_t* AHost)
+  : MIP_ClapHost(AHost) {
   }
 
   //----------

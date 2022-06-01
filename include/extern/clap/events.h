@@ -12,7 +12,7 @@ extern "C" {
 // must be the first attribute of the event
 typedef struct clap_event_header {
    uint32_t size;     // event size including this header, eg: sizeof (clap_event_note)
-   uint32_t time;     // time at which the event happens
+   uint32_t time;     // sample offset within the buffer for this event
    uint16_t space_id; // event space, see clap_host_event_registry
    uint16_t type;     // event type
    uint32_t flags;    // see clap_event_flags
@@ -22,10 +22,11 @@ typedef struct clap_event_header {
 static const CLAP_CONSTEXPR uint16_t CLAP_CORE_EVENT_SPACE_ID = 0;
 
 enum clap_event_flags {
-   // indicate a live momentary event
+   // Indicate a live user event, for example a user turning a phisical knob
+   // or playing a physical key.
    CLAP_EVENT_IS_LIVE = 1 << 0,
 
-   // indicate that the event should not be recorded.
+   // Indicate that the event should not be recorded.
    // For example this is useful when a parameter changes because of a MIDI CC,
    // because if the host records both the MIDI CC automation and the parameter
    // automation there will be a conflict.
@@ -46,14 +47,19 @@ enum clap_event_flags {
 // or implement clap_plugin_event_filter and reject raw midi and midi2 events.
 enum {
    // NOTE_ON and NOTE_OFF represents a key pressed and key released event.
+   // A NOTE_ON with a velocity of 0 is valid and should not be interpreted as a NOTE_OFF.
    //
    // NOTE_CHOKE is meant to choke the voice(s), like in a drum machine when a closed hihat
-   // chokes an open hihat.
+   // chokes an open hihat. This event can be sent by the host to the plugin. Here two use case:
+   // - a plugin is inside a drum pad in Bitwig Studio's drum machine, and this pad is choked by
+   //   another one
+   // - the user double clicks the DAW's stop button in the transport which then stops the sound on
+   //   every tracks
    //
-   // NOTE_END is sent by the plugin to the host. The port, channel and key are those given
+   // NOTE_END is sent by the plugin to the host. The port, channel, key and note_id are those given
    // by the host in the NOTE_ON event. In other words, this event is matched against the
-   // plugin's note input port. NOTE_END is only requiered if the plugin marked at least
-   // one of its parameters as polyphonic.
+   // plugin's note input port.
+   // NOTE_END is useful to help the host to match the plugin's voice life time.
    //
    // When using polyphonic modulations, the host has to allocate and release voices for its
    // polyphonic modulator. Yet only the plugin effectively knows when the host should terminate
@@ -96,8 +102,10 @@ enum {
    CLAP_EVENT_PARAM_VALUE,
    CLAP_EVENT_PARAM_MOD,
 
-   // uses clap_event_param_gesture
-   // Indicates that a parameter gesture begun or ended.
+   // Indicates that the user started or finished to adjust a knob.
+   // This is not mandatory to wrap parameter changes with gesture events, but this improves a lot
+   // the user experience when recording automation or overriding automation playback.
+   // Uses clap_event_param_gesture.
    CLAP_EVENT_PARAM_GESTURE_BEGIN,
    CLAP_EVENT_PARAM_GESTURE_END,
 
@@ -108,16 +116,14 @@ enum {
 };
 typedef int32_t clap_event_type;
 
-/**
- * Note on, off, end and choke events.
- * In the case of note choke or end events:
- * - the velocity is ignored.
- * - key and channel are used to match active notes, a value of -1 matches all.
- */
+// Note on, off, end and choke events.
+// In the case of note choke or end events:
+// - the velocity is ignored.
+// - key and channel are used to match active notes, a value of -1 matches all.
 typedef struct clap_event_note {
    clap_event_header_t header;
 
-   int32_t note_id;  // -1 if unspecified, otherwise >0
+   int32_t note_id; // -1 if unspecified, otherwise >=0
    int16_t port_index;
    int16_t channel;  // 0..15
    int16_t key;      // 0..127
@@ -226,8 +232,8 @@ typedef struct clap_event_transport {
    clap_beattime bar_start;  // start pos of the current bar
    int32_t       bar_number; // bar at song pos 0 has the number 0
 
-   int16_t tsig_num;   // time signature numerator
-   int16_t tsig_denom; // time signature denominator
+   uint16_t tsig_num;   // time signature numerator
+   uint16_t tsig_denom; // time signature denominator
 } clap_event_transport_t;
 
 typedef struct clap_event_midi {
@@ -260,7 +266,7 @@ typedef struct clap_input_events {
 
    uint32_t (*size)(const struct clap_input_events *list);
 
-   // Don't free the return event, it belongs to the list
+   // Don't free the returned event, it belongs to the list
    const clap_event_header_t *(*get)(const struct clap_input_events *list, uint32_t index);
 } clap_input_events_t;
 

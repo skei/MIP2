@@ -2,6 +2,10 @@
 #define mip_debug_print_included
 //----------------------------------------------------------------------
 
+//#define MIP_DEBUG_PRINT_THREAD
+//#define MIP_DEBUG_PRINT_TIME
+//#define MIP_DEBUG_PRINT_SOCKET
+
 /*
   see the socket output by using this in a console:
   nc -U -l -k /tmp/mip.socket

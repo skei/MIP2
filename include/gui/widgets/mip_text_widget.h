@@ -56,11 +56,15 @@ public:
   //----------
 
   virtual void drawText(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
+    MIP_Parameter* param = getParameter();
     MIP_FRect rect = getRect();
     rect.shrink(MTextOffset);
     if (MDrawText) {
       const char* txt = MText;
-      if (MDrawParamName && (MParamIndex >= 0)) txt = MParamName;
+      //if (MDrawParamName && (MParamIndex >= 0)) txt = MParamName;
+      if (param && MDrawParamName) {
+        txt = param->getName();
+      }
       APainter->setFontSize(MTextSize);
       APainter->setColor(MTextColor);
       APainter->drawText(rect,txt,MTextAlignment);

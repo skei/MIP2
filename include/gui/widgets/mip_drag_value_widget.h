@@ -27,8 +27,8 @@ private:
   uint32_t    MSnapMode       = 1;        // 0: always snap, 1: shift disables snapping
 
   bool        MQuantize       = false;
-  uint32_t    MQuantizeSteps  = 0;
-  uint32_t    MQuantizeMode   = 1;
+//  uint32_t    MQuantizeSteps  = 0;
+//  uint32_t    MQuantizeMode   = 1;
 
 //------------------------------
 protected:
@@ -86,8 +86,8 @@ public:
   virtual void      setSnapMode(uint32_t AMode)           { MSnapMode = AMode; }
 
   virtual void      setQuantize(bool AQuantize=true)      { MQuantize = AQuantize; }
-  virtual void      setQuantizeSteps(uint32_t ASteps)     { MQuantizeSteps = ASteps; }
-  virtual void      setQuantizeMode(uint32_t AMode)       { MQuantizeMode = AMode; }
+//  virtual void      setQuantizeSteps(uint32_t ASteps)     { MQuantizeSteps = ASteps; }
+//  virtual void      setQuantizeMode(uint32_t AMode)       { MQuantizeMode = AMode; }
 
   //----------
 
@@ -97,8 +97,8 @@ public:
   virtual uint32_t  getSnapMode()                         { return MSnapMode; }
 
   virtual bool      getQuantize()                         { return MQuantize; }
-  virtual uint32_t  getQuantizeSteps()                    { return MQuantizeSteps; }
-  virtual uint32_t  getQuantizeMode()                     { return MQuantizeMode; }
+//  virtual uint32_t  getQuantizeSteps()                    { return MQuantizeSteps; }
+//  virtual uint32_t  getQuantizeMode()                     { return MQuantizeMode; }
 
   //----------
 
@@ -145,6 +145,15 @@ protected:
   //----------
 
   float calcValue(float value, float deltax, float deltay, bool shift) {
+
+    //bool stepped = false;
+    int32_t steps = 0;
+    //MIP_Parameter* param = getParameter();
+    //if (param) {
+    //  stepped = (param && param->info.flags & CLAP_PARAM_IS_STEPPED);
+    //  steps = param->info.max_value - param->info.min_value + 1;
+    //}
+
     float sens = MDragSensitivity;
     if (shift) sens *= MDragSensitivity2;
     switch (MDragDirection) {
@@ -155,7 +164,11 @@ protected:
     }
     MDragValue = MIP_Clamp(value,0.0f, 1.0f);
     if (MSnap && !shift) value = snapValue(value);
-    if (MQuantize && !shift) value = MIP_Quantize(value,MQuantizeSteps);
+
+
+    //if (MQuantize && !shift) value = MIP_Quantize(value,MQuantizeSteps);
+    if (MQuantize && !shift) value = MIP_Quantize(value,steps);
+
     value = MIP_Clamp(value,0.0f, 1.0f);
     return value;
   }

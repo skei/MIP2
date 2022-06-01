@@ -20,14 +20,18 @@
 #define SMOOTHER_FACTOR (1.0 / 250.0)
 
 struct myDelayFx {
-  MIP_RcFilter<float> flt = {};
+
+  MIP_RcFilter<float> flt   = {};
+  float               rough = 0.0;
+
   float process(float x) {
+    float r = MIP_Random();
+    if (r >= rough) x = -x;
     return flt.process(x);
   }
 };
 
 typedef MIP_InterpolatedDelay<4096,myDelayFx> myDelay;
-
 
 //----------------------------------------------------------------------
 //
@@ -41,59 +45,65 @@ class myVoice {
 private:
 //------------------------------
 
-  MIP_VoiceContext*   context           = nullptr;
+  MIP_VoiceContext*   context             = nullptr;
 
-  MIP_Oscillator2     osc1              = {};
-  MIP_SvfFilter       flt1              = {};
-  myDelay             res1              = {};
-  MIP_Envelope        amp_env           = {};
+  MIP_Oscillator2     osc1                = {};
+  MIP_SvfFilter       flt1                = {};
+  MIP_SvfFilter       nsh1                = {};
+  myDelay             res1                = {};
+  MIP_Envelope        amp_env             = {};
 
-  MIP_RcFilter<float> flt1_freq_smoother = {};
-  MIP_RcFilter<float> flt1_res_smoother  = {};
-  MIP_RcFilter<float> vol_smoother      = {};
+  MIP_RcFilter<float> flt1_freq_smoother  = {};
+  MIP_RcFilter<float> flt1_res_smoother   = {};
+  MIP_RcFilter<float> vol_smoother        = {};
 
-  int32_t             note_key          = -1;
-  float               note_onvel        = 0.0;
-  float               note_offvel       = 0.0;
-  float               note_vol          = 0.0;
-  float               note_pan          = 0.0;
-  float               note_tuning       = 0.0;
-  float               note_vibr         = 0.0;
-  float               note_expr         = 0.0;
-  float               note_bright       = 0.0;
-  float               note_press        = 0.0;
-  float               hz                = 0.0;  // note hz
+  int32_t             note_key            = -1;
+  float               note_onvel          = 0.0;
+  float               note_offvel         = 0.0;
+  float               note_vol            = 0.0;
+  float               note_pan            = 0.0;
+  float               note_tuning         = 0.0;
+  float               note_vibr           = 0.0;
+  float               note_expr           = 0.0;
+  float               note_bright         = 0.0;
+  float               note_press          = 0.0;
+  float               hz                  = 0.0;  // note hz
 
   float               p_osc1_pulse        = 0.0;
   float               p_osc1_width        = 0.0;
   float               p_osc1_tri          = 0.0;
   float               p_osc1_sin          = 0.0;
-//  float               p_osc1_noise        = 0.0;
+  float               p_osc1_oct          = 0.5;
+  float               p_osc1_semi         = 0.5;
   float               p_osc1_cent         = 0.5;
-  float               p_flt1_freq         = 0.5;
-  float               p_flt1_res          = 0.5;
+
   float               p_res1_noise        = 0.0;
   float               p_res1_nshape       = 0.0;
   float               p_res1_fb           = 0.5;
   float               p_res1_damp         = 0.0;
+  float               p_res1_oct          = 0.5;
   float               p_res1_semi         = 0.5;
+  float               p_res1_cent         = 0.5;
+  float               p_res1_rough        = 0.0;
+
+  float               p_flt1_freq         = 0.5;
+  float               p_flt1_res          = 0.5;
 
   float               p_osc1_out          = 0.0;
   float               p_res1_out          = 0.0;
 
-  float               osc1_pulse_mod     = 0.0;
-  float               osc1_width_mod     = 0.0;
-  float               osc1_tri_mod       = 0.0;
-  float               osc1_sin_mod       = 0.0;
-  float               flt1_freq_mod      = 0.0;
-  float               flt1_res_mod       = 0.0;
+  float               osc1_pulse_mod      = 0.0;
+  float               osc1_width_mod      = 0.0;
+  float               osc1_tri_mod        = 0.0;
+  float               osc1_sin_mod        = 0.0;
+  float               flt1_freq_mod       = 0.0;
+  float               flt1_res_mod        = 0.0;
 
-  float               pitch_mod         = 0.0;
+  float               pitch_mod           = 0.0;
 
-  //float               fb_mod            = 0.5;
-  //float               fb_tune_mod       = 0.5;
-  //float               fb_damp_mod       = 0.0;
-
+  //float               fb_mod              = 0.5;
+  //float               fb_tune_mod         = 0.5;
+  //float               fb_damp_mod         = 0.0;
 
 //------------------------------
 public:
@@ -205,13 +215,17 @@ public:
       case PAR_OSC1_WIDTH:  p_osc1_width = value;             break;
       case PAR_OSC1_TRI:    p_osc1_tri = value;               break;
       case PAR_OSC1_SIN:    p_osc1_sin = value;               break;
-//      case PAR_OSC1_NOISE:  p_osc1_noise = value;             break;
+      case PAR_OSC1_OCT:    p_osc1_oct = value;               break;
+      case PAR_OSC1_SEMI:   p_osc1_semi = value;              break;
       case PAR_OSC1_CENT:   p_osc1_cent = value;              break;
       case PAR_RES1_NOISE:  p_res1_noise = value;             break;
       case PAR_RES1_NSHAPE: p_res1_nshape = value;            break;
       case PAR_RES1_FB:     p_res1_fb = value;                break;
       case PAR_RES1_DAMP:   p_res1_damp = value;              break;
+      case PAR_RES1_OCT:    p_res1_oct = value;               break;
       case PAR_RES1_SEMI:   p_res1_semi = value;              break;
+      case PAR_RES1_CENT:   p_res1_cent = value;              break;
+      case PAR_RES1_ROUGH:  p_res1_rough = value;             break;
       case PAR_FLT1_FREQ:   p_flt1_freq = value;              break;
       case PAR_FLT1_RES:    p_flt1_res = value;               break;
       case PAR_ENV1_ATT:    amp_env.setAttack(value*5);       break;
@@ -241,14 +255,14 @@ public:
 
       // pitch
 
-      float p;
+      //float o1_pitch = (p_osc1_cent * 2.0) - 1.0;
+      //o1_pitch += (p_osc1_oct * 48.0) + (p_osc1_semi) + pitch_mod;
 
-      //p = (p_osc1_oct * 48) + (p_osc1_semi * 12) + p_osc1_cent;
-      p = p_osc1_cent;
-      //float osc_pitch = (p_osc1_cent * 2.0) - 1.0;
-      float osc_pitch = (p * 2.0) - 1.0;
-      osc_pitch += pitch_mod;
-      float osc_hz = MIP_NoteToHz(note_key + note_tuning + osc_pitch);
+      float o1_pitch  = ((p_osc1_oct  * 2.0 - 1.0) * 48.0)
+                      + ((p_osc1_semi * 2.0 - 1.0) * 12.0)
+                      +  (p_osc1_cent * 2.0 - 1.0);
+      float osc_hz = MIP_NoteToHz(note_key + note_tuning + o1_pitch);
+      osc_hz = MIP_Clamp(osc_hz,20,10000);
 
       // osc
 
@@ -265,16 +279,14 @@ public:
 
       // res
 
-      //float res_pitch = p_res1_semi;
-      //res_pitch = (res_pitch * 2.0) - 1.0;
-      //res_pitch = powf(2,res_pitch);
-
-      p = p_res1_semi;
-      //float res_pitch = (p_res1_semi * 2.0) - 1.0;
-      float res_pitch = (p * 2.0) - 1.0;
-      float res_hz = MIP_NoteToHz(note_key + note_tuning + res_pitch);
+      float r1_pitch  = ((p_res1_oct  * 2.0 - 1.0) * 48.0)
+                      + ((p_res1_semi * 2.0 - 1.0) * 12.0)
+                      +  (p_res1_cent * 2.0 - 1.0);
+      float res_hz = MIP_NoteToHz(note_key + note_tuning + r1_pitch);
+      res_hz = MIP_Clamp(res_hz,1,20000);
 
       float delay = (context->samplerate / res_hz);
+      delay *= 0.5;
       //delay /= res_hz;
 
       float fb = p_res1_fb;
@@ -287,6 +299,7 @@ public:
       damp = 1.0 - damp;
 
       res1.getFeedbackFX()->flt.setWeight(damp);
+      res1.getFeedbackFX()->rough = p_res1_rough;
 
       // buffer
 
@@ -335,13 +348,21 @@ public:
         // res
 
         // noise
+
+        nsh1.setMode(MIP_SVF_LP);
+        float ns = 1.0 - p_res1_nshape;
+        nsh1.setFreq(ns * ns);
+        nsh1.setBW(1);
+
         float rnd = MIP_RandomSigned();
-        float noise = (rnd * p_res1_noise) + (osc * (1.0 - p_res1_noise));
+        rnd = nsh1.process(rnd);
+
+        float noisemix = (rnd * p_res1_noise) + (osc * (1.0 - p_res1_noise));
         //res = (noise * p_res1_noise) + (res * (1.0 - p_res1_noise));
 
         float res = 0.0;
         if (res1.hasWrapped()) res = res1.process(0,fb,delay);
-        else res = res1.process(noise,fb,delay);
+        else res = res1.process(noisemix,fb,delay);
 
         // out
         float out = (osc * p_osc1_out) + (res * p_res1_out);

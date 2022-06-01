@@ -68,6 +68,7 @@ public:
 
   virtual void drawKnob(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
     if (MDrawKnob) {
+
       float     value             = getValue();
       float     modvalue          = getModValue();
       float     S                 = (float)getRect().w;
@@ -76,10 +77,18 @@ public:
       float     step_end          = S / 2.0f + 1.0f;
       float     needle_length     = S * MNeedleLength;
       float     needle_thickness  = S * MNeedleThickness;
-      if (MParameter) {
-        value     = MParameter->to01(value);
-        modvalue  = MParameter->to01(modvalue);
-      }
+
+      bool stepped = false;
+      int32_t steps = 0;
+
+      //if (MParameter) {
+      //  value     = MParameter->to01(value);
+      //  modvalue  = MParameter->to01(modvalue);
+      //
+      //  stepped = (MParameter->info.flags & CLAP_PARAM_IS_STEPPED);
+      //  steps = MParameter->info.max_value - MParameter->info.min_value + 1;
+      //
+      //}
       MIP_FRect r = getRect();
       MIP_FRect rr = r;
       r.shrink((arc_thickness / 2.0f) + 1.0f);
@@ -129,9 +138,13 @@ public:
         m2 =  0.8f * mvalue;
       }
       APainter->drawArc(rr,m1,m2,MIP_COLOR_BLACK,2);
+
       // steps
-      if (getQuantize() && MDrawSteppedArc) {
-        uint32_t num = getQuantizeSteps();
+      //if (getQuantize() && MDrawSteppedArc) {
+      //  uint32_t num = getQuantizeSteps();
+      if (stepped && MDrawSteppedArc) {
+        uint32_t num = steps;
+
         if (num > 2) {
           float va = 1.0f / (float)(num - 1);
           float vv = va;

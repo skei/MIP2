@@ -3,22 +3,13 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "base/types/mip_array.h"
-//#include "audio/filters//mip_rc_filter.h"
-#include "plugin/clap/mip_clap.h"
+//#include "base/types/mip_array.h"
+//#include "base/types/mip_queue.h"
+//#include "base/utils/mip_math.h"
+#include "extern/clap/clap.h"
 
 class MIP_AudioPort;
-typedef MIP_Array<const clap_audio_port_info_t*> MIP_AudioPortArray;
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-  // clap_audio_port_info_t
-  /*
-  */
+typedef MIP_Array<MIP_AudioPort*> MIP_AudioPortArray;
 
 //----------------------------------------------------------------------
 //
@@ -32,59 +23,59 @@ class MIP_AudioPort {
 private:
 //------------------------------
 
+  clap_audio_port_info_t MInfo  = {
+    .id             = 0,    // set this in appendAudioPort
+    .name           = {0},
+    .flags          = 0,    // CLAP_AUDIO_PORT_IS_MAIN
+    .channel_count  = 0,
+    .port_type      = {0},  // CLAP_PORT_STEREO
+    .in_place_pair  = CLAP_INVALID_ID
+  };
 
 //------------------------------
 public:
 //------------------------------
 
-  clap_audio_port_info_t  info  = {0};
-  int32_t                 index = -1;
+  MIP_AudioPort() {  }
 
-//------------------------------
-public:
-//------------------------------
+  //----------
 
-  MIP_AudioPort(clap_audio_port_info_t* audio_port_info) {
+  MIP_AudioPort(const char* AName, uint32_t AFlags=CLAP_AUDIO_PORT_IS_MAIN, uint32_t AChannels=2, const char* APortType=CLAP_PORT_STEREO, uint32_t AInPlacePair=CLAP_INVALID_ID) {
+    //MInfo.id = 0;
+    strncpy(MInfo.name,AName,CLAP_NAME_SIZE);
+    MInfo.flags         = AFlags;
+    MInfo.channel_count = AChannels;
+    MInfo.port_type     = APortType;
+    MInfo.in_place_pair = AInPlacePair;
   }
 
   //----------
 
-  MIP_AudioPort(uint32_t id, uint32_t flags, const char* name, const char* module, double minval, double maxval, double defval) {
-  }
-
-  //----------
-
-  virtual ~MIP_AudioPort() {
-  }
+  ~MIP_AudioPort() {  }
 
 //------------------------------
 public:
 //------------------------------
 
-//  void setIndex(int32_t AIndex)               { index = AIndex; }
-//
-//  void setId(clap_id id)                      { info.id = id; }
-//  void setFlags(clap_param_info_flags flags)  { info.flags = flags; }
-//  void setCookie(void * cookie)               { info.cookie = cookie; }
-//  void setNeme(const char* name)              { strncpy(info.name,name,CLAP_NAME_SIZE); }
-//  void setModule(const char* module)          { strncpy(info.module,module,CLAP_MODULE_SIZE); }
-//  void setMinValue(double min_value)          { info.min_value = min_value; }
-//  void setMaxValue(double max_value)          { info.max_value = max_value; }
-//  void setDefaultValue(double default_value)  { info.default_value = default_value; }
-//
-//  //----------
-//
-//  int32_t               getIndex()        { return index; }
-//  clap_param_info_t*    getParamInfo()    { return &info; }
-//
-//  clap_id               getId()           { return info.id; }
-//  clap_param_info_flags getFlags()        { return info.flags; }
-//  void*                 getCookie()       { return info.cookie; }
-//  char*                 getName()         { return info.name; }
-//  char*                 getModule()       { return info.module; }
-//  double                getMinValue()     { return info.min_value; }
-//  double                getMaxValue()     { return info.max_value; }
-//  double                getDefaultValue() { return info.default_value; }
+  // set/get
+
+  void setId(uint32_t AId)              { MInfo.id = AId; }
+  void setName(const char* AName)       { strcpy(MInfo.name,AName); }
+  void setFlags(uint32_t AFlags)        { MInfo.flags = AFlags; }
+  void setChannelCount(uint32_t ACount) { MInfo.channel_count = ACount; }
+  void setPortType(const char* AType)   { strcpy((char*)MInfo.port_type,AType); }
+  void setInPlacePair(uint32_t APair)   { MInfo.in_place_pair = APair; }
+
+  uint32_t    getId()           { return MInfo.id; }
+  const char* getName()         { return MInfo.name; }
+  uint32_t    getFlags()        { return MInfo.flags; }
+  uint32_t    getChannelCount() { return MInfo.channel_count; }
+  const char* getPortType()     { return MInfo.port_type; }
+  uint32_t    getInPlacePair()  { return MInfo.in_place_pair; }
+
+  clap_audio_port_info_t* getInfo() {
+    return &MInfo;
+  }
 
 //------------------------------
 public:
@@ -94,3 +85,4 @@ public:
 
 //----------------------------------------------------------------------
 #endif
+

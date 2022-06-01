@@ -127,12 +127,27 @@ public:
 
   virtual void drawValueBar(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
 
+
+    MIP_Parameter* param = getParameter();
+
+    bool stepped = false;
+    float value = getValue();
+
+//    if (param) {
+//      MIP_DPrint("getValue: %.3f param.getValue: %.3f param.getNormalizedValue: %.3f\n",getValue(),param->getValue(),param->getNormalizedValue());
+//      stepped = (param->isStepped());
+//      //value = param->getNormalizedValue();
+//    }
+
+//    MIP_Print("value %f\n",value);
+
     if (MDrawValueBar) {
 
       MIP_FRect rect = getRect();
       rect.shrink(MValueBarOffset);
 
-      float value = getValue();
+
+      //MIP_Print("value %f\n",value);
 
       float w = rect.w * value;
       float h = rect.h * value;
@@ -180,11 +195,17 @@ public:
         APainter->strokePath();
       }
 
-      if (MDrawQuantized) {
-        uint32_t num = getQuantizeSteps();
+      //if (MDrawQuantized & stepped) {
+      if (stepped) {
+
+        //uint32_t num = getQuantizeSteps();
+        uint32_t num = param->getMaxValue() - param->getMinValue() + 1;
+        MIP_Print("num %i\n",num);
+
         if (num > 0) {
           MIP_FRect r = getRect();
-          float step = r.w / (float)(num-1);
+          //float step = r.w / (float)(num-1);
+          float step = r.w / (float)(num);
           float x = r.x + step;
           for (uint32_t i=0; i<num-1; i++) {
             APainter->setColor(MQuantizedColor);

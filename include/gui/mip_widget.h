@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------
 
 class MIP_Widget;
-typedef MIP_Array<MIP_Widget*> MIP_Widgets;
+typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 
 //----------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ protected:
   int32_t         MCursor                 = MIP_CURSOR_DEFAULT;   //
   MIP_Widget*     MOwnerWindow            = nullptr;              // = MIP_Window;
   MIP_Widget*     MParent                 = nullptr;              //
-  MIP_Widgets     MChildren               = {};                   //
+  MIP_WidgetArray MChildren               = {};                   //
   int32_t         MWidgetIndex            = -1;                   //
 
   MIP_FRect       MRect                   = {};                   //
@@ -99,14 +99,15 @@ protected:
 
   float           MChildrenXOffset        = 0.0f;                 // offset (relative to parent rect)
   float           MChildrenYOffset        = 0.0f;                 // -"-
-  float           MModValue               = 0.0;                  //
-  float           MValue                  = 0.0;                  //
-  float           MMinValue               = 0.0;                  //
-  float           MMaxValue               = 1.0;                  //
-  float           MDefaultValue           = 0.0;                  //
 
-  int32_t         MParamIndex             = -1;                   //
-  char            MParamName[256]         = {0};                  //
+  float           MValue                  = 0.0;                  //
+  float           MModValue               = 0.0;                  //
+  float           MDefaultValue           = 0.0;                  //
+//  float           MMinValue               = 0.0;                  //
+//  float           MMaxValue               = 1.0;                  //
+
+  //int32_t         MParamIndex             = -1;                   //
+  //char            MParamName[256]         = {0};                  //
   MIP_Parameter*  MParameter              = nullptr;              //
 
   MIP_Skin*       MSkin                   = &MIP_DEFAULT_SKIN;
@@ -165,8 +166,8 @@ public: // set
   virtual void setChildrenYOffset(float AY)                 { MChildrenYOffset = AY; }
   virtual void setContentRect(MIP_FRect ARect)              { MContentRect = ARect; }
   virtual void setCursor(int32_t ACursor)                   { MCursor = ACursor; }
-  virtual void setMinValue(float AValue)                    { MMinValue = AValue; }
-  virtual void setMaxValue(float AValue)                    { MMaxValue = AValue; }
+//  virtual void setMinValue(float AValue)                    { MMinValue = AValue; }
+//  virtual void setMaxValue(float AValue)                    { MMaxValue = AValue; }
   virtual void setDefaultValue(float AValue)                { MDefaultValue = AValue; }
   virtual void setHeight(float AHeight)                     { MRect.h = AHeight; }
   virtual void setHint(const char* AHint)                   { MHint = AHint; }
@@ -188,8 +189,27 @@ public: // set
   virtual void setWidth(float AWidth)                       { MRect.w = AWidth; }
 
   virtual void setParameter(MIP_Parameter* AParameter)      { MParameter = AParameter; }
-  virtual void setParamIndex(int32_t AIndex)                { MParamIndex = AIndex; }
-  virtual void setParamName(const char* AName)              { strcpy(MParamName,AName); }
+//  virtual void setParamIndex(int32_t AIndex)                { MParamIndex = AIndex; }
+//  virtual void setParamName(const char* AName)              { strcpy(MParamName,AName); }
+
+  // value -> 0..1
+
+//  virtual void setParameterValue(float AValue) {
+//    float value = AValue;
+//    if (MParameter) value = MParameter->to01(value);
+//    //MIP_Print("AValue %f value %f\n",AValue,value);
+//    MValue = value;
+//  }
+
+  // 0..1 -> value
+
+//  virtual float getParameterValue() {
+//    float value = MValue;
+//    if (MParameter) value = MParameter->from01(value);
+//    //MIP_Print("MValue %f value %f\n",MValue,value);
+//    return value;
+//  }
+
 
   //virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
   //virtual void setOwner(MIP_Window* AOwner)             { MOwner = AOwner; }
@@ -207,27 +227,27 @@ public: // set
 public:
 //------------------------------
 
-  virtual MIP_Widget*     getChild(uint32_t AIndex)   { return MChildren[AIndex]; }
-  virtual MIP_Widgets*    getChildren()               { return &MChildren; }
-  virtual MIP_FRect       getContentRect()            { return MContentRect; }
-  virtual int32_t         getCursor()                 { return MCursor; }
-  virtual float           getMinValue()               { return MMinValue; }
-  virtual float           getMaxValue()               { return MMaxValue; }
-  virtual float           getDefaultValue()           { return MDefaultValue; }
-  virtual const char*     getHint()                   { return MHint; }
-  virtual int32_t         getWidgetIndex()            { return MWidgetIndex; }
-  virtual MIP_FRect       getInitialRect()            { return MInitialRect; }
-  virtual float           getModValue()               { return MModValue; }
-  virtual const char*     getName()                   { return MName; }
-  virtual uint32_t        getNumChildren()            { return MChildren.size(); }
-  virtual MIP_Widget*     getParent()                 { return MParent; }
-  virtual MIP_FRect       getRect()                   { return MRect; }
-  virtual float           getValue()                  { return MValue; }
+  virtual MIP_Widget*       getChild(uint32_t AIndex)   { return MChildren[AIndex]; }
+  virtual MIP_WidgetArray*  getChildren()               { return &MChildren; }
+  virtual MIP_FRect         getContentRect()            { return MContentRect; }
+  virtual int32_t           getCursor()                 { return MCursor; }
+//  virtual float             getMinValue()               { return MMinValue; }
+//  virtual float             getMaxValue()               { return MMaxValue; }
+  virtual float             getDefaultValue()           { return MDefaultValue; }
+  virtual const char*       getHint()                   { return MHint; }
+  virtual int32_t           getWidgetIndex()            { return MWidgetIndex; }
+  virtual MIP_FRect         getInitialRect()            { return MInitialRect; }
+  virtual float             getModValue()               { return MModValue; }
+  virtual const char*       getName()                   { return MName; }
+  virtual uint32_t          getNumChildren()            { return MChildren.size(); }
+  virtual MIP_Widget*       getParent()                 { return MParent; }
+  virtual MIP_FRect         getRect()                   { return MRect; }
+  virtual float             getValue()                  { return MValue; }
 
-  virtual int32_t         getParamIndex()             { return MParamIndex; }
-  MIP_Parameter*          getParameter()              { return MParameter; }
+//  virtual int32_t           getParamIndex()             { return MParamIndex; }
+  MIP_Parameter*            getParameter()              { return MParameter; }
 
-  //virtual int32_t         getSubParamIndex()          { return MSubParamIndex; }
+  //virtual int32_t           getSubParamIndex()          { return MSubParamIndex; }
 
 //------------------------------
 public:
@@ -883,11 +903,11 @@ public:
 
   virtual void on_widget_connect(MIP_Parameter* AParameter) {
     MParameter = AParameter;
-    MParamIndex = AParameter->getIndex();
-    strncpy(MParamName,AParameter->getName(),255);
+//    MParamIndex = AParameter->getIndex();
+//    strncpy(MParamName,AParameter->getName(),255);
     MValue = AParameter->getDefaultValue();
-    MMinValue = AParameter->getMinValue();
-    MMaxValue = AParameter->getMaxValue();
+//    MMinValue = AParameter->getMinValue();
+//    MMaxValue = AParameter->getMaxValue();
     MDefaultValue = AParameter->getDefaultValue();
   }
 

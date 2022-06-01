@@ -72,8 +72,8 @@ public:
     wdg_value->setTextColor(MIP_COLOR_BLACK);
     wdg_value->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
 
-    sprintf(value_text,"%.3f",MValue);
-
+    //sprintf(value_text,"%.3f",MValue);
+    sprintf(value_text,"---");
 
     //wdg_value->setValue(AValue);
 
@@ -100,6 +100,10 @@ public:
       wdg_knob->setValue(AValue);
     }
     if (wdg_value) {
+      //MIP_Parameter* param = getParameter();
+      //if (param) {
+      //  AValue = param->valueToText(AValue);
+      //}
       sprintf(value_text,"%.3f",AValue); // todo: parameter.valueToText
       wdg_value->setText(value_text);
     }

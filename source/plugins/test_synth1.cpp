@@ -49,19 +49,20 @@
 #define PAR_RES1_OCT    15
 #define PAR_RES1_SEMI   16
 #define PAR_RES1_CENT   17
+#define PAR_RES1_ROUGH  18
 
-#define PAR_FLT1_TYPE   18
-#define PAR_FLT1_FREQ   19
-#define PAR_FLT1_RES    20
+#define PAR_FLT1_TYPE   19
+#define PAR_FLT1_FREQ   20
+#define PAR_FLT1_RES    21
 
-#define PAR_ENV1_ATT    21
-#define PAR_ENV1_DEC    22
-#define PAR_ENV1_SUS    23
-#define PAR_ENV1_REL    24
+#define PAR_ENV1_ATT    22
+#define PAR_ENV1_DEC    23
+#define PAR_ENV1_SUS    24
+#define PAR_ENV1_REL    25
 
 //----------
 
-#define NUM_PARAMS      25
+#define NUM_PARAMS      26
 #define NUM_VOICES      128
 
 //----------------------------------------------------------------------
@@ -228,7 +229,7 @@ private:
       "Oct",
       "",
       0.0,
-      1.0,
+      4.0,
       0.5
     },
 
@@ -325,6 +326,16 @@ private:
       0.0,
       1.0,
       0.5
+    },
+
+    { PAR_RES1_ROUGH,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Rough",
+      "",
+      0.0,
+      1.0,
+      0.0
     },
 
     //---------- flt1 ----------

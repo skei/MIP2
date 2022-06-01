@@ -63,7 +63,7 @@ public:
 
   void removeOldestLine() {
     if (MNumLines > 0) {
-      MIP_Widgets* content = MContent->getChildren();
+      MIP_WidgetArray* content = MContent->getChildren();
       MIP_Widget* wdg = MContent->getChild(0);
       content->remove(0);
       delete wdg;

@@ -24,9 +24,8 @@ public:
   clap_host_ambisonic_t*          ambisonic           = nullptr;
   clap_host_audio_ports_config_t* audio_ports_config  = nullptr;
   clap_host_audio_ports_t*        audio_ports         = nullptr;
-  clap_host_check_for_update_t*   check_for_update    = nullptr;
+  //clap_host_check_for_update_t*   check_for_update    = nullptr;
   clap_host_cv_t*                 cv                  = nullptr;
-  clap_host_event_filter_t*       event_filter        = nullptr;
   clap_host_event_registry_t*     event_registry      = nullptr;
   clap_host_file_reference*       file_reference      = nullptr;
   clap_host_gui_t*                gui                 = nullptr;
@@ -40,11 +39,14 @@ public:
   clap_host_quick_controls_t*     quick_controls      = nullptr;
   clap_host_state_t*              state               = nullptr;
   clap_host_surround_t*           surround            = nullptr;
+  clap_host_tail_t*               tail                = nullptr;
   clap_host_thread_check_t*       thread_check        = nullptr;
   clap_host_thread_pool_t*        thread_pool         = nullptr;
   clap_host_timer_support_t*      timer_support       = nullptr;
   clap_host_track_info_t*         track_info          = nullptr;
+  //clap_host_transport_control_t*  transport_control   = nullptr;
   clap_host_tuning_t*             tuning              = nullptr;
+  clap_host_voice_info_t*         voice_info          = nullptr;
 
 //------------------------------
 public:
@@ -55,9 +57,8 @@ public:
     ambisonic           = (clap_host_ambisonic_t*)AHost->get_extension(AHost,CLAP_EXT_AMBISONIC);
     audio_ports_config  = (clap_host_audio_ports_config_t*)AHost->get_extension(AHost,CLAP_EXT_AUDIO_PORTS_CONFIG);
     audio_ports         = (clap_host_audio_ports_t*)AHost->get_extension(AHost,CLAP_EXT_AUDIO_PORTS);
-    check_for_update    = (clap_host_check_for_update_t*)AHost->get_extension(AHost,CLAP_EXT_CHECK_FOR_UPDATE);
+    //check_for_update    = (clap_host_check_for_update_t*)AHost->get_extension(AHost,CLAP_EXT_CHECK_FOR_UPDATE);
     cv                  = (clap_host_cv_t*)AHost->get_extension(AHost,CLAP_EXT_CV);
-    event_filter        = (clap_host_event_filter_t*)AHost->get_extension(AHost,CLAP_EXT_EVENT_FILTER);
     event_registry      = (clap_host_event_registry_t*)AHost->get_extension(AHost,CLAP_EXT_EVENT_REGISTRY);
     file_reference      = (clap_host_file_reference*)AHost->get_extension(AHost,CLAP_EXT_FILE_REFERENCE);
     gui                 = (clap_host_gui_t*)AHost->get_extension(AHost,CLAP_EXT_GUI);
@@ -71,11 +72,14 @@ public:
     quick_controls      = (clap_host_quick_controls_t*)AHost->get_extension(AHost,CLAP_EXT_QUICK_CONTROLS);
     state               = (clap_host_state_t*)AHost->get_extension(AHost,CLAP_EXT_STATE);
     surround            = (clap_host_surround_t*)AHost->get_extension(AHost,CLAP_EXT_SURROUND);
+    tail                = (clap_host_tail_t*)AHost->get_extension(AHost,CLAP_EXT_TAIL);
     thread_check        = (clap_host_thread_check_t*)AHost->get_extension(AHost,CLAP_EXT_THREAD_CHECK);
     thread_pool         = (clap_host_thread_pool_t*)AHost->get_extension(AHost,CLAP_EXT_THREAD_POOL);
     timer_support       = (clap_host_timer_support_t*)AHost->get_extension(AHost,CLAP_EXT_TIMER_SUPPORT);
     track_info          = (clap_host_track_info_t*)AHost->get_extension(AHost,CLAP_EXT_TRACK_INFO);
+    //transport_control   = (clap_host_transport_control_t*)AHost->get_extension(AHost,CLAP_EXT_TRANSPORT_CONTROL);
     tuning              = (clap_host_tuning_t*)AHost->get_extension(AHost,CLAP_EXT_TUNING);
+    voice_info          = (clap_host_voice_info_t*)AHost->get_extension(AHost,CLAP_EXT_VOICE_INFO);
   }
 
   virtual ~MIP_ClapHost() {
@@ -109,9 +113,8 @@ public:
     if (ambisonic)          { MIP_Print("host supports: %s\n",CLAP_EXT_AMBISONIC); }
     if (audio_ports_config) { MIP_Print("host supports: %s\n",CLAP_EXT_AUDIO_PORTS_CONFIG); }
     if (audio_ports)        { MIP_Print("host supports: %s\n",CLAP_EXT_AUDIO_PORTS); }
-    if (check_for_update)   { MIP_Print("host supports: %s\n",CLAP_EXT_CHECK_FOR_UPDATE); }
+  //if (check_for_update)   { MIP_Print("host supports: %s\n",CLAP_EXT_CHECK_FOR_UPDATE); }
     if (cv)                 { MIP_Print("host supports: %s\n",CLAP_EXT_CV); }
-    if (event_filter)       { MIP_Print("host supports: %s\n",CLAP_EXT_EVENT_FILTER); }
     if (event_registry)     { MIP_Print("host supports: %s\n",CLAP_EXT_EVENT_REGISTRY); }
     if (file_reference)     { MIP_Print("host supports: %s\n",CLAP_EXT_FILE_REFERENCE); }
     if (gui)                { MIP_Print("host supports: %s\n",CLAP_EXT_GUI); }
@@ -125,11 +128,14 @@ public:
     if (quick_controls)     { MIP_Print("host supports: %s\n",CLAP_EXT_QUICK_CONTROLS); }
     if (state)              { MIP_Print("host supports: %s\n",CLAP_EXT_STATE); }
     if (surround)           { MIP_Print("host supports: %s\n",CLAP_EXT_SURROUND); }
+    if (tail)               { MIP_Print("host supports: %s\n",CLAP_EXT_TAIL); }
     if (thread_check)       { MIP_Print("host supports: %s\n",CLAP_EXT_THREAD_CHECK); }
     if (thread_pool)        { MIP_Print("host supports: %s\n",CLAP_EXT_THREAD_POOL); }
     if (timer_support)      { MIP_Print("host supports: %s\n",CLAP_EXT_TIMER_SUPPORT); }
     if (track_info)         { MIP_Print("host supports: %s\n",CLAP_EXT_TRACK_INFO); }
+  //if (transport_control)  { MIP_Print("host supports: %s\n",CLAP_EXT_TRANSPORT_CONTROL); }
     if (tuning)             { MIP_Print("host supports: %s\n",CLAP_EXT_TUNING); }
+    if (voice_info)         { MIP_Print("host supports: %s\n",CLAP_EXT_VOICE_INFO); }
   }
 
 };
