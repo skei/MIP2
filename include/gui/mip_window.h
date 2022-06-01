@@ -44,12 +44,12 @@
 //----------------------------------------------------------------------
 
 #ifdef MIP_NO_GUI
-  typedef MIP_BaseWindow MIP_BasicWindow;
+  typedef MIP_BaseWindow MIP_ImplementedWindow;
 #endif
 
 #ifdef MIP_GUI_XCB
   #include "gui/xcb/mip_xcb_window.h"
-  typedef MIP_XcbWindow MIP_BasicWindow;
+  typedef MIP_XcbWindow MIP_ImplementedWindow;
 #endif
 
 //----------------------------------------------------------------------
@@ -71,7 +71,7 @@ public:
 //----------------------------------------------------------------------
 
 class MIP_Window
-: public MIP_BasicWindow {
+: public MIP_ImplementedWindow {
 
 //------------------------------
 private:
@@ -120,7 +120,7 @@ public:
 //------------------------------
 
   MIP_Window(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener, bool AEmbedded)
-  : MIP_BasicWindow(AWidth,AHeight,AEmbedded) {
+  : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded) {
     MName = "MIP_Window";
     MListener = AListener;
     // move these to open() ?
@@ -410,7 +410,7 @@ public:
     //setSkin();
     //setScale(1.5,true); // clipping isn't scfaled...
     alignWidgets();
-    MIP_BasicWindow::open();
+    MIP_ImplementedWindow::open();
   }
 
 //------------------------------

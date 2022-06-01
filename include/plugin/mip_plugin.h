@@ -881,6 +881,80 @@ public: // ext - voice_info
 public: // note listener
 //------------------------------
 
+//------------------------------
+protected: // setup
+//------------------------------
+
+//  void setupAudioInputs(clap_audio_port_info_t* inputs, uint32_t num) {
+//    for (uint32_t i=0; i<num; i++) {
+//      const clap_audio_port_info_t* info = &inputs[i];
+//      MAudioInputs.append(info);
+//    }
+//  }
+//
+//  //void appendAudioInput(clap_audio_port_info_t APort) {
+//  //  MAudioInputs.append(APort);
+//  //  return APort;
+//  //}
+//
+//  //void deleteAudioInputs() {
+//  //  for (uint32_t i=0; i<MAudioInputs.size(); i++) {
+//  //    delete MAudioInputs[i];
+//  //  }
+//  //}
+//
+//  //----------
+//
+//  void setupAudioOutputs(clap_audio_port_info_t* outputs, uint32_t num) {
+//    for (uint32_t i=0; i<num; i++) {
+//      const clap_audio_port_info_t* info = &outputs[i];
+//      MAudioOutputs.append(info);
+//    }
+//  }
+//
+//  //----------
+//
+//  void setupNoteInputs(clap_note_port_info_t* inputs, uint32_t num) {
+//    for (uint32_t i=0; i<num; i++) {
+//      const clap_note_port_info_t* info = &inputs[i];
+//      MNoteInputs.append(info);
+//    }
+//  }
+//
+//  //----------
+//
+//  void setupNoteOutputs(clap_note_port_info_t* outputs, uint32_t num) {
+//    for (uint32_t i=0; i<num; i++) {
+//      const clap_note_port_info_t* info = &outputs[i];
+//      MNoteOutputs.append(info);
+//    }
+//  }
+//
+//  //----------
+//
+//  void setupQuickControls(clap_quick_controls_page_t* page, uint32_t num) {
+//    for (uint32_t i=0; i<num; i++) {
+//      const clap_quick_controls_page_t* info = &page[i];
+//      MQuickControls.append(info);
+//    }
+//  }
+
+//------------------------------
+protected: // parameters
+//------------------------------
+
+  void setupParameters(clap_param_info_t* params, uint32_t num) {
+    //MIP_PRINT;
+    for (uint32_t i=0; i<num; i++) {
+      MIP_Parameter* parameter = new MIP_Parameter(&params[i]);
+      MParameters.appendParameter(parameter);
+    }
+  }
+
+//------------------------------
+public: // note listener
+//------------------------------
+
   void on_note_listener_note_end(MIP_Note ANote) override {
     MIP_Print("TODO\n");
     //clap_event_note_t event;

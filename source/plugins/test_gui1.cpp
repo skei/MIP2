@@ -129,7 +129,7 @@ public: // plugin
 
   bool init() final {
     for (uint32_t i=0; i<3; i++) {
-      appendParameter(new MIP_Parameter( &myParameters[i] ));
+      MParameters.appendParameter(new MIP_Parameter( &myParameters[i] ));
     }
     return MIP_Plugin::init();
     //setDefaultParameterValues();
@@ -194,12 +194,12 @@ public:
 
   //----------
 
-  void handle_process(const clap_process_t *process) final {
-    float** inputs = process->audio_inputs[0].data32;
-    float** outputs = process->audio_outputs[0].data32;
-    uint32_t length = process->frames_count;
-    MIP_CopyStereoBuffer(outputs,inputs,length);
-  }
+//  void handle_process(const clap_process_t *process) final {
+//    float** inputs = process->audio_inputs[0].data32;
+//    float** outputs = process->audio_outputs[0].data32;
+//    uint32_t length = process->frames_count;
+//    MIP_CopyStereoBuffer(outputs,inputs,length);
+//  }
 
 //------------------------------
 public:
@@ -637,9 +637,9 @@ public:
       dragvalue->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
       dragvalue->setFillBackground(true);
       dragvalue->setBackgroundColor(0.55);
-      dragvalue->setQuantize(true);
-      dragvalue->setQuantizeMode(0);
-      dragvalue->setQuantizeSteps(5);
+      //dragvalue->setQuantize(true);
+      //dragvalue->setQuantizeMode(0);
+      //dragvalue->setQuantizeSteps(5);
 
       MIP_SliderWidget* slider;
 
@@ -677,8 +677,8 @@ public:
       slider->layout.alignment  = MIP_WIDGET_ALIGN_FILL_TOP;
       slider->setDrawValueBarGradient(false);
       slider->setDrawValueBarBorder(false);
-      slider->setQuantize(true);
-      slider->setQuantizeSteps(5);
+      //slider->setQuantize(true);
+      //slider->setQuantizeSteps(5);
       //slider->setQuantizeMode(0);
       slider->setDrawQuantized();
 
@@ -699,8 +699,8 @@ public:
       knob = new MIP_KnobWidget(MIP_FRect(40,40));
       left_scrollbox->appendWidget(knob);
       knob->layout.alignment  = MIP_WIDGET_ALIGN_STACK_HORIZ;
-      knob->setQuantize(true);
-      knob->setQuantizeSteps(5);
+      //knob->setQuantize(true);
+      //knob->setQuantizeSteps(5);
       knob->setDrawSteppedArc(true);
       knob->setStepColor(0.6);
 
@@ -1113,7 +1113,7 @@ public:
 //
 //----------------------------------------------------------------------
 
-void MIP_Register(MIP_ClapRegistry* ARegistry) {
+void MIP_Register(MIP_Registry* ARegistry) {
   ARegistry->appendDescriptor(&myDescriptor);
 }
 

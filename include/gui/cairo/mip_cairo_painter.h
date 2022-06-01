@@ -522,10 +522,10 @@ public:
 
   //void roundedRectangle(float AX1, float AY1, float AX2, float AY2, float AR, uint32_t ACorners) {
   void roundedRectangle(MIP_FRect ARect, float ARadius, uint32_t ACorners, uint32_t AEdges) override {
-    int32_t x = ARect.x;
-    int32_t y = ARect.y;
-    int32_t w = ARect.w;//+1;
-    int32_t h = ARect.h;//+1;
+    int32_t x = ARect.x; //+ 0.5;
+    int32_t y = ARect.y; //+ 0.5;
+    int32_t w = ARect.w; //- 1.0;
+    int32_t h = ARect.h; //- 1.0;
     int32_t r = ARadius;
     float degrees = M_PI / 180.0;
 
@@ -687,6 +687,7 @@ public: // draw
   void drawRectangle(MIP_FRect ARect, MIP_Color AColor, float AWidth=1) override {
     setColor(AColor);
     setLineWidth(AWidth);
+    //ARect.add(0.5,0.5,-1,-1);
     rectangle(ARect);
     strokePath();
   }

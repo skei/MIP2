@@ -92,6 +92,24 @@ public:
     }
   }
 
+  //----------
+
+  double getParameterValue(uint32_t AIndex) {
+    return MParameters[AIndex]->getValue();
+  }
+
+  double getParameterModulation(uint32_t AIndex) {
+    return MParameters[AIndex]->getModulation();
+  }
+
+  void setParameterValue(uint32_t AIndex, double AValue) {
+    MParameters[AIndex]->setValue(AValue);
+  }
+
+  void setParameterModulation(uint32_t AIndex, double AValue) {
+    MParameters[AIndex]->setModulation(AValue);
+  }
+
 
 //------------------------------
 public:

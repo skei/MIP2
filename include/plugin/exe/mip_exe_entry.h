@@ -17,7 +17,7 @@
 //----------------------------------------------------------------------
 
 class MIP_ExeWindow
-: public MIP_BasicWindow {
+: public MIP_ImplementedWindow {
 
 //------------------------------
 private:
@@ -27,11 +27,12 @@ private:
   const clap_plugin_gui_t*  gui     = nullptr;
 
 //------------------------------
+
 public:
 //------------------------------
 
   MIP_ExeWindow(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener, const clap_plugin_t* APlugin, const clap_plugin_gui_t* AGui)
-  : MIP_BasicWindow(AWidth,AHeight,false) {
+  : MIP_ImplementedWindow(AWidth,AHeight,false) {
     plugin = APlugin;
     gui = AGui;
   }

@@ -9,7 +9,7 @@
 //----------------------------------------------------------------------
 
 
-#include "test/test1.cpp"
+//#include "test/test1.cpp"
 
 
 //----------------------------------------------------------------------
@@ -43,7 +43,7 @@
 //#include "../source/plugins/sa_tyr.cpp"
 
 //#include "../source/plugins/test_gui1.cpp"
-//#include "../source/_backup/plugins/test_synth1.cpp"
+#include "../source/plugins/test_synth1.cpp"
 
 //----------
 

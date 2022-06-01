@@ -15,7 +15,7 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 
-#define MIP_DEBUG_PRINT_SOCKET
+//#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 //tail -F ~/.BitwigStudio/log/engine.log | pv --rate --bytes > /dev/null
 
@@ -467,23 +467,27 @@ public: // clap
     //MIP_Print("host version: %s\n",MHost->host->version);
     //MIP_Print("host clap version: %i.%i.%i\n",ver.major,ver.minor,ver.revision);
     //MHost->printSupportedExtensions();
+
     setupParameters(myParameters,NUM_PARAMS);
-    setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
-    setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
+//    setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
+//    setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
+
     return MIP_Plugin::init();
+
   }
 
   //----------
 
-  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
-    MVoiceManager.prepareVoices(sample_rate);
-    // send initial parameter values to the voices
-    for (uint32_t i=0; i<NUM_PARAMS; i++) {
-      float v = MParameterValues[i];
-      MVoiceManager.setParameter(i,v);
-    }
-    return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
-  }
+//  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
+//    MVoiceManager.prepareVoices(sample_rate);
+//    // send initial parameter values to the voices
+//    for (uint32_t i=0; i<NUM_PARAMS; i++) {
+//      //float v = MParameterValues[i];
+//      float v = MParameters.getParameterValue(i);
+//      MVoiceManager.setParameter(i,v);
+//    }
+//    return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
+//  }
 
   //----------
 
@@ -504,28 +508,27 @@ public: // clap
   //----------
 
   clap_process_status process(const clap_process_t *process) final {
-    flushAudioParams();
-    handle_input_events(process->in_events,process->out_events);
-    handle_process(process);
-    handle_output_events(process->in_events,process->out_events);
-
-    // hack!!!!!
-    // update gui (state only) in process!
-
-    if (MEditor && MEditorIsOpen) {
-      uint32_t num_playing = 0;
-      uint32_t num_released = 0;
-      for (uint32_t i=0; i<NUM_VOICES; i++) {
-        uint32_t state = MVoiceManager.getVoiceState(i);
-        ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
-        if (state == MIP_VOICE_PLAYING) num_playing += 1;
-        if (state == MIP_VOICE_RELEASED) num_released += 1;
-      }
-      ((myEditor*)MEditor)->MPlayingVoicesWidget->setValue(num_playing);
-      ((myEditor*)MEditor)->MReleasedVoicesWidget->setValue(num_released);
-      ((myEditor*)MEditor)->MTotalVoicesWidget->setValue(num_playing + num_released);
-    }
-
+//    flushAudioParams();
+//    handle_input_events(process->in_events,process->out_events);
+//    handle_process(process);
+//    handle_output_events(process->in_events,process->out_events);
+//
+//    // hack!!!!!
+//    // update gui (state only) in process!
+//
+//    if (MEditor && MEditorIsOpen) {
+//      uint32_t num_playing = 0;
+//      uint32_t num_released = 0;
+//      for (uint32_t i=0; i<NUM_VOICES; i++) {
+//        uint32_t state = MVoiceManager.getVoiceState(i);
+//        ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
+//        if (state == MIP_VOICE_PLAYING) num_playing += 1;
+//        if (state == MIP_VOICE_RELEASED) num_released += 1;
+//      }
+//      ((myEditor*)MEditor)->MPlayingVoicesWidget->setValue(num_playing);
+//      ((myEditor*)MEditor)->MReleasedVoicesWidget->setValue(num_released);
+//      ((myEditor*)MEditor)->MTotalVoicesWidget->setValue(num_playing + num_released);
+//    }
     return CLAP_PROCESS_CONTINUE;
   }
 
@@ -536,9 +539,10 @@ public: // clap
   bool gui_create(const char *api, bool is_floating) final {
     if (strcmp(api,CLAP_WINDOW_API_X11) != 0) return false;
     if (is_floating) return false;
-    MEditorIsOpen = false;
+    MIsEditorOpen = false;
     MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true,&myDescriptor);
     return (MEditor);
+    return false;
   }
 
   //----------
@@ -569,29 +573,29 @@ protected:
     we need to tell the voices about it
   */
 
-  void handle_editor_parameter(uint32_t AIndex, float AValue) final {
-    //MIP_Print("%i = %.3f\n",AIndex,AValue);
-    MVoiceManager.setParameter(AIndex,AValue);
-  }
+  //void handle_editor_parameter(uint32_t AIndex, float AValue) final {
+  //  //MIP_Print("%i = %.3f\n",AIndex,AValue);
+  //  MVoiceManager.setParameter(AIndex,AValue);
+  //}
 
   //----------
 
-  void handle_process(const clap_process_t *process) final {
-    float** outputs = process->audio_outputs[0].data32;
-    uint32_t length = process->frames_count;
-
-    #ifdef MIP_VOICE_PREPARE_EVENTS
-      MVoiceManager.processPrepared(process,MHost);
-    #else
-      MVoiceManager.processBlock(process);
-    #endif
-
-    float v = MParameterValues[PAR_VOL];  // vol
-    float p = MParameterValues[PAR_PAN];  // pan
-    float l = v * (1.0 - p);
-    float r = v * (      p);
-    MIP_ScaleStereoBuffer(outputs,l,r,length);
-  }
+  //void handle_process(const clap_process_t *process) final {
+  //  float** outputs = process->audio_outputs[0].data32;
+  //  uint32_t length = process->frames_count;
+  //
+  //  #ifdef MIP_VOICE_PREPARE_EVENTS
+  //    MVoiceManager.processPrepared(process,MHost);
+  //  #else
+  //    MVoiceManager.processBlock(process);
+  //  #endif
+  //
+  //  float v = MParameterValues[PAR_VOL];  // vol
+  //  float p = MParameterValues[PAR_PAN];  // pan
+  //  float l = v * (1.0 - p);
+  //  float r = v * (      p);
+  //  MIP_ScaleStereoBuffer(outputs,l,r,length);
+  //}
 
 };
 
@@ -601,7 +605,7 @@ protected:
 //
 //----------------------------------------------------------------------
 
-void MIP_Register(MIP_ClapRegistry* ARegistry) {
+void MIP_Register(MIP_Registry* ARegistry) {
   ARegistry->appendDescriptor(&myDescriptor);
 }
 
