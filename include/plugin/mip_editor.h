@@ -8,7 +8,6 @@
 #include "base/types/mip_queue.h"
 #include "base/system/mip_timer.h"
 #include "plugin/mip_parameter.h"
-#include "plugin/mip_parameter_manager.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include "gui/mip_widget.h"
 #include "gui/mip_window.h"
@@ -230,19 +229,19 @@ public:
 
   //----------
 
-  void setParameterValues(MIP_ParameterManager* AParameters, bool ARedraw=false) {
-    for (uint32_t i=0; i<AParameters->parameterCount(); i++) {
-      MIP_Parameter* param = AParameters->getParameter(i);
-      double value = param->getValue();
-      //setParameterValue(i,value,ARedraw);
-      MIP_Widget* widget = MParamToWidget[i];
-      if (widget) {
-        value = param->normalizeValue(value);
-        widget->setValue(value);
-        if (ARedraw) widget->redraw();
-      }
-    }
-  }
+  //void setParameterValues(MIP_ParameterManager* AParameters, bool ARedraw=false) {
+  //  for (uint32_t i=0; i<AParameters->parameterCount(); i++) {
+  //    MIP_Parameter* param = AParameters->getParameter(i);
+  //    double value = param->getValue();
+  //    //setParameterValue(i,value,ARedraw);
+  //    MIP_Widget* widget = MParamToWidget[i];
+  //    if (widget) {
+  //      value = param->normalizeValue(value);
+  //      widget->setValue(value);
+  //      if (ARedraw) widget->redraw();
+  //    }
+  //  }
+  //}
 
   //----------
 

@@ -26,7 +26,7 @@
 	"base/mip_attributes.h"
 	"base/debug/mip_debug.h"
 
-1654046895 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
+1654101586 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
 	"mip.h"
 	"plugin/mip_audio_port.h"
 	"plugin/mip_editor.h"
@@ -38,9 +38,6 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/clap/mip_clap_plugin.h"
 	"plugin/clap/mip_clap_utils.h"
-	"plugin/mip_parameter_manager.h"
-	"plugin/mip_event_handler.h"
-	"plugin/mip_note_handler.h"
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/vst2/mip_vst2_entry.h"
 	"plugin/vst3/mip_vst3_entry.h"
@@ -737,12 +734,11 @@
 
 1643479691 /DISKS/sda2/code/git/MIP2/include/plugin/wrapper/mip_vst3_wrapper.h
 
-1654041951 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
+1654100008 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
 	"mip.h"
 	"base/types/mip_queue.h"
 	"base/system/mip_timer.h"
 	"plugin/mip_parameter.h"
-	"plugin/mip_parameter_manager.h"
 	"plugin/clap/mip_clap_plugin.h"
 	"gui/mip_widget.h"
 	"gui/mip_window.h"
@@ -896,7 +892,7 @@
 1649450447 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_curve_widget.h
 	"gui/widgets/mip_drag_value_widget.h"
 
-1654022121 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_drag_value_widget.h
+1654105795 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_drag_value_widget.h
 	"gui/widgets/mip_value_widget.h"
 
 1654039733 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_value_widget.h
@@ -934,7 +930,7 @@
 1646955750 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_keyboard_widget.h
 	"gui/mip_widget.h"
 
-1653679013 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob2_widget.h
+1654105443 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob2_widget.h
 	"gui/mip_widget.h"
 	"gui/widgets/mip_knob_widget.h"
 	"gui/widgets/mip_text_widget.h"
@@ -1671,7 +1667,7 @@
 
 1648646406 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage/sa_botage_logo.h
 
-1654046922 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1.cpp
+1654104685 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_voice_manager.h"
@@ -1843,7 +1839,7 @@
 	"mip.h"
 	"plugin/mip_note.h"
 
-1653486119 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
+1654101214 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
 	"mip.h"
 	"audio/mip_audio_utils.h"
 	"base/types/mip_queue.h"
@@ -1858,7 +1854,7 @@
 1652743485 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage/sa_botage_widgets.h
 	"gui/mip_widgets.h"
 
-1653673134 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1/test_synth1_voice.h
+1654104815 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1/test_synth1_voice.h
 	"mip.h"
 	"audio/mip_audio_math.h"
 	"audio/filters/mip_rc_filter.h"
@@ -1869,7 +1865,7 @@
 	"audio/waveforms/mip_polyblep_waveform.h"
 	"plugin/mip_voice_manager.h"
 
-1653675829 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1/test_synth1_editor.h
+1654105591 /DISKS/sda2/code/git/MIP2/source/plugins/test_synth1/test_synth1_editor.h
 	"mip.h"
 	"gui/mip_widgets.h"
 	"plugin/mip_editor.h"
@@ -1899,7 +1895,7 @@
 	"plugin/mip_plugin.h"
 	"gui/mip_widgets.h"
 
-1653850981 /DISKS/sda2/code/git/MIP2/include/plugin/mip_audio_port.h
+1654047418 /DISKS/sda2/code/git/MIP2/include/plugin/mip_audio_port.h
 	"mip.h"
 	"extern/clap/clap.h"
 
@@ -1921,7 +1917,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/clap/mip_clap_host.h"
 
-1653851369 /DISKS/sda2/code/git/MIP2/include/plugin/mip_note_port.h
+1654047548 /DISKS/sda2/code/git/MIP2/include/plugin/mip_note_port.h
 	"mip.h"
 	"extern/clap/clap.h"
 

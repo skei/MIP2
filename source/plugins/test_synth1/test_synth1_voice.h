@@ -99,7 +99,7 @@ private:
   float               flt1_freq_mod       = 0.0;
   float               flt1_res_mod        = 0.0;
 
-  float               pitch_mod           = 0.0;
+  float               osc1_cent_mod       = 0.0;
 
   //float               fb_mod              = 0.5;
   //float               fb_tune_mod         = 0.5;
@@ -144,7 +144,7 @@ public:
     res1.start();
     flt1_freq_mod = 0.0;
     flt1_res_mod  = 0.0;
-    pitch_mod     = 0.0;
+    osc1_cent_mod = 0.0;
     amp_env.noteOn();
     return MIP_VOICE_PLAYING;
   }
@@ -241,7 +241,7 @@ public:
       case PAR_OSC1_WIDTH:  osc1_width_mod = value;   break;
       case PAR_OSC1_TRI:    osc1_tri_mod = value;     break;
       case PAR_OSC1_SIN:    osc1_sin_mod = value;     break;
-      case PAR_OSC1_CENT:   pitch_mod = value;        break;
+      case PAR_OSC1_CENT:   osc1_cent_mod = value;        break;
       case PAR_FLT1_FREQ:   flt1_freq_mod = value;    break;
       case PAR_FLT1_RES:    flt1_res_mod = value;     break;
     }
@@ -255,12 +255,10 @@ public:
 
       // pitch
 
-      //float o1_pitch = (p_osc1_cent * 2.0) - 1.0;
-      //o1_pitch += (p_osc1_oct * 48.0) + (p_osc1_semi) + pitch_mod;
+      float o1_pitch  = ((p_osc1_oct  /*+ osc1_oct_mod*/ ) * 12.0)
+                      + ((p_osc1_semi /*+ osc1_semi_mod*/) * 1.0)
+                      +  (p_osc1_cent   + osc1_cent_mod  );
 
-      float o1_pitch  = ((p_osc1_oct  * 2.0 - 1.0) * 48.0)
-                      + ((p_osc1_semi * 2.0 - 1.0) * 12.0)
-                      +  (p_osc1_cent * 2.0 - 1.0);
       float osc_hz = MIP_NoteToHz(note_key + note_tuning + o1_pitch);
       osc_hz = MIP_Clamp(osc_hz,20,10000);
 
@@ -279,9 +277,10 @@ public:
 
       // res
 
-      float r1_pitch  = ((p_res1_oct  * 2.0 - 1.0) * 48.0)
-                      + ((p_res1_semi * 2.0 - 1.0) * 12.0)
-                      +  (p_res1_cent * 2.0 - 1.0);
+      float r1_pitch  = ((p_res1_oct  /*+ res1_oct_mod*/ ) * 12.0)
+                      + ((p_res1_semi /*+ res1_semi_mod*/) * 1.0)
+                      +  (p_res1_cent /*+ res1_cent_mod*/  );
+
       float res_hz = MIP_NoteToHz(note_key + note_tuning + r1_pitch);
       res_hz = MIP_Clamp(res_hz,1,20000);
 

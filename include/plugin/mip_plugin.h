@@ -22,11 +22,7 @@
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_utils.h"
 
-#include "plugin/mip_parameter_manager.h"
-#include "plugin/mip_event_handler.h"
-#include "plugin/mip_note_handler.h"
-//#include "plugin/mip_process_handler.h"
-//#include "plugin/mip_voice_manager.h"
+//----------
 
 #ifdef MIP_EXE
   #include "plugin/exe/mip_exe_entry.h"
@@ -43,7 +39,6 @@
 #ifdef MIP_VST3
   #include "plugin/vst3/mip_vst3_entry.h"
 #endif
-
 
 //----------------------------------------------------------------------
 //
@@ -70,26 +65,13 @@
 
 class MIP_Plugin
 : public MIP_ClapPlugin
-, public MIP_EditorListener
-, public MIP_EventListener
-, public MIP_NoteListener
-, public MIP_ParameterListener {
-
-//, public MIP_ProcessListener
-//, public MIP_VoiceListener
+, public MIP_EditorListener {
 
 //------------------------------
 protected:
 //------------------------------
 
-
-  MIP_EventHandler      MEventHandler             = MIP_EventHandler(this,&MParameters,&MNoteHandler);
-  MIP_ParameterManager  MParameters               = MIP_ParameterManager(this);
-  MIP_NoteHandler       MNoteHandler              = MIP_NoteHandler(this);
-
-  //MIP_ProcessHandler    MProcessHandler   = MIP_ProcessHandler(this);
-  //myVoiceHandler        MVoiceHandler     = myVoiceHandler(this);
-
+  MIP_ParameterArray      MParameters = {};
   MIP_Editor*           MEditor                   = nullptr;
   MIP_Host*             MHost                     = nullptr;
 
@@ -101,12 +83,6 @@ protected:
   uint32_t              MSelectedQuickControls    = 0;
   int32_t               MRenderMode               = 0;
 
-  double*               MAudioParamValues         = {0};
-  double*               MHostParamValues          = {0};
-
-  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS_PER_BLOCK> MAudioParamQueue  = {};
-  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS_PER_BLOCK> MHostParamQueue   = {};
-
   uint32_t              MLatency                  = 0;
   uint32_t              MTail                     = 0;
 
@@ -114,6 +90,12 @@ protected:
   MIP_AudioPortArray    MAudioOutputs             = {};
   MIP_NotePortArray     MNoteInputs               = {};
   MIP_NotePortArray     MNoteOutputs              = {};
+
+  double*               MAudioParamValues         = {0};
+  double*               MHostParamValues          = {0};
+
+  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS_PER_BLOCK> MAudioParamQueue  = {};
+  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS_PER_BLOCK> MHostParamQueue   = {};
 
 //------------------------------
 public:
@@ -141,7 +123,7 @@ public:
       deleteAudioOutputs();
       deleteNoteInputs();
       deleteNoteOutputs();
-      //deleteParameters(); // deleted in MParameterManager destructor
+      deleteParameters();
     #endif
     delete MHost;
   }
@@ -153,13 +135,13 @@ public: // plugin
   bool init() override {
     CLAP_Print("\n");
     // queues
-    uint32_t num = MParameters.parameterCount();
+    uint32_t num = MParameters.size();
     uint32_t size = num * sizeof(double);
     MAudioParamValues = (double*)malloc(size);
     MHostParamValues = (double*)malloc(size);
     memset(MAudioParamValues,0,size);
     memset(MHostParamValues,0,size);
-    MParameters.setDefaultParameterValues();
+    setDefaultParameterValues();
     return true;
   }
 
@@ -176,7 +158,8 @@ public: // plugin
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) override {
     CLAP_Print("sample_rate %.3f min_frames_count %i max_frames_count %i\n",sample_rate,min_frames_count,max_frames_count);
     MIsActivated = true;
-    return MParameters.activate(sample_rate,min_frames_count,max_frames_count);
+    //return MParameters.activate(sample_rate,min_frames_count,max_frames_count);
+    return true;
   }
 
   //----------
@@ -205,21 +188,15 @@ public: // plugin
 
   void reset() override {
     CLAP_Print("\n");
-    //MParameters.reset();
   }
 
   //----------
 
-    //flushAudioParams();
-    //handle_input_events(process->in_events,process->out_events);
-    //handle_process(process);
-    //handle_output_events(process->in_events,process->out_events);
-
   clap_process_status process(const clap_process_t *process) override {
     flushAudioParams();
-    MEventHandler.preProcess(process->in_events,process->out_events);
-    //MProcessor.process(process);
-    MEventHandler.postProcess(process->in_events,process->out_events);
+    preProcessEvents(process->in_events,process->out_events);
+    //..
+    postProcessEvents(process->in_events,process->out_events);
     flushHostParams(process->out_events);
     return CLAP_PROCESS_CONTINUE;
   }
@@ -228,30 +205,30 @@ public: // plugin
 
   const void* get_extension(const char *id) override {
     CLAP_Print("id %s\n",id);
-    if (MIP_IsEqual(id,CLAP_EXT_AMBISONIC))           return &MAmbisonic;
-    if (MIP_IsEqual(id,CLAP_EXT_AUDIO_PORTS))         return &MAudioPorts;
-    if (MIP_IsEqual(id,CLAP_EXT_AUDIO_PORTS_CONFIG))  return &MAudioPorts;
-    //if (MIP_IsEqual(id,CLAP_EXT_CHECK_FOR_UPDATE))    return &MCheckForUpdate;
-    if (MIP_IsEqual(id,CLAP_EXT_CV))                  return &MCv;
-    if (MIP_IsEqual(id,CLAP_EXT_FILE_REFERENCE))      return &MFileReference;
-    if (MIP_IsEqual(id,CLAP_EXT_GUI))                 return &MGui;
-    if (MIP_IsEqual(id,CLAP_EXT_LATENCY))             return &MLatency;
-    if (MIP_IsEqual(id,CLAP_EXT_MIDI_MAPPINGS))       return &MMidiMappings;
-    if (MIP_IsEqual(id,CLAP_EXT_NOTE_NAME))           return &MNoteName;
-    if (MIP_IsEqual(id,CLAP_EXT_NOTE_PORTS))          return &MNotePorts;
-    if (MIP_IsEqual(id,CLAP_EXT_PARAMS))              return &MParams;
-    if (MIP_IsEqual(id,CLAP_EXT_POSIX_FD_SUPPORT))    return &MPosixFdSupport;
-    if (MIP_IsEqual(id,CLAP_EXT_PRESET_LOAD))         return &MPresetLoad;
-    if (MIP_IsEqual(id,CLAP_EXT_QUICK_CONTROLS))      return &MQuickControls;
-    if (MIP_IsEqual(id,CLAP_EXT_RENDER))              return &MRender;
-    if (MIP_IsEqual(id,CLAP_EXT_STATE))               return &MState;
-    if (MIP_IsEqual(id,CLAP_EXT_SURROUND))            return &MSurround;
-    if (MIP_IsEqual(id,CLAP_EXT_TAIL))                return &MTail;
-    if (MIP_IsEqual(id,CLAP_EXT_THREAD_POOL))         return &MThreadPool;
-    if (MIP_IsEqual(id,CLAP_EXT_TIMER_SUPPORT))       return &MTimerSupport;
-    if (MIP_IsEqual(id,CLAP_EXT_TRACK_INFO))          return &MTrackInfo;
-    if (MIP_IsEqual(id,CLAP_EXT_TUNING))              return &MTuning;
-    if (MIP_IsEqual(id,CLAP_EXT_VOICE_INFO))          return &MVoiceInfo;
+    //if (MIP_IsEqual(id,CLAP_EXT_AMBISONIC))           return &MAmbisonic;
+    if (MIP_IsEqual(id,CLAP_EXT_AUDIO_PORTS))           return &MAudioPorts;
+    //if (MIP_IsEqual(id,CLAP_EXT_AUDIO_PORTS_CONFIG))  return &MAudioPorts;
+    ////if (MIP_IsEqual(id,CLAP_EXT_CHECK_FOR_UPDATE))  return &MCheckForUpdate;
+    //if (MIP_IsEqual(id,CLAP_EXT_CV))                  return &MCv;
+    //if (MIP_IsEqual(id,CLAP_EXT_FILE_REFERENCE))      return &MFileReference;
+    if (MIP_IsEqual(id,CLAP_EXT_GUI))                   return &MGui;
+    if (MIP_IsEqual(id,CLAP_EXT_LATENCY))               return &MLatency;
+    //if (MIP_IsEqual(id,CLAP_EXT_MIDI_MAPPINGS))       return &MMidiMappings;
+    //if (MIP_IsEqual(id,CLAP_EXT_NOTE_NAME))           return &MNoteName;
+    if (MIP_IsEqual(id,CLAP_EXT_NOTE_PORTS))            return &MNotePorts;
+    if (MIP_IsEqual(id,CLAP_EXT_PARAMS))                return &MParams;
+    //if (MIP_IsEqual(id,CLAP_EXT_POSIX_FD_SUPPORT))    return &MPosixFdSupport;
+    //if (MIP_IsEqual(id,CLAP_EXT_PRESET_LOAD))         return &MPresetLoad;
+    //if (MIP_IsEqual(id,CLAP_EXT_QUICK_CONTROLS))      return &MQuickControls;
+    //if (MIP_IsEqual(id,CLAP_EXT_RENDER))              return &MRender;
+    if (MIP_IsEqual(id,CLAP_EXT_STATE))                 return &MState;
+    //if (MIP_IsEqual(id,CLAP_EXT_SURROUND))            return &MSurround;
+    if (MIP_IsEqual(id,CLAP_EXT_TAIL))                  return &MTail;
+    //if (MIP_IsEqual(id,CLAP_EXT_THREAD_POOL))         return &MThreadPool;
+    //if (MIP_IsEqual(id,CLAP_EXT_TIMER_SUPPORT))       return &MTimerSupport;
+    //if (MIP_IsEqual(id,CLAP_EXT_TRACK_INFO))          return &MTrackInfo;
+    //if (MIP_IsEqual(id,CLAP_EXT_TUNING))              return &MTuning;
+    if (MIP_IsEqual(id,CLAP_EXT_VOICE_INFO))            return &MVoiceInfo;
     return nullptr;
   }
 
@@ -527,7 +504,8 @@ public: // ext - gui
   bool gui_show() override {
     CLAP_Print("\n");
     if (MEditor) {
-      MEditor->setParameterValues(&MParameters,false);
+      //MEditor->setEditorParameterValues(&MParameters,false);
+      setEditorParameterValues(false);
       bool res = MEditor->show();
       MIsEditorOpen = res;
       return res;
@@ -634,14 +612,14 @@ public: // ext - params
 
   uint32_t params_count() override {
     CLAP_Print("\n");
-    return MParameters.parameterCount();
+    return MParameters.size();
   }
 
   //----------
 
   bool params_get_info(uint32_t param_index, clap_param_info_t* param_info) override {
     CLAP_Print("param_index %i\n",param_index);
-    MIP_Parameter* parameter = MParameters.getParameter(param_index);
+    MIP_Parameter* parameter = MParameters[param_index];
     clap_param_info_t* info = parameter->getInfo();
     //printParamInfo(info);
     memcpy(param_info,info,sizeof(clap_param_info_t));
@@ -652,7 +630,7 @@ public: // ext - params
 
   bool params_get_value(clap_id param_id, double *value) override {
     CLAP_Print("param_id %i\n",param_id);
-    MIP_Parameter* parameter = MParameters.getParameter(param_id);
+    MIP_Parameter* parameter = MParameters[param_id];
     *value = parameter->getValue();
     return true;
   }
@@ -661,7 +639,7 @@ public: // ext - params
 
   bool params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) override {
     CLAP_Print("param_id %i value %.3f\n",param_id,value);
-    MIP_Parameter* parameter = MParameters.getParameter(param_id);
+    MIP_Parameter* parameter = MParameters[param_id];
     return parameter->valueToText(value,display,size);
   }
 
@@ -669,7 +647,7 @@ public: // ext - params
 
   bool params_text_to_value(clap_id param_id, const char* display, double* value) override {
     CLAP_Print("param_id %i display %.3f\n",param_id,display);
-    MIP_Parameter* parameter = MParameters.getParameter(param_id);
+    MIP_Parameter* parameter = MParameters[param_id];
     return parameter->textToValue(display,value);
   }
 
@@ -677,8 +655,8 @@ public: // ext - params
 
   void params_flush(const clap_input_events_t  *in, const clap_output_events_t *out) override {
     CLAP_Print("\n");
-    MEventHandler.preProcess(in,out);
-    MEventHandler.postProcess(in,out);
+    preProcessEvents(in,out);
+    postProcessEvents(in,out);
     //handle_input_events(in,out);
     //handle_output_events(in,out);
   }
@@ -757,10 +735,10 @@ public: // ext - state
     CLAP_Print("\n");
     uint32_t version = 0;
     stream->write(stream,&version,sizeof(uint32_t));
-    uint32_t num = MParameters.parameterCount();
+    uint32_t num = MParameters.size();
     stream->write(stream,&num,sizeof(uint32_t));
     for (uint32_t i=0; i<num; i++) {
-      MIP_Parameter* param = MParameters.getParameter(i);
+      MIP_Parameter* param = MParameters[i];
       double value = param->getValue();
       stream->write(stream,&value,sizeof(double));
     }
@@ -771,16 +749,17 @@ public: // ext - state
 
   bool state_load(const clap_istream_t *stream) override {
     CLAP_Print("\n");
+    return true;
     uint32_t version = 0;
     uint32_t num = 0;
-    uint32_t param_count = MParameters.parameterCount();
+    uint32_t param_count = MParameters.size();
     stream->read(stream,&version,sizeof(uint32_t));
     stream->read(stream,&num,sizeof(uint32_t));
     //MIP_Assert( num == MParameters.parameterCount() );
     if (version == 0) {
       if (num == param_count) {
         for (uint32_t i=0; i<num; i++) {
-          MIP_Parameter* param = MParameters.getParameter(i);
+          MIP_Parameter* param = MParameters[i];
           double value = 0.0;
           stream->read(stream,&value,sizeof(double));
           param->setValue(value);
@@ -873,71 +852,11 @@ public: // ext - voice_info
     return false;
   }
 
+//----------------------------------------------------------------------
 //
-//------------------------------
 //
-
-//------------------------------
-public: // note listener
-//------------------------------
-
-//------------------------------
-protected: // setup
-//------------------------------
-
-//  void setupAudioInputs(clap_audio_port_info_t* inputs, uint32_t num) {
-//    for (uint32_t i=0; i<num; i++) {
-//      const clap_audio_port_info_t* info = &inputs[i];
-//      MAudioInputs.append(info);
-//    }
-//  }
 //
-//  //void appendAudioInput(clap_audio_port_info_t APort) {
-//  //  MAudioInputs.append(APort);
-//  //  return APort;
-//  //}
-//
-//  //void deleteAudioInputs() {
-//  //  for (uint32_t i=0; i<MAudioInputs.size(); i++) {
-//  //    delete MAudioInputs[i];
-//  //  }
-//  //}
-//
-//  //----------
-//
-//  void setupAudioOutputs(clap_audio_port_info_t* outputs, uint32_t num) {
-//    for (uint32_t i=0; i<num; i++) {
-//      const clap_audio_port_info_t* info = &outputs[i];
-//      MAudioOutputs.append(info);
-//    }
-//  }
-//
-//  //----------
-//
-//  void setupNoteInputs(clap_note_port_info_t* inputs, uint32_t num) {
-//    for (uint32_t i=0; i<num; i++) {
-//      const clap_note_port_info_t* info = &inputs[i];
-//      MNoteInputs.append(info);
-//    }
-//  }
-//
-//  //----------
-//
-//  void setupNoteOutputs(clap_note_port_info_t* outputs, uint32_t num) {
-//    for (uint32_t i=0; i<num; i++) {
-//      const clap_note_port_info_t* info = &outputs[i];
-//      MNoteOutputs.append(info);
-//    }
-//  }
-//
-//  //----------
-//
-//  void setupQuickControls(clap_quick_controls_page_t* page, uint32_t num) {
-//    for (uint32_t i=0; i<num; i++) {
-//      const clap_quick_controls_page_t* info = &page[i];
-//      MQuickControls.append(info);
-//    }
-//  }
+//----------------------------------------------------------------------
 
 //------------------------------
 protected: // parameters
@@ -947,59 +866,157 @@ protected: // parameters
     //MIP_PRINT;
     for (uint32_t i=0; i<num; i++) {
       MIP_Parameter* parameter = new MIP_Parameter(&params[i]);
-      MParameters.appendParameter(parameter);
-    }
-  }
-
-//------------------------------
-public: // note listener
-//------------------------------
-
-  void on_note_listener_note_end(MIP_Note ANote) override {
-    MIP_Print("TODO\n");
-    //clap_event_note_t event;
-    //event.header.size = sizeof(clap_event_note_t);
-    //event.header.time = 0;
-    //event.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
-    //event.header.type = CLAP_EVENT_NOTE_END;
-    //event.header.flags = 0;
-    //event.note_id = ANote.note_id;
-    //event.port_index = ANote.port;
-    //event.channel = ANote.channel;
-    //event.key = ANote.key;
-    //event.velocity = 0.0;
-  }
-
-//------------------------------
-public: // event listener
-//------------------------------
-
-  void on_event_listener_parameter(uint32_t AIndex, double AValue) override {
-    if (MEditor && MIsEditorOpen) {
-      MEditor->queueGuiParam(AIndex,AValue);
+      MParameters.append(parameter);
     }
   }
 
   //----------
 
-  void on_event_listener_modulation(uint32_t AIndex, double AValue) override {
-    if (MEditor && MIsEditorOpen) {
-      MEditor->queueGuiMod(AIndex,AValue);
+  void appendParameter(MIP_Parameter* AParameter, bool AKeepIndex=false) {
+    if (!AKeepIndex) {
+      uint32_t index = MParameters.size();
+      AParameter->setId(index);
+    }
+    MParameters.append(AParameter);
+  }
+
+  //----------
+
+  //----------
+
+  void deleteParameters() {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      delete MParameters[i];
+    }
+  }
+
+
+//------------------------------
+public: // audio inputs
+//------------------------------
+
+  void setupAudioInputs(clap_audio_port_info_t* infos, uint32_t num) {
+    //MIP_PRINT;
+    for (uint32_t i=0; i<num; i++) {
+      MIP_AudioPort* audio_port = new MIP_AudioPort(&infos[i]);
+      MAudioInputs.append(audio_port);
+    }
+  }
+
+  //----------
+
+  MIP_AudioPort* appendAudioInput(MIP_AudioPort* AAudioPort, bool AKeepIndex=false) {
+    if (!AKeepIndex) {
+      uint32_t index = MAudioInputs.size();
+      AAudioPort->setId(index);
+    }
+    MAudioInputs.append(AAudioPort);
+    return AAudioPort;
+  }
+
+  //----------
+
+  void deleteAudioInputs() {
+    for (uint32_t i=0; i<MAudioInputs.size(); i++) {
+      delete MAudioInputs[i];
+      MAudioInputs[i] = nullptr;
     }
   }
 
 //------------------------------
-public: // editor listener
+public: // audio outputs
 //------------------------------
 
-  // called from MIP_Editor.on_window_listener_updateWidget
-  // assumes values is denormalized
+  void setupAudioOutputs(clap_audio_port_info_t* infos, uint32_t num) {
+    //MIP_PRINT;
+    for (uint32_t i=0; i<num; i++) {
+      MIP_AudioPort* audio_port = new MIP_AudioPort(&infos[i]);
+      MAudioOutputs.append(audio_port);
+    }
+  }
 
-  void on_editor_listener_parameter(uint32_t AIndex, double AValue) override {
-    //MIP_Print("%f\n",AValue);
-    queueAudioParam(AIndex,AValue);
-    queueHostParam(AIndex,AValue);
-    MParameters.handle_parameter(AIndex,AValue);
+  //----------
+
+  MIP_AudioPort* appendAudioOutput(MIP_AudioPort* AAudioPort, bool AKeepIndex=false) {
+    if (!AKeepIndex) {
+      uint32_t index = MAudioOutputs.size();
+      AAudioPort->setId(index);
+    }
+    MAudioOutputs.append(AAudioPort);
+    return AAudioPort;
+  }
+
+  //----------
+
+  void deleteAudioOutputs() {
+    for (uint32_t i=0; i<MAudioOutputs.size(); i++) {
+      delete MAudioOutputs[i];
+      MAudioOutputs[i] = nullptr;
+    }
+  }
+
+//------------------------------
+public: // note inputs
+//------------------------------
+
+  void setupNoteInputs(clap_note_port_info_t* infos, uint32_t num) {
+    //MIP_PRINT;
+    for (uint32_t i=0; i<num; i++) {
+      MIP_NotePort* note_port = new MIP_NotePort(&infos[i]);
+      MNoteInputs.append(note_port);
+    }
+  }
+
+  //----------
+
+  MIP_NotePort* appendNoteInput(MIP_NotePort* ANotePort, bool AKeepIndex=false) {
+    if (!AKeepIndex) {
+      uint32_t index = MNoteInputs.size();
+      ANotePort->setId(index);
+    }
+    MNoteInputs.append(ANotePort);
+    return ANotePort;
+  }
+
+  //----------
+
+  void deleteNoteInputs() {
+    for (uint32_t i=0; i<MNoteInputs.size(); i++) {
+      delete MNoteInputs[i];
+      MNoteInputs[i] = nullptr;
+    }
+  }
+
+//------------------------------
+public: // note outputs
+//------------------------------
+
+  void setupNoteOutputs(clap_note_port_info_t* infos, uint32_t num) {
+    //MIP_PRINT;
+    for (uint32_t i=0; i<num; i++) {
+      MIP_NotePort* note_port = new MIP_NotePort(&infos[i]);
+      MNoteOutputs.append(note_port);
+    }
+  }
+
+  //----------
+
+  MIP_NotePort* appendNoteOutput(MIP_NotePort* ANotePort, bool AKeepIndex=false) {
+    if (!AKeepIndex) {
+      uint32_t index = MNoteOutputs.size();
+      ANotePort->setId(index);
+    }
+    MNoteOutputs.append(ANotePort);
+    return ANotePort;
+  }
+
+  //----------
+
+  void deleteNoteOutputs() {
+    for (uint32_t i=0; i<MNoteOutputs.size(); i++) {
+      delete MNoteOutputs[i];
+      MNoteOutputs[i] = nullptr;
+    }
   }
 
 //------------------------------
@@ -1018,7 +1035,7 @@ public: // queues
   void flushAudioParams() {
     uint32_t index = 0;
     while (MAudioParamQueue.read(&index)) {
-      MIP_Parameter* param = MParameters.getParameter(index);
+      MIP_Parameter* param = MParameters[index];
       double value = MAudioParamValues[index];
       // if we already set this, it should be (bit) identical?
       if (value != param->getValue()) {
@@ -1050,8 +1067,132 @@ public: // queues
   }
 
 //------------------------------
-public: // events
+public: // editor listener
 //------------------------------
+
+  void on_editor_listener_parameter(uint32_t AIndex, double AValue) override {
+    queueAudioParam(AIndex,AValue);
+    queueHostParam(AIndex,AValue);
+    handle_parameter(AIndex,AValue);
+  }
+
+//------------------------------
+public: // param / mod
+//------------------------------
+
+  void handle_parameter(uint32_t AIndex, double AValue) {
+//    MIP_Print("AIndex %i AValue %.3f\n",AIndex,AValue);
+    MParameters[AIndex]->setValue(AValue);
+  }
+
+  //----------
+
+  void handle_modulation(uint32_t AIndex, double AValue) {
+//    MIP_Print("AIndex %i AValue %.3f\n",AIndex,AValue);
+    MParameters[AIndex]->setModulation(AValue);
+  }
+
+//------------------------------
+public: //events
+//------------------------------
+
+  void preProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+    uint32_t num_events = in_events->size(in_events);
+    for (uint32_t i=0; i<num_events; i++) {
+      const clap_event_header_t* header = in_events->get(in_events,i);
+      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+        handle_event(header);
+      }
+    }
+  }
+
+  //----------
+
+  void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  void handle_event(const clap_event_header_t* header) {
+    switch (header->type) {
+      case CLAP_EVENT_PARAM_VALUE:      handle_parameter_event((clap_event_param_value_t*)header); break;
+      case CLAP_EVENT_PARAM_MOD:        handle_modulation_event((clap_event_param_mod_t*)header); break;
+      case CLAP_EVENT_TRANSPORT:        handle_transport_event((clap_event_transport_t*)header); break;
+      case CLAP_EVENT_NOTE_ON:          handle_note_on_event((clap_event_note_t*)header); break;
+      case CLAP_EVENT_NOTE_OFF:         handle_note_off_event((clap_event_note_t*)header); break;
+      case CLAP_EVENT_NOTE_END:         handle_note_end_event((clap_event_note_t*)header); break;
+      case CLAP_EVENT_NOTE_CHOKE:       handle_note_choke_event((clap_event_note_t*)header); break;
+      case CLAP_EVENT_NOTE_EXPRESSION:  handle_note_expression_event((clap_event_note_expression_t*)header); break;
+      case CLAP_EVENT_MIDI:             handle_midi_event((clap_event_midi_t*)header); break;
+      case CLAP_EVENT_MIDI2:            handle_midi2_event((clap_event_midi2_t*)header); break;
+      case CLAP_EVENT_MIDI_SYSEX:       handle_midi_sysex_event((clap_event_midi_sysex_t*)header); break;
+    }
+  };
+
+  //----------
+
+  void handle_parameter_event(clap_event_param_value_t* event) {
+    //MParameters.handle_value_event(event);
+    handle_parameter(event->param_id,event->value);
+    //if (MListener) MListener->on_event_listener_parameter(event->param_id,event->value);
+    if (MEditor && MIsEditorOpen) {
+      MEditor->queueGuiParam(event->param_id,event->value);
+    }
+  }
+
+  void handle_modulation_event(clap_event_param_mod_t* event) {
+    //MParameters.handle_modulation_event(event);
+    handle_modulation(event->param_id,event->amount);
+    //if (MListener) MListener->on_event_listener_modulation(event->param_id,event->amount);
+    if (MEditor && MIsEditorOpen) {
+      MEditor->queueGuiMod(event->param_id,event->amount);
+    }
+  }
+
+  void handle_transport_event(clap_event_transport_t* event) {
+    MIP_Print("TODO\n");
+  }
+
+  void handle_note_on_event(clap_event_note_t* event) {
+    MIP_Print("TODO\n");
+    //if (MAudioProcessor) MAudioProcessor->handle_note_on_event(event);
+  }
+
+  void handle_note_off_event(clap_event_note_t* event) {
+    MIP_Print("TODO\n");
+    //if (MAudioProcessor) MAudioProcessor->handle_note_off_event(event);
+  }
+
+  void handle_note_end_event(clap_event_note_t* event) {
+    MIP_Print("ERROR\n");
+    //if (MAudioProcessor) MAudioProcessor->handle_note_end_event(event);
+  }
+
+  void handle_note_choke_event(clap_event_note_t* event) {
+    MIP_Print("TODO\n");
+    //if (MAudioProcessor) MAudioProcessor->handle_note_choke_event(event);
+  }
+
+  void handle_note_expression_event(clap_event_note_expression_t* event) {
+    MIP_Print("TODO\n");
+    //if (MAudioProcessor) MAudioProcessor->handle_note_expression_event(event);
+  }
+
+  //----------
+
+  void handle_midi_event(clap_event_midi_t* event) {
+    MIP_Print("TODO\n");
+  }
+
+  void handle_midi2_event(clap_event_midi2_t* event) {
+    MIP_Print("TODO\n");
+  }
+
+  void handle_midi_sysex_event(clap_event_midi_sysex_t* event) {
+    MIP_Print("TODO\n");
+  }
 
 //------------------------------
 public: // send events
@@ -1130,131 +1271,28 @@ public: // send events
     out_events->try_push(out_events,header);
   }
 
-
-//------------------------------
-public: // parameters
-//------------------------------
-
-  //MIP_Parameter* appendParameter(MIP_Parameter* AParameter,bool AKeepIndex=false) {
-  //  MParameters.appendParameter(AParameter,AKeepIndex);
-  //  return AParameter;
-  //}
-
-  //----------
-
-  //void setDefaultParameterValues() {
-  //  for (uint32_t i=0; i<MParameters.parameterCount(); i++) {
-  //    MIP_Parameter* param = MParameters.getParameter(i);
-  //    double value = param->getDefaultValue();
-  //    //MIP_Print("%i. %f\n",i,value);
-  //    param->setValue(value);
-  //  }
-  //}
-
-  //----------
-
-  //void setEditorParameterValues(bool ARedraw=false) {
-  //  if (MEditor) {
-  //    for (uint32_t i=0; i<MParameters.parameterCount(); i++) {
-  //      MIP_Parameter* param = MParameters.getParameter(i);
-  //      double value = param->getValue();
-  //      //MIP_Print("%i. %f\n",i,value);
-  //      MEditor->setParameterValue(i,value,ARedraw);
-  //    }
-  //  }
-  //}
-
-//------------------------------
-public: // audio inputs
-//------------------------------
-
-  MIP_AudioPort* appendAudioInput(MIP_AudioPort* AAudioPort, bool AKeepIndex=false) {
-    if (!AKeepIndex) {
-      uint32_t index = MAudioInputs.size();
-      AAudioPort->setId(index);
-    }
-    MAudioInputs.append(AAudioPort);
-    return AAudioPort;
-  }
-
-  //----------
-
-  void deleteAudioInputs() {
-    for (uint32_t i=0; i<MAudioInputs.size(); i++) {
-      delete MAudioInputs[i];
-      MAudioInputs[i] = nullptr;
-    }
-  }
-
-//------------------------------
-public: // audio outputs
-//------------------------------
-
-  MIP_AudioPort* appendAudioOutput(MIP_AudioPort* AAudioPort, bool AKeepIndex=false) {
-    if (!AKeepIndex) {
-      uint32_t index = MAudioOutputs.size();
-      AAudioPort->setId(index);
-    }
-    MAudioOutputs.append(AAudioPort);
-    return AAudioPort;
-  }
-
-  //----------
-
-  void deleteAudioOutputs() {
-    for (uint32_t i=0; i<MAudioOutputs.size(); i++) {
-      delete MAudioOutputs[i];
-      MAudioOutputs[i] = nullptr;
-    }
-  }
-
-//------------------------------
-public: // note inputs
-//------------------------------
-
-  MIP_NotePort* appendNoteInput(MIP_NotePort* ANotePort, bool AKeepIndex=false) {
-    if (!AKeepIndex) {
-      uint32_t index = MNoteInputs.size();
-      ANotePort->setId(index);
-    }
-    MNoteInputs.append(ANotePort);
-    return ANotePort;
-  }
-
-  //----------
-
-  void deleteNoteInputs() {
-    for (uint32_t i=0; i<MNoteInputs.size(); i++) {
-      delete MNoteInputs[i];
-      MNoteInputs[i] = nullptr;
-    }
-  }
-
-//------------------------------
-public: // note outputs
-//------------------------------
-
-  MIP_NotePort* appendNoteOutput(MIP_NotePort* ANotePort, bool AKeepIndex=false) {
-    if (!AKeepIndex) {
-      uint32_t index = MNoteOutputs.size();
-      ANotePort->setId(index);
-    }
-    MNoteOutputs.append(ANotePort);
-    return ANotePort;
-  }
-
-  //----------
-
-  void deleteNoteOutputs() {
-    for (uint32_t i=0; i<MNoteOutputs.size(); i++) {
-      delete MNoteOutputs[i];
-      MNoteOutputs[i] = nullptr;
-    }
-  }
-
 //------------------------------
 public:
 //------------------------------
+
+  void setDefaultParameterValues() {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      MIP_Parameter* param = MParameters[i];
+      double value = param->getDefaultValue();
+      //MIP_Print("%i. %f\n",i,value);
+      param->setValue(value);
+    }
+  }
+
+  //----------
+
+  void setEditorParameterValues(bool ARedraw=false) {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      MIP_Parameter* param = MParameters[i];
+      double value = param->getValue();
+      MEditor->setParameterValue(i,value,ARedraw);
+    }
+  }
 
 };
 

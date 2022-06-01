@@ -100,11 +100,14 @@ public:
       wdg_knob->setValue(AValue);
     }
     if (wdg_value) {
-      //MIP_Parameter* param = getParameter();
-      //if (param) {
-      //  AValue = param->valueToText(AValue);
-      //}
-      sprintf(value_text,"%.3f",AValue); // todo: parameter.valueToText
+      MIP_Parameter* param = getParameter();
+      if (param) {
+        AValue = param->denormalizeValue(AValue);
+        param->valueToText(AValue,value_text,32);
+      }
+      else {
+        sprintf(value_text,"%.3f",AValue); // todo: parameter.valueToText
+      }
       wdg_value->setText(value_text);
     }
   }
@@ -148,10 +151,10 @@ public:
       setValue( ASender->getValue() );
       MIP_Parameter* par = (MIP_Parameter*)getParameter();
       if (par) {
-        if (par->valueToText(MValue,value_text,32)) {
-          //displayText(value_text,getValue());
-          wdg_value->setText(value_text);
-        }
+        float value = par->denormalizeValue(MValue);
+        par->valueToText(value,value_text,32);
+        //displayText(value_text,getValue());
+        wdg_value->setText(value_text);
       }
       do_widget_redraw(wdg_value,wdg_value->getRect(),0);
     }

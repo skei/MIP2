@@ -207,6 +207,9 @@ private:
 
   //----------
 
+
+  //void on_editor_listener_parameter(uint32_t AIndex, double AValue) overrude {}
+
   void handle_editor_parameter(uint32_t AIndex, float AValue) final {
     MVoiceManager.setParameter(AIndex,AValue);
   }

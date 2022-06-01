@@ -15,7 +15,7 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 //tail -F ~/.BitwigStudio/log/engine.log | pv --rate --bytes > /dev/null
 
@@ -23,6 +23,8 @@
 //#define MIP_DEBUG_WATCHES
 //#define MIP_DEBUG_CALLSTACK
 //#define MIP_DEBUG_CRASH_HANDLER
+
+//#define MIP_DEBUG_CLAP
 
 //#define MIP_VST2
 //#define MIP_VST3
@@ -82,29 +84,72 @@ typedef MIP_VoiceManager<myVoice,NUM_VOICES> myVoiceManager;
 //
 //----------------------------------------------------------------------
 
-const char* myFeatures[] = {
-  "instrument",
-  nullptr
-};
+//const char* myFeatures[] = {
+//  "instrument",
+//  nullptr
+//};
 
 //----------
 
 const clap_plugin_descriptor_t myDescriptor = {
-  CLAP_VERSION,
-  "skei.audio/test_synth1",
+  .clap_version = CLAP_VERSION,
+  .id           = "skei.audio/test_synth1",
   #ifdef MIP_DEBUG
-    "test_synth1 (debug)",
+    .name       = "test_synth1 (debug)",
   #else
-    "test_synth1",
+    .name       = "test_synth1",
   #endif
-  "skei.audio",
-  "https://torhelgeskei.com",
-  "",
-  "",
-  "0.0.4",
-  "simple mip2 test synth",
-  myFeatures
+  .vendor       = "skei.audio",
+  .url          = "https://torhelgeskei.com",
+  .manual_url   = "",
+  .support_url  = "",
+  .version      = "0.0.4",
+  //myFeatures
+  .features     = (const char*[]){CLAP_PLUGIN_FEATURE_INSTRUMENT,nullptr} //"simple mip2 test synth",
 };
+
+//----------------------------------------------------------------------
+//
+// processor
+//
+//----------------------------------------------------------------------
+
+//class myProcessor {
+//
+//public:
+//
+//  //myProcessor(MIP_AudioProcessorListener* AListener)
+//  //: MIP_AudioProcessor(AListener) {
+//  //}
+//
+//public:
+//
+//  clap_process_status process(const clap_process_t *process) {
+//    //MIP_PRINT;
+//    return CLAP_PROCESS_CONTINUE;
+//  }
+//
+//  void handle_note_on_event(clap_event_note_t* event) { // final {
+//    MIP_Print("TODO\n");
+//  }
+//
+//  void handle_note_off_event(clap_event_note_t* event) { // final {
+//    MIP_Print("TODO\n");
+//  }
+//
+//  void handle_note_end_event(clap_event_note_t* event) { // final {
+//    MIP_Print("ERROR\n");
+//  }
+//
+//  void handle_note_choke_event(clap_event_note_t* event) { // final {
+//    MIP_Print("TODO\n");
+//  }
+//
+//  void handle_note_expression_event(clap_event_note_expression_t* event) { // final {
+//    MIP_Print("TODO\n");
+//  }
+//
+//};
 
 //----------------------------------------------------------------------
 //
@@ -113,6 +158,7 @@ const clap_plugin_descriptor_t myDescriptor = {
 //----------------------------------------------------------------------
 
 class myPlugin
+//: public MIP_Plugin<myProcessor> {
 : public MIP_Plugin {
 
 //------------------------------
@@ -224,35 +270,36 @@ private:
 //    },
 
     { PAR_OSC1_OCT,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
       nullptr,
       "Oct",
       "",
-      0.0,
-      4.0,
-      0.5
+     -4,
+      4,
+      0
     },
 
     { PAR_OSC1_SEMI,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
       nullptr,
       "Semi",
       "",
-      0.0,
-      1.0,
-      0.5
+     -12,
+      12,
+      0
     },
 
     { PAR_OSC1_CENT,
       CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED
         | CLAP_PARAM_IS_MODULATABLE
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Cent",
       "",
-      0.0,
+     -1.0,
       1.0,
-      0.5
+      0.
     },
 
     //---------- res1 ----------
@@ -298,34 +345,34 @@ private:
     },
 
     { PAR_RES1_OCT,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
       nullptr,
       "Oct",
       "",
-      0.0,
-      1.0,
-      0.5
+     -4,
+      4,
+      0
     },
 
     { PAR_RES1_SEMI,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
       nullptr,
       "Semi",
       "",
-      0.0,
-      1.0,
-      0.5
+     -12,
+      12,
+      0
 
     },
 
     { PAR_RES1_CENT,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
       nullptr,
       "Cent",
       "",
-      0.0,
+     -1.0,
       1.0,
-      0.5
+      0.0
     },
 
     { PAR_RES1_ROUGH,
@@ -453,6 +500,7 @@ public:
 //------------------------------
 
   myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
+  //: MIP_Plugin<myProcessor>(ADescriptor,AHost) {
   : MIP_Plugin(ADescriptor,AHost) {
     MIP_Print("Hello world!\n");
   }
@@ -467,27 +515,25 @@ public: // clap
     //MIP_Print("host version: %s\n",MHost->host->version);
     //MIP_Print("host clap version: %i.%i.%i\n",ver.major,ver.minor,ver.revision);
     //MHost->printSupportedExtensions();
-
     setupParameters(myParameters,NUM_PARAMS);
-//    setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
-//    setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
-
+    setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
+    setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
     return MIP_Plugin::init();
-
   }
 
   //----------
 
-//  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
-//    MVoiceManager.prepareVoices(sample_rate);
-//    // send initial parameter values to the voices
-//    for (uint32_t i=0; i<NUM_PARAMS; i++) {
-//      //float v = MParameterValues[i];
-//      float v = MParameters.getParameterValue(i);
-//      MVoiceManager.setParameter(i,v);
-//    }
-//    return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
-//  }
+  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
+    MIP_PRINT;
+    MVoiceManager.prepareVoices(sample_rate);
+    // send initial parameter values to the voices
+    for (uint32_t i=0; i<NUM_PARAMS; i++) {
+      //float v = MParameterValues[i];
+      float v = MParameters[i]->getValue();
+      MVoiceManager.setParameter(i,v);
+    }
+    return MIP_Plugin::activate(sample_rate,min_frames_count,max_frames_count);
+  }
 
   //----------
 
@@ -508,27 +554,44 @@ public: // clap
   //----------
 
   clap_process_status process(const clap_process_t *process) final {
-//    flushAudioParams();
-//    handle_input_events(process->in_events,process->out_events);
-//    handle_process(process);
-//    handle_output_events(process->in_events,process->out_events);
-//
-//    // hack!!!!!
-//    // update gui (state only) in process!
-//
-//    if (MEditor && MEditorIsOpen) {
-//      uint32_t num_playing = 0;
-//      uint32_t num_released = 0;
-//      for (uint32_t i=0; i<NUM_VOICES; i++) {
-//        uint32_t state = MVoiceManager.getVoiceState(i);
-//        ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
-//        if (state == MIP_VOICE_PLAYING) num_playing += 1;
-//        if (state == MIP_VOICE_RELEASED) num_released += 1;
-//      }
-//      ((myEditor*)MEditor)->MPlayingVoicesWidget->setValue(num_playing);
-//      ((myEditor*)MEditor)->MReleasedVoicesWidget->setValue(num_released);
-//      ((myEditor*)MEditor)->MTotalVoicesWidget->setValue(num_playing + num_released);
-//    }
+    flushAudioParams();
+
+    //handle_input_events(process->in_events,process->out_events);
+    preProcessEvents(process->in_events,process->out_events);
+
+    //handle_process(process);
+    float** outputs = process->audio_outputs[0].data32;
+    uint32_t length = process->frames_count;
+    #ifdef MIP_VOICE_PREPARE_EVENTS
+      MVoiceManager.processPrepared(process,MHost);
+    #else
+      MVoiceManager.processBlock(process);
+    #endif
+    float v = MParameters[PAR_VOL]->getValue();  // vol
+    float p = MParameters[PAR_PAN]->getValue();  // pan
+    float l = v * (1.0 - p);
+    float r = v * (      p);
+    MIP_ScaleStereoBuffer(outputs,l,r,length);
+
+    //handle_output_events(process->in_events,process->out_events);
+    postProcessEvents(process->in_events,process->out_events);
+
+    flushHostParams(process->out_events);
+    // hack!!!!!
+    // update gui (state only) in process!
+    if (MEditor && MIsEditorOpen) {
+      uint32_t num_playing = 0;
+      uint32_t num_released = 0;
+      for (uint32_t i=0; i<NUM_VOICES; i++) {
+        uint32_t state = MVoiceManager.getVoiceState(i);
+        ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
+        if (state == MIP_VOICE_PLAYING) num_playing += 1;
+        if (state == MIP_VOICE_RELEASED) num_released += 1;
+      }
+      ((myEditor*)MEditor)->MPlayingVoicesWidget->setValue(num_playing);
+      ((myEditor*)MEditor)->MReleasedVoicesWidget->setValue(num_released);
+      ((myEditor*)MEditor)->MTotalVoicesWidget->setValue(num_playing + num_released);
+    }
     return CLAP_PROCESS_CONTINUE;
   }
 
@@ -537,12 +600,10 @@ public: // clap
   //----------
 
   bool gui_create(const char *api, bool is_floating) final {
-    if (strcmp(api,CLAP_WINDOW_API_X11) != 0) return false;
-    if (is_floating) return false;
-    MIsEditorOpen = false;
+    MIP_PRINT;
     MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true,&myDescriptor);
-    return (MEditor);
-    return false;
+    if (!MEditor) return false;
+    return true;
   }
 
   //----------
@@ -550,6 +611,7 @@ public: // clap
   //----------
 
   bool voice_info_get(clap_voice_info_t *info) final {
+    MIP_PRINT;
     info->voice_count     = NUM_VOICES;
     info->voice_capacity  = NUM_VOICES;
     info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;
@@ -578,24 +640,10 @@ protected:
   //  MVoiceManager.setParameter(AIndex,AValue);
   //}
 
-  //----------
-
-  //void handle_process(const clap_process_t *process) final {
-  //  float** outputs = process->audio_outputs[0].data32;
-  //  uint32_t length = process->frames_count;
-  //
-  //  #ifdef MIP_VOICE_PREPARE_EVENTS
-  //    MVoiceManager.processPrepared(process,MHost);
-  //  #else
-  //    MVoiceManager.processBlock(process);
-  //  #endif
-  //
-  //  float v = MParameterValues[PAR_VOL];  // vol
-  //  float p = MParameterValues[PAR_PAN];  // pan
-  //  float l = v * (1.0 - p);
-  //  float r = v * (      p);
-  //  MIP_ScaleStereoBuffer(outputs,l,r,length);
-  //}
+  void on_editor_listener_parameter(uint32_t AIndex, double AValue) override {
+    MIP_Plugin::on_editor_listener_parameter(AIndex,AValue);
+    MVoiceManager.setParameter(AIndex,AValue);
+  }
 
 };
 

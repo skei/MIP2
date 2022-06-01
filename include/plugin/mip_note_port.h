@@ -39,11 +39,18 @@ public:
 
   //----------
 
+  MIP_NotePort(const clap_note_port_info_t* AInfo) {
+    MInfo.id                  = AInfo->id;
+    MInfo.supported_dialects  = AInfo->supported_dialects;
+    MInfo.preferred_dialect   = AInfo->preferred_dialect;
+    strncpy(MInfo.name,AInfo->name,CLAP_NAME_SIZE);
+  }
+
   MIP_NotePort(const char* AName, uint32_t ASupportedDialects=CLAP_NOTE_DIALECT_CLAP, uint32_t APreferredDialect=CLAP_NOTE_DIALECT_CLAP) {
-    //MInfo.id = 0;
+    MInfo.id                  = 0;
+    MInfo.supported_dialects  = ASupportedDialects;
+    MInfo.preferred_dialect   = APreferredDialect;
     strncpy(MInfo.name,AName,CLAP_NAME_SIZE);
-    MInfo.supported_dialects = ASupportedDialects;
-    MInfo.preferred_dialect = APreferredDialect;
   }
 
   //----------

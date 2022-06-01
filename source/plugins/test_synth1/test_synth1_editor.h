@@ -103,6 +103,7 @@ public:
         osc_oct_knob->getKnobWidget()->setSnapPos(0.5);
         osc_oct_knob->getKnobWidget()->setSnapDist(0.05);
         osc_oct_knob->getKnobWidget()->setBipolar(true);
+        //osc_oct_knob->getKnobWidget()->setQuantize(true);
         osc_panel->appendWidget(osc_oct_knob);
         connect(osc_oct_knob,PAR_OSC1_OCT);
 

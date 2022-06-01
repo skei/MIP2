@@ -40,6 +40,17 @@ public:
 
   //----------
 
+  MIP_AudioPort(const clap_audio_port_info_t* info) {
+    MInfo.id            = info->id;
+    strncpy(MInfo.name,info->name,CLAP_NAME_SIZE);
+    MInfo.flags         = info->flags;
+    MInfo.channel_count = info->channel_count;
+    MInfo.port_type     = info->port_type;
+    MInfo.in_place_pair = info->in_place_pair;
+  }
+
+  //----------
+
   MIP_AudioPort(const char* AName, uint32_t AFlags=CLAP_AUDIO_PORT_IS_MAIN, uint32_t AChannels=2, const char* APortType=CLAP_PORT_STEREO, uint32_t AInPlacePair=CLAP_INVALID_ID) {
     //MInfo.id = 0;
     strncpy(MInfo.name,AName,CLAP_NAME_SIZE);

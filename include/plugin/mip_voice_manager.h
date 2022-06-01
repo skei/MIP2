@@ -308,6 +308,17 @@ private: // events
 
   //----------
 
+  // AIndex = event index
+  // AOffset = budffer offset
+  // handle all events from AIndex, with offset AOffset
+  // returns samples until next event, or MIP_UINT32_MAX if no more
+
+  uint32_t handleEventsAt(const clap_process_t* process, uint32_t AIndex, uint32_t AOffset) {
+    return MIP_UINT32_MAX;
+  }
+
+  //----------
+
   void handleEvent(const clap_event_header_t* header) {
     switch (header->type) {
       case CLAP_EVENT_NOTE_ON:          handleNoteOnEvent((const clap_event_note_t*)header);                break;

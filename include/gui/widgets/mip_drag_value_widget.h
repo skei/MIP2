@@ -147,11 +147,14 @@ protected:
   float calcValue(float value, float deltax, float deltay, bool shift) {
 
     //bool stepped = false;
+
     int32_t steps = 0;
+
     //MIP_Parameter* param = getParameter();
     //if (param) {
     //  stepped = (param && param->info.flags & CLAP_PARAM_IS_STEPPED);
-    //  steps = param->info.max_value - param->info.min_value + 1;
+    //  steps = param->getMaxValue() - param->getMinValue() + 1;
+    //  MIP_Print("steps: %i\n",steps);
     //}
 
     float sens = MDragSensitivity;
