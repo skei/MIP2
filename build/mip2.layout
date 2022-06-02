@@ -1,15 +1,60 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
-	<ActiveTarget name="exe debug" />
+	<ActiveTarget name="plugin debug" />
+	<File name="../source/plugins/sa_botage/sa_botage_logo.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="157" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ports/sa_sonic_maximizer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3877" topLine="135" />
+		</Cursor>
+	</File>
+	<File name="../doc/compile.txt" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="32" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/test/test_gui.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/json.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4341" topLine="112" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/test_synth1/test_synth1_voice.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11334" topLine="305" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/preset.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="794" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ports.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1764" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_botage.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4017" topLine="159" />
+		</Cursor>
+	</File>
 	<File name="../source/plugins/test_synth1/test_synth1_widgets.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="16" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="../source/plugins/test_synth1/test_synth1_editor.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../source/plugins/test_synth1/test_synth1_editor.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="0" topLine="12" />
+			<Cursor1 position="6706" topLine="177" />
 		</Cursor>
 	</File>
 	<File name="../source/test/test_widget.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -27,6 +72,11 @@
 			<Cursor1 position="3780" topLine="139" />
 		</Cursor>
 	</File>
+	<File name="../doc/todo.txt" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="286" topLine="46" />
+		</Cursor>
+	</File>
 	<File name="../source/plugins/sa_mini.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="664" topLine="3" />
@@ -35,11 +85,6 @@
 	<File name="../source/plugins/sa_mini/sa_pitch.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="2350" topLine="89" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_plugin.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="27601" topLine="984" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/template_instrument.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -67,14 +112,24 @@
 			<Cursor1 position="2770" topLine="99" />
 		</Cursor>
 	</File>
-	<File name="../source/plugins/test_synth1.cpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="test/test1.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="10995" topLine="521" />
+			<Cursor1 position="0" topLine="71" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/test_synth1.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11087" topLine="551" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/sa_ports/sa_exciter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="3458" topLine="124" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_event_handler.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="123" />
 		</Cursor>
 	</File>
 	<File name="../source/apps/clap-host/midi_file.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -134,7 +189,7 @@
 	</File>
 	<File name="../source/plugins/test_gui1.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="39152" topLine="1084" />
+			<Cursor1 position="2612" topLine="126" />
 		</Cursor>
 	</File>
 	<File name="../source/test/test_gui2.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -145,11 +200,6 @@
 	<File name="../source/plugins/sa_ports/sa_large_room_reverb.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="4192" topLine="151" />
-		</Cursor>
-	</File>
-	<File name="../doc/compile.txt" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="32" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/sa_ports/sa_transient_killer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -167,19 +217,9 @@
 			<Cursor1 position="0" topLine="146" />
 		</Cursor>
 	</File>
-	<File name="../include/plugin/mip_event_handler.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="123" />
-		</Cursor>
-	</File>
 	<File name="../source/plugins/sa_ports/sa_tilteq.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="2914" topLine="118" />
-		</Cursor>
-	</File>
-	<File name="test/test1.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="36" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/sa_mini/sa_grains.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -192,24 +232,24 @@
 			<Cursor1 position="5111" topLine="185" />
 		</Cursor>
 	</File>
+	<File name="../include/plugin/mip_editor.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="850" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_voice_manager.h" open="1" top="1" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6959" topLine="165" />
+		</Cursor>
+	</File>
 	<File name="build.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1060" topLine="31" />
+			<Cursor1 position="595" topLine="25" />
 		</Cursor>
 	</File>
 	<File name="../source/apps/clap-host/main.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1354" topLine="31" />
-		</Cursor>
-	</File>
-	<File name="../LICENSE" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="23" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_editor.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="850" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="../source/apps/clap-host/print.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -232,54 +272,19 @@
 			<Cursor1 position="14155" topLine="150" />
 		</Cursor>
 	</File>
+	<File name="../LICENSE" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="23" topLine="0" />
+		</Cursor>
+	</File>
 	<File name="../source/apps/clap-host/arguments.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="4658" topLine="184" />
 		</Cursor>
 	</File>
-	<File name="../source/plugins/sa_botage/sa_botage_logo.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/plugin/mip_plugin.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="157" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_ports/sa_sonic_maximizer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3877" topLine="135" />
-		</Cursor>
-	</File>
-	<File name="../doc/todo.txt" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="286" topLine="46" />
-		</Cursor>
-	</File>
-	<File name="../source/test/test_gui.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/json.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4341" topLine="112" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/test_synth1/test_synth1_voice.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="8707" topLine="271" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/preset.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="794" topLine="15" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_ports.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1764" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_botage.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1025" topLine="41" />
+			<Cursor1 position="33729" topLine="1049" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

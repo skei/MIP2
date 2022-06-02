@@ -129,7 +129,7 @@ public: // plugin
 
   bool init() final {
     for (uint32_t i=0; i<3; i++) {
-      MParameters.appendParameter(new MIP_Parameter( &myParameters[i] ));
+      appendParameter(new MIP_Parameter( &myParameters[i] ));
     }
     return MIP_Plugin::init();
     //setDefaultParameterValues();

@@ -191,6 +191,9 @@ public:
 
         MIP_Knob2Widget* res_rough_knob = new MIP_Knob2Widget( MIP_FRect(180,92,50,82),"Rough");
         res_panel->appendWidget(res_rough_knob);
+        res_rough_knob->getKnobWidget()->setSnap(true);
+        res_rough_knob->getKnobWidget()->setSnapPos(0.5);
+        res_rough_knob->getKnobWidget()->setSnapDist(0.05);
         connect(res_rough_knob,PAR_RES1_ROUGH);
 
       // ----- flt1 -----

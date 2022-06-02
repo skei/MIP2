@@ -121,7 +121,7 @@ public: // process threaded
     // clear frame buffer (voices are added to it)
     MIP_ClearMonoBuffer(MFrameBuffer,length);
     // prepare events (separate them for each individual voice)
-    handleEvents(process);
+    handleEvents(process->in_events,process->out_events);
     // setup threaded voice array
     uint32_t num_voices  = 0;
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
@@ -295,8 +295,9 @@ private: // events
   // - processBlock
   // - processThreaded
 
-  void handleEvents(const clap_process_t* process) {
-    const clap_input_events_t* in_events = process->in_events;
+  void handleEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+  //void handleEvents(const clap_process_t* process) {
+    //const clap_input_events_t* in_events = process->in_events;
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
@@ -313,9 +314,9 @@ private: // events
   // handle all events from AIndex, with offset AOffset
   // returns samples until next event, or MIP_UINT32_MAX if no more
 
-  uint32_t handleEventsAt(const clap_process_t* process, uint32_t AIndex, uint32_t AOffset) {
-    return MIP_UINT32_MAX;
-  }
+  //uint32_t handleEventsAt(const clap_process_t* process, uint32_t AIndex, uint32_t AOffset) {
+  //  return MIP_UINT32_MAX;
+  //}
 
   //----------
 

@@ -1023,7 +1023,10 @@ public: // note outputs
 public: // queues
 //------------------------------
 
-  // called from MIP_Plugin.on_editor_listener_parameter (above)
+  /*
+    called from
+      on_editor_listener_parameter
+  */
 
   void queueAudioParam(uint32_t AIndex, double AValue) {
     MAudioParamValues[AIndex] = AValue;
@@ -1046,7 +1049,10 @@ public: // queues
 
   //----------
 
-  // called from MIP_Plugin.on_editor_listener_parameter (above)
+  /*
+    called from
+      on_editor_listener_parameter
+  */
 
   void queueHostParam(uint32_t AIndex, double AValue) {
     MHostParamValues[AIndex] = AValue;
@@ -1080,15 +1086,26 @@ public: // editor listener
 public: // param / mod
 //------------------------------
 
+  /*
+    called from:
+      on_editor_listener_parameter
+      handle_parameter_event
+  */
+
   void handle_parameter(uint32_t AIndex, double AValue) {
-//    MIP_Print("AIndex %i AValue %.3f\n",AIndex,AValue);
+    //MIP_Print("AIndex %i AValue %.3f\n",AIndex,AValue);
     MParameters[AIndex]->setValue(AValue);
   }
 
   //----------
 
+  /*
+    called from:
+      handle_modulation_event
+  */
+
   void handle_modulation(uint32_t AIndex, double AValue) {
-//    MIP_Print("AIndex %i AValue %.3f\n",AIndex,AValue);
+    //MIP_Print("AIndex %i AValue %.3f\n",AIndex,AValue);
     MParameters[AIndex]->setModulation(AValue);
   }
 
@@ -1096,7 +1113,7 @@ public: // param / mod
 public: //events
 //------------------------------
 
-  void preProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+  virtual void preProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
     uint32_t num_events = in_events->size(in_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
@@ -1108,14 +1125,14 @@ public: //events
 
   //----------
 
-  void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+  virtual void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  void handle_event(const clap_event_header_t* header) {
+  virtual void handle_event(const clap_event_header_t* header) {
     switch (header->type) {
       case CLAP_EVENT_PARAM_VALUE:      handle_parameter_event((clap_event_param_value_t*)header); break;
       case CLAP_EVENT_PARAM_MOD:        handle_modulation_event((clap_event_param_mod_t*)header); break;
@@ -1133,7 +1150,7 @@ public:
 
   //----------
 
-  void handle_parameter_event(clap_event_param_value_t* event) {
+  virtual void handle_parameter_event(clap_event_param_value_t* event) {
     //MParameters.handle_value_event(event);
     handle_parameter(event->param_id,event->value);
     //if (MListener) MListener->on_event_listener_parameter(event->param_id,event->value);
@@ -1142,7 +1159,7 @@ public:
     }
   }
 
-  void handle_modulation_event(clap_event_param_mod_t* event) {
+  virtual void handle_modulation_event(clap_event_param_mod_t* event) {
     //MParameters.handle_modulation_event(event);
     handle_modulation(event->param_id,event->amount);
     //if (MListener) MListener->on_event_listener_modulation(event->param_id,event->amount);
@@ -1151,46 +1168,46 @@ public:
     }
   }
 
-  void handle_transport_event(clap_event_transport_t* event) {
+  virtual void handle_transport_event(clap_event_transport_t* event) {
     MIP_Print("TODO\n");
   }
 
-  void handle_note_on_event(clap_event_note_t* event) {
+  virtual void handle_note_on_event(clap_event_note_t* event) {
     MIP_Print("TODO\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_on_event(event);
   }
 
-  void handle_note_off_event(clap_event_note_t* event) {
+  virtual void handle_note_off_event(clap_event_note_t* event) {
     MIP_Print("TODO\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_off_event(event);
   }
 
-  void handle_note_end_event(clap_event_note_t* event) {
+  virtual void handle_note_end_event(clap_event_note_t* event) {
     MIP_Print("ERROR\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_end_event(event);
   }
 
-  void handle_note_choke_event(clap_event_note_t* event) {
+  virtual void handle_note_choke_event(clap_event_note_t* event) {
     MIP_Print("TODO\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_choke_event(event);
   }
 
-  void handle_note_expression_event(clap_event_note_expression_t* event) {
+  virtual void handle_note_expression_event(clap_event_note_expression_t* event) {
     MIP_Print("TODO\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_expression_event(event);
   }
 
   //----------
 
-  void handle_midi_event(clap_event_midi_t* event) {
+  virtual void handle_midi_event(clap_event_midi_t* event) {
     MIP_Print("TODO\n");
   }
 
-  void handle_midi2_event(clap_event_midi2_t* event) {
+  virtual void handle_midi2_event(clap_event_midi2_t* event) {
     MIP_Print("TODO\n");
   }
 
-  void handle_midi_sysex_event(clap_event_midi_sysex_t* event) {
+  virtual void handle_midi_sysex_event(clap_event_midi_sysex_t* event) {
     MIP_Print("TODO\n");
   }
 
