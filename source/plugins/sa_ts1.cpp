@@ -73,10 +73,10 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_voice_manager.h"
 
-#include "test_synth1/test_synth1_voice.h"
-#include "test_synth1/test_synth1_editor.h"
+#include "sa_ts1/sa_ts1_editor.h"
+#include "sa_ts1/sa_ts1_voice.h"
 
-typedef MIP_VoiceManager<myVoice,NUM_VOICES> myVoiceManager;
+typedef MIP_VoiceManager<sa_ts1_Voice,NUM_VOICES> sa_ts1_VoiceManager;
 
 //----------------------------------------------------------------------
 //
@@ -93,19 +93,22 @@ typedef MIP_VoiceManager<myVoice,NUM_VOICES> myVoiceManager;
 
 const clap_plugin_descriptor_t myDescriptor = {
   .clap_version = CLAP_VERSION,
-  .id           = "skei.audio/test_synth1",
+  .id           = "skei.audio/sa_ts1",
   #ifdef MIP_DEBUG
     .name       = "test_synth1 (debug)",
   #else
-    .name       = "test_synth1",
+    .name       = "sa_ts1",
   #endif
   .vendor       = "skei.audio",
   .url          = "https://torhelgeskei.com",
   .manual_url   = "",
   .support_url  = "",
-  .version      = "0.0.4",
+  .version      = "0.0.5",
   //myFeatures
-  .features     = (const char*[]){CLAP_PLUGIN_FEATURE_INSTRUMENT,nullptr} //"simple mip2 test synth",
+  .features     = (const char*[]){
+    CLAP_PLUGIN_FEATURE_INSTRUMENT,
+    nullptr
+  }
 };
 
 //----------------------------------------------------------------------
@@ -493,7 +496,7 @@ private:
 
   //----------
 
-  myVoiceManager MVoiceManager = {};
+  sa_ts1_VoiceManager MVoiceManager = {};
 
 //------------------------------
 public:
@@ -584,13 +587,13 @@ public: // clap
       uint32_t num_released = 0;
       for (uint32_t i=0; i<NUM_VOICES; i++) {
         uint32_t state = MVoiceManager.getVoiceState(i);
-        ((myEditor*)MEditor)->MVoiceWidget->voice_state[i] = state;
+        ((sa_ts1_Editor*)MEditor)->MVoiceWidget->voice_state[i] = state;
         if (state == MIP_VOICE_PLAYING) num_playing += 1;
         if (state == MIP_VOICE_RELEASED) num_released += 1;
       }
-      ((myEditor*)MEditor)->MPlayingVoicesWidget->setValue(num_playing);
-      ((myEditor*)MEditor)->MReleasedVoicesWidget->setValue(num_released);
-      ((myEditor*)MEditor)->MTotalVoicesWidget->setValue(num_playing + num_released);
+      ((sa_ts1_Editor*)MEditor)->MPlayingVoicesWidget->setValue(num_playing);
+      ((sa_ts1_Editor*)MEditor)->MReleasedVoicesWidget->setValue(num_released);
+      ((sa_ts1_Editor*)MEditor)->MTotalVoicesWidget->setValue(num_playing + num_released);
     }
     return CLAP_PROCESS_CONTINUE;
   }
@@ -601,7 +604,7 @@ public: // clap
 
   bool gui_create(const char *api, bool is_floating) final {
     MIP_PRINT;
-    MEditor = new myEditor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true,&myDescriptor);
+    MEditor = new sa_ts1_Editor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true,&myDescriptor);
     if (!MEditor) return false;
     return true;
   }

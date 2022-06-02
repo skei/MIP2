@@ -1,5 +1,5 @@
-#ifndef test_synth1_voice_included
-#define test_synth1_voice_included
+#ifndef sa_ts1_voice_included
+#define sa_ts1_voice_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
@@ -19,7 +19,7 @@
 
 #define SMOOTHER_FACTOR (1.0 / 250.0)
 
-struct myDelayFx {
+struct sa_ts1_DelayFx {
 
   MIP_RcFilter<float> flt   = {};
   float               rough = 0.0;
@@ -31,7 +31,7 @@ struct myDelayFx {
   }
 };
 
-typedef MIP_InterpolatedDelay<4096,myDelayFx> myDelay;
+typedef MIP_InterpolatedDelay<4096,sa_ts1_DelayFx> sa_ts1_Delay;
 
 //----------------------------------------------------------------------
 //
@@ -39,7 +39,7 @@ typedef MIP_InterpolatedDelay<4096,myDelayFx> myDelay;
 //
 //----------------------------------------------------------------------
 
-class myVoice {
+class sa_ts1_Voice {
 
 //------------------------------
 private:
@@ -50,7 +50,7 @@ private:
   MIP_Oscillator2     osc1                = {};
   MIP_SvfFilter       flt1                = {};
   MIP_SvfFilter       nsh1                = {};
-  myDelay             res1                = {};
+  sa_ts1_Delay        res1                = {};
   MIP_Envelope        amp_env             = {};
 
   MIP_RcFilter<float> flt1_freq_smoother  = {};
@@ -92,18 +92,16 @@ private:
   float               p_osc1_out          = 0.0;
   float               p_res1_out          = 0.0;
 
+  //----------
+
   float               osc1_pulse_mod      = 0.0;
   float               osc1_width_mod      = 0.0;
   float               osc1_tri_mod        = 0.0;
   float               osc1_sin_mod        = 0.0;
-  float               flt1_freq_mod       = 0.0;
-  float               flt1_res_mod        = 0.0;
-
   float               osc1_cent_mod       = 0.0;
 
-  //float               fb_mod              = 0.5;
-  //float               fb_tune_mod         = 0.5;
-  //float               fb_damp_mod         = 0.0;
+  float               flt1_freq_mod       = 0.0;
+  float               flt1_res_mod        = 0.0;
 
 //------------------------------
 public:
@@ -304,11 +302,11 @@ public:
       float ro = p_res1_rough;
       if (ro < 0.5) {
         ro = ro * 2.0; // 0..0,5 -> 0..1
-        ro = MIP_Curve(ro,0.02);
+        ro = MIP_Curve(ro,0.01);
       }
       else {
         ro = (ro - 0.5) * 2.0; // 0.5..1 -> 0..1
-        ro = MIP_Curve(ro,0.98);
+        ro = MIP_Curve(ro,0.99);
         ro += 1.0;
       }
 

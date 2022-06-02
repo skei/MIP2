@@ -1,5 +1,5 @@
-#ifndef test_synth1_widgets_included
-#define test_synth1_widgets_included
+#ifndef sa_ts1_widgets_included
+#define sa_ts1_widgets_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
@@ -7,20 +7,20 @@
 
 //----------------------------------------------------------------------
 
-class MIP_VoiceWidget
+class sa_ts1_VoiceWidget
 : public MIP_PanelWidget {
 
 //------------------------------
 public:
 
-  MIP_VoiceWidget(MIP_FRect ARect)
+  sa_ts1_VoiceWidget(MIP_FRect ARect)
   : MIP_PanelWidget(ARect) {
     setFillBackground(false);
   }
 
   //----------
 
-  virtual ~MIP_VoiceWidget() {
+  virtual ~sa_ts1_VoiceWidget() {
   }
 
 //------------------------------

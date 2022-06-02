@@ -43,7 +43,7 @@
 //#include "../source/plugins/sa_tyr.cpp"
 
 //#include "../source/plugins/test_gui1.cpp"
-#include "../source/plugins/test_synth1.cpp"
+#include "../source/plugins/sa_ts1.cpp"
 
 //----------
 
