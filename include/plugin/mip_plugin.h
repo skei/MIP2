@@ -71,7 +71,7 @@ class MIP_Plugin
 protected:
 //------------------------------
 
-  MIP_ParameterArray      MParameters = {};
+  MIP_ParameterArray    MParameters               = {};
   MIP_Editor*           MEditor                   = nullptr;
   MIP_Host*             MHost                     = nullptr;
 
@@ -866,18 +866,20 @@ protected: // parameters
     //MIP_PRINT;
     for (uint32_t i=0; i<num; i++) {
       MIP_Parameter* parameter = new MIP_Parameter(&params[i]);
+      //parameter->setId(i);
       MParameters.append(parameter);
     }
   }
 
   //----------
 
-  void appendParameter(MIP_Parameter* AParameter, bool AKeepIndex=false) {
+  MIP_Parameter* appendParameter(MIP_Parameter* AParameter, bool AKeepIndex=false) {
     if (!AKeepIndex) {
       uint32_t index = MParameters.size();
       AParameter->setId(index);
     }
     MParameters.append(AParameter);
+    return AParameter;
   }
 
   //----------
@@ -1065,16 +1067,21 @@ public: // queues
     uint32_t index = 0;
     while (MHostParamQueue.read(&index)) {
       double value = MHostParamValues[index];
+      //MIP_Print("index %i value %f\n",index,value);
       //todo: check if value really changed (if multiple events)
+
       send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_BEGIN,out_events);
       send_param_value_event(index,value,out_events);
       send_param_gesture_event(index,CLAP_EVENT_PARAM_GESTURE_END,out_events);
+
     }
   }
 
 //------------------------------
 public: // editor listener
 //------------------------------
+
+//qwe
 
   void on_editor_listener_parameter(uint32_t AIndex, double AValue) override {
     queueAudioParam(AIndex,AValue);
@@ -1222,6 +1229,7 @@ public: // send events
   //----------
 
   void send_param_value_event(uint32_t index, double value, const clap_output_events_t* out_events) {
+    MIP_Print("CLAP_EVENT_PARAM_VALUE: index %i value %f\n",index,value);
     clap_event_param_value_t param_value;
     param_value.header.size     = sizeof (clap_event_param_value_t);
     param_value.header.time     = 0;

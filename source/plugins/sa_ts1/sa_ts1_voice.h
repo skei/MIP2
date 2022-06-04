@@ -69,15 +69,25 @@ private:
   float               note_press          = 0.0;
   float               hz                  = 0.0;  // note hz
 
-  float               p_osc1_pulse        = 0.0;
+  float               p_osc1_in_o1        = 0.0;
+  float               p_osc1_in_o2        = 0.0;
+  float               p_osc1_in_r1        = 0.0;
+  float               p_osc1_in_r2        = 0.0;
+  float               p_osc1_in_n         = 0.0;
+  float               p_osc1_shape        = 0.0;
   float               p_osc1_width        = 0.0;
-  float               p_osc1_tri          = 0.0;
-  float               p_osc1_sin          = 0.0;
+  //float               p_osc1_tri          = 0.0;
+  //float               p_osc1_sin          = 0.0;
   float               p_osc1_oct          = 0.5;
   float               p_osc1_semi         = 0.5;
   float               p_osc1_cent         = 0.5;
 
-  float               p_res1_noise        = 0.0;
+  float               p_res1_in_o1        = 0.0;
+  float               p_res1_in_o2        = 0.0;
+  float               p_res1_in_r1        = 0.0;
+  float               p_res1_in_r2        = 0.0;
+  float               p_res1_in_n         = 0.0;
+  //float               p_res1_noise        = 0.0;
   float               p_res1_nshape       = 0.0;
   float               p_res1_fb           = 0.5;
   float               p_res1_damp         = 0.0;
@@ -102,6 +112,12 @@ private:
 
   float               flt1_freq_mod       = 0.0;
   float               flt1_res_mod        = 0.0;
+
+
+  float O1 = 0.0;
+  float O2 = 0.0;
+  float R1 = 0.0;
+  float R2 = 0.0;
 
 //------------------------------
 public:
@@ -209,15 +225,25 @@ public:
     switch (index) {
       case PAR_OSC1_OUT:    p_osc1_out = value;               break;
       case PAR_RES1_OUT:    p_res1_out = value;               break;
-      case PAR_OSC1_PULSE:  p_osc1_pulse = value;             break;
+      case PAR_OSC1_IN_O1:  p_osc1_in_o1 = value;             break;
+      case PAR_OSC1_IN_O2:  p_osc1_in_o2 = value;             break;
+      case PAR_OSC1_IN_R1:  p_osc1_in_r1 = value;             break;
+      case PAR_OSC1_IN_R2:  p_osc1_in_r2 = value;             break;
+      case PAR_OSC1_IN_N:   p_osc1_in_n = value;             break;
+      case PAR_OSC1_SHAPE:  p_osc1_shape = value;             break;
       case PAR_OSC1_WIDTH:  p_osc1_width = value;             break;
-      case PAR_OSC1_TRI:    p_osc1_tri = value;               break;
-      case PAR_OSC1_SIN:    p_osc1_sin = value;               break;
+      //case PAR_OSC1_TRI:    p_osc1_tri = value;               break;
+      //case PAR_OSC1_SIN:    p_osc1_sin = value;               break;
       case PAR_OSC1_OCT:    p_osc1_oct = value;               break;
       case PAR_OSC1_SEMI:   p_osc1_semi = value;              break;
       case PAR_OSC1_CENT:   p_osc1_cent = value;              break;
-      case PAR_RES1_NOISE:  p_res1_noise = value;             break;
-      case PAR_RES1_NSHAPE: p_res1_nshape = value;            break;
+      case PAR_RES1_IN_O1:  p_res1_in_o1 = value;             break;
+      case PAR_RES1_IN_O2:  p_res1_in_o2 = value;             break;
+      case PAR_RES1_IN_R1:  p_res1_in_r1 = value;             break;
+      case PAR_RES1_IN_R2:  p_res1_in_r2 = value;             break;
+      case PAR_RES1_IN_N:   p_res1_in_n = value;             break;
+      //case PAR_RES1_NOISE:  p_res1_noise = value;             break;
+      case PAR_RES1_SHAPE:  p_res1_nshape = value;             break;
       case PAR_RES1_FB:     p_res1_fb = value;                break;
       case PAR_RES1_DAMP:   p_res1_damp = value;              break;
       case PAR_RES1_OCT:    p_res1_oct = value;               break;
@@ -235,10 +261,10 @@ public:
 
   void modulation(uint32_t index, float value) {
     switch (index) {
-      case PAR_OSC1_PULSE:  osc1_pulse_mod = value;   break;
+      case PAR_OSC1_SHAPE:  osc1_pulse_mod = value;   break;
       case PAR_OSC1_WIDTH:  osc1_width_mod = value;   break;
-      case PAR_OSC1_TRI:    osc1_tri_mod = value;     break;
-      case PAR_OSC1_SIN:    osc1_sin_mod = value;     break;
+      //case PAR_OSC1_TRI:    osc1_tri_mod = value;     break;
+      //case PAR_OSC1_SIN:    osc1_sin_mod = value;     break;
       case PAR_OSC1_CENT:   osc1_cent_mod = value;        break;
       case PAR_FLT1_FREQ:   flt1_freq_mod = value;    break;
       case PAR_FLT1_RES:    flt1_res_mod = value;     break;
@@ -251,6 +277,31 @@ public:
     MIP_Assert(note_key >= 0);
     if (note_key >= 0) {
 
+      // shapes
+
+      //float shape = p_osc1_shape; // TODO, instead of pulse,tri,sin knobs
+
+      float shape       = p_osc1_shape * 3.0;
+      float osc1_pulse  = 0.0;
+      float osc1_tri    = 0.0;
+      float osc1_sin    = 0.0;
+
+      if (shape < 1.0) {
+        osc1_pulse  = shape;
+        osc1_tri    = 0.0;
+        osc1_sin    = 0.0;
+      }
+      else if (shape < 2.0) {
+        osc1_pulse  = 1.0;
+        osc1_tri    = shape - 1.0;
+        osc1_sin    = 0.0;
+      }
+      else {
+        osc1_pulse  = 1.0;
+        osc1_tri    = 1.0;
+        osc1_sin    = shape - 2.0;
+      }
+
       // pitch
 
       float o1_pitch  = ((p_osc1_oct  /*+ osc1_oct_mod*/ ) * 12.0)
@@ -262,10 +313,10 @@ public:
 
       // osc
 
-      float osq = MIP_Clamp( p_osc1_pulse + osc1_pulse_mod, 0, 1);
+      float osq = MIP_Clamp( osc1_pulse + osc1_pulse_mod, 0, 1);
       float owi = MIP_Clamp( p_osc1_width + osc1_width_mod, 0, 1);
-      float otr = MIP_Clamp( p_osc1_tri   + osc1_tri_mod,   0, 1);
-      float osi = MIP_Clamp( p_osc1_sin   + osc1_sin_mod,   0, 1);
+      float otr = MIP_Clamp( osc1_tri   + osc1_tri_mod,   0, 1);
+      float osi = MIP_Clamp( osc1_sin   + osc1_sin_mod,   0, 1);
 
       osc1.setFrequency(osc_hz);
       osc1.setSawSqu(osq);
@@ -355,31 +406,36 @@ public:
         amp *= amp_env.process();
         amp = vol_smoother.process(amp);
 
-        //osc
-        float osc = osc1.process();
+//
 
+        float osc1_in = 0.0;
+        osc1_in += p_osc1_in_o1 * O1;
+        osc1_in += p_osc1_in_o2 * O2;
+        osc1_in += p_osc1_in_r1 * R1;
+        osc1_in += p_osc1_in_r2 * R2;
+        osc1_in += p_osc1_in_n * MIP_RandomSigned();
 
-        // res
+        float res1_in = 0.0;
+        res1_in += p_res1_in_o1 * O1;
+        res1_in += p_res1_in_o2 * O2;
+        res1_in += p_res1_in_r1 * R1;
+        res1_in += p_res1_in_r2 * R2;
+        res1_in += p_res1_in_n * MIP_RandomSigned();
 
-        // noise
+        O1 = osc1.process();
+
+        // res shape
 
         nsh1.setMode(MIP_SVF_LP);
         float ns = 1.0 - p_res1_nshape;
         nsh1.setFreq(ns * ns);
         nsh1.setBW(1);
-
-        float rnd = MIP_RandomSigned();
-        rnd = nsh1.process(rnd);
-
-        float noisemix = (rnd * p_res1_noise) + (osc * (1.0 - p_res1_noise));
-        //res = (noise * p_res1_noise) + (res * (1.0 - p_res1_noise));
-
-        float res = 0.0;
-        if (res1.hasWrapped()) res = res1.process(0,fb,delay);
-        else res = res1.process(noisemix,fb,delay);
+        res1_in = nsh1.process(res1_in);
+        if (res1.hasWrapped()) R1 = res1.process(0,fb,delay);
+        else R1 = res1.process(res1_in,fb,delay);
 
         // out
-        float out = (osc * p_osc1_out) + (res * p_res1_out);
+        float out = (O1 * p_osc1_out) + (R1 * p_res1_out);
 
         // filter
         out = flt1.process(out);

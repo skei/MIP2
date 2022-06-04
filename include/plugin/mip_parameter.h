@@ -78,7 +78,8 @@ public:
 
   //----------
 
-  MIP_Parameter(const char* AName, const char* AModule="", float AValue=0.0) {
+  //MIP_Parameter(const char* AName, const char* AModule="", float AValue=0.0) {
+  MIP_Parameter(const char* AName, const char* AModule, float AValue) {
     strncpy(MInfo.name,AName,CLAP_NAME_SIZE);
     strncpy(MInfo.module,AModule,CLAP_PATH_SIZE);
     MValue = AValue;
@@ -177,6 +178,7 @@ public:
 
   double normalizeValue(double AValue) {
     double range = (MInfo.max_value - MInfo.min_value);
+    //MIP_Print("%f, %f\n",MInfo.min_value,MInfo.max_value);
     MIP_Assert(range > 0);
     return (AValue - MInfo.min_value) / range;
   }

@@ -445,6 +445,7 @@
 		<Unit filename="../include/gui/widgets/mip_image_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_keyboard_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob2_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_knob2b_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob3_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob4_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob5_widget.h" />
@@ -541,15 +542,11 @@
 		<Unit filename="../include/plugin/mip_descriptor.h" />
 		<Unit filename="../include/plugin/mip_editor.h" />
 		<Unit filename="../include/plugin/mip_entry.h" />
-		<Unit filename="../include/plugin/mip_event_handler.h" />
 		<Unit filename="../include/plugin/mip_host.h" />
 		<Unit filename="../include/plugin/mip_note.h" />
-		<Unit filename="../include/plugin/mip_note_handler.h" />
 		<Unit filename="../include/plugin/mip_note_port.h" />
 		<Unit filename="../include/plugin/mip_parameter.h" />
-		<Unit filename="../include/plugin/mip_parameter_manager.h" />
 		<Unit filename="../include/plugin/mip_plugin.h" />
-		<Unit filename="../include/plugin/mip_process_handler.h" />
 		<Unit filename="../include/plugin/mip_quick_control.h" />
 		<Unit filename="../include/plugin/mip_registry.h" />
 		<Unit filename="../include/plugin/mip_voice.h" />
@@ -632,6 +629,13 @@
 		<Unit filename="../source/plugins/sa_ports/sa_sonic_maximizer.h" />
 		<Unit filename="../source/plugins/sa_ports/sa_tilteq.h" />
 		<Unit filename="../source/plugins/sa_ports/sa_transient_killer.h" />
+		<Unit filename="../source/plugins/sa_ts1.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_editor.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_voice.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_widgets.h" />
 		<Unit filename="../source/plugins/sa_tyr.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -655,13 +659,6 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/test_synth1.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/plugins/test_synth1/test_synth1_editor.h" />
-		<Unit filename="../source/plugins/test_synth1/test_synth1_voice.h" />
-		<Unit filename="../source/plugins/test_synth1/test_synth1_widgets.h" />
 		<Unit filename="../source/test/test_gui.cpp">
 			<Option compile="0" />
 			<Option link="0" />

@@ -2,7 +2,7 @@
 //#define MIP_NO_GUI
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 
 #define EDITOR_WIDTH  640
@@ -13,7 +13,7 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 
-//#include "gui/mip_widgets.h"
+#include "gui/mip_widgets.h"
 
 //----------------------------------------------------------------------
 //
@@ -65,7 +65,6 @@ private:
     {
       0,
       CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_STEPPED,
       nullptr,
       "param1",
       "",
@@ -108,26 +107,6 @@ private:
 private:
 //------------------------------
 
-  void handle_parameter_event(clap_event_param_value_t* param_value) final {
-    MIP_Plugin::handle_parameter_event(param_value);
-    need_recalc = true;
-  }
-
-  //----------
-
-  void handle_process(const clap_process_t *process) final {
-    //MIP_PRINT;
-    if (need_recalc) recalc(MSampleRate);
-    uint32_t len = process->frames_count;
-    float* in0  = process->audio_inputs[0].data32[0];
-    float* in1  = process->audio_inputs[0].data32[1];
-    float* out0 = process->audio_outputs[0].data32[0];
-    float* out1 = process->audio_outputs[0].data32[1];
-    for (uint32_t i=0; i<len; i++) {
-      *in0++ = *out0++;
-      *in1++ = *out1++;
-    }
-  }
 
 //------------------------------
 public: // plugin
@@ -139,7 +118,7 @@ public: // plugin
     //clap_param_info_t* param_info = &myParameters[0];
     //MIP_IntParameter* param = new MIP_IntParameter(&myParameters[0]);
     //appendParameter(param);
-    appendParameter( new MIP_IntParameter( &myParameters[0] ));
+    appendParameter( new MIP_Parameter( &myParameters[0] ));
 
     setupAudioInputs(myAudioInputs,1);
     setupAudioOutputs(myAudioOutputs,1);
@@ -165,7 +144,7 @@ public: // plugin
   //----------
 
   bool gui_create(const char *api, bool is_floating) final {
-    MEditor = new MIP_Editor(this,this,MEditorDefaultWidth,MEditorDefaultHeight,true);
+    MEditor = new MIP_Editor(this,this,640,480,true);
     if (MEditor) {
       MIP_Window* window = MEditor->getWindow();
         MIP_PanelWidget* panel = new MIP_PanelWidget(MIP_FRect());
@@ -193,7 +172,7 @@ public: // plugin
 //
 //----------------------------------------------------------------------
 
-void MIP_Register(MIP_ClapRegistry* ARegistry) {
+void MIP_Register(MIP_Registry* ARegistry) {
   ARegistry->appendDescriptor(&template_descriptor);
 }
 

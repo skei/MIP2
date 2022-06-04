@@ -11,7 +11,7 @@
 //----------------------------------------------------------------------
 
 #define EDITOR_WIDTH          536 + 240
-#define EDITOR_HEIGHT         530
+#define EDITOR_HEIGHT         530 + 120
 
 
 class sa_ts1_Editor
@@ -33,6 +33,39 @@ public:
   sa_ts1_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded, const clap_plugin_descriptor_t* descriptor)
   : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
     MIP_Window* window = getWindow();
+
+    // osc menu
+
+    MIP_MenuWidget* osc_type_menu = new MIP_MenuWidget(MIP_FRect(200,200));
+    osc_type_menu->appendMenuItem("Morph");
+    osc_type_menu->setItemSize(100,20);
+    osc_type_menu->setItemLayout(1,1);
+    osc_type_menu->setMenuMirror(false,false);
+    //MEditorPanel->appendWidget(osc_type_menu);
+
+    // res menu
+
+    MIP_MenuWidget* res_type_menu = new MIP_MenuWidget(MIP_FRect(200,200));
+    res_type_menu->appendMenuItem("Pluck");
+    res_type_menu->appendMenuItem("Bow");
+    res_type_menu->appendMenuItem("Blow");
+    res_type_menu->setItemSize(100,20);
+    res_type_menu->setItemLayout(1,3);
+    res_type_menu->setMenuMirror(false,false);
+    //MEditorPanel->appendWidget(res_type_menu);
+
+    // flt menu
+
+    MIP_MenuWidget* flt_type_menu = new MIP_MenuWidget(MIP_FRect(200,200));
+    flt_type_menu->appendMenuItem("Off");
+    flt_type_menu->appendMenuItem("Lowpass");
+    flt_type_menu->appendMenuItem("Highpass");
+    flt_type_menu->appendMenuItem("Bandpass");
+    flt_type_menu->appendMenuItem("Notch");
+    flt_type_menu->setItemSize(100,20);
+    flt_type_menu->setItemLayout(1,5);
+    flt_type_menu->setMenuMirror(false,false);
+    //MEditorPanel->appendWidget(flt_type_menu);
 
     // panel
 
@@ -63,20 +96,50 @@ public:
 
       // ----- osc1
 
-      MIP_PanelWidget* osc1_panel = new MIP_PanelWidget(MIP_FRect(10,10,230,174) );
+      MIP_PanelWidget* osc1_panel = new MIP_PanelWidget(MIP_FRect(10,10,230,255) );
       osc1_panel->setFillBackground(true);
       osc1_panel->setBackgroundColor(0.55);
       controls->appendWidget(osc1_panel);
 
-        // pulse
+        // inputs
 
-        MIP_Knob2Widget* osc1_pulse_knob = new MIP_Knob2Widget( MIP_FRect(0,0,50,82),"Pulse");
-        osc1_panel->appendWidget(osc1_pulse_knob);
-        connect(osc1_pulse_knob,PAR_OSC1_PULSE);
+        MIP_Knob2bWidget* osc1_in_o1 = new MIP_Knob2bWidget( MIP_FRect(0,0,30,45),"O1");
+        osc1_panel->appendWidget(osc1_in_o1);
+        connect(osc1_in_o1,PAR_OSC1_IN_O1);
+
+        MIP_Knob2bWidget* osc1_in_o2 = new MIP_Knob2bWidget( MIP_FRect(35,0,30,45),"O2");
+        osc1_panel->appendWidget(osc1_in_o2);
+        connect(osc1_in_o2,PAR_OSC1_IN_O2);
+
+        MIP_Knob2bWidget* osc1_in_r1 = new MIP_Knob2bWidget( MIP_FRect(70,0,30,45),"R1");
+        osc1_panel->appendWidget(osc1_in_r1);
+        connect(osc1_in_r1,PAR_OSC1_IN_R1);
+
+        MIP_Knob2bWidget* osc1_in_r2 = new MIP_Knob2bWidget( MIP_FRect(105,0,30,45),"R2");
+        osc1_panel->appendWidget(osc1_in_r2);
+        connect(osc1_in_r2,PAR_OSC1_IN_R2);
+
+        MIP_Knob2bWidget* osc1_in_n = new MIP_Knob2bWidget( MIP_FRect(140,0,30,45),"N");
+        osc1_panel->appendWidget(osc1_in_n);
+        connect(osc1_in_n,PAR_OSC1_IN_N);
+
+        // type
+
+        MIP_SelectorWidget* osc1_type_selector = new MIP_SelectorWidget( MIP_FRect(0,50,230,20) );
+        osc1_panel->appendWidget(osc1_type_selector);
+        osc1_type_selector->setText("---");
+        osc1_type_selector->setMenu(osc_type_menu);
+        connect(osc1_type_selector,PAR_OSC1_TYPE);
+
+        // shape
+
+        MIP_Knob2Widget* osc1_shape_knob = new MIP_Knob2Widget( MIP_FRect(0,80,50,82),"Shape");
+        osc1_panel->appendWidget(osc1_shape_knob);
+        connect(osc1_shape_knob,PAR_OSC1_SHAPE);
 
         // width
 
-        MIP_Knob2Widget* osc1_width_knob = new MIP_Knob2Widget( MIP_FRect(60,0,50,82),"Width");
+        MIP_Knob2Widget* osc1_width_knob = new MIP_Knob2Widget( MIP_FRect(60,80,50,82),"Width");
         osc1_width_knob->getKnobWidget()->setSnap(true);
         osc1_width_knob->getKnobWidget()->setSnapPos(0.5);
         osc1_width_knob->getKnobWidget()->setSnapDist(0.05);
@@ -84,21 +147,9 @@ public:
         osc1_panel->appendWidget(osc1_width_knob);
         connect(osc1_width_knob,PAR_OSC1_WIDTH);
 
-        // tri
-
-        MIP_Knob2Widget* osc1_tri_knob = new MIP_Knob2Widget( MIP_FRect(120,0,50,82),"Tri");
-        osc1_panel->appendWidget(osc1_tri_knob);
-        connect(osc1_tri_knob,PAR_OSC1_TRI);
-
-        // sin
-
-        MIP_Knob2Widget* osc1_sin_knob = new MIP_Knob2Widget( MIP_FRect(180,0,50,82),"Sin");
-        osc1_panel->appendWidget(osc1_sin_knob);
-        connect(osc1_sin_knob,PAR_OSC1_SIN);
-
         // oct
 
-        MIP_Knob2Widget* osc1_oct_knob = new MIP_Knob2Widget( MIP_FRect(0,92,50,82),"Oct");
+        MIP_Knob2Widget* osc1_oct_knob = new MIP_Knob2Widget( MIP_FRect(0,170,50,82),"Oct");
         osc1_oct_knob->getKnobWidget()->setSnap(true);
         osc1_oct_knob->getKnobWidget()->setSnapPos(0.5);
         osc1_oct_knob->getKnobWidget()->setSnapDist(0.05);
@@ -109,7 +160,7 @@ public:
 
         // semi
 
-        MIP_Knob2Widget* osc1_semi_knob = new MIP_Knob2Widget( MIP_FRect(60,92,50,82),"Semi");
+        MIP_Knob2Widget* osc1_semi_knob = new MIP_Knob2Widget( MIP_FRect(60,170,50,82),"Semi");
         osc1_semi_knob->getKnobWidget()->setSnap(true);
         osc1_semi_knob->getKnobWidget()->setSnapPos(0.5);
         osc1_semi_knob->getKnobWidget()->setSnapDist(0.05);
@@ -119,7 +170,7 @@ public:
 
         // cent
 
-        MIP_Knob2Widget* osc1_cent_knob = new MIP_Knob2Widget( MIP_FRect(120,92,50,82),"Cent");
+        MIP_Knob2Widget* osc1_cent_knob = new MIP_Knob2Widget( MIP_FRect(120,170,50,82),"Cent");
         osc1_cent_knob->getKnobWidget()->setSnap(true);
         osc1_cent_knob->getKnobWidget()->setSnapPos(0.5);
         osc1_cent_knob->getKnobWidget()->setSnapDist(0.05);
@@ -129,37 +180,61 @@ public:
 
       // ----- res1 -----
 
-      MIP_PanelWidget* res1_panel = new MIP_PanelWidget(MIP_FRect(10,194,230,174) );
+      MIP_PanelWidget* res1_panel = new MIP_PanelWidget(MIP_FRect(10,275,230,255) );
       res1_panel->setBackgroundColor(0.55);
       controls->appendWidget(res1_panel);
 
-        // noise
+        // inputs
 
-        MIP_Knob2Widget* res1_noise_knob = new MIP_Knob2Widget( MIP_FRect(0,0,50,82),"Noise");
-        res1_panel->appendWidget(res1_noise_knob);
-        connect(res1_noise_knob,PAR_RES1_NOISE);
+        MIP_Knob2bWidget* res1_in_o1 = new MIP_Knob2bWidget( MIP_FRect(0,0,30,45),"O1");
+        res1_panel->appendWidget(res1_in_o1);
+        connect(res1_in_o1,PAR_RES1_IN_O1);
 
-        // nshape
+        MIP_Knob2bWidget* res1_in_o2 = new MIP_Knob2bWidget( MIP_FRect(35,0,30,45),"O2");
+        res1_panel->appendWidget(res1_in_o2);
+        connect(res1_in_o2,PAR_RES1_IN_O2);
 
-        MIP_Knob2Widget* res1_nshape_knob = new MIP_Knob2Widget( MIP_FRect(60,0,50,82),"NShape");
+        MIP_Knob2bWidget* res1_in_r1 = new MIP_Knob2bWidget( MIP_FRect(70,0,30,45),"R1");
+        res1_panel->appendWidget(res1_in_r1);
+        connect(res1_in_r1,PAR_RES1_IN_R1);
+
+        MIP_Knob2bWidget* res1_in_r2 = new MIP_Knob2bWidget( MIP_FRect(105,0,30,45),"R2");
+        res1_panel->appendWidget(res1_in_r2);
+        connect(res1_in_r2,PAR_RES1_IN_R2);
+
+        MIP_Knob2bWidget* res1_in_n = new MIP_Knob2bWidget( MIP_FRect(140,0,30,45),"N");
+        res1_panel->appendWidget(res1_in_n);
+        connect(res1_in_n,PAR_RES1_IN_N);
+
+        // type
+
+        MIP_SelectorWidget* res1_type_selector = new MIP_SelectorWidget( MIP_FRect(0,50,230,20) );
+        res1_panel->appendWidget(res1_type_selector);
+        res1_type_selector->setText("---");
+        res1_type_selector->setMenu(res_type_menu);
+        connect(res1_type_selector,PAR_RES1_TYPE);
+
+        // shape
+
+        MIP_Knob2Widget* res1_nshape_knob = new MIP_Knob2Widget( MIP_FRect(60,80,50,82),"Shape");
         res1_panel->appendWidget(res1_nshape_knob);
-        connect(res1_nshape_knob,PAR_RES1_NSHAPE);
+        connect(res1_nshape_knob,PAR_RES1_SHAPE);
 
         // fb
 
-        MIP_Knob2Widget* res1_fb_knob = new MIP_Knob2Widget( MIP_FRect(120,0,50,82),"FB");
+        MIP_Knob2Widget* res1_fb_knob = new MIP_Knob2Widget( MIP_FRect(120,80,50,82),"FB");
         res1_panel->appendWidget(res1_fb_knob);
         connect(res1_fb_knob,PAR_RES1_FB);
 
         // damp
 
-        MIP_Knob2Widget* res1_damp_knob = new MIP_Knob2Widget( MIP_FRect(180,0,50,82),"Damp");
+        MIP_Knob2Widget* res1_damp_knob = new MIP_Knob2Widget( MIP_FRect(180,80,50,82),"Damp");
         res1_panel->appendWidget(res1_damp_knob);
         connect(res1_damp_knob,PAR_RES1_DAMP);
 
         // oct
 
-        MIP_Knob2Widget* res1_oct_knob = new MIP_Knob2Widget( MIP_FRect(0,92,50,82),"Oct");
+        MIP_Knob2Widget* res1_oct_knob = new MIP_Knob2Widget( MIP_FRect(0,170,50,82),"Oct");
         res1_oct_knob->getKnobWidget()->setSnap(true);
         res1_oct_knob->getKnobWidget()->setSnapPos(0.5);
         res1_oct_knob->getKnobWidget()->setSnapDist(0.05);
@@ -169,7 +244,7 @@ public:
 
         // semi
 
-        MIP_Knob2Widget* res1_semi_knob = new MIP_Knob2Widget( MIP_FRect(60,92,50,82),"Semi");
+        MIP_Knob2Widget* res1_semi_knob = new MIP_Knob2Widget( MIP_FRect(60,170,50,82),"Semi");
         res1_semi_knob->getKnobWidget()->setSnap(true);
         res1_semi_knob->getKnobWidget()->setSnapPos(0.5);
         res1_semi_knob->getKnobWidget()->setSnapDist(0.05);
@@ -179,7 +254,7 @@ public:
 
         // cent
 
-        MIP_Knob2Widget* res1_cent_knob = new MIP_Knob2Widget( MIP_FRect(120,92,50,82),"Cent");
+        MIP_Knob2Widget* res1_cent_knob = new MIP_Knob2Widget( MIP_FRect(120,170,50,82),"Cent");
         res1_cent_knob->getKnobWidget()->setSnap(true);
         res1_cent_knob->getKnobWidget()->setSnapPos(0.5);
         res1_cent_knob->getKnobWidget()->setSnapDist(0.05);
@@ -189,7 +264,7 @@ public:
 
         // rough
 
-        MIP_Knob2Widget* res1_rough_knob = new MIP_Knob2Widget( MIP_FRect(180,92,50,82),"Rough");
+        MIP_Knob2Widget* res1_rough_knob = new MIP_Knob2Widget( MIP_FRect(180,170,50,82),"Rough");
         res1_panel->appendWidget(res1_rough_knob);
         res1_rough_knob->getKnobWidget()->setSnap(true);
         res1_rough_knob->getKnobWidget()->setSnapPos(0.5);
@@ -200,14 +275,14 @@ public:
 
       // ----- osc2
 
-      MIP_PanelWidget* osc2_panel = new MIP_PanelWidget(MIP_FRect(250,10,230,174) );
+      MIP_PanelWidget* osc2_panel = new MIP_PanelWidget(MIP_FRect(250,10,230,255) );
       osc2_panel->setFillBackground(true);
       osc2_panel->setBackgroundColor(0.55);
       controls->appendWidget(osc2_panel);
 
-      // ----- res1 -----
+      // ----- res2 -----
 
-      MIP_PanelWidget* res2_panel = new MIP_PanelWidget(MIP_FRect(250,194,230,174) );
+      MIP_PanelWidget* res2_panel = new MIP_PanelWidget(MIP_FRect(250,275,230,255) );
       res2_panel->setFillBackground(true);
       res2_panel->setBackgroundColor(0.55);
       controls->appendWidget(res2_panel);
@@ -237,7 +312,7 @@ public:
 
       // ----- global -----
 
-      MIP_PanelWidget* global_panel = new MIP_PanelWidget(MIP_FRect(490,75,230,82) );
+      MIP_PanelWidget* global_panel = new MIP_PanelWidget(MIP_FRect(490,80,230,175) );
       global_panel->setBackgroundColor(0.57);
       controls->appendWidget(global_panel);
 
@@ -259,45 +334,60 @@ public:
 
         // osc1 out
 
-        MIP_Knob2Widget* global_osc1_out_knob = new MIP_Knob2Widget( MIP_FRect(120,0,50,82),"O1 out");
+        MIP_Knob2Widget* global_osc1_out_knob = new MIP_Knob2Widget( MIP_FRect(0,90,50,82),"O1");
         global_panel->appendWidget(global_osc1_out_knob);
         connect(global_osc1_out_knob,PAR_OSC1_OUT);
 
+        // osc2 out
+
+        MIP_Knob2Widget* global_osc2_out_knob = new MIP_Knob2Widget( MIP_FRect(60,90,50,82),"O2");
+        global_panel->appendWidget(global_osc2_out_knob);
+        //connect(global_osc2_out_knob,PAR_OSC2_OUT);
+
         // res1 out
 
-        MIP_Knob2Widget* global_res1_out_knob = new MIP_Knob2Widget( MIP_FRect(180,0,50,82),"R1 out");
+        MIP_Knob2Widget* global_res1_out_knob = new MIP_Knob2Widget( MIP_FRect(120,90,50,82),"R1");
         global_panel->appendWidget(global_res1_out_knob);
         connect(global_res1_out_knob,PAR_RES1_OUT);
+
+
+        // res2 out
+
+        MIP_Knob2Widget* global_res2_out_knob = new MIP_Knob2Widget( MIP_FRect(180,90,50,82),"R2");
+        global_panel->appendWidget(global_res2_out_knob);
+        //connect(global_res2_out_knob,PAR_RES2_OUT);
 
       // ----- flt1 -----
 
       //(270,75,230,82) );
 
-      MIP_PanelWidget* flt1_panel = new MIP_PanelWidget(MIP_FRect(490,167,170,82) );
+      MIP_PanelWidget* flt1_panel = new MIP_PanelWidget(MIP_FRect(490,265,170,115) );
       flt1_panel->setBackgroundColor(0.55);
       controls->appendWidget(flt1_panel);
 
         // type
 
-        MIP_Knob2Widget* flt1_type_knob = new MIP_Knob2Widget( MIP_FRect(0,0,50,82),"Type");
-        flt1_panel->appendWidget(flt1_type_knob);
-        connect(flt1_type_knob,PAR_FLT1_TYPE);
+        MIP_SelectorWidget* flt1_type_selector = new MIP_SelectorWidget( MIP_FRect(0,0,170,20) );
+        flt1_panel->appendWidget(flt1_type_selector);
+        flt1_type_selector->setText("---");
+        flt1_type_selector->setMenu(flt_type_menu);
+        connect(flt1_type_selector,PAR_FLT1_TYPE);
 
         // freq
 
-        MIP_Knob2Widget* flt1_freq_knob = new MIP_Knob2Widget( MIP_FRect(60,0,50,82),"Freq");
+        MIP_Knob2Widget* flt1_freq_knob = new MIP_Knob2Widget( MIP_FRect(0,30,50,82),"Freq");
         flt1_panel->appendWidget(flt1_freq_knob);
         connect(flt1_freq_knob,PAR_FLT1_FREQ);
 
         // res
 
-        MIP_Knob2Widget* flt1_res_knob = new MIP_Knob2Widget( MIP_FRect(120,0,50,82),"Res");
+        MIP_Knob2Widget* flt1_res_knob = new MIP_Knob2Widget( MIP_FRect(60,30,50,82),"Res");
         flt1_panel->appendWidget(flt1_res_knob);
         connect(flt1_res_knob,PAR_FLT1_RES);
 
       // ----- env1
 
-      MIP_PanelWidget* env1_panel = new MIP_PanelWidget(MIP_FRect(490,259,230,82) );
+      MIP_PanelWidget* env1_panel = new MIP_PanelWidget(MIP_FRect(490,389,230,82) );
       env1_panel->setFillBackground(true);
       env1_panel->setBackgroundColor(0.55);
       controls->appendWidget(env1_panel);
@@ -326,7 +416,14 @@ public:
         env1_panel->appendWidget(env1_rel_knob);
         connect(env1_rel_knob,PAR_ENV1_REL);
 
+    // menus
+
+    MEditorPanel->appendWidget(osc_type_menu);
+    MEditorPanel->appendWidget(res_type_menu);
+    MEditorPanel->appendWidget(flt_type_menu);
+
     window->appendWidget(MEditorPanel);
+
   }
 
   //----------
@@ -337,6 +434,8 @@ public:
   */
 
   void on_timerCallback(void) final {
+    //MIP_PRINT;
+    //flushGuiParams();
     MVoiceWidget->redraw();
     MPlayingVoicesWidget->redraw();
     MReleasedVoicesWidget->redraw();

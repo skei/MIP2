@@ -13,7 +13,7 @@
 #define MIP_VOICE_PREPARE_EVENTS
 
 // process voices separately in threads(thread-pool)
-//#define MIP_VOICE_PROCESS_THREADED
+#define MIP_VOICE_PROCESS_THREADED
 
 //----------
 

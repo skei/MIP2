@@ -25,6 +25,7 @@
 #include "gui/widgets/mip_keyboard_widget.h"
 #include "gui/widgets/mip_knob_widget.h"
 #include "gui/widgets/mip_knob2_widget.h"
+#include "gui/widgets/mip_knob2b_widget.h"
 #include "gui/widgets/mip_knob3_widget.h"
 #include "gui/widgets/mip_knob4_widget.h"
 #include "gui/widgets/mip_knob5_widget.h"

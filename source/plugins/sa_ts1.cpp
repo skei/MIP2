@@ -36,36 +36,47 @@
 #define PAR_OSC1_OUT    2
 #define PAR_RES1_OUT    3
 
-#define PAR_OSC1_PULSE  4
-#define PAR_OSC1_WIDTH  5
-#define PAR_OSC1_TRI    6
-#define PAR_OSC1_SIN    7
-#define PAR_OSC1_OCT    8
-#define PAR_OSC1_SEMI   9
-#define PAR_OSC1_CENT   10
+#define PAR_OSC1_IN_O1  4
+#define PAR_OSC1_IN_O2  5
+#define PAR_OSC1_IN_R1  6
+#define PAR_OSC1_IN_R2  7
+#define PAR_OSC1_IN_N   8
 
-#define PAR_RES1_NOISE  11
-#define PAR_RES1_NSHAPE 12
-#define PAR_RES1_FB     13
-#define PAR_RES1_DAMP   14
-#define PAR_RES1_OCT    15
-#define PAR_RES1_SEMI   16
-#define PAR_RES1_CENT   17
-#define PAR_RES1_ROUGH  18
+#define PAR_OSC1_TYPE   9
+#define PAR_OSC1_SHAPE  10
+#define PAR_OSC1_WIDTH  11
+#define PAR_OSC1_OCT    12
+#define PAR_OSC1_SEMI   13
+#define PAR_OSC1_CENT   14
 
-#define PAR_FLT1_TYPE   19
-#define PAR_FLT1_FREQ   20
-#define PAR_FLT1_RES    21
+#define PAR_RES1_IN_O1  15
+#define PAR_RES1_IN_O2  16
+#define PAR_RES1_IN_R1  17
+#define PAR_RES1_IN_R2  18
+#define PAR_RES1_IN_N   19
 
-#define PAR_ENV1_ATT    22
-#define PAR_ENV1_DEC    23
-#define PAR_ENV1_SUS    24
-#define PAR_ENV1_REL    25
+#define PAR_RES1_TYPE   20
+#define PAR_RES1_SHAPE  21
+#define PAR_RES1_FB     22
+#define PAR_RES1_DAMP   23
+#define PAR_RES1_OCT    24
+#define PAR_RES1_SEMI   25
+#define PAR_RES1_CENT   26
+#define PAR_RES1_ROUGH  27
+
+#define PAR_FLT1_TYPE   28
+#define PAR_FLT1_FREQ   29
+#define PAR_FLT1_RES    30
+
+#define PAR_ENV1_ATT    31
+#define PAR_ENV1_DEC    32
+#define PAR_ENV1_SUS    33
+#define PAR_ENV1_REL    34
 
 //----------
 
-#define NUM_PARAMS      26
-#define NUM_VOICES      128
+#define NUM_PARAMS      35
+#define NUM_VOICES      256
 
 //----------------------------------------------------------------------
 
@@ -95,7 +106,7 @@ const clap_plugin_descriptor_t myDescriptor = {
   .clap_version = CLAP_VERSION,
   .id           = "skei.audio/sa_ts1",
   #ifdef MIP_DEBUG
-    .name       = "test_synth1 (debug)",
+    .name       = "sa_ts1 (debug)",
   #else
     .name       = "sa_ts1",
   #endif
@@ -107,6 +118,7 @@ const clap_plugin_descriptor_t myDescriptor = {
   //myFeatures
   .features     = (const char*[]){
     CLAP_PLUGIN_FEATURE_INSTRUMENT,
+    //CLAP_PLUGIN_FEATURE_SYNTHESIZER,
     nullptr
   }
 };
@@ -181,7 +193,6 @@ private:
       1.0,
       0.5
     },
-
     { PAR_PAN,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
@@ -201,7 +212,6 @@ private:
       1.0,
       0.5
     },
-
     { PAR_RES1_OUT,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
@@ -214,18 +224,76 @@ private:
 
     //---------- osc1 ----------
 
-    { PAR_OSC1_PULSE,
-      CLAP_PARAM_IS_AUTOMATABLE
-        | CLAP_PARAM_IS_MODULATABLE
-        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    // inputs
+
+    { PAR_OSC1_IN_O1,
+      CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "Pulse",
+      "O1",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC1_IN_O2,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "O2",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC1_IN_R1,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "R1",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC1_IN_R2,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "R2",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC1_IN_N,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "N",
       "",
       0.0,
       1.0,
       0.0
     },
 
+    //
+
+    { PAR_OSC1_TYPE,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Type",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC1_SHAPE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Shape",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
     { PAR_OSC1_WIDTH,
       CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_MODULATABLE
@@ -238,40 +306,6 @@ private:
       0.5
     },
 
-    { PAR_OSC1_TRI,
-      CLAP_PARAM_IS_AUTOMATABLE
-        | CLAP_PARAM_IS_MODULATABLE
-        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
-      nullptr,
-      "Tri",
-      "",
-      0.0,
-      1.0,
-      0.0
-    },
-
-    { PAR_OSC1_SIN,
-      CLAP_PARAM_IS_AUTOMATABLE
-        | CLAP_PARAM_IS_MODULATABLE
-        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
-      nullptr,
-      "Sin",
-      "",
-      0.0,
-      1.0,
-      0.0
-    },
-
-//    { PAR_OSC1_NOISE,
-//      CLAP_PARAM_IS_AUTOMATABLE,
-//      nullptr,
-//      "Noise",
-//      "",
-//      0.0,
-//      1.0,
-//      0.0
-//    },
-
     { PAR_OSC1_OCT,
       CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
       nullptr,
@@ -281,7 +315,6 @@ private:
       4,
       0
     },
-
     { PAR_OSC1_SEMI,
       CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
       nullptr,
@@ -291,7 +324,6 @@ private:
       12,
       0
     },
-
     { PAR_OSC1_CENT,
       CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_STEPPED
@@ -307,26 +339,74 @@ private:
 
     //---------- res1 ----------
 
-    { PAR_RES1_NOISE,
+    // inputs
+
+    { PAR_RES1_IN_O1,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "Noise",
+      "O1",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_RES1_IN_O2,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "O2",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_RES1_IN_R1,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "R1",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_RES1_IN_R2,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "R2",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_RES1_IN_N,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "N",
       "",
       0.0,
       1.0,
       0.0
     },
 
-    { PAR_RES1_NSHAPE,
+    //
+
+    { PAR_RES1_TYPE,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
-      "NShape",
+      "Type",
       "",
       0.0,
       1.0,
       0.0
     },
-
+    { PAR_RES1_SHAPE,
+      CLAP_PARAM_IS_AUTOMATABLE,
+      nullptr,
+      "Shape",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
     { PAR_RES1_FB,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
@@ -336,7 +416,6 @@ private:
       1.0,
       0.9
     },
-
     { PAR_RES1_DAMP,
       CLAP_PARAM_IS_AUTOMATABLE,
       nullptr,
@@ -356,7 +435,6 @@ private:
       4,
       0
     },
-
     { PAR_RES1_SEMI,
       CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
       nullptr,
@@ -365,9 +443,7 @@ private:
      -12,
       12,
       0
-
     },
-
     { PAR_RES1_CENT,
       CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
       nullptr,
@@ -494,6 +570,16 @@ private:
     }
   };
 
+//  #define NUM_NOTE_OUTPUTS 1
+//
+//  clap_note_port_info_t myNoteOutputs[NUM_NOTE_OUTPUTS] = {
+//    { 0,
+//      CLAP_NOTE_DIALECT_CLAP,
+//      CLAP_NOTE_DIALECT_CLAP,
+//      "Note Out"
+//    }
+//  };
+
   //----------
 
   sa_ts1_VoiceManager MVoiceManager = {};
@@ -521,6 +607,7 @@ public: // clap
     setupParameters(myParameters,NUM_PARAMS);
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
+//    setupNoteOutputs(myNoteOutputs,NUM_NOTE_OUTPUTS);
     return MIP_Plugin::init();
   }
 
@@ -578,8 +665,8 @@ public: // clap
 
     //handle_output_events(process->in_events,process->out_events);
     postProcessEvents(process->in_events,process->out_events);
-
     flushHostParams(process->out_events);
+
     // hack!!!!!
     // update gui (state only) in process!
     if (MEditor && MIsEditorOpen) {
