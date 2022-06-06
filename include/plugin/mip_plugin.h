@@ -1176,46 +1176,46 @@ public:
   }
 
   virtual void handle_transport_event(clap_event_transport_t* event) {
-    MIP_Print("TODO\n");
+    //MIP_Print("TODO\n");
   }
 
   virtual void handle_note_on_event(clap_event_note_t* event) {
-    MIP_Print("TODO\n");
+    //MIP_Print("TODO\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_on_event(event);
   }
 
   virtual void handle_note_off_event(clap_event_note_t* event) {
-    MIP_Print("TODO\n");
+    //MIP_Print("TODO\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_off_event(event);
   }
 
   virtual void handle_note_end_event(clap_event_note_t* event) {
-    MIP_Print("ERROR\n");
+    //MIP_Print("ERROR\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_end_event(event);
   }
 
   virtual void handle_note_choke_event(clap_event_note_t* event) {
-    MIP_Print("TODO\n");
+    //MIP_Print("TODO\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_choke_event(event);
   }
 
   virtual void handle_note_expression_event(clap_event_note_expression_t* event) {
-    MIP_Print("TODO\n");
+    //MIP_Print("TODO\n");
     //if (MAudioProcessor) MAudioProcessor->handle_note_expression_event(event);
   }
 
   //----------
 
   virtual void handle_midi_event(clap_event_midi_t* event) {
-    MIP_Print("TODO\n");
+    //MIP_Print("TODO\n");
   }
 
   virtual void handle_midi2_event(clap_event_midi2_t* event) {
-    MIP_Print("TODO\n");
+    //MIP_Print("TODO\n");
   }
 
   virtual void handle_midi_sysex_event(clap_event_midi_sysex_t* event) {
-    MIP_Print("TODO\n");
+    //MIP_Print("TODO\n");
   }
 
 //------------------------------
@@ -1229,7 +1229,7 @@ public: // send events
   //----------
 
   void send_param_value_event(uint32_t index, double value, const clap_output_events_t* out_events) {
-    MIP_Print("CLAP_EVENT_PARAM_VALUE: index %i value %f\n",index,value);
+    //MIP_Print("CLAP_EVENT_PARAM_VALUE: index %i value %f\n",index,value);
     clap_event_param_value_t param_value;
     param_value.header.size     = sizeof (clap_event_param_value_t);
     param_value.header.time     = 0;

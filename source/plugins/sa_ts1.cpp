@@ -31,52 +31,106 @@
 
 //----------------------------------------------------------------------
 
-#define PAR_VOL         0
-#define PAR_PAN         1
-#define PAR_OSC1_OUT    2
-#define PAR_RES1_OUT    3
+#define PAR_MASTER_VOL      0
+#define PAR_MASTER_PAN      1
+#define PAR_MASTER_OSC1_OUT 2
+#define PAR_MASTER_OSC2_OUT 3
+#define PAR_MASTER_RES1_OUT 4
+#define PAR_MASTER_RES2_OUT 5
 
-#define PAR_OSC1_IN_O1  4
-#define PAR_OSC1_IN_O2  5
-#define PAR_OSC1_IN_R1  6
-#define PAR_OSC1_IN_R2  7
-#define PAR_OSC1_IN_N   8
+// osc 1
 
-#define PAR_OSC1_TYPE   9
-#define PAR_OSC1_SHAPE  10
-#define PAR_OSC1_WIDTH  11
-#define PAR_OSC1_OCT    12
-#define PAR_OSC1_SEMI   13
-#define PAR_OSC1_CENT   14
+#define PAR_OSC1_IN_O1      6
+#define PAR_OSC1_IN_O2      7
+#define PAR_OSC1_IN_R1      8
+#define PAR_OSC1_IN_R2      9
+#define PAR_OSC1_IN_N       10
 
-#define PAR_RES1_IN_O1  15
-#define PAR_RES1_IN_O2  16
-#define PAR_RES1_IN_R1  17
-#define PAR_RES1_IN_R2  18
-#define PAR_RES1_IN_N   19
+#define PAR_OSC1_TYPE       11
+#define PAR_OSC1_SHAPE      12
+#define PAR_OSC1_WIDTH      13
 
-#define PAR_RES1_TYPE   20
-#define PAR_RES1_SHAPE  21
-#define PAR_RES1_FB     22
-#define PAR_RES1_DAMP   23
-#define PAR_RES1_OCT    24
-#define PAR_RES1_SEMI   25
-#define PAR_RES1_CENT   26
-#define PAR_RES1_ROUGH  27
+#define PAR_OSC1_PM_TYPE    14
+#define PAR_OSC1_PM_AMOUNT  15
+#define PAR_OSC1_WM_TYPE    16
+#define PAR_OSC1_WM_AMOUNT  17
 
-#define PAR_FLT1_TYPE   28
-#define PAR_FLT1_FREQ   29
-#define PAR_FLT1_RES    30
+#define PAR_OSC1_OCT        18
+#define PAR_OSC1_SEMI       19
+#define PAR_OSC1_CENT       20
 
-#define PAR_ENV1_ATT    31
-#define PAR_ENV1_DEC    32
-#define PAR_ENV1_SUS    33
-#define PAR_ENV1_REL    34
+// osc 2
+
+#define PAR_OSC2_IN_O1      21
+#define PAR_OSC2_IN_O2      22
+#define PAR_OSC2_IN_R1      23
+#define PAR_OSC2_IN_R2      24
+#define PAR_OSC2_IN_N       25
+
+#define PAR_OSC2_TYPE       26
+#define PAR_OSC2_SHAPE      27
+#define PAR_OSC2_WIDTH      28
+
+#define PAR_OSC2_PM_TYPE    29
+#define PAR_OSC2_PM_AMOUNT  30
+#define PAR_OSC2_WM_TYPE    31
+#define PAR_OSC2_WM_AMOUNT  32
+
+#define PAR_OSC2_OCT        33
+#define PAR_OSC2_SEMI       34
+#define PAR_OSC2_CENT       35
+
+// res 1
+
+#define PAR_RES1_IN_O1      36
+#define PAR_RES1_IN_O2      37
+#define PAR_RES1_IN_R1      38
+#define PAR_RES1_IN_R2      39
+#define PAR_RES1_IN_N       40
+
+#define PAR_RES1_TYPE       41
+#define PAR_RES1_SHAPE      42
+#define PAR_RES1_FB         43
+#define PAR_RES1_DAMP       44
+#define PAR_RES1_ROUGH      45
+#define PAR_RES1_OCT        46
+#define PAR_RES1_SEMI       47
+#define PAR_RES1_CENT       48
+
+// res 2
+
+#define PAR_RES2_IN_O1      49
+#define PAR_RES2_IN_O2      50
+#define PAR_RES2_IN_R1      51
+#define PAR_RES2_IN_R2      52
+#define PAR_RES2_IN_N       53
+
+#define PAR_RES2_TYPE       54
+#define PAR_RES2_SHAPE      55
+#define PAR_RES2_FB         56
+#define PAR_RES2_DAMP       57
+#define PAR_RES2_ROUGH      58
+#define PAR_RES2_OCT        59
+#define PAR_RES2_SEMI       60
+#define PAR_RES2_CENT       61
+
+// flt1
+
+#define PAR_FLT1_TYPE       62
+#define PAR_FLT1_FREQ       63
+#define PAR_FLT1_RES        64
+
+// env1
+
+#define PAR_ENV1_ATT        65
+#define PAR_ENV1_DEC        66
+#define PAR_ENV1_SUS        67
+#define PAR_ENV1_REL        68
 
 //----------
 
-#define NUM_PARAMS      35
-#define NUM_VOICES      256
+#define NUM_PARAMS          69
+#define NUM_VOICES          256
 
 //----------------------------------------------------------------------
 
@@ -87,18 +141,13 @@
 #include "sa_ts1/sa_ts1_editor.h"
 #include "sa_ts1/sa_ts1_voice.h"
 
-typedef MIP_VoiceManager<sa_ts1_Voice,NUM_VOICES> sa_ts1_VoiceManager;
+typedef MIP_VoiceManager<sa_ts1_Voice<double>,NUM_VOICES> sa_ts1_VoiceManager;
 
 //----------------------------------------------------------------------
 //
 // descriptor
 //
 //----------------------------------------------------------------------
-
-//const char* myFeatures[] = {
-//  "instrument",
-//  nullptr
-//};
 
 //----------
 
@@ -114,11 +163,11 @@ const clap_plugin_descriptor_t myDescriptor = {
   .url          = "https://torhelgeskei.com",
   .manual_url   = "",
   .support_url  = "",
-  .version      = "0.0.5",
+  .version      = "0.0.6",
   //myFeatures
   .features     = (const char*[]){
     CLAP_PLUGIN_FEATURE_INSTRUMENT,
-    //CLAP_PLUGIN_FEATURE_SYNTHESIZER,
+    CLAP_PLUGIN_FEATURE_SYNTHESIZER,
     nullptr
   }
 };
@@ -184,8 +233,9 @@ private:
 
     //---------- global ----------
 
-    { PAR_VOL,
-      CLAP_PARAM_IS_AUTOMATABLE,
+    { PAR_MASTER_VOL,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE,
       nullptr,
       "Vol",
       "",
@@ -193,8 +243,9 @@ private:
       1.0,
       0.5
     },
-    { PAR_PAN,
-      CLAP_PARAM_IS_AUTOMATABLE,
+    { PAR_MASTER_PAN,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE,
       nullptr,
       "Pan",
       "",
@@ -203,8 +254,10 @@ private:
       0.5
     },
 
-    { PAR_OSC1_OUT,
-      CLAP_PARAM_IS_AUTOMATABLE,
+    { PAR_MASTER_OSC1_OUT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "O1",
       "",
@@ -212,10 +265,34 @@ private:
       1.0,
       0.5
     },
-    { PAR_RES1_OUT,
-      CLAP_PARAM_IS_AUTOMATABLE,
+    { PAR_MASTER_OSC2_OUT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "O2",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_MASTER_RES1_OUT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "R1",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_MASTER_RES2_OUT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "R2",
       "",
       0.0,
       1.0,
@@ -227,7 +304,9 @@ private:
     // inputs
 
     { PAR_OSC1_IN_O1,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "O1",
       "",
@@ -236,7 +315,9 @@ private:
       0.0
     },
     { PAR_OSC1_IN_O2,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "O2",
       "",
@@ -245,7 +326,9 @@ private:
       0.0
     },
     { PAR_OSC1_IN_R1,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "R1",
       "",
@@ -254,7 +337,9 @@ private:
       0.0
     },
     { PAR_OSC1_IN_R2,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "R2",
       "",
@@ -263,7 +348,9 @@ private:
       0.0
     },
     { PAR_OSC1_IN_N,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "N",
       "",
@@ -275,7 +362,8 @@ private:
     //
 
     { PAR_OSC1_TYPE,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED,
       nullptr,
       "Type",
       "",
@@ -306,8 +394,57 @@ private:
       0.5
     },
 
+    // pm, wm
+
+    { PAR_OSC1_PM_TYPE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED,
+      nullptr,
+      "Phase",
+      "",
+      0,
+      5,
+      0
+    },
+    { PAR_OSC1_PM_AMOUNT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Phase",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
+    { PAR_OSC1_WM_TYPE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED,
+      nullptr,
+      "Wave",
+      "",
+      0,
+      3,
+      0
+    },
+    { PAR_OSC1_WM_AMOUNT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Wave",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
     { PAR_OSC1_OCT,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Oct",
       "",
@@ -316,7 +453,10 @@ private:
       0
     },
     { PAR_OSC1_SEMI,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Semi",
       "",
@@ -326,7 +466,183 @@ private:
     },
     { PAR_OSC1_CENT,
       CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Cent",
+      "",
+     -1.0,
+      1.0,
+      0.
+    },
+
+    //---------- osc2 ----------
+
+    // inputs
+
+    { PAR_OSC2_IN_O1,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "O1",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC2_IN_O2,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "O2",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC2_IN_R1,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "R1",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC2_IN_R2,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "R2",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC2_IN_N,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "N",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
+    //
+
+    { PAR_OSC2_TYPE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED,
+      nullptr,
+      "Type",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC2_SHAPE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Shape",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_OSC2_WIDTH,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Width",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    // pm, wm
+
+    { PAR_OSC2_PM_TYPE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED,
+      nullptr,
+      "Phase",
+      "",
+      0,
+      5,
+      0
+    },
+    { PAR_OSC2_PM_AMOUNT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Phase",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
+    { PAR_OSC2_WM_TYPE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED,
+      nullptr,
+      "Wave",
+      "",
+      0,
+      3,
+      0
+    },
+    { PAR_OSC2_WM_AMOUNT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Wave",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
+    { PAR_OSC2_OCT,
+      CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_STEPPED
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Oct",
+      "",
+     -4,
+      4,
+      0
+    },
+    { PAR_OSC2_SEMI,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Semi",
+      "",
+     -12,
+      12,
+      0
+    },
+    { PAR_OSC2_CENT,
+      CLAP_PARAM_IS_AUTOMATABLE
         | CLAP_PARAM_IS_MODULATABLE
         | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
@@ -342,7 +658,9 @@ private:
     // inputs
 
     { PAR_RES1_IN_O1,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "O1",
       "",
@@ -351,7 +669,9 @@ private:
       0.0
     },
     { PAR_RES1_IN_O2,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "O2",
       "",
@@ -360,7 +680,9 @@ private:
       0.0
     },
     { PAR_RES1_IN_R1,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "R1",
       "",
@@ -369,7 +691,9 @@ private:
       0.0
     },
     { PAR_RES1_IN_R2,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "R2",
       "",
@@ -378,28 +702,33 @@ private:
       0.0
     },
     { PAR_RES1_IN_N,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "N",
       "",
       0.0,
       1.0,
-      0.0
+      1.0
     },
 
     //
 
     { PAR_RES1_TYPE,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED,
       nullptr,
       "Type",
       "",
       0.0,
-      1.0,
+      2.0,
       0.0
     },
     { PAR_RES1_SHAPE,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Shape",
       "",
@@ -408,7 +737,9 @@ private:
       0.0
     },
     { PAR_RES1_FB,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "FB",
       "",
@@ -417,7 +748,9 @@ private:
       0.9
     },
     { PAR_RES1_DAMP,
-      CLAP_PARAM_IS_AUTOMATABLE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Damp",
       "",
@@ -426,8 +759,23 @@ private:
       0.5
     },
 
+    { PAR_RES1_ROUGH,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Rough",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+
     { PAR_RES1_OCT,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Oct",
       "",
@@ -436,7 +784,10 @@ private:
       0
     },
     { PAR_RES1_SEMI,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Semi",
       "",
@@ -445,7 +796,9 @@ private:
       0
     },
     { PAR_RES1_CENT,
-      CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Cent",
       "",
@@ -454,12 +807,157 @@ private:
       0.0
     },
 
-    { PAR_RES1_ROUGH,
-      CLAP_PARAM_IS_AUTOMATABLE,
+    //---------- res2 ----------
+
+    // inputs
+
+    { PAR_RES2_IN_O1,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "O1",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_RES2_IN_O2,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "O2",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_RES2_IN_R1,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "R1",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_RES2_IN_R2,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "R2",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_RES2_IN_N,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "N",
+      "",
+      0.0,
+      1.0,
+      1.0
+    },
+
+    //
+
+    { PAR_RES2_TYPE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED,
+      nullptr,
+      "Type",
+      "",
+      0.0,
+      2.0,
+      0.0
+    },
+    { PAR_RES2_SHAPE,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Shape",
+      "",
+      0.0,
+      1.0,
+      0.0
+    },
+    { PAR_RES2_FB,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "FB",
+      "",
+      0.0,
+      1.0,
+      0.9
+    },
+    { PAR_RES2_DAMP,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Damp",
+      "",
+      0.0,
+      1.0,
+      0.5
+    },
+
+    { PAR_RES2_ROUGH,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
       nullptr,
       "Rough",
       "",
       0.0,
+      1.0,
+      0.0
+    },
+
+    { PAR_RES2_OCT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Oct",
+      "",
+     -4,
+      4,
+      0
+    },
+    { PAR_RES2_SEMI,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_STEPPED
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+
+      nullptr,
+      "Semi",
+      "",
+     -12,
+      12,
+      0
+    },
+    { PAR_RES2_CENT,
+      CLAP_PARAM_IS_AUTOMATABLE
+        | CLAP_PARAM_IS_MODULATABLE
+        | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      nullptr,
+      "Cent",
+      "",
+     -1.0,
       1.0,
       0.0
     },
@@ -472,8 +970,8 @@ private:
       "Type",
       "",
       0.0,
-      1.0,
-      0.0
+      4.0,
+      1.0
     },
 
     { PAR_FLT1_FREQ,
@@ -509,7 +1007,7 @@ private:
       "",
       0.0,
       1.0,
-      0.01
+      0.05
     },
 
     { PAR_ENV1_DEC,
@@ -604,7 +1102,11 @@ public: // clap
     //MIP_Print("host version: %s\n",MHost->host->version);
     //MIP_Print("host clap version: %i.%i.%i\n",ver.major,ver.minor,ver.revision);
     //MHost->printSupportedExtensions();
+
     setupParameters(myParameters,NUM_PARAMS);
+
+//    appendParameter( new MIP_Parameter() );
+
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
 //    setupNoteOutputs(myNoteOutputs,NUM_NOTE_OUTPUTS);
@@ -614,8 +1116,7 @@ public: // clap
   //----------
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
-    MIP_PRINT;
-    MVoiceManager.prepareVoices(sample_rate);
+    MVoiceManager.prepareVoices(sample_rate,&MParameters);
     // send initial parameter values to the voices
     for (uint32_t i=0; i<NUM_PARAMS; i++) {
       //float v = MParameterValues[i];
@@ -657,8 +1158,8 @@ public: // clap
     #else
       MVoiceManager.processBlock(process);
     #endif
-    float v = MParameters[PAR_VOL]->getValue();  // vol
-    float p = MParameters[PAR_PAN]->getValue();  // pan
+    float v = MParameters[PAR_MASTER_VOL]->getValue();  // vol
+    float p = MParameters[PAR_MASTER_PAN]->getValue();  // pan
     float l = v * (1.0 - p);
     float r = v * (      p);
     MIP_ScaleStereoBuffer(outputs,l,r,length);
@@ -690,7 +1191,6 @@ public: // clap
   //----------
 
   bool gui_create(const char *api, bool is_floating) final {
-    MIP_PRINT;
     MEditor = new sa_ts1_Editor(this,this,EDITOR_WIDTH,EDITOR_HEIGHT,true,&myDescriptor);
     if (!MEditor) return false;
     return true;
@@ -701,7 +1201,6 @@ public: // clap
   //----------
 
   bool voice_info_get(clap_voice_info_t *info) final {
-    MIP_PRINT;
     info->voice_count     = NUM_VOICES;
     info->voice_capacity  = NUM_VOICES;
     info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;

@@ -13,7 +13,7 @@
 #define MIP_VOICE_PREPARE_EVENTS
 
 // process voices separately in threads(thread-pool)
-#define MIP_VOICE_PROCESS_THREADED
+//#define MIP_VOICE_PROCESS_THREADED
 
 //----------
 
@@ -33,6 +33,10 @@
 
 template <class VOICE, int VOICE_COUNT>
 class MIP_VoiceManager {
+
+  /*
+    why size * 2..
+  */
 
   // note_end queue
   typedef MIP_Queue<MIP_Note,VOICE_COUNT*2> MIP_NoteQueue;
@@ -70,10 +74,11 @@ public:
 public:
 //------------------------------
 
-  void prepareVoices(float ASampleRate) {
+  void prepareVoices(float ASampleRate, MIP_ParameterArray* AParameters) {
     MIP_Assert(ASampleRate > 0);
     MVoiceContext.samplerate = ASampleRate;
     MVoiceContext.invsamplerate = 1.0 / ASampleRate;
+    MVoiceContext.parameters = AParameters;
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
       MVoices[i].state = MIP_VOICE_OFF;
       MVoices[i].prepare(&MVoiceContext);

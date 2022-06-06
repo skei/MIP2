@@ -5,7 +5,161 @@
 // exponential decay
 // https://en.wikipedia.org/wiki/Exponential_decay
 
-//----------
+//#define env_numstages 5
+
+#include <math.h>
+
+#define mip_env_rate_scale     10.0f // 30.0f
+#define mip_env_threshold      0.001 //MIP_TINY
+
+#define MIP_ENVELOPE_OFF       0
+#define MIP_ENVELOPE_ATTACK    1
+#define MIP_ENVELOPE_DECAY     2
+#define MIP_ENVELOPE_SUSTAIN   3
+#define MIP_ENVELOPE_RELEASE   4
+#define MIP_ENVELOPE_FINISHED  5
+
+//----------------------------------------------------------------------
+
+template <class T>
+struct MIP_EnvelopeStage {
+  T target;
+  T rate;
+};
+
+//----------------------------------------------------------------------
+
+// We calculate the coefficients using the time-constant equation:
+// g = e ^ ( -1 / (time * sample rate) ),
+// out = in + g * (out  in),
+
+//----------------------------------------------------------------------
+
+template <class T>
+class MIP_Envelope {
+
+  private:
+
+    T                     MSampleRate = 0;// = 44100;
+    T                     MValue = 0;
+    int32_t               MStage = 0;
+    MIP_EnvelopeStage<T>  MStages[5]; // -,a,d,s,r
+
+  public:
+
+    MIP_Envelope() {
+      //MScale = 50.0;//6.0;
+      MStage = MIP_ENVELOPE_OFF;
+      MValue = 0.0;
+    }
+
+    //----------
+
+    void    setSampleRate(T ARate)  { MSampleRate = ARate; }
+    T       getValue(void)          { return MValue; }
+    int32_t getStage(void)          { return MStage; }
+
+  public:
+
+    void reset() {
+      MStage = MIP_ENVELOPE_OFF;
+      MValue = 0.0;
+    }
+
+    /*
+      ???
+      we cheat a little, and multiply the ms value by 5..
+      ..easier to make log/exp ish curves (x*x*x)..
+      ???
+    */
+
+    T calcRate(T ms) {
+      T a = ms * mip_env_rate_scale; // 0..1 -> 0..25
+      a = (a*a*a);
+      a += 1.0;
+      return 1.0 / a;
+    }
+
+    //----------
+
+    void setAttack(T AValue) {
+      MStages[MIP_ENVELOPE_ATTACK].target = 1.0;
+      MStages[MIP_ENVELOPE_ATTACK].rate   = calcRate(AValue);
+    }
+
+    void setDecay(T AValue) {
+      MStages[MIP_ENVELOPE_DECAY].rate = calcRate(AValue);
+    }
+
+    void setSustain(T AValue) {
+      MStages[MIP_ENVELOPE_DECAY].target = AValue;
+      MStages[MIP_ENVELOPE_SUSTAIN].target = AValue;
+      MStages[MIP_ENVELOPE_SUSTAIN].rate = 1.0;
+    }
+
+    void setRelease(T AValue) {
+      MStages[MIP_ENVELOPE_RELEASE].target = 0.0;
+      MStages[MIP_ENVELOPE_RELEASE].rate = calcRate(AValue);
+    }
+
+    //----------
+
+    void setADSR(T a, T d, T s, T r) {
+      setAttack(a);
+      setDecay(d);
+      setSustain(s);
+      setRelease(r);
+    }
+
+    //----------
+
+    void noteOn(void) {
+      MStage = MIP_ENVELOPE_ATTACK;
+      MValue = 0.0;
+
+    }
+
+    //----------
+
+    void noteOff(void) {
+      MStage = MIP_ENVELOPE_RELEASE;
+    }
+
+    //----------
+
+    T process(void) {
+      if (MStage == MIP_ENVELOPE_OFF) return 0.0;
+      if (MStage == MIP_ENVELOPE_FINISHED) return 0.0;
+      if (MStage == MIP_ENVELOPE_SUSTAIN) return MValue;
+      T target = MStages[MStage].target;
+      T rate   = MStages[MStage].rate;
+      MValue += ( (target-MValue) * rate );
+      if (fabs(target-MValue) <= mip_env_threshold) {
+        MStage += 1;
+      }
+      return MValue;
+    }
+
+    //----------
+
+    // http://www.kvraudio.com/forum/viewtopic.php?p=6515525#p6515525
+
+    T processSteps(int32_t ASteps) {
+      if (ASteps==0) return MValue;
+      T result = process();
+      T target = MStages[MStage].target;
+      T rate   = MStages[MStage].rate;
+      MValue += (target - MValue) * (1 - pow(1 - rate, ASteps));
+      return result;
+    }
+
+    //----------
+
+};
+
+
+//----------------------------------------------------------------------
+#endif
 
 /*
 
@@ -38,209 +192,3 @@ pos(spd,smp)  = (1-spd)^smp
 pos()         = position arrived at speed in samples
 
 */
-
-//#define env_numstages 5
-
-#include <math.h>
-
-#define mip_env_rate_scale     10.0f // 30.0f
-#define mip_env_threshold      0.001 //MIP_TINY
-
-#define MIP_ENVELOPE_OFF       0
-#define MIP_ENVELOPE_ATTACK    1
-#define MIP_ENVELOPE_DECAY     2
-#define MIP_ENVELOPE_SUSTAIN   3
-#define MIP_ENVELOPE_RELEASE   4
-#define MIP_ENVELOPE_FINISHED  5
-
-//----------------------------------------------------------------------
-
-struct MIP_EnvelopeStage {
-  float target;
-  float rate;
-};
-
-//----------------------------------------------------------------------
-
-// We calculate the coefficients using the time-constant equation:
-// g = e ^ ( -1 / (time * sample rate) ),
-// out = in + g * (out  in),
-
-//----------------------------------------------------------------------
-
-class MIP_Envelope {
-
-  private:
-
-    float               MSampleRate = 0;// = 44100;
-    float               MValue = 0;
-    int32_t             MStage = 0;
-    MIP_EnvelopeStage   MStages[5]; // -,a,d,s,r
-
-  public:
-
-    MIP_Envelope() {
-      //MScale = 50.0;//6.0;
-      MStage = MIP_ENVELOPE_OFF;
-      MValue = 0.0;
-    }
-
-    //----------
-
-    void    setSampleRate(float ARate) { MSampleRate = ARate; }
-    float   getValue(void)             { return MValue; }
-    int32_t getStage(void)             { return MStage; }
-
-  public:
-
-    void reset() {
-      MStage = MIP_ENVELOPE_OFF;
-      MValue = 0.0;
-    }
-
-    /*
-      ???
-      we cheat a little, and multiply the ms value by 5..
-      ..easier to make log/exp ish curves (x*x*x)..
-      ???
-    */
-
-    float calcRate(float ms) {
-      //return expf(-1 / (ms * MSampleRate));
-      //ms = (ms*ms); // a little hack to make the knob more 'sensitive' to short durations..
-      //ms *= 2.0;
-      //float rate = 1.0f - expf(-1.0f / (ms*MSampleRate));
-      //KTrace("ms %.3f rate %f\n",ms,rate);
-      //float rate = 1.0;
-      //if (ms > 0) rate = 1.0f - expf(-1.0f / ms*1000.0f);
-      //else rate = 0;
-      //return rate;
-      //return 1.0f / (ms*1000.0f)
-      //return 1.0f - expf(-2.0f * MIP_PI * ms / MSampleRate);
-      float a = ms * mip_env_rate_scale; // 0..1 -> 0..25
-      a = (a*a*a);
-      a += 1.0;
-      //if (a > 0) return 1.0f / a;
-      //else return 1.0;
-
-//      MIP_Print("ms %f -> %f\n",ms,1.0/a);
-
-      return 1.0 / a;
-    }
-
-    //----------
-
-    void setAttack(float AValue) {
-      //float r1 = AValue * mip_env_rate_scale;
-      //float r2 = (r1*r1*r1) + 1;
-      MStages[MIP_ENVELOPE_ATTACK].target = 1.0;
-      //MStages[MIP_ENVELOPE_ATTACK].rate   = 1.0f / r2;
-      MStages[MIP_ENVELOPE_ATTACK].rate   = calcRate(AValue);
-    }
-
-    void setDecay(float AValue) {
-      //float r1 = AValue * mip_env_rate_scale;
-      //float r2 = (r1*r1*r1) + 1;
-      //MStages[MIP_ENVELOPE_DECAY].target = ATarget; // set in setSustain
-      //MStages[MIP_ENVELOPE_DECAY].rate = 1.0f / r2;
-      MStages[MIP_ENVELOPE_DECAY].rate = calcRate(AValue);
-    }
-
-    void setSustain(float AValue) {
-      //float r1 = AValue;                  // * env_rate_scale;
-      //float r2 = (r1*r1*r1);              // + 1;
-      //MStages[MIP_ENVELOPE_DECAY].target = r2;   // set in setSustain
-      //MStages[MIP_ENVELOPE_SUSTAIN].target = r2; // set in setSustain
-      MStages[MIP_ENVELOPE_DECAY].target = AValue;
-      MStages[MIP_ENVELOPE_SUSTAIN].target = AValue;
-      MStages[MIP_ENVELOPE_SUSTAIN].rate = 1.0;
-    }
-
-    void setRelease(float AValue) {
-      //float r1 = AValue * mip_env_rate_scale;
-      //float r2 = (r1*r1*r1) + 1;
-      MStages[MIP_ENVELOPE_RELEASE].target = 0.0;
-      //MStages[MIP_ENVELOPE_RELEASE].rate   = 1.0f / r2;
-      MStages[MIP_ENVELOPE_RELEASE].rate = calcRate(AValue);
-    }
-
-    //----------
-
-    //void setStage(int32 AStage, float ATarget, float ARate) {
-    //  float r1 = ARate * env_rate_scale;
-    //  float r2 = (r1*r1*r1) + 1;
-    //  //float r2 = r1*r1 + 1;
-    //  STrace("r2: %f\n",r2);
-    //  MStages[AStage].target = ATarget;
-    //  MStages[AStage].rate   = 1.0f / r2;
-    //}
-
-    //----------
-
-    void setADSR(float a, float d, float s, float r) {
-      //setStage(kes_attack,1.0f,a);
-      //setStage(kes_decay,s,d);
-      //setStage(kes_sustain,s,1,1);
-      ////MStages[kes_sustain].target = s*s*s;
-      ////MStages[kes_sustain].rate   = 1.0;
-      //setStage(kes_release,0.0f,r);
-      setAttack(a);
-      setDecay(d);
-      setSustain(s);
-      setRelease(r);
-    }
-
-    //----------
-
-    void noteOn(void) {
-      MStage = MIP_ENVELOPE_ATTACK;
-      MValue = 0.0;
-
-    }
-
-    //----------
-
-    void noteOff(void) {
-      MStage = MIP_ENVELOPE_RELEASE;
-    }
-
-    //----------
-
-    float process(void) {
-      if (MStage == MIP_ENVELOPE_OFF) return 0.0;
-      if (MStage == MIP_ENVELOPE_FINISHED) return 0.0;
-      if (MStage == MIP_ENVELOPE_SUSTAIN) return MValue;
-      float target = MStages[MStage].target;
-      float rate   = MStages[MStage].rate;
-      MValue += ( (target-MValue) * rate );
-      if (fabs(target-MValue) <= mip_env_threshold) {
-        MStage += 1;
-      }
-      return MValue;
-    }
-
-    //----------
-
-    // http://www.kvraudio.com/forum/viewtopic.php?p=6515525#p6515525
-
-    float processSteps(int32_t ASteps) {
-      if (ASteps==0) return MValue;
-      float result = process();
-      //if (ASteps>1) for (int32 i=1; i<ASteps; i++) process();
-      float target = MStages[MStage].target;
-      float rate   = MStages[MStage].rate;
-      MValue += (target - MValue) * (1 - pow(1 - rate, ASteps));
-      //if (fabs(target-MValue) <= mip_env_threshold) {
-      //  MStage += 1;
-      //}
-      return result;
-    }
-
-    //----------
-
-};
-
-
-//----------------------------------------------------------------------
-#endif
-

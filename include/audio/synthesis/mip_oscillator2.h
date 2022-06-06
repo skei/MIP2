@@ -5,147 +5,175 @@
 #include "base/utils/mip_math.h"
 #include "audio/waveforms/mip_polyblep_waveform.h"
 
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+template <class T>
 class MIP_Oscillator2 {
 
-  private:
-    float MPulseWidth = 0.5f;
-    float MSawSqu     = 0.0f;
-    float MSquTri     = 0.0f;
-    float MTriSin     = 0.0f;
-    float ph          = 0.0f;
-    float phadd       = 0.0f;
-    float z1          = 0.0f;
-    float MSampleRate = 0.0f;
-    float MIrate      = 0.0f;
+//------------------------------
+private:
+//------------------------------
 
-  public:
+  T MPulseWidth = 0.5;
+  T MSawSqu     = 0.0;
+  T MSquTri     = 0.0;
+  T MTriSin     = 0.0;
+  T ph          = 0.0;
+  T phadd       = 0.0;
+  T z1          = 0.0;
+  T MSampleRate = 0.0;
+  T MIrate      = 0.0;
 
-    //MIP_Oscillator2() {
-    //}
+//------------------------------
+public:
+//------------------------------
 
-  //--------------------
-  // get
-  //--------------------
+  //MIP_Oscillator2() {
+  //}
 
-  public:
+  //----------
 
-    float getPhase(void) { return ph; }
-    float getPhaseAdd(void) { return phadd; }
+  //~MIP_Oscillator2() {
+  //}
 
-  //--------------------
-  // set
-  //--------------------
+//------------------------------
+public:
+//------------------------------
 
-  public:
+  T getPhase(void) { return ph; }
+  T getPhaseAdd(void) { return phadd; }
 
-    void setSampleRate(float rate) {
-      MIP_Assert( rate > 0 );
-      MSampleRate = rate;
-      MIrate = 1.0f / MSampleRate;
-    }
+//------------------------------
+public:
+//------------------------------
 
-    void setFrequency(float hz) {
-      //KTrace("hz %.2f\n",hz);
-      MIP_Assert( hz >= 1 );
-      MIP_Assert( hz < (MSampleRate*0.5f) );
-      //phadd = hz / srate;
-      phadd = hz * MIrate;
-    }
+  void setSampleRate(T rate) {
+    MIP_Assert( rate > 0 );
+    MSampleRate = rate;
+    MIrate = 1.0 / MSampleRate;
+  }
 
-    void setPhase(float a) {
-      //MIP_Assert( a >= 0 );
-      //MIP_Assert( a <  1 );
-      ph = MIP_Fract(a);
-    }
+  //----------
 
-    void setPhaseAdd(float a) {
-      MIP_Assert( a >= 0 );
-      MIP_Assert( a <= 1 );
-      phadd = a;
-    }
+  void setFrequency(T hz) {
+    //KTrace("hz %.2f\n",hz);
+    MIP_Assert( hz >= 1.0 );
+    MIP_Assert( hz < (MSampleRate*0.5) );
+    //phadd = hz / srate;
+    phadd = hz * MIrate;
+  }
 
-    void reset(void) {
-      ph = 0;
-      phadd = 0;
-      z1 = 0;
-    }
+  //----------
 
-    void setPulseWidth(float pw) {
-      MIP_Assert( pw >= 0 );
-      MIP_Assert( pw <= 1 );
-      MPulseWidth = pw;
-    }
+  void setPhase(T a) {
+    //MIP_Assert( a >= 0 );
+    //MIP_Assert( a <  1 );
+    ph = MIP_Fract(a);
+  }
 
-    void setSawSqu(float sawsqu) {
-      MIP_Assert( sawsqu >= 0 );
-      MIP_Assert( sawsqu <= 1 );
-      MSawSqu = sawsqu;
-    }
+  //----------
 
-    void setSquTri(float squtri) {
-      MIP_Assert( squtri >= 0 );
-      MIP_Assert( squtri <= 1 );
-      MSquTri = squtri;
-    }
+  void setPhaseAdd(T a) {
+    MIP_Assert( a >= 0.0 );
+    MIP_Assert( a <= 1.0 );
+    phadd = a;
+  }
 
-    void setTriSin(float trisin) {
-      MIP_Assert( trisin >= 0 );
-      MIP_Assert( trisin <= 1 );
-      MTriSin = trisin;
-    }
+  //----------
 
-  //--------------------
-  // process
-  //--------------------
+  void reset(void) {
+    ph = 0.0;
+    phadd = 0.0;
+    z1 = 0.0;
+  }
 
-  public:
+  //----------
 
-    float process() {
+  void setPulseWidth(T pw) {
+    MIP_Assert( pw >= 0.0 );
+    MIP_Assert( pw <= 1.0 );
+    MPulseWidth = pw;
+  }
 
-      MIP_Assert( MSampleRate > 0.0f );
+  //----------
 
-      ph += phadd;
-      ph = MIP_Fract(ph);
-      float t1 = ph + 0.5f;
-      t1 = MIP_Fract(t1);
-      float saw1 = 2.0f * t1 - 1.0f;
-      saw1 -= MIP_PolyBlep(t1,phadd);
-      float t2 = t1 + MPulseWidth;
-      t2 = MIP_Fract(t2);
-      float saw2 = 2.0f * t2 - 1.0f;
-      saw2 -= MIP_PolyBlep(t2,phadd);
-      float squ = saw1 - (saw2*MSawSqu);
-      z1 = (phadd * squ) + ((1.0f - phadd) * z1);
-      //TODO: KInterpolate_Linear
-      float tri  = squ * (1-MSquTri) + (z1*4.0f)        * MSquTri;
-      float sine = tri * (1-MTriSin) + sin(ph*MIP_PI2) * MTriSin;
-      float out  = tri * (1-MTriSin) + sine             * MTriSin;
-      return out;
-    }
+  void setSawSqu(T sawsqu) {
+    MIP_Assert( sawsqu >= 0.0 );
+    MIP_Assert( sawsqu <= 1.0 );
+    MSawSqu = sawsqu;
+  }
 
-    float process_mod(float mod, float ofs=0.0f) {
+  //----------
 
-      MIP_Assert( MSampleRate > 0.0f );
+  void setSquTri(T squtri) {
+    MIP_Assert( squtri >= 0.0 );
+    MIP_Assert( squtri <= 1.0 );
+    MSquTri = squtri;
+  }
 
-      //ph += phadd;
-      ph += (phadd + ofs);
-      ph = MIP_Fract(ph);
-      float phm = MIP_Fract(ph+mod);
-      float t1 = phm + 0.5f;
-      t1 = MIP_Fract(t1);
-      float saw1 = 2.0f * t1 - 1.0f;
-      saw1 -= MIP_PolyBlep(t1,phadd);
-      float t2 = t1 + MPulseWidth;
-      t2 = MIP_Fract(t2);
-      float saw2 = 2.0f * t2 - 1.0f;
-      saw2 -= MIP_PolyBlep(t2,phadd);
-      float squ = saw1 - (saw2*MSawSqu);
-      z1 = (phadd * squ) + ((1.0f - phadd) * z1);
-      float tri  = squ * (1-MSquTri) + (z1*4.0f)          * MSquTri;
-      float sine = tri * (1-MTriSin) + sin(phm*MIP_PI2)  * MTriSin;
-      float out  = tri * (1-MTriSin) + sine               * MTriSin;
-      return out;
-    }
+  //----------
+
+  void setTriSin(T trisin) {
+    MIP_Assert( trisin >= 0.0 );
+    MIP_Assert( trisin <= 1.0 );
+    MTriSin = trisin;
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  T process() {
+    MIP_Assert( MSampleRate > 0.0 );
+    ph += phadd;
+    ph = MIP_Fract(ph);
+    T t1 = ph + 0.5;
+    t1 = MIP_Fract(t1);
+    T saw1 = 2.0f * t1 - 1.0;
+    saw1 -= MIP_PolyBlep(t1,phadd);
+    T t2 = t1 + MPulseWidth;
+    t2 = MIP_Fract(t2);
+    T saw2 = 2.0 * t2 - 1.0;
+    saw2 -= MIP_PolyBlep(t2,phadd);
+    T squ = saw1 - (saw2*MSawSqu);
+    z1 = (phadd * squ) + ((1.0 - phadd) * z1);
+    //TODO: KInterpolate_Linear
+    T tri  = squ * (1.0 - MSquTri) + (z1 * 4.0)        * MSquTri;
+    T sine = tri * (1.0 - MTriSin) + sin(ph * MIP_PI2) * MTriSin;
+    T out  = tri * (1.0 - MTriSin) + sine              * MTriSin;
+    return out;
+  }
+
+  //----------
+
+  T process_mod(T mod, T ofs=0.0) {
+    MIP_Assert( MSampleRate > 0.0 );
+    //ph += phadd;
+    ph += (phadd + (phadd*ofs));
+    ph = MIP_Fract(ph);
+
+    //ph *= scale;
+
+    T phm = MIP_Fract(ph+mod);
+    T t1 = phm + 0.5;
+    t1 = MIP_Fract(t1);
+    T saw1 = 2.0f * t1 - 1.0;
+    saw1 -= MIP_PolyBlep(t1,phadd);
+    T t2 = t1 + MPulseWidth;
+    t2 = MIP_Fract(t2);
+    T saw2 = 2.0 * t2 - 1.0;
+    saw2 -= MIP_PolyBlep(t2,phadd);
+    T squ = saw1 - (saw2*MSawSqu);
+    z1 = (phadd * squ) + ((1.0 - phadd) * z1);
+    T tri  = squ * (1.0 - MSquTri) + (z1 * 4.0)       * MSquTri;
+    T sine = tri * (1.0 - MTriSin) + sin(phm*MIP_PI2) * MTriSin;
+    T out  = tri * (1.0 - MTriSin) + sine             * MTriSin;
+    return out;
+  }
 
 };
 

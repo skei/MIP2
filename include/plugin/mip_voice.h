@@ -44,6 +44,7 @@ struct MIP_VoiceContext {
   const clap_process_t* process       = nullptr;
   float                 samplerate    = 0.0;
   float                 invsamplerate = 0.0;
+  MIP_ParameterArray*   parameters    = nullptr;
 };
 
 //----------------------------------------------------------------------
@@ -74,6 +75,27 @@ public:
     context = AContext;
     voice.prepare(context);
   }
+
+  //----------
+
+  float getLevel() {
+    return voice.getEnvLevel();
+  }
+
+  //----------
+
+  void handleVoiceEvent(MIP_VoiceEvent event) {
+    switch (event.type) {
+      case MIP_VOICE_EVENT_NOTE_ON:         note_on(event.index,event.value);     break;
+      case MIP_VOICE_EVENT_NOTE_OFF:        note_off(event.value);                break;
+      case MIP_VOICE_EVENT_NOTE_CHOKE:      note_choke();                         break;
+      case MIP_VOICE_EVENT_NOTE_EXPRESSION: expression(event.index,event.value);  break;
+      case MIP_VOICE_EVENT_PARAMETER:       parameter(event.index,event.value);   break;
+      case MIP_VOICE_EVENT_MODULATION:      modulation(event.index,event.value);  break;
+    }
+  }
+
+  //----------
 
   void note_on(int32_t key, float velocity) {
     state = voice.note_on(key,velocity);
@@ -106,12 +128,6 @@ public:
 
   void modulation(uint32_t index, float value) {
     voice.modulation(index,value);
-  }
-
-  //----------
-
-  float getLevel() {
-    return voice.getEnvLevel();
   }
 
 //------------------------------
@@ -147,19 +163,6 @@ public:
   void prepare_modulation(uint32_t time, uint32_t index, float value) {
     MIP_VoiceEvent ev = MIP_VoiceEvent(MIP_VOICE_EVENT_MODULATION,time,index,value);
     events.write(ev);
-  }
-
-  //----------
-
-  void handleVoiceEvent(MIP_VoiceEvent event) {
-    switch (event.type) {
-      case MIP_VOICE_EVENT_NOTE_ON:         note_on(event.index,event.value);     break;
-      case MIP_VOICE_EVENT_NOTE_OFF:        note_off(event.value);                break;
-      case MIP_VOICE_EVENT_NOTE_CHOKE:      note_choke();                         break;
-      case MIP_VOICE_EVENT_NOTE_EXPRESSION: expression(event.index,event.value);  break;
-      case MIP_VOICE_EVENT_PARAMETER:       parameter(event.index,event.value);   break;
-      case MIP_VOICE_EVENT_MODULATION:      modulation(event.index,event.value);  break;
-    }
   }
 
 //------------------------------

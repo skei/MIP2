@@ -95,7 +95,9 @@ float MIP_Clip(float x, float l, float h) {
 //return x / (x+(1-1/t)*(x-1));
 
 float MIP_Curve(float x, float t) {
-  t = (t*0.990f) + 0.005f;
+  if (t < 0.001) t = 0.001;
+  if (t > 0.999) t = 0.999;
+  //t = (t*0.990f) + 0.005f;
   float a = ( 1.0f - 1.0f/t );
   return x / (x+a * (x-1) );
 }

@@ -32,6 +32,7 @@ public:
     setDrawBorder(false);
     setDrawText(true);
     setText("<select>");
+    setDrawParamName(false);
   }
 
   virtual ~MIP_SelectorWidget() {
@@ -107,7 +108,7 @@ public:
 //    }
 
   void on_menuEvent(int32_t AIndex) override {
-    MIP_Print("AIndex %i\n",AIndex);
+    //MIP_Print("AIndex %i\n",AIndex);
     float v = indexToValue(AIndex);
     setValue(v);
     do_widget_update(this);
@@ -124,9 +125,15 @@ public:
       //if (MMenu->getNumItems() > 0) {
         float val = getValue();
         int32_t sel = valueToIndex(val);
-        if (sel >= 0) MText = MMenu->getItem(sel);
-// !!!!!!!!
-        else MText = "---";
+
+
+        if (sel >= 0) {
+          //MIP_Print("sel %i MText %s\n",sel,MText);
+          MText = MMenu->getItem(sel);
+        }
+        else {
+          MText = "---";
+        }
 
       //}
       //else MText = "neg";
