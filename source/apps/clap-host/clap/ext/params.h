@@ -112,32 +112,38 @@ enum {
    CLAP_PARAM_IS_AUTOMATABLE = 1 << 5,
 
    // Does this param supports per note automations?
-   CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE = 1 << 6,
-
-   // Does this param supports per channel automations?
-   CLAP_PARAM_IS_AUTOMATABLE_PER_CHANNEL = 1 << 7,
-
-   // Does this param supports per port automations?
-   CLAP_PARAM_IS_AUTOMATABLE_PER_PORT = 1 << 8,
-
-   // Does the parameter support the modulation signal?
-   CLAP_PARAM_IS_MODULATABLE = 1 << 9,
+   CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE_ID = 1 << 6,
 
    // Does this param supports per note automations?
-   CLAP_PARAM_IS_MODULATABLE_PER_NOTE = 1 << 10,
+   CLAP_PARAM_IS_AUTOMATABLE_PER_KEY = 1 << 7,
 
    // Does this param supports per channel automations?
-   CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL = 1 << 11,
+   CLAP_PARAM_IS_AUTOMATABLE_PER_CHANNEL = 1 << 8,
+
+   // Does this param supports per port automations?
+   CLAP_PARAM_IS_AUTOMATABLE_PER_PORT = 1 << 9,
+
+   // Does the parameter support the modulation signal?
+   CLAP_PARAM_IS_MODULATABLE = 1 << 10,
+
+   // Does this param supports per note automations?
+   CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID = 1 << 11,
+
+   // Does this param supports per note automations?
+   CLAP_PARAM_IS_MODULATABLE_PER_KEY = 1 << 12,
 
    // Does this param supports per channel automations?
-   CLAP_PARAM_IS_MODULATABLE_PER_PORT = 1 << 12,
+   CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL = 1 << 13,
+
+   // Does this param supports per channel automations?
+   CLAP_PARAM_IS_MODULATABLE_PER_PORT = 1 << 14,
 
    // Any change to this parameter will affect the plugin output and requires to be done via
    // process() if the plugin is active.
    //
    // A simple example would be a DC Offset, changing it will change the output signal and must be
    // processed.
-   CLAP_PARAM_REQUIRES_PROCESS = 1 << 13,
+   CLAP_PARAM_REQUIRES_PROCESS = 1 << 15,
 };
 typedef uint32_t clap_param_info_flags;
 
@@ -161,10 +167,10 @@ typedef struct clap_param_info {
    // destroyed.
    void *cookie;
 
-   char name[CLAP_NAME_SIZE];     // the display name
-   char module[CLAP_MODULE_SIZE]; // the module containing the param, eg:
-                                  // "oscillators/wt1"; '/' will be used as a
-                                  // separator to show a tree like structure.
+   char name[CLAP_NAME_SIZE];   // the display name
+   char module[CLAP_PATH_SIZE]; // the module containing the param, eg:
+                                // "oscillators/wt1"; '/' will be used as a
+                                // separator to show a tree like structure.
 
    double min_value;     // minimum plain value
    double max_value;     // maximum plain value
@@ -267,7 +273,7 @@ typedef struct clap_host_params {
    // [main-thread]
    void (*rescan)(const clap_host_t *host, clap_param_rescan_flags flags);
 
-   // Clears references to a parameter
+   // Clears references to a parameter.
    // [main-thread]
    void (*clear)(const clap_host_t *host, clap_id param_id, clap_param_clear_flags flags);
 

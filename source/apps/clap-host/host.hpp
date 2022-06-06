@@ -194,7 +194,7 @@ public: // extensions
   virtual bool posix_fd_support_register_fd(int fd, int flags) { return false; }
   virtual bool posix_fd_support_modify_fd(int fd, int flags) { return false; }
   virtual bool posix_fd_support_unregister_fd(int fd) { return false; }
-  virtual void quick_controls_changed(clap_quick_controls_changed_flags flags) {}
+  //virtual void quick_controls_changed(clap_quick_controls_changed_flags flags) {}
   virtual void state_mark_dirty() {}
   virtual void surround_changed() {}
   virtual void surround_get_preferred_channel_map(uint8_t* channel_map, uint32_t channel_map_capacity, uint32_t* channel_count) {}
@@ -305,9 +305,9 @@ private: // extensions
     host_->event_filter_changed();
   }
 
-  clap_host_event_filter MEventFilter = {
-    clap_host_event_filter_changed_callback
-  };
+  //clap_host_event_filter MEventFilter = {
+  //  clap_host_event_filter_changed_callback
+  //};
 
   // event-registry
 
@@ -469,12 +469,12 @@ private: // extensions
 
   // posix-fd-support
 
-  static bool clap_host_posix_fd_support_register_fd_callback(const clap_host *host, int fd, int flags) {
+  static bool clap_host_posix_fd_support_register_fd_callback(const clap_host *host, int fd, clap_posix_fd_flags_t flags) {
     Host* host_ = (Host*)host->host_data;
     return host_->posix_fd_support_register_fd(fd,flags);
   }
 
-  static bool clap_host_posix_fd_support_modify_fd_callback(const clap_host *host, int fd, int flags) {
+  static bool clap_host_posix_fd_support_modify_fd_callback(const clap_host *host, int fd, clap_posix_fd_flags_t flags) {
     Host* host_ = (Host*)host->host_data;
     return host_->posix_fd_support_modify_fd(fd,flags);
   }
@@ -492,14 +492,14 @@ private: // extensions
 
   // quick-controls.draft/0
 
-  static void clap_host_quick_controls_changed_callback(const clap_host *host, clap_quick_controls_changed_flags flags) {
-    Host* host_ = (Host*)host->host_data;
-    host_->quick_controls_changed(flags);
-  }
+  //static void clap_host_quick_controls_changed_callback(const clap_host *host, clap_quick_controls_changed_flags flags) {
+  //  Host* host_ = (Host*)host->host_data;
+  //  host_->quick_controls_changed(flags);
+  //}
 
-  clap_host_quick_controls MQuickControls = {
-    clap_host_quick_controls_changed_callback
-  };
+  //clap_host_quick_controls MQuickControls = {
+  //  clap_host_quick_controls_changed_callback
+  //};
 
   // state
 

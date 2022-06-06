@@ -82,6 +82,10 @@ typedef struct clap_window {
 
 // Information to improve window resizement when initiated by the host or window manager.
 typedef struct clap_gui_resize_hints {
+   bool can_resize_horizontally;
+   bool can_resize_vertically;
+
+   // only if can resize horizontally and vertically
    bool     preseve_aspect_ratio;
    uint32_t aspect_ratio_width;
    uint32_t aspect_ratio_height;
@@ -122,8 +126,8 @@ typedef struct clap_plugin_gui {
    // If the plugin prefers to work out the scaling factor itself by querying the OS directly,
    // then ignore the call.
    //
-   // Returns false if the call was ignored.
-   // Returns true if the scaling could be applied, false otherwise.
+   // Returns true if the scaling could be applied
+   // Returns false if the call was ignored, or the scaling could not be applied.
    // [main-thread]
    bool (*set_scale)(const clap_plugin_t *plugin, double scale);
 
