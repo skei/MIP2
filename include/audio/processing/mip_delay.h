@@ -151,6 +151,13 @@ class MIP_InterpolatedDelay {
       MIP_Assert( MCounter >= 0 );
       MIP_Assert( MCounter < MAX_DELAY );
 
+
+      // if only part of next sample 'fits' inside delay length...
+      if ((MPhase + 1.0) >= ADelay) {
+        float diff = ADelay - MPhase;
+        out *= diff;
+      }
+
       MBuffer[MCounter] = out;
 
       MCounter++;

@@ -634,6 +634,8 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/plugins/sa_ts1/sa_ts1_editor.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_osc.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_res.h" />
 		<Unit filename="../source/plugins/sa_ts1/sa_ts1_voice.h" />
 		<Unit filename="../source/plugins/sa_ts1/sa_ts1_widgets.h" />
 		<Unit filename="../source/plugins/sa_tyr.cpp">

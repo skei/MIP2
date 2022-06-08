@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1654304523 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+1654529299 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
 	"../source/plugins/sa_ts1.cpp"
 
 1643950248 /DISKS/sda2/code/git/MIP2/source/test/test.cpp
@@ -617,7 +617,7 @@
 	<errno.h>
 	"base/mip_const.h"
 
-1639493008 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_math.h
+1654459879 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_math.h
 	<math.h>
 	<stdlib.h>
 	"mip.h"
@@ -1736,7 +1736,7 @@
 	<string.h>
 	<math.h>
 
-1652285434 /DISKS/sda2/code/git/MIP2/include/audio/modulation/mip_envelope.h
+1654454075 /DISKS/sda2/code/git/MIP2/include/audio/modulation/mip_envelope.h
 	<math.h>
 
 1652293573 /DISKS/sda2/code/git/MIP2/include/audio/waveforms/mip_polyblep_waveform.h
@@ -1833,11 +1833,11 @@
 1653814579 /DISKS/sda2/code/git/MIP2/include/plugin/mip_note.h
 	"mip.h"
 
-1653585149 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice.h
+1654451172 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice.h
 	"mip.h"
 	"plugin/mip_note.h"
 
-1654378513 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
+1654449482 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
 	"mip.h"
 	"audio/mip_audio_utils.h"
 	"base/types/mip_queue.h"
@@ -1930,14 +1930,14 @@
 	"plugin/mip_note.h"
 	"plugin/clap/mip_clap.h"
 
-1654438944 /DISKS/sda2/code/git/MIP2/source/plugins/sa_ts1.cpp
+1654610622 /DISKS/sda2/code/git/MIP2/source/plugins/sa_ts1.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_voice_manager.h"
 	"sa_ts1/sa_ts1_editor.h"
 	"sa_ts1/sa_ts1_voice.h"
 
-1654439143 /DISKS/sda2/code/git/MIP2/source/plugins/sa_ts1/sa_ts1_editor.h
+1654612438 /DISKS/sda2/code/git/MIP2/source/plugins/sa_ts1/sa_ts1_editor.h
 	"mip.h"
 	"gui/mip_widgets.h"
 	"plugin/mip_editor.h"
@@ -1947,7 +1947,7 @@
 	"mip.h"
 	"gui/mip_widgets.h"
 
-1654438398 /DISKS/sda2/code/git/MIP2/source/plugins/sa_ts1/sa_ts1_voice.h
+1654520360 /DISKS/sda2/code/git/MIP2/source/plugins/sa_ts1/sa_ts1_voice.h
 	"mip.h"
 	"audio/mip_audio_math.h"
 	"audio/filters/mip_rc_filter.h"
@@ -1957,9 +1957,20 @@
 	"audio/modulation/mip_envelope.h"
 	"audio/waveforms/mip_polyblep_waveform.h"
 	"plugin/mip_voice_manager.h"
+	"sa_ts1_osc.h"
+	"sa_ts1_res.h"
 
 1654270314 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob2b_widget.h
 	"gui/mip_widget.h"
 	"gui/widgets/mip_knob_widget.h"
 	"gui/widgets/mip_text_widget.h"
+
+1654611086 /DISKS/sda2/code/git/MIP2/source/plugins/sa_ts1/sa_ts1_osc.h
+	"base/utils/mip_interpolation.h"
+
+1639493725 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_interpolation.h
+
+1654465835 /DISKS/sda2/code/git/MIP2/source/plugins/sa_ts1/sa_ts1_res.h
+	"audio/filters/mip_rc_filter.h"
+	"audio/processing/mip_delay.h"
 

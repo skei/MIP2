@@ -158,6 +158,13 @@ public:
         //phase_add_mod = (dt * pm);
         break;
       }
+      case 6: { // Flip
+        if (t >= MPhaseModAmount) {
+          t = 1.0 - t;
+          //t = MIP_Fract(t);
+        }
+        break;
+      }
     }
 
     // saw 1
@@ -210,6 +217,24 @@ public:
         out = MIP_Interpolate_Linear(MWaveModAmount,out,rm);
         break;
       }
+      case 4: { // Replace
+        //T rm = out * mod;
+        //out = MIP_Interpolate_Linear(MWaveModAmount,out,rm);
+        if (abs(out) > MWaveModAmount) {
+          out = mod;
+        }
+        break;
+      }
+      case 5: { // Neg
+        out = MIP_Interpolate_Linear(MWaveModAmount,out,-mod);
+        break;
+      }
+      case 6: { // Neg
+        T sign = MIP_Sign(out);
+        out = MIP_Interpolate_Linear(MWaveModAmount,out,mod*sign);
+        break;
+      }
+
     }
 
     MPhase += MPhaseAdd + phase_add_mod;

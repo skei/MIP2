@@ -38,6 +38,9 @@
 #define PAR_MASTER_RES1_OUT 4
 #define PAR_MASTER_RES2_OUT 5
 
+//#define PAR_OSC_MIX_TYPE    6
+//#define PAR_OSC_MIX_AMOUNT  7
+
 // osc 1
 
 #define PAR_OSC1_IN_O1      6
@@ -403,7 +406,7 @@ private:
       "Phase",
       "",
       0,
-      5,
+      6,
       0
     },
     { PAR_OSC1_PM_AMOUNT,
@@ -425,7 +428,7 @@ private:
       "Wave",
       "",
       0,
-      3,
+      6,
       0
     },
     { PAR_OSC1_WM_AMOUNT,
@@ -580,7 +583,7 @@ private:
       "Phase",
       "",
       0,
-      5,
+      6,
       0
     },
     { PAR_OSC2_PM_AMOUNT,
@@ -602,7 +605,7 @@ private:
       "Wave",
       "",
       0,
-      3,
+      6,
       0
     },
     { PAR_OSC2_WM_AMOUNT,
