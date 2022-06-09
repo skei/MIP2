@@ -234,6 +234,11 @@ public:
         out = MIP_Interpolate_Linear(MWaveModAmount,out,mod*sign);
         break;
       }
+      case 7: { // max
+        T s = MIP_Sign(out);
+        T m = MIP_Max( abs(out), abs(mod) ) * s;
+        out = MIP_Interpolate_Linear(MWaveModAmount,out,m);
+      }
 
     }
 

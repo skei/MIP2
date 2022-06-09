@@ -169,6 +169,10 @@ public:
 public:
 //------------------------------
 
+  uint32_t process(uint32_t AState, uint32_t ASize, uint32_t AOffset) {
+    return AState;
+  }
+
   void processBlock(uint32_t AIndex) {
     uint32_t length = context->process->frames_count;
     state = voice.process(AIndex,state,length,0);
@@ -198,7 +202,10 @@ public:
         // we have more events
         int32_t length = next_event.time - current_time;
         if (length > 0) {
+
           if (state != MIP_VOICE_WAITING) {
+          //if ((state == MIP_VOICE_PLAYING) || ((state == MIP_VOICE_RELEASED)) {
+
             state = voice.process(AIndex,state,length,current_time);
           }
           remaining -= length;
@@ -206,15 +213,20 @@ public:
         }
         handleVoiceEvent(next_event);
       } // event
+
       else {
         // no more events
         int32_t length = remaining;
+
         if (state != MIP_VOICE_WAITING) {
+        //if ((state == MIP_VOICE_PLAYING) || ((state == MIP_VOICE_RELEASED)) {
+
           state = voice.process(AIndex,state,length,current_time);
         }
         remaining -= length;
         current_time += length;
       } // !event
+
     } // remaining > 0
     MIP_Assert( events.read(&next_event) == false );
   }

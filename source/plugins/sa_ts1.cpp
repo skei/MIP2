@@ -139,12 +139,16 @@
 
 #include "mip.h"
 #include "plugin/mip_plugin.h"
-#include "plugin/mip_voice_manager.h"
+
+//#include "plugin/mip_voice_manager.h"
+//#include "plugin/mip_block_voice_manager.h"
+#include "plugin/mip_split_voice_manager.h"
+//#include "plugin/mip_threaded_voice_manager.h"
 
 #include "sa_ts1/sa_ts1_editor.h"
 #include "sa_ts1/sa_ts1_voice.h"
 
-typedef MIP_VoiceManager<sa_ts1_Voice<double>,NUM_VOICES> sa_ts1_VoiceManager;
+typedef MIP_SplitVoiceManager<sa_ts1_Voice<double>,NUM_VOICES> sa_ts1_VoiceManager;
 
 //----------------------------------------------------------------------
 //
@@ -371,7 +375,7 @@ private:
       "Type",
       "",
       0.0,
-      1.0,
+      2.0,
       0.0
     },
     { PAR_OSC1_SHAPE,
@@ -428,7 +432,7 @@ private:
       "Wave",
       "",
       0,
-      6,
+      7,
       0
     },
     { PAR_OSC1_WM_AMOUNT,
@@ -548,7 +552,7 @@ private:
       "Type",
       "",
       0.0,
-      1.0,
+      2.0,
       0.0
     },
     { PAR_OSC2_SHAPE,
@@ -605,7 +609,7 @@ private:
       "Wave",
       "",
       0,
-      6,
+      7,
       0
     },
     { PAR_OSC2_WM_AMOUNT,
@@ -1156,11 +1160,17 @@ public: // clap
     //handle_process(process);
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
-    #ifdef MIP_VOICE_PREPARE_EVENTS
-      MVoiceManager.processPrepared(process,MHost);
-    #else
-      MVoiceManager.processBlock(process);
-    #endif
+
+//    #ifdef MIP_VOICE_PREPARE_EVENTS
+//      MVoiceManager.processPrepared(process,MHost);
+//    #else
+//      MVoiceManager.processBlock(process);
+//    #endif
+
+      MVoiceManager.process(process);
+      //MVoiceManager.processThreaded(process,MHost);
+
+
     float v = MParameters[PAR_MASTER_VOL]->getValue();  // vol
     float p = MParameters[PAR_MASTER_PAN]->getValue();  // pan
     float l = v * (1.0 - p);
@@ -1215,7 +1225,7 @@ public: // clap
   //----------
 
   void thread_pool_exec(uint32_t task_index) final {
-    MVoiceManager.processVoiceThread(task_index);
+    //MVoiceManager.processVoiceThread(task_index);
   }
 
 //------------------------------

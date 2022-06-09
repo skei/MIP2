@@ -38,8 +38,10 @@ public:
 
     MIP_MenuWidget* osc_type_menu = new MIP_MenuWidget(MIP_FRect());
     osc_type_menu->appendMenuItem("Morph");
+    osc_type_menu->appendMenuItem("DSF");
+    osc_type_menu->appendMenuItem("Wavetable");
     osc_type_menu->setItemSize(100,20);
-    osc_type_menu->setItemLayout(1,1);
+    osc_type_menu->setItemLayout(1,3);
     osc_type_menu->setMenuMirror(false,false);
     //MEditorPanel->appendWidget(osc_type_menu);
 
@@ -72,13 +74,14 @@ public:
     MIP_MenuWidget* wave_shaper_type_menu = new MIP_MenuWidget(MIP_FRect());
     wave_shaper_type_menu->appendMenuItem("Off");
     wave_shaper_type_menu->appendMenuItem("Curve");
-    wave_shaper_type_menu->appendMenuItem("AM");
-    wave_shaper_type_menu->appendMenuItem("RM");
+    wave_shaper_type_menu->appendMenuItem("AmplMod");
+    wave_shaper_type_menu->appendMenuItem("RingMod");
     wave_shaper_type_menu->appendMenuItem("Replace");
-    wave_shaper_type_menu->appendMenuItem("Neg");
+    wave_shaper_type_menu->appendMenuItem("Negate");
     wave_shaper_type_menu->appendMenuItem("Sign");
+    wave_shaper_type_menu->appendMenuItem("Max");
     wave_shaper_type_menu->setItemSize(100,20);
-    wave_shaper_type_menu->setItemLayout(1,7);
+    wave_shaper_type_menu->setItemLayout(1,8);
     wave_shaper_type_menu->setMenuMirror(false,false);
     //MEditorPanel->appendWidget(wave_shaper_type_menu);
 
@@ -87,10 +90,10 @@ public:
     MIP_MenuWidget* phase_shaper_type_menu = new MIP_MenuWidget(MIP_FRect());
     phase_shaper_type_menu->appendMenuItem("Off");
     phase_shaper_type_menu->appendMenuItem("Curve");
-    phase_shaper_type_menu->appendMenuItem("Reso");
-    phase_shaper_type_menu->appendMenuItem("Pulse");
-    phase_shaper_type_menu->appendMenuItem("PM");
-    phase_shaper_type_menu->appendMenuItem("FM");
+    phase_shaper_type_menu->appendMenuItem("Sync");
+    phase_shaper_type_menu->appendMenuItem("Sync / Clamp");
+    phase_shaper_type_menu->appendMenuItem("PhaseMod");
+    phase_shaper_type_menu->appendMenuItem("FreqMod");
     phase_shaper_type_menu->appendMenuItem("Flip");
     phase_shaper_type_menu->setItemSize(100,20);
     phase_shaper_type_menu->setItemLayout(1,7);
