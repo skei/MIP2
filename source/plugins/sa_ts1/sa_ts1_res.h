@@ -50,6 +50,10 @@ private:
   T MDamp     = 0.0;
   T MRough    = 0.0;
 
+  uint32_t MMode          = 0;
+  uint32_t MSpeed         = 0;
+  uint32_t MSpeedCounter  = 0;
+
 //------------------------------
 public:
 //------------------------------
@@ -79,10 +83,13 @@ public:
     MHz = AHz;
   }
 
-  void setShape(T s)    { MShape = s; }
-  void setFeedback(T f) { MFeedback = f; }
-  void setDamp(T d)     { MDamp = d; }
-  void setRough(T r)    { MRough = r; }
+  void setShape(T s)        { MShape = s; }
+  void setFeedback(T f)     { MFeedback = f; }
+  void setDamp(T d)         { MDamp = d; }
+  void setRough(T r)        { MRough = r; }
+
+  void setMode(uint32_t m)  { MMode = m; }
+  void setSpeed(uint32_t s) { MSpeed = s; }
 
   //void setHz(T hz) {
   //}
@@ -92,14 +99,13 @@ public:
   void restart() {
     MDelay.clear();
     MDelay.start();
+    MSpeedCounter = 0;
   }
 
   //----------
 
   T process(T in) {
     T out = in;
-
-
 
     T sh = 1.0 - MShape;
     MInputShaper.setMode(MIP_SVF_LP);
@@ -121,7 +127,8 @@ public:
     damp = 1.0 - damp;
     MDelay.getFeedbackFX()->filter.setWeight(damp);
 
-    float ro = MRough;
+    float ro = 1.0 - MRough;
+
     if (ro < 0.5) {
       ro = ro * 2.0; // 0..0,5 -> 0..1
       ro = MIP_Curve(ro,0.01);
@@ -135,9 +142,34 @@ public:
     ro *= 0.5;
     MDelay.getFeedbackFX()->rough = ro;
 
-    if (MDelay.hasWrapped()) out = MDelay.process(0,fb,delay);
-    else out = MDelay.process(in,fb,delay);
+    T _in = in;
 
+    switch (MMode) {
+      case 0: {// plucked
+        if (MDelay.hasWrapped()) {
+          _in = 0.0;
+        }
+        break;
+      }
+      case 1: { // bowed
+        if (MDelay.hasWrapped()) {
+          MSpeedCounter += 1;
+          if (MSpeedCounter >= MSpeed) {
+            MSpeedCounter = 0;
+            MDelay.start();
+          }
+          else {
+            _in = 0.0;
+          }
+        }
+        break;
+      }
+      case 2: {
+        break;
+      }
+    }
+
+    out = MDelay.process(_in,fb,delay);
     return out;
 
   }

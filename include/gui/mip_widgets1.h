@@ -1,0 +1,60 @@
+#ifndef mip_widgets_included
+#define mip_widgets_included
+//----------------------------------------------------------------------
+
+#include "mip.h"
+#include "gui/widgets1/mip_template_widget.h"
+
+//----------------------------------------------------------------------
+
+#include "gui/widgets1/mip_bitmap_widget.h"
+#include "gui/widgets1/mip_button_widget.h"
+#include "gui/widgets1/mip_button_row_widget.h"
+#include "gui/widgets1/mip_cached_widget.h"
+#include "gui/widgets1/mip_cairo_widget.h"
+#include "gui/widgets1/mip_circular_waveform_widget.h"
+#include "gui/widgets1/mip_container_widget.h"
+#include "gui/widgets1/mip_curve_widget.h"
+#include "gui/widgets1/mip_drag_value_widget.h"
+#include "gui/widgets1/mip_dual_slider_widget.h"
+#include "gui/widgets1/mip_graph_widget.h"
+#include "gui/widgets1/mip_grid_widget.h"
+#include "gui/widgets1/mip_group_box_widget.h"
+#include "gui/widgets1/mip_image_widget.h"
+#include "gui/widgets1/mip_image_strip_widget.h"
+#include "gui/widgets1/mip_keyboard_widget.h"
+#include "gui/widgets1/mip_knob_widget.h"
+#include "gui/widgets1/mip_knob2_widget.h"
+#include "gui/widgets1/mip_knob2b_widget.h"
+#include "gui/widgets1/mip_knob3_widget.h"
+#include "gui/widgets1/mip_knob4_widget.h"
+#include "gui/widgets1/mip_knob5_widget.h"
+#include "gui/widgets1/mip_menu_item_widget.h"
+#include "gui/widgets1/mip_menu_widget.h"
+#include "gui/widgets1/mip_main_menu_widget.h"
+#include "gui/widgets1/mip_modmatrix_widget.h"
+#include "gui/widgets1/mip_pages_widget.h"
+#include "gui/widgets1/mip_plot_widget.h"
+#include "gui/widgets1/mip_range_slider_widget.h"
+#include "gui/widgets1/mip_sa_header_widget.h"
+#include "gui/widgets1/mip_scroll_bar_widget.h"
+#include "gui/widgets1/mip_scroll_box_widget.h"
+#include "gui/widgets1/mip_selector_widget.h"
+#include "gui/widgets1/mip_sizer_widget.h"
+#include "gui/widgets1/mip_slider_bank_widget.h"
+#include "gui/widgets1/mip_slider_widget.h"
+#include "gui/widgets1/mip_symbol_widget.h"
+#include "gui/widgets1/mip_tabs_widget.h"
+#include "gui/widgets1/mip_template_widget.h"
+#include "gui/widgets1/mip_text_box_widget.h"
+#include "gui/widgets1/mip_text_edit_widget.h"
+#include "gui/widgets1/mip_text_widget.h"
+#include "gui/widgets1/mip_timeline_widget.h"
+#include "gui/widgets1/mip_value_graph_widget.h"
+#include "gui/widgets1/mip_value_widget.h"
+#include "gui/widgets1/mip_waveform_widget.h"
+#include "gui/widgets1/mip_xy_pad_widget.h"
+
+
+//----------------------------------------------------------------------
+#endif

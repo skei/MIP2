@@ -8,27 +8,23 @@
     menu size?
 */
 
+//#include "gui/widgets/v0/mip_menu_item_widget.h"
+//#include "gui/widgets/v0/mip_panel_widget.h"
+#include "gui/mip_widgets.h"
+
+
+//typedef MIP_Array<char*>  MIP_MenuItems;
+typedef MIP_Array<char*>  MIP_CharPtrArray;
+
+//typedef MIP_Array<MIP_MenuWidget*> MIP_MenuWidgets;
+
 //----------------------------------------------------------------------
-
-#include "gui/mip_widget.h"
-
-#include "gui/widgets/mip_menu_item_widget.h"
-#include "gui/widgets/mip_panel_widget.h"
-//#include "gui/mip_widgets.h"
-
-//----------------------------------------------------------------------
-
-//typedef MIP_Array<char*>  MIP_CharPtrArray;
 
 class MIP_MenuListener {
   public:
-    virtual void on_menu_Event(int32_t AIndex) {}
+    virtual void on_menuEvent(int32_t AIndex) {}
 };
 
-//----------------------------------------------------------------------
-//
-//
-//
 //----------------------------------------------------------------------
 
 class MIP_MenuWidget
@@ -40,7 +36,7 @@ protected:
 //------------------------------
 
   MIP_MenuListener*   MListener     = nullptr;
-  MIP_CharPtrArray    MItems        = {};;
+  MIP_CharPtrArray    MItems;
   uint32_t            MBorderSize   = 5; //0; //1;
   float               MMenuWidth    = 0;//96;
   float               MMenuHeight   = 0;//16;
@@ -52,7 +48,8 @@ protected:
   uint32_t            MItemsY       = 1;
   bool                MMirrorX      = false;
   bool                MMirrorY      = false;
-  bool                MAlwaysOpen   = false;
+
+  bool MAlwaysOpen = false;
 
 //------------------------------
 public:
@@ -60,10 +57,11 @@ public:
 
   MIP_MenuWidget(MIP_FRect ARect)
   : MIP_PanelWidget(ARect) {
+
     setName("MIP_MenuWidget");
     setHint("menu");
-    //MMenuWidth  = ARect.w;
-    //MMenuHeight = ARect.h;
+//    MMenuWidth  = ARect.w;
+//    MMenuHeight = ARect.h;
     if (MAlwaysOpen) {
       state.active = true;
       state.visible = true;
@@ -95,12 +93,12 @@ public:
 
   //----------
 
-  virtual void        setListener(MIP_MenuListener* AListener)     { MListener = AListener; }
-  virtual void        setItemWidth(int32_t AWidth)                 { MItemWidth = AWidth; }
-  virtual void        setItemHeight(int32_t AHeight)               { MItemHeight = AHeight; }
-  virtual void        setItemSize(int32_t AWidth, int32_t AHeight) { MItemWidth = AWidth; MItemHeight = AHeight; }
-  virtual void        setItemLayout(int32_t x, int32_t y)          { MItemsX = x; MItemsY = y; }
-  virtual void        setMenuMirror(bool x, bool y)                { MMirrorX = x; MMirrorY = y; }
+  virtual void setListener(MIP_MenuListener* AListener)     { MListener = AListener; }
+  virtual void setItemWidth(int32_t AWidth)                 { MItemWidth = AWidth; }
+  virtual void setItemHeight(int32_t AHeight)               { MItemHeight = AHeight; }
+  virtual void setItemSize(int32_t AWidth, int32_t AHeight) { MItemWidth = AWidth; MItemHeight = AHeight; }
+  virtual void setItemLayout(int32_t x, int32_t y)          { MItemsX = x; MItemsY = y; }
+  virtual void setMenuMirror(bool x, bool y)                { MMirrorX = x; MMirrorY = y; }
 
 //------------------------------
 public:
@@ -122,10 +120,10 @@ public:
 
   //----------
 
-  //virtual void clearMenu(void) {
-  //  MItems.clear();
-  //  deleteChildren();
-  //}
+//  virtual void clearMenu(void) {
+//    MItems.clear();
+//    deleteChildren();
+//  }
 
   //----------
 
@@ -198,6 +196,23 @@ public:
 public:
 //------------------------------
 
+  //virtual void appendMenuItem2(const char* ALabel) {
+  //  MIP_MenuItemWidget* text;
+  //  text = new MIP_MenuItemWidget( MIP_FRect(50,20) );
+  //  text->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+  //  text->setText(ALabel);
+  //  appendWidget(text);
+  //}
+
+  //----------
+
+  //virtual void open2(int32_t AXpos, int32_t AYpos) {
+  //}
+
+//------------------------------
+public:
+//------------------------------
+
   void alignWidgets(bool ARecursive=true) override {
     MIP_PanelWidget::alignWidgets(ARecursive);
   }
@@ -213,14 +228,14 @@ public:
       if (!getRect().contains(AXpos,AYpos)) {
         // left-clicked outside of widget
         MSelectedItem = MPrevSelected;
-        if (MListener) MListener->on_menu_Event(MSelectedItem);
+        if (MListener) MListener->on_menuEvent(MSelectedItem);
         if (!MAlwaysOpen) close();
       }
     }
     if (AButton == MIP_BUTTON_RIGHT) {
       // right-clicked
       MSelectedItem = MPrevSelected;
-      if (MListener) MListener->on_menu_Event(MSelectedItem);
+      if (MListener) MListener->on_menuEvent(MSelectedItem);
       if (!MAlwaysOpen) close();
     }
   }
@@ -235,7 +250,7 @@ public:
     //MIP_PRINT;
     int32_t index = ASender->getWidgetIndex();
     MSelectedItem = index;
-    if (MListener) MListener->on_menu_Event(MSelectedItem);
+    if (MListener) MListener->on_menuEvent(MSelectedItem);
     if (!MAlwaysOpen) close();
     MIP_PanelWidget::do_widget_update(this,AMode);
     //MIP_Widget::do_widget_update(ASender);
@@ -250,7 +265,7 @@ public:
     if (AValue == MIP_MENU_NOTIFY_CLOSE) {
       // right clicked on menuitem
       MSelectedItem = MPrevSelected;
-      if (MListener) MListener->on_menu_Event(MSelectedItem);
+      if (MListener) MListener->on_menuEvent(MSelectedItem);
       if (!MAlwaysOpen) close();
     }
     //MIP_Widget::do_widget_notify(AWidget,AValue);

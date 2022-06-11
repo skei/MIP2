@@ -26,7 +26,7 @@ public:
   : MIP_TextWidget(ARect) {
     setName("MIP_SelectorWidget");
     setHint("selector");
-    setMouseCursor(MIP_CURSOR_FINGER);
+    setCursor(MIP_CURSOR_FINGER);
     setFillBackground(true);
     setBackgroundColor(0.5);
     setTextColor(MIP_COLOR_BLACK);
@@ -61,44 +61,44 @@ public:
   //}
 
   virtual void setSelected(int32_t AIndex) {
-    //float v = indexToValue(AIndex);
-    //setValue(v);
-    setValue(AIndex);
+    float v = indexToValue(AIndex);
+    setValue(v);
+    //do_update(this);
+    //do_redraw(this,MRect);
   }
 
   //----------
 
   virtual int32_t getSelected(void) {
-    //int32_t i = valueToIndex( getValue() );
-    //return i;
-    return getValue();
+    int32_t i = valueToIndex( getValue() );
+    return i;
   }
 
   //----------
 
-//  virtual float indexToValue(int32_t AIndex) {
-//    float v = 0.0f;
-//    if (MMenu) {
-//      uint32_t num = MMenu->getNumItems() - 1;
-//      if (num > 0) {
-//        v = (float)AIndex / (float)num;
-//      }
-//    }
-//    return v;
-//  }
+  virtual float indexToValue(int32_t AIndex) {
+    float v = 0.0f;
+    if (MMenu) {
+      uint32_t num = MMenu->getNumItems() - 1;
+      if (num > 0) {
+        v = (float)AIndex / (float)num;
+      }
+    }
+    return v;
+  }
 
   //----------
 
-//  virtual uint32_t valueToIndex(float AValue) {
-//    float i = 0;
-//    if (MMenu) {
-//      uint32_t num = MMenu->getNumItems() - 1;
-//      if (num > 0) {
-//        i = AValue * (float)num;
-//      }
-//    }
-//    return (uint32_t)i;
-//  }
+  virtual uint32_t valueToIndex(float AValue) {
+    float i = 0;
+    if (MMenu) {
+      uint32_t num = MMenu->getNumItems() - 1;
+      if (num > 0) {
+        i = AValue * (float)num;
+      }
+    }
+    return (uint32_t)i;
+  }
 
 //------------------------------
 public:
@@ -113,11 +113,10 @@ public:
 //      do_redraw(this,MRect);
 //    }
 
-  void on_menu_Event(int32_t AIndex) override {
+  void on_menuEvent(int32_t AIndex) override {
     //MIP_Print("AIndex %i\n",AIndex);
-    //float v = indexToValue(AIndex);
-    //setValue(v);
-    setValue(AIndex);
+    float v = indexToValue(AIndex);
+    setValue(v);
     do_widget_update(this);
     do_widget_redraw(this,getRect(),0);
   }
@@ -130,10 +129,9 @@ public:
     MIP_FRect mrect = getRect();
     if (MMenu) {
       //if (MMenu->getNumItems() > 0) {
-//        float val = getValue();
-//        int32_t sel = valueToIndex(val);
+        float val = getValue();
+        int32_t sel = valueToIndex(val);
 
-        int32_t sel = getValue();
 
         if (sel >= 0) {
           //MIP_Print("sel %i MText %s\n",sel,MText);

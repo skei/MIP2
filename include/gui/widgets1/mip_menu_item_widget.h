@@ -2,16 +2,9 @@
 #define mip_menu_item_widget_included
 //----------------------------------------------------------------------
 
-#include "gui/mip_widget.h"
 #include "gui/widgets/mip_text_widget.h"
 
 #define MIP_MENU_NOTIFY_CLOSE 1
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
 
 class MIP_MenuItemWidget
 : public MIP_TextWidget {
@@ -30,8 +23,8 @@ private:
 public:
 //------------------------------
 
-  MIP_MenuItemWidget(MIP_FRect ARect, const char* AText="")
-  : MIP_TextWidget(ARect,AText) {
+  MIP_MenuItemWidget(MIP_FRect ARect)
+  : MIP_TextWidget(ARect) {
     setName("MIP_MenuItemWidget");
     setHint("menuitem");
     flags.autoCursor = false;
@@ -40,7 +33,7 @@ public:
     setFillBackground(true);
     setBackgroundColor(MNormalBackgroundColor);
     setTextColor(MNormalTextColor);
-    setMouseCursor(MIP_CURSOR_FINGER);
+    setCursor(MIP_CURSOR_FINGER);
   }
 
   //----------

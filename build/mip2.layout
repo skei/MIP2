@@ -1,35 +1,120 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
-	<ActiveTarget name="plugin debug" />
-	<File name="../source/plugins/sa_mini/sa_pitch.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2350" topLine="89" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_tyr.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5309" topLine="183" />
-		</Cursor>
-	</File>
+	<ActiveTarget name="exe debug" />
 	<File name="../include/extern/clap/ext/posix-fd-support.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1022" topLine="6" />
 		</Cursor>
 	</File>
-	<File name="../source/plugins/sa_hexwave.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/widgets2/mip_sa_header_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="15632" topLine="492" />
+			<Cursor1 position="639" topLine="7" />
 		</Cursor>
 	</File>
-	<File name="../include/plugin/mip_parameter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../source/plugins/sa_ports/sa_tilteq.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="5086" topLine="120" />
+			<Cursor1 position="2914" topLine="118" />
 		</Cursor>
 	</File>
-	<File name="../source/apps/clap-host/host.hpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/widgets2/mip_panel_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1645" topLine="60" />
+			<Cursor1 position="3804" topLine="83" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_mini/sa_grains.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6260" topLine="181" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_mini/sa_fibonacci.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5111" topLine="185" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ts1/sa_ts1_widgets.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="399" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets2/mip_menu_item_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="420" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_voice_manager.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3161" topLine="102" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ts1/sa_ts1_voice.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="13153" topLine="372" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/main.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1354" topLine="31" />
+		</Cursor>
+	</File>
+	<File name="../include/base/mip_enums.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9539" topLine="286" />
+		</Cursor>
+	</File>
+	<File name="../source/test/test_widget.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1161" topLine="54" />
+		</Cursor>
+	</File>
+	<File name="../include/base/utils/mip_math.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4567" topLine="179" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/mip_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="31901" topLine="881" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_editor.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6922" topLine="243" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_selector_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="581" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ts1/sa_ts1_parameters.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="12362" topLine="733" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/print.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="8884" topLine="196" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ports/sa_hrtf.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="642" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_host2.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="92" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_botage/sa_botage_editor.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="14155" topLine="150" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/base/mip_base_painter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3672" topLine="88" />
 		</Cursor>
 	</File>
 	<File name="../source/test/test_gui.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -37,29 +122,269 @@
 			<Cursor1 position="0" topLine="0" />
 		</Cursor>
 	</File>
+	<File name="../include/gui/widgets/mip_drag_value_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5821" topLine="154" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets2/mip_text_widget.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="574" topLine="12" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/cairo/mip_cairo_painter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="13548" topLine="420" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/arguments.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4658" topLine="184" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_value_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2468" topLine="97" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ts1/sa_ts1_res.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1938" topLine="83" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/ext/params.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7732" topLine="261" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_botage/sa_botage_logo.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="157" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ports/sa_sonic_maximizer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3877" topLine="135" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_plugin.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="30777" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets2/mip_drag_value_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="787" topLine="16" />
+		</Cursor>
+	</File>
+	<File name="../doc/compile.txt" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="32" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/json.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4341" topLine="112" />
+		</Cursor>
+	</File>
+	<File name="../include/audio/synthesis/mip_oscillator2.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2057" topLine="98" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/template_instrument.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3592" topLine="155" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/preset.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="794" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ports.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1764" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_botage.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="455" topLine="20" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets2/mip_selector_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1839" topLine="42" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/test_gui1.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2612" topLine="126" />
+		</Cursor>
+	</File>
+	<File name="../doc/todo.txt" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="286" topLine="46" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_knob2b_widget.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3894" topLine="9" />
+		</Cursor>
+	</File>
+	<File name="../LICENSE" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="23" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets2/mip_text_header_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1021" topLine="20" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/mip_widgets2.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="428" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets2/mip_menu_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="619" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_knob2_widget.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4665" topLine="134" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_tyr/sa_tyr_editor.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3734" topLine="84" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_tyr/sa_tyr_widgets.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="340" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_voice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5211" topLine="164" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_mini/sa_transpose.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1209" topLine="44" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_template_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1887" topLine="38" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/template_plugin.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="146" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ports/sa_small_room_reverb.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3780" topLine="139" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_mini.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="664" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_mini/sa_pitch.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2350" topLine="89" />
+		</Cursor>
+	</File>
+	<File name="../include/base/debug/mip_debug_crash_handler.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2022" topLine="48" />
+		</Cursor>
+	</File>
 	<File name="../source/apps/clap-host/process.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="5510" topLine="167" />
 		</Cursor>
 	</File>
-	<File name="../source/plugins/sa_ts1/sa_ts1_voice.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/widgets2/mip_slider_widget.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="5558" topLine="195" />
+			<Cursor1 position="738" topLine="8" />
 		</Cursor>
 	</File>
-	<File name="../source/plugins/sa_ts1/sa_ts1_osc.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../source/plugins/sa_hexwave.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="5047" topLine="213" />
+			<Cursor1 position="15632" topLine="492" />
 		</Cursor>
 	</File>
-	<File name="../source/plugins/sa_ts1/sa_ts1_res.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/widgets/mip_knob_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="724" topLine="20" />
+			<Cursor1 position="5707" topLine="136" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/host.hpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1645" topLine="60" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets2/mip_knob2_widget.h" open="1" top="1" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="928" topLine="19" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_text_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="711" topLine="33" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_tyr/sa_tyr_voice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2770" topLine="99" />
+		</Cursor>
+	</File>
+	<File name="../source/test/test_gui2.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="988" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/version.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="489" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ts1/sa_ts1_osc.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3940" topLine="156" />
+		</Cursor>
+	</File>
+	<File name="test/test1.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="71" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_split_voice_manager.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3013" topLine="106" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_parameter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2833" topLine="97" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/sa_ports/sa_exciter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="3458" topLine="124" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/events.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3756" topLine="75" />
 		</Cursor>
 	</File>
 	<File name="../source/apps/clap-host/midi_file.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -77,19 +402,9 @@
 			<Cursor1 position="3338" topLine="136" />
 		</Cursor>
 	</File>
-	<File name="../source/test/test_widget.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1161" topLine="54" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_ts1/sa_ts1_widgets.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="490" topLine="0" />
-		</Cursor>
-	</File>
 	<File name="../source/plugins/sa_ts1/sa_ts1_editor.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2800" topLine="56" />
+			<Cursor1 position="28599" topLine="701" />
 		</Cursor>
 	</File>
 	<File name="../source/apps/clap-host/audio_file.hpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -102,14 +417,9 @@
 			<Cursor1 position="4902" topLine="187" />
 		</Cursor>
 	</File>
-	<File name="../include/gui/mip_widgets.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/mip_widgets1.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1103" topLine="15" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/test_gui1.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2612" topLine="126" />
+			<Cursor1 position="2483" topLine="23" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/sa_ladspa.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -117,9 +427,14 @@
 			<Cursor1 position="28" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="../include/extern/clap/ext/params.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/plugin/mip_block_voice_manager.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="7732" topLine="261" />
+			<Cursor1 position="2572" topLine="90" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_slider_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5879" topLine="176" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/sa_ports/sa_saturation.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -134,7 +449,7 @@
 	</File>
 	<File name="../source/plugins/sa_ts1.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="12189" topLine="580" />
+			<Cursor1 position="748" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="../include/plugin/clap/mip_clap_plugin.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -142,19 +457,29 @@
 			<Cursor1 position="4480" topLine="58" />
 		</Cursor>
 	</File>
-	<File name="../include/audio/processing/mip_delay.h" open="1" top="1" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/widgets2/mip_value_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3813" topLine="142" />
+			<Cursor1 position="622" topLine="7" />
 		</Cursor>
 	</File>
-	<File name="../include/audio/synthesis/mip_oscillator2.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="build.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2057" topLine="98" />
+			<Cursor1 position="1072" topLine="23" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_tyr.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5309" topLine="183" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/sa_ports/sa_large_room_reverb.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="4192" topLine="151" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_threaded_voice_manager.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3006" topLine="105" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/sa_ports/sa_transient_killer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -167,204 +492,19 @@
 			<Cursor1 position="3133" topLine="76" />
 		</Cursor>
 	</File>
+	<File name="../include/audio/processing/mip_delay.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4071" topLine="153" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets2/mip_knob_widget.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="472" topLine="9" />
+		</Cursor>
+	</File>
 	<File name="../source/plugins/sa_ports/sa_compciter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="5562" topLine="197" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/template_instrument.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3592" topLine="155" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/main.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1354" topLine="31" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_mini/sa_grains.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6260" topLine="181" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_ports/sa_tilteq.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2914" topLine="118" />
-		</Cursor>
-	</File>
-	<File name="../doc/todo.txt" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="286" topLine="46" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_voice_manager.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="17938" topLine="552" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_mini/sa_fibonacci.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5111" topLine="185" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_tyr/sa_tyr_editor.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3734" topLine="84" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_tyr/sa_tyr_widgets.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="340" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/mip_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="31901" topLine="881" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_editor.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6922" topLine="243" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_botage/sa_botage_editor.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="14155" topLine="150" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/template_plugin.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="146" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/print.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="8884" topLine="196" />
-		</Cursor>
-	</File>
-	<File name="../source/test/test_gui2.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="988" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_ports/sa_hrtf.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="642" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="test/test1.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="71" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/version.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="489" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_botage/sa_botage_logo.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="157" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_botage.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="455" topLine="20" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/arguments.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4658" topLine="184" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_host2.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="92" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_plugin.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="33865" topLine="1217" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_tyr/sa_tyr_voice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2770" topLine="99" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_ports/sa_sonic_maximizer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3877" topLine="135" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/events.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="96" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/json.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4341" topLine="112" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_ports.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1764" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_knob2b_widget.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2666" topLine="3" />
-		</Cursor>
-	</File>
-	<File name="build.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1079" topLine="29" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/preset.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="794" topLine="15" />
-		</Cursor>
-	</File>
-	<File name="../doc/compile.txt" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="32" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_mini.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="664" topLine="3" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_knob2_widget.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="12" />
-		</Cursor>
-	</File>
-	<File name="../include/base/debug/mip_debug_crash_handler.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2022" topLine="48" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_voice.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="92" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_mini/sa_transpose.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1209" topLine="44" />
-		</Cursor>
-	</File>
-	<File name="../LICENSE" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="23" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_ports/sa_small_room_reverb.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3780" topLine="139" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

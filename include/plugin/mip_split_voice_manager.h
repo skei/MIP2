@@ -53,10 +53,10 @@ private:
   __MIP_ALIGNED(MIP_ALIGNMENT_CACHE) float MVoiceBuffer[MIP_VOICE_BUFFERSIZE]     = {0};
   __MIP_ALIGNED(MIP_ALIGNMENT_CACHE) float MFrameBuffer[MIP_VOICE_MAX_FRAMESIZE]  = {0};
 
-  MIP_VoiceContext  MVoiceContext                 = {};
-  MIP_NoteQueue     MNoteEndQueue                 = {};
-  MIP_Voice<VOICE>  MVoices[VOICE_COUNT]          = {};
-  uint32_t          MThreadedVoices[VOICE_COUNT]  = {0};
+  MIP_VoiceContext  MVoiceContext               = {};
+  MIP_NoteQueue     MNoteEndQueue               = {};
+  MIP_Voice<VOICE>  MVoices[VOICE_COUNT]        = {};
+  uint32_t          MActiveVoices[VOICE_COUNT]  = {0};
 
 //------------------------------
 public:
@@ -133,16 +133,16 @@ public: // process threaded
       if ((MVoices[i].state == MIP_VOICE_PLAYING)
         || (MVoices[i].state == MIP_VOICE_RELEASED)
         || (MVoices[i].state == MIP_VOICE_WAITING)) {
-        MThreadedVoices[num_voices++] = i;
+        MActiveVoices[num_voices++] = i;
       }
     }
     // calc voices
     if (num_voices > 0) {
-      manuallyProcessVoiceThreads(num_voices);
+      processActiveVoices(num_voices);
     }
     // add all voice buffers to frame buffer
     for (uint32_t i=0; i<num_voices; i++) {
-      int32_t voice = MThreadedVoices[i];
+      int32_t voice = MActiveVoices[i];
       float* src = MVoiceBuffer + (process->frames_count * voice);
       MIP_AddMonoBuffer(MFrameBuffer,src,length);
     }
@@ -157,11 +157,11 @@ public: // process threaded
   //----------
 
   /*
-    called bu host for each voice
+    called by host for each voice
   */
 
-  void processVoiceThread(uint32_t index) {
-    int32_t voice = MThreadedVoices[index];
+  void processVoice(uint32_t index) {
+    int32_t voice = MActiveVoices[index];
     if (voice >= 0) {
       MVoices[voice].processPrepared(voice);
     }
@@ -175,9 +175,9 @@ public: // process threaded
     coud do our own threading...
   */
 
-  void manuallyProcessVoiceThreads(uint32_t num) {
+  void processActiveVoices(uint32_t num) {
     for (uint32_t i=0; i<num; i++) {
-      processVoiceThread(i);
+      processVoice(i);
     }
   }
 
@@ -240,14 +240,14 @@ private: // events
   void handleEvent(const clap_event_header_t* header) {
     switch (header->type) {
       case CLAP_EVENT_NOTE_ON:          handleNoteOnEvent((const clap_event_note_t*)header);                break;
-      case CLAP_EVENT_NOTE_OFF:         handleNoteOff((const clap_event_note_t*)header);                    break;
-      case CLAP_EVENT_NOTE_CHOKE:       handleNoteChoke((const clap_event_note_t*)header);                  break;
-      case CLAP_EVENT_NOTE_EXPRESSION:  handleNoteExpression((const clap_event_note_expression_t*)header);  break;
-      case CLAP_EVENT_PARAM_VALUE:      handleParamValue((const clap_event_param_value_t*)header);          break;
-      case CLAP_EVENT_PARAM_MOD:        handleParamMod((const clap_event_param_mod_t*)header);              break;
-      case CLAP_EVENT_MIDI:             handleMidi((const clap_event_midi_t*)header);                       break;
-      case CLAP_EVENT_MIDI_SYSEX:       handleMidiSysex((const clap_event_midi_sysex_t*)header);            break;
-      case CLAP_EVENT_MIDI2:            handleMidi2((const clap_event_midi2_t*)header);                     break;
+      case CLAP_EVENT_NOTE_OFF:         handleNoteOffEvent((const clap_event_note_t*)header);                    break;
+      case CLAP_EVENT_NOTE_CHOKE:       handleNoteChokeEvent((const clap_event_note_t*)header);                  break;
+      case CLAP_EVENT_NOTE_EXPRESSION:  handleNoteExpressionEvent((const clap_event_note_expression_t*)header);  break;
+      case CLAP_EVENT_PARAM_VALUE:      handleParamValueEvent((const clap_event_param_value_t*)header);          break;
+      case CLAP_EVENT_PARAM_MOD:        handleParamModEvent((const clap_event_param_mod_t*)header);              break;
+      case CLAP_EVENT_MIDI:             handleMidiEvent((const clap_event_midi_t*)header);                       break;
+      case CLAP_EVENT_MIDI_SYSEX:       handleMidiSysexEvent((const clap_event_midi_sysex_t*)header);            break;
+      case CLAP_EVENT_MIDI2:            handleMidi2Event((const clap_event_midi2_t*)header);                     break;
     }
   }
 
@@ -259,7 +259,7 @@ private: // events
   */
 
   void handleNoteOnEvent(const clap_event_note_t* event) {
-    //MIP_Print("NOTE ON: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
+    MIP_Print("NOTE ON: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     int32_t voice = findAvailableVoice(true); // true = search released voices too
     if (voice >= 0) {
       // let the host know that the note that was playing for this voice
@@ -290,8 +290,8 @@ private: // events
 
   // note_id is always -1
 
-  void handleNoteOff(const clap_event_note_t* event) {
-    //MIP_Print("NOTE OFF: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
+  void handleNoteOffEvent(const clap_event_note_t* event) {
+    MIP_Print("NOTE OFF: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
       if (MVoices[i].state == MIP_VOICE_PLAYING) {
         //if (MVoices[i].note.note_id == event->note_id) {
@@ -305,16 +305,16 @@ private: // events
 
   //----------
 
-  void handleNoteChoke(const clap_event_note_t* event) {
-    MIP_Print("NOTE CHOKE: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
+  void handleNoteChokeEvent(const clap_event_note_t* event) {
+    MIP_Print("key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
   }
 
   //----------
 
   // note_id is always -1
 
-  void handleNoteExpression(const clap_event_note_expression_t* event) {
-    //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
+  void handleNoteExpressionEvent(const clap_event_note_expression_t* event) {
+    MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
       //if (MVoices[i].note.note_id == event->note_id) {
         if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
@@ -333,8 +333,8 @@ private: // events
     see also: voiceParameter (called from gui)
   */
 
-  void handleParamValue(const clap_event_param_value_t* event) {
-    //MIP_Print("param %i note %i port %i chan %i key %i value %.3f\n",event->param_id,event->note_id,event->port_index,event->channel,event->key,event->value);
+  void handleParamValueEvent(const clap_event_param_value_t* event) {
+    MIP_Print("param %i note %i port %i chan %i key %i value %.3f\n",event->param_id,event->note_id,event->port_index,event->channel,event->key,event->value);
     if (event->note_id == -1) {
       // global
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
@@ -363,12 +363,14 @@ private: // events
   // mono: all is -l
   // poly: all is ok
 
-  void handleParamMod(const clap_event_param_mod_t* event) {
-    //MIP_Print("param %i note %i port %i chan %i key %i amount %.3f\n",event->param_id,event->note_id,event->port_index,event->channel,event->key,event->amount);
+  // amount always 0 fpor voice stacking.. ?
+
+  void handleParamModEvent(const clap_event_param_mod_t* event) {
+    MIP_Print("param %i note %i port %i chan %i key %i amount %.3f\n",event->param_id,event->note_id,event->port_index,event->channel,event->key,event->amount);
     if (event->note_id == -1) {
       // global
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
-        if ((MVoices[i].state == MIP_VOICE_PLAYING) || (MVoices[i].state == MIP_VOICE_RELEASED)) {
+        if ((MVoices[i].state == MIP_VOICE_PLAYING) || (MVoices[i].state == MIP_VOICE_RELEASED)) { // WAITING?
         //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
           MVoices[i].prepare_modulation(event->header.time,event->param_id,event->amount);
         //}
@@ -391,19 +393,19 @@ private: // events
 //
 //------------------------------
 
-  void handleMidi(const clap_event_midi_t* event) {
+  void handleMidiEvent(const clap_event_midi_t* event) {
     MIP_Print("port %i data %02x,%02x,%02x\n",event->port_index,event->data[0],event->data[1],event->data[2]);
   }
 
   //----------
 
-  void handleMidiSysex(const clap_event_midi_sysex_t* event) {
+  void handleMidiSysexEvent(const clap_event_midi_sysex_t* event) {
     MIP_Print("port %i size %i\n",event->port_index,event->size);
   }
 
   //----------
 
-  void handleMidi2(const clap_event_midi2_t* event) {
+  void handleMidi2Event(const clap_event_midi2_t* event) {
     MIP_Print("port %i data %i,%i,%i,%i\n",event->port_index,event->data[0],event->data[1],event->data[2],event->data[3]);
   }
 

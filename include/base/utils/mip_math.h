@@ -199,9 +199,13 @@ float MIP_Quantize(float AValue, int32_t ASteps) {
   }
   float v = AValue * (float)(ASteps/*-1*/);
   //int32_t i = MIP_Trunc(v);
-  int i = (float)(int)v;
-  float res = (float)i / (float)(ASteps-1);
-  return MIP_Min(res,1.0f);
+  float i = floorf(v);
+
+  MIP_Print("i %f\n",i);
+
+  //int i = (int)v;
+  float res = i / (float)(ASteps);
+  return MIP_Clamp(res,0,1);
 }
 
 //----------

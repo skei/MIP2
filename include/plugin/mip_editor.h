@@ -220,8 +220,8 @@ public:
     float value = AValue;
     MIP_Widget* widget = MParamToWidget[AIndex];
     if (widget) {
-      MIP_Parameter* param = widget->getParameter();
-      if (param) value = param->normalizeValue(value);
+//      MIP_Parameter* param = widget->getParameter();
+//      if (param) value = param->normalizeValue(value);
       widget->setValue(value);
       if (ARedraw) widget->redraw();
     }
@@ -261,7 +261,9 @@ private: // window listener
     if (param) index = param->getId();
     if (index >= 0) {
       double value = AWidget->getValue();
-      value = param->denormalizeValue(value);
+      if (param->isStepped()) value = (int)value;
+      //MIP_Print("%i %.3f\n",index,value);
+      //value = param->denormalizeValue(value);
       if (MListener) MListener->on_editor_listener_parameter(index,value);
     }
   }
@@ -298,8 +300,8 @@ public:
     double value = AValue;
     MIP_Widget* widget = MParamToWidget[AIndex];
     MIP_Assert(widget);
-    MIP_Parameter* param = widget->getParameter();
-    if (param) value = param->normalizeValue(value);
+//    MIP_Parameter* param = widget->getParameter();
+//    if (param) value = param->normalizeValue(value);
     MGuiParamVal[AIndex] = value;
     MGuiParamQueue.write(AIndex);
   }

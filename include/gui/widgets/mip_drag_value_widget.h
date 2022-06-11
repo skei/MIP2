@@ -2,11 +2,8 @@
 #define mip_drag_value_widget_included
 //----------------------------------------------------------------------
 
+#include "gui/mip_widget.h"
 #include "gui/widgets/mip_value_widget.h"
-
-#define MIP_VALUE_WIDGET_LABEL_SPACE 4.0f
-
-//----------------------------------------------------------------------
 
 class MIP_DragValueWidget
 : public MIP_ValueWidget {
@@ -15,54 +12,35 @@ class MIP_DragValueWidget
 private:
 //------------------------------
 
-  bool        MIsDragging     = false;
-  //bool        MIsDragging2    = false;
-  float       MPrevXpos       = 0.0f;
-  float       MPrevYpos       = 0.0f;
-  uint32_t    MPrevClickTime  = 0;
-
-  bool        MSnap           = false;
-  float       MSnapPos        = 0.5;
-  float       MSnapDist       = 0.1;
-  uint32_t    MSnapMode       = 1;        // 0: always snap, 1: shift disables snapping
-
-  bool        MQuantize       = false;
-//  uint32_t    MQuantizeSteps  = 0;
-//  uint32_t    MQuantizeMode   = 1;
+  float MPrevXpos = 0.0;
+  float MPrevYpos = 0.0;
 
 //------------------------------
 protected:
 //------------------------------
 
-  // drag
-  bool        MCanDragValue       = true;
-  //bool        MCanDragValue2      = true;
-  float       MDragSensitivity    = 0.004f;
-  float       MDragSensitivity2   = 0.05;
-  uint32_t    MDragDirection      = MIP_UP;
-  float       MDragValue          = 0.0f;
-  float       MClickedValue       = 0.0f;
-  //float       MDragValue2         = 0.0f;
+  bool    MSnap               = false;
+  double  MSnapPos            = 0.5;
+  double  MSnapDist           = 0.01;
 
-  // double-click
-  bool        MDblClickReset      = true;
-
-  //float MValue2 = 0.0;
-  bool MPrevShift = false;
+  float MDragSensitivity      = 0.002;
+  float MDragExtraSensitivity = 0.05;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_DragValueWidget(MIP_FRect ARect, const char* AText="", float AValue=0.0)
-  : MIP_ValueWidget(ARect) {
-    setName("MIP_DragValueWidget");
-    setHint("dragvalue");
-    MText = AText;
-    MValue = AValue;
-    flags.autoMouseLock   = true;
-    flags.autoMouseHide   = true;
-    flags.redrawInteract  = true;
+  MIP_DragValueWidget(MIP_FRect ARect, const char* AName="")
+  : MIP_ValueWidget(ARect,AName) {
+    setName("MIP_TemplateWidget");
+    setHint("template");
+    //flags.redrawHover = true;
+    //flags.autoHint = true;
+    setMouseCursor(MIP_CURSOR_ARROW_UP_DOWN);
+    flags.autoCursor = true;
+    flags.autoMouseLock = true;
+    flags.autoMouseHide = true;
+    flags.redrawInteract = false;
   }
 
   //----------
@@ -74,135 +52,41 @@ public:
 public:
 //------------------------------
 
-  virtual void      setCanDragValue(bool ADrag=true)      { MCanDragValue = ADrag; }
-  //virtual void      setCanDragValue2(bool ADrag=true)     { MCanDragValue2 = ADrag; }
-  virtual void      setDragSensitivity(float AValue)      { MDragSensitivity = AValue; }
-  //virtual void      setDragSensitivity2(float AValue)     { MDragSensitivity2 = AValue; }
-  virtual void      setDragDirection(uint32_t ADirection) { MDragDirection = ADirection; }
-
-  virtual void      setSnap(bool ASnap=true)              { MSnap = ASnap; }
-  virtual void      setSnapPos(float APos)                { MSnapPos = APos; }
-  virtual void      setSnapDist(float ADist)              { MSnapDist = ADist; }
-  virtual void      setSnapMode(uint32_t AMode)           { MSnapMode = AMode; }
-
-  virtual void      setQuantize(bool AQuantize=true)      { MQuantize = AQuantize; }
-//  virtual void      setQuantizeSteps(uint32_t ASteps)     { MQuantizeSteps = ASteps; }
-//  virtual void      setQuantizeMode(uint32_t AMode)       { MQuantizeMode = AMode; }
+  //bool isDragging() { return MIsDragging; }
 
   //----------
 
-  virtual bool      getSnap()                             { return MSnap; }
-  virtual float     getSnapPos()                          { return MSnapPos; }
-  virtual float     getSnapDist()                         { return MSnapDist; }
-  virtual uint32_t  getSnapMode()                         { return MSnapMode; }
-
-  virtual bool      getQuantize()                         { return MQuantize; }
-//  virtual uint32_t  getQuantizeSteps()                    { return MQuantizeSteps; }
-//  virtual uint32_t  getQuantizeMode()                     { return MQuantizeMode; }
-
-  //----------
-
-  virtual bool      isDragging()                          { return MIsDragging; }
-  //virtual bool      isDragging2()                         { return MIsDragging2; }
-
-  //----------
-
-  //virtual void  setValue2(float AValue) { MValue2 = AValue; }
-  //virtual float getValue2() { return MValue2; }
+  //virtual void setQuantize(bool AQuantize=true) { MQuantize = AQuantize; }
+  virtual void setSnap(bool ASnap=true)         { MSnap = ASnap; }
+  virtual void setSnapPos(float APos)           { MSnapPos = APos; }
+  virtual void setSnapDist(float ADist)         { MSnapDist = ADist; }
 
 //------------------------------
-protected:
+public:
 //------------------------------
 
-  virtual float snapValue(float AValue) {
-    float v = AValue;
-    float s = 1.0f;
-    float dist = fabs( AValue - MSnapPos );
-    if (dist < MSnapDist) {
-      v = MSnapPos;
+  void drag(float AXDelta, float AYDelta) {
+    //MIP_Print("xdelta %.2f ydelta %.2f\n",AXDelta,AYDelta);
+    if (MParameter) {
+      double minval = MParameter->getMinValue();
+      double maxval = MParameter->getMaxValue();
+      double range = maxval - minval;
+      //bool stepped = MParameter->isStepped();
+      //uint32_t numsteps = 1;
+      //if (stepped) { numsteps = (int)range + 1; }
+      float value = getValue();
+      float sens = MDragSensitivity * range;
+      value -= AYDelta * sens;
+      value = MIP_Clamp(value,minval,maxval);
+
+      //if (stepped) value = (double)(int)value;
+      //MIP_Print("value %.3f\n",value);
+
+      setValue(value);
+
+      update();
+      redraw();
     }
-    else {
-      // scale left
-      if (AValue < MSnapPos) {
-        float sp_sd = MSnapPos - MSnapDist;
-        if (sp_sd > 0) s = MSnapPos / sp_sd;
-        v = AValue * s;
-      }
-      // scale right
-      else if (AValue > MSnapPos) {
-        float iv = 1.0f - AValue;
-        float isp = (1.0f - MSnapPos);
-        float isp_sd = isp - MSnapDist;
-        if (isp_sd > 0) s = isp / isp_sd;
-        v = iv * s;
-        v = 1.0f - v;
-      }
-    }
-    v = MIP_Clamp(v,0.0f,1.0f);
-    return v;
-  }
-
-  //----------
-
-  float calcValue(float value, float deltax, float deltay, bool shift) {
-
-    //bool stepped = false;
-
-    int32_t steps = 0;
-
-    //MIP_Parameter* param = getParameter();
-    //if (param) {
-    //  stepped = (param && param->info.flags & CLAP_PARAM_IS_STEPPED);
-    //  steps = param->getMaxValue() - param->getMinValue() + 1;
-    //  MIP_Print("steps: %i\n",steps);
-    //}
-
-    float sens = MDragSensitivity;
-    if (shift) sens *= MDragSensitivity2;
-    switch (MDragDirection) {
-      case MIP_UP:     value += (sens * deltay);   break;
-      case MIP_DOWN:   value -= (sens * deltay);   break;
-      case MIP_LEFT:   value -= (sens * deltax);   break;
-      case MIP_RIGHT:  value += (sens * deltax);   break;
-    }
-    MDragValue = MIP_Clamp(value,0.0f, 1.0f);
-    if (MSnap && !shift) value = snapValue(value);
-
-
-    //if (MQuantize && !shift) value = MIP_Quantize(value,MQuantizeSteps);
-    if (MQuantize && !shift) value = MIP_Quantize(value,steps);
-
-    value = MIP_Clamp(value,0.0f, 1.0f);
-    return value;
-  }
-
-  //----------
-
-  float calcValueFromMouse(float AXpos, float AYpos, uint32_t AState) {
-    float value = getValue();
-    if (MCanDragValue) {
-      //float sens = MDragSensitivity;
-      //if (AState & MIP_KEY_SHIFT) sens *= MDragSensitivity2;
-      if (MIsDragging) {
-        float value = MDragValue;
-        float deltax = AXpos - MPrevXpos; // right is increasing
-        float deltay = MPrevYpos - AYpos; // up is increasing
-        bool shift = (AState & MIP_KEY_SHIFT);
-        //if (shift && !MPrevShift) {
-        //  //MIP_Print("shift pressed\n");
-        //  if (MQuantize) MDragValue = getValue();
-        //}
-        //if (!shift && MPrevShift) {
-        //  //MIP_Print("shift released\n");
-        //  if (MQuantize) MDragValue = getValue();
-        //}
-        //MPrevShift = shift;
-        value = calcValue(value,deltax,deltay,shift/*,sens*/);
-      }
-      MPrevXpos = AXpos;
-      MPrevYpos = AYpos;
-    }
-    return value;
   }
 
 //------------------------------
@@ -210,142 +94,37 @@ public:
 //------------------------------
 
   void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
-
-    MPrevShift = (AState & MIP_KEY_SHIFT);
-    MClickedValue = getValue();
-    MDragValue = getValue();
-
     if (AButton == MIP_BUTTON_LEFT) {
-//      if (MDblClickReset) {
-//        if ((ATimeStamp - MPrevClickTime) < MIP_GUI_DBLCLICK_MS) {
-//          if (getParameter()) setValue( getParameter()->getDefValue() );
-//          else setValue( getDefaultValue() );
-//          update();
-//          redraw();
-//        }
-//      } // dbl click
-//      MPrevClickTime = ATimeStamp;
-      if (MCanDragValue) {
-        if (flags.autoMouseLock)    do_widget_setMouseCursor(this,MIP_CURSOR_GRAB);
-        if (flags.autoMouseHide)    do_widget_setMouseCursor(this,MIP_CURSOR_HIDE);
-        if (flags.redrawInteract)   do_widget_redraw(this,getRect(),0);
-        MPrevXpos     = AXpos;
-        MPrevYpos     = AYpos;
-        MIsDragging   = true;
-      } // can drag
-
-    } // left
-
-//    else if (AButton == MIP_BUTTON_RIGHT) {
-//      if (MCanDragValue2) {
-//        if (flags.autoMouseLock)    do_widget_setMouseCursor(this,MIP_CURSOR_GRAB);
-//        if (flags.autoMouseHide)    do_widget_setMouseCursor(this,MIP_CURSOR_HIDE);
-//        if (flags.autoMouseRedraw)  do_widget_redraw(this,getRect(),0);
-//        MPrevXpos     = AXpos;
-//        MPrevYpos     = AYpos;
-//        MIsDragging2   = true;
-//      } // can drag 2
-//    } // right
-  }
-
-  //----------
-
-  void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
-    if (MCanDragValue) {
-      if (AButton == MIP_BUTTON_LEFT) {
-        if (flags.autoMouseHide)    do_widget_setMouseCursor(this,MIP_CURSOR_SHOW);
-        if (flags.autoMouseLock)    do_widget_setMouseCursor(this,MIP_CURSOR_RELEASE);
-        if (flags.redrawInteract)   do_widget_redraw(this,getRect(),0);
-        MIsDragging = false;
-        //setValue(MDragValue);
-      }
-    }
-
-//    if (MCanDragValue2) {
-//      if (AButton == MIP_BUTTON_RIGHT) {
-//        if (flags.autoMouseHide)    do_widget_setMouseCursor(this,MIP_CURSOR_SHOW);
-//        if (flags.autoMouseLock)    do_widget_setMouseCursor(this,MIP_CURSOR_RELEASE);
-//        if (flags.autoMouseRedraw)  do_widget_redraw(this,getRect(),0);
-//        MIsDragging2 = false;
-//        //setValue(MDragValue);
-//      }
-//    }
-  }
-
-  //----------
-
-  void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp=0) override {
-
-    //float diff = MValue - MClickedValue;
-    //MIP_Print("diff: %.2f\n",diff);
-
-    if (MCanDragValue) {
-      //float sens = MDragSensitivity;
-      //if (AState & MIP_KEY_SHIFT) sens *= MDragSensitivity2;
-      if (MIsDragging) {
-        float value = MDragValue;
-        float deltax = AXpos - MPrevXpos; // right is increasing
-        float deltay = MPrevYpos - AYpos; // up is increasing
-        bool shift = (AState & MIP_KEY_SHIFT);
-        /*
-        if (shift && !MPrevShift) {
-          //MIP_Print("shift pressed\n");
-          if (MQuantize) MDragValue = getValue();
-        }
-        if (!shift && MPrevShift) {
-          //MIP_Print("shift released\n");
-          if (MQuantize) MDragValue = getValue();
-        }
-        MPrevShift = shift;
-        */
-        value = calcValue(value,deltax,deltay,shift/*,sens*/);
-        //value = calcValueFromMouse(AXpos,AYpos,AState);
-        setValue(value);
-        update();
-        redraw();
-      } // is dragging
-      //if (MIsDragging2) {
-      //  float value = MDragValue;
-      //  float deltax = AXpos - MPrevXpos; // right is increasing
-      //  float deltay = MPrevYpos - AYpos; // up is increasing
-      //  value = calcValue(value,deltax,deltay,(AState & MIP_KEY_SHIFT)/*,sens*/);
-      //  setValue2(value);
-      //  update();
-      //  redraw();
-      //} // is dragging
-
+      state.interacting = true;
       MPrevXpos = AXpos;
       MPrevYpos = AYpos;
-
+      if (flags.autoMouseLock) do_widget_setMouseCursor(this,MIP_CURSOR_GRAB);
+      if (flags.autoMouseHide) do_widget_setMouseCursor(this,MIP_CURSOR_HIDE);
+      if (flags.redrawInteract) do_widget_redraw(this,getRect(),0);
     }
-
   }
 
-  //----------
-
-  void on_widget_mouseEnter(float AXpos, float AYpos, MIP_Widget* AFrom/*, uint32_t ATimeStamp=0*/) override {
-    if (MCanDragValue) {
-      switch (MDragDirection) {
-        case MIP_LEFT:
-        case MIP_RIGHT:
-          do_widget_setMouseCursor(this,MIP_CURSOR_ARROWLEFTRIGHT);
-          break;
-        case MIP_UP:
-        case MIP_DOWN:
-          do_widget_setMouseCursor(this,MIP_CURSOR_ARROWUPDOWN);
-          break;
-      }
+  void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
+    if (AButton == MIP_BUTTON_LEFT) {
+      state.interacting = false;
+      if (flags.autoMouseLock) do_widget_setMouseCursor(this,MIP_CURSOR_RELEASE);
+      if (flags.autoMouseHide) do_widget_setMouseCursor(this,MIP_CURSOR_SHOW);
+      if (flags.redrawInteract) do_widget_redraw(this,getRect(),0);
     }
-    if (flags.autoHint) do_widget_setHint(this,getHint(),0);
   }
 
-  //----------
+  void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp=0) override {
+    if (state.interacting) {
+      float xdelta = AXpos - MPrevXpos;
+      float ydelta = AYpos - MPrevYpos;
+      drag(xdelta,ydelta);
+      MPrevXpos = AXpos;
+      MPrevYpos = AYpos;
+    }
+  }
 
-  //void on_widget_leave(float AXpos, float AYpos, MIP_Widget* ATo, uint32_t ATimeStamp=0) override {
-  //  do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
-  //  do_widget_setHint(this,"");
-  //}
-
+//------------------------------
+public:
 //------------------------------
 
 };

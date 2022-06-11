@@ -209,6 +209,141 @@ void mip_xcb_put_image(xcb_connection_t* connection, xcb_drawable_t dst, xcb_gco
 }
 
 //----------------------------------------------------------------------
+//
+// mouse cursors
+//
+//----------------------------------------------------------------------
+
+  /*
+    cursors = (
+        ('X_cursor', 0),
+        ('arrow', 2),
+        ('based_arrow_down', 4),
+        ('based_arrow_up', 6),
+        ('boat', 8),
+        ('bogosity', 10),
+        ('bottom_left_corner', 12),
+        ('bottom_right_corner', 14),
+        ('bottom_side', 16),
+        ('bottom_tee', 18),
+        ('box_spiral', 20),
+        ('center_ptr', 22),
+        ('circle', 24),
+        ('clock', 26),
+        ('coffee_mug', 28),
+        ('cross', 30),
+        ('cross_reverse', 32),
+        ('crosshair', 34),
+        ('diamond_cross', 36),
+        ('dot', 38),
+        ('dotbox', 40),
+        ('double_arrow', 42),
+        ('draft_large', 44),
+        ('draft_small', 46),
+        ('draped_box', 48),
+        ('exchange', 50),
+        ('fleur', 52),
+        ('gobbler', 54),
+        ('gumby', 56),
+        ('hand1', 58),
+        ('hand2', 60),
+        ('heart', 62),
+        ('icon', 64),
+        ('iron_cross', 66),
+        ('left_ptr', 68),
+        ('left_side', 70),
+        ('left_tee', 72),
+        ('leftbutton', 74),
+        ('ll_angle', 76),
+        ('lr_angle', 78),
+        ('man', 80),
+        ('middlebutton', 82),
+        ('mouse', 84),
+        ('pencil', 86),
+        ('pirate', 88),
+        ('plus', 90),
+        ('question_arrow', 92),
+        ('right_ptr', 94),
+        ('right_side', 96),
+        ('right_tee', 98),
+        ('rightbutton', 100),
+        ('rtl_logo', 102),
+        ('sailboat', 104),
+        ('sb_down_arrow', 106),
+        ('sb_h_double_arrow', 108),
+        ('sb_left_arrow', 110),
+        ('sb_right_arrow', 112),
+        ('sb_up_arrow', 114),
+        ('sb_v_double_arrow', 116),
+        ('shuttle', 118),
+        ('sizing', 120),
+        ('spider', 122),
+        ('spraycan', 124),
+        ('star', 126),
+        ('target', 128),
+        ('tcross', 130),
+        ('top_left_arrow', 132),
+        ('top_left_corner', 134),
+        ('top_right_corner', 136),
+        ('top_side', 138),
+        ('top_tee', 140),
+        ('trek', 142),
+        ('ul_angle', 144),
+        ('umbrella', 146),
+        ('ur_angle', 148),
+        ('watch', 150),
+        ('xterm', 152)
+    )
+  */
+
+  // https://tronche.com/gui/x/xlib/appendix/b/
+
+  const char* MIP_XCB_WM_CURSORS[MIP_CURSOR_COUNT] = {
+
+    "left_ptr",             // MIP_CURSOR_DEFAULT
+    "left_ptr",             // MIP_CURSOR_ARROW
+
+    "sb_up_arrow",          // MIP_CURSOR_ARROW_UP
+    "sb_down_arrow",        // MIP_CURSOR_ARROW_DOWN
+    "sb_left_arrow",        // MIP_CURSOR_ARROW_LEFT
+    "sb_right_arrow",       // MIP_CURSOR_ARROW_RIGHT
+
+    "sb_v_double_arrow",    // MIP_CURSOR_ARROW_UP_DOWN
+    "sb_h_double_arrow",    // MIP_CURSOR_ARROW_LEFT_RIGHT
+
+    "top_left_corner",      // MIP_CURSOR_ARROW_TOP_LEFT
+    "top_right_corner",     // MIP_CURSOR_ARROW_TOP_RIGHT
+    "bottom_left_corner",   // MIP_CURSOR_ARROW_BOTTOM_LEFT
+    "bottom_right_corner",  // MIP_CURSOR_ARROW_BOTTOM_RIGHT
+
+    "left_side",            // MIP_CURSOR_ARROW_LEFT_SIDE
+    "right_side",           // MIP_CURSOR_ARROW_RIGHT_SIDE
+    "top_side",             // MIP_CURSOR_ARROW_TOP_SIDE
+    "bottom_side",          // MIP_CURSOR_ARROW_BOTTOM_SIDE
+
+    "fleur",                // MIP_CURSOR_MOVE
+    "watch",                // MIP_CURSOR_WAIT
+    "clock",                // MIP_CURSOR_ARROW_WAIT    !!!
+    "hand2",                // MIP_CURSOR_HAND
+    "hand1",                // MIP_CURSOR_FINGER
+    "crosshair",            // MIP_CURSOR_CROSS
+    "cross",                // MIP_CURSOR_CROSS2
+    "pencil",               // MIP_CURSOR_PENCIL
+    "plus",                 // MIP_CURSOR_PLUS
+    "question_arrow",       // MIP_CURSOR_QUESTION
+    "xterm",                // MIP_CURSOR_IBEAM
+
+    "circle",               // MIP_CURSOR_ARROW_INVALID
+    "crossed_circle",       // MIP_CURSOR_INVALID
+
+    "pirate"                // MIP_CURSOR_X
+
+  };
+
+
+
+
+//----------------------------------------------------------------------
 
 
 //----------------------------------------------------------------------

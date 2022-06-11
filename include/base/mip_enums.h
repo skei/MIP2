@@ -105,30 +105,48 @@ enum MIP_EPluginStates {
 //----------------------------------------------------------------------
 
 enum MIP_EMouseCursors {
+
   MIP_CURSOR_GRAB                = -4,
   MIP_CURSOR_RELEASE             = -3,
   MIP_CURSOR_SHOW                = -2,
   MIP_CURSOR_HIDE                = -1,
+
   MIP_CURSOR_DEFAULT             = 0,
   MIP_CURSOR_ARROW               = 1,
-  MIP_CURSOR_ARROWUP             = 2,
-  MIP_CURSOR_ARROWDOWN           = 3,
-  MIP_CURSOR_ARROWLEFT           = 4,
-  MIP_CURSOR_ARROWRIGHT          = 5,
-  MIP_CURSOR_ARROWUPDOWN         = 6,
-  MIP_CURSOR_ARROWLEFTRIGHT      = 7,
-  MIP_CURSOR_ARROWDIAGLEFT       = 8,
-  MIP_CURSOR_ARROWDIAGRIGHT      = 9,
-  MIP_CURSOR_MOVE                = 10,
-  MIP_CURSOR_WAIT                = 11,
-  MIP_CURSOR_ARROWWAIT           = 12,
-  MIP_CURSOR_HAND                = 13,
-  MIP_CURSOR_FINGER              = 14,
-  MIP_CURSOR_CROSS               = 15,
-  MIP_CURSOR_PENCIL              = 16,
-  MIP_CURSOR_PLUS                = 17,
-  MIP_CURSOR_QUESTION            = 18,
-  MIP_CURSOR_IBEAM               = 19
+
+  MIP_CURSOR_ARROW_UP            = 2,
+  MIP_CURSOR_ARROW_DOWN          = 3,
+  MIP_CURSOR_ARROW_LEFT          = 4,
+  MIP_CURSOR_ARROW_RIGHT         = 5,
+
+  MIP_CURSOR_ARROW_UP_DOWN       = 6,
+  MIP_CURSOR_ARROW_LEFT_RIGHT    = 7,
+
+  MIP_CURSOR_ARROW_TOP_LEFT      = 8,
+  MIP_CURSOR_ARROW_TOP_RIGHT     = 9,
+  MIP_CURSOR_ARROW_BOTTOM_LEFT   = 10,
+  MIP_CURSOR_ARROW_BOTTOM_RIGHT  = 11,
+
+  MIP_CURSOR_ARROW_LEFT_SIDE     = 12,
+  MIP_CURSOR_ARROW_RIGHT_SIDE    = 13,
+  MIP_CURSOR_ARROW_TOP_SIDE      = 14,
+  MIP_CURSOR_ARROW_BOTTOM_SIDE   = 15,
+
+  MIP_CURSOR_MOVE                = 16,
+  MIP_CURSOR_WAIT                = 17,
+  MIP_CURSOR_ARROW_WAIT          = 18, // !!!
+  MIP_CURSOR_HAND                = 19,
+  MIP_CURSOR_FINGER              = 20,
+  MIP_CURSOR_CROSS               = 21,
+  MIP_CURSOR_CROSS2              = 22,
+  MIP_CURSOR_PENCIL              = 23,
+  MIP_CURSOR_PLUS                = 24,
+  MIP_CURSOR_QUESTION            = 25,
+  MIP_CURSOR_IBEAM               = 26,
+  MIP_CURSOR_ARROW_INVALID       = 27,
+  MIP_CURSOR_INVALID             = 28,
+  MIP_CURSOR_X                   = 29,
+  MIP_CURSOR_COUNT               = 30
 };
 
 enum MIP_EMouseButtons {

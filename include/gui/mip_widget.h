@@ -82,7 +82,7 @@ protected:
 
   const char*     MName                   = "MIP_Widget";         //
   const char*     MHint                   = "widget";             //
-  int32_t         MCursor                 = MIP_CURSOR_DEFAULT;   //
+  int32_t         MMouseCursor            = MIP_CURSOR_DEFAULT;   //
   MIP_Widget*     MOwnerWindow            = nullptr;              // = MIP_Window;
   MIP_Widget*     MParent                 = nullptr;              //
   MIP_WidgetArray MChildren               = {};                   //
@@ -165,7 +165,7 @@ public: // set
   virtual void setChildrenXOffset(float AX)                 { MChildrenXOffset = AX; }
   virtual void setChildrenYOffset(float AY)                 { MChildrenYOffset = AY; }
   virtual void setContentRect(MIP_FRect ARect)              { MContentRect = ARect; }
-  virtual void setCursor(int32_t ACursor)                   { MCursor = ACursor; }
+  virtual void setMouseCursor(int32_t ACursor)              { MMouseCursor = ACursor; }
 //  virtual void setMinValue(float AValue)                    { MMinValue = AValue; }
 //  virtual void setMaxValue(float AValue)                    { MMaxValue = AValue; }
   virtual void setDefaultValue(float AValue)                { MDefaultValue = AValue; }
@@ -230,7 +230,7 @@ public:
   virtual MIP_Widget*       getChild(uint32_t AIndex)   { return MChildren[AIndex]; }
   virtual MIP_WidgetArray*  getChildren()               { return &MChildren; }
   virtual MIP_FRect         getContentRect()            { return MContentRect; }
-  virtual int32_t           getCursor()                 { return MCursor; }
+  virtual int32_t           getMouseCursor()                 { return MMouseCursor; }
 //  virtual float             getMinValue()               { return MMinValue; }
 //  virtual float             getMaxValue()               { return MMaxValue; }
   virtual float             getDefaultValue()           { return MDefaultValue; }
@@ -873,7 +873,7 @@ public:
     //MIP_Print("%s : x %.2f y %.2f from %s\n",MName,AXpos,AYpos,(AFrom)?AFrom->getName():"?");
     state.hovering = true;
     if (flags.redrawHover) do_widget_redraw(this,MRect,0/*MIP_PAINT_REDRAW*/);
-    if (flags.autoCursor) do_widget_setMouseCursor(this,MCursor);
+    if (flags.autoCursor) do_widget_setMouseCursor(this,MMouseCursor);
     if (flags.autoHint) do_widget_setHint(this,MHint,0);
   }
 
@@ -902,6 +902,9 @@ public:
   }
 
   virtual void on_widget_connect(MIP_Parameter* AParameter) {
+
+    //MIP_Print("%i. %s = %.3f\n",AParameter->getId(),AParameter->getName(),AParameter->getValue());
+
     MParameter = AParameter;
 //    MParamIndex = AParameter->getIndex();
 //    strncpy(MParamName,AParameter->getName(),255);

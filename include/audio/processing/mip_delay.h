@@ -107,6 +107,12 @@ class MIP_InterpolatedDelay {
       MPhase = 0.0f;
     }
 
+    //void restart() {
+    //  MCounter = 0;
+    //  MWrapped = false;
+    //  //MPhase = 0.0f;
+    //}
+
     float process(float AInput, float AFeedback, float ADelay) {
 
       MIP_Assert( ADelay > 0 );
@@ -153,10 +159,10 @@ class MIP_InterpolatedDelay {
 
 
       // if only part of next sample 'fits' inside delay length...
-      if ((MPhase + 1.0) >= ADelay) {
-        float diff = ADelay - MPhase;
-        out *= diff;
-      }
+      //if ((MPhase + 1.0) >= ADelay) {
+      //  float diff = ADelay - MPhase;
+      //  out *= diff;
+      //}
 
       MBuffer[MCounter] = out;
 

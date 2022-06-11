@@ -84,13 +84,12 @@ public:
     MMip2Image->layout.alignment = MIP_WIDGET_ALIGN_RIGHT_TOP;
     appendWidget(MMip2Image);
 
-    sprintf(MClapText,"CLAP %i.%i.%i",CLAP_VERSION_MAJOR,CLAP_VERSION_MINOR,CLAP_VERSION_REVISION);
+    sprintf(MClapText,"CLAP v%i.%i.%i",CLAP_VERSION_MAJOR,CLAP_VERSION_MINOR,CLAP_VERSION_REVISION);
 
     MClapTextWidget = new MIP_TextWidget( MIP_FRect(0,0,129,16),MClapText );
     MClapTextWidget->layout.alignment = MIP_WIDGET_ALIGN_RIGHT_BOTTOM;
     MClapTextWidget->setText(MClapText);
     MClapTextWidget->setTextSize(9);
-    MClapTextWidget->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     MClapTextWidget->setTextColor(MIP_COLOR_DARK_GRAY);
     MClapTextWidget->setFillBackground(false);
     appendWidget(MClapTextWidget);
@@ -99,7 +98,6 @@ public:
     MPluginName->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP_LEFT;
     MPluginName->setText("PluginName");
     MPluginName->setTextSize(24);
-    MPluginName->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     MPluginName->setTextColor(MIP_COLOR_BLACK);
     MPluginName->setFillBackground(false);
     appendWidget(MPluginName);
@@ -108,7 +106,6 @@ public:
     MPluginVersion->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP_LEFT;
     MPluginVersion->setText("v0.0.0");
     MPluginVersion->setTextSize(10);
-    MPluginVersion->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     MPluginVersion->setTextColor(MIP_COLOR_DARK_GRAY);
     MPluginVersion->setFillBackground(false);
     appendWidget(MPluginVersion);

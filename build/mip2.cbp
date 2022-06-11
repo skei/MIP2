@@ -422,7 +422,8 @@
 		<Unit filename="../include/gui/mip_skin.h" />
 		<Unit filename="../include/gui/mip_surface.h" />
 		<Unit filename="../include/gui/mip_widget.h" />
-		<Unit filename="../include/gui/mip_widgets.h" />
+		<Unit filename="../include/gui/mip_widgets1.h" />
+		<Unit filename="../include/gui/mip_widgets2.h" />
 		<Unit filename="../include/gui/mip_window.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui_painter.h" />
@@ -477,10 +478,19 @@
 		<Unit filename="../include/gui/widgets/mip_value_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_waveform_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_xy_pad_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_drag_value_widget.h" />
 		<Unit filename="../include/gui/widgets2/mip_image_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_knob2_widget.h" />
 		<Unit filename="../include/gui/widgets2/mip_knob_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_menu_item_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_menu_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_panel_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_sa_header_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_selector_widget.h" />
 		<Unit filename="../include/gui/widgets2/mip_slider_widget.h" />
-		<Unit filename="../include/gui/widgets2/mip_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_text_header_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_text_widget.h" />
+		<Unit filename="../include/gui/widgets2/mip_value_widget.h" />
 		<Unit filename="../include/gui/win32/mip_win32.h" />
 		<Unit filename="../include/gui/win32/mip_win32_surface.h" />
 		<Unit filename="../include/gui/win32/mip_win32_window.h" />
@@ -539,6 +549,7 @@
 		<Unit filename="../include/plugin/lv2/mip_lv2_host.h" />
 		<Unit filename="../include/plugin/lv2/mip_lv2_plugin.h" />
 		<Unit filename="../include/plugin/mip_audio_port.h" />
+		<Unit filename="../include/plugin/mip_block_voice_manager.h" />
 		<Unit filename="../include/plugin/mip_descriptor.h" />
 		<Unit filename="../include/plugin/mip_editor.h" />
 		<Unit filename="../include/plugin/mip_entry.h" />
@@ -549,6 +560,8 @@
 		<Unit filename="../include/plugin/mip_plugin.h" />
 		<Unit filename="../include/plugin/mip_quick_control.h" />
 		<Unit filename="../include/plugin/mip_registry.h" />
+		<Unit filename="../include/plugin/mip_split_voice_manager.h" />
+		<Unit filename="../include/plugin/mip_threaded_voice_manager.h" />
 		<Unit filename="../include/plugin/mip_voice.h" />
 		<Unit filename="../include/plugin/mip_voice_manager.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2.h" />
@@ -635,6 +648,7 @@
 		</Unit>
 		<Unit filename="../source/plugins/sa_ts1/sa_ts1_editor.h" />
 		<Unit filename="../source/plugins/sa_ts1/sa_ts1_osc.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_parameters.h" />
 		<Unit filename="../source/plugins/sa_ts1/sa_ts1_res.h" />
 		<Unit filename="../source/plugins/sa_ts1/sa_ts1_voice.h" />
 		<Unit filename="../source/plugins/sa_ts1/sa_ts1_widgets.h" />

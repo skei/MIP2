@@ -238,6 +238,20 @@ public:
         T s = MIP_Sign(out);
         T m = MIP_Max( abs(out), abs(mod) ) * s;
         out = MIP_Interpolate_Linear(MWaveModAmount,out,m);
+        break;
+      }
+      case 8: { // fold
+        //T s = MIP_Sign(out);
+        //T m = MIP_Max( abs(out), abs(mod) ) * s;
+        //out = MIP_Interpolate_Linear(MWaveModAmount,out,m);
+        T s = MIP_Sign(out);
+        T a = abs(out);
+        a *= 1.0 + (MWaveModAmount * 2.0);
+        if (a > 1.0) {
+          a = 1.0 + (1.0 - a);
+        }
+        out = a * s;
+        break;
       }
 
     }

@@ -112,6 +112,11 @@ public:
     MModulation = AValue;
   }
 
+  const char* getDisplayText() {
+    valueToText(getValue(),MDisplayText,32);
+    return MDisplayText;
+  }
+
   //----------
 
   void setIsModulated(bool AState=true)       { MIsModulated = AState; }

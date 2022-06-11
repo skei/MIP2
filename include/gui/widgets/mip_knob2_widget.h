@@ -2,82 +2,60 @@
 #define mip_knob2_widget_included
 //----------------------------------------------------------------------
 
-// label
-//   O
-// value
-
-#define TEXT_HEIGHT 16
-
 #include "gui/mip_widget.h"
+#include "gui/widgets/mip_panel_widget.h"
 #include "gui/widgets/mip_knob_widget.h"
 #include "gui/widgets/mip_text_widget.h"
 
 class MIP_Knob2Widget
-: public MIP_Widget {
+: public MIP_PanelWidget {
 
 //------------------------------
-protected:
+private:
 //------------------------------
 
-  MIP_KnobWidget*  wdg_knob        = nullptr;
-  MIP_TextWidget*  wdg_label       = nullptr;
-  MIP_TextWidget*  wdg_value       = nullptr;
-  char             value_text[32]  = {0};
+  MIP_KnobWidget*   MKnobWidget       = nullptr;;
+  MIP_TextWidget*   MLabelWidget      = nullptr;;
+  MIP_TextWidget*   MValueWidget      = nullptr;;
+
+  char              MDisplayText[32]  = {0};
+
+  bool              MDrawLabel        = true;
+  bool              MDrawValue        = true;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Knob2Widget(MIP_FRect ARect, const char* AName="")
-  : MIP_Widget(ARect) {
+  MIP_Knob2Widget(MIP_FRect ARect, const char* AName="", bool ALabel=true, bool AValue=true)
+  : MIP_PanelWidget(ARect) {
     setName("MIP_Knob2Widget");
     setHint("knob2");
-    //#define X MRect.x
-    //#define Y MRect.y
-    #define X 0
-    #define Y 0
-    #define W getRect().w
-    #define H getRect().h
-    #define KS W
 
-//    sprintf(value_text,"%.3f",MValue);
+    setDrawBorder(false);
 
-    wdg_label = (MIP_TextWidget*)appendWidget( new MIP_TextWidget( MIP_FRect(X,Y,      W, 16) ));
-    wdg_knob  = (MIP_KnobWidget*)appendWidget( new MIP_KnobWidget( MIP_FRect(X,Y+16,   W, KS) ));
-    wdg_value = (MIP_TextWidget*)appendWidget( new MIP_TextWidget( MIP_FRect(X,Y+16+KS,W, 16) ));
-    #undef X
-    #undef Y
-    #undef W
-    #undef H
-    #undef KS
+    MDrawLabel = ALabel;
+    MDrawValue = AValue;
 
-    wdg_label->setText(AName);
-    //wdg_label->setTextSize(10);
-    wdg_label->setFillBackground(false);
-    wdg_label->setBackgroundColor(MIP_Color(0.55));
-    wdg_label->setDrawBorder(false);
-    wdg_label->setTextColor(MIP_COLOR_BLACK);
-    wdg_label->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+    if (MDrawLabel) {
+      MLabelWidget = new MIP_TextWidget( MIP_FRect(15) );
+      MLabelWidget->layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      appendWidget(MLabelWidget);
+    }
 
-    //wdg_knob->setValue(AValue);
-    wdg_knob->setFillBackground(false);
-    wdg_knob->setBackgroundColor(MIP_Color(0.55));
-    //wdg_knob->setBipolar(ABipolar);
+    if (MDrawValue) {
+      MValueWidget = new MIP_TextWidget( MIP_FRect(15) );
+      MValueWidget->layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
+      appendWidget(MValueWidget);
+    }
 
-    wdg_value->setText(value_text);
-    //wdg_value->setTextSize(10);
-    wdg_value->setFillBackground(false);
-    wdg_value->setBackgroundColor(MIP_Color(0.55));
-    wdg_value->setDrawBorder(false);
-    wdg_value->setTextColor(MIP_COLOR_BLACK);
-    wdg_value->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
-
-    //sprintf(value_text,"%.3f",MValue);
-    sprintf(value_text,"---");
-
-    //wdg_value->setValue(AValue);
+    MKnobWidget = new MIP_KnobWidget( MIP_FRect() );
+    MKnobWidget->layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    appendWidget(MKnobWidget);
 
   }
+
+  //----------
 
   virtual ~MIP_Knob2Widget() {
   }
@@ -86,88 +64,74 @@ public:
 public:
 //------------------------------
 
-  virtual MIP_KnobWidget* getKnobWidget()  { return wdg_knob; }
-  virtual MIP_TextWidget* getLabelWidget() { return wdg_label; }
-  virtual MIP_TextWidget* getValueWidget() { return wdg_value; }
+  MIP_KnobWidget* getKnobWidget() {
+    return MKnobWidget;
+  }
+
+  // setValue
 
 //------------------------------
 public:
 //------------------------------
 
   void setValue(float AValue) override {
-    MIP_Widget::setValue(AValue);
-    if (wdg_knob) {
-      wdg_knob->setValue(AValue);
+    if (MKnobWidget) {
+      MKnobWidget->setValue(AValue);
     }
-    if (wdg_value) {
-      MIP_Parameter* param = getParameter();
-      if (param) {
-        AValue = param->denormalizeValue(AValue);
-        param->valueToText(AValue,value_text,32);
-      }
-      else {
-        sprintf(value_text,"%.3f",AValue); // todo: parameter.valueToText
-      }
-      wdg_value->setText(value_text);
+    if (MValueWidget) {
+      sprintf(MDisplayText,"%.2f",AValue);
+      MValueWidget->setText(MDisplayText);
+      //MValueWidget->setValue(AValue);
+      //MValueWidget->setText(MDisplayText);
+      MValueWidget->redraw();
     }
   }
+
+  //----------
 
   void setModValue(float AValue) override {
-    //MIP_Print("%.3f\n",AValue);
-    MIP_Widget::setModValue(AValue);
-    if (wdg_knob) {
-      wdg_knob->setModValue(AValue);
+    MIP_PanelWidget::setModValue(AValue);
+    if (MKnobWidget) {
+      MKnobWidget->setModValue(AValue);
     }
-    //if (wdg_value) {
-    //  sprintf(value_text,"%.3f",AValue);
-    //  wdg_value->setText(value_text);
-    //}
   }
 
 //------------------------------
 public:
 //------------------------------
 
-//  void on_widget_connect(MIP_Parameter* AParameter) final {
-//    wdg_knob->setParameter(AParameter);
-//    if (AParameter) {
-//      wdg_label->setText( AParameter->getName() );
-//      float value = 0.0f;
-//      //const char* txt = AParameter->getDisplayText(value);
-//      //MIP_FloatToString(value_text,AValue);
-//      sprintf(value_text,"%.3f",value);
-//      wdg_value->setText(value_text);
-//    }
-//  }
-
-//------------------------------
-public:
-//------------------------------
-
-  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) final {
-    //MIP_Widget::do_widget_update(ASender);
-    //if (MParent) MParent->do_widget_update(this);
-    if (ASender == wdg_knob) {
-      setValue( ASender->getValue() );
-      MIP_Parameter* par = (MIP_Parameter*)getParameter();
-      if (par) {
-        float value = par->denormalizeValue(MValue);
-        par->valueToText(value,value_text,32);
-        //displayText(value_text,getValue());
-        wdg_value->setText(value_text);
-      }
-      do_widget_redraw(wdg_value,wdg_value->getRect(),0);
+  void on_widget_connect(MIP_Parameter* AParameter) override {
+    MKnobWidget->on_widget_connect(AParameter);
+    if (MLabelWidget) {
+      const char* name = AParameter->getName();
+      MLabelWidget->setText(name);
     }
-    //else {
-      //if (MParent) MParent->do_widget_update(this);
-      MIP_Widget::do_widget_update(this,AMode);
+    //if (MValueWidget) {
+    //  double value = AParameter->getValue();
+    //  sprintf(MDisplayText,"%.2f",value);
+    //  MValueWidget->setText(MDisplayText);
+    //  //MIP_Print("%s %.3f\n",name,value);
     //}
+    //MIP_PanelWidget::on_widget_connect(AParameter);
+  }
+
+  //----------
+
+  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
+    if (ASender == MKnobWidget) {
+      double value = ASender->getValue();
+      //MIP_Print("value %.3f\n",value);
+      setValue(value);
+      //if (MValueWidget) {
+      //  MValueWidget->setValue(value);
+      //  MValueWidget->redraw();
+      //}
+    }
+    //MIP_PanelWidget::do_widget_update(this,AMode);
+    MIP_PanelWidget::do_widget_update(ASender,AMode);
   }
 
 };
 
-#undef TEXT_HEIGHT
-
 //----------------------------------------------------------------------
 #endif
-

@@ -2,48 +2,38 @@
 #define mip_value_widget_included
 //----------------------------------------------------------------------
 
-#include "base/utils/mip_convert.h"
+#include "gui/mip_widget.h"
 #include "gui/widgets/mip_text_widget.h"
-
-#define MIP_VALUE_WIDGET_LABEL_SPACE 4.0f
-
-//----------------------------------------------------------------------
 
 class MIP_ValueWidget
 : public MIP_TextWidget {
 
 //------------------------------
-private:
-//------------------------------
-
-  char        MValueText[32]      = {0};
-
-//------------------------------
 protected:
 //------------------------------
 
-  uint32_t    MDigits             = 3;
 
-  // value text
+  //const char* MValueText          = "0.0";
   bool        MDrawValueText      = true;
   MIP_Color   MValueTextColor     = MIP_COLOR_BLACK;
+  double      MValueTextSize      = 12.0;
   uint32_t    MValueTextAlignment = MIP_TEXT_ALIGN_RIGHT;
-  MIP_FRect   MValueTextOffset    = MIP_FRect(2,2,2,2);
+  MIP_FRect   MValueTextOffset    = MIP_FRect(0,0,2,0);
+  bool        MDrawParamValue     = true;
+  uint32_t    MDigits             = 2;
 
-  // label
-  bool        MDrawLabel          = false;
-  const char* MLabel              = "";
-  MIP_Color   MLabelColor         = MIP_Color(0.7f);
+  char        MDisplayText[32]    = {0};
 
 //------------------------------
 public:
 //------------------------------
 
   MIP_ValueWidget(MIP_FRect ARect, const char* AText="")
-  : MIP_TextWidget(ARect) {
-    setName("MIP_ValueWidget");
-    setHint("value");
-    MText = AText;
+  : MIP_TextWidget(ARect,AText) {
+    setName("MIP_TemplateWidget");
+    setHint("template");
+    setTextAlignment(MIP_TEXT_ALIGN_LEFT);
+    setTextOffset(MIP_FRect(2,0,0,0));
   }
 
   virtual ~MIP_ValueWidget() {
@@ -53,36 +43,24 @@ public:
 public:
 //------------------------------
 
-  virtual void setDigits(uint32_t ADigits) {
-    MDigits = ADigits;
-  }
+//  virtual void setDrawParamName(bool ADraw=true) {
+//    MDrawParamName = ADrawName;
+//  }
+//
+//  virtual void setDrawParamValue(bool ADraw=true) {
+//    MDrawParamValue = ADraw;
+//  }
+
+  //virtual void setDrawParamName(bool AParam=true) {
+  //  MDrawParamName = AParam;
+  //}
 
   virtual void setDrawValueText(bool ADraw=true) {
     MDrawValueText = ADraw;
   }
 
-  virtual void setValueTextAlignment(uint32_t AAlignment) {
-    MValueTextAlignment = AAlignment;
-  }
-
-  virtual void setValueTextColor(MIP_Color AColor) {
-    MValueTextColor = AColor;
-  }
-
-  virtual void setValueTextOffset(MIP_FRect AOffset) {
-    MValueTextOffset = AOffset;
-  }
-
-  virtual void setDrawLabel(bool ADraw=true) {
-    MDrawLabel = ADraw;
-  }
-
-  virtual void setLabel(const char* ALabel) {
-    MLabel = ALabel;
-  }
-
-  virtual void setLabelColor(MIP_Color AColor) {
-    MLabelColor = AColor;
+  virtual void setDigits(uint32_t ADigits) {
+    MDigits = ADigits;
   }
 
 //------------------------------
@@ -90,45 +68,41 @@ public:
 //------------------------------
 
   virtual void drawValueText(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) {
-
     if (MDrawValueText) {
-
-      float value = getValue();
-      const char*     label = "";
-
-      MIP_Parameter* param = getParameter();
-      if (param) {
-        //label = param->getLabel();
-        double v2 = param->denormalizeValue(value);
-        param->valueToText(v2,MValueText,32);
-        //MIP_Print("value %f text %s\n",value,MValueText);
+      MIP_FRect rect = MRect;
+      rect.shrink(MValueTextOffset);
+      const char* text = MDisplayText;
+      if (MDrawParamValue && MParameter) {
+        double value = MParameter->getValue();
+        if (MParameter->isStepped()) {
+          sprintf(MDisplayText,"%i",(int)value);
+          text = MDisplayText;
+        }
+        else {
+          sprintf(MDisplayText,"%.2f",value);
+          text = MDisplayText;
+        }
       }
       else {
-        label = MLabel;
-        MIP_FloatToString(MValueText,value,MDigits);
+        double value = getValue();
+        if (MDigits == 0) {
+          sprintf(MDisplayText,"%i",(int)value);
+          text = MDisplayText;
+        }
+        else {
+          char format[8] = {0};
+          format[0] = '%';
+          format[1] = '.';
+          format[2] = '0' + MDigits;
+          format[3] = 'f';
+          format[4] = 0;
+          MIP_Print("format: '%s'\n",format);
+          sprintf(MDisplayText,"%.2f",value);
+          text = MDisplayText;
+        }
       }
-
-      MIP_FRect value_rect = getRect();
-      MIP_FRect label_rect = getRect();
-
-      value_rect.shrink(MValueTextOffset);
-      label_rect.shrink(MValueTextOffset);
-
-      if (MDrawLabel) {
-        float width = APainter->getTextWidth(label);
-        label_rect.x = value_rect.x2() - width;
-        label_rect.w = width;
-        value_rect.w -= (width + MIP_VALUE_WIDGET_LABEL_SPACE);
-      }
-
-      if (MDrawValueText) {
-        APainter->setColor(MValueTextColor);
-        APainter->drawText(value_rect,MValueText,MValueTextAlignment);
-      }
-      if (MDrawLabel) {
-        APainter->setColor(MLabelColor);
-        APainter->drawText(label_rect,label,MValueTextAlignment);
-      }
+      APainter->setColor(MValueTextColor);
+      APainter->drawText(rect,text,MValueTextAlignment);
     }
   }
 
@@ -137,11 +111,11 @@ public:
 //------------------------------
 
   void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
-    fillBackground(APainter,ARect,AMode);
-    //paintChildren(APainter,getRect(),AMode);
-    drawText(APainter,ARect,AMode);
-    drawValueText(APainter,ARect,AMode);
-    drawBorder(APainter,ARect,AMode);
+    fillBackground(APainter, ARect, AMode);
+    paintWidgets(APainter,ARect,AMode);
+    drawText(APainter, ARect, AMode);
+    drawValueText(APainter, ARect, AMode);
+    drawBorder(APainter, ARect, AMode);
   }
 
 };
