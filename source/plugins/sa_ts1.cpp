@@ -15,7 +15,7 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 
-#define MIP_DEBUG_PRINT_SOCKET
+//#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 //tail -F ~/.BitwigStudio/log/engine.log | pv --rate --bytes > /dev/null
 
@@ -30,7 +30,9 @@
 
 //----------------------------------------------------------------------
 
-#define NUM_VOICES 128
+#define NUM_VOICES    128
+#define EDITOR_WIDTH  816
+#define EDITOR_HEIGHT 683
 
 //----------------------------------------------------------------------
 
@@ -134,6 +136,7 @@ private:
   //----------
 
   sa_ts1_VoiceManager MVoiceManager = {};
+  clap_id MSelectedQuickControlsPage = 0;
 
 //------------------------------
 public:
@@ -183,11 +186,12 @@ public: // clap
 
   const void* get_extension(const char *id) final {
     //MIP_Print("host asks for: %s\n",id);
-    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0) return &MAudioPorts;
-    if (strcmp(id,CLAP_EXT_GUI) == 0)         return &MGui;
-    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)  return &MNotePorts;
-    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0) return &MThreadPool;
-    if (strcmp(id,CLAP_EXT_VOICE_INFO) == 0)  return &MVoiceInfo;
+    if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)     return &MAudioPorts;
+    if (strcmp(id,CLAP_EXT_GUI) == 0)             return &MGui;
+    if (strcmp(id,CLAP_EXT_NOTE_PORTS) == 0)      return &MNotePorts;
+    if (MIP_IsEqual(id,CLAP_EXT_QUICK_CONTROLS))  return &MQuickControls;
+    if (strcmp(id,CLAP_EXT_THREAD_POOL) == 0)     return &MThreadPool;
+    if (strcmp(id,CLAP_EXT_VOICE_INFO) == 0)      return &MVoiceInfo;
     return MIP_Plugin::get_extension(id);
   }
 
@@ -243,6 +247,44 @@ public: // clap
   }
 
   //----------
+  // quick-controls
+  //----------
+
+  uint32_t quick_controls_count() final {
+    return 1;
+  }
+
+  bool quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) final {
+    page->id = 0;
+    strcpy(page->name,"MIP: page1");
+    page->param_ids[0] = PAR_OSC1_SHAPE;
+    page->param_ids[1] = PAR_OSC1_WIDTH;
+    page->param_ids[2] = PAR_OSC2_SHAPE;
+    page->param_ids[3] = PAR_OSC2_WIDTH;
+    page->param_ids[4] = PAR_RES1_FB;
+    page->param_ids[5] = PAR_RES1_DAMP;
+    page->param_ids[6] = PAR_RES2_FB;
+    page->param_ids[7] = PAR_RES2_DAMP;
+    return true;
+  }
+
+  void quick_controls_select(clap_id page_id) final {
+    MSelectedQuickControlsPage = page_id;
+  }
+
+  clap_id quick_controls_get_selected() final {
+    return MSelectedQuickControlsPage;
+  }
+
+  //----------
+  // thread-pool
+  //----------
+
+  void thread_pool_exec(uint32_t task_index) final {
+    //MVoiceManager.processVoiceThread(task_index);
+  }
+
+  //----------
   // voice-info
   //----------
 
@@ -253,13 +295,6 @@ public: // clap
     return true;
   }
 
-  //----------
-  // thread-pool
-  //----------
-
-  void thread_pool_exec(uint32_t task_index) final {
-    //MVoiceManager.processVoiceThread(task_index);
-  }
 
 //------------------------------
 protected:
