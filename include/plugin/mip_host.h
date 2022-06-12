@@ -21,6 +21,12 @@ class MIP_Host
 public:
 //------------------------------
 
+  /*
+    careful..
+    don't do much clap-related stuff here..
+    plugin->init has not been called yet
+  */
+
   MIP_Host(const clap_host_t* AHost)
   : MIP_ClapHost(AHost) {
   }

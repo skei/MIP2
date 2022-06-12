@@ -74,6 +74,7 @@ protected:
   MIP_ParameterArray    MParameters               = {};
   MIP_Editor*           MEditor                   = nullptr;
   MIP_Host*             MHost                     = nullptr;
+  const clap_host_t*    MClapHost                 = nullptr;
 
   bool                  MIsActivated              = false;
   bool                  MIsProcessing             = false;
@@ -104,15 +105,10 @@ public:
   MIP_Plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_ClapPlugin(ADescriptor,AHost) {
     //MDescriptor = ADescriptor;
-    MHost = new MIP_Host(AHost);
-    #ifdef MIP_DEBUG_CLAP
-      MHost->printSupportedExtensions();
-      CLAP_Print("host clap version: %i.%i.%i\n",AHost->clap_version.major,AHost->clap_version.minor,AHost->clap_version.revision);
-      CLAP_Print("host name:         %s\n",AHost->name);
-      CLAP_Print("host vendor:       %s\n",AHost->vendor);
-      CLAP_Print("host url:          %s\n",AHost->url);
-      CLAP_Print("host version:      %s\n",AHost->version);
-    #endif
+
+    MClapHost = AHost;
+    //MHost = new MIP_Host(AHost);
+
   }
 
   //----------
@@ -134,6 +130,18 @@ public: // plugin
 
   bool init() override {
     CLAP_Print("\n");
+
+    MHost = new MIP_Host(MClapHost);
+    MHost->initExtensions();
+    #ifdef MIP_DEBUG_CLAP
+      MHost->printSupportedExtensions();
+      CLAP_Print("host clap version: %i.%i.%i\n",AHost->clap_version.major,AHost->clap_version.minor,AHost->clap_version.revision);
+      CLAP_Print("host name:         %s\n",AHost->name);
+      CLAP_Print("host vendor:       %s\n",AHost->vendor);
+      CLAP_Print("host url:          %s\n",AHost->url);
+      CLAP_Print("host version:      %s\n",AHost->version);
+    #endif
+
     // queues
     uint32_t num = MParameters.size();
     uint32_t size = num * sizeof(double);

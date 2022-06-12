@@ -52,8 +52,17 @@ public:
 public:
 //------------------------------
 
+  /*
+    clap-host says:
+    The plugin can't query for extensions during the create method. Wait for clap_plugin.init() call.
+  */
+
   MIP_ClapHost(const clap_host_t* AHost) {
     host                = AHost;
+/*
+    moved to MIP_Plugin.initExtensions
+    called from MIP_Plugin.init
+
     ambisonic           = (clap_host_ambisonic_t*)AHost->get_extension(AHost,CLAP_EXT_AMBISONIC);
     audio_ports_config  = (clap_host_audio_ports_config_t*)AHost->get_extension(AHost,CLAP_EXT_AUDIO_PORTS_CONFIG);
     audio_ports         = (clap_host_audio_ports_t*)AHost->get_extension(AHost,CLAP_EXT_AUDIO_PORTS);
@@ -80,6 +89,7 @@ public:
     //transport_control   = (clap_host_transport_control_t*)AHost->get_extension(AHost,CLAP_EXT_TRANSPORT_CONTROL);
     tuning              = (clap_host_tuning_t*)AHost->get_extension(AHost,CLAP_EXT_TUNING);
     voice_info          = (clap_host_voice_info_t*)AHost->get_extension(AHost,CLAP_EXT_VOICE_INFO);
+*/
   }
 
   virtual ~MIP_ClapHost() {
@@ -108,6 +118,36 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  void initExtensions() {
+    ambisonic           = (clap_host_ambisonic_t*)host->get_extension(host,CLAP_EXT_AMBISONIC);
+    audio_ports_config  = (clap_host_audio_ports_config_t*)host->get_extension(host,CLAP_EXT_AUDIO_PORTS_CONFIG);
+    audio_ports         = (clap_host_audio_ports_t*)host->get_extension(host,CLAP_EXT_AUDIO_PORTS);
+    //check_for_update    = (clap_host_check_for_update_t*)host->get_extension(host,CLAP_EXT_CHECK_FOR_UPDATE);
+    cv                  = (clap_host_cv_t*)host->get_extension(host,CLAP_EXT_CV);
+    event_registry      = (clap_host_event_registry_t*)host->get_extension(host,CLAP_EXT_EVENT_REGISTRY);
+    file_reference      = (clap_host_file_reference*)host->get_extension(host,CLAP_EXT_FILE_REFERENCE);
+    gui                 = (clap_host_gui_t*)host->get_extension(host,CLAP_EXT_GUI);
+    latency             = (clap_host_latency_t*)host->get_extension(host,CLAP_EXT_LATENCY);
+    log                 = (clap_host_log_t*)host->get_extension(host,CLAP_EXT_LOG);
+    midi_mapping        = (clap_host_midi_mappings_t*)host->get_extension(host,CLAP_EXT_MIDI_MAPPINGS);
+    note_name           = (clap_host_note_name_t*)host->get_extension(host,CLAP_EXT_NOTE_NAME);
+    note_ports          = (clap_host_note_ports_t*)host->get_extension(host,CLAP_EXT_NOTE_PORTS);
+    params              = (clap_host_params_t*)host->get_extension(host,CLAP_EXT_PARAMS);
+    posix_fd_support    = (clap_host_posix_fd_support_t*)host->get_extension(host,CLAP_EXT_POSIX_FD_SUPPORT);
+    quick_controls      = (clap_host_quick_controls_t*)host->get_extension(host,CLAP_EXT_QUICK_CONTROLS);
+    state               = (clap_host_state_t*)host->get_extension(host,CLAP_EXT_STATE);
+    surround            = (clap_host_surround_t*)host->get_extension(host,CLAP_EXT_SURROUND);
+    tail                = (clap_host_tail_t*)host->get_extension(host,CLAP_EXT_TAIL);
+    thread_check        = (clap_host_thread_check_t*)host->get_extension(host,CLAP_EXT_THREAD_CHECK);
+    thread_pool         = (clap_host_thread_pool_t*)host->get_extension(host,CLAP_EXT_THREAD_POOL);
+    timer_support       = (clap_host_timer_support_t*)host->get_extension(host,CLAP_EXT_TIMER_SUPPORT);
+    track_info          = (clap_host_track_info_t*)host->get_extension(host,CLAP_EXT_TRACK_INFO);
+    //transport_control   = (clap_host_transport_control_t*)host->get_extension(host,CLAP_EXT_TRANSPORT_CONTROL);
+    tuning              = (clap_host_tuning_t*)host->get_extension(host,CLAP_EXT_TUNING);
+    voice_info          = (clap_host_voice_info_t*)host->get_extension(host,CLAP_EXT_VOICE_INFO);
+  }
+
 
   void printSupportedExtensions() {
     if (ambisonic)          { MIP_Print("host supports: %s\n",CLAP_EXT_AMBISONIC); }
