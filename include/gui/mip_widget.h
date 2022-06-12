@@ -768,6 +768,19 @@ public:
 
   //----------
 
+  virtual void scaleWidgets(double AScale, bool ARecursive=true) {
+    uint32_t num = MChildren.size();
+    for (uint32_t i=0; i<num; i++) {
+      MIP_Widget* child = MChildren[i];
+      MIP_FRect rect = child->getRect();
+      rect.scale(AScale);
+      child->setRect(rect);
+      if (ARecursive) child->scaleWidgets(AScale,ARecursive);
+    }
+  }
+
+  //----------
+
   virtual void scrollChildren(float AOffsetX, float AOffsetY) {
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
