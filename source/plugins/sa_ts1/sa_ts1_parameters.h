@@ -2,6 +2,13 @@
 #define sa_ts1_parameters_included
 //----------------------------------------------------------------------
 
+/*
+  todo: we can test the param_id, and the index in MParameters when
+  we append the parameters, if they differ, the ordering is wrong..
+  any better way, so we don't need those enums?
+
+*/
+
 enum sa_ts1_EParameters {
   PAR_MASTER_VOL = 0,
   PAR_MASTER_PAN ,

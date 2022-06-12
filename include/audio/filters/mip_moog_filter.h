@@ -1,6 +1,16 @@
+#ifndef mip_moog_filter_included
+#define mip_moog_filter_included
+//----------------------------------------------------------------------
+
+#include "mip.h"
+
+//----------------------------------------------------------------------
 
 class MIP_MoogFilter {
 };
+
+//----------------------------------------------------------------------
+#endif
 
 //{$include mip.inc}
 //unit mip_filter_moog;

@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------
 
 #include <math.h>
-#include "common/mip_math_fast.h"
+#include "base/utils/mip_fast_math.h"
 //#include "base/mip_math_table.h"
 
 /*

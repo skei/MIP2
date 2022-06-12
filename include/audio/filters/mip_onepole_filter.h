@@ -23,12 +23,12 @@ class MIP_OnePoleFilter {
   private:
 
     uint32_t  FType;
-    bool    FInterpolate;
-    float   a0, b1, y;
-    float   _gain, _gain2;
-    float   i_a0, i_b1;
-    float   d_a0, d_b1;
-    float   s_a0, s_b1;
+    bool      FInterpolate;
+    float     a0, b1, y;
+    float     _gain, _gain2;
+    float     i_a0, i_b1;
+    float     d_a0, d_b1;
+    float     s_a0, s_b1;
 
   private:
 

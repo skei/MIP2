@@ -19,16 +19,16 @@
 //----------------------------------------------------------------------
 
 enum MIP_CytomicFilterTypes {
-  kft_none      = 0,
-  kft_lowpass   = 1,
-  kft_bandpass  = 2,
-  kft_highpass  = 3,
-  kft_notch     = 4,
-  kft_peak      = 5,
-  kft_allpass   = 6,
-  kft_bell      = 7,
-  kft_lowshelf  = 8,
-  kft_highshelf = 9
+  _SVF_NONE       = 0,
+  _SVF_LOWPASS    = 1,
+  _SVF_BANDPASS   = 2,
+  _SVF_HIGHPASS   = 3,
+  _SVF_NOTCH      = 4,
+  _SVF_PEAK       = 5,
+  _SVF_ALLPASS    = 6,
+  _SVF_BELL       = 7,
+  _SVF_LOWSHELF   = 8,
+  _SVF_HIGHSHELF  = 9
 };
 
 //----------------------------------------------------------------------
@@ -73,58 +73,58 @@ class MIP_CytomicFilter {
         double g = tan((cutoff / sampleRate) * M_PI);
         double k = computeK(q, type == kft_bell /*USE GAIN FOR BELL FILTER ONLY*/);
         switch (type) {
-          case kft_none:
+          case _SVF_NONE:
             // nothing todo
             break;
-          case kft_lowpass:
+          case _SVF_LOWPASS:
             computeA(g, k);
             _m0 = 0;
             _m1 = 0;
             _m2 = 1;
             break;
-          case kft_bandpass:
+          case _SVF_BANDPASS:
             computeA(g, k);
             _m0 = 0;
             _m1 = 1;
             _m2 = 0;
             break;
-          case kft_highpass:
+          case _SVF_HIGHPASS:
             computeA(g, k);
             _m0 = 1;
             _m1 = -k;
             _m2 = -1;
             break;
-          case kft_notch:
+          case _SVF_NOTCH:
             computeA(g, k);
             _m0 = 1;
             _m1 = -k;
             _m2 = 0;
             break;
-          case kft_peak:
+          case _SVF_PEAK:
             computeA(g, k);
             _m0 = 1;
             _m1 = -k;
             _m2 = -2;
             break;
-          case kft_allpass:
+          case _SVF_ALLPASS:
             computeA(g, k);
             _m0 = 1;
             _m1 = -2*k;
             _m2 = 0;
             break;
-          case kft_bell:
+          case _SVF_BELL:
             computeA(g, k);
             _m0 = 1;
             _m1 = k*(_A*_A - 1);
             _m2 = 0;
             break;
-          case kft_lowshelf:
+          case _SVF_LOWSHELF:
             computeA(g /= _ASqrt, k);
             _m0 = 1;
             _m1 = k*(_A-1);
             _m2 = _A*_A - 1;
             break;
-          case kft_highshelf:
+          case _SVF_HIGHSHELF:
             computeA(g *= _ASqrt, k);
             _m0 = _A*_A;
             _m1 = k*(1-_A)*_A;

@@ -187,8 +187,10 @@ public:
       case PAR_ENV1_DEC:      MAmpEnvelope.setDecay(value*5);       break;
       case PAR_ENV1_SUS:      MAmpEnvelope.setSustain(value*value); break;
       case PAR_ENV1_REL:      MAmpEnvelope.setRelease(value*5);     break;
+      case PAR_OSC1_TYPE:     MOscillator1.setType(value);          break;
       case PAR_OSC1_PM_TYPE:  MOscillator1.setPhaseModType(value);  break;
       case PAR_OSC1_WM_TYPE:  MOscillator1.setWaveModType(value);   break;
+      case PAR_OSC2_TYPE:     MOscillator2.setType(value);          break;
       case PAR_OSC2_PM_TYPE:  MOscillator2.setPhaseModType(value);  break;
       case PAR_OSC2_WM_TYPE:  MOscillator2.setWaveModType(value);   break;
       case PAR_FLT1_TYPE:     MFilter.setMode(value);               break;
