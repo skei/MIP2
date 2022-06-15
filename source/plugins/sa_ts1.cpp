@@ -25,8 +25,8 @@
 //#define MIP_DEBUG_CRASH_HANDLER
 
 //#define MIP_DEBUG_CLAP
-//#define MIP_VST2
-//#define MIP_VST3
+#define MIP_VST2
+#define MIP_VST3
 
 //----------------------------------------------------------------------
 

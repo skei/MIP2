@@ -175,7 +175,7 @@ public:
   int32   PLUGIN_API countClasses() override {
     MIP_Print("MIP_Vst3Entry.countClasses\n");
     //return MIP_GetNumPlugins();
-    return MIP_CLAP_REGISTRY.getNumPlugins();
+    return MIP_REGISTRY.getNumDescriptors();
   }
 
   //----------
@@ -186,7 +186,7 @@ public:
 //    MIP_Descriptor* plugin_desc = plugin_info->descriptor;
 
     //const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(index);
-    const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getPlugin(index);
+    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
 
 
     const char* long_id = getLongId(descriptor);
@@ -217,9 +217,9 @@ public:
     //TODO: cid -> index
 
     //MIP_Vst3Host* host = new MIP_Vst3Host();
-    const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getPlugin(0);
+    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(0);
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(0,descriptor,nullptr/*host->ptr()*/);
-    const clap_plugin_t* clap_plugin = plugin->ptr();
+    const clap_plugin_t* clap_plugin = plugin->getPlugin();
     MIP_Vst3Plugin* vst3plugin  = new MIP_Vst3Plugin(clap_plugin);
 
 ////      plugin->setListener(vst3_instance);
@@ -249,7 +249,7 @@ public:
 //      memcpy(info->cid,(const char*)plugin_desc->getLongId(),16);
 
     //const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(0);
-    const clap_plugin_descriptor_t* descriptor = MIP_CLAP_REGISTRY.getPlugin(0);
+    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(0);
 
     const char* long_id = getLongId(descriptor);
     memcpy(info->cid,long_id,16);
