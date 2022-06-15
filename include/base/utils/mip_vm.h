@@ -4,19 +4,15 @@
 
 /*
   uses calculated gotos ('goto **ip++')..
+  .mip_script // text -> parse -> bytecode
+  .mip_bytecode
 
-
-  bk  : byte mip
-  kbc : mip bytce code
-
-  todo:
-  - call external functions
 */
 
 //----------
 
 #include <stdio.h>  // printf
-#include "base/mip_stack.h"
+#include "base/types/mip_stack.h"
 
 //----------
 
@@ -27,19 +23,6 @@
 #define MIP_VM_MAX_EXTERNALS     256
 #define MIP_VM_NUM_REGISTERS     256
 
-//----------------------------------------------------------------------
-
-typedef intptr_t MIP_Cell;
-
-typedef MIP_Stack<MIP_Cell, MIP_VM_DATA_STACK_SIZE> MIP_DataStack;
-typedef MIP_Stack<MIP_Cell*,MIP_VM_CALL_STACK_SIZE> MIP_CallStack;
-
-struct MIP_Opcode {
-  int       type;
-  MIP_Cell value;
-};
-
-// opcode types
 #define MIP_VM_OP_TYPE_NONE      0
 #define MIP_VM_OP_TYPE_INTERNAL  1
 #define MIP_VM_OP_TYPE_EXTERNAL  2
@@ -50,10 +33,94 @@ struct MIP_Opcode {
 #define MIP_VM_OP_TYPE_DATAPTR   7
 #define MIP_VM_OP_TYPE_CODEPTR   8
 
-class MIP_VirtualMachine;
-typedef void (*MIP_External)(MIP_VirtualMachine* vm);
+enum MIP_EVMOpcodes {
+  MIP_OP_NOOP = 0,  // "noop",  // 0
+  MIP_OP_EXIT,      // "exit",   // 1
+  MIP_OP_PUSH,      // "push",   // 2
+  MIP_OP_DROP,      // "drop",   // 3
+  MIP_OP_DUP,       // "dup",    // 4
+  MIP_OP_DUP2,      // "dup2",   // 5
+  MIP_OP_PUSHR,     // "pushr",  // 6
+  MIP_OP_POPR,      // "popr",   // 7
+  MIP_OP_PUSHD,     // "pushd",  // 8
+  MIP_OP_POPD,      // "popd",   // 9
+  MIP_OP_CALL,      // "call",   // 10
+  MIP_OP_RET,       // "ret",    // 11
+  MIP_OP_JMP,       // "jmp",    // 12
+  MIP_OP_JZ,        // "jz",     // 13
+  MIP_OP_JNZ,       // "jnz",    // 14
+  MIP_OP_EQ,        // "eq",     // 15
+  MIP_OP_GR,        // "gr",     // 16
+  MIP_OP_LE,        // "le",     // 17
+  MIP_OP_NE,        // "ne",     // 18
+  MIP_OP_ADD,       // "add",    // 19
+  MIP_OP_SUB,       // "sub",    // 20
+  MIP_OP_MUL,       // "mul",    // 21
+  MIP_OP_DIV,       // "div",    // 22
+  MIP_OP_INC,       // "inc",    // 23
+  MIP_OP_DEC,       // "dec",    // 24
+  MIP_OP_PRINT,     // "print",  // 25
+  MIP_OP_EXT,       // "ext"     // 26
+
+  MIP_VM_NUM_OPCODES
+
+};
+
+const char* MIP_VMOpcodeNames[MIP_VM_NUM_OPCODES] = {
+  "noop",   // 0
+  "exit",   // 1
+  "push",   // 2
+  "drop",   // 3
+  "dup",    // 4
+  "dup2",   // 5
+  "pushr",  // 6
+  "popr",   // 7
+  "pushd",  // 8
+  "popd",   // 9
+  "call",   // 10
+  "ret",    // 11
+  "jmp",    // 12
+  "jz",     // 13
+  "jnz",    // 14
+  "eq",     // 15
+  "gr",     // 16
+  "le",     // 17
+  "ne",     // 18
+  "add",    // 19
+  "sub",    // 20
+  "mul",    // 21
+  "div",    // 22
+  "inc",    // 23
+  "dec",    // 24
+  "print",  // 25
+  "ext"     // 26
+};
 
 //----------------------------------------------------------------------
+
+//typedef union {
+//  double    f;
+//  uint64_t  i;
+//  void*     p;
+//} MIP_VMValue;
+
+typedef intptr_t MIP_VMValue;
+
+struct MIP_VMOpcode {
+  int         type;
+  MIP_VMValue value;
+};
+
+
+class MIP_VirtualMachine;
+typedef void (*MIP_VMExternal)(MIP_VirtualMachine* vm);
+
+typedef MIP_Stack<MIP_VMValue, MIP_VM_DATA_STACK_SIZE> MIP_VMDataStack;
+typedef MIP_Stack<MIP_VMValue*,MIP_VM_CALL_STACK_SIZE> MIP_VMCallStack;
+
+//----------------------------------------------------------------------
+//
+//
 //
 //----------------------------------------------------------------------
 
@@ -63,17 +130,17 @@ class MIP_VirtualMachine {
 private:
 //------------------------------
 
-  int           MCodeSegment_size                       = 0;
-  MIP_Cell      MCodeSegment[MIP_VM_CODE_SEGMENT_SIZE]  = {0};
-  MIP_Cell      MDataSegment[MIP_VM_DATA_SEGMENT_SIZE]  = {0};
-  MIP_Cell      MRegisters[MIP_VM_NUM_REGISTERS]        = {0};
-  uint32_t      MNumExternals                           = 0;
-  MIP_External  MExternals[MIP_VM_MAX_EXTERNALS]        = {0};
-  int           MNumOpcodes                             = 0;
-  MIP_Opcode*   MOpcodes                                = nullptr;
-  MIP_Cell*     MIP                                     = nullptr;
-  MIP_CallStack MCallStack;
-  MIP_DataStack MDataStack;
+  int             MCodeSegment_size                       = 0;
+  MIP_VMValue     MCodeSegment[MIP_VM_CODE_SEGMENT_SIZE]  = {0};
+  MIP_VMValue     MDataSegment[MIP_VM_DATA_SEGMENT_SIZE]  = {0};
+  MIP_VMValue     MRegisters[MIP_VM_NUM_REGISTERS]        = {0};
+  uint32_t        MNumExternals                           = 0;
+  MIP_VMExternal  MExternals[MIP_VM_MAX_EXTERNALS]        = {0};
+  int             MNumOpcodes                             = 0;
+  MIP_VMOpcode*   MOpcodes                                = nullptr;
+  MIP_VMValue*    MIP                                     = nullptr;
+  MIP_VMCallStack MCallStack;
+  MIP_VMDataStack MDataStack;
 
 //------------------------------
 public:
@@ -91,15 +158,15 @@ public:
 public:
 //------------------------------
 
-MIP_Cell* getRegisters()                  { return MRegisters; }
-MIP_Cell  getRegister(int i)              { return MRegisters[i]; }
-void      setRegister(int i, MIP_Cell v)  { MRegisters[i] = v; }
+  MIP_VMValue*  getRegisters()                    { return MRegisters; }
+  MIP_VMValue   getRegister(int i)                { return MRegisters[i]; }
+  void          setRegister(int i, MIP_VMValue v) { MRegisters[i] = v; }
 
 //------------------------------
 public:
 //------------------------------
 
-  int registerExternal(MIP_External AExternal) {
+  int registerExternal(MIP_VMExternal AExternal) {
     int index = MNumExternals;
     MExternals[MNumExternals++] = AExternal;
     return index;
@@ -111,7 +178,7 @@ public:
   // You may not use this mechanism to jump to code in a different function.
   // If you do that, totally unpredictable things will happen.
 
-  void translate(MIP_Opcode* AOpcodes, int ASize) {
+  void translate(MIP_VMOpcode* AOpcodes, int ASize) {
     MOpcodes = AOpcodes;
     MNumOpcodes = ASize;
     execute(-1);
@@ -120,67 +187,63 @@ public:
   //----------
 
   void execute(int APosition=0) {
-
     if (APosition >= 0) {
 
-      //dtrace( "MCodeSegment = " << (int)&MCodeSegment[0] );
-      //dtrace( "MDataSegment = " << (int)&MDataSegment[0] );
-
-      //------------------------------
-      // execute
-      //------------------------------
+//------------------------------
+// execute
+//------------------------------
 
       #define VM_NEXT       goto **MIP++
       #define VM_NEXT_cell  *MIP++
       #define VM_PUSH_call  MCallStack.push(MIP)
       #define VM_POP_call   MIP = MCallStack.pop()
-      #define VM_PUSH(x)    MDataStack.push((MIP_Cell)x)
+      #define VM_PUSH(x)    MDataStack.push((MIP_VMValue)x)
       #define VM_POP        MDataStack.pop()
       #define VM_DROP       MDataStack.drop()
       #define VM_DUP        MDataStack.dup()
       #define VM_DUP2       MDataStack.dup2()
       #define VM_POS(x)     MCodeSegment[x]
 
-      //----------
-
       MIP = &MCodeSegment[APosition];
       VM_NEXT;
 
-      // script internals
+      //----- opcodes -----
 
       _op_noop:
         VM_NEXT;
 
       _op_exit:
-        //intptr_t r = (intptr_t)VM_POP;
+        //MIP_VMValue r = (intptr_t)VM_POP;
         return;
 
-      _op_push:
+      //----- stack -----
+
+      _op_push: // psh const
         VM_PUSH(VM_NEXT_cell);
         VM_NEXT;
 
-      _op_pushr:
+      _op_pushr: // push register
         VM_PUSH( MRegisters[VM_NEXT_cell] );
         VM_NEXT;
 
-      _op_popr:
+      _op_popr: // pop register
         {
-          MIP_Cell reg = (MIP_Cell)VM_NEXT_cell;
-          MRegisters[reg] = (MIP_Cell)VM_POP;
+          MIP_VMValue reg = (MIP_VMValue)VM_NEXT_cell;
+          MRegisters[reg] = (MIP_VMValue)VM_POP;
         VM_NEXT;
         }
 
       _op_pushd: // push from data
         {
-          MIP_Cell *dp = (MIP_Cell*)VM_NEXT_cell;
+          MIP_VMValue *dp = (MIP_VMValue*)VM_NEXT_cell;
           VM_PUSH(*dp);
         }
         VM_NEXT;
 
       _op_popd: // pop to data
         {
-          MIP_Cell *dp = (MIP_Cell*)VM_NEXT_cell;
-          *dp = (MIP_Cell)VM_POP;
+          MIP_VMValue *dp = (MIP_VMValue*)VM_NEXT_cell;
+          *dp = (MIP_VMValue)VM_POP;
         }
         VM_NEXT;
 
@@ -196,135 +259,163 @@ public:
         VM_DUP2;
         VM_NEXT;
 
-      //----------
+      //----- branching -----
 
-      _op_call:
+      _op_call: // call (gosub)
         {
-          MIP_Cell *ip = (MIP_Cell*)VM_NEXT_cell;
+          MIP_VMValue *ip = (MIP_VMValue*)VM_NEXT_cell;
           VM_PUSH_call;
           MIP = ip;
         }
         VM_NEXT;
 
-      _op_ret:
+      _op_ret: // return
         VM_POP_call;
         VM_NEXT;
 
-      _op_jmp:
+      _op_jmp: // unconditional jump (goto)
         {
-          MIP_Cell *ip = (MIP_Cell*)VM_NEXT_cell;
+          MIP_VMValue *ip = (MIP_VMValue*)VM_NEXT_cell;
           MIP = ip;
         }
         VM_NEXT;
 
-      _op_jz:
+      _op_jz: // jump if zero
         {
-          MIP_Cell* ip = (MIP_Cell*)VM_NEXT_cell;
-          if ( (intptr_t)VM_POP==0 ) MIP = ip;
+          MIP_VMValue* ip = (MIP_VMValue*)VM_NEXT_cell;
+          if ((MIP_VMValue)VM_POP == 0 ) MIP = ip;
         }
         VM_NEXT;
 
-      _op_jnz:
+      _op_jnz: // jump if not zero
         {
-          MIP_Cell* ip = (MIP_Cell*)VM_NEXT_cell;
-          if ( (intptr_t)VM_POP!=0 ) MIP = ip;
+          MIP_VMValue* ip = (MIP_VMValue*)VM_NEXT_cell;
+          if ((MIP_VMValue)VM_POP != 0) MIP = ip;
         }
         VM_NEXT;
 
-      //----------
+      //----- conditional -----
 
-      _op_eq:
+      _op_eq: // equal
         {
-          intptr_t v1 = (intptr_t)VM_POP;
-          intptr_t v2 = (intptr_t)VM_POP;
-          VM_PUSH((v2==v1));
+          MIP_VMValue v1 = (MIP_VMValue)VM_POP;
+          MIP_VMValue v2 = (MIP_VMValue)VM_POP;
+          VM_PUSH((v2 == v1));
         }
         VM_NEXT;
 
-      _op_gr:
+      _op_gr: // greater
         {
-          intptr_t v1 = (intptr_t)VM_POP;
-          intptr_t v2 = (intptr_t)VM_POP;
-          VM_PUSH((v2>v1));
+          MIP_VMValue v1 = (MIP_VMValue)VM_POP;
+          MIP_VMValue v2 = (MIP_VMValue)VM_POP;
+          VM_PUSH((v2 > v1));
         }
         VM_NEXT;
 
-      _op_le:
+      _op_le: // less
         {
-          intptr_t v1 = (intptr_t)VM_POP;
-          intptr_t v2 = (intptr_t)VM_POP;
-          VM_PUSH((v2<v1));
+          MIP_VMValue v1 = (MIP_VMValue)VM_POP;
+          MIP_VMValue v2 = (MIP_VMValue)VM_POP;
+          VM_PUSH((v2 < v1));
         }
         VM_NEXT;
 
-      _op_ne:
+      _op_ne: // not equal
         {
-          intptr_t v1 = (intptr_t)VM_POP;
-          intptr_t v2 = (intptr_t)VM_POP;
-          VM_PUSH((v2!=v1));
+          MIP_VMValue v1 = (MIP_VMValue)VM_POP;
+          MIP_VMValue v2 = (MIP_VMValue)VM_POP;
+          VM_PUSH((v2 != v1));
         }
         VM_NEXT;
 
-      //----------
+      //_op_feq: {
+      //}
+      //
+      //_op_fgr: {
+      //}
+      //
+      //_op_fle: {
+      //}
+      //
+      //_op_fne: {
+      //}
 
-      _op_add:
+      //----- math -----
+
+      _op_add: // s += s2
         {
-          intptr_t v1 = (intptr_t)VM_POP;
-          intptr_t v2 = (intptr_t)VM_POP;
-          VM_PUSH((v2+v1));
+          MIP_VMValue v1 = (MIP_VMValue)VM_POP;
+          MIP_VMValue v2 = (MIP_VMValue)VM_POP;
+          VM_PUSH((v2 + v1));
         }
         VM_NEXT;
 
-      _op_sub:
+      _op_sub: // s -= s2
         {
-          intptr_t v1 = (intptr_t)VM_POP;
-          intptr_t v2 = (intptr_t)VM_POP;
-          VM_PUSH((v2-v1));
+          MIP_VMValue v1 = (MIP_VMValue)VM_POP;
+          MIP_VMValue v2 = (MIP_VMValue)VM_POP;
+          VM_PUSH((v2 - v1));
         }
         VM_NEXT;
 
-      _op_mul:
+      _op_mul: // s *= s2
         {
-          intptr_t v1 = (intptr_t)VM_POP;
-          intptr_t v2 = (intptr_t)VM_POP;
-          VM_PUSH((v2*v1));
+          MIP_VMValue v1 = (MIP_VMValue)VM_POP;
+          MIP_VMValue v2 = (MIP_VMValue)VM_POP;
+          VM_PUSH((v2 * v1));
         }
         VM_NEXT;
 
-      _op_div:
+      _op_div: // s /= s2
         {
-          intptr_t v1 = (intptr_t)VM_POP;
-          intptr_t v2 = (intptr_t)VM_POP;
-          VM_PUSH((v2/v1));
+          MIP_VMValue v1 = (MIP_VMValue)VM_POP;
+          MIP_VMValue v2 = (MIP_VMValue)VM_POP;
+          VM_PUSH((v2 / v1));
         }
         VM_NEXT;
 
-      _op_inc:
+      //_op_fadd: {
+      //  }
+      //
+      //_op_fsub: {
+      //  }
+      //
+      //_op_fmul: {
+      //  }
+      //
+      //_op_fdiv: {
+      //  }
+
+      _op_inc: // s += 1
         {
-          intptr_t* top = (intptr_t*)MDataStack.getTop();
-          *top+=1;
+          MIP_VMValue* top = (MIP_VMValue*)MDataStack.getTop();
+          *top += 1;
         }
         VM_NEXT;
 
-      _op_dec:
+      _op_dec: // s -= 1
         {
-          intptr_t* top = (intptr_t*)MDataStack.getTop();
-          *top-=1;
+          MIP_VMValue* top = (MIP_VMValue*)MDataStack.getTop();
+          *top -= 1;
         }
         VM_NEXT;
 
-      //----------
+      //----- io -----
 
-      _op_printi:
+      _op_print: // print (int)
         {
-          intptr_t v = (intptr_t)VM_POP;
+          MIP_VMValue v = (MIP_VMValue)VM_POP;
           printf("%i\n",(int)v);
         }
         VM_NEXT;
 
-      _op_ext:
+      //----- external -----
+
+      // call external
+
+      _op_ext: // call external
         {
-          intptr_t external = (intptr_t)VM_POP;
+          MIP_VMValue external = (MIP_VMValue)VM_POP;
           MExternals[external](this);
         }
         VM_NEXT;
@@ -342,22 +433,16 @@ public:
       #undef VM_DUP2
       #undef VM_POS
 
-    } // 0+ (exec)
+    } // execute
 
-    //else
-    //if (APosition==-2) // jit
-    //{
-    //} // -2 (jit)
+    // relocate
+    else if (APosition == -1) {
 
-    else if (APosition == -1) { // relocate
+//------------------------------
+// translate (relocate?)
+//------------------------------
 
-      //------------------------------
-      // translate (relocate?)
-      //------------------------------
-
-      // MOpcodes -> MCodeSegment ++ ...
-
-      #define VM_WRITE(op) MCodeSegment[pos++] = (MIP_Cell)op;
+      #define VM_WRITE(op) MCodeSegment[pos++] = (MIP_VMValue)op;
 
       void* op_adr[] = {
         &&_op_noop,
@@ -385,19 +470,19 @@ public:
         &&_op_div,
         &&_op_inc,
         &&_op_dec,
-        &&_op_printi,
+        &&_op_print,
         &&_op_ext
       };
 
       int pos = 0;
       for (int i=0; i<MNumOpcodes; i++) {
         int type = MOpcodes[i].type;
-        MIP_Cell value = MOpcodes[i].value;
+        MIP_VMValue value = MOpcodes[i].value;
         switch (type) {
           //case MIP_VM_OP_TYPE_NONE:
           //  break;
           case MIP_VM_OP_TYPE_INTERNAL:
-            VM_WRITE( op_adr[ (intptr_t)value ] );
+            VM_WRITE( op_adr[ (MIP_VMValue)value ] );
             break;
           case MIP_VM_OP_TYPE_EXTERNAL:
           case MIP_VM_OP_TYPE_WORD:
@@ -407,10 +492,10 @@ public:
             VM_WRITE(value);
             break;
           case MIP_VM_OP_TYPE_DATAPTR:
-            VM_WRITE( &MDataSegment[ (intptr_t)value ] );
+            VM_WRITE( &MDataSegment[ (MIP_VMValue)value ] );
             break;
           case MIP_VM_OP_TYPE_CODEPTR:
-            VM_WRITE( &MCodeSegment[ (intptr_t)value ] );
+            VM_WRITE( &MCodeSegment[ (MIP_VMValue)value ] );
             break;
         } // switch type
       } // for size
@@ -418,7 +503,7 @@ public:
 
       #undef VM_WRITE
 
-    } // -1 (relocate)
+    } // relocate
 
   }
 
