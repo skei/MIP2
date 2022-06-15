@@ -44,6 +44,10 @@
 #include "plugin/mip_split_voice_manager.h"
 //#include "plugin/mip_threaded_voice_manager.h"
 
+//#include "base/utils/mip_lua.h"
+//#include "base/utils/mip_vm.h"
+//#include "base/utils/mip_vm_compiler.h"
+
 //----------
 
 #include "sa_ts1/sa_ts1_parameters.h"
@@ -162,6 +166,11 @@ public: // clap
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);
     //setupNoteOutputs(myNoteOutputs,NUM_NOTE_OUTPUTS);
+
+    //supportsExtension(CLAP_EXT_AUDIO_PORTS);
+
+//    test_lua();
+
     return MIP_Plugin::init();
   }
 

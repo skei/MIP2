@@ -300,6 +300,11 @@ public: // window
       MRect.w = AWidth;
       MRect.h = AHeight;
       alignWidgets();
+
+      //float sx = MRect.w / EDITOR_WIDTH;
+      //float sy = MRect.h / EDITOR_HEIGHT;
+      //scaleWidgets(sx);
+
     #endif
 
   }

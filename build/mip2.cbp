@@ -8,6 +8,7 @@
 		<Build>
 			<Target title="exe debug">
 				<Option output="../bin/build_debug" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="../bin" />
 				<Option object_output="obj/debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -26,6 +27,7 @@
 			</Target>
 			<Target title="exe release">
 				<Option output="../bin/build_release" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="../bin" />
 				<Option object_output="obj/release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -41,6 +43,7 @@
 			</Target>
 			<Target title="exe sanitize">
 				<Option output="../bin/build_sanitize" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="../bin" />
 				<Option object_output="obj/debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -120,7 +123,6 @@
 			<Add directory="../include/extern/vst3" />
 		</Compiler>
 		<Linker>
-			<Add library="dl" />
 			<Add library="sndfile" />
 			<Add library="xcb" />
 			<Add library="xcb-image" />
@@ -128,8 +130,11 @@
 			<Add library="xcb-keysyms" />
 			<Add library="xcb-util" />
 			<Add library="pthread" />
-			<Add library="cairo" />
+			<Add library="dl" />
+			<Add library="tcc" />
 			<Add library="rt" />
+			<Add library="cairo" />
+			<Add library="lua5.3" />
 		</Linker>
 		<Unit filename="../LICENSE" />
 		<Unit filename="../README.md" />
@@ -194,6 +199,7 @@
 		<Unit filename="../include/audio/waveforms/mip_rochebois_waveform.h" />
 		<Unit filename="../include/audio/waveforms/mip_sinc_waveform.h" />
 		<Unit filename="../include/audio/waveforms/mip_table_waveform.h" />
+		<Unit filename="../include/audio2/mip_module.h" />
 		<Unit filename="../include/base/debug/mip_debug.h" />
 		<Unit filename="../include/base/debug/mip_debug_assert.h" />
 		<Unit filename="../include/base/debug/mip_debug_callstack.h" />
@@ -263,6 +269,7 @@
 		<Unit filename="../include/base/utils/mip_interpolation.h" />
 		<Unit filename="../include/base/utils/mip_isaac.h" />
 		<Unit filename="../include/base/utils/mip_json.h" />
+		<Unit filename="../include/base/utils/mip_lua.h" />
 		<Unit filename="../include/base/utils/mip_math.h" />
 		<Unit filename="../include/base/utils/mip_modular.h" />
 		<Unit filename="../include/base/utils/mip_neural.h" />
@@ -273,7 +280,9 @@
 		<Unit filename="../include/base/utils/mip_sort.h" />
 		<Unit filename="../include/base/utils/mip_strutils.h" />
 		<Unit filename="../include/base/utils/mip_tcc.h" />
+		<Unit filename="../include/base/utils/mip_tcc2.h" />
 		<Unit filename="../include/base/utils/mip_vm.h" />
+		<Unit filename="../include/base/utils/mip_vm_compiler.h" />
 		<Unit filename="../include/base/utils/mip_windowing.h" />
 		<Unit filename="../include/extern/clap/audio-buffer.h" />
 		<Unit filename="../include/extern/clap/clap.h" />
@@ -548,8 +557,8 @@
 		<Unit filename="../include/plugin/mip_descriptor.h" />
 		<Unit filename="../include/plugin/mip_editor.h" />
 		<Unit filename="../include/plugin/mip_entry.h" />
+		<Unit filename="../include/plugin/mip_event_handler.h" />
 		<Unit filename="../include/plugin/mip_host.h" />
-		<Unit filename="../include/plugin/mip_module.h" />
 		<Unit filename="../include/plugin/mip_note.h" />
 		<Unit filename="../include/plugin/mip_note_port.h" />
 		<Unit filename="../include/plugin/mip_parameter.h" />
@@ -638,6 +647,10 @@
 		<Unit filename="../source/plugins/sa_ports/sa_sonic_maximizer.h" />
 		<Unit filename="../source/plugins/sa_ports/sa_tilteq.h" />
 		<Unit filename="../source/plugins/sa_ports/sa_transient_killer.h" />
+		<Unit filename="../source/plugins/sa_tcc.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../source/plugins/sa_ts1.cpp">
 			<Option compile="0" />
 			<Option link="0" />

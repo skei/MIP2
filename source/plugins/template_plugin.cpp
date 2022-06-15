@@ -104,7 +104,7 @@ private:
 
   //----------
 
-  void handle_process(const clap_process_t *process) final {
+  clap_process_status process(const clap_process_t *process) final {
     //MIP_PRINT;
     if (need_recalc) recalc(MSampleRate);
     uint32_t len = process->frames_count;
@@ -116,6 +116,7 @@ private:
       *in0++ = *out0++;
       *in1++ = *out1++;
     }
+    return CLAP_PROCESS_CONTINUE;
   }
 
 //------------------------------

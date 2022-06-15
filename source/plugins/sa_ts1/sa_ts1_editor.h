@@ -10,10 +10,6 @@
 
 //----------------------------------------------------------------------
 
-#define EDITOR_WIDTH          816
-#define EDITOR_HEIGHT         683
-
-
 class sa_ts1_Editor
 : public MIP_Editor {
 
@@ -33,8 +29,6 @@ public:
   sa_ts1_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, bool AEmbedded, const clap_plugin_descriptor_t* descriptor)
   : MIP_Editor(AListener,APlugin,AWidth,AHeight,AEmbedded) {
     MIP_Window* window = getWindow();
-
-// sa_ts1_module_menus
 
     // osc menu
 
