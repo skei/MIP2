@@ -21,23 +21,27 @@
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_utils.h"
 
-//----------
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
-#ifdef MIP_EXE
-  #include "plugin/exe/mip_exe_entry.h"
-#endif
-
-//#ifdef MIP_LV2
-//  #include "plugin/lv2/mip_lv2_entry.h"
+//#ifdef MIP_EXE
+//  #include "plugin/exe/mip_exe_entry.h"
 //#endif
-
-#ifdef MIP_VST2
-  #include "plugin/vst2/mip_vst2_entry.h"
-#endif
-
-#ifdef MIP_VST3
-  #include "plugin/vst3/mip_vst3_entry.h"
-#endif
+//
+////#ifdef MIP_LV2
+////  #include "plugin/lv2/mip_lv2_entry.h"
+////#endif
+//
+//#ifdef MIP_VST2
+//  #include "plugin/vst2/mip_vst2_entry.h"
+//#endif
+//
+//#ifdef MIP_VST3
+//  #include "plugin/vst3/mip_vst3_entry.h"
+//#endif
 
 //----------------------------------------------------------------------
 //
@@ -104,10 +108,8 @@ public:
   MIP_Plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_ClapPlugin(ADescriptor,AHost) {
     //MDescriptor = ADescriptor;
-
     MClapHost = AHost;
     //MHost = new MIP_Host(AHost);
-
   }
 
   //----------
@@ -867,6 +869,14 @@ public: // ext - voice_info
 
 
 //------------------------------
+public:
+//------------------------------
+
+  MIP_ParameterArray* getParameters() {
+    return &MParameters;
+  }
+
+//------------------------------
 protected: // parameters
 //------------------------------
 
@@ -1328,6 +1338,26 @@ public:
   }
 
 };
+
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+
+#ifdef MIP_EXE
+  #include "plugin/exe/mip_exe_entry.h"
+#endif
+
+//#ifdef MIP_LV2
+//  #include "plugin/lv2/mip_lv2_entry.h"
+//#endif
+
+#ifdef MIP_VST2
+  #include "plugin/vst2/mip_vst2_entry.h"
+#endif
+
+#ifdef MIP_VST3
+  #include "plugin/vst3/mip_vst3_entry.h"
+#endif
+
 
 //----------------------------------------------------------------------
 #endif

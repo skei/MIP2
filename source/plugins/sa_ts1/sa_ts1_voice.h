@@ -183,6 +183,7 @@ public:
   void parameter(uint32_t index, T value) {
     //MIP_Print("index %i value %f\n",index,value);
     MParameters[index] = value;
+    //MIP_Print("---\n");
     switch(index) {
       case PAR_ENV1_ATT:      MAmpEnvelope.setAttack(value*5);      break;
       case PAR_ENV1_DEC:      MAmpEnvelope.setDecay(value*5);       break;

@@ -126,7 +126,7 @@ public: // draft
 protected: // plugin
 //------------------------------
 
-  clap_host_t*  MHost = nullptr;
+  //clap_host_t*  MHost = nullptr;
 
   clap_plugin_t MPlugin = {
     .desc             = nullptr,

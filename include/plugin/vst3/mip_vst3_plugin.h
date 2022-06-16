@@ -13,20 +13,55 @@
 #include "plugin/vst3/mip_vst3.h"
 #include "plugin/vst3/mip_vst3_utils.h"
 
-//#include "base/types/mip_queue.h"
-//#include "plugin/mip_descriptor.h"
-//#include "plugin/mip_instance_listener.h"
-//#include "plugin/mip_plugin.h"
-//#include "plugin/mip_process_context.h"
-//#include "plugin/vst3/mip_vst3.h"
-//#include "plugin/vst3/mip_vst3_utils.h"
-
-
 
 #define MIP_PLUGIN_VST3_TIMER_MS 50
 
-//typedef MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PROCESS_EVENTS> MIP_ParamQueue;
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
+class MIP_Vst3Window
+: public MIP_ImplementedWindow {
+
+//------------------------------
+private:
+//------------------------------
+
+  const clap_plugin_t*      plugin  = nullptr;
+  const clap_plugin_gui_t*  gui     = nullptr;
+//------------------------------
+
+public:
+//------------------------------
+
+  MIP_Vst3Window(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener, const clap_plugin_t* APlugin, const clap_plugin_gui_t* AGui)
+  : MIP_ImplementedWindow(AWidth,AHeight,false) {
+    plugin = APlugin;
+    gui = AGui;
+  }
+
+  //----------
+
+  virtual ~MIP_Vst3Window() {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  void on_window_resize(int32_t AWidth, int32_t AHeight) override {
+    //MIP_Window::on_window_resize(AWidth,AHeight);
+    gui->set_size(plugin,AWidth,AHeight);
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+// plugin
+//
 //----------------------------------------------------------------------
 
 //class MIP_Vst3Plugin {
@@ -37,25 +72,26 @@ class MIP_Vst3Plugin
 , public IConnectionPoint
 , public IMidiMapping
 , public IKeyswitchController
-//, public INoteExpressionController
+, public INoteExpressionController
 , public IEditController
 , public IEditController2
 , public IPlugView
-, public ITimerHandler {
-//, public MIP_InstanceListener {
+, public ITimerHandler
+, public MIP_WindowListener {
 
 //------------------------------
 private:
 //------------------------------
 
-//  MIP_Plugin*         MPlugin             = nullptr;
-//  MIP_Descriptor*     MDescriptor         = nullptr;
+  MIP_ParameterArray*             MParameters = nullptr;
 
-  const clap_plugin_t*            MPlugin     = nullptr;
+  MIP_ClapPlugin*                 MPlugin     = nullptr;
+  //MIP_Descriptor*               MDescriptor = nullptr;
   const clap_plugin_descriptor_t* MDescriptor = nullptr;
+  MIP_Vst3Host*                   MHost       = nullptr;
 
   //#ifndef MIP_NO_GUI
-  //MIP_Editor*         MEditor             = nullptr;
+  //MIP_Editor*                   MEditor     = nullptr;
   //#endif
 
   uint32_t            MRefCount           = 1;
@@ -72,16 +108,17 @@ private:
   uint32_t            MSampleSize         = 0;
   uint32_t            MBlockSize          = 0;
   float               MSampleRate         = 0.0;
+
   //MIP_ProcessContext  MProcessContext     = {0};
 
 //------------------------------
 public:
 //------------------------------
 
-  //MIP_Vst3Plugin(MIP_Plugin* APlugin) {
-  MIP_Vst3Plugin(const clap_plugin_t* APlugin) {
-    MPlugin = APlugin; // delete this!
-    MDescriptor = MPlugin->desc;
+  MIP_Vst3Plugin(MIP_ClapPlugin* APlugin, MIP_Vst3Host* AHost) {
+    MHost = AHost;
+    MPlugin     = APlugin;
+    MDescriptor = MPlugin->getDescriptor();
     MRefCount   = 1;
     setupParameterInfo();
   }
@@ -101,6 +138,29 @@ public:
   //AEffect* getAEffect() {
   //  return &MAEffect;
   //}
+
+  void setParameters(MIP_ParameterArray* AParameters) {
+    MParameters = AParameters;
+  }
+
+//------------------------------
+private:
+//------------------------------
+
+  double normalizeParameter(uint32_t index, double value) {
+    clap_param_info_t info;
+    MPlugin->params_get_info(index,&info);
+    double range = info.max_value - info.min_value;
+    if (range == 0) return 0.0;
+    return (value - info.min_value) / range;
+  }
+
+  double denormalizeParameter(uint32_t index, double value) {
+    clap_param_info_t info;
+    MPlugin->params_get_info(index,&info);
+    double range = info.max_value - info.min_value;
+    return info.min_value + (value * range);
+  }
 
 //------------------------------
 public: // editor listener
@@ -235,25 +295,36 @@ private:
 
   void setupParameterInfo() {
     MIP_PRINT;
-//    if (!MParamInfos) {
-//      uint32_t num = MDescriptor->getNumParameters();
-//      MParamInfos = (ParameterInfo*)malloc( num * sizeof(ParameterInfo) );
-//      for (uint32_t i=0; i<num; i++) {
-//        MIP_Parameter* param = MDescriptor->getParameter(i);
-//        MParamInfos[i].id = i;
-//        VST3_CharToUtf16((char*)param->getName(),MParamInfos[i].title);
-//        VST3_CharToUtf16((char*)param->getShortName(),MParamInfos[i].shortTitle);
-//        VST3_CharToUtf16((char*)param->getLabel(),MParamInfos[i].units);
-//        if (param->getNumSteps() > 1) MParamInfos[i].stepCount = param->getNumSteps() - 1;
-//        else MParamInfos[i].stepCount = 0;
-//        MParamInfos[i].defaultNormalizedValue = param->getDefValue();
-//        MParamInfos[i].unitId = kRootUnitId; //-1;
-//        int32_t flags = 0;
-//        if (param->canAutomate()) flags += ParameterInfo::kCanAutomate;
-//        else flags += ParameterInfo::kIsReadOnly; // ??
-//        MParamInfos[i].flags = flags;
-//      }
-//    }
+    if (!MParamInfos) {
+
+      //MIP_Print("\n\n");
+      //MIP_Print("num params: %i\n",MPlugin->params_count());
+      //MIP_Print("\n\n");
+
+      uint32_t num = MPlugin->params_count();
+      MParamInfos = (ParameterInfo*)malloc( num * sizeof(ParameterInfo) );
+      for (uint32_t i=0; i<num; i++) {
+        clap_param_info_t info = {0};
+        MPlugin->params_get_info(i,&info);
+
+        MParamInfos[i].id = i;
+        VST3_CharToUtf16(info.name,MParamInfos[i].title);
+        VST3_CharToUtf16(info.name,MParamInfos[i].shortTitle);
+        VST3_CharToUtf16("",MParamInfos[i].units);
+
+        if (info.flags & CLAP_PARAM_IS_STEPPED) {
+          MParamInfos[i].stepCount = info.max_value - info.min_value + 1;
+        }
+
+        MParamInfos[i].defaultNormalizedValue = 0; // info.default_value; // TODO: normalize!
+
+        MParamInfos[i].unitId = kRootUnitId; //-1;
+        int32_t flags = 0;
+        if (info.flags & CLAP_PARAM_IS_AUTOMATABLE) flags += ParameterInfo::kCanAutomate;
+        else flags += ParameterInfo::kIsReadOnly; // ??
+        MParamInfos[i].flags = flags;
+      }
+    }
     MIP_PRINT;
   }
 
@@ -344,18 +415,25 @@ private:
           IParamValueQueue* paramQueue = paramChanges->getParameterData(i);
           if (paramQueue) {
             uint32_t id = paramQueue->getParameterId();
-//            if (id < MDescriptor->getNumParameters()) {
-//              //for (int32_t j=0; j<paramQueue->getPointCount(); j++) {
-//                int32_t offset = 0;
-//                double value = 0;
-//                int32_t pointcount = paramQueue->getPointCount();
-//                paramQueue->getPoint(pointcount-1,offset,value); // last point
-//                MIP_Parameter* param = MDescriptor->getParameter(id);
-//                if (param) value = param->from01(value);
-//                MPlugin->on_plugin_parameter(id,value);
-//              //}
-//            } // id < param
-//            else {
+            if (id < MPlugin->params_count()) {
+              int32_t pointcount = paramQueue->getPointCount();
+              MIP_Print("parameter(id): ");
+              for (int32_t j=0; j<pointcount; j++) {
+
+                int32_t offset = 0;
+                double value = 0;
+                paramQueue->getPoint(pointcount-1,offset,value); // last point
+                MIP_DPrint("%i: %i:%.2f",j,offset,value);
+
+                //  MIP_Parameter* param = MDescriptor->getParameter(id);
+                //  if (param) value = param->from01(value);
+                //  MPlugin->on_plugin_parameter(id,value);
+
+              }
+              MIP_DPrint("\n");
+
+            } // id < param
+            else {
               // if MIP_PLUGIN_RECEIVE_MIDI
               // IMidiMapping
               int32_t offset = 0;
@@ -363,31 +441,47 @@ private:
               int32_t pointcount = paramQueue->getPointCount();
               paramQueue->getPoint(pointcount-1,offset,value);      // last point
               uint32_t midi_ev = (id & 0xffff0000);
-//              uint32_t midi_ch = (id & 0x0000ffff);
+              uint32_t midi_ch = (id & 0x0000ffff);
               switch(midi_ev) {
+
                 case MIP_VST3_PARAM_AFTERTOUCH: {
+
                   //if (offset != 0)
-//                  MPlugin->on_plugin_midi(MIP_MIDI_CHANNEL_AFTERTOUCH+midi_ch,value*127.0f,0);
+                  //MPlugin->on_plugin_midi(MIP_MIDI_CHANNEL_AFTERTOUCH+midi_ch,value*127.0f,0);
+
+                  MIP_Print("aftertouch. offset %i ch %i val %.3f\n",offset,midi_ch,value * 127);
+
                   break;
                 } // at
+
                 case MIP_VST3_PARAM_PITCHBEND: {
-//                  float v2 = value * 16383.0f;
-//                  uint32_t i2 = (uint32_t)v2;
+
+                  float v2 = value * 16383.0f;
+                  uint32_t i2 = (uint32_t)v2;
                   //if (midi_ch != 0) {
-//                    uint32_t m2 = i2 & 0x7f;
-//                    uint32_t m3 = i2 >> 7;
-                    //if (offset != 0)
-//                    MPlugin->on_plugin_midi(MIP_MIDI_PITCHBEND+midi_ch,m2,m3);
+                  // uint32_t m2 = i2 & 0x7f;
+                  // uint32_t m3 = i2 >> 7;
+                  //if (offset != 0)
+                  // MPlugin->on_plugin_midi(MIP_MIDI_PITCHBEND+midi_ch,m2,m3);
+
+                  MIP_Print("pitchbend. offset %i ch %i v %i\n",offset,midi_ch,i2);
+
                   //}
                   break;
                 } // pb
+
                 case MIP_VST3_PARAM_BRIGHTNESS: {
+
                   //if (offset != 0)
-//                  MPlugin->on_plugin_midi(MIP_MIDI_CONTROL_CHANGE+midi_ch,74,value*127.0f);
+                  //MPlugin->on_plugin_midi(MIP_MIDI_CONTROL_CHANGE+midi_ch,74,value*127.0f);
+
+                  MIP_Print("brightness. offset %i ch %i v %i\n",offset,midi_ch,value*127);
+
                   break;
                 }
+
               } // switch (midi_ev)
-            //} // id < num params
+            } // id < num params
           } // paramqueue
         } // for all params
       } // numparams > 0
@@ -412,62 +506,108 @@ private:
       for (int32_t i=0; i<num; i++) {
         Event event;
         inputEvents->getEvent(i,event);
+
+        //int32_t       busindex      = event.busIndex;     // event bus index More...
+        int32_t         offset  = event.sampleOffset; // sample frames related to the current block start sample position More...
+        //TQuarterNotes ppqPosition   = event.ppqPosition;  // position in project
+        //uint16_t      flags         = event.flags;        // combination of EventFlags
+
         //uint32_t offset  = 0;
-//        uint8_t  msg1    = 0;
-//        uint8_t  msg2    = 0;
-//        uint8_t  msg3    = 0;
+        uint8_t  msg1    = 0;
+        uint8_t  msg2    = 0;
+        uint8_t  msg3    = 0;
         //uint32_t type    = 0;//kve_none;
-        //uint32_t noteid  = 0;
+        uint32_t noteid  = 0;
         //float    value   = 0.0f;
         switch (event.type) {
+
           case Event::kNoteOnEvent:
+
+            //int16 channel   channel index in event bus
+            //int16 pitch     range [0, 127] = [C-2, G8] with A3=440Hz (12-TET: twelve-tone equal temperament)
+            //float tuning    1.f = +1 cent, -1.f = -1 cent More...
+            //float velocity  range [0.0, 1.0] More...
+            //int32 length    in sample frames (optional, Note Off has to follow in any case!)
+            //int32 noteId
+
             //offset  = event.sampleOffset;
-//            msg1    = MIP_MIDI_NOTE_ON + event.noteOn.channel;
-//            msg2    = event.noteOn.pitch;
-//            msg3    = event.noteOn.velocity * 127;
-            //noteid  = event.noteOn.noteId;
+            msg1    = MIP_MIDI_NOTE_ON + event.noteOn.channel;
+            msg2    = event.noteOn.pitch;
+            msg3    = event.noteOn.velocity * 127;
+            noteid  = event.noteOn.noteId;
+
 //            MPlugin->on_plugin_midi(msg1,msg2,msg3);
+            MIP_Print("kNoteOnEvent: offset %i noteid %i msg1 %i msg2 %i msg3 %i\n",offset,noteid,msg1,msg2,msg3);
             //on_noteExpression(offset,type,noteid,value);
+
             break;
+
           case Event::kNoteOffEvent:
+
             //offset  = event.sampleOffset;
-//            msg1    = MIP_MIDI_NOTE_OFF + event.noteOff.channel;
-//            msg2    = event.noteOff.pitch;
-//            msg3    = event.noteOff.velocity * 127;
-            //noteid  = event.noteOff.noteId;
+            msg1    = MIP_MIDI_NOTE_OFF + event.noteOff.channel;
+            msg2    = event.noteOff.pitch;
+            msg3    = event.noteOff.velocity * 127;
+            noteid  = event.noteOff.noteId;
+
 //            MPlugin->on_plugin_midi(msg1,msg2,msg3);
+            MIP_Print("kNoteOffEvent: offset %i noteid %i msg1 %i msg2 %i msg3 %i\n",offset,noteid,msg1,msg2,msg3);
             //on_noteExpression(offset,type,noteid,value);
+
             break;
+
           case Event::kDataEvent:
+
             break;
+
           case Event::kPolyPressureEvent:
+
             //offset  = event.sampleOffset;
-//            msg1    = MIP_MIDI_POLY_AFTERTOUCH + event.polyPressure.channel;
-//            msg2    = event.polyPressure.pitch;
-//            msg3    = event.polyPressure.pressure * 127;
-            //noteid  = event.polyPressure.noteId;
+            msg1    = MIP_MIDI_POLY_AFTERTOUCH + event.polyPressure.channel;
+            msg2    = event.polyPressure.pitch;
+            msg3    = event.polyPressure.pressure * 127;
+            msg3    = event.polyPressure.noteId;
+            noteid  = event.polyPressure.noteId;
+
 //            MPlugin->on_plugin_midi(msg1,msg2,msg3);
+            MIP_Print("kPolyPressureEvent: offset %i noteid %i msg1 %i msg2 %i msg3 %i\n",offset,noteid,msg1,msg2,msg3);
+
             break;
-          case Event::kNoteExpressionValueEvent:
-            //offset = event.sampleOffset;
-            //noteid = event.noteExpressionValue.noteId;
-            //value  = event.noteExpressionValue.value;
-            //switch(event.noteExpressionValue.typeId) {
-            //  case kTuningTypeID:     type = kve_bend; break;
-            //  case kBrightnessTypeID: type = kve_slide; break;
-            //  //case kVolumeTypeID:     type = kve_none;  break;
-            //  //case kPanTypeID:        type = kve_none;  break;
-            //  //case kVibratoTypeID:    type = kve_none;  break;
-            //  //case kExpressionTypeID: type = kve_none;  break;
-            //}polyPressure
-            //on_noteExpression(offset,type,noteid,value);
+
+          case Event::kNoteExpressionValueEvent: {
+
+            /*
+            int32_t offset = event.sampleOffset;
+            int32_t noteid = event.noteExpressionValue.noteId;
+            double value  = event.noteExpressionValue.value;
+            switch(event.noteExpressionValue.typeId) {
+              case kTuningTypeID:     type = kve_bend; break;
+              case kBrightnessTypeID: type = kve_slide; break;
+              //case kVolumeTypeID:     type = kve_none;  break;
+              //case kPanTypeID:        type = kve_none;  break;
+              //case kVibratoTypeID:    type = kve_none;  break;
+              //case kExpressionTypeID: type = kve_none;  break;
+            } //polyPressure
+            on_noteExpression(offset,type,noteid,value);
+            */
+
+            MIP_Print("kNoteExpressionValueEvent: offset %i noteid %i type %i offset %i value %.3f\n",offset,event.noteExpressionValue.noteId,event.noteExpressionValue.typeId,event.sampleOffset,event.noteExpressionValue.value);
+
             break;
+          }
+
           case Event::kNoteExpressionTextEvent:
+
             break;
+
           case Event::kChordEvent:
+
             break;
+
           case Event::kScaleEvent:
+
             break;
+
           default:
             break;
         } // switch
@@ -578,9 +718,9 @@ public:
       return kResultOk;
     }
     if ( FUnknownPrivate::iidEqual(INoteExpressionController_iid,_iid) ) {
-      //*obj = (INoteExpressionController*)this;
-      //addRef();
-      //return kResultOk;
+      *obj = (INoteExpressionController*)this;
+      addRef();
+      return kResultOk;
       return kNoInterface;
     }
     if ( FUnknownPrivate::iidEqual(IKeyswitchController_iid,_iid) ) {
@@ -653,14 +793,14 @@ public:
     MIP_PRINT;
     MHostApp = (IHostApplication*)context;
     //context->queryInterface(IHostApplication_iid, (void**)&MHostApp);
-//    if (MHostApp) {
-//      String128 u;
-//      MHostApp->getName(u);
-//      VST3_Utf16ToChar(u,MHostName);
-//    }
-//    else {
-//    }
-//    MPlugin->on_plugin_init();
+    if (MHostApp) {
+      String128 u;
+      MHostApp->getName(u);
+      VST3_Utf16ToChar(u,MHostName);
+    }
+    else {
+    }
+    //MPlugin->on_plugin_init();
     return kResultOk;
   }
 
@@ -674,7 +814,7 @@ public:
 
   tresult PLUGIN_API terminate() override {
     MIP_PRINT;
-//    MPlugin->on_plugin_deinit();
+    //MPlugin->on_plugin_deinit();
     return kResultOk;
   }
 
@@ -696,13 +836,15 @@ public:
 
   tresult PLUGIN_API getControllerClassId(TUID classId) override {
     MIP_PRINT;
-//    if (MDescriptor->hasEditor()) {
-//      memcpy(classId,MDescriptor->getLongEditorId(),16);
-//      return kResultOk;
-//    }
-//    else {
-      return kResultFalse;
-//    }
+      //if (MDescriptor->hasEditor()) {
+      //  memcpy(classId,MDescriptor->getLongEditorId(),16);
+        getEditorId(MDescriptor);
+        memcpy(classId,MEditorId,16);
+        return kResultOk;
+      //}
+      //else {
+      //  return kResultFalse;
+      //}
   }
 
   //----------
@@ -784,15 +926,15 @@ public:
       bus.mediaType = kAudio;
       if (dir == kInput) {
 
-//        MIP_AudioPort* port = MDescriptor->getAudioInput(index);
-//        bus.direction = kInput;
-//        bus.channelCount = port->num_channels;
-//        VST3_CharToUtf16(port->name,bus.name);
+        //const clap_plugin_audio_ports_t* audio_ports = (const clap_plugin_audio_ports_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_AUDIO_PORTS);
+        //if (audio_ports) {
 
-        // debug:
-        bus.direction = kInput;
-        bus.channelCount = 2;
-        VST3_CharToUtf16("input",bus.name);
+          // debug:
+          bus.direction = kInput;
+          bus.channelCount = 2;
+          VST3_CharToUtf16("input",bus.name);
+
+        //}
 
       }
       else if (dir == kOutput) {
@@ -878,8 +1020,8 @@ public:
 
   tresult PLUGIN_API setActive(TBool state) override {
     MIP_PRINT;
-//    if (state) MPlugin->on_plugin_activate(MSampleRate,0,MBlockSize);
-//    else MPlugin->on_plugin_deactivate();
+    if (state) MPlugin->activate(MSampleRate,0,MBlockSize);
+    else MPlugin->deactivate();
     return kResultOk;
   }
 
@@ -985,6 +1127,11 @@ public:
 ////        MPlugin->updateAllParameters();
 //        break;
 //    }
+
+    int num_read  = 0;
+    uint32_t i = 666;
+    state->read(&i,sizeof(uint32_t),&num_read);
+
     return kResultOk;
   }
 
@@ -1015,6 +1162,11 @@ public:
 //    state->write(&mode,sizeof(uint32_t),&num_written);    //  MIP_Assert( num_written == sizeof(uint32_t) );
 //    state->write(&size,sizeof(uint32_t),&num_written);    //  MIP_Assert( num_written == sizeof(uint32_t) );
 //    state->write(ptr,size,&num_written);                  //  MIP_Assert( num_written == size );
+
+    int num_written  = 0;
+    uint32_t i = 666;
+    state->write(&i,sizeof(uint32_t),&num_written);
+
     return kResultOk;
   }
 
@@ -1074,7 +1226,10 @@ public:
 //        return kResultOk;
 //      }
 //    }
-    return kResultFalse;
+
+    arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
+    return kResultOk;
+    //return kResultFalse;
   }
 
   //----------
@@ -1146,7 +1301,9 @@ public:
     MSampleSize   = setup.symbolicSampleSize; // kSample32, kSample64
     MBlockSize    = setup.maxSamplesPerBlock;
     MSampleRate   = setup.sampleRate;
+
 //    MPlugin->on_sampleRate(MSampleRate);
+
     return kResultOk;
   }
 
@@ -1414,11 +1571,10 @@ public:
   // INoteExpressionController
   //--------------------
 
-      // Returns number of supported note change types for event bus index and channel.
+  // Returns number of supported note change types for event bus index and channel.
 
-  /*
   int32 PLUGIN_API getNoteExpressionCount(int32 busIndex, int16 channel) override {
-    VST3_Trace("vst3: instance/getNoteExpressionCount busIndex:%i channel:%i\n",busIndex,channel);
+    MIP_Print("vst3: instance/getNoteExpressionCount busIndex:%i channel:%i\n",busIndex,channel);
     //if (busIndex==0) return 1;
     return 2;
   }
@@ -1428,14 +1584,14 @@ public:
   //flags: NoteExpressionTypeInfo::kIsBipolar, kIsOneShot, kIsAbsolute, kAssociatedParameterIDValid
 
   tresult PLUGIN_API getNoteExpressionInfo(int32 busIndex, int16 channel, int32 noteExpressionIndex, NoteExpressionTypeInfo& info) override {
-    VST3_Trace("vst3: instance/getNoteExpressionInfo busIndex:%i channel:%i noteExpressionIndex:%i\n",busIndex,channel,noteExpressionIndex);
+    MIP_Print("vst3: instance/getNoteExpressionInfo busIndex:%i channel:%i noteExpressionIndex:%i\n",busIndex,channel,noteExpressionIndex);
     //if (busIndex==0) {
       switch(noteExpressionIndex) {
         case 0:
           info.typeId                 = 0; // ??
-          char_to_utf16("Tuning",info.title);
-          char_to_utf16("Tun",info.shortTitle);
-          char_to_utf16("",info.units);
+          VST3_CharToUtf16("Tuning",info.title);
+          VST3_CharToUtf16("Tun",info.shortTitle);
+          VST3_CharToUtf16("",info.units);
           info.unitId                 = 0;
           info.valueDesc.defaultValue = 0.0;
           info.valueDesc.minimum      = 0;
@@ -1445,9 +1601,9 @@ public:
           return kResultOk;
         case 1:
           info.typeId                 = 1; // ??
-          char_to_utf16("Brightness",info.title);
-          char_to_utf16("Bri",info.shortTitle);
-          char_to_utf16("",info.units);
+          VST3_CharToUtf16("Brightness",info.title);
+          VST3_CharToUtf16("Bri",info.shortTitle);
+          VST3_CharToUtf16("",info.units);
           info.unitId                 = 0;
           info.valueDesc.defaultValue = 0.0;
           info.valueDesc.minimum      = 0;
@@ -1465,10 +1621,11 @@ public:
   // Gets a user readable representation of the normalized note change value.
 
   tresult PLUGIN_API getNoteExpressionStringByValue(int32 busIndex, int16 channel, NoteExpressionTypeID id, NoteExpressionValue valueNormalized, String128 string) override {
-    VST3_Trace("vst3: instance/getNoteExpressionStringByValue busIndex:%i channel:%i id:%i valueNormalized:%.3f\n",busIndex,channel,id,valueNormalized);
+    MIP_Print("vst3: instance/getNoteExpressionStringByValue busIndex:%i channel:%i id:%i valueNormalized:%.3f\n",busIndex,channel,id,valueNormalized);
     char temp[100];
-    MIP_FloatToString(temp,valueNormalized);
-    char_to_utf16(temp,string);
+    //MIP_FloatToString(temp,valueNormalized);
+    sprintf(temp,"%.3f",valueNormalized);
+    VST3_CharToUtf16(temp,string);
     return kResultOk;
   }
 
@@ -1477,15 +1634,14 @@ public:
   // Converts the user readable representation to the normalized note change value.
 
   tresult PLUGIN_API getNoteExpressionValueByString(int32 busIndex, int16 channel, NoteExpressionTypeID id, const TChar* string, NoteExpressionValue& valueNormalized) override{
-    VST3_Trace("vst3: instance/getNoteExpressionValueByString busIndex:%i  channel:%i id:%i string:%s\n",busIndex,channel,id,string);
+    MIP_Print("vst3: instance/getNoteExpressionValueByString busIndex:%i  channel:%i id:%i string:%s\n",busIndex,channel,id,string);
     char temp[129];
-    utf16_to_char(string,temp);
-    float res = const char*ToFloat(temp);
+    VST3_Utf16ToChar(string,temp);
+    //float res = MIP_StringToFloat(temp);
+    float res = atof(temp);
     valueNormalized = res;
     return kResultOk;
   }
-
-  */
 
   //--------------------
   // IKeyswitchController
@@ -1632,13 +1788,13 @@ public:
 
   tresult PLUGIN_API getUnitInfo(int32 unitIndex, UnitInfo& info) override {
     MIP_PRINT;
-//    if (unitIndex==0) {
-//      info.id = kRootUnitId; //0;
-//      info.parentUnitId = kNoParentUnitId;
-//      VST3_CharToUtf16("root",info.name);
-//      info.programListId = kNoProgramListId;
-//      return kResultOk;
-//    }
+    if (unitIndex==0) {
+      info.id = kRootUnitId; //0;
+      info.parentUnitId = kNoParentUnitId;
+      VST3_CharToUtf16("root",info.name);
+      info.programListId = kNoProgramListId;
+      return kResultOk;
+    }
     return kResultFalse;
   }
 
@@ -1665,12 +1821,12 @@ public:
 
   tresult PLUGIN_API getProgramListInfo(int32 listIndex, ProgramListInfo& info) override {
     MIP_PRINT;
-//    if (listIndex == 0) {
-//      info.id = 0;
-//      VST3_CharToUtf16("program",info.name);
-//      info.programCount = 1;
-//      return kResultOk;
-//    }
+    if (listIndex == 0) {
+      info.id = 0;
+      VST3_CharToUtf16("program",info.name);
+      info.programCount = 1;
+      return kResultOk;
+    }
     return kResultFalse;
   }
 
@@ -1680,10 +1836,10 @@ public:
 
   tresult PLUGIN_API getProgramName(ProgramListID listId, int32 programIndex, String128 name) override {
     MIP_PRINT;
-//    if ((listId == 0) && (programIndex == 0)) {
-//      VST3_CharToUtf16("program",name);
-//      return kResultOk;
-//    }
+    if ((listId == 0) && (programIndex == 0)) {
+      VST3_CharToUtf16("program",name);
+      return kResultOk;
+    }
     return kResultFalse;
   }
 
@@ -1864,8 +2020,8 @@ public:
 
   int32 PLUGIN_API getParameterCount() override {
     MIP_PRINT;
-//    return MDescriptor->getNumParameters();
-    return 0;
+    return MPlugin->params_count();
+    //return 0;
   }
 
   //----------
@@ -1874,36 +2030,36 @@ public:
     MIP_Print("index %i\n",paramIndex);
     if (paramIndex < 0) return kResultFalse;
 
-//    int32_t num_params = MDescriptor->getNumParameters();
-//    if (paramIndex < num_params) {
-//      MIP_Parameter* param = MDescriptor->getParameter(paramIndex);
-//      if (param) {
-//        memcpy(&info,&MParamInfos[paramIndex],sizeof(ParameterInfo));
-//        return kResultOk;
-//      }
-//    } // index < numparams
-//
-//    else { // > # params
-//      //MIP_Trace("paramIndex (%08x) >= num.params\n",paramIndex);
-//      switch (paramIndex) {
-//        case kAfterTouch: // 128
-//          break;
-//        case kPitchBend: // 129
-//          break;
-//        case kCtrlFilterResonance: // cc 74 (slide)
-//          break;
-//      }
-//      switch (paramIndex & 0xffff0000) {
-//        case MIP_VST3_PARAM_AFTERTOUCH:
-//          break;
-//        case MIP_VST3_PARAM_PITCHBEND:
-//          break;
-//        case MIP_VST3_PARAM_BRIGHTNESS:
-//          break;
-//      }
-//      //return kResultOk;
-//      return kResultFalse;
-//    } // > #params
+    int32_t num_params = MPlugin->params_count();
+    if (paramIndex < num_params) {
+      //MIP_Parameter* param = MDescriptor->getParameter(paramIndex);
+      //if (param) {
+        memcpy(&info,&MParamInfos[paramIndex],sizeof(ParameterInfo));
+        return kResultOk;
+      //}
+    } // index < numparams
+
+    else { // > # params
+      //MIP_Trace("paramIndex (%08x) >= num.params\n",paramIndex);
+      switch (paramIndex) {
+        case kAfterTouch: // 128
+          break;
+        case kPitchBend: // 129
+          break;
+        case kCtrlFilterResonance: // cc 74 (slide)
+          break;
+      }
+      switch (paramIndex & 0xffff0000) {
+        case MIP_VST3_PARAM_AFTERTOUCH:
+          break;
+        case MIP_VST3_PARAM_PITCHBEND:
+          break;
+        case MIP_VST3_PARAM_BRIGHTNESS:
+          break;
+      }
+      //return kResultOk;
+      return kResultFalse;
+    } // > #params
 
     return kResultFalse;
 
@@ -1913,76 +2069,83 @@ public:
 
   tresult PLUGIN_API getParamStringByValue(ParamID id, ParamValue valueNormalized, String128 string) override {
     MIP_PRINT;
-//    if (id < MDescriptor->getNumParameters()) {
-//      MIP_Parameter* param = MDescriptor->getParameter(id);
-//      char buffer[32]; // ???
-////      param->getDisplayText(valueNormalized,buffer);
-//      param->displayText(buffer,valueNormalized);
-//      VST3_CharToUtf16(buffer,string);
-//      return kResultOk;
-//    }
-//    else {
+    if (id < MPlugin->params_count()) {
+      //MIP_Parameter* param = MDescriptor->getParameter(id);
+      char buffer[32]; // ???
+      //param->getDisplayText(valueNormalized,buffer);
+      //param->displayText(buffer,valueNormalized);
+      double v = denormalizeParameter(id,valueNormalized);
+      sprintf(buffer,"%.3f",v);
+      VST3_CharToUtf16(buffer,string);
+      return kResultOk;
+    }
+    else {
       return kResultFalse;
-//    }
+    }
   }
 
   //----------
 
   tresult PLUGIN_API getParamValueByString(ParamID id, TChar* string, ParamValue& valueNormalized) override {
-//    if (id < MDescriptor->getNumParameters()) {
-//      MIP_Parameter* param = MDescriptor->getParameter(id);
-//      char temp[129];
-//      VST3_CharToUtf16(string,temp);
-//      float v = atoi(temp);
-//      float v2 = param->to01(v);
-//      valueNormalized = v2;
-//      return kResultOk;
-//    }
-//    else {
+    if (id < MPlugin->params_count()) {
+      //MIP_Parameter* param = MDescriptor->getParameter(id);
+      char temp[129];
+      //VST3_CharToUtf16(string,temp);
+      VST3_Utf16ToChar(string,temp);
+      double v = atoi(temp);
+      //float v2 = param->to01(v);
+      valueNormalized = denormalizeParameter(id,v);
+      return kResultOk;
+    }
+    else {
       return kResultFalse;
-//    }
+    }
   }
 
   //----------
 
   ParamValue PLUGIN_API normalizedParamToPlain(ParamID id, ParamValue valueNormalized) override {
     MIP_PRINT;
-//    if (id < MDescriptor->getNumParameters()) {
-//      MIP_Parameter* param = MDescriptor->getParameter(id);
-//      float v = param->from01(valueNormalized);
-//      return v;
-//    }
-//    else {
+    if (id < MPlugin->params_count()) {
+      //MIP_Parameter* param = MDescriptor->getParameter(id);
+      //float v = param->from01(valueNormalized);
+      //return v;
+      return denormalizeParameter(id,valueNormalized);
+    }
+    else {
       return valueNormalized;
-//    }
+    }
   }
 
   //----------
 
   ParamValue PLUGIN_API plainParamToNormalized(ParamID id, ParamValue plainValue) override {
     MIP_PRINT;
-//    if (id < MDescriptor->getNumParameters()) {
+    if (id < MPlugin->params_count()) {
 //      MIP_Parameter* param = MDescriptor->getParameter(id);
 //      float v = param->to01(plainValue);
 //      return v;
-//    }
-//    else {
+      return normalizeParameter(id,plainValue);
+    }
+    else {
       return plainValue;
-//    }
+    }
   }
 
   //----------
 
   ParamValue PLUGIN_API getParamNormalized(ParamID id) override {
     MIP_PRINT;
-//    if (id < MDescriptor->getNumParameters()) {
-////      float v = MPlugin->getParamValue(id);
-//      float v = 0;
-//      return v;
-//    }
-//    else {
+    if (id < MPlugin->params_count()) {
+      //float v = MPlugin->getParamValue(id);
+      MIP_Parameter* param = MParameters->item(id);
+      double v = param->getValue();
+      //float v = 0;
+      return v;
+    }
+    else {
       return 0;
-//    }
+    }
   }
 
   //----------
@@ -2062,10 +2225,10 @@ public:
   IPlugView* PLUGIN_API createView(FIDString name) override {
     MIP_PRINT;
 //    if (MDescriptor->hasEditor()) {
-//      if (name && (strcmp(name,ViewType::kEditor) == 0)) {
-//        addRef();
-//        return (IPlugView*)this;
-//      }
+      if (name && (strcmp(name,ViewType::kEditor) == 0)) {
+        addRef();
+        return (IPlugView*)this;
+      }
 //    }
     return nullptr;
   }
@@ -2097,6 +2260,50 @@ public:
   // IPlugView
   //--------------------
 
+  void open_editor() {
+    #ifndef MIP_NO_GUI
+      const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
+      const clap_plugin_t* plugin = MPlugin->getPlugin();
+      if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
+        gui->create(plugin,CLAP_WINDOW_API_X11,false);
+        gui->set_scale(plugin,1.0);
+        uint32_t width = 0.0;
+        uint32_t height = 0.0;
+        gui->get_size(plugin,&width,&height);
+        MIP_Vst3Window* window = new MIP_Vst3Window(width,height,this,plugin,gui);
+        //window->setup(plugin,gui);
+        window->open();
+        clap_window_t clap_window = {};
+        clap_window.api = CLAP_WINDOW_API_X11;
+        clap_window.x11 = window->getXcbWindow();
+        gui->set_parent( plugin, &clap_window );
+        gui->show(plugin);
+        window->eventLoop();
+        window->close();
+        delete window;
+        //gui->hide(plugin);
+        gui->destroy(plugin);
+      }
+    #endif
+  }
+
+  //-----
+
+  char MEditorId[16] = {0};
+
+  const char* getEditorId(const clap_plugin_descriptor_t* descriptor) {
+    uint32_t* id = (uint32_t*)MEditorId;
+    id[0] = MIP_MAGIC_M_ED;
+    id[1] = MIP_HashString(descriptor->name);
+    id[2] = MIP_HashString(descriptor->vendor);
+    id[3] = MIP_HashString(descriptor->version);
+    return (const char*)id;
+  }
+
+
+
+  //--------------------
+
   tresult PLUGIN_API isPlatformTypeSupported(FIDString type) override {
     MIP_PRINT;
     // "X11EmbedWindowID"
@@ -2125,23 +2332,29 @@ public:
     MIP_PRINT;
 //    #ifndef MIP_NO_GUI
 //      if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
-//        if (MPlugFrame) {
-//          uint32_t w = MDescriptor->getEditorDefaultWidth();
-//          uint32_t h = MDescriptor->getEditorDefaultHeight();
-//          //if (w == 0) w = MPlugin->getDefaultEditorWidth();
-//          //if (h == 0) h = MPlugin->getDefaultEditorHeight();
-//          ViewRect r;
-//          r.left    = 0;
-//          r.top     = 0;
-//          r.right   = w;
-//          r.bottom  = h;
-//          MPlugFrame->resizeView(this,&r);
-//        }
-//        MEditor = MPlugin->openEditor(parent);
-//        MEditor->open();
-//        //if (MRunLoop)
-//        MRunLoop->registerTimer(this,MIP_PLUGIN_VST3_TIMER_MS);
-//        return kResultOk;
+        if (MPlugFrame) {
+          uint32_t w = 640; //MDescriptor->getEditorDefaultWidth();
+          uint32_t h = 512;//MDescriptor->getEditorDefaultHeight();
+          //if (w == 0) w = MPlugin->getDefaultEditorWidth();
+          //if (h == 0) h = MPlugin->getDefaultEditorHeight();
+          ViewRect r;
+          r.left    = 0;
+          r.top     = 0;
+          r.right   = w;
+          r.bottom  = h;
+          MPlugFrame->resizeView(this,&r);
+        }
+
+        open_editor();
+
+//        MPlugin->gui_openEditor(parent);
+//        bool gui = MPlugin->gui_create(CLAP_WINDOW_API_X11,false);
+//        //MPlugin->gui_set_parent(parent);
+//        //MEditor->open();
+
+        //if (MRunLoop)
+        MRunLoop->registerTimer(this,MIP_PLUGIN_VST3_TIMER_MS);
+        return kResultOk;
 //      }
 //    #endif // MIP_NO_GUI
     return kResultFalse;
@@ -2158,15 +2371,15 @@ public:
     MIP_PRINT;
 //    #ifndef MIP_NO_GUI
 //    if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
-//      //if (MRunLoop)
-//      MRunLoop->unregisterTimer(this);
+      //if (MRunLoop)
+      MRunLoop->unregisterTimer(this);
 //      MEditor->close();
 //      MPlugin->closeEditor(MEditor);
 //      MEditor = nullptr;
-//      return kResultOk;
+      return kResultOk;
 //    }
 //    #endif // MIP_NO_GUI
-    return kResultFalse;
+//    return kResultFalse;
   }
 
   //----------
@@ -2199,13 +2412,13 @@ public:
   tresult PLUGIN_API getSize(ViewRect* size) override {
     MIP_PRINT;
 //    if (MDescriptor->hasEditor()) {
-//      size->left    = 0;
-//      size->top     = 0;
-//      size->right   = MDescriptor->getEditorWidth();
-//      size->bottom  = MDescriptor->getEditorHeight();
-//      return kResultOk;
+      size->left    = 0;
+      size->top     = 0;
+      size->right   = 640;//MDescriptor->getEditorWidth();
+      size->bottom  = 512;//MDescriptor->getEditorHeight();
+      return kResultOk;
 //    }
-    return kResultFalse;
+//    return kResultFalse;
   }
 
   //----------
@@ -2222,10 +2435,10 @@ public:
 //      //MEditorWidth = newSize->getWidth();
 //      //MEditorHeight = newSize->getHeight();
 //      //TODO: resize/redraw editor
-//      return kResultOk;
+      return kResultOk;
 //    }
 //    else {
-      return kResultFalse;
+//      return kResultFalse;
 //    }
   }
 
@@ -2251,13 +2464,13 @@ public:
     MIP_PRINT;
 
 //    if (MDescriptor->hasEditor()) {
-//      MPlugFrame = frame;
-//      //tresult res =
-//      MPlugFrame->queryInterface(IRunLoop_iid, (void**)&MRunLoop);
-//      return kResultOk;
+      MPlugFrame = frame;
+      //tresult res =
+      MPlugFrame->queryInterface(IRunLoop_iid, (void**)&MRunLoop);
+      return kResultOk;
 //    }
 //    else {
-      return kResultFalse;
+//      return kResultFalse;
 //    }
   }
 
@@ -2303,6 +2516,9 @@ public:
 //      MPlugin->flushParamsToHost();
 //    #endif // MIP_NO_GUI
   }
+
+//
+//
 
 };
 

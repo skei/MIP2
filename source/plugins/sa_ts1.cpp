@@ -158,11 +158,16 @@ public: // clap
 //------------------------------
 
   bool init() final {
-    //clap_version_t ver = MHost->host->clap_version;
-    //MIP_Print("host name: %s\n",MHost->host->name);
-    //MIP_Print("host version: %s\n",MHost->host->version);
-    //MIP_Print("host clap version: %i.%i.%i\n",ver.major,ver.minor,ver.revision);
-    //MHost->printSupportedExtensions();
+
+//    MIP_Print("MClapHost: %p\n",MClapHost);
+//    MIP_Print("MClapHost->host: %p\n",MHost->host);
+
+//    clap_version_t ver = MHost->host->clap_version;
+//    MIP_Print("host name: %s\n",MHost->host->name);
+//    MIP_Print("host version: %s\n",MHost->host->version);
+//    MIP_Print("host clap version: %i.%i.%i\n",ver.major,ver.minor,ver.revision);
+//    MHost->printSupportedExtensions();
+
     setupParameters(sa_ts1_Parameters,NUM_PARAMS);
     setupAudioOutputs(myAudioOutputs,NUM_AUDIO_OUTPUTS);
     setupNoteInputs(myNoteInputs,NUM_NOTE_INPUTS);

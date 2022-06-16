@@ -5,8 +5,11 @@
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/vst3/mip_vst3.h"
+#include "plugin/vst3/mip_vst3_host.h"
 #include "plugin/vst3/mip_vst3_plugin.h"
 #include "plugin/vst3/mip_vst3_utils.h"
+
+#include "plugin/mip_plugin.h"
 
 //#ifndef MIP_NO_GUI
 //#include "plugin/mip_editor.h"
@@ -136,7 +139,6 @@ public:
 
   tresult PLUGIN_API getFactoryInfo(PFactoryInfo* info) override {
     MIP_Print("MIP_Vst3Entry.getFactoryInfo\n");
-
     strcpy(info->vendor,"<factory author>");
     strcpy(info->url,"<factory url>");
     strcpy(info->email,"<factory email>");
@@ -171,12 +173,23 @@ public:
     int32_t index = findPluginIndex(cid);
     if (index < 0) return kNotImplemented;
     const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
-    MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,nullptr/*host->ptr()*/);
-    MIP_Vst3Plugin* vst3plugin = new MIP_Vst3Plugin(plugin);
+
+    MIP_Vst3Host* vst3_host = new MIP_Vst3Host();
+    //MIP_Print("vst3_host: %p\n",vst3_host);
+    //MIP_Print("vst3_host->getHost(): %p\n",vst3_host->getHost());
+    MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,vst3_host->getHost());
+    plugin->init();
+    MIP_Vst3Plugin* vst3plugin = new MIP_Vst3Plugin(plugin,vst3_host);
+
+    MIP_Plugin* pl = (MIP_Plugin*)plugin;
+    MIP_ParameterArray* pa = pl->getParameters();
+    vst3plugin->setParameters(pa);
+
 //      plugin->setListener(vst3_instance);
 //      plugin->on_plugin_open();
 //      plugin->setDefaultParameterValues();
 //      plugin->updateAllParameters();
+
       *obj = (Vst::IComponent*)vst3plugin;
       return kResultOk;
     return kNotImplemented;

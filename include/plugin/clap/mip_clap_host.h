@@ -95,6 +95,8 @@ public:
   virtual ~MIP_ClapHost() {
   }
 
+  //const chap_host_t* getHost() { return MHost; }
+
 //------------------------------
 public:
 //------------------------------

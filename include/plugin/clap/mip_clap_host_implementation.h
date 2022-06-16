@@ -101,23 +101,23 @@ private: // host
   //----------
 
   static const void* clap_host_get_extension_callback(const struct clap_host *host, const char *extension_id) {
-    MIP_ClapHostImplementation* exehost = (MIP_ClapHostImplementation*)host->host_data;
-    return exehost->get_extension(extension_id);
+    MIP_ClapHostImplementation* _host = (MIP_ClapHostImplementation*)host->host_data;
+    return _host->get_extension(extension_id);
   }
 
   static void clap_host_request_restart_callback(const struct clap_host *host) {
-    MIP_ClapHostImplementation* exehost = (MIP_ClapHostImplementation*)host->host_data;
-    return exehost->request_restart();
+    MIP_ClapHostImplementation* _host = (MIP_ClapHostImplementation*)host->host_data;
+    return _host->request_restart();
   }
 
   static void clap_host_request_process_callback(const struct clap_host *host) {
-    MIP_ClapHostImplementation* exehost = (MIP_ClapHostImplementation*)host->host_data;
-    return exehost->request_process();
+    MIP_ClapHostImplementation* _host = (MIP_ClapHostImplementation*)host->host_data;
+    return _host->request_process();
   }
 
   static void clap_host_request_callback_callback(const struct clap_host *host) {
-    MIP_ClapHostImplementation* exehost = (MIP_ClapHostImplementation*)host->host_data;
-    return exehost->request_callback();
+    MIP_ClapHostImplementation* _host = (MIP_ClapHostImplementation*)host->host_data;
+    return _host->request_callback();
   }
 
 //------------------------------
