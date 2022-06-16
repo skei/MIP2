@@ -15,7 +15,7 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 
-//#define MIP_DEBUG_PRINT_SOCKET
+#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 //tail -F ~/.BitwigStudio/log/engine.log | pv --rate --bytes > /dev/null
 
@@ -25,6 +25,7 @@
 //#define MIP_DEBUG_CRASH_HANDLER
 
 //#define MIP_DEBUG_CLAP
+
 #define MIP_VST2
 #define MIP_VST3
 

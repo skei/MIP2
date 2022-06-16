@@ -10,7 +10,8 @@
 
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
-#include "plugin/vst2/mip_vst2.h"
+#include "plugin/vst3/mip_vst3.h"
+#include "plugin/vst3/mip_vst3_utils.h"
 
 //#include "base/types/mip_queue.h"
 //#include "plugin/mip_descriptor.h"
@@ -779,33 +780,54 @@ public:
 
   tresult PLUGIN_API getBusInfo(MediaType type, BusDirection dir, int32 index, BusInfo& bus) override {
     MIP_PRINT;
-//    if (type == kAudio) {
-//      bus.mediaType = kAudio;
-//      if (dir == kInput) {
+    if (type == kAudio) {
+      bus.mediaType = kAudio;
+      if (dir == kInput) {
+
 //        MIP_AudioPort* port = MDescriptor->getAudioInput(index);
 //        bus.direction = kInput;
 //        bus.channelCount = port->num_channels;
 //        VST3_CharToUtf16(port->name,bus.name);
-//      }
-//      else if (dir == kOutput) {
+
+        // debug:
+        bus.direction = kInput;
+        bus.channelCount = 2;
+        VST3_CharToUtf16("input",bus.name);
+
+      }
+      else if (dir == kOutput) {
+
 //        MIP_AudioPort* port = MDescriptor->getAudioOutput(index);
 //        bus.direction = kOutput;
 //        bus.channelCount = port->num_channels;
 //        VST3_CharToUtf16(port->name,bus.name);
-//      }
-//      bus.flags = 0;//kDefaultActive;
-//      return kResultOk;
-//    }
-//    else if (type == kEvent) {
-//      bus.mediaType = kEvent;
-//      if (dir == kInput) {
+
+        // debug:
+        bus.direction = kOutput;
+        bus.channelCount = 2;
+        VST3_CharToUtf16("output",bus.name);
+
+      }
+      bus.flags = 0;//kDefaultActive;
+      return kResultOk;
+    }
+    else if (type == kEvent) {
+      bus.mediaType = kEvent;
+      if (dir == kInput) {
+
 //        bus.direction = kInput;
 //        bus.channelCount = 1; // 16?
 //        VST3_CharToUtf16("Midi In",bus.name);
-//      }
-//      bus.flags = 0;//kDefaultActive;
-//      return kResultOk;
-//    }
+
+        // debug:
+        bus.direction = kInput;
+        bus.channelCount = 1; // 16?
+        VST3_CharToUtf16("midi",bus.name);
+
+      }
+      bus.flags = 0;//kDefaultActive;
+      return kResultOk;
+    }
 
     return kResultFalse;
   }
