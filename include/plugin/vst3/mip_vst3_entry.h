@@ -8,31 +8,16 @@
 #include "plugin/vst3/mip_vst3_plugin.h"
 #include "plugin/vst3/mip_vst3_utils.h"
 
-//#include "plugin/mip_descriptor.h"
-//#include "plugin/mip_plugin.h"
-//#include "plugin/vst3/mip_vst3_host_proxy.h"
-
 //#ifndef MIP_NO_GUI
 //#include "plugin/mip_editor.h"
 //#endif
 
 //----------------------------------------------------------------------
-
-//const char test_long_id[16] = {
-//  0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00
-//};
-
-//const char test_editor_id[16] = {
-//  0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00, 0x00,0x00,0x00,0x00
-//};
-
-//----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
 
-//template <class DESC, class PLUG>
 class MIP_Vst3Entry
 : public IPluginFactory3 {
 
@@ -42,11 +27,8 @@ private:
 
   uint32_t      MRefCount     = 1;
   FUnknown*     MHostContext  = nullptr;
-
   char          MPluginId[16] = {0};
   char          MEditorId[16] = {0};
-
-  //MIP_ClapHost  MHost = {};
 
 //------------------------------
 public:
@@ -67,23 +49,11 @@ public:
 private:
 //------------------------------
 
-  //TODO: -> MIP_StrUtils.h
-  // https://stackoverflow.com/questions/7666509/hash-function-for-string
 
-  uint32_t MIP_HashString(const char* buffer) {
-    char* ptr = (char*)buffer;
-    unsigned long h = 5381;
-    int c;
-    while ((c = *ptr++)) {
-      h = ((h << 5) + h) + c; // h * 33 + c
-    }
-    return h;
-  }
+  //#define MIP_MAGIC_M_PL   0x4d5f504c    // M_PL   // plugin
+  //#define MIP_MAGIC_M_ED   0x4d5f4544    // M_ED   // editor
 
   //----------
-
-//  #define MIP_MAGIC_M_PL   0x4d5f504c    // M_PL   // plugin
-//  #define MIP_MAGIC_M_ED   0x4d5f4544    // M_ED   // editor
 
   const char* getLongId(const clap_plugin_descriptor_t* descriptor) {
     uint32_t* id = (uint32_t*)MPluginId;
@@ -93,6 +63,31 @@ private:
     id[3] = MIP_HashString(descriptor->version);
     return (const char*)id;
   }
+
+  //----------
+
+  int32_t findPluginIndex(const char* cid) {
+    uint32_t num = MIP_REGISTRY.getNumDescriptors();
+    for (uint32_t i=0; i<num; i++) {
+      const clap_plugin_descriptor_t* desc = MIP_REGISTRY.getDescriptor(i);
+      const char* id = getLongId(desc);
+      if (VST3_iidEqual(cid,id)) { return i; }
+    }
+    return -1;
+  }
+
+  //----------
+
+  bool isInstrument(const clap_plugin_descriptor_t* descriptor) {
+    const char** feature = descriptor->features;
+    uint32_t index = 0;
+    while (feature[index]) {
+      if (strcmp(feature[index], "instrument") == 0) return true;
+      index++;
+    }
+    return false;
+  }
+
 
 //------------------------------
 public:
@@ -122,24 +117,15 @@ public:
   tresult PLUGIN_API queryInterface(const TUID _iid, void** obj) override {
     MIP_Print("MIP_Vst3Entry.queryInterface\n");
     if (VST3_iidEqual(_iid,IPluginFactory2_iid)) {
-      //MIP_Print("queryInterface\n");
-      //VST3_PrintIID(_iid);
-      //MIP_DPrint(" (IPluginFactory2) -> kResultOk\n");
       *obj = (IPluginFactory2*)this;
       addRef();
       return kResultOk;
     }
     if (VST3_iidEqual(_iid,IPluginFactory3_iid)) {
-      //MIP_Print("\n");
-      //VST3_PrintIID(_iid);
-      //MIP_DPrint(" (IPluginFactory3) -> kResultOk\n");
       *obj = (IPluginFactory3*)this;
       addRef();
       return kResultOk;
     }
-    //MIP_Print("\n");
-    //VST3_PrintIID(_iid);
-    //MIP_DPrint("(unknown) -> kNoInterface\n");
     *obj = nullptr;
     return kNoInterface;
   }
@@ -147,17 +133,6 @@ public:
   //--------------------
   // IPluginFactory
   //--------------------
-
-  /*
-    Class factory that any Plug-in defines for creating class instances.
-    From the host's point of view a Plug-in module is a factory which can
-    create a certain kind of object(s). The interface IPluginFactory provides
-    methods to get information about the classes exported by the Plug-in and a
-    mechanism to create instances of these classes (that usually define the
-    IPluginBase interface)
-  */
-
-  //----------
 
   tresult PLUGIN_API getFactoryInfo(PFactoryInfo* info) override {
     MIP_Print("MIP_Vst3Entry.getFactoryInfo\n");
@@ -174,7 +149,6 @@ public:
 
   int32   PLUGIN_API countClasses() override {
     MIP_Print("MIP_Vst3Entry.countClasses\n");
-    //return MIP_GetNumPlugins();
     return MIP_REGISTRY.getNumDescriptors();
   }
 
@@ -182,13 +156,7 @@ public:
 
   tresult PLUGIN_API getClassInfo(int32 index, PClassInfo* info) override {
     MIP_Print("MIP_Vst3Entry.getClassInfo\n");
-//    MIP_PluginInfo* plugin_info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(index);
-//    MIP_Descriptor* plugin_desc = plugin_info->descriptor;
-
-    //const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(index);
     const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
-
-
     const char* long_id = getLongId(descriptor);
     memcpy(info->cid,long_id,16);
     info->cardinality = PClassInfo::kManyInstances;
@@ -200,40 +168,17 @@ public:
   //----------
 
   tresult PLUGIN_API createInstance(FIDString cid, FIDString _iid, void** obj) override {
-    MIP_Print("MIP_Vst3Entry.createInstance\n");
-//    VST3_PrintIID(cid);
-//    //MIP_DPrint("\n");
-//    MIP_PluginInfo* info = MIP_GLOBAL_PLUGIN_LIST.findPluginByLongId(cid);
-//    if (info) {
-//      MIP_DPrint(" (index %i) -> kResultOk\n",info->index);
-//      uint32_t index = info->index;
-//      MIP_Descriptor* desc = info->descriptor;
-//      MIP_Vst3HostProxy* hostproxy = new MIP_Vst3HostProxy();       // deleted in MIP_Plugin() destructor
-//      MIP_Plugin* plugin = MIP_CreatePlugin(index,desc,hostproxy);  // deleted in MIP_Vst3Plugin destructor
-//      MIP_Vst3Plugin* vst3_plugin = new MIP_Vst3Plugin(plugin);     // deleted in MIP_Vst3Plugin.release()
-
-//    MIP_Vst2Host* host = new MIP_Vst2Host(audioMaster); // deleted in MIP_Vst2Plugin destructor
-
-    //TODO: cid -> index
-
-    //MIP_Vst3Host* host = new MIP_Vst3Host();
-    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(0);
-    MIP_ClapPlugin* plugin = MIP_CreatePlugin(0,descriptor,nullptr/*host->ptr()*/);
-    const clap_plugin_t* clap_plugin = plugin->getPlugin();
-    MIP_Vst3Plugin* vst3plugin  = new MIP_Vst3Plugin(clap_plugin);
-
-////      plugin->setListener(vst3_instance);
-////      plugin->on_plugin_open();
-////      plugin->setDefaultParameterValues();
-////      plugin->updateAllParameters();
-
+    int32_t index = findPluginIndex(cid);
+    if (index < 0) return kNotImplemented;
+    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
+    MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,nullptr/*host->ptr()*/);
+    MIP_Vst3Plugin* vst3plugin = new MIP_Vst3Plugin(plugin);
+//      plugin->setListener(vst3_instance);
+//      plugin->on_plugin_open();
+//      plugin->setDefaultParameterValues();
+//      plugin->updateAllParameters();
       *obj = (Vst::IComponent*)vst3plugin;
       return kResultOk;
-
-//    }
-    //MIP_DPrint(" -> kNotImplemented\n");
-    //*obj = nullptr;
-    //MIP_Print("ok\n");;
     return kNotImplemented;
   }
 
@@ -243,31 +188,19 @@ public:
 
   tresult PLUGIN_API getClassInfo2(int32 index, PClassInfo2* info) override {
     MIP_Print("MIP_Vst3Entry.getClassInfo2\n");
-//    MIP_PluginInfo* plugin_info = MIP_GLOBAL_PLUGIN_LIST.getPluginInfo(index);
-//    if (info) {
-//      MIP_Descriptor* plugin_desc = plugin_info->descriptor;
-//      memcpy(info->cid,(const char*)plugin_desc->getLongId(),16);
-
-    //const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(0);
-    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(0);
-
+    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
     const char* long_id = getLongId(descriptor);
     memcpy(info->cid,long_id,16);
     info->cardinality = PClassInfo::kManyInstances;
     strcpy(info->category,kVstAudioEffectClass);
     strcpy(info->name,descriptor->name);
     info->classFlags = 0;
-
-//    if (strstr(descriptor->features,"instrument")) strcpy(info->subCategories,Vst::PlugType::kInstrument);
-//    else if (strstr(descriptor->features,"audio_effect")) strcpy(info->subCategories,Vst::PlugType::kFx);
-
+    if (isInstrument(descriptor)) strcpy(info->subCategories,Vst::PlugType::kInstrument);
+    else strcpy(info->subCategories,Vst::PlugType::kFx);
     strcpy(info->vendor,descriptor->vendor);
     strcpy(info->version,descriptor->version);
     strcpy(info->sdkVersion,kVstVersionString);
     return kResultOk;
-//    }
-//    MIP_DPrint(" -> kResultFalse\n");
-//    return kResultFalse;
   }
 
   //--------------------
@@ -319,7 +252,7 @@ IPluginFactory* PLUGIN_API mip_vst3_entry() {
 //__MIP_EXPORT
 __attribute__ ((visibility ("default")))
 bool vst3_module_entry(void* sharedLibraryHandle)  {
-    MIP_Print("ModuleEntry\n");
+  MIP_Print("ModuleEntry\n");
   //if (++counter == 1) {
   //  moduleHandle = sharedLibraryHandle;
   //  return true;
@@ -330,7 +263,7 @@ bool vst3_module_entry(void* sharedLibraryHandle)  {
 //__MIP_EXPORT
 __attribute__ ((visibility ("default")))
 bool vst3_module_exit(void) {
-    MIP_Print("ModuleExit\n");
+  MIP_Print("ModuleExit\n");
   //if (--counter == 0) {
   //  moduleHandle = nullptr;
   //  return true;
