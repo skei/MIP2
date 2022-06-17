@@ -5,7 +5,7 @@
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/vst3/mip_vst3.h"
-#include "plugin/vst3/mip_vst3_host.h"
+#include "plugin/vst3/mip_vst3_host_implementation.h"
 #include "plugin/vst3/mip_vst3_plugin.h"
 #include "plugin/vst3/mip_vst3_utils.h"
 
@@ -174,7 +174,9 @@ public:
     if (index < 0) return kNotImplemented;
     const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
 
-    MIP_Vst3Host* vst3_host = new MIP_Vst3Host();
+    //MIP_Vst3Host* vst3_host = new MIP_Vst3Host();
+    MIP_Vst3HostImplementation* vst3_host = new MIP_Vst3HostImplementation();
+
     //MIP_Print("vst3_host: %p\n",vst3_host);
     //MIP_Print("vst3_host->getHost(): %p\n",vst3_host->getHost());
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,vst3_host->getHost());

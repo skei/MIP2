@@ -1,11 +1,11 @@
-#ifndef mip_vst3_host_included
-#define mip_vst3_host_included
+#ifndef mip_vst3_host_implementation_included
+#define mip_vst3_host_implementation_included
 //----------------------------------------------------------------------
 
 //#include "plugin/clap/mip_clap_host.h"
 #include "plugin/clap/mip_clap_host_implementation.h"
 
-class MIP_Vst3Host
+class MIP_Vst3HostImplementation
 : public MIP_ClapHostImplementation {
 
 //------------------------------
@@ -21,14 +21,14 @@ public:
 //------------------------------
 
   //MIP_Vst2Host(audioMasterCallback audioMaster) {
-  MIP_Vst3Host()
+  MIP_Vst3HostImplementation()
   : MIP_ClapHostImplementation() {
     //MAudioMaster = audioMaster;
   }
 
   //----------
 
-  virtual ~MIP_Vst3Host() {
+  virtual ~MIP_Vst3HostImplementation() {
   }
 
 //------------------------------
