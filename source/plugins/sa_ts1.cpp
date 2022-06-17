@@ -15,7 +15,7 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_CAIRO
 
-#define MIP_DEBUG_PRINT_SOCKET
+//#define MIP_DEBUG_PRINT_SOCKET
 //nc -U -l -k /tmp/mip.socket
 //tail -F ~/.BitwigStudio/log/engine.log | pv --rate --bytes > /dev/null
 
@@ -143,6 +143,8 @@ private:
   sa_ts1_VoiceManager MVoiceManager = {};
   clap_id MSelectedQuickControlsPage = 0;
 
+  //
+
 //------------------------------
 public:
 //------------------------------
@@ -151,6 +153,38 @@ public:
   //: MIP_Plugin<myProcessor>(ADescriptor,AHost) {
   : MIP_Plugin(ADescriptor,AHost) {
     MIP_Print("Hello world!\n");
+
+    // manual jump-table? :-)
+    /*
+    uint32_t i = 0;
+
+    //void* funcs[] = {
+    void* funcs[] = {
+      &&_func1,
+      &&_func2,
+      &&_func3
+    };
+
+    goto *funcs[i];
+
+    _func1:
+      MIP_Print("func1\n");
+      i += 2;
+      goto *funcs[i];
+
+    _func2:
+      MIP_Print("func2\n");
+      goto _finito;
+
+    _func3:
+      MIP_Print("func3\n");
+      funcs[0] = &&_func2;
+      goto *funcs[0];
+
+    _finito:
+      MIP_Print("...\n");
+    */
+
   }
 
 //------------------------------
