@@ -42,14 +42,4 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-//----------------------------------------------------------------------
-
-/*
-  Writing: cosine = (double (*)(double)) dlsym(handle, "cos");
-  would seem more natural, but the C99 standard leaves
-  casting from "void *" to a function pointer undefined.
-  The assignment used below is the POSIX.1-2003 (Technical
-  Corrigendum 1) workaround; see the Rationale for the
-  POSIX specification of dlsym().
-*/
 
