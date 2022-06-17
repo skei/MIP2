@@ -16,7 +16,8 @@ enum EDebugWatchType {
   MIP_WATCH_FLOAT   = 1,
   MIP_WATCH_CHARPTR = 2,
   MIP_WATCH_PTR     = 3,
-  MIP_WATCH_BOOL    = 4
+  MIP_WATCH_BOOL    = 4,
+  MIP_WATCH_INTPTR  = 5
 };
 
 //----------------------------------------------------------------------
@@ -101,6 +102,7 @@ public:
       case MIP_WATCH_CHARPTR: MIP_DPrint("%s%s : %s\n",   APrefix, name, *(const char*)ptr);             break;
       case MIP_WATCH_PTR:     MIP_DPrint("%s%s : 0x%xp\n",APrefix, name, ptr);                           break;
       case MIP_WATCH_BOOL:    MIP_DPrint("%s%s : %s\n",   APrefix, name, (*(bool*)ptr)?"true":"false");  break;
+      case MIP_WATCH_INTPTR:  MIP_DPrint("%s%s : %i\n",   APrefix, name, *(intptr_t*)ptr);               break;
     }
   }
 
@@ -116,7 +118,7 @@ public:
   void printWatches(const char* APrefix="") {
     if (APrefix[0] != 0) MIP_DPrint("\n%s\n",APrefix);
     for (uint32_t i=0; i<MWatches.size(); i++) {
-      printWatch(i,"- ");
+      printWatch(i,"");
     }
   }
 
