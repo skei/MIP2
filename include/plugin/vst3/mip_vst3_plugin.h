@@ -22,6 +22,7 @@
 
 //typedef MIP_Array<clap_event_header_t*> MIP_Vst3EventHeaders;
 
+#define MAX_BLOCK_SIZE                4096
 #define MIP_PLUGIN_VST3_TIMER_MS      50
 #define MIP_VST3_MAX_EVENTS_PER_BLOCK 1024
 
@@ -43,7 +44,7 @@
 
 struct _vst3_event_ {
   int16_t offset    = 0;
-  int16_t type      = 0;  // 0:none, 1:IEventList (notes), 2:IParamValueChanges (params/midi)
+  int16_t type      = 0;  // 0:none, 1:IParamValueChanges (params/midi), 2:IEventList (notes)
   int16_t index     = 0;  // index in lists --"--  (the real event)
   int16_t subindex  = 0;  // IParamValueQueue (interpolated param values)
 };
@@ -155,6 +156,25 @@ private:
   IParameterChanges*  MVst3ParamChanges = nullptr;
   IEventList*         MVst3EventList    = nullptr;
 
+  alignas(32) float   MAudioInputBuffer1[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioInputBuffer2[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioOutputBuffer1[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioOutputBuffer2[MAX_BLOCK_SIZE];
+  alignas(32) float*  MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
+  alignas(32) float*  MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
+
+  alignas(64) double  MAudioInputBuffer1_64[MAX_BLOCK_SIZE];
+  alignas(64) double  MAudioInputBuffer2_64[MAX_BLOCK_SIZE];
+  alignas(64) double  MAudioOutputBuffer1_64[MAX_BLOCK_SIZE];
+  alignas(64) double  MAudioOutputBuffer2_64[MAX_BLOCK_SIZE];
+  alignas(64) double* MAudioInputBuffers_64[2] = { MAudioInputBuffer1_64, MAudioInputBuffer2_64 };
+  alignas(64) double* MAudioOutputBuffers_64[2] = { MAudioOutputBuffer1_64, MAudioOutputBuffer2_64 };
+
+  clap_audio_buffer_t MAudioInputs = {0};
+  clap_audio_buffer_t MAudioOutputs = {0};
+
+  char MEventBuffer[1024] = {0}; // temporary clap event
+
 //------------------------------
 public:
 //------------------------------
@@ -188,7 +208,7 @@ public:
   }
 
 //------------------------------
-private:
+private: // in_events
 //------------------------------
 
   static uint32_t vst3_input_events_size_callback(const struct clap_input_events *list) {
@@ -212,16 +232,72 @@ private:
   //----------
 
   uint32_t vst3_input_events_size() {
-    MIP_PRINT;
-    return 0;
+    MIP_Print("num events: %i\n",MVst3NumEvents);
+    return MVst3NumEvents;
   }
 
   const clap_event_header_t* vst3_input_events_get(uint32_t index) {
-    MIP_PRINT;
+    MIP_Print("%i. type:%i offset:%i index %i sub %i\n",index,MVst3Events[index].type,MVst3Events[index].offset,MVst3Events[index].index,MVst3Events[index].subindex );
+
+    switch (MVst3Events[index].type) {
+    case 0:
+      break;
+    case 1: {
+      MIP_Print("parameter\n");
+      _vst3_event_ * ev = &MVst3Events[index];
+      return convertEvent(ev);
+      //if (MVst3ParamChanges) {
+      //  IParamValueQueue* paramQueue = MVst3ParamChanges->getParameterData( ev->index );
+      //  if (paramQueue) {
+      //    uint32_t id = paramQueue->getParameterId();
+      //    MIP_Print("id: %i\n",id);
+      //    if (id < MPlugin->params_count()) {
+      //      int32_t offset = 0;
+      //      double value = 0;
+      //      paramQueue->getPoint(ev->subindex,offset,value);
+      //      MIP_Print("offset %i value %f\n",offset,value);
+      //
+      //    }
+      ///  }
+      //}
+      break;
+    }
+    case 2:
+      MIP_Print("event\n");
+      if (MVst3EventList) {
+      }
+      break;
+    }
+
     return nullptr;
   }
 
+//------------------------------
+private: // out_events
+//------------------------------
+
+  static bool vst3_output_events_try_push_callback(const struct clap_output_events *list, const clap_event_header_t *event) {
+    MIP_Vst3Plugin* plugin = (MIP_Vst3Plugin*)list->ctx;
+    return plugin->vst3_output_events_try_push(event);
+  }
+
   //----------
+
+  clap_output_events_t MVst3OutputEvents = {
+    this,
+    vst3_output_events_try_push_callback
+  };
+
+  //----------
+
+  bool vst3_output_events_try_push(const clap_event_header_t *event) {
+    MIP_PRINT;
+    return true;
+  }
+
+//------------------------------
+private:
+//------------------------------
 
   void prepareParameters(ProcessData& data) {
     IParameterChanges* paramChanges = data.inputParameterChanges;
@@ -234,70 +310,23 @@ private:
             uint32_t id = paramQueue->getParameterId();
             if (id < MPlugin->params_count()) {
               int32_t pointcount = paramQueue->getPointCount();
-              MIP_Print("parameter id %i : ",id);
+              //MIP_Print("parameter id %i : ",id);
               for (int32_t j=0; j<pointcount; j++) {
+
                 int32_t offset = 0;
                 double value = 0;
                 //paramQueue->getPoint(jpointcount-1,offset,value); // last point
                 paramQueue->getPoint(j,offset,value); // last point
-                MIP_DPrint("ofs %i idx %i val %.2f",j,offset,value);
+                //MIP_DPrint("ofs %i idx %i val %.2f",j,offset,value);
+
+                MVst3Events[MVst3NumEvents].offset    = offset;
+                MVst3Events[MVst3NumEvents].type      = 1;
+                MVst3Events[MVst3NumEvents].index     = i;
+                MVst3Events[MVst3NumEvents].subindex  = j;
+                MVst3NumEvents += 1;
+
               }
-              MIP_DPrint("\n");
             } // id < param
-
-//            else {
-//              uint32_t  midi_ev   = (id & 0xffff0000);
-//              uint32_t  midi_ch   = (id & 0x0000ffff);
-//              int32_t pointcount = paramQueue->getPointCount();
-//              switch(midi_ev) {
-//                case MIP_VST3_PARAM_AFTERTOUCH:
-//                  MIP_Print("aftertouch(ch:%i): ",midi_ch);
-//                  break;
-//                case MIP_VST3_PARAM_PITCHBEND:
-//                  MIP_Print("pitchbend(ch:%i): ",midi_ch);
-//                  break;
-//                case MIP_VST3_PARAM_BRIGHTNESS:
-//                  MIP_Print("brightness(ch:%i): ",midi_ch);
-//                  break;
-//              }
-//              for (int32_t j=0; j<pointcount; j++) {
-//                int32_t offset = 0;
-//                double value = 0;
-//                //paramQueue->getPoint(jpointcount-1,offset,value); // last point
-//                paramQueue->getPoint(j,offset,value); // last point
-//                MIP_DPrint("%i: %i:%.2f",j,offset,value);
-//              }
-//              MIP_DPrint("\n");
-//
-////              switch(midi_ev) {
-////                case MIP_VST3_PARAM_AFTERTOUCH: {
-////                  //if (offset != 0)
-////                  //MPlugin->on_plugin_midi(MIP_MIDI_CHANNEL_AFTERTOUCH+midi_ch,value*127.0f,0);
-////                  MIP_Print("aftertouch. offset %i ch %i val %.3f\n",offset,midi_ch,value * 127);
-////                  break;
-////                } // at
-////                case MIP_VST3_PARAM_PITCHBEND: {
-////                  //float v2 = value * 16383.0f;
-////                  //uint32_t i2 = (uint32_t)v2;
-////                  ////if (midi_ch != 0) {
-////                  //// uint32_t m2 = i2 & 0x7f;
-////                  //// uint32_t m3 = i2 >> 7;
-////                  ////if (offset != 0)
-////                  //// MPlugin->on_plugin_midi(MIP_MIDI_PITCHBEND+midi_ch,m2,m3);
-////                  ////    MIP_Print("pitchbend. offset %i ch %i v %i\n",offset,midi_ch,i2);
-////                  ////}
-////                  break;
-////                } // pb
-////                case MIP_VST3_PARAM_BRIGHTNESS: {
-////                  ////if (offset != 0)
-////                  ////MPlugin->on_plugin_midi(MIP_MIDI_CONTROL_CHANGE+midi_ch,74,value*127.0f);
-////                  //MIP_Print("brightness. offset %i ch %i v %i\n",offset,midi_ch,value*127);
-////                  break;
-////                }
-////              } // switch (midi_ev)
-//
-//            } // id < num params
-
           } // paramqueue
         } // for all params
       } // numparams > 0
@@ -311,6 +340,7 @@ private:
     if (inputEvents) {
       int32_t num = inputEvents->getEventCount();
       for (int32_t i=0; i<num; i++) {
+
         Event event;
         inputEvents->getEvent(i,event);
 
@@ -319,42 +349,48 @@ private:
         //TQuarterNotes ppqPosition   = event.ppqPosition;  // position in project
         //uint16_t      flags         = event.flags;        // combination of EventFlags
 
+        MVst3Events[MVst3NumEvents].offset    = offset;
+        MVst3Events[MVst3NumEvents].type      = 2;
+        MVst3Events[MVst3NumEvents].index     = i;
+        MVst3Events[MVst3NumEvents].subindex  = 0;
+        MVst3NumEvents += 1;
+
         switch (event.type) {
           case Event::kNoteOnEvent:
-            MIP_Print("kNoteOnEvent: ofs %i chan %i pitch %i vel %.2f noteid %i\n",offset,event.noteOn.channel,event.noteOn.pitch,event.noteOn.velocity,event.noteOn.noteId);
+            //MIP_Print("kNoteOnEvent: ofs %i chan %i pitch %i vel %.2f noteid %i\n",offset,event.noteOn.channel,event.noteOn.pitch,event.noteOn.velocity,event.noteOn.noteId);
             break;
           case Event::kNoteOffEvent:
-            MIP_Print("kNoteOffEvent: ofs %i chan %i pitch %i vel %.2f noteid %i\n",offset,event.noteOff.channel,event.noteOff.pitch,event.noteOff.velocity,event.noteOff.noteId);
+            //MIP_Print("kNoteOffEvent: ofs %i chan %i pitch %i vel %.2f noteid %i\n",offset,event.noteOff.channel,event.noteOff.pitch,event.noteOff.velocity,event.noteOff.noteId);
             break;
           case Event::kDataEvent:
             break;
           case Event::kPolyPressureEvent:
-            MIP_Print("kPolyPressureEvent: ofs %i chan %i pitch %i pres %.2f noteid %i\n",offset,event.polyPressure.channel,event.polyPressure.pitch,event.polyPressure.pressure,event.polyPressure.noteId);
+            //MIP_Print("kPolyPressureEvent: ofs %i chan %i pitch %i pres %.2f noteid %i\n",offset,event.polyPressure.channel,event.polyPressure.pitch,event.polyPressure.pressure,event.polyPressure.noteId);
             break;
           case Event::kNoteExpressionValueEvent: {
-            const char* typestr = "?";
-            switch (event.noteExpressionValue.typeId) {
-              case kTuningTypeID:     typestr = "tuning";     break;
-              case kBrightnessTypeID: typestr = "brightness"; break;
-              case kVolumeTypeID:     typestr = "volume";     break;
-              case kPanTypeID:        typestr = "pan";        break;
-              case kVibratoTypeID:    typestr = "vibrato";    break;
-              case kExpressionTypeID: typestr = "expression"; break;
-            }
-            MIP_Print("kNoteExpressionValueEvent: ofs %i type %i (%s) val %.2f noteid %i\n",offset,event.noteExpressionValue.typeId,typestr,event.noteExpressionValue.value,event.noteExpressionValue.noteId);
+            //const char* typestr = "?";
+            //switch (event.noteExpressionValue.typeId) {
+            //  case kTuningTypeID:     typestr = "tuning";     break;
+            //  case kBrightnessTypeID: typestr = "brightness"; break;
+            //  case kVolumeTypeID:     typestr = "volume";     break;
+            //  case kPanTypeID:        typestr = "pan";        break;
+            //  case kVibratoTypeID:    typestr = "vibrato";    break;
+            //  case kExpressionTypeID: typestr = "expression"; break;
+            //}
+            //MIP_Print("kNoteExpressionValueEvent: ofs %i type %i (%s) val %.2f noteid %i\n",offset,event.noteExpressionValue.typeId,typestr,event.noteExpressionValue.value,event.noteExpressionValue.noteId);
             break;
           }
           case Event::kNoteExpressionTextEvent:
-            MIP_Print("kNoteExpressionTextEvent\n");
+            //MIP_Print("kNoteExpressionTextEvent\n");
             break;
           case Event::kChordEvent:
-            MIP_Print("kChordEvent\n");
+            //MIP_Print("kChordEvent\n");
             break;
           case Event::kScaleEvent:
-            MIP_Print("kScaleEvent\n");
+            //MIP_Print("kScaleEvent\n");
             break;
           default:
-            MIP_Print("unknown event\n");
+            //MIP_Print("unknown event\n");
             break;
         } // switch
       } // for all events
@@ -364,6 +400,50 @@ private:
   //----------
 
   clap_event_header_t* convertEvent(_vst3_event_* AEvent) {
+    MIP_Print("type:%i offset:%i index %i sub %i\n",AEvent->type,AEvent->offset,AEvent->index,AEvent->subindex );
+    switch (AEvent->type) {
+      case 1: { // parameter
+        MIP_Print("parameter\n");
+
+        clap_event_param_value_t* param_value_event = (clap_event_param_value_t*)MEventBuffer;
+        clap_event_header_t* event = (clap_event_header_t*)param_value_event;
+        memset(param_value_event,0,sizeof(clap_event_param_value_t));
+        param_value_event->header.size     = sizeof(clap_event_param_value_t);  // event size including this header, eg: sizeof (clap_event_note)
+        param_value_event->header.time     = AEvent->offset;                    // time at which the event happens
+        param_value_event->header.space_id = CLAP_CORE_EVENT_SPACE_ID;          // event space, see clap_host_event_registry
+        param_value_event->header.type     = CLAP_EVENT_PARAM_VALUE;                // event type
+        param_value_event->header.flags    = 0;                                 // see clap_event_flags
+        param_value_event->port_index      = -1;
+        param_value_event->key             = -1;
+        param_value_event->channel         = -1;
+        param_value_event->value           = 0.5;
+        return event;
+
+        break;
+      }
+      case 2: { // event
+        MIP_Print("event\n");
+
+        clap_event_note_t* note_event = (clap_event_note_t*)MEventBuffer;
+        clap_event_header_t* event = (clap_event_header_t*)note_event;
+        memset(note_event,0,sizeof(clap_event_note_t));
+
+        note_event->header.size     = sizeof(clap_event_note_t);
+        note_event->header.time     = AEvent->offset;
+        note_event->header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+        note_event->header.type     = CLAP_EVENT_NOTE_ON;
+        note_event->header.flags    = 0;
+        //note_event->cookie          = nullptr;
+        note_event->note_id         = 12;
+        note_event->port_index      = 0;
+        note_event->key             = 48;
+        note_event->channel         = 0;
+        note_event->velocity        = 1.0;
+        return event;
+
+        break;
+      }
+    }
     return nullptr;
   }
 
@@ -382,178 +462,6 @@ private:
 private:
 //------------------------------
 
-#if 0
-
-  /*
-    free all clap_events we (potentially) appended in convertInputEvents
-    and reset both MClapEvents and MMidiEvents
-  */
-
-  void clearInputEvents() {
-    //for (uint32_t i=0; i<MNumEvents; i++) {
-    //  if (MClapEvents[i]) free( MClapEvents[i] );
-    //  MClapEvents[i] = nullptr;
-    //}
-    //MNumEvents = 0;
-  }
-
-  //----------
-
-
-  /*
-    called before processing current audiobuffer
-    allocates a clap_event for each midi event in MidiInputEvents
-    initializes it, and appends it to MClapEvents
-
-  */
-
-  void convertInputEvents() {
-    uint32_t num_events = MMidiEvents.size();
-    for (uint32_t i=0; i<num_events; i++) {
-      MidiEvent* midievent = MMidiEvents[i];
-      float   time    = midievent->time - MCurrentTime;
-      uint8_t msg1    = midievent->msg1;
-      uint8_t msg2    = midievent->msg2;
-      uint8_t msg3    = midievent->msg3;
-      int32_t offset  = floorf(time * MSampleRate);
-      switch( msg1 & 0xF0) {
-
-        case MIDI_NOTE_OFF: {
-          clap_event_note_t* note_event = (clap_event_note_t*)malloc(sizeof(clap_event_note_t)); // deleted in deleteInputEvents()
-          clap_event_header_t* event = (clap_event_header_t*)note_event;
-          memset(note_event,0,sizeof(clap_event_note_t));
-          note_event->header.size     = sizeof(clap_event_note_t);  // event size including this header, eg: sizeof (clap_event_note)
-          note_event->header.time     = offset;                     // time at which the event happens
-          note_event->header.space_id = 0;                          // event space, see clap_host_event_registry
-          note_event->header.type     = CLAP_EVENT_NOTE_OFF;        // event type
-          note_event->header.flags    = 0;                          // see clap_event_flags
-          note_event->port_index      = 0;
-          note_event->key             = msg2;
-          note_event->channel         = msg1 & 0x0f;
-          note_event->velocity        = msg3 / 127.0;
-          MClapEvents.push_back(event);
-          break;
-        }
-
-        case MIDI_NOTE_ON: {
-          clap_event_note_t* note_event = (clap_event_note_t*)malloc(sizeof(clap_event_note_t)); // deleted in deleteInputEvents()
-          clap_event_header_t* event = (clap_event_header_t*)note_event;
-          memset(note_event,0,sizeof(clap_event_note_t));
-          note_event->header.size     = sizeof(clap_event_note_t);  // event size including this header, eg: sizeof (clap_event_note)
-          note_event->header.time     = offset;                     // time at which the event happens
-          note_event->header.space_id = 0;                          // event space, see clap_host_event_registry
-          note_event->header.type     = CLAP_EVENT_NOTE_ON;         // event type
-          note_event->header.flags    = 0;                          // see clap_event_flags
-          note_event->port_index      = 0;
-          note_event->key             = msg2;
-          note_event->channel         = msg1 & 0x0f;
-          note_event->velocity        = msg3 / 127.0;
-          MClapEvents.push_back(event);
-          break;
-        }
-
-        case MIDI_POLY_AFTERTOUCH: {
-          clap_event_note_expression_t* expression_event = (clap_event_note_expression_t*)malloc(sizeof(clap_event_note_expression_t)); // deleted in deleteInputEvents()
-          clap_event_header_t* event = (clap_event_header_t*)expression_event;
-          memset(expression_event,0,sizeof(clap_event_note_expression_t));
-          expression_event->header.size     = sizeof(clap_event_note_expression_t);  // event size including this header, eg: sizeof (clap_event_note)
-          expression_event->header.time     = offset;                     // time at which the event happens
-          expression_event->header.space_id = 0;                          // event space, see clap_host_event_registry
-          expression_event->header.type     = CLAP_EVENT_NOTE_EXPRESSION; // event type
-          expression_event->header.flags    = 0;                          // see clap_event_flags
-          expression_event->expression_id   = CLAP_NOTE_EXPRESSION_PRESSURE;
-          expression_event->port_index      = 0;
-          expression_event->key             = msg2;
-          expression_event->channel         = msg1 & 0x0f;
-          expression_event->value           = msg3 / 127.0; // TODO !!!
-          MClapEvents.push_back(event);
-          break;
-        }
-
-        case MIDI_CONTROL_CHANGE: {
-          if (arg_remap_cc == msg2) {
-            clap_event_param_value_t* param_value_event = (clap_event_param_value_t*)malloc(sizeof(clap_event_param_value_t)); // deleted in deleteInputEvents()
-            clap_event_header_t* event = (clap_event_header_t*)param_value_event;
-            memset(param_value_event,0,sizeof(clap_event_param_value_t));
-            param_value_event->header.size      = sizeof(clap_event_param_value_t);  // event size including this header, eg: sizeof (clap_event_note)
-            param_value_event->header.time      = offset;                            // time at which the event happens
-            param_value_event->header.space_id  = 0;                                 // event space, see clap_host_event_registry
-            param_value_event->header.type      = CLAP_EVENT_PARAM_VALUE;               // event type
-            param_value_event->header.flags     = 0;                                 // see clap_event_flags
-            param_value_event->cookie           = MRemapParamInfo.cookie;
-            param_value_event->param_id         = MRemapParamInfo.id;
-            param_value_event->port_index       = -1;
-            param_value_event->key              = -1;
-            param_value_event->channel          = -1;//msg1 & 15;
-            param_value_event->value            = (float)msg3 / 127.0;
-            MClapEvents.push_back(event);
-          }
-          else {
-            clap_event_midi_t* midi_event = (clap_event_midi_t*)malloc(sizeof(clap_event_midi_t));  // deleted in deleteInputEvents()
-            clap_event_header_t* event = (clap_event_header_t*)midi_event;
-            memset(midi_event,0,sizeof(clap_event_midi_t));
-            midi_event->header.size     = sizeof(clap_event_midi_t);  // event size including this header, eg: sizeof (clap_event_note)
-            midi_event->header.time     = offset;                     // time at which the event happens
-            midi_event->header.space_id = 0;                          // event space, see clap_host_event_registry
-            midi_event->header.type     = CLAP_EVENT_MIDI;            // event type
-            midi_event->header.flags    = 0;                          // see clap_event_flags
-            midi_event->data[0]         = msg1;
-            midi_event->data[1]         = msg2;
-            midi_event->data[2]         = msg3;
-            MClapEvents.push_back(event);
-            break;
-          }
-          break;
-        }
-
-        // TODO?
-
-        //case MIDI_PROGRAM_CHANGE: {
-        //  break;
-        //}
-
-        //case MIDI_CHANNEL_AFTERTOUCH: {
-        //  event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
-        //  event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
-        //  event->note_expression.port_index     = 0;
-        //  event->note_expression.key            = msg2;
-        //  event->note_expression.channel        = msg1 & 0x0f;
-        //  event->note_expression.value          = msg3 / 127.0; // TODO
-        //  break;
-        //}
-
-        //case MIDI_PITCHBEND: {
-        //  event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
-        //  event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_TUNING;
-        //  event->note_expression.port_index     = 0;
-        //  event->note_expression.key            = 0;
-        //  event->note_expression.channel        = msg1 & 0x0f;
-        //  event->note_expression.value          = (float)((msg2 * 128) + msg3) / 127.0;
-        //  break;
-        //}
-
-        //default: {
-        //    clap_event_midi_t* midi_event = (clap_event_midi_t*)malloc(sizeof(clap_event_midi_t));  // deleted in deleteInputEvents()
-        //    clap_event_header_t* event = (clap_event_header_t*)midi_event;
-        //    memset(midi_event,0,sizeof(clap_event_midi_t));
-        //    midi_event->header.size     = sizeof(clap_event_midi_t);  // event size including this header, eg: sizeof (clap_event_note)
-        //    midi_event->header.time     = offset;                     // time at which the event happens
-        //    midi_event->header.space_id = 0;                          // event space, see clap_host_event_registry
-        //    midi_event->header.type     = CLAP_EVENT_MIDI;            // event type
-        //    midi_event->header.flags    = 0;                          // see clap_event_flags
-        //    midi_event->data[0]         = msg1;
-        //    midi_event->data[1]         = msg2;
-        //    midi_event->data[2]         = msg3;
-        //    MClapEvents.append(event);
-        //    break;
-        //  break;
-        //}
-
-      }  // switch
-    } // for all events
-  }
-
-#endif // 0
 
 
 //------------------------------
@@ -1664,6 +1572,10 @@ public:
     prepareEvents(data);
     prepareParameters(data);
 
+    //if (MVst3NumEvents > 0) {
+    //  MIP_Print("events: %i\n",MVst3NumEvents);
+    //}
+
     bool _flush = ( (data.numInputs == 0) && (data.numOutputs == 0) && (data.numSamples == 0) );
     if (!_flush) {
 
@@ -1678,15 +1590,28 @@ public:
       //MProcessContext.tempo         = data.processContext->tempo;
       //MPlugin->on_plugin_process(&MProcessContext);
 
-      MClapProcess.steady_time          = 0;
-      MClapProcess.frames_count         = 0;
-      MClapProcess.transport            = nullptr;
-      MClapProcess.audio_inputs         = nullptr;
-      MClapProcess.audio_outputs        = nullptr;
-      MClapProcess.audio_inputs_count   = 0;
-      MClapProcess.audio_outputs_count  = 0;
+//      MClapProcess.steady_time          = 0;
+//      MClapProcess.frames_count         = 0;
+//      MClapProcess.transport            = nullptr;
+
+      MAudioInputs.data32         = MAudioInputBuffers;
+      MAudioInputs.data64         = MAudioInputBuffers_64;
+      MAudioInputs.channel_count  = 2;
+      MAudioInputs.latency        = 0;
+      MAudioInputs.constant_mask  = 0;
+
+      MAudioOutputs.data32         = MAudioOutputBuffers;
+      MAudioOutputs.data64         = MAudioOutputBuffers_64;
+      MAudioOutputs.channel_count  = 2;
+      MAudioOutputs.latency        = 0;
+      MAudioOutputs.constant_mask  = 0;
+
+      MClapProcess.audio_inputs         = &MAudioInputs;
+      MClapProcess.audio_outputs        = &MAudioOutputs;
+      MClapProcess.audio_inputs_count   = 2;
+      MClapProcess.audio_outputs_count  = 2;
       MClapProcess.in_events            = &MVst3InputEvents;
-      MClapProcess.out_events           = nullptr;
+      MClapProcess.out_events           = &MVst3OutputEvents;
 
       MPlugin->process(&MClapProcess);
 
