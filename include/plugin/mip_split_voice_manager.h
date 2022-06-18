@@ -259,7 +259,7 @@ private: // events
   */
 
   void handleNoteOnEvent(const clap_event_note_t* event) {
-    MIP_Print("NOTE ON: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
+    //MIP_Print("NOTE ON: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     int32_t voice = findAvailableVoice(true); // true = search released voices too
     if (voice >= 0) {
       // let the host know that the note that was playing for this voice
@@ -291,7 +291,7 @@ private: // events
   // note_id is always -1
 
   void handleNoteOffEvent(const clap_event_note_t* event) {
-    MIP_Print("NOTE OFF: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
+    //MIP_Print("NOTE OFF: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
       if (MVoices[i].state == MIP_VOICE_PLAYING) {
         //if (MVoices[i].note.note_id == event->note_id) {
@@ -306,7 +306,7 @@ private: // events
   //----------
 
   void handleNoteChokeEvent(const clap_event_note_t* event) {
-    MIP_Print("key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
+    //MIP_Print("key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
   }
 
   //----------
@@ -314,7 +314,7 @@ private: // events
   // note_id is always -1
 
   void handleNoteExpressionEvent(const clap_event_note_expression_t* event) {
-    MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
+    //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
       //if (MVoices[i].note.note_id == event->note_id) {
         if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
@@ -334,7 +334,7 @@ private: // events
   */
 
   void handleParamValueEvent(const clap_event_param_value_t* event) {
-    MIP_Print("param %i note %i port %i chan %i key %i value %.3f\n",event->param_id,event->note_id,event->port_index,event->channel,event->key,event->value);
+    //MIP_Print("param %i note %i port %i chan %i key %i value %.3f\n",event->param_id,event->note_id,event->port_index,event->channel,event->key,event->value);
     if (event->note_id == -1) {
       // global
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
@@ -366,7 +366,7 @@ private: // events
   // amount always 0 fpor voice stacking.. ?
 
   void handleParamModEvent(const clap_event_param_mod_t* event) {
-    MIP_Print("param %i note %i port %i chan %i key %i amount %.3f\n",event->param_id,event->note_id,event->port_index,event->channel,event->key,event->amount);
+    //MIP_Print("param %i note %i port %i chan %i key %i amount %.3f\n",event->param_id,event->note_id,event->port_index,event->channel,event->key,event->amount);
     if (event->note_id == -1) {
       // global
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
@@ -394,19 +394,19 @@ private: // events
 //------------------------------
 
   void handleMidiEvent(const clap_event_midi_t* event) {
-    MIP_Print("port %i data %02x,%02x,%02x\n",event->port_index,event->data[0],event->data[1],event->data[2]);
+    //MIP_Print("port %i data %02x,%02x,%02x\n",event->port_index,event->data[0],event->data[1],event->data[2]);
   }
 
   //----------
 
   void handleMidiSysexEvent(const clap_event_midi_sysex_t* event) {
-    MIP_Print("port %i size %i\n",event->port_index,event->size);
+    //MIP_Print("port %i size %i\n",event->port_index,event->size);
   }
 
   //----------
 
   void handleMidi2Event(const clap_event_midi2_t* event) {
-    MIP_Print("port %i data %i,%i,%i,%i\n",event->port_index,event->data[0],event->data[1],event->data[2],event->data[3]);
+    //MIP_Print("port %i data %i,%i,%i,%i\n",event->port_index,event->data[0],event->data[1],event->data[2],event->data[3]);
   }
 
 //------------------------------

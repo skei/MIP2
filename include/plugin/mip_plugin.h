@@ -202,6 +202,7 @@ public: // plugin
   //----------
 
   clap_process_status process(const clap_process_t *process) override {
+
     flushAudioParams();
     preProcessEvents(process->in_events,process->out_events);
     //..
@@ -1139,19 +1140,18 @@ public: //events
 //------------------------------
 
   virtual void preProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
-    MIP_PRINT;
     uint32_t num_events = in_events->size(in_events);
-    MIP_Print("num events: %i\n",num_events);
+    //MIP_Print("num events: %i\n",num_events);
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
 
-      MIP_Print("header: %p\n",header);                     // null
-      MIP_Print("event: %i\n",i);
+      //MIP_Print("header: %p\n",header);                     // null
+      //MIP_Print("event: %i\n",i);
 
       if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-        MIP_Print("space_id == CLAP_CORE_EVENT_SPACE_ID\n");
+        //MIP_Print("space_id == CLAP_CORE_EVENT_SPACE_ID\n");
         handle_event(header);
-        MIP_Print("event handled..\n");
+        //MIP_Print("event handled..\n");
       }
     }
   }
