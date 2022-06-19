@@ -251,7 +251,9 @@ public: // clap
     //MIP_PRINT;
     //MIP_Print("process->in_events->size() = %i\n",process->in_events->size(process->in_events));
     flushAudioParams();
+
 //    preProcessEvents(process->in_events,process->out_events);
+
     // processes into MFrameBuffer, which is then copied into 'outputs'
     // todo: do the copy here, sp we can add effects..
     MVoiceManager.process(process);
@@ -262,7 +264,9 @@ public: // clap
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ScaleStereoBuffer(outputs,l,r,length);
+
 //    postProcessEvents(process->in_events,process->out_events);
+
     flushHostParams(process->out_events);
     // hack!
     // update gui (state only) in process!

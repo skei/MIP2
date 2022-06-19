@@ -190,7 +190,7 @@ public:
   //----------
 
   virtual ~MIP_Vst3Plugin() {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (MPlugin) delete MPlugin;
     if (MParamInfos) free(MParamInfos);
   }
@@ -219,7 +219,9 @@ private: // in_events
   //----------
 
   const clap_event_header_t* vst3_input_events_get(uint32_t index) {
-    //MIP_Print("%i: type:%i offset:%i index %i sub %i\n",index,MVst3Events[index].type,MVst3Events[index].offset,MVst3Events[index].index,MVst3Events[index].subindex );
+
+    MIP_Print("%i: type:%i offset:%i index %i sub %i\n",index,MVst3Events[index].type,MVst3Events[index].offset,MVst3Events[index].index,MVst3Events[index].subindex );
+
     _vst3_event_* ev = &MVst3Events[index];
     return convertEvent(ev);
   }
@@ -311,11 +313,21 @@ private:
       for (int32_t i=0; i<num; i++) {
         Event event;
         inputEvents->getEvent(i,event);
-        MVst3Events[MVst3NumEvents].offset    = event.sampleOffset;
-        MVst3Events[MVst3NumEvents].type      = 2;
-        MVst3Events[MVst3NumEvents].index     = i;
-        MVst3Events[MVst3NumEvents].subindex  = 0;
-        MVst3NumEvents += 1;
+        switch (event.type) {
+          case Event::kNoteOnEvent:
+          case Event::kNoteOffEvent:
+          //case Event::kDataEvent:
+          case Event::kPolyPressureEvent:
+          case Event::kNoteExpressionValueEvent:
+          //case Event::kNoteExpressionTextEvent:
+          //case Event::kChordEvent:
+          //case Event::kScaleEvent:
+            MVst3Events[MVst3NumEvents].offset    = event.sampleOffset;
+            MVst3Events[MVst3NumEvents].type      = 2;
+            MVst3Events[MVst3NumEvents].index     = i;
+            MVst3Events[MVst3NumEvents].subindex  = 0;
+            MVst3NumEvents += 1;
+        } // event.type
       } // for all events
     } // if input events
   }
@@ -363,9 +375,10 @@ private:
             param_value_event->header.type     = CLAP_EVENT_PARAM_VALUE;
             param_value_event->header.flags    = 0;
             param_value_event->param_id        = paramQueue->getParameterId();
-            param_value_event->port_index      = -1;
-            param_value_event->key             = -1;
-            param_value_event->channel         = -1;
+            param_value_event->note_id         = -1;
+            param_value_event->port_index      = 0;
+            param_value_event->channel         = 0;
+            param_value_event->key             = 0;
             param_value_event->value           = value;
             return (clap_event_header_t*)param_value_event;
           } // paramQueue
@@ -386,7 +399,7 @@ private:
           Event event;
           MVst3EventList->getEvent(AEvent->index,event);
 
-          int32_t       offset        = event.sampleOffset; // sample frames related to the current block start sample position More...
+          //int32_t       offset        = event.sampleOffset; // sample frames related to the current block start sample position More...
           //int32_t       busindex      = event.busIndex;     // event bus index More...
           //TQuarterNotes ppqPosition   = event.ppqPosition;  // position in project
           //uint16_t      flags         = event.flags;        // combination of EventFlags
@@ -394,7 +407,7 @@ private:
           switch (event.type) {
 
             case Event::kNoteOnEvent: {
-              MIP_Print("kNoteOnEvent: ofs %i chan %i pitch %i vel %.2f noteid %i\n",offset,event.noteOn.channel,event.noteOn.pitch,event.noteOn.velocity,event.noteOn.noteId);
+              //MIP_Print("kNoteOnEvent: ofs %i chan %i pitch %i vel %.2f noteid %i\n",offset,event.noteOn.channel,event.noteOn.pitch,event.noteOn.velocity,event.noteOn.noteId);
               clap_event_note_t* note_event = (clap_event_note_t*)MEventBuffer;
               memset(note_event,0,sizeof(clap_event_note_t));
               note_event->header.size     = sizeof(clap_event_note_t);
@@ -403,7 +416,7 @@ private:
               note_event->header.type     = CLAP_EVENT_NOTE_ON;
               note_event->header.flags    = 0;
               //note_event->cookie          = nullptr;
-              note_event->port_index      = -1;//event.busIndex;
+              note_event->port_index      = 0;//event.busIndex;
               note_event->channel         = event.noteOn.channel;
               note_event->key             = event.noteOn.pitch;
               note_event->note_id         = event.noteOn.pitch;
@@ -413,7 +426,7 @@ private:
             }
 
             case Event::kNoteOffEvent: {
-              MIP_Print("kNoteOffEvent: ofs %i chan %i pitch %i vel %.2f noteid %i\n",offset,event.noteOff.channel,event.noteOff.pitch,event.noteOff.velocity,event.noteOff.noteId);
+              //MIP_Print("kNoteOffEvent: ofs %i chan %i pitch %i vel %.2f noteid %i\n",offset,event.noteOff.channel,event.noteOff.pitch,event.noteOff.velocity,event.noteOff.noteId);
               clap_event_note_t* note_event = (clap_event_note_t*)MEventBuffer;
               memset(note_event,0,sizeof(clap_event_note_t));
               note_event->header.size     = sizeof(clap_event_note_t);
@@ -422,7 +435,7 @@ private:
               note_event->header.type     = CLAP_EVENT_NOTE_OFF;
               note_event->header.flags    = 0;
               //note_event->cookie          = nullptr;
-              note_event->port_index      = -1;//event.busIndex;
+              note_event->port_index      = 0;//event.busIndex;
               note_event->channel         = event.noteOff.channel;
               note_event->key             = event.noteOff.pitch;
               note_event->note_id         = event.noteOff.pitch;
@@ -432,26 +445,41 @@ private:
             }
 
             case Event::kDataEvent: {
-              MIP_Print("kDataEvent: ofs %i\n",offset);
+              //MIP_Print("kDataEvent: ofs %i\n",offset);
               break;
             }
 
+//struct PolyPressureEvent
+//{
+//	int16 channel;			///< channel index in event bus
+//	int16 pitch;			///< range [0, 127] = [C-2, G8] with A3=440Hz
+//	float pressure;			///< range [0.0, 1.0]
+//	int32 noteId;			///< event should be applied to the noteId (if not -1)
+//};
+
             case Event::kPolyPressureEvent: {
-              MIP_Print("kPolyPressureEvent: ofs %i chan %i pitch %i pres %.2f noteid %i\n",offset,event.polyPressure.channel,event.polyPressure.pitch,event.polyPressure.pressure,event.polyPressure.noteId);
-              break;
+              // ok
+              //MIP_Print("kPolyPressureEvent: ofs %i chan %i pitch %i pres %.2f noteid %i\n",AEvent->offset,event.polyPressure.channel,event.polyPressure.pitch,event.polyPressure.pressure,event.polyPressure.noteId);
+              clap_event_note_expression_t* note_expression_event = (clap_event_note_expression_t*)MEventBuffer;
+              memset(note_expression_event,0,sizeof(clap_event_note_expression_t));
+              note_expression_event->header.size      = sizeof(clap_event_note_expression_t);
+              note_expression_event->header.time      = AEvent->offset;
+              note_expression_event->header.space_id  = CLAP_CORE_EVENT_SPACE_ID;
+              note_expression_event->header.type      = CLAP_NOTE_EXPRESSION_PRESSURE;
+              note_expression_event->header.flags     = 0;
+              //note_expression_event->cookie           = nullptr;
+              note_expression_event->port_index       = 0;//event.busIndex;
+              note_expression_event->channel          = event.polyPressure.channel;
+              note_expression_event->key              = event.polyPressure.pitch;
+              note_expression_event->note_id          = event.polyPressure.noteId;
+              note_expression_event->value            = event.polyPressure.pressure;
+              note_expression_event->expression_id    = CLAP_NOTE_EXPRESSION_PRESSURE;
+              return (clap_event_header_t*)note_expression_event;
+              //break;
             }
 
             case Event::kNoteExpressionValueEvent: {
-              //const char* typestr = "?";
-              //switch (event.noteExpressionValue.typeId) {
-              //  case kTuningTypeID:     typestr = "tuning";     break;
-              //  case kBrightnessTypeID: typestr = "brightness"; break;
-              //  case kVolumeTypeID:     typestr = "volume";     break;
-              //  case kPanTypeID:        typestr = "pan";        break;
-              //  case kVibratoTypeID:    typestr = "vibrato";    break;
-              //  case kExpressionTypeID: typestr = "expression"; break;
-              //}
-              MIP_Print("kNoteExpressionValueEvent: ofs %i type %i val %.2f noteid %i\n",offset,event.noteExpressionValue.typeId,event.noteExpressionValue.value,event.noteExpressionValue.noteId);
+//              MIP_Print("kNoteExpressionValueEvent: ofs %i type %i val %.2f noteid %i\n",offset,event.noteExpressionValue.typeId,event.noteExpressionValue.value,event.noteExpressionValue.noteId);
               clap_event_note_expression_t* note_expression_event = (clap_event_note_expression_t*)MEventBuffer;
               memset(note_expression_event,0,sizeof(clap_event_note_expression_t));
               note_expression_event->header.size     = sizeof(clap_event_note_expression_t);
@@ -459,47 +487,74 @@ private:
               note_expression_event->header.space_id = CLAP_CORE_EVENT_SPACE_ID;
               note_expression_event->header.type     = CLAP_EVENT_NOTE_EXPRESSION;
               note_expression_event->header.flags    = 0;
-              //note_expression_event->cookie          = nullptr;
-              note_expression_event->port_index      = -1;//event.busIndex;
-              note_expression_event->channel         = -1;//event.noteExpressionValue.channel;
+              note_expression_event->port_index      = 0;//event.busIndex;
+              note_expression_event->channel         = 0;//event.noteExpressionValue.channel;
               note_expression_event->key             = event.noteExpressionValue.noteId;
               note_expression_event->note_id         = event.noteExpressionValue.noteId;
               //note_expression_event->expression_id   = event.noteExpressionValue.velocity;
+
+              note_expression_event->value           = 0.0;
+
               switch (event.noteExpressionValue.typeId) {
-                case kTuningTypeID:     note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_TUNING;     break;
-                case kBrightnessTypeID: note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_BRIGHTNESS; break;
-                case kVolumeTypeID:     note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_VOLUME;     break;
-                case kPanTypeID:        note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_PAN;        break;
-                case kVibratoTypeID:    note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_VIBRATO;    break;
-                case kExpressionTypeID: note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_EXPRESSION; break;
+                case kVolumeTypeID:
+                  // Volume, plain range [0 = -oo , 0.25 = 0dB, 0.5 = +6dB, 1 = +12dB]: plain = 20 * log (4 * norm)
+                  note_expression_event->expression_id  = CLAP_NOTE_EXPRESSION_VOLUME;
+                  note_expression_event->value          = event.noteExpressionValue.value;
+                  break;
+                case kPanTypeID:
+                  // Panning (L-R), plain range [0 = left, 0.5 = center, 1 = right]
+                  note_expression_event->expression_id  = CLAP_NOTE_EXPRESSION_PAN;
+                  note_expression_event->value          = event.noteExpressionValue.value;
+                  break;
+                case kTuningTypeID:
+                  // Tuning, plain range [0 = -120.0 (ten octaves down), 0.5 none, 1 = +120.0 (ten octaves up)]
+                  // plain = 240 * (norm - 0.5) and norm = plain / 240 + 0.5
+                  // oneOctave is 12.0 / 240.0; oneHalfTune = 1.0 / 240.0;
+                  note_expression_event->expression_id  = CLAP_NOTE_EXPRESSION_TUNING;
+                  note_expression_event->value          = (event.noteExpressionValue.value - 0.5) * 240;
+                  break;
+                case kVibratoTypeID:
+                  note_expression_event->expression_id  = CLAP_NOTE_EXPRESSION_VIBRATO;
+                  note_expression_event->value          = event.noteExpressionValue.value;
+                  break;
+                case kExpressionTypeID:
+                  note_expression_event->expression_id  = CLAP_NOTE_EXPRESSION_EXPRESSION;
+                  note_expression_event->value          = event.noteExpressionValue.value;
+                  break;
+                case kBrightnessTypeID:
+                  note_expression_event->expression_id  = CLAP_NOTE_EXPRESSION_BRIGHTNESS;
+                  note_expression_event->value          = event.noteExpressionValue.value;
+                  break;
+                //kTextTypeID
+                //kPhonemeTypeID
               }
               return (clap_event_header_t*)note_expression_event;
               //break;
             }
-            case Event::kNoteExpressionTextEvent: {
-              MIP_Print("kNoteExpressionTextEvent\n");
 
-              //break;
+            case Event::kNoteExpressionTextEvent: {
+              //MIP_Print("kNoteExpressionTextEvent\n");
+              break;
             }
+
             case Event::kChordEvent: {
-              MIP_Print("kChordEvent\n");
+              //MIP_Print("kChordEvent\n");
               break;
             }
+
             case Event::kScaleEvent: {
-              MIP_Print("kScaleEvent\n");
+              //MIP_Print("kScaleEvent\n");
               break;
             }
+
             default: {
               MIP_Print("unknown event\n");
               break;
             }
 
           } // switch event.type
-
         } // MVst3EventList
-
       }  // 2. event
-
     } // switch AEvent->type
     return nullptr;
   }
@@ -521,6 +576,8 @@ private:
     if (range == 0) return 0.0;
     return (value - info.min_value) / range;
   }
+
+  //----------
 
   double denormalizeParameter(uint32_t index, double value) {
     clap_param_info_t info;
@@ -661,7 +718,7 @@ private:
   */
 
   void setupParameterInfo() {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (!MParamInfos) {
 
       //MIP_Print("\n\n");
@@ -692,7 +749,7 @@ private:
         MParamInfos[i].flags = flags;
       }
     }
-    MIP_PRINT;
+    //MIP_PRINT;
   }
 
   //----------
@@ -768,7 +825,7 @@ public:
   */
 
   uint32 PLUGIN_API addRef() override {
-    MIP_PRINT;
+    //MIP_PRINT;
     MRefCount++;
     return MRefCount;
   }
@@ -782,7 +839,7 @@ public:
   */
 
   uint32 PLUGIN_API release() override {
-    MIP_PRINT;
+    //MIP_PRINT;
     const uint32 r = --MRefCount; // const uint32 ?
     if (r == 0) {
       delete this;
@@ -834,7 +891,7 @@ public:
   */
 
   tresult PLUGIN_API queryInterface(const TUID _iid, void** obj) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     *obj = nullptr;
     if ( FUnknownPrivate::iidEqual(IAudioProcessor_iid,_iid) ) {
       *obj = (IAudioProcessor*)this;
@@ -929,7 +986,7 @@ public:
   */
 
   tresult PLUGIN_API initialize(FUnknown* context) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     MHostApp = (IHostApplication*)context;
     //context->queryInterface(IHostApplication_iid, (void**)&MHostApp);
     if (MHostApp) {
@@ -952,7 +1009,7 @@ public:
   */
 
   tresult PLUGIN_API terminate() override {
-    MIP_PRINT;
+    //MIP_PRINT;
     //MPlugin->on_plugin_deinit();
     return kResultOk;
   }
@@ -974,7 +1031,7 @@ public:
   */
 
   tresult PLUGIN_API getControllerClassId(TUID classId) override {
-    MIP_PRINT;
+    //MIP_PRINT;
       //if (MDescriptor->hasEditor()) {
       //  memcpy(classId,MDescriptor->getLongEditorId(),16);
         getEditorId(MDescriptor);
@@ -994,7 +1051,7 @@ public:
   */
 
   tresult PLUGIN_API setIoMode(IoMode mode) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     //switch (mode) {
     //  case kSimple:             VST3_Trace("(kSimple)\n"); break;
     //  case kAdvanced:           VST3_Trace("(kAdvanced)\n"); break;
@@ -1023,7 +1080,7 @@ public:
   */
 
   int32 PLUGIN_API getBusCount(MediaType type, BusDirection dir) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (type == kAudio) {
 //      if (dir == kInput) return MDescriptor->getNumAudioInputs();
 //      else if (dir == kOutput) return MDescriptor->getNumAudioOutputs();
@@ -1060,7 +1117,7 @@ public:
   */
 
   tresult PLUGIN_API getBusInfo(MediaType type, BusDirection dir, int32 index, BusInfo& bus) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (type == kAudio) {
       bus.mediaType = kAudio;
       if (dir == kInput) {
@@ -1130,7 +1187,7 @@ public:
   */
 
   tresult PLUGIN_API getRoutingInfo(RoutingInfo& inInfo, RoutingInfo& outInfo) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     outInfo.mediaType = inInfo.mediaType; // MediaTypes::kAudio;
     outInfo.busIndex  = inInfo.busIndex;  // 0;
     outInfo.channel   = -1;
@@ -1147,7 +1204,7 @@ public:
   */
 
   tresult PLUGIN_API activateBus(MediaType type, BusDirection dir, int32 index, TBool state) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -1158,7 +1215,7 @@ public:
   */
 
   tresult PLUGIN_API setActive(TBool state) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (state) MPlugin->activate(MSampleRate,0,MBlockSize);
     else MPlugin->deactivate();
     return kResultOk;
@@ -1237,7 +1294,7 @@ public:
   */
 
   tresult PLUGIN_API setState(IBStream* state) override {
-    MIP_PRINT;
+    //MIP_PRINT;
 //    uint32_t version = 0;
 //    uint32_t mode = 0;
 //    int32_t size = 0;
@@ -1285,7 +1342,7 @@ public:
   */
 
   tresult PLUGIN_API getState(IBStream* state) override {
-    MIP_PRINT;
+    //MIP_PRINT;
 //    uint32_t  version = MDescriptor->getVersion();
 //    uint32_t  mode    = 0;
 //    void*     ptr     = nullptr;
@@ -1329,7 +1386,7 @@ public:
   //const SpeakerArrangement kStereo = kSpeakerL | kSpeakerR;
 
   tresult PLUGIN_API setBusArrangements(SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     //if ((numIns == 2) && (*inputs == kStereo)) {}
     if ((numIns == 2) && (numOuts == 2)) return kResultTrue;
     return kResultFalse;
@@ -1344,7 +1401,7 @@ public:
   */
 
   tresult PLUGIN_API getBusArrangement(BusDirection dir, int32 index, SpeakerArrangement& arr) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     //if ((dir==kOutput) && (index==0)) {
     //  arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
     //  return kResultOk;
@@ -1433,7 +1490,7 @@ public:
   */
 
   tresult PLUGIN_API setupProcessing(ProcessSetup& setup) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     MProcessMode  = setup.sampleRate;         // kRealtime, kPrefetch, kOffline
     MSampleSize   = setup.symbolicSampleSize; // kSample32, kSample64
     MBlockSize    = setup.maxSamplesPerBlock;
@@ -1457,7 +1514,7 @@ public:
   */
 
   tresult PLUGIN_API setProcessing(TBool state) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     MIsProcessing = state;
     return kResultOk;
   }
@@ -1811,7 +1868,7 @@ public:
   // Gets a user readable representation of the normalized note change value.
 
   tresult PLUGIN_API getNoteExpressionStringByValue(int32 busIndex, int16 channel, NoteExpressionTypeID id, NoteExpressionValue valueNormalized, String128 string) override {
-    MIP_Print("vst3: instance/getNoteExpressionStringByValue busIndex:%i channel:%i id:%i valueNormalized:%.3f\n",busIndex,channel,id,valueNormalized);
+    //MIP_Print("vst3: instance/getNoteExpressionStringByValue busIndex:%i channel:%i id:%i valueNormalized:%.3f\n",busIndex,channel,id,valueNormalized);
     char temp[100];
     //MIP_FloatToString(temp,valueNormalized);
     sprintf(temp,"%.3f",valueNormalized);
@@ -1824,7 +1881,7 @@ public:
   // Converts the user readable representation to the normalized note change value.
 
   tresult PLUGIN_API getNoteExpressionValueByString(int32 busIndex, int16 channel, NoteExpressionTypeID id, const TChar* string, NoteExpressionValue& valueNormalized) override{
-    MIP_Print("vst3: instance/getNoteExpressionValueByString busIndex:%i  channel:%i id:%i string:%s\n",busIndex,channel,id,string);
+    //MIP_Print("vst3: instance/getNoteExpressionValueByString busIndex:%i  channel:%i id:%i string:%s\n",busIndex,channel,id,string);
     char temp[129];
     VST3_Utf16ToChar(string,temp);
     //float res = MIP_StringToFloat(temp);
@@ -1852,7 +1909,7 @@ public:
   // Returns number of supported key switches for event bus index and channel.
 
   int32 PLUGIN_API getKeyswitchCount(int32 busIndex, int16 channel) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return 0;
   }
 
@@ -1874,7 +1931,7 @@ public:
   // Returns key switch info.
 
   tresult PLUGIN_API getKeyswitchInfo(int32 busIndex, int16 channel, int32 keySwitchIndex, KeyswitchInfo& info) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1905,7 +1962,7 @@ public:
   */
 
   tresult PLUGIN_API connect(IConnectionPoint* other) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     //IMessage* msg;
     //msg->setMessageID("test");
     //other->notify(msg);
@@ -1917,7 +1974,7 @@ public:
   //Disconnects a given connection point from this.
 
   tresult PLUGIN_API disconnect(IConnectionPoint* other)  override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1936,7 +1993,7 @@ public:
   */
 
   tresult PLUGIN_API notify(IMessage* message) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1959,7 +2016,7 @@ public:
   // Returns the flat count of units.
 
   int32 PLUGIN_API getUnitCount() override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return 1;
   }
 
@@ -1977,7 +2034,7 @@ public:
   */
 
   tresult PLUGIN_API getUnitInfo(int32 unitIndex, UnitInfo& info) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (unitIndex==0) {
       info.id = kRootUnitId; //0;
       info.parentUnitId = kNoParentUnitId;
@@ -1993,7 +2050,7 @@ public:
   // Gets the count of Program List.
 
   int32 PLUGIN_API getProgramListCount() override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return 0; // 1
   }
 
@@ -2010,7 +2067,7 @@ public:
   */
 
   tresult PLUGIN_API getProgramListInfo(int32 listIndex, ProgramListInfo& info) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (listIndex == 0) {
       info.id = 0;
       VST3_CharToUtf16("program",info.name);
@@ -2025,7 +2082,7 @@ public:
   // Gets for a given program list ID and program index its program name.
 
   tresult PLUGIN_API getProgramName(ProgramListID listId, int32 programIndex, String128 name) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if ((listId == 0) && (programIndex == 0)) {
       VST3_CharToUtf16("program",name);
       return kResultOk;
@@ -2042,7 +2099,7 @@ public:
 
   //CString attributeId, String128 attributeValue) {
   tresult PLUGIN_API getProgramInfo(ProgramListID listId, int32 programIndex, Steinberg::Vst::CString attributeId, String128 attributeValue) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     ////attributeId = "";
     //if ((listId == 0) && (programIndex == 0) /* attributeId */) {
     //  char_to_utf16("",attributeValue);
@@ -2056,7 +2113,7 @@ public:
   // Returns kResultTrue if the given program index of a given program list ID supports PitchNames.
 
   tresult PLUGIN_API hasProgramPitchNames(ProgramListID listId, int32 programIndex) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -2069,7 +2126,7 @@ public:
   */
 
   tresult PLUGIN_API getProgramPitchName(ProgramListID listId, int32 programIndex, int16 midiPitch, String128 name) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     //char_to_utf16("pitch",name);
     return kResultFalse;
   }
@@ -2079,7 +2136,7 @@ public:
   // Gets the current selected unit.
 
   UnitID PLUGIN_API getSelectedUnit() override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return 0;
   }
 
@@ -2088,7 +2145,7 @@ public:
   // Sets a new selected unit.
 
   tresult PLUGIN_API selectUnit(UnitID unitId) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2102,7 +2159,7 @@ public:
   */
 
   tresult PLUGIN_API getUnitByBus(MediaType type, BusDirection dir, int32 busIndex, int32 channel, UnitID& unitId) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     unitId = 0;
     return kResultOk;//False;
   }
@@ -2118,7 +2175,7 @@ public:
   */
 
   tresult PLUGIN_API setUnitProgramData(int32 listOrUnitId, int32 programIndex, IBStream* data) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -2141,7 +2198,7 @@ public:
   */
 
   tresult PLUGIN_API setComponentState(IBStream* state) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     /*
     // we receive the current state of the component (processor part)
     if (state == nullptr) return kResultFalse;
@@ -2190,7 +2247,7 @@ public:
 
   //tresult PLUGIN_API setState(IBStream* state) {
   tresult PLUGIN_API setEditorState(IBStream* state) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2198,7 +2255,7 @@ public:
 
   //tresult PLUGIN_API getState(IBStream* state) {
   tresult PLUGIN_API getEditorState(IBStream* state) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2395,7 +2452,7 @@ public:
   */
 
   tresult PLUGIN_API setComponentHandler(IComponentHandler* handler) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     MComponentHandler = handler;
     //handler->queryInterface(IComponentHandler2::iid,(void**)&MComponentHandler2);
     //MIP_Vst3Host* host = (MIP_Vst3Host*)MPlugin->getHost();
@@ -2413,7 +2470,7 @@ public:
   */
 
   IPlugView* PLUGIN_API createView(FIDString name) override {
-    MIP_PRINT;
+    //MIP_PRINT;
 //    if (MDescriptor->hasEditor()) {
       if (name && (strcmp(name,ViewType::kEditor) == 0)) {
         addRef();
@@ -2428,21 +2485,21 @@ public:
   //--------------------
 
   tresult PLUGIN_API setKnobMode(KnobMode mode) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultFalse;
   }
 
   //----------
 
   tresult PLUGIN_API openHelp(TBool onlyCheck) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultFalse;
   }
 
   //----------
 
   tresult PLUGIN_API openAboutBox(TBool onlyCheck) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -2495,7 +2552,7 @@ public:
   //--------------------
 
   tresult PLUGIN_API isPlatformTypeSupported(FIDString type) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     // "X11EmbedWindowID"
     if (type && strcmp(type,kPlatformTypeX11EmbedWindowID) == 0) {
       return kResultOk;
@@ -2519,7 +2576,7 @@ public:
   */
 
   tresult PLUGIN_API attached(void* parent, FIDString type) override {
-    MIP_PRINT;
+    //MIP_PRINT;
 //    #ifndef MIP_NO_GUI
 //      if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
         if (MPlugFrame) {
@@ -2558,7 +2615,7 @@ public:
   */
 
   tresult PLUGIN_API removed() override {
-    MIP_PRINT;
+    //MIP_PRINT;
 //    #ifndef MIP_NO_GUI
 //    if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
       //if (MRunLoop)
@@ -2575,21 +2632,21 @@ public:
   //----------
 
   tresult PLUGIN_API onWheel(float distance) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultOk;
   }
 
   //----------
 
   tresult PLUGIN_API onKeyDown(char16 key, int16 keyCode, int16 modifiers) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultOk;
   }
 
   //----------
 
   tresult PLUGIN_API onKeyUp(char16 key, int16 keyCode, int16 modifiers) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2600,7 +2657,7 @@ public:
   */
 
   tresult PLUGIN_API getSize(ViewRect* size) override {
-    MIP_PRINT;
+    //MIP_PRINT;
 //    if (MDescriptor->hasEditor()) {
       size->left    = 0;
       size->top     = 0;
@@ -2620,7 +2677,7 @@ public:
   */
 
   tresult PLUGIN_API onSize(ViewRect* newSize) override {
-    MIP_PRINT;
+    //MIP_PRINT;
 //    if (MDescriptor->hasEditor()) {
 //      //MEditorWidth = newSize->getWidth();
 //      //MEditorHeight = newSize->getHeight();
@@ -2639,7 +2696,7 @@ public:
   */
 
   tresult PLUGIN_API onFocus(TBool state) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2651,7 +2708,7 @@ public:
   */
 
   tresult PLUGIN_API setFrame(IPlugFrame* frame) override {
-    MIP_PRINT;
+    //MIP_PRINT;
 
 //    if (MDescriptor->hasEditor()) {
       MPlugFrame = frame;
@@ -2671,7 +2728,7 @@ public:
   */
 
   tresult PLUGIN_API canResize() override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -2683,7 +2740,7 @@ public:
   */
 
   tresult PLUGIN_API checkSizeConstraint(ViewRect* rect) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return kResultOk;//False;
   }
 
