@@ -117,6 +117,7 @@ public: // process threaded
   */
 
   void process(const clap_process_t *process) {
+    //MIP_PRINT;
     //count_param_events(process);
     MVoiceContext.process = process;
     float* out0 = process->audio_outputs->data32[0];
@@ -216,6 +217,9 @@ private: // events
   //void handleEvents(const clap_process_t* process) {
     //const clap_input_events_t* in_events = process->in_events;
     uint32_t num_events = in_events->size(in_events);
+
+    //MIP_Print("num_events: %i\n",num_events);
+
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
       if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
@@ -239,15 +243,15 @@ private: // events
 
   void handleEvent(const clap_event_header_t* header) {
     switch (header->type) {
-      case CLAP_EVENT_NOTE_ON:          handleNoteOnEvent((const clap_event_note_t*)header);                break;
-      case CLAP_EVENT_NOTE_OFF:         handleNoteOffEvent((const clap_event_note_t*)header);                    break;
-      case CLAP_EVENT_NOTE_CHOKE:       handleNoteChokeEvent((const clap_event_note_t*)header);                  break;
-      case CLAP_EVENT_NOTE_EXPRESSION:  handleNoteExpressionEvent((const clap_event_note_expression_t*)header);  break;
-      case CLAP_EVENT_PARAM_VALUE:      handleParamValueEvent((const clap_event_param_value_t*)header);          break;
-      case CLAP_EVENT_PARAM_MOD:        handleParamModEvent((const clap_event_param_mod_t*)header);              break;
-      case CLAP_EVENT_MIDI:             handleMidiEvent((const clap_event_midi_t*)header);                       break;
-      case CLAP_EVENT_MIDI_SYSEX:       handleMidiSysexEvent((const clap_event_midi_sysex_t*)header);            break;
-      case CLAP_EVENT_MIDI2:            handleMidi2Event((const clap_event_midi2_t*)header);                     break;
+      case CLAP_EVENT_NOTE_ON:          handleNoteOnEvent((const clap_event_note_t*)header);                    break;
+      case CLAP_EVENT_NOTE_OFF:         handleNoteOffEvent((const clap_event_note_t*)header);                   break;
+      case CLAP_EVENT_NOTE_CHOKE:       handleNoteChokeEvent((const clap_event_note_t*)header);                 break;
+      case CLAP_EVENT_NOTE_EXPRESSION:  handleNoteExpressionEvent((const clap_event_note_expression_t*)header); break;
+      case CLAP_EVENT_PARAM_VALUE:      handleParamValueEvent((const clap_event_param_value_t*)header);         break;
+      case CLAP_EVENT_PARAM_MOD:        handleParamModEvent((const clap_event_param_mod_t*)header);             break;
+      case CLAP_EVENT_MIDI:             handleMidiEvent((const clap_event_midi_t*)header);                      break;
+      case CLAP_EVENT_MIDI_SYSEX:       handleMidiSysexEvent((const clap_event_midi_sysex_t*)header);           break;
+      case CLAP_EVENT_MIDI2:            handleMidi2Event((const clap_event_midi2_t*)header);                    break;
     }
   }
 

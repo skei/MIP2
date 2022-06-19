@@ -248,25 +248,22 @@ public: // clap
   //----------
 
   clap_process_status process(const clap_process_t *process) final {
+    //MIP_PRINT;
+    //MIP_Print("process->in_events->size() = %i\n",process->in_events->size(process->in_events));
     flushAudioParams();
-    preProcessEvents(process->in_events,process->out_events);
-
+//    preProcessEvents(process->in_events,process->out_events);
     // processes into MFrameBuffer, which is then copied into 'outputs'
-    // todo: do the copy heer, sp we can add effects..
+    // todo: do the copy here, sp we can add effects..
     MVoiceManager.process(process);
-
     float v = MParameters[PAR_MASTER_VOL]->getValue();  // vol
     float p = MParameters[PAR_MASTER_PAN]->getValue();  // pan
     float l = v * (1.0 - p);
     float r = v * (      p);
-
     float** outputs = process->audio_outputs[0].data32;
     uint32_t length = process->frames_count;
     MIP_ScaleStereoBuffer(outputs,l,r,length);
-
-    postProcessEvents(process->in_events,process->out_events);
+//    postProcessEvents(process->in_events,process->out_events);
     flushHostParams(process->out_events);
-
     // hack!
     // update gui (state only) in process!
     if (MEditor && MIsEditorOpen) {
@@ -282,7 +279,6 @@ public: // clap
       ((sa_ts1_Editor*)MEditor)->MReleasedVoicesWidget->setValue(num_released);
       ((sa_ts1_Editor*)MEditor)->MTotalVoicesWidget->setValue(num_playing + num_released);
     }
-
     return CLAP_PROCESS_CONTINUE;
   }
 

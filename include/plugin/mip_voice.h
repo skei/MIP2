@@ -200,6 +200,9 @@ public:
     while (remaining > 0) {
       if (events.read(&next_event)) {
         // we have more events
+
+        //MIP_Print("current_time: %i next_event.time: %i\n",current_time,next_event.time);
+
         int32_t length = next_event.time - current_time;
         if (length > 0) {
 

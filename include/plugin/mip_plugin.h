@@ -202,8 +202,9 @@ public: // plugin
   //----------
 
   clap_process_status process(const clap_process_t *process) override {
-
     flushAudioParams();
+
+    MIP_Print("process->in_events->size() = %i\n",process->in_events->size(process->in_events));
     preProcessEvents(process->in_events,process->out_events);
     //..
     postProcessEvents(process->in_events,process->out_events);
@@ -664,7 +665,6 @@ public: // ext - params
   //----------
 
   void params_flush(const clap_input_events_t  *in, const clap_output_events_t *out) override {
-    CLAP_Print("\n");
     preProcessEvents(in,out);
     postProcessEvents(in,out);
     //handle_input_events(in,out);
@@ -1139,9 +1139,11 @@ public: // param / mod
 public: //events
 //------------------------------
 
+  // prints NUm_events: 2
+
   virtual void preProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
     uint32_t num_events = in_events->size(in_events);
-    //MIP_Print("num events: %i\n",num_events);
+    //MIP_Print("num events: %i\n",num_events); // -> 2
     for (uint32_t i=0; i<num_events; i++) {
       const clap_event_header_t* header = in_events->get(in_events,i);
 
@@ -1159,6 +1161,7 @@ public: //events
   //----------
 
   virtual void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+    //MIP_PRINT;
   }
 
 //------------------------------
@@ -1166,6 +1169,7 @@ public:
 //------------------------------
 
   virtual void handle_event(const clap_event_header_t* header) {
+    //MIP_PRINT;
     switch (header->type) {
       case CLAP_EVENT_PARAM_VALUE:      handle_parameter_event((clap_event_param_value_t*)header); break;
       case CLAP_EVENT_PARAM_MOD:        handle_modulation_event((clap_event_param_mod_t*)header); break;

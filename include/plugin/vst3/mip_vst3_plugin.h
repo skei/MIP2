@@ -211,14 +211,17 @@ public:
 private: // in_events
 //------------------------------
 
-  static uint32_t vst3_input_events_size_callback(const struct clap_input_events *list) {
-    MIP_Vst3Plugin* plugin = (MIP_Vst3Plugin*)list->ctx;
-    return plugin->vst3_input_events_size();
+  uint32_t vst3_input_events_size() {
+    //MIP_Print("num events: %i\n",MVst3NumEvents);
+    return MVst3NumEvents;
   }
 
-  static const clap_event_header_t* vst3_input_events_get_callback(const struct clap_input_events *list, uint32_t index) {
-    MIP_Vst3Plugin* plugin = (MIP_Vst3Plugin*)list->ctx;
-    return plugin->vst3_input_events_get(index);
+  //----------
+
+  const clap_event_header_t* vst3_input_events_get(uint32_t index) {
+    //MIP_Print("%i: type:%i offset:%i index %i sub %i\n",index,MVst3Events[index].type,MVst3Events[index].offset,MVst3Events[index].index,MVst3Events[index].subindex );
+    _vst3_event_* ev = &MVst3Events[index];
+    return convertEvent(ev);
   }
 
   //----------
@@ -231,29 +234,24 @@ private: // in_events
 
   //----------
 
-  uint32_t vst3_input_events_size() {
-    //MIP_Print("num events: %i\n",MVst3NumEvents);
-    return MVst3NumEvents;
+  static uint32_t vst3_input_events_size_callback(const struct clap_input_events *list) {
+    MIP_Vst3Plugin* plugin = (MIP_Vst3Plugin*)list->ctx;
+    return plugin->vst3_input_events_size();
   }
 
-  //----------
-
-  const clap_event_header_t* vst3_input_events_get(uint32_t index) {
-    MIP_Print("%i. type:%i offset:%i index %i sub %i\n",index,MVst3Events[index].type,MVst3Events[index].offset,MVst3Events[index].index,MVst3Events[index].subindex );
-    _vst3_event_* ev = &MVst3Events[index];
-    return convertEvent(ev);
+  static const clap_event_header_t* vst3_input_events_get_callback(const struct clap_input_events *list, uint32_t index) {
+    MIP_Vst3Plugin* plugin = (MIP_Vst3Plugin*)list->ctx;
+    return plugin->vst3_input_events_get(index);
   }
 
 //------------------------------
 private: // out_events
 //------------------------------
 
-  static bool vst3_output_events_try_push_callback(const struct clap_output_events *list, const clap_event_header_t *event) {
-    MIP_Vst3Plugin* plugin = (MIP_Vst3Plugin*)list->ctx;
-    return plugin->vst3_output_events_try_push(event);
+  bool vst3_output_events_try_push(const clap_event_header_t *event) {
+    MIP_Print("TODO\n");
+    return true;
   }
-
-  //----------
 
   clap_output_events_t MVst3OutputEvents = {
     this,
@@ -262,10 +260,12 @@ private: // out_events
 
   //----------
 
-  bool vst3_output_events_try_push(const clap_event_header_t *event) {
-    MIP_PRINT;
-    return true;
+  static bool vst3_output_events_try_push_callback(const struct clap_output_events *list, const clap_event_header_t *event) {
+    MIP_Vst3Plugin* plugin = (MIP_Vst3Plugin*)list->ctx;
+    return plugin->vst3_output_events_try_push(event);
   }
+
+  //----------
 
 //------------------------------
 private:
@@ -307,10 +307,10 @@ private:
     IEventList* inputEvents = data.inputEvents;
     if (inputEvents) {
       int32_t num = inputEvents->getEventCount();
+      //MIP_Print("num %i\n",num);
       for (int32_t i=0; i<num; i++) {
         Event event;
         inputEvents->getEvent(i,event);
-        //MIP_Print("%i (MVst3NumEvents: %i)\n",i,MVst3NumEvents);
         MVst3Events[MVst3NumEvents].offset    = event.sampleOffset;
         MVst3Events[MVst3NumEvents].type      = 2;
         MVst3Events[MVst3NumEvents].index     = i;
@@ -347,7 +347,7 @@ private:
 
       case 1: {
 
-        MIP_Print("parameter\n");
+        //MIP_Print("parameter\n");
 
         if (MVst3ParamChanges) {
           clap_event_param_value_t* param_value_event = (clap_event_param_value_t*)MEventBuffer;
@@ -435,26 +435,51 @@ private:
               MIP_Print("kDataEvent: ofs %i\n",offset);
               break;
             }
+
             case Event::kPolyPressureEvent: {
               MIP_Print("kPolyPressureEvent: ofs %i chan %i pitch %i pres %.2f noteid %i\n",offset,event.polyPressure.channel,event.polyPressure.pitch,event.polyPressure.pressure,event.polyPressure.noteId);
               break;
             }
+
             case Event::kNoteExpressionValueEvent: {
-              const char* typestr = "?";
+              //const char* typestr = "?";
+              //switch (event.noteExpressionValue.typeId) {
+              //  case kTuningTypeID:     typestr = "tuning";     break;
+              //  case kBrightnessTypeID: typestr = "brightness"; break;
+              //  case kVolumeTypeID:     typestr = "volume";     break;
+              //  case kPanTypeID:        typestr = "pan";        break;
+              //  case kVibratoTypeID:    typestr = "vibrato";    break;
+              //  case kExpressionTypeID: typestr = "expression"; break;
+              //}
+              MIP_Print("kNoteExpressionValueEvent: ofs %i type %i val %.2f noteid %i\n",offset,event.noteExpressionValue.typeId,event.noteExpressionValue.value,event.noteExpressionValue.noteId);
+              clap_event_note_expression_t* note_expression_event = (clap_event_note_expression_t*)MEventBuffer;
+              memset(note_expression_event,0,sizeof(clap_event_note_expression_t));
+              note_expression_event->header.size     = sizeof(clap_event_note_expression_t);
+              note_expression_event->header.time     = AEvent->offset;
+              note_expression_event->header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+              note_expression_event->header.type     = CLAP_EVENT_NOTE_EXPRESSION;
+              note_expression_event->header.flags    = 0;
+              //note_expression_event->cookie          = nullptr;
+              note_expression_event->port_index      = -1;//event.busIndex;
+              note_expression_event->channel         = -1;//event.noteExpressionValue.channel;
+              note_expression_event->key             = event.noteExpressionValue.noteId;
+              note_expression_event->note_id         = event.noteExpressionValue.noteId;
+              //note_expression_event->expression_id   = event.noteExpressionValue.velocity;
               switch (event.noteExpressionValue.typeId) {
-                case kTuningTypeID:     typestr = "tuning";     break;
-                case kBrightnessTypeID: typestr = "brightness"; break;
-                case kVolumeTypeID:     typestr = "volume";     break;
-                case kPanTypeID:        typestr = "pan";        break;
-                case kVibratoTypeID:    typestr = "vibrato";    break;
-                case kExpressionTypeID: typestr = "expression"; break;
+                case kTuningTypeID:     note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_TUNING;     break;
+                case kBrightnessTypeID: note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_BRIGHTNESS; break;
+                case kVolumeTypeID:     note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_VOLUME;     break;
+                case kPanTypeID:        note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_PAN;        break;
+                case kVibratoTypeID:    note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_VIBRATO;    break;
+                case kExpressionTypeID: note_expression_event->expression_id = CLAP_NOTE_EXPRESSION_EXPRESSION; break;
               }
-              MIP_Print("kNoteExpressionValueEvent: ofs %i type %i (%s) val %.2f noteid %i\n",offset,event.noteExpressionValue.typeId,typestr,event.noteExpressionValue.value,event.noteExpressionValue.noteId);
-              break;
+              return (clap_event_header_t*)note_expression_event;
+              //break;
             }
             case Event::kNoteExpressionTextEvent: {
               MIP_Print("kNoteExpressionTextEvent\n");
-              break;
+
+              //break;
             }
             case Event::kChordEvent: {
               MIP_Print("kChordEvent\n");
@@ -1245,7 +1270,6 @@ public:
     int num_read  = 0;
     uint32_t i = 666;
     state->read(&i,sizeof(uint32_t),&num_read);
-
     return kResultOk;
   }
 
@@ -1280,7 +1304,6 @@ public:
     int num_written  = 0;
     uint32_t i = 666;
     state->write(&i,sizeof(uint32_t),&num_written);
-
     return kResultOk;
   }
 
@@ -1587,13 +1610,19 @@ public:
 
   tresult PLUGIN_API process(ProcessData& data) override {
 
+    //MIP_Print("--- process start ---\n");
+
     MVst3ParamChanges = data.inputParameterChanges;
     MVst3EventList    = data.inputEvents;
     MVst3NumEvents    = 0;
 
-    prepareParameters(data);
+    //MIP_Print("PRE num events: %i\n",MVst3NumEvents);
+
     prepareEvents(data);
-    sortEvents();
+//    prepareParameters(data);
+//    sortEvents();
+
+    //MIP_Print("POST num events: %i\n",MVst3NumEvents);
 
     //if (MVst3NumEvents > 0) {
     //  MIP_Print("events: %i\n",MVst3NumEvents);
@@ -1604,8 +1633,10 @@ public:
 
       //MProcessContext.num_inputs = MDescriptor->getNumAudioInputs();
       //MProcessContext.num_outputs = MDescriptor->getNumAudioOutputs();
-      ////for (uint32_t i=0; i<MProcessContext.num_inputs; i++)  { MProcessContext.inputs[i]  = data.inputs[0].channelBuffers32[i];  }
-      ////for (uint32_t i=0; i<MProcessContext.num_outputs; i++) { MProcessContext.outputs[i] = data.outputs[0].channelBuffers32[i]; }
+
+//      for (uint32_t i=0; i<MProcessContext.num_inputs; i++)  { MProcessContext.inputs[i]  = data.inputs[0].channelBuffers32[i];  }
+//      for (uint32_t i=0; i<MProcessContext.num_outputs; i++) { MProcessContext.outputs[i] = data.outputs[0].channelBuffers32[i]; }
+
       //MProcessContext.inputs      = data.inputs[0].channelBuffers32;
       //MProcessContext.outputs     = data.outputs[0].channelBuffers32;
       //MProcessContext.num_samples     = data.numSamples;
@@ -1613,21 +1644,21 @@ public:
       //MProcessContext.tempo         = data.processContext->tempo;
       //MPlugin->on_plugin_process(&MProcessContext);
 
-//      MClapProcess.steady_time          = 0;
-//      MClapProcess.frames_count         = 0;
-//      MClapProcess.transport            = nullptr;
+      MAudioInputs.data32               = data.inputs[0].channelBuffers32;//MAudioInputBuffers;
+      MAudioInputs.data64               = data.inputs[0].channelBuffers64;//MAudioInputBuffers_64;
+      MAudioInputs.channel_count        = 2;
+      MAudioInputs.latency              = 0;
+      MAudioInputs.constant_mask        = 0;
 
-      MAudioInputs.data32         = MAudioInputBuffers;
-      MAudioInputs.data64         = MAudioInputBuffers_64;
-      MAudioInputs.channel_count  = 2;
-      MAudioInputs.latency        = 0;
-      MAudioInputs.constant_mask  = 0;
+      MAudioOutputs.data32              = data.outputs[0].channelBuffers32;//MAudioOutputBuffers;
+      MAudioOutputs.data64              = data.outputs[0].channelBuffers64;//MAudioOutputBuffers_64;
+      MAudioOutputs.channel_count       = 2;
+      MAudioOutputs.latency             = 0;
+      MAudioOutputs.constant_mask       = 0;
 
-      MAudioOutputs.data32         = MAudioOutputBuffers;
-      MAudioOutputs.data64         = MAudioOutputBuffers_64;
-      MAudioOutputs.channel_count  = 2;
-      MAudioOutputs.latency        = 0;
-      MAudioOutputs.constant_mask  = 0;
+      MClapProcess.steady_time          = 0;
+      MClapProcess.frames_count         = data.numSamples;
+      MClapProcess.transport            = nullptr;
 
       MClapProcess.audio_inputs         = &MAudioInputs;
       MClapProcess.audio_outputs        = &MAudioOutputs;
@@ -1636,9 +1667,11 @@ public:
       MClapProcess.in_events            = &MVst3InputEvents;
       MClapProcess.out_events           = &MVst3OutputEvents;
 
+      //uint32_t num = MClapProcess.in_events->size(MClapProcess.in_events);
+      //MIP_Print("num events: %i process.in_events.size: %i\n",MVst3NumEvents,num);
+
       // clap takes over
       MPlugin->process(&MClapProcess);
-
 
     }
 
@@ -1651,8 +1684,10 @@ public:
     // I recall the Steinberg Validator complaining that process() should just
     // return kResultTrue...
 
-    MVst3NumEvents = 0;
-    memset(MEventBuffer,0,1024);
+//    MVst3NumEvents = 0;
+//    memset(MEventBuffer,0,1024);
+
+    //MIP_Print("--- process end ---\n");
 
     return kResultOk; // = kResulttrue (0)
   }
@@ -2174,7 +2209,7 @@ public:
   */
 
   int32 PLUGIN_API getParameterCount() override {
-    MIP_PRINT;
+    //MIP_PRINT;
     return MPlugin->params_count();
     //return 0;
   }
@@ -2182,7 +2217,7 @@ public:
   //----------
 
   tresult PLUGIN_API getParameterInfo(int32 paramIndex, ParameterInfo& info) override {
-    MIP_Print("index %i\n",paramIndex);
+    //MIP_Print("index %i\n",paramIndex);
     if (paramIndex < 0) return kResultFalse;
 
     int32_t num_params = MPlugin->params_count();
@@ -2223,7 +2258,7 @@ public:
   //----------
 
   tresult PLUGIN_API getParamStringByValue(ParamID id, ParamValue valueNormalized, String128 string) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (id < MPlugin->params_count()) {
       //MIP_Parameter* param = MDescriptor->getParameter(id);
       char buffer[32]; // ???
@@ -2260,7 +2295,7 @@ public:
   //----------
 
   ParamValue PLUGIN_API normalizedParamToPlain(ParamID id, ParamValue valueNormalized) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (id < MPlugin->params_count()) {
       //MIP_Parameter* param = MDescriptor->getParameter(id);
       //float v = param->from01(valueNormalized);
@@ -2275,7 +2310,7 @@ public:
   //----------
 
   ParamValue PLUGIN_API plainParamToNormalized(ParamID id, ParamValue plainValue) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (id < MPlugin->params_count()) {
 //      MIP_Parameter* param = MDescriptor->getParameter(id);
 //      float v = param->to01(plainValue);
@@ -2290,7 +2325,7 @@ public:
   //----------
 
   ParamValue PLUGIN_API getParamNormalized(ParamID id) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (id < MPlugin->params_count()) {
       //float v = MPlugin->getParamValue(id);
       MIP_Parameter* param = MParameters->item(id);
@@ -2320,7 +2355,7 @@ public:
   // bitwig sends a ParamID = 0x3f800000
 
   tresult PLUGIN_API setParamNormalized(ParamID id, ParamValue value) override {
-    MIP_PRINT;
+    //MIP_PRINT;
 //    if (id >= MDescriptor->getNumParameters()) {
 //      return kResultFalse; // ???
 //    }
@@ -2666,10 +2701,10 @@ public:
 
   void onTimer() override {
     //MIP_PRINT;
-//    #ifndef MIP_NO_GUI
+    #ifndef MIP_NO_GUI
 //      MPlugin->on_updateEditor(MEditor);
 //      MPlugin->flushParamsToHost();
-//    #endif // MIP_NO_GUI
+    #endif // MIP_NO_GUI
   }
 
 //
