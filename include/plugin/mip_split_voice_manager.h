@@ -318,14 +318,16 @@ private: // events
   // note_id is always -1
 
   void handleNoteExpressionEvent(const clap_event_note_expression_t* event) {
-    //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
+
+    MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
+
     //MIP_Print("%f\n",event->value);
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      if (MVoices[i].note.note_id == event->note_id) {
-      //  if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
+      //if (MVoices[i].note.note_id == event->note_id) {
+        if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
           MVoices[i].prepare_expression(event->header.time,event->expression_id,event->value);
-      //  }
-      }
+        }
+      //}
     }
   }
 

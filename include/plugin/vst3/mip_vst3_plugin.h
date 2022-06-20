@@ -7,11 +7,7 @@
 //----------
 
 /*
-  this is turning more and more into a full host..
-  borrow the process stuff from the apps/clap-host
-  TODO:
-  - get/setState
-  - get/setEditorState
+  todo:
 */
 
 #include "mip.h"
@@ -27,7 +23,7 @@
 
 #define MIP_VST3_MAX_EVENTS_PER_BLOCK 4096
 #define MIP_VST3_MAX_EVENT_SIZE       256
-
+#define MIP_VST3_MAX_NOTE_IDS         32
 /*
 struct mip_vst3event {
   int16_t offset    = 0;
@@ -41,6 +37,13 @@ struct mip_vst3event {
   double  value     = 0.0;
 };
 */
+
+struct note_id_t {
+  int32_t note_id   = -1;
+  int16_t port      = -1;
+  int16_t channel   = -1;
+  int16_t key       = -1;
+};
 
 //----------------------------------------------------------------------
 //
@@ -166,6 +169,8 @@ private:
   uint32_t  MNumEvents = 0;
   char      MEvents[MIP_VST3_MAX_EVENTS_PER_BLOCK * MIP_VST3_MAX_EVENT_SIZE] = {0};
 
+  uint32_t  MLastNoteId                     = 0;
+  note_id_t MNoteIds[MIP_VST3_MAX_NOTE_IDS] = {};
 
 //------------------------------
 public:
@@ -299,22 +304,6 @@ private:
                 param_value_event->key             = 0;
                 param_value_event->value           = value;
 
-                //IParamValueQueue* paramQueue = MVst3ParamChanges->getParameterData( AEvent->index );
-                //if (paramQueue) {
-                //int32_t offset = 0;
-                //double value = 0;
-                //paramQueue->getPoint(AEvent->subindex,offset,value);
-                //MVst3Events[MVst3NumEvents].offset    = offset;
-                //MVst3Events[MVst3NumEvents].type      = 1; // CLAP_EVENT_PARAM_VALUE;
-                //MVst3Events[MVst3NumEvents].index     = i; // paramQueue->getParameterId();
-                //MVst3Events[MVst3NumEvents].subindex  = j; // ---
-                //MVst3Events[MVst3NumEvents].port      = 0;
-                //MVst3Events[MVst3NumEvents].chan      = 0;
-                //MVst3Events[MVst3NumEvents].key       = 0;
-                //MVst3Events[MVst3NumEvents].noteid    = 0;
-                //MVst3Events[MVst3NumEvents].value     = value;
-                //MVst3NumEvents += 1;
-
               }
             } // id < param
           } // paramqueue
@@ -344,11 +333,30 @@ private:
             note_event->header.space_id = CLAP_CORE_EVENT_SPACE_ID;
             note_event->header.type     = CLAP_EVENT_NOTE_ON;
             note_event->header.flags    = 0;
-            note_event->note_id         = event.noteOn.pitch;
+            note_event->note_id         = event.noteOn.noteId;
             note_event->port_index      = 0;//event.busIndex;
             note_event->channel         = event.noteOn.channel;
             note_event->key             = event.noteOn.pitch;
             note_event->velocity        = event.noteOn.velocity;
+            //event.noteOn.tuning
+            //event.noteOn.length
+
+            //int32_t id = (event.noteOn.channel << 8) + event.noteOn.pitch;
+            MNoteIds[MLastNoteId].note_id = event.noteOn.noteId;
+            MNoteIds[MLastNoteId].port    = 0;//event.busIndex;
+            MNoteIds[MLastNoteId].channel = event.noteOn.channel;
+            MNoteIds[MLastNoteId].key     = event.noteOn.pitch;
+            MLastNoteId += 1;
+            MLastNoteId %= MIP_VST3_MAX_NOTE_IDS;
+
+            //for (uint32_t i=0; i<MIP_VST3_MAX_NOTE_IDS; i++) {
+            //  int32_t id = MNoteIds[i];
+            //  if (id >= 0) {
+            //    chan  = (MNoteIds[i] & 0xff00) >> 8;
+            //    key   = (MNoteIds[i] & 0xff);
+            //  }
+            //}
+
             break;
           }
 
@@ -362,11 +370,22 @@ private:
             note_event->header.space_id = CLAP_CORE_EVENT_SPACE_ID;
             note_event->header.type     = CLAP_EVENT_NOTE_OFF;
             note_event->header.flags    = 0;
-            note_event->note_id         = event.noteOff.pitch;
+            note_event->note_id         = event.noteOff.noteId;
             note_event->port_index      = 0;//event.busIndex;
             note_event->channel         = event.noteOff.channel;
             note_event->key             = event.noteOff.pitch;
             note_event->velocity        = event.noteOff.velocity;
+            //event.noteOff.tuning
+
+            for (uint32_t i=0; i<MIP_VST3_MAX_NOTE_IDS; i++) {
+              if (MNoteIds[i].note_id == event.noteOff.noteId) {
+                MNoteIds[i].note_id = -1;
+                MNoteIds[i].port    = -1;
+                MNoteIds[i].channel = -1;
+                MNoteIds[i].key     = -1;
+              }
+            }
+
             break;
           }
 
@@ -394,15 +413,34 @@ private:
             uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
             clap_event_note_expression_t* note_expression_event = (clap_event_note_expression_t*)&MEvents[pos];
             memset(note_expression_event,0,sizeof(clap_event_note_expression_t));
+
+            //uint32_t chan = (event.noteExpressionValue.noteId >> 8);
+            //uint32_t key = (event.noteExpressionValue.noteId & 255);
+
+            int32_t port = -1;
+            int32_t chan = -1;
+            int32_t key = -1;
+
+            for (uint32_t i=0; i<MIP_VST3_MAX_NOTE_IDS; i++) {
+              if (MNoteIds[i].note_id == event.noteExpressionValue.noteId) {
+                port    = MNoteIds[i].port;
+                chan    = MNoteIds[i].channel;
+                key     = MNoteIds[i].key;
+              }
+            }
+
+            MIP_Assert(chan >= 0);
+            MIP_Assert(key >= 0);
+
             note_expression_event->header.size     = sizeof(clap_event_note_expression_t);
             note_expression_event->header.time     = event.sampleOffset;
             note_expression_event->header.space_id = CLAP_CORE_EVENT_SPACE_ID;
             note_expression_event->header.type     = CLAP_EVENT_NOTE_EXPRESSION;
             note_expression_event->header.flags    = 0;
             note_expression_event->note_id         = event.noteExpressionValue.noteId;
-            note_expression_event->port_index      = 0;//event.busIndex;
-            note_expression_event->channel         = 0;//event.noteExpressionValue.channel;
-            note_expression_event->key             = 0;//event.noteExpressionValue.pitch;
+            note_expression_event->port_index      = port;//event.busIndex;
+            note_expression_event->channel         = chan;//0;//event.noteExpressionValue.channel;
+            note_expression_event->key             = key;//event.noteExpressionValue.noteId;
             switch (event.noteExpressionValue.typeId) {
               case kVolumeTypeID:
                 // Volume, plain range [0 = -oo , 0.25 = 0dB, 0.5 = +6dB, 1 = +12dB]:
