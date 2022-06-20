@@ -18,25 +18,13 @@
 
 //typedef MIP_Array<clap_event_header_t*> MIP_Vst3EventHeaders;
 
-#define MIP_VST3_TIMER_MS             50
-#define MIP_VST3_MAX_AUDIO_BLOCK_SIZE 4096
+#define MIP_VST3_TIMER_MS               50
+#define MIP_VST3_MAX_AUDIO_BLOCK_SIZE   4096
+#define MIP_VST3_MAX_EVENTS_PER_BLOCK   4096
+#define MIP_VST3_MAX_EVENT_SIZE         256
+#define MIP_VST3_MAX_NOTE_IDS           32
 
-#define MIP_VST3_MAX_EVENTS_PER_BLOCK 4096
-#define MIP_VST3_MAX_EVENT_SIZE       256
-#define MIP_VST3_MAX_NOTE_IDS         32
-/*
-struct mip_vst3event {
-  int16_t offset    = 0;
-  int16_t type      = 0;  // 0:none, 1:IParamValueChanges (params/midi), 2:IEventList (notes)
-  int16_t index     = 0;  // index in lists --"--  (the real event)
-  int16_t subindex  = 0;  // IParamValueQueue (interpolated param values)
-  int16_t port      = 0;
-  int16_t chan      = 0;
-  int16_t key       = 0;
-  int16_t noteid    = 0;
-  double  value     = 0.0;
-};
-*/
+// events buffer : 4096 * 256 = 1m
 
 struct note_id_t {
   int32_t note_id   = -1;
@@ -51,6 +39,7 @@ struct note_id_t {
 //
 //----------------------------------------------------------------------
 
+/*
 class MIP_Vst3Window
 : public MIP_ImplementedWindow {
 
@@ -88,13 +77,14 @@ public:
 
 };
 
+*/
+
 //----------------------------------------------------------------------
 //
 // plugin
 //
 //----------------------------------------------------------------------
 
-//class MIP_Vst3Plugin {
 class MIP_Vst3Plugin
 : public IComponent
 , public IAudioProcessor
@@ -115,12 +105,8 @@ private:
 
   MIP_ParameterArray*             MParameters         = nullptr;
   MIP_ClapPlugin*                 MPlugin             = nullptr;
-  //MIP_Descriptor*                 MDescriptor         = nullptr;
   const clap_plugin_descriptor_t* MDescriptor         = nullptr;
   MIP_Vst3HostImplementation*     MHost               = nullptr;
-  //#ifndef MIP_NO_GUI
-  //MIP_Editor*                     MEditor             = nullptr;
-  //#endif
   uint32_t                        MRefCount           = 1;
   IComponentHandler*              MComponentHandler   = nullptr;
   IComponentHandler2*             MComponentHandler2  = nullptr;
@@ -140,31 +126,33 @@ private:
   clap_process_t                  MClapProcess        = {};
   clap_event_transport_t          MTransport          = {};
 
-  MIP_Vst3Window*                 MWindow = nullptr;
+  //alignas(32) float               MAudioInputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  //alignas(32) float               MAudioInputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  //alignas(32) float               MAudioOutputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  //alignas(32) float               MAudioOutputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  //alignas(32) float*              MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
+  //alignas(32) float*              MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
+  //
+  //alignas(64) double              MAudioInputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  //alignas(64) double              MAudioInputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  //alignas(64) double              MAudioOutputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  //alignas(64) double              MAudioOutputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  //alignas(64) double*             MAudioInputBuffers_64[2] = { MAudioInputBuffer1_64, MAudioInputBuffer2_64 };
+  //alignas(64) double*             MAudioOutputBuffers_64[2] = { MAudioOutputBuffer1_64, MAudioOutputBuffer2_64 };
 
-  //-----
-
-  alignas(32) float               MAudioInputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(32) float               MAudioInputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(32) float               MAudioOutputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(32) float               MAudioOutputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(32) float*              MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
-  alignas(32) float*              MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
-
-  alignas(64) double              MAudioInputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(64) double              MAudioInputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(64) double              MAudioOutputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(64) double              MAudioOutputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(64) double*             MAudioInputBuffers_64[2] = { MAudioInputBuffer1_64, MAudioInputBuffer2_64 };
-  alignas(64) double*             MAudioOutputBuffers_64[2] = { MAudioOutputBuffer1_64, MAudioOutputBuffer2_64 };
-
-  clap_audio_buffer_t             MAudioInputs = {0};
+  clap_audio_buffer_t             MAudioInputs  = {0};
   clap_audio_buffer_t             MAudioOutputs = {0};
 
   uint32_t                        MNumEvents                                                        = 0;
   char                            MEvents[MIP_VST3_MAX_EVENTS_PER_BLOCK * MIP_VST3_MAX_EVENT_SIZE]  = {0};
   uint32_t                        MLastNoteId                                                       = 0;
   note_id_t                       MNoteIds[MIP_VST3_MAX_NOTE_IDS]                                   = {};
+
+  //MIP_Vst3Window*                 MWindow             = nullptr;
+  //MIP_Descriptor*                 MDescriptor         = nullptr;
+  //#ifndef MIP_NO_GUI
+  //MIP_Editor*                     MEditor             = nullptr;
+  //#endif
 
 //------------------------------
 public:
@@ -181,7 +169,6 @@ public:
   //----------
 
   virtual ~MIP_Vst3Plugin() {
-    //MIP_PRINT;
     if (MPlugin) delete MPlugin;
     if (MParamInfos) free(MParamInfos);
   }
@@ -190,9 +177,7 @@ public:
 public:
 //------------------------------
 
-  //AEffect* getAEffect() {
-  //  return &MAEffect;
-  //}
+  // called from vst3Entry
 
   void setParameters(MIP_ParameterArray* AParameters) {
     MParameters = AParameters;
@@ -203,18 +188,12 @@ private: // in_events
 //------------------------------
 
   uint32_t vst3_input_events_size() {
-    //MIP_Print("num events: %i\n",MVst3NumEvents);
-    //return MVst3NumEvents;
     return MNumEvents;
   }
 
   //----------
 
   const clap_event_header_t* vst3_input_events_get(uint32_t index) {
-    //MIP_Print("%i: type:%i offset:%i index %i sub %i\n",index,MVst3Events[index].type,MVst3Events[index].offset,MVst3Events[index].index,MVst3Events[index].subindex );
-    //mip_vst3event* ev = &MVst3Events[index];
-    //return convertEvent(ev);
-
     uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * index;
     return (const clap_event_header_t*)&MEvents[pos];
   }
@@ -278,11 +257,9 @@ private:
             if (id < MPlugin->params_count()) {
               int32_t pointcount = paramQueue->getPointCount();
               for (int32_t j=0; j<pointcount; j++) {
-
                 int32_t offset = 0;
                 double value = 0;
-                paramQueue->getPoint(j,offset,value); // pointcount-1 = last value..
-
+                paramQueue->getPoint(j,offset,value);
                 uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
                 clap_event_param_value_t* param_value_event = (clap_event_param_value_t*)&MEvents[pos];
                 memset(param_value_event,0,sizeof(clap_event_param_value_t));
@@ -297,7 +274,6 @@ private:
                 param_value_event->channel         = 0;
                 param_value_event->key             = 0;
                 param_value_event->value           = value;
-
               }
             } // id < param
           } // paramqueue
@@ -318,7 +294,6 @@ private:
         switch (event.type) {
 
           case Event::kNoteOnEvent: {
-
             uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
             clap_event_note_t* note_event = (clap_event_note_t*)&MEvents[pos];
             memset(note_event,0,sizeof(clap_event_note_t));
@@ -328,34 +303,22 @@ private:
             note_event->header.type     = CLAP_EVENT_NOTE_ON;
             note_event->header.flags    = 0;
             note_event->note_id         = event.noteOn.noteId;
-            note_event->port_index      = 0;//event.busIndex;
+            note_event->port_index      = 0; // event.busIndex;
             note_event->channel         = event.noteOn.channel;
             note_event->key             = event.noteOn.pitch;
             note_event->velocity        = event.noteOn.velocity;
             //event.noteOn.tuning
             //event.noteOn.length
-
-            //int32_t id = (event.noteOn.channel << 8) + event.noteOn.pitch;
             MNoteIds[MLastNoteId].note_id = event.noteOn.noteId;
-            MNoteIds[MLastNoteId].port    = 0;//event.busIndex;
+            MNoteIds[MLastNoteId].port    = 0; // event.busIndex;
             MNoteIds[MLastNoteId].channel = event.noteOn.channel;
             MNoteIds[MLastNoteId].key     = event.noteOn.pitch;
             MLastNoteId += 1;
             MLastNoteId %= MIP_VST3_MAX_NOTE_IDS;
-
-            //for (uint32_t i=0; i<MIP_VST3_MAX_NOTE_IDS; i++) {
-            //  int32_t id = MNoteIds[i];
-            //  if (id >= 0) {
-            //    chan  = (MNoteIds[i] & 0xff00) >> 8;
-            //    key   = (MNoteIds[i] & 0xff);
-            //  }
-            //}
-
             break;
           }
 
           case Event::kNoteOffEvent: {
-
             uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
             clap_event_note_t* note_event = (clap_event_note_t*)&MEvents[pos];
             memset(note_event,0,sizeof(clap_event_note_t));
@@ -365,12 +328,11 @@ private:
             note_event->header.type     = CLAP_EVENT_NOTE_OFF;
             note_event->header.flags    = 0;
             note_event->note_id         = event.noteOff.noteId;
-            note_event->port_index      = 0;//event.busIndex;
+            note_event->port_index      = 0; // event.busIndex;
             note_event->channel         = event.noteOff.channel;
             note_event->key             = event.noteOff.pitch;
             note_event->velocity        = event.noteOff.velocity;
             //event.noteOff.tuning
-
             for (uint32_t i=0; i<MIP_VST3_MAX_NOTE_IDS; i++) {
               if (MNoteIds[i].note_id == event.noteOff.noteId) {
                 MNoteIds[i].note_id = -1;
@@ -379,12 +341,10 @@ private:
                 MNoteIds[i].key     = -1;
               }
             }
-
             break;
           }
 
           case Event::kPolyPressureEvent: {
-
             uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
             clap_event_note_expression_t* note_expression_event = (clap_event_note_expression_t*)&MEvents[pos];
             memset(note_expression_event,0,sizeof(clap_event_note_expression_t));
@@ -394,7 +354,7 @@ private:
             note_expression_event->header.type     = CLAP_EVENT_NOTE_EXPRESSION;
             note_expression_event->header.flags    = 0;
             note_expression_event->note_id         = event.polyPressure.noteId;
-            note_expression_event->port_index      = 0;//event.busIndex;
+            note_expression_event->port_index      = 0; // event.busIndex;
             note_expression_event->channel         = event.polyPressure.channel;
             note_expression_event->key             = event.polyPressure.pitch;
             note_expression_event->expression_id   = CLAP_NOTE_EXPRESSION_PRESSURE;
@@ -403,18 +363,14 @@ private:
           }
 
           case Event::kNoteExpressionValueEvent: {
-
             uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
             clap_event_note_expression_t* note_expression_event = (clap_event_note_expression_t*)&MEvents[pos];
             memset(note_expression_event,0,sizeof(clap_event_note_expression_t));
-
             //uint32_t chan = (event.noteExpressionValue.noteId >> 8);
             //uint32_t key = (event.noteExpressionValue.noteId & 255);
-
             int32_t port = -1;
             int32_t chan = -1;
             int32_t key = -1;
-
             for (uint32_t i=0; i<MIP_VST3_MAX_NOTE_IDS; i++) {
               if (MNoteIds[i].note_id == event.noteExpressionValue.noteId) {
                 port    = MNoteIds[i].port;
@@ -422,19 +378,17 @@ private:
                 key     = MNoteIds[i].key;
               }
             }
-
             MIP_Assert(chan >= 0);
             MIP_Assert(key >= 0);
-
             note_expression_event->header.size     = sizeof(clap_event_note_expression_t);
             note_expression_event->header.time     = event.sampleOffset;
             note_expression_event->header.space_id = CLAP_CORE_EVENT_SPACE_ID;
             note_expression_event->header.type     = CLAP_EVENT_NOTE_EXPRESSION;
             note_expression_event->header.flags    = 0;
             note_expression_event->note_id         = event.noteExpressionValue.noteId;
-            note_expression_event->port_index      = port;//event.busIndex;
-            note_expression_event->channel         = chan;//0;//event.noteExpressionValue.channel;
-            note_expression_event->key             = key;//event.noteExpressionValue.noteId;
+            note_expression_event->port_index      = port; //event.busIndex;
+            note_expression_event->channel         = chan; //event.noteExpressionValue.channel;
+            note_expression_event->key             = key;  //event.noteExpressionValue.noteId;
             switch (event.noteExpressionValue.typeId) {
               case kVolumeTypeID:
                 // Volume, plain range [0 = -oo , 0.25 = 0dB, 0.5 = +6dB, 1 = +12dB]:
@@ -522,75 +476,59 @@ private:
 public: // editor listener
 //------------------------------
 
-//  #ifndef MIP_NO_GUI
-//
-//  /*
-//    we run our gui in its own thread, but need to communicate with the
-//    host on its gui thread.. so, when we tweak a parameter, we queue the
-//    parameter (index), and send all updated ones to the host during onTimer
-//    (see bottom)
-//    the host should communicate the parameter change (audio thread) during
-//    next process()
-//  */
-//
-//  // AValue is 0..1 (widget-value)
-//  // TODO: convert via parameter if necessary..
-//
-//  void on_updateParameterFromEditor(uint32_t AIndex, float AValue) override {
-//    //MEditorParameterValues[AIndex] = AValue;
-//    //MIP_Parameter* parameter = MDescriptor->parameters[AIndex];
-//    //float value = parameter->from01(AValue);
-//    float value = AValue;
-//    MPlugin->setParameterValue(AIndex,value);
-//    MVst2Host->updateParameter(AIndex,value);
-//  }
-//
-//  //----------
-//
-//  void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) override {
-//  }
-//
-//  #endif
+  //#ifndef MIP_NO_GUI
+  //
+  ///*
+  //  we run our gui in its own thread, but need to communicate with the
+  //  host on its gui thread.. so, when we tweak a parameter, we queue the
+  //  parameter (index), and send all updated ones to the host during onTimer
+  //  (see bottom)
+  //  the host should communicate the parameter change (audio thread) during
+  //  next process()
+  //*/
+  //
+  //// AValue is 0..1 (widget-value)
+  //// TODO: convert via parameter if necessary..
+  //
+  //void on_updateParameterFromEditor(uint32_t AIndex, float AValue) override {
+  //  //MEditorParameterValues[AIndex] = AValue;
+  //  //MIP_Parameter* parameter = MDescriptor->parameters[AIndex];
+  //  //float value = parameter->from01(AValue);
+  //  float value = AValue;
+  //  MPlugin->setParameterValue(AIndex,value);
+  //  MVst2Host->updateParameter(AIndex,value);
+  //}
+  //
+  ////----------
+  //
+  //void on_resizeFromEditor(uint32_t AWidth, uint32_t AHeight) override {
+  //}
+  //
+  //#endif
 
 //------------------------------
 public:
 //------------------------------
 
-//  uint32_t getPluginFormat() override {
-//    return MIP_PLUGIN_FORMAT_VST3;
-//  }
-
-  //----------
-
-//  float getSamplerate() override {
-//    return MSampleRate;
-//  }
-
-  //float getBlocksize() override {
-  //  return MBlockSize;
+  //void notifyHostUpdateParameter(uint32_t AIndex, float AValue) override {
+  //  if (MComponentHandler) {
+  //    //if (MComponentHandler2) MComponentHandler2->startGroupEdit();
+  //    MComponentHandler->beginEdit(AIndex);          // click
+  //    MComponentHandler->performEdit(AIndex,AValue);  // drag
+  //    MComponentHandler->endEdit(AIndex);            // release
+  //    //if (MComponentHandler2) MComponentHandler2->finishGroupEdit();
+  //  }
   //}
 
   //----------
 
-//  void notifyHostUpdateParameter(uint32_t AIndex, float AValue) override {
-//    if (MComponentHandler) {
-//      //if (MComponentHandler2) MComponentHandler2->startGroupEdit();
-//      MComponentHandler->beginEdit(AIndex);          // click
-//      MComponentHandler->performEdit(AIndex,AValue);  // drag
-//      MComponentHandler->endEdit(AIndex);            // release
-//      //if (MComponentHandler2) MComponentHandler2->finishGroupEdit();
-//    }
-//  }
+  //void notifyHostResizeWindow(uint32_t AWidth, uint32_t AHeight) override {
+  //}
 
   //----------
 
-//  void notifyHostResizeWindow(uint32_t AWidth, uint32_t AHeight) override {
-//  }
-
-  //----------
-
-//  void notifyHostMidiOutput(uint32_t AOffset, uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) override {
-//  }
+  //void notifyHostMidiOutput(uint32_t AOffset, uint8_t AMsg1, uint8_t AMsg2, uint8_t AMsg3) override {
+  //}
 
 //------------------------------
 public: // editor listener
@@ -604,11 +542,11 @@ public: // editor listener
     see updateParametersInTimer below
   */
 
-//  void updateParameterFromEditor(uint32_t AIndex, float AValue) override {
-//    MHostValues[AIndex] = AValue;
-//    MUpdatedHostParameters.write(AIndex);
-//    MIP_BaseInstance::updateParameterFromEditor(AIndex,AValue);
-//  }
+  //void updateParameterFromEditor(uint32_t AIndex, float AValue) override {
+  //  MHostValues[AIndex] = AValue;
+  //  MUpdatedHostParameters.write(AIndex);
+  //  MIP_BaseInstance::updateParameterFromEditor(AIndex,AValue);
+  //}
 
   //----------
 
@@ -650,30 +588,20 @@ private:
   */
 
   void setupParameterInfo() {
-    //MIP_PRINT;
     if (!MParamInfos) {
-
-      //MIP_Print("\n\n");
-      //MIP_Print("num params: %i\n",MPlugin->params_count());
-      //MIP_Print("\n\n");
-
       uint32_t num = MPlugin->params_count();
       MParamInfos = (ParameterInfo*)malloc( num * sizeof(ParameterInfo) );
       for (uint32_t i=0; i<num; i++) {
         clap_param_info_t info = {0};
         MPlugin->params_get_info(i,&info);
-
         MParamInfos[i].id = i;
         VST3_CharToUtf16(info.name,MParamInfos[i].title);
         VST3_CharToUtf16(info.name,MParamInfos[i].shortTitle);
         VST3_CharToUtf16("",MParamInfos[i].units);
-
         if (info.flags & CLAP_PARAM_IS_STEPPED) {
           MParamInfos[i].stepCount = info.max_value - info.min_value + 1;
         }
-
         MParamInfos[i].defaultNormalizedValue = 0; // info.default_value; // TODO: normalize!
-
         MParamInfos[i].unitId = kRootUnitId; //-1;
         int32_t flags = 0;
         if (info.flags & CLAP_PARAM_IS_AUTOMATABLE) flags += ParameterInfo::kCanAutomate;
@@ -681,7 +609,6 @@ private:
         MParamInfos[i].flags = flags;
       }
     }
-    //MIP_PRINT;
   }
 
   //----------
@@ -726,22 +653,22 @@ private:
       MIP_Vst3Instance.onTimer
   */
 
-//  void notifyHostAboutUpdatedParameters() {
-//    uint32_t index;
-//    while (MUpdatedHostParameters.read(&index)) {
-//      float value = MHostValues[index];
-//
-//      MIP_Trace("%i %.2f\n",index,value);
-//
-//      if (MComponentHandler) {
-//        //if (MComponentHandler2) MComponentHandler2->startGroupEdit();
-//        MComponentHandler->beginEdit(index);          // click
-//        MComponentHandler->performEdit(index,value);  // drag
-//        MComponentHandler->endEdit(index);            // release
-//        //if (MComponentHandler2) MComponentHandler2->finishGroupEdit();
-//      }
-//    }
-//  }
+  //void notifyHostAboutUpdatedParameters() {
+  //  uint32_t index;
+  //  while (MUpdatedHostParameters.read(&index)) {
+  //    float value = MHostValues[index];
+  //
+  //    MIP_Trace("%i %.2f\n",index,value);
+  //
+  //    if (MComponentHandler) {
+  //      //if (MComponentHandler2) MComponentHandler2->startGroupEdit();
+  //      MComponentHandler->beginEdit(index);          // click
+  //      MComponentHandler->performEdit(index,value);  // drag
+  //      MComponentHandler->endEdit(index);            // release
+  //      //if (MComponentHandler2) MComponentHandler2->finishGroupEdit();
+  //    }
+  //  }
+  //}
 
 //----------------------------------------
 public:
@@ -757,7 +684,6 @@ public:
   */
 
   uint32 PLUGIN_API addRef() override {
-    //MIP_PRINT;
     MRefCount++;
     return MRefCount;
   }
@@ -771,7 +697,6 @@ public:
   */
 
   uint32 PLUGIN_API release() override {
-    //MIP_PRINT;
     const uint32 r = --MRefCount; // const uint32 ?
     if (r == 0) {
       delete this;
@@ -823,7 +748,6 @@ public:
   */
 
   tresult PLUGIN_API queryInterface(const TUID _iid, void** obj) override {
-    //MIP_PRINT;
     *obj = nullptr;
     if ( FUnknownPrivate::iidEqual(IAudioProcessor_iid,_iid) ) {
       *obj = (IAudioProcessor*)this;
@@ -918,7 +842,6 @@ public:
   */
 
   tresult PLUGIN_API initialize(FUnknown* context) override {
-    //MIP_PRINT;
     MHostApp = (IHostApplication*)context;
     //context->queryInterface(IHostApplication_iid, (void**)&MHostApp);
     if (MHostApp) {
@@ -941,7 +864,6 @@ public:
   */
 
   tresult PLUGIN_API terminate() override {
-    //MIP_PRINT;
     //MPlugin->on_plugin_deinit();
     return kResultOk;
   }
@@ -963,16 +885,9 @@ public:
   */
 
   tresult PLUGIN_API getControllerClassId(TUID classId) override {
-    //MIP_PRINT;
-      //if (MDescriptor->hasEditor()) {
-      //  memcpy(classId,MDescriptor->getLongEditorId(),16);
-        getEditorId(MDescriptor);
-        memcpy(classId,MEditorId,16);
-        return kResultOk;
-      //}
-      //else {
-      //  return kResultFalse;
-      //}
+    getEditorId(MDescriptor);
+    memcpy(classId,MEditorId,16);
+    return kResultOk;
   }
 
   //----------
@@ -983,7 +898,6 @@ public:
   */
 
   tresult PLUGIN_API setIoMode(IoMode mode) override {
-    //MIP_PRINT;
     //switch (mode) {
     //  case kSimple:             VST3_Trace("(kSimple)\n"); break;
     //  case kAdvanced:           VST3_Trace("(kAdvanced)\n"); break;
@@ -1012,18 +926,17 @@ public:
   */
 
   int32 PLUGIN_API getBusCount(MediaType type, BusDirection dir) override {
-    //MIP_PRINT;
     if (type == kAudio) {
-//      if (dir == kInput) return MDescriptor->getNumAudioInputs();
-//      else if (dir == kOutput) return MDescriptor->getNumAudioOutputs();
+      //if (dir == kInput) return MDescriptor->getNumAudioInputs();
+      //else if (dir == kOutput) return MDescriptor->getNumAudioOutputs();
       return 2;
     }
     if (type == kEvent) {
       //if (dir==kOutput) return 1;
       //else
-//      if (MDescriptor->canReceiveMidi()) {
-//        if (dir == kInput) return 1;
-//      }
+      //if (MDescriptor->canReceiveMidi()) {
+      //  if (dir == kInput) return 1;
+      //}
       return 1;
     }
     return 0;
@@ -1049,34 +962,26 @@ public:
   */
 
   tresult PLUGIN_API getBusInfo(MediaType type, BusDirection dir, int32 index, BusInfo& bus) override {
-    //MIP_PRINT;
     if (type == kAudio) {
       bus.mediaType = kAudio;
       if (dir == kInput) {
-
         //const clap_plugin_audio_ports_t* audio_ports = (const clap_plugin_audio_ports_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_AUDIO_PORTS);
         //if (audio_ports) {
-
-          // debug:
+          // TODO
           bus.direction = kInput;
           bus.channelCount = 2;
           VST3_CharToUtf16("input",bus.name);
-
         //}
-
       }
       else if (dir == kOutput) {
-
-//        MIP_AudioPort* port = MDescriptor->getAudioOutput(index);
-//        bus.direction = kOutput;
-//        bus.channelCount = port->num_channels;
-//        VST3_CharToUtf16(port->name,bus.name);
-
-        // debug:
+        //MIP_AudioPort* port = MDescriptor->getAudioOutput(index);
+        //bus.direction = kOutput;
+        //bus.channelCount = port->num_channels;
+        //VST3_CharToUtf16(port->name,bus.name);
+        // TODO
         bus.direction = kOutput;
         bus.channelCount = 2;
         VST3_CharToUtf16("output",bus.name);
-
       }
       bus.flags = 0;//kDefaultActive;
       return kResultOk;
@@ -1084,21 +989,17 @@ public:
     else if (type == kEvent) {
       bus.mediaType = kEvent;
       if (dir == kInput) {
-
-//        bus.direction = kInput;
-//        bus.channelCount = 1; // 16?
-//        VST3_CharToUtf16("Midi In",bus.name);
-
+        //bus.direction = kInput;
+        //bus.channelCount = 1; // 16?
+        //VST3_CharToUtf16("Midi In",bus.name);
         // debug:
         bus.direction = kInput;
         bus.channelCount = 1; // 16?
         VST3_CharToUtf16("midi",bus.name);
-
       }
       bus.flags = 0;//kDefaultActive;
       return kResultOk;
     }
-
     return kResultFalse;
   }
 
@@ -1119,7 +1020,6 @@ public:
   */
 
   tresult PLUGIN_API getRoutingInfo(RoutingInfo& inInfo, RoutingInfo& outInfo) override {
-    //MIP_PRINT;
     outInfo.mediaType = inInfo.mediaType; // MediaTypes::kAudio;
     outInfo.busIndex  = inInfo.busIndex;  // 0;
     outInfo.channel   = -1;
@@ -1136,7 +1036,6 @@ public:
   */
 
   tresult PLUGIN_API activateBus(MediaType type, BusDirection dir, int32 index, TBool state) override {
-    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -1147,7 +1046,6 @@ public:
   */
 
   tresult PLUGIN_API setActive(TBool state) override {
-    //MIP_PRINT;
     if (state) MPlugin->activate(MSampleRate,0,MBlockSize);
     else MPlugin->deactivate();
     return kResultOk;
@@ -1226,36 +1124,34 @@ public:
   */
 
   tresult PLUGIN_API setState(IBStream* state) override {
-    //MIP_PRINT;
-//    uint32_t version = 0;
-//    uint32_t mode = 0;
-//    int32_t size = 0;
-//    uint32_t num_params = 0;
-//    void*    ptr = nullptr;
-//    int32_t num_read = 0;
-//    state->read(&version,sizeof(uint32_t),&num_read); //  MIP_Assert( num_read == sizeof(uint32_t) );
-//    state->read(&mode,sizeof(uint32_t),&num_read);    //  MIP_Assert( num_read == sizeof(uint32_t) );
-//    state->read(&size,sizeof(int32_t),&num_read);     //  MIP_Assert( num_read == sizeof(int32_t) );
-//    switch (mode) {
-//      case 0:
-//        // is it safe to malloc/free here?
-//        ptr = malloc(size);
-//        state->read(&ptr,size,&num_read);
-////        MPlugin->on_plugin_restoreState(size,ptr,0);
-//        free(ptr);
-//        break;
-//      case 1:
-//        num_params = MDescriptor->getNumParameters();
-//        MIP_Assert( (uint32_t)size == (num_params * sizeof(float)) );
-//        for (uint32_t i=0; i<num_params; i++) {
-//          float v = 0.f;
-//          state->read(&v,sizeof(float),&num_read);
-////          MPlugin->setParamValue(i,v);
-//        }
-////        MPlugin->updateAllParameters();
-//        break;
-//    }
-
+    //uint32_t version = 0;
+    //uint32_t mode = 0;
+    //int32_t size = 0;
+    //uint32_t num_params = 0;
+    //void*    ptr = nullptr;
+    //int32_t num_read = 0;
+    //state->read(&version,sizeof(uint32_t),&num_read); //  MIP_Assert( num_read == sizeof(uint32_t) );
+    //state->read(&mode,sizeof(uint32_t),&num_read);    //  MIP_Assert( num_read == sizeof(uint32_t) );
+    //state->read(&size,sizeof(int32_t),&num_read);     //  MIP_Assert( num_read == sizeof(int32_t) );
+    //switch (mode) {
+    //  case 0:
+    //    // is it safe to malloc/free here?
+    //    ptr = malloc(size);
+    //    state->read(&ptr,size,&num_read);
+    //    //MPlugin->on_plugin_restoreState(size,ptr,0);
+    //    free(ptr);
+    //    break;
+    //  case 1:
+    //    num_params = MDescriptor->getNumParameters();
+    //    MIP_Assert( (uint32_t)size == (num_params * sizeof(float)) );
+    //    for (uint32_t i=0; i<num_params; i++) {
+    //      float v = 0.f;
+    //      state->read(&v,sizeof(float),&num_read);
+    //      //MPlugin->setParamValue(i,v);
+    //    }
+    //    //MPlugin->updateAllParameters();
+    //    break;
+    //}
     int num_read  = 0;
     uint32_t i = 666;
     state->read(&i,sizeof(uint32_t),&num_read);
@@ -1274,22 +1170,20 @@ public:
   */
 
   tresult PLUGIN_API getState(IBStream* state) override {
-    //MIP_PRINT;
-//    uint32_t  version = MDescriptor->getVersion();
-//    uint32_t  mode    = 0;
-//    void*     ptr     = nullptr;
-//    uint32_t  size    = MPlugin->on_plugin_saveState(&ptr,0);
-//    if ((size == 0) && (ptr == nullptr)) {
-//      ptr = MPlugin->getParamValues();
-//      size = MDescriptor->getNumParameters() * sizeof(float);
-//      mode = 1;
-//    }
-//    int num_written  = 0;
-//    state->write(&version,sizeof(uint32_t),&num_written); //  MIP_Assert( num_written == sizeof(uint32_t) );
-//    state->write(&mode,sizeof(uint32_t),&num_written);    //  MIP_Assert( num_written == sizeof(uint32_t) );
-//    state->write(&size,sizeof(uint32_t),&num_written);    //  MIP_Assert( num_written == sizeof(uint32_t) );
-//    state->write(ptr,size,&num_written);                  //  MIP_Assert( num_written == size );
-
+    //uint32_t  version = MDescriptor->getVersion();
+    //uint32_t  mode    = 0;
+    //void*     ptr     = nullptr;
+    //uint32_t  size    = MPlugin->on_plugin_saveState(&ptr,0);
+    //if ((size == 0) && (ptr == nullptr)) {
+    //  ptr = MPlugin->getParamValues();
+    //  size = MDescriptor->getNumParameters() * sizeof(float);
+    //  mode = 1;
+    //}
+    //int num_written  = 0;
+    //state->write(&version,sizeof(uint32_t),&num_written); //  MIP_Assert( num_written == sizeof(uint32_t) );
+    //state->write(&mode,sizeof(uint32_t),&num_written);    //  MIP_Assert( num_written == sizeof(uint32_t) );
+    //state->write(&size,sizeof(uint32_t),&num_written);    //  MIP_Assert( num_written == sizeof(uint32_t) );
+    //state->write(ptr,size,&num_written);                  //  MIP_Assert( num_written == size );
     int num_written  = 0;
     uint32_t i = 666;
     state->write(&i,sizeof(uint32_t),&num_written);
@@ -1318,7 +1212,6 @@ public:
   //const SpeakerArrangement kStereo = kSpeakerL | kSpeakerR;
 
   tresult PLUGIN_API setBusArrangements(SpeakerArrangement* inputs, int32 numIns, SpeakerArrangement* outputs, int32 numOuts) override {
-    //MIP_PRINT;
     //if ((numIns == 2) && (*inputs == kStereo)) {}
     if ((numIns == 2) && (numOuts == 2)) return kResultTrue;
     return kResultFalse;
@@ -1333,29 +1226,26 @@ public:
   */
 
   tresult PLUGIN_API getBusArrangement(BusDirection dir, int32 index, SpeakerArrangement& arr) override {
-    //MIP_PRINT;
     //if ((dir==kOutput) && (index==0)) {
     //  arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
     //  return kResultOk;
     //}
-//    if (dir == kInput) {
-//      MIP_AudioPort* port = MDescriptor->getAudioInput(index);
-//      if (port) {
-//        arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
-//        return kResultOk;
-//      }
-//    }
-//    else if (dir == kOutput) {
-//      MIP_AudioPort* port = MDescriptor->getAudioInput(index);
-//      if (port) {
-//        arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
-//        return kResultOk;
-//      }
-//    }
-
+    //if (dir == kInput) {
+    //  MIP_AudioPort* port = MDescriptor->getAudioInput(index);
+    //  if (port) {
+    //    arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
+    //    return kResultOk;
+    //  }
+    //}
+    //else if (dir == kOutput) {
+    //  MIP_AudioPort* port = MDescriptor->getAudioInput(index);
+    //  if (port) {
+    //    arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
+    //    return kResultOk;
+    //  }
+    //}
     arr = Steinberg::Vst::kSpeakerL | Steinberg::Vst::kSpeakerR;
     return kResultOk;
-    //return kResultFalse;
   }
 
   //----------
@@ -1371,11 +1261,10 @@ public:
   */
 
   tresult PLUGIN_API canProcessSampleSize(int32 symbolicSampleSize) override {
-    //MIP_PRINT;
     if (symbolicSampleSize==kSample32) {
       return kResultTrue;
     }
-    return kResultFalse;// kResultFalse;// kNotImplemented;
+    return kResultFalse;// kNotImplemented;
   }
 
   //----------
@@ -1393,7 +1282,6 @@ public:
   */
 
   uint32 PLUGIN_API getLatencySamples() override {
-    //MIP_PRINT;
     return 0;
   }
 
@@ -1422,14 +1310,11 @@ public:
   */
 
   tresult PLUGIN_API setupProcessing(ProcessSetup& setup) override {
-    //MIP_PRINT;
     MProcessMode  = setup.sampleRate;         // kRealtime, kPrefetch, kOffline
     MSampleSize   = setup.symbolicSampleSize; // kSample32, kSample64
     MBlockSize    = setup.maxSamplesPerBlock;
     MSampleRate   = setup.sampleRate;
-
-//    MPlugin->on_sampleRate(MSampleRate);
-
+    //MPlugin->on_sampleRate(MSampleRate);
     return kResultOk;
   }
 
@@ -1446,7 +1331,6 @@ public:
   */
 
   tresult PLUGIN_API setProcessing(TBool state) override {
-    //MIP_PRINT;
     MIsProcessing = state;
     return kResultOk;
   }
@@ -1598,19 +1482,12 @@ public:
   // assume only 1 input/output bus..
 
   tresult PLUGIN_API process(ProcessData& data) override {
-    //MVst3ParamChanges = data.inputParameterChanges;
-    //MVst3EventList    = data.inputEvents;
-
     MNumEvents = 0;
     prepareEvents(data);
     prepareParameters(data);
     sortEvents();
-
     bool _flush = ( (data.numInputs == 0) && (data.numOutputs == 0) && (data.numSamples == 0) );
     if (!_flush) {
-
-      //MProcessContext.samplerate  = data.processContext->sampleRate;
-      //MProcessContext.tempo       = data.processContext->tempo;
 
       MAudioInputs.data32               = data.inputs[0].channelBuffers32;//MAudioInputBuffers;
       MAudioInputs.data64               = data.inputs[0].channelBuffers64;//MAudioInputBuffers_64;
@@ -1653,12 +1530,9 @@ public:
       MTransport.tsig_num               = data.processContext->timeSigNumerator;
       MTransport.tsig_denom             = data.processContext->timeSigDenominator;
 
-      //
-
       MClapProcess.steady_time          = MSteadyTime;
       MClapProcess.frames_count         = data.numSamples;
       MClapProcess.transport            = &MTransport;
-
       MClapProcess.audio_inputs         = &MAudioInputs;
       MClapProcess.audio_outputs        = &MAudioOutputs;
       MClapProcess.audio_inputs_count   = 2;
@@ -1666,30 +1540,19 @@ public:
       MClapProcess.in_events            = &MVst3InputEvents;
       MClapProcess.out_events           = &MVst3OutputEvents;
 
-      //uint32_t num = MClapProcess.in_events->size(MClapProcess.in_events);
-      //MIP_Print("num events: %i process.in_events.size: %i\n",MVst3NumEvents,num);
-
-      // clap takes over
       MPlugin->process(&MClapProcess);
-
       MSteadyTime += data.numSamples;
 
     }
 
-//    else {
-//      // flush
-//      MIP_Print("flusah\n");
-//    }
+    //else {
+    //  // flush
+    //  MIP_Print("flusah\n");
+    //}
 
     // https://forum.juce.com/t/vst3-plugin-wrapper/12323/5
     // I recall the Steinberg Validator complaining that process() should just
     // return kResultTrue...
-
-//    MVst3NumEvents = 0;
-//    memset(MEventBuffer,0,1024);
-
-    //MIP_Print("--- process end ---\n");
-
     return kResultOk; // = kResulttrue (0)
   }
 
@@ -1709,7 +1572,6 @@ public:
   */
 
   uint32 PLUGIN_API getTailSamples() override {
-    //MIP_PRINT;
     return kNoTail;
   }
 
@@ -1741,19 +1603,18 @@ public:
   */
 
   tresult PLUGIN_API getMidiControllerAssignment(int32 busIndex, int16 channel, CtrlNumber midiControllerNumber, ParamID& id) override {
-    //MIP_PRINT;
     //if (busIndex == 0) {
-//      switch (midiControllerNumber) {
-//        case kAfterTouch: // 128
-//          id = MIP_VST3_PARAM_AFTERTOUCH + channel;
-//          return kResultOk;
-//        case kPitchBend: // 129
-//          id = MIP_VST3_PARAM_PITCHBEND + channel;
-//          return kResultOk;
-//        case kCtrlFilterResonance: // cc 74 (slide)
-//          id = MIP_VST3_PARAM_BRIGHTNESS + channel;
-//          return kResultOk;
-//      }
+    //  switch (midiControllerNumber) {
+    //    case kAfterTouch: // 128
+    //      id = MIP_VST3_PARAM_AFTERTOUCH + channel;
+    //      return kResultOk;
+    //    case kPitchBend: // 129
+    //      id = MIP_VST3_PARAM_PITCHBEND + channel;
+    //      return kResultOk;
+    //    case kCtrlFilterResonance: // cc 74 (slide)
+    //      id = MIP_VST3_PARAM_BRIGHTNESS + channel;
+    //      return kResultOk;
+    //  }
     //}
     return kResultFalse;
   }
@@ -1765,7 +1626,6 @@ public:
   // Returns number of supported note change types for event bus index and channel.
 
   int32 PLUGIN_API getNoteExpressionCount(int32 busIndex, int16 channel) override {
-    //MIP_Print("vst3: instance/getNoteExpressionCount busIndex:%i channel:%i\n",busIndex,channel);
     //if (busIndex==0) return 1;
     return 2;
   }
@@ -1775,7 +1635,6 @@ public:
   //flags: NoteExpressionTypeInfo::kIsBipolar, kIsOneShot, kIsAbsolute, kAssociatedParameterIDValid
 
   tresult PLUGIN_API getNoteExpressionInfo(int32 busIndex, int16 channel, int32 noteExpressionIndex, NoteExpressionTypeInfo& info) override {
-    //MIP_Print("vst3: instance/getNoteExpressionInfo busIndex:%i channel:%i noteExpressionIndex:%i\n",busIndex,channel,noteExpressionIndex);
     //if (busIndex==0) {
       switch(noteExpressionIndex) {
         case 0:
@@ -1812,7 +1671,6 @@ public:
   // Gets a user readable representation of the normalized note change value.
 
   tresult PLUGIN_API getNoteExpressionStringByValue(int32 busIndex, int16 channel, NoteExpressionTypeID id, NoteExpressionValue valueNormalized, String128 string) override {
-    //MIP_Print("vst3: instance/getNoteExpressionStringByValue busIndex:%i channel:%i id:%i valueNormalized:%.3f\n",busIndex,channel,id,valueNormalized);
     char temp[100];
     //MIP_FloatToString(temp,valueNormalized);
     sprintf(temp,"%.3f",valueNormalized);
@@ -1825,7 +1683,6 @@ public:
   // Converts the user readable representation to the normalized note change value.
 
   tresult PLUGIN_API getNoteExpressionValueByString(int32 busIndex, int16 channel, NoteExpressionTypeID id, const TChar* string, NoteExpressionValue& valueNormalized) override{
-    //MIP_Print("vst3: instance/getNoteExpressionValueByString busIndex:%i  channel:%i id:%i string:%s\n",busIndex,channel,id,string);
     char temp[129];
     VST3_Utf16ToChar(string,temp);
     //float res = MIP_StringToFloat(temp);
@@ -1853,7 +1710,6 @@ public:
   // Returns number of supported key switches for event bus index and channel.
 
   int32 PLUGIN_API getKeyswitchCount(int32 busIndex, int16 channel) override {
-    //MIP_PRINT;
     return 0;
   }
 
@@ -1875,7 +1731,6 @@ public:
   // Returns key switch info.
 
   tresult PLUGIN_API getKeyswitchInfo(int32 busIndex, int16 channel, int32 keySwitchIndex, KeyswitchInfo& info) override {
-    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1906,7 +1761,6 @@ public:
   */
 
   tresult PLUGIN_API connect(IConnectionPoint* other) override {
-    //MIP_PRINT;
     //IMessage* msg;
     //msg->setMessageID("test");
     //other->notify(msg);
@@ -1918,7 +1772,6 @@ public:
   //Disconnects a given connection point from this.
 
   tresult PLUGIN_API disconnect(IConnectionPoint* other)  override {
-    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1937,7 +1790,6 @@ public:
   */
 
   tresult PLUGIN_API notify(IMessage* message) override {
-    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -1960,7 +1812,6 @@ public:
   // Returns the flat count of units.
 
   int32 PLUGIN_API getUnitCount() override {
-    //MIP_PRINT;
     return 1;
   }
 
@@ -1978,7 +1829,6 @@ public:
   */
 
   tresult PLUGIN_API getUnitInfo(int32 unitIndex, UnitInfo& info) override {
-    //MIP_PRINT;
     if (unitIndex==0) {
       info.id = kRootUnitId; //0;
       info.parentUnitId = kNoParentUnitId;
@@ -1994,7 +1844,6 @@ public:
   // Gets the count of Program List.
 
   int32 PLUGIN_API getProgramListCount() override {
-    //MIP_PRINT;
     return 0; // 1
   }
 
@@ -2011,7 +1860,6 @@ public:
   */
 
   tresult PLUGIN_API getProgramListInfo(int32 listIndex, ProgramListInfo& info) override {
-    //MIP_PRINT;
     if (listIndex == 0) {
       info.id = 0;
       VST3_CharToUtf16("program",info.name);
@@ -2026,7 +1874,6 @@ public:
   // Gets for a given program list ID and program index its program name.
 
   tresult PLUGIN_API getProgramName(ProgramListID listId, int32 programIndex, String128 name) override {
-    //MIP_PRINT;
     if ((listId == 0) && (programIndex == 0)) {
       VST3_CharToUtf16("program",name);
       return kResultOk;
@@ -2043,7 +1890,6 @@ public:
 
   //CString attributeId, String128 attributeValue) {
   tresult PLUGIN_API getProgramInfo(ProgramListID listId, int32 programIndex, Steinberg::Vst::CString attributeId, String128 attributeValue) override {
-    //MIP_PRINT;
     ////attributeId = "";
     //if ((listId == 0) && (programIndex == 0) /* attributeId */) {
     //  char_to_utf16("",attributeValue);
@@ -2057,7 +1903,6 @@ public:
   // Returns kResultTrue if the given program index of a given program list ID supports PitchNames.
 
   tresult PLUGIN_API hasProgramPitchNames(ProgramListID listId, int32 programIndex) override {
-    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -2070,7 +1915,6 @@ public:
   */
 
   tresult PLUGIN_API getProgramPitchName(ProgramListID listId, int32 programIndex, int16 midiPitch, String128 name) override {
-    //MIP_PRINT;
     //char_to_utf16("pitch",name);
     return kResultFalse;
   }
@@ -2080,7 +1924,6 @@ public:
   // Gets the current selected unit.
 
   UnitID PLUGIN_API getSelectedUnit() override {
-    //MIP_PRINT;
     return 0;
   }
 
@@ -2089,7 +1932,6 @@ public:
   // Sets a new selected unit.
 
   tresult PLUGIN_API selectUnit(UnitID unitId) override {
-    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2103,7 +1945,6 @@ public:
   */
 
   tresult PLUGIN_API getUnitByBus(MediaType type, BusDirection dir, int32 busIndex, int32 channel, UnitID& unitId) override {
-    //MIP_PRINT;
     unitId = 0;
     return kResultOk;//False;
   }
@@ -2119,7 +1960,6 @@ public:
   */
 
   tresult PLUGIN_API setUnitProgramData(int32 listOrUnitId, int32 programIndex, IBStream* data) override {
-    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -2142,7 +1982,6 @@ public:
   */
 
   tresult PLUGIN_API setComponentState(IBStream* state) override {
-    //MIP_PRINT;
     /*
     // we receive the current state of the component (processor part)
     if (state == nullptr) return kResultFalse;
@@ -2155,7 +1994,6 @@ public:
     return kResultOk;
     */
     //return kResultOk;//False;
-
     /*
       https://forum.juce.com/t/possible-demo-plugin-bug/19131/9
       "..which in turn returns kNotImplemented, should you not be returning
@@ -2163,13 +2001,11 @@ public:
       "That is intended. I can’t remember why but some DAWs needed that."
 
     */
-
     /*
     int num_read = 0;
     uint32_t test_int = 0;
     state->read(&test_int,4,&num_read);
     */
-
     // MEditor->updateParameterFromHost(param,index,value);
     return kResultOk;
   }
@@ -2191,7 +2027,6 @@ public:
 
   //tresult PLUGIN_API setState(IBStream* state) {
   tresult PLUGIN_API setEditorState(IBStream* state) override {
-    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2199,7 +2034,6 @@ public:
 
   //tresult PLUGIN_API getState(IBStream* state) {
   tresult PLUGIN_API getEditorState(IBStream* state) override {
-    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2210,7 +2044,6 @@ public:
   */
 
   int32 PLUGIN_API getParameterCount() override {
-    //MIP_PRINT;
     return MPlugin->params_count();
     //return 0;
   }
@@ -2218,7 +2051,6 @@ public:
   //----------
 
   tresult PLUGIN_API getParameterInfo(int32 paramIndex, ParameterInfo& info) override {
-    //MIP_Print("index %i\n",paramIndex);
     if (paramIndex < 0) return kResultFalse;
 
     int32_t num_params = MPlugin->params_count();
@@ -2229,7 +2061,6 @@ public:
         return kResultOk;
       //}
     } // index < numparams
-
     else { // > # params
       //MIP_Trace("paramIndex (%08x) >= num.params\n",paramIndex);
       switch (paramIndex) {
@@ -2251,15 +2082,12 @@ public:
       //return kResultOk;
       return kResultFalse;
     } // > #params
-
     return kResultFalse;
-
   }
 
   //----------
 
   tresult PLUGIN_API getParamStringByValue(ParamID id, ParamValue valueNormalized, String128 string) override {
-    //MIP_PRINT;
     if (id < MPlugin->params_count()) {
       //MIP_Parameter* param = MDescriptor->getParameter(id);
       char buffer[32]; // ???
@@ -2296,7 +2124,6 @@ public:
   //----------
 
   ParamValue PLUGIN_API normalizedParamToPlain(ParamID id, ParamValue valueNormalized) override {
-    //MIP_PRINT;
     if (id < MPlugin->params_count()) {
       //MIP_Parameter* param = MDescriptor->getParameter(id);
       //float v = param->from01(valueNormalized);
@@ -2311,11 +2138,10 @@ public:
   //----------
 
   ParamValue PLUGIN_API plainParamToNormalized(ParamID id, ParamValue plainValue) override {
-    //MIP_PRINT;
     if (id < MPlugin->params_count()) {
-//      MIP_Parameter* param = MDescriptor->getParameter(id);
-//      float v = param->to01(plainValue);
-//      return v;
+      //MIP_Parameter* param = MDescriptor->getParameter(id);
+      //float v = param->to01(plainValue);
+      //return v;
       return normalizeParameter(id,plainValue);
     }
     else {
@@ -2326,7 +2152,6 @@ public:
   //----------
 
   ParamValue PLUGIN_API getParamNormalized(ParamID id) override {
-    //MIP_PRINT;
     if (id < MPlugin->params_count()) {
       //float v = MPlugin->getParamValue(id);
       MIP_Parameter* param = MParameters->item(id);
@@ -2356,17 +2181,16 @@ public:
   // bitwig sends a ParamID = 0x3f800000
 
   tresult PLUGIN_API setParamNormalized(ParamID id, ParamValue value) override {
-    //MIP_PRINT;
-//    if (id >= MDescriptor->getNumParameters()) {
-//      return kResultFalse; // ???
-//    }
-////    MPlugin->setParamValue(id,value);
-//    //MEditorValues[id] = value;
-//    #ifndef MIP_NO_GUI
-//    if (MEditor) {
-//      MEditor->setParameterValueAndRedraw(id,value);
-//    }
-//    #endif // MIP_NO_GUI
+    //if (id >= MDescriptor->getNumParameters()) {
+    //  return kResultFalse; // ???
+    //}
+    ////MPlugin->setParamValue(id,value);
+    ////MEditorValues[id] = value;
+    //#ifndef MIP_NO_GUI
+    //if (MEditor) {
+    //  MEditor->setParameterValueAndRedraw(id,value);
+    //}
+    //#endif // MIP_NO_GUI
     //MIP_Parameter* parameter = MDescriptor->getParameter(id);
     //float v = parameter->from01(value);
     //on_updateParameter(id,v);
@@ -2396,7 +2220,6 @@ public:
   */
 
   tresult PLUGIN_API setComponentHandler(IComponentHandler* handler) override {
-    //MIP_PRINT;
     MComponentHandler = handler;
     //handler->queryInterface(IComponentHandler2::iid,(void**)&MComponentHandler2);
     //MIP_Vst3Host* host = (MIP_Vst3Host*)MPlugin->getHost();
@@ -2414,13 +2237,12 @@ public:
   */
 
   IPlugView* PLUGIN_API createView(FIDString name) override {
-    //MIP_PRINT;
-//    if (MDescriptor->hasEditor()) {
+    //if (MDescriptor->hasEditor()) {
       if (name && (strcmp(name,ViewType::kEditor) == 0)) {
         addRef();
         return (IPlugView*)this;
       }
-//    }
+    //}
     return nullptr;
   }
 
@@ -2429,67 +2251,24 @@ public:
   //--------------------
 
   tresult PLUGIN_API setKnobMode(KnobMode mode) override {
-    //MIP_PRINT;
     return kResultFalse;
   }
 
   //----------
 
   tresult PLUGIN_API openHelp(TBool onlyCheck) override {
-    //MIP_PRINT;
     return kResultFalse;
   }
 
   //----------
 
   tresult PLUGIN_API openAboutBox(TBool onlyCheck) override {
-    //MIP_PRINT;
     return kResultFalse;
   }
 
   //--------------------
   // IPlugView
   //--------------------
-
-//  void open_editor() {
-//    #ifndef MIP_NO_GUI
-//      const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
-//      const clap_plugin_t* plugin = MPlugin->getPlugin();
-//      if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
-//        gui->create(plugin,CLAP_WINDOW_API_X11,false);
-//        gui->set_scale(plugin,1.0);
-//        uint32_t width = 0.0;
-//        uint32_t height = 0.0;
-//        gui->get_size(plugin,&width,&height);
-//
-//        //MIP_Vst3Window* window = new MIP_Vst3Window(width,height,this,plugin,gui);
-//        MWindow = new MIP_Vst3Window(width,height,this,plugin,gui);
-//        //window->setup(plugin,gui);
-//        MWindow->open();
-//        clap_window_t clap_window = {};
-//        clap_window.api = CLAP_WINDOW_API_X11;
-//        clap_window.x11 = MWindow->getXcbWindow();
-//        gui->set_parent( plugin, &clap_window );
-//        gui->show(plugin);
-//  //      MWindow->eventLoop();
-//  //      window->close();
-//  //      delete window;
-//  //      //gui->hide(plugin);
-//  //      gui->destroy(plugin);
-//      }
-//    #endif
-//  }
-//
-//  void close_editor() {
-//    const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
-//    const clap_plugin_t* plugin = MPlugin->getPlugin();
-//    gui->hide(plugin);
-//    gui->destroy(plugin);
-//    MWindow->close();
-//    delete MWindow;
-//  }
-
-  //-----
 
   const char* getEditorId(const clap_plugin_descriptor_t* descriptor) {
     uint32_t* id = (uint32_t*)MEditorId;
@@ -2500,12 +2279,9 @@ public:
     return (const char*)id;
   }
 
-
-
   //--------------------
 
   tresult PLUGIN_API isPlatformTypeSupported(FIDString type) override {
-    //MIP_PRINT;
     // "X11EmbedWindowID"
     if (type && strcmp(type,kPlatformTypeX11EmbedWindowID) == 0) {
       return kResultOk;
@@ -2529,87 +2305,31 @@ public:
   */
 
   tresult PLUGIN_API attached(void* parent, FIDString type) override {
-    //MIP_PRINT;
-//    #ifndef MIP_NO_GUI
-//      if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
-
-//        if (MPlugFrame) {
-//          uint32_t w = 640; //MDescriptor->getEditorDefaultWidth();
-//          uint32_t h = 512;//MDescriptor->getEditorDefaultHeight();
-//          //if (w == 0) w = MPlugin->getDefaultEditorWidth();
-//          //if (h == 0) h = MPlugin->getDefaultEditorHeight();
-//          ViewRect r;
-//          r.left    = 0;
-//          r.top     = 0;
-//          r.right   = w;
-//          r.bottom  = h;
-//          MPlugFrame->resizeView(this,&r);
-//        }
-
-/// Showing the GUI works as follow:
-///  1. clap_plugin_gui->is_api_supported(), check what can work
-///  2. clap_plugin_gui->create(), allocates gui resources
-///  3. if the plugin window is floating
-///  4.    -> clap_plugin_gui->set_transient()
-///  5.    -> clap_plugin_gui->suggest_title()
-///  6. else
-///  7.    -> clap_plugin_gui->set_scale()
-///  8.    -> clap_plugin_gui->can_resize()
-///  9.    -> if resizable and has known size from previous session, clap_plugin_gui->set_size()
-/// 10.    -> else clap_plugin_gui->get_size(), gets initial size
-/// 11.    -> clap_plugin_gui->set_parent()
-/// 12. clap_plugin_gui->show()
-
-/// 13. clap_plugin_gui->hide()/show() ...
-/// 14. clap_plugin_gui->destroy() when done with the gui
-
-        const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
-        const clap_plugin_t* plugin = MPlugin->getPlugin();
-        if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
-          if (gui->create(plugin,CLAP_WINDOW_API_X11,false)) {
-            gui->set_scale(plugin,1.0);
-            uint32_t width = 0;
-            uint32_t height = 0;
-            gui->get_size(plugin,&width,&height);
-
-            MIP_Print("width %i height %i\n",width,height);
-
-            if (MPlugFrame) {
-              //uint32_t w = 640; //MDescriptor->getEditorDefaultWidth();
-              //uint32_t h = 512;//MDescriptor->getEditorDefaultHeight();
-              //if (w == 0) w = MPlugin->getDefaultEditorWidth();
-              //if (h == 0) h = MPlugin->getDefaultEditorHeight();
-              ViewRect r;
-              r.left    = 0;
-              r.top     = 0;
-              r.right   = width;
-              r.bottom  = height;
-              MPlugFrame->resizeView(this,&r);
-            }
-
-            clap_window_t clap_window = {};
-            clap_window.api = CLAP_WINDOW_API_X11;
-            clap_window.x11 = (clap_xwnd)parent;//MWindow->getXcbWindow();
-            gui->set_parent(plugin,&clap_window);
-            gui->show(plugin);
-          }
+    const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
+    const clap_plugin_t* plugin = MPlugin->getPlugin();
+    if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
+      if (gui->create(plugin,CLAP_WINDOW_API_X11,false)) {
+        gui->set_scale(plugin,1.0);
+        uint32_t width = 0;
+        uint32_t height = 0;
+        gui->get_size(plugin,&width,&height);
+        if (MPlugFrame) {
+          ViewRect r;
+          r.left    = 0;
+          r.top     = 0;
+          r.right   = width;
+          r.bottom  = height;
+          MPlugFrame->resizeView(this,&r);
         }
-
-//        open_editor();
-
-//        MPlugin->gui_openEditor(parent);
-//        bool gui = MPlugin->gui_create(CLAP_WINDOW_API_X11,false);
-//        //MPlugin->gui_set_parent(parent);
-//        //MEditor->open();
-
-        //if (MRunLoop)
-
-//        MRunLoop->registerTimer(this,MIP_VST3_TIMER_MS);
-        return kResultOk;
-
-//      }
-//    #endif // MIP_NO_GUI
-    return kResultFalse;
+        clap_window_t clap_window = {};
+        clap_window.api = CLAP_WINDOW_API_X11;
+        clap_window.x11 = (clap_xwnd)parent;//MWindow->getXcbWindow();
+        gui->set_parent(plugin,&clap_window);
+        gui->show(plugin);
+      }
+    }
+    return kResultOk;
+    //return kResultFalse;
   }
 
   //----------
@@ -2620,49 +2340,31 @@ public:
   */
 
   tresult PLUGIN_API removed() override {
-    //MIP_PRINT;
-//    #ifndef MIP_NO_GUI
-//    if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
-      //if (MRunLoop)
-
-      const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
-      const clap_plugin_t* plugin = MPlugin->getPlugin();
-      if (gui) {
-        gui->hide(plugin);
-        gui->destroy(plugin);
-      }
-
-//      close_editor();
-
-//      MRunLoop->unregisterTimer(this);
-
-//      MEditor->close();
-//      MPlugin->closeEditor(MEditor);
-//      MEditor = nullptr;
-      return kResultOk;
-//    }
-//    #endif // MIP_NO_GUI
-//    return kResultFalse;
+    const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
+    const clap_plugin_t* plugin = MPlugin->getPlugin();
+    if (gui) {
+      gui->hide(plugin);
+      gui->destroy(plugin);
+    }
+    //MRunLoop->unregisterTimer(this);
+    return kResultOk;
   }
 
   //----------
 
   tresult PLUGIN_API onWheel(float distance) override {
-    //MIP_PRINT;
     return kResultOk;
   }
 
   //----------
 
   tresult PLUGIN_API onKeyDown(char16 key, int16 keyCode, int16 modifiers) override {
-    //MIP_PRINT;
     return kResultOk;
   }
 
   //----------
 
   tresult PLUGIN_API onKeyUp(char16 key, int16 keyCode, int16 modifiers) override {
-    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2673,25 +2375,16 @@ public:
   */
 
   tresult PLUGIN_API getSize(ViewRect* size) override {
-    //MIP_PRINT;
-//    if (MDescriptor->hasEditor()) {
-
-      uint32_t width = 0;
-      uint32_t height = 0;
-
-      const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
-      const clap_plugin_t* plugin = MPlugin->getPlugin();
-      gui->get_size(plugin,&width,&height);
-
-      size->left    = 0;
-      size->top     = 0;
-      size->right   = width;//MDescriptor->getEditorWidth();
-      size->bottom  = height;//MDescriptor->getEditorHeight();
-      return kResultOk;
-
-
-//    }
-//    return kResultFalse;
+    uint32_t width = 0;
+    uint32_t height = 0;
+    const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
+    const clap_plugin_t* plugin = MPlugin->getPlugin();
+    gui->get_size(plugin,&width,&height);
+    size->left    = 0;
+    size->top     = 0;
+    size->right   = width;//MDescriptor->getEditorWidth();
+    size->bottom  = height;//MDescriptor->getEditorHeight();
+    return kResultOk;
   }
 
   //----------
@@ -2703,16 +2396,10 @@ public:
   */
 
   tresult PLUGIN_API onSize(ViewRect* newSize) override {
-    //MIP_PRINT;
-//    if (MDescriptor->hasEditor()) {
-//      //MEditorWidth = newSize->getWidth();
-//      //MEditorHeight = newSize->getHeight();
-//      //TODO: resize/redraw editor
-      return kResultOk;
-//    }
-//    else {
-//      return kResultFalse;
-//    }
+    //MEditorWidth = newSize->getWidth();
+    //MEditorHeight = newSize->getHeight();
+    //TODO: resize/redraw editor
+    return kResultOk;
   }
 
   //----------
@@ -2722,7 +2409,6 @@ public:
   */
 
   tresult PLUGIN_API onFocus(TBool state) override {
-    //MIP_PRINT;
     return kResultOk;
   }
 
@@ -2734,17 +2420,10 @@ public:
   */
 
   tresult PLUGIN_API setFrame(IPlugFrame* frame) override {
-    //MIP_PRINT;
-
-//    if (MDescriptor->hasEditor()) {
-      MPlugFrame = frame;
-      //tresult res =
-      MPlugFrame->queryInterface(IRunLoop_iid, (void**)&MRunLoop);
-      return kResultOk;
-//    }
-//    else {
-//      return kResultFalse;
-//    }
+    MPlugFrame = frame;
+    //tresult res =
+    MPlugFrame->queryInterface(IRunLoop_iid, (void**)&MRunLoop);
+    return kResultOk;
   }
 
   //----------
@@ -2754,7 +2433,6 @@ public:
   */
 
   tresult PLUGIN_API canResize() override {
-    //MIP_PRINT;
     return kResultFalse;
   }
 
@@ -2766,7 +2444,6 @@ public:
   */
 
   tresult PLUGIN_API checkSizeConstraint(ViewRect* rect) override {
-    //MIP_PRINT;
     return kResultOk;//False;
   }
 
@@ -2783,23 +2460,19 @@ public:
   */
 
   void onTimer() override {
-    //MIP_PRINT;
-    #ifndef MIP_NO_GUI
-//      MPlugin->on_updateEditor(MEditor);
-//      MPlugin->flushParamsToHost();
-    #endif // MIP_NO_GUI
+    //MPlugin->on_updateEditor(MEditor);
+    //MPlugin->flushParamsToHost();
   }
 
-//
 //
 
 };
 
-
-//#endif // 0
-
-#undef MIP_MAX_EVENTS_PER_BLOCK
-
+#undef MIP_VST3_TIMER_MS
+#undef MIP_VST3_MAX_AUDIO_BLOCK_SIZE
+#undef MIP_VST3_MAX_EVENTS_PER_BLOCK
+#undef MIP_VST3_MAX_EVENT_SIZE
+#undef MIP_VST3_MAX_NOTE_IDS
 
 //----------------------------------------------------------------------
 #endif
