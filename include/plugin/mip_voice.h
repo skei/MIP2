@@ -118,7 +118,7 @@ public:
       case CLAP_NOTE_EXPRESSION_VIBRATO:    voice.vibrato(value);     break;
       case CLAP_NOTE_EXPRESSION_EXPRESSION: voice.expression(value);  break;
       case CLAP_NOTE_EXPRESSION_BRIGHTNESS:
-        MIP_Print("value %f\n",value);
+        //MIP_Print("value %f\n",value);
         voice.brightness(value);
         break;
       case CLAP_NOTE_EXPRESSION_PRESSURE:   voice.pressure(value);    break;

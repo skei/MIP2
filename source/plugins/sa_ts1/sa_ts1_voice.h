@@ -175,7 +175,7 @@ public:
   //----------
 
   void pressure(T amount) {
-    MIP_Print("pressure: %f\n",amount);
+    //MIP_Print("pressure: %f\n",amount);
     note_press = amount;
   }
 
