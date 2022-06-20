@@ -113,64 +113,58 @@ class MIP_Vst3Plugin
 private:
 //------------------------------
 
-  MIP_ParameterArray*             MParameters = nullptr;
-  MIP_ClapPlugin*                 MPlugin     = nullptr;
-  //MIP_Descriptor*               MDescriptor = nullptr;
-  const clap_plugin_descriptor_t* MDescriptor = nullptr;
-
-  MIP_Vst3HostImplementation*     MHost       = nullptr;
-
+  MIP_ParameterArray*             MParameters         = nullptr;
+  MIP_ClapPlugin*                 MPlugin             = nullptr;
+  //MIP_Descriptor*                 MDescriptor         = nullptr;
+  const clap_plugin_descriptor_t* MDescriptor         = nullptr;
+  MIP_Vst3HostImplementation*     MHost               = nullptr;
   //#ifndef MIP_NO_GUI
-  //MIP_Editor*                   MEditor     = nullptr;
+  //MIP_Editor*                     MEditor             = nullptr;
   //#endif
+  uint32_t                        MRefCount           = 1;
+  IComponentHandler*              MComponentHandler   = nullptr;
+  IComponentHandler2*             MComponentHandler2  = nullptr;
+  IPlugFrame*                     MPlugFrame          = nullptr;
+  IHostApplication*               MHostApp            = nullptr;
+  ParameterInfo*                  MParamInfos         = nullptr;
+  IRunLoop*                       MRunLoop            = nullptr;
+  uint32_t                        MIoMode             = 0;
+  char                            MHostName[129]      = {0};
+  bool                            MIsProcessing       = false;
+  uint32_t                        MProcessMode        = 0;
+  uint32_t                        MSampleSize         = 0;
+  uint32_t                        MBlockSize          = 0;
+  float                           MSampleRate         = 0.0;
+  char                            MEditorId[16]       = {0};
+  int64_t                         MSteadyTime         = 0;
+  clap_process_t                  MClapProcess        = {};
+  clap_event_transport_t          MTransport          = {};
 
-  uint32_t              MRefCount           = 1;
-  IComponentHandler*    MComponentHandler   = nullptr;
-  IComponentHandler2*   MComponentHandler2  = nullptr;
-  IPlugFrame*           MPlugFrame          = nullptr;
-  IHostApplication*     MHostApp            = nullptr;
-  ParameterInfo*        MParamInfos         = nullptr;
-  IRunLoop*             MRunLoop            = nullptr;
-  uint32_t              MIoMode             = 0;
-  char                  MHostName[129]      = {0};
-  bool                  MIsProcessing       = false;
-  uint32_t              MProcessMode        = 0;
-  uint32_t              MSampleSize         = 0;
-  uint32_t              MBlockSize          = 0;
-  float                 MSampleRate         = 0.0;
+  MIP_Vst3Window*                 MWindow = nullptr;
 
-  //MIP_ProcessContext  MProcessContext     = {0};
-    clap_process_t      MClapProcess        = {};
   //-----
 
-  alignas(32) float   MAudioInputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(32) float   MAudioInputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(32) float   MAudioOutputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(32) float   MAudioOutputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(32) float*  MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
-  alignas(32) float*  MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
+  alignas(32) float               MAudioInputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  alignas(32) float               MAudioInputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  alignas(32) float               MAudioOutputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  alignas(32) float               MAudioOutputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  alignas(32) float*              MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
+  alignas(32) float*              MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
 
-  alignas(64) double  MAudioInputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(64) double  MAudioInputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(64) double  MAudioOutputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(64) double  MAudioOutputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  alignas(64) double* MAudioInputBuffers_64[2] = { MAudioInputBuffer1_64, MAudioInputBuffer2_64 };
-  alignas(64) double* MAudioOutputBuffers_64[2] = { MAudioOutputBuffer1_64, MAudioOutputBuffer2_64 };
+  alignas(64) double              MAudioInputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  alignas(64) double              MAudioInputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  alignas(64) double              MAudioOutputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  alignas(64) double              MAudioOutputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
+  alignas(64) double*             MAudioInputBuffers_64[2] = { MAudioInputBuffer1_64, MAudioInputBuffer2_64 };
+  alignas(64) double*             MAudioOutputBuffers_64[2] = { MAudioOutputBuffer1_64, MAudioOutputBuffer2_64 };
 
-  clap_audio_buffer_t MAudioInputs = {0};
-  clap_audio_buffer_t MAudioOutputs = {0};
+  clap_audio_buffer_t             MAudioInputs = {0};
+  clap_audio_buffer_t             MAudioOutputs = {0};
 
-  //char                MEventBuffer[1024] = {0};
-  //mip_vst3event       MVst3Events[MIP_VST3_MAX_EVENTS_PER_BLOCK] = {0};
-  //mip_vst3event       MVst3Events[MIP_VST3_MAX_EVENTS_PER_BLOCK] = {0};
-  //IParameterChanges*  MVst3ParamChanges   = nullptr;
-  //IEventList*         MVst3EventList      = nullptr;
-
-  uint32_t  MNumEvents = 0;
-  char      MEvents[MIP_VST3_MAX_EVENTS_PER_BLOCK * MIP_VST3_MAX_EVENT_SIZE] = {0};
-
-  uint32_t  MLastNoteId                     = 0;
-  note_id_t MNoteIds[MIP_VST3_MAX_NOTE_IDS] = {};
+  uint32_t                        MNumEvents                                                        = 0;
+  char                            MEvents[MIP_VST3_MAX_EVENTS_PER_BLOCK * MIP_VST3_MAX_EVENT_SIZE]  = {0};
+  uint32_t                        MLastNoteId                                                       = 0;
+  note_id_t                       MNoteIds[MIP_VST3_MAX_NOTE_IDS]                                   = {};
 
 //------------------------------
 public:
@@ -490,12 +484,8 @@ private:
 
   //----------
 
-//  //int values[] = { 88, 56, 100, 2, 25 };
-
   static
-  int cmp_vst3_evt(const void* a, const void* b) {
-    //mip_vst3event* ev1 = (mip_vst3event*)a;
-    //mip_vst3event* ev2 = (mip_vst3event*)b;
+  int compare_events(const void* a, const void* b) {
     clap_event_header_t* ev1 = (clap_event_header_t*)a;
     clap_event_header_t* ev2 = (clap_event_header_t*)b;
     return (ev1->time - ev2->time);
@@ -504,8 +494,7 @@ private:
   //----------
 
   void sortEvents() {
-    //qsort(MVst3Events,MVst3NumEvents,sizeof(mip_vst3event), cmp_vst3_evt);
-    qsort(MEvents,MNumEvents,MIP_VST3_MAX_EVENT_SIZE, cmp_vst3_evt);
+    qsort(MEvents,MNumEvents,MIP_VST3_MAX_EVENT_SIZE, compare_events);
   }
 
 //------------------------------
@@ -1620,16 +1609,8 @@ public:
     bool _flush = ( (data.numInputs == 0) && (data.numOutputs == 0) && (data.numSamples == 0) );
     if (!_flush) {
 
-      //MProcessContext.num_inputs = MDescriptor->getNumAudioInputs();
-      //MProcessContext.num_outputs = MDescriptor->getNumAudioOutputs();
-      // for (uint32_t i=0; i<MProcessContext.num_inputs; i++)  { MProcessContext.inputs[i]  = data.inputs[0].channelBuffers32[i];  }
-      // for (uint32_t i=0; i<MProcessContext.num_outputs; i++) { MProcessContext.outputs[i] = data.outputs[0].channelBuffers32[i]; }
-      //MProcessContext.inputs      = data.inputs[0].channelBuffers32;
-      //MProcessContext.outputs     = data.outputs[0].channelBuffers32;
-      //MProcessContext.num_samples = data.numSamples;
       //MProcessContext.samplerate  = data.processContext->sampleRate;
       //MProcessContext.tempo       = data.processContext->tempo;
-      //MPlugin->on_plugin_process(&MProcessContext);
 
       MAudioInputs.data32               = data.inputs[0].channelBuffers32;//MAudioInputBuffers;
       MAudioInputs.data64               = data.inputs[0].channelBuffers64;//MAudioInputBuffers_64;
@@ -1643,9 +1624,40 @@ public:
       MAudioOutputs.latency             = 0;
       MAudioOutputs.constant_mask       = 0;
 
-      MClapProcess.steady_time          = 0;
+      MTransport.header.type            = CLAP_EVENT_TRANSPORT;
+      MTransport.header.size            = sizeof(clap_event_transport_t);
+      MTransport.header.space_id        = CLAP_CORE_EVENT_SPACE_ID;
+      MTransport.header.time            = 0;
+      MTransport.header.flags           = 0;
+
+      MTransport.flags = 0;
+      if (data.processContext->state & ProcessContext::StatesAndFlags::kTempoValid)             MTransport.flags |= CLAP_TRANSPORT_HAS_TEMPO;
+      if (data.processContext->state & ProcessContext::StatesAndFlags::kBarPositionValid)       MTransport.flags |= CLAP_TRANSPORT_HAS_BEATS_TIMELINE;
+      if (data.processContext->state & ProcessContext::StatesAndFlags::kProjectTimeMusicValid)  MTransport.flags |= CLAP_TRANSPORT_HAS_SECONDS_TIMELINE;
+      if (data.processContext->state & ProcessContext::StatesAndFlags::kTimeSigValid)           MTransport.flags |= CLAP_TRANSPORT_HAS_TIME_SIGNATURE;
+      if (data.processContext->state & ProcessContext::StatesAndFlags::kPlaying)                MTransport.flags |= CLAP_TRANSPORT_IS_PLAYING;
+      if (data.processContext->state & ProcessContext::StatesAndFlags::kRecording)              MTransport.flags |= CLAP_TRANSPORT_IS_RECORDING;
+      if (data.processContext->state & ProcessContext::StatesAndFlags::kCycleActive)            MTransport.flags |= CLAP_TRANSPORT_IS_LOOP_ACTIVE;
+      //if (data.processContext->state & ProcessContext::StatesAndFlags::)                        MTransport.flags |= CLAP_TRANSPORT_IS_WITHIN_PRE_ROLL;
+
+      MTransport.song_pos_beats         = data.processContext->projectTimeMusic;
+      MTransport.song_pos_seconds       = data.processContext->continousTimeSamples;
+      MTransport.tempo                  = data.processContext->tempo;
+      MTransport.tempo_inc              = 0.0;  // hz/srate
+      MTransport.loop_start_beats       = data.processContext->cycleStartMusic;
+      MTransport.loop_end_beats         = data.processContext->cycleEndMusic;
+      MTransport.loop_start_seconds     = 0;
+      MTransport.loop_end_seconds       = 0;
+      MTransport.bar_start              = 0;
+      MTransport.bar_number             = 0;//data.processContext->barPositionMusic;
+      MTransport.tsig_num               = data.processContext->timeSigNumerator;
+      MTransport.tsig_denom             = data.processContext->timeSigDenominator;
+
+      //
+
+      MClapProcess.steady_time          = MSteadyTime;
       MClapProcess.frames_count         = data.numSamples;
-      MClapProcess.transport            = nullptr;
+      MClapProcess.transport            = &MTransport;
 
       MClapProcess.audio_inputs         = &MAudioInputs;
       MClapProcess.audio_outputs        = &MAudioOutputs;
@@ -1659,6 +1671,8 @@ public:
 
       // clap takes over
       MPlugin->process(&MClapProcess);
+
+      MSteadyTime += data.numSamples;
 
     }
 
@@ -2437,36 +2451,45 @@ public:
   // IPlugView
   //--------------------
 
-  void open_editor() {
-    #ifndef MIP_NO_GUI
-      const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
-      const clap_plugin_t* plugin = MPlugin->getPlugin();
-      if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
-        gui->create(plugin,CLAP_WINDOW_API_X11,false);
-        gui->set_scale(plugin,1.0);
-        uint32_t width = 0.0;
-        uint32_t height = 0.0;
-        gui->get_size(plugin,&width,&height);
-        MIP_Vst3Window* window = new MIP_Vst3Window(width,height,this,plugin,gui);
-        //window->setup(plugin,gui);
-        window->open();
-        clap_window_t clap_window = {};
-        clap_window.api = CLAP_WINDOW_API_X11;
-        clap_window.x11 = window->getXcbWindow();
-        gui->set_parent( plugin, &clap_window );
-        gui->show(plugin);
-        window->eventLoop();
-        window->close();
-        delete window;
-        //gui->hide(plugin);
-        gui->destroy(plugin);
-      }
-    #endif
-  }
+//  void open_editor() {
+//    #ifndef MIP_NO_GUI
+//      const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
+//      const clap_plugin_t* plugin = MPlugin->getPlugin();
+//      if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
+//        gui->create(plugin,CLAP_WINDOW_API_X11,false);
+//        gui->set_scale(plugin,1.0);
+//        uint32_t width = 0.0;
+//        uint32_t height = 0.0;
+//        gui->get_size(plugin,&width,&height);
+//
+//        //MIP_Vst3Window* window = new MIP_Vst3Window(width,height,this,plugin,gui);
+//        MWindow = new MIP_Vst3Window(width,height,this,plugin,gui);
+//        //window->setup(plugin,gui);
+//        MWindow->open();
+//        clap_window_t clap_window = {};
+//        clap_window.api = CLAP_WINDOW_API_X11;
+//        clap_window.x11 = MWindow->getXcbWindow();
+//        gui->set_parent( plugin, &clap_window );
+//        gui->show(plugin);
+//  //      MWindow->eventLoop();
+//  //      window->close();
+//  //      delete window;
+//  //      //gui->hide(plugin);
+//  //      gui->destroy(plugin);
+//      }
+//    #endif
+//  }
+//
+//  void close_editor() {
+//    const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
+//    const clap_plugin_t* plugin = MPlugin->getPlugin();
+//    gui->hide(plugin);
+//    gui->destroy(plugin);
+//    MWindow->close();
+//    delete MWindow;
+//  }
 
   //-----
-
-  char MEditorId[16] = {0};
 
   const char* getEditorId(const clap_plugin_descriptor_t* descriptor) {
     uint32_t* id = (uint32_t*)MEditorId;
@@ -2509,20 +2532,70 @@ public:
     //MIP_PRINT;
 //    #ifndef MIP_NO_GUI
 //      if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
-        if (MPlugFrame) {
-          uint32_t w = 640; //MDescriptor->getEditorDefaultWidth();
-          uint32_t h = 512;//MDescriptor->getEditorDefaultHeight();
-          //if (w == 0) w = MPlugin->getDefaultEditorWidth();
-          //if (h == 0) h = MPlugin->getDefaultEditorHeight();
-          ViewRect r;
-          r.left    = 0;
-          r.top     = 0;
-          r.right   = w;
-          r.bottom  = h;
-          MPlugFrame->resizeView(this,&r);
+
+//        if (MPlugFrame) {
+//          uint32_t w = 640; //MDescriptor->getEditorDefaultWidth();
+//          uint32_t h = 512;//MDescriptor->getEditorDefaultHeight();
+//          //if (w == 0) w = MPlugin->getDefaultEditorWidth();
+//          //if (h == 0) h = MPlugin->getDefaultEditorHeight();
+//          ViewRect r;
+//          r.left    = 0;
+//          r.top     = 0;
+//          r.right   = w;
+//          r.bottom  = h;
+//          MPlugFrame->resizeView(this,&r);
+//        }
+
+/// Showing the GUI works as follow:
+///  1. clap_plugin_gui->is_api_supported(), check what can work
+///  2. clap_plugin_gui->create(), allocates gui resources
+///  3. if the plugin window is floating
+///  4.    -> clap_plugin_gui->set_transient()
+///  5.    -> clap_plugin_gui->suggest_title()
+///  6. else
+///  7.    -> clap_plugin_gui->set_scale()
+///  8.    -> clap_plugin_gui->can_resize()
+///  9.    -> if resizable and has known size from previous session, clap_plugin_gui->set_size()
+/// 10.    -> else clap_plugin_gui->get_size(), gets initial size
+/// 11.    -> clap_plugin_gui->set_parent()
+/// 12. clap_plugin_gui->show()
+
+/// 13. clap_plugin_gui->hide()/show() ...
+/// 14. clap_plugin_gui->destroy() when done with the gui
+
+        const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
+        const clap_plugin_t* plugin = MPlugin->getPlugin();
+        if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
+          if (gui->create(plugin,CLAP_WINDOW_API_X11,false)) {
+            gui->set_scale(plugin,1.0);
+            uint32_t width = 0;
+            uint32_t height = 0;
+            gui->get_size(plugin,&width,&height);
+
+            MIP_Print("width %i height %i\n",width,height);
+
+            if (MPlugFrame) {
+              //uint32_t w = 640; //MDescriptor->getEditorDefaultWidth();
+              //uint32_t h = 512;//MDescriptor->getEditorDefaultHeight();
+              //if (w == 0) w = MPlugin->getDefaultEditorWidth();
+              //if (h == 0) h = MPlugin->getDefaultEditorHeight();
+              ViewRect r;
+              r.left    = 0;
+              r.top     = 0;
+              r.right   = width;
+              r.bottom  = height;
+              MPlugFrame->resizeView(this,&r);
+            }
+
+            clap_window_t clap_window = {};
+            clap_window.api = CLAP_WINDOW_API_X11;
+            clap_window.x11 = (clap_xwnd)parent;//MWindow->getXcbWindow();
+            gui->set_parent(plugin,&clap_window);
+            gui->show(plugin);
+          }
         }
 
-        open_editor();
+//        open_editor();
 
 //        MPlugin->gui_openEditor(parent);
 //        bool gui = MPlugin->gui_create(CLAP_WINDOW_API_X11,false);
@@ -2530,8 +2603,10 @@ public:
 //        //MEditor->open();
 
         //if (MRunLoop)
-        MRunLoop->registerTimer(this,MIP_VST3_TIMER_MS);
+
+//        MRunLoop->registerTimer(this,MIP_VST3_TIMER_MS);
         return kResultOk;
+
 //      }
 //    #endif // MIP_NO_GUI
     return kResultFalse;
@@ -2549,7 +2624,18 @@ public:
 //    #ifndef MIP_NO_GUI
 //    if (MDescriptor->hasFlag(MIP_PLUGIN_HAS_EDITOR)) {
       //if (MRunLoop)
-      MRunLoop->unregisterTimer(this);
+
+      const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
+      const clap_plugin_t* plugin = MPlugin->getPlugin();
+      if (gui) {
+        gui->hide(plugin);
+        gui->destroy(plugin);
+      }
+
+//      close_editor();
+
+//      MRunLoop->unregisterTimer(this);
+
 //      MEditor->close();
 //      MPlugin->closeEditor(MEditor);
 //      MEditor = nullptr;
@@ -2589,11 +2675,21 @@ public:
   tresult PLUGIN_API getSize(ViewRect* size) override {
     //MIP_PRINT;
 //    if (MDescriptor->hasEditor()) {
+
+      uint32_t width = 0;
+      uint32_t height = 0;
+
+      const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
+      const clap_plugin_t* plugin = MPlugin->getPlugin();
+      gui->get_size(plugin,&width,&height);
+
       size->left    = 0;
       size->top     = 0;
-      size->right   = 640;//MDescriptor->getEditorWidth();
-      size->bottom  = 512;//MDescriptor->getEditorHeight();
+      size->right   = width;//MDescriptor->getEditorWidth();
+      size->bottom  = height;//MDescriptor->getEditorHeight();
       return kResultOk;
+
+
 //    }
 //    return kResultFalse;
   }
