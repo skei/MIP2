@@ -182,7 +182,7 @@ public:
   //----------
 
   void parameter(uint32_t index, T value) {
-    //MIP_Print("index %i value %f\n",index,value);
+    MIP_Print("index %i value %f\n",index,value);
     MParameters[index] = value;
     //MIP_Print("---\n");
     switch(index) {

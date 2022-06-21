@@ -2,6 +2,8 @@
 #define mip_vst2_entry_included
 //----------------------------------------------------------------------
 
+// work in progress..
+
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 //#include "plugin/clap/mip_clap_host.h"
@@ -49,9 +51,7 @@ public:
     //const clap_plugin_t* plugin = MIP_CreatePlugin(host->ptr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(0,descriptor,host->getHost());
     const clap_plugin_t* clap_plugin = plugin->getPlugin();
-
-    clap_plugin->init(clap_plugin);
-
+    clap_plugin->init(clap_plugin); // destroy called in effClose
     //MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
     MIP_Vst2Plugin* vst2plugin  = new MIP_Vst2Plugin(host,clap_plugin/*plugin->ptr()*/,audioMaster); // deleted in vst2_dispatcher_callback(effClose)
     /*
@@ -83,22 +83,22 @@ public:
     AEffect* effect = vst2plugin->getAEffect();
     host->setAEffect(effect);
     memset(effect,0,sizeof(AEffect));
-    effect->magic                     = kEffectMagic;
-    effect->uniqueID                  = 0x00000000;
-    effect->flags                     = flags;
-    effect->numInputs                 = num_inputs;
-    effect->numOutputs                = num_outputs;
-    effect->numParams                 = num_params;
-    effect->numPrograms               = 0;
-    effect->version                   = 0x00000000; // TODO
-    effect->initialDelay              = 0;
-    effect->object                    = vst2plugin;
-    effect->user                      = nullptr;//this;
-    effect->dispatcher                = vst2_dispatcher_callback;
-    effect->setParameter              = vst2_setParameter_callback;
-    effect->getParameter              = vst2_getParameter_callback;
-    effect->processReplacing          = vst2_process_callback;
-    effect->processDoubleReplacing    = vst2_processDouble_callback;
+    effect->magic                   = kEffectMagic;
+    effect->uniqueID                = 0x00000000;
+    effect->flags                   = flags;
+    effect->numInputs               = num_inputs;
+    effect->numOutputs              = num_outputs;
+    effect->numParams               = num_params;
+    effect->numPrograms             = 0;
+    effect->version                 = 0x00000000; // TODO
+    effect->initialDelay            = 0;
+    effect->object                  = vst2plugin;
+    effect->user                    = nullptr;//this;
+    effect->dispatcher              = vst2_dispatcher_callback;
+    effect->setParameter            = vst2_setParameter_callback;
+    effect->getParameter            = vst2_getParameter_callback;
+    effect->processReplacing        = vst2_process_callback;
+    effect->processDoubleReplacing  = vst2_processDouble_callback;
     return effect;
   }
 

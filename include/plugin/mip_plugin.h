@@ -1103,6 +1103,9 @@ public: // editor listener
 //qwe
 
   void on_editor_listener_parameter(uint32_t AIndex, double AValue) override {
+
+    MIP_Print("AIndex %i AValue %f\n",AIndex,AValue);
+
     queueAudioParam(AIndex,AValue);
     queueHostParam(AIndex,AValue);
     handle_parameter(AIndex,AValue);

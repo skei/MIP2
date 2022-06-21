@@ -102,28 +102,20 @@ public:
     (is synth, has editor, ..)..
   */
 
-//  MIP_Vst2Plugin(MIP_ClapHost* AHost, const clap_plugin_t* APlugin, audioMasterCallback audioMaster) {
   MIP_Vst2Plugin(MIP_Vst2Host* AHost, const clap_plugin_t* APlugin, audioMasterCallback audioMaster) {
     MIP_Print("\n");
-
     MHost         = AHost;
-
     MPlugin       = APlugin;
     MDescriptor   = MPlugin->desc;
     MAudioMaster  = audioMaster;
-
     MGui          = (const clap_plugin_gui_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_GUI);
-    //MGuiX11       = (const clap_plugin_gui_x11_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_GUI_X11);
     MParams       = (const clap_plugin_params_t*)MPlugin->get_extension(MPlugin,CLAP_EXT_PARAMS);
-
     uint32_t num_params = MParams->count(MPlugin);
     MParameterValues = (float*)malloc(num_params * sizeof(float));
-
     memset(&MVstMidiSendEvents,0,sizeof(MVstMidiSendEvents));
     for (uint32_t i=0; i<MIP_VST2_MAX_MIDI_SEND; i++) {
       MVstEvents.events[i] = (VstEvent*)&MVstMidiSendEvents[i];
     }
-
   }
 
   //----------
@@ -385,7 +377,7 @@ public: // vst2
       */
 
       case effGetProgram: // 3
-        MIP_Print("effGetProgram -> %i\n",MCurrentProgram);
+        //MIP_Print("effGetProgram -> %i\n",MCurrentProgram);
         return MCurrentProgram;
         break;
 
@@ -550,7 +542,9 @@ public: // vst2
           MIsProcessing = false;
           MIsSuspended = true;
           //MInstance->on_plugin_deactivate();
-//          MPlugin->deactivate(MPlugin);
+
+          MPlugin->deactivate(MPlugin);
+
         }
         else { // resume
           //if (!MIsInitialized) {
@@ -560,7 +554,9 @@ public: // vst2
           MIsProcessing = true;
           MIsSuspended = false;
           //MInstance->on_plugin_activate(MSampleRate,0,MMaxBlockSize);
-//          MPlugin->activate(MPlugin,MSampleRate,0,MMaxBlockSize);
+
+          MPlugin->activate(MPlugin,MSampleRate,0,MMaxBlockSize);
+
         }
         break;
 
@@ -657,7 +653,7 @@ public: // vst2
       */
 
       case effEditIdle: // 19
-        MIP_Print("effEditIdle\n");
+        //MIP_Print("effEditIdle\n");
         #ifndef MIP_NO_GUI
 //          if (MGui) {
 //            if (MIsEditorOpen) {
@@ -1184,7 +1180,7 @@ public: // vst2
       */
 
       case effGetTailSize: // 52
-        MIP_Print("effGetTailSize -> 0\n");
+        //MIP_Print("effGetTailSize -> 0\n");
         //if (MTail == -1) return 1;
         return 0;
         //break;

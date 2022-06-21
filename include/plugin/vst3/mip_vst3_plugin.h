@@ -6,15 +6,10 @@
 
 //----------
 
-/*
-  todo:
-*/
-
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/vst3/mip_vst3.h"
 #include "plugin/vst3/mip_vst3_utils.h"
-
 
 //typedef MIP_Array<clap_event_header_t*> MIP_Vst3EventHeaders;
 
@@ -32,52 +27,6 @@ struct note_id_t {
   int16_t channel   = -1;
   int16_t key       = -1;
 };
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-/*
-class MIP_Vst3Window
-: public MIP_ImplementedWindow {
-
-//------------------------------
-private:
-//------------------------------
-
-  const clap_plugin_t*      plugin      = nullptr;
-  const clap_plugin_gui_t*  gui         = nullptr;
-
-//------------------------------
-
-public:
-//------------------------------
-
-  MIP_Vst3Window(uint32_t AWidth, uint32_t AHeight, MIP_WindowListener* AListener, const clap_plugin_t* APlugin, const clap_plugin_gui_t* AGui)
-  : MIP_ImplementedWindow(AWidth,AHeight,false) {
-    plugin = APlugin;
-    gui = AGui;
-  }
-
-  //----------
-
-  virtual ~MIP_Vst3Window() {
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-  void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    //MIP_Window::on_window_resize(AWidth,AHeight);
-    gui->set_size(plugin,AWidth,AHeight);
-  }
-
-};
-
-*/
 
 //----------------------------------------------------------------------
 //
@@ -126,20 +75,6 @@ private:
   clap_process_t                  MClapProcess        = {};
   clap_event_transport_t          MTransport          = {};
 
-  //alignas(32) float               MAudioInputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  //alignas(32) float               MAudioInputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  //alignas(32) float               MAudioOutputBuffer1[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  //alignas(32) float               MAudioOutputBuffer2[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  //alignas(32) float*              MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
-  //alignas(32) float*              MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
-  //
-  //alignas(64) double              MAudioInputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  //alignas(64) double              MAudioInputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  //alignas(64) double              MAudioOutputBuffer1_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  //alignas(64) double              MAudioOutputBuffer2_64[MIP_VST3_MAX_AUDIO_BLOCK_SIZE];
-  //alignas(64) double*             MAudioInputBuffers_64[2] = { MAudioInputBuffer1_64, MAudioInputBuffer2_64 };
-  //alignas(64) double*             MAudioOutputBuffers_64[2] = { MAudioOutputBuffer1_64, MAudioOutputBuffer2_64 };
-
   clap_audio_buffer_t             MAudioInputs  = {0};
   clap_audio_buffer_t             MAudioOutputs = {0};
 
@@ -147,12 +82,6 @@ private:
   char                            MEvents[MIP_VST3_MAX_EVENTS_PER_BLOCK * MIP_VST3_MAX_EVENT_SIZE]  = {0};
   uint32_t                        MLastNoteId                                                       = 0;
   note_id_t                       MNoteIds[MIP_VST3_MAX_NOTE_IDS]                                   = {};
-
-  //MIP_Vst3Window*                 MWindow             = nullptr;
-  //MIP_Descriptor*                 MDescriptor         = nullptr;
-  //#ifndef MIP_NO_GUI
-  //MIP_Editor*                     MEditor             = nullptr;
-  //#endif
 
 //------------------------------
 public:
@@ -720,31 +649,6 @@ public:
     processing part and the controller part in one component class. The host
     tries to query the IEditController interface after creating an
     IAudioProcessor and on success uses it as controller.
-
-    reaper asks for:
-      C3B17BC0-2C174494-80293402-FBC4BBF8 (IContextInfoHandler,   plsextensions)
-      31E29A7A-E55043AD-8B95B9B8-DA1FBE1E (IContextInfoHandler2,  pslextensions)
-
-    bitwig asks for:
-      6C389611-D391455D-B870B833-94A0EFDD (IUnitData)
-      8683B01F-7B354F70-A2651DEC-353AF4FF (IProgramListData)
-      7F4EFE59-F3204967-AC27A3AE-AFB63038 (IEditController2)
-      65ED9690-8AC44525-8AADEF7A-72EA703F (IPlugViewContentScaleSupport)
-
-    ( 65ed9690-8ac44525-8aadef7a-72ea703f (IPlugInViewScaling, pslextensions) !! )
-
-      633b9012-d19a4953-b477b436-9daaeedb
-      8e8bbb11-73384477-ac6b1eeb-383df4f0
-      ccc87233-accb4371-bc74a1f2-5ebba43c
-
-      7743fe5e-f3224d6d-a729ada9-aab2333b
-      cd291308-775e4492-b5db37be-62bb1a54
-      41c5087e-4bbb4e8b-8da21bd2-97dc6679
-      001a4b89-86924ed8-b7aacdee-cc12d6dd
-      98e97900-c220484c-82a3edcd-d06cdd45
-
-      6bec9099-83c14927-83a8ee72-79e97733
-
   */
 
   tresult PLUGIN_API queryInterface(const TUID _iid, void** obj) override {
