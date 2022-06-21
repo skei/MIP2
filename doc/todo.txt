@@ -16,6 +16,10 @@
   plugin: dll-entry
   gui: window, painter, surface classes
 
+* doubles
+
+  doubles for anything related to audio or parameter values
+
 //----------------------------------------------------------------------
 //
 // /BASE

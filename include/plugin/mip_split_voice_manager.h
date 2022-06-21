@@ -318,9 +318,7 @@ private: // events
   // note_id is always -1
 
   void handleNoteExpressionEvent(const clap_event_note_expression_t* event) {
-
-    MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
-
+    //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
     //MIP_Print("%f\n",event->value);
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
       //if (MVoices[i].note.note_id == event->note_id) {
@@ -472,7 +470,7 @@ private: // note_end
     clap_event_note_t event;
     clap_event_header_t* header = (clap_event_header_t*)&event;
     header->size      = sizeof(clap_event_note_t);
-    header->time      = 0; // crashed if this was anything else than 0
+    header->time      = 0;
     header->space_id  = CLAP_CORE_EVENT_SPACE_ID;
     header->type      = CLAP_EVENT_NOTE_END;
     header->flags     = 0;

@@ -104,8 +104,7 @@ public:
 
 //  MIP_Vst2Plugin(MIP_ClapHost* AHost, const clap_plugin_t* APlugin, audioMasterCallback audioMaster) {
   MIP_Vst2Plugin(MIP_Vst2Host* AHost, const clap_plugin_t* APlugin, audioMasterCallback audioMaster) {
-
-    //MIP_Print("MIP_Vst2Plugin()\n");
+    MIP_Print("\n");
 
     MHost         = AHost;
 
@@ -130,7 +129,7 @@ public:
   //----------
 
   ~MIP_Vst2Plugin() {
-    //MIP_Print("~MIP_Vst2Plugin()\n");
+    MIP_Print("\n");
     free(MParameterValues);
     if (MPlugin) MPlugin->destroy(MPlugin);
     if (MHost) delete MHost;
@@ -276,6 +275,7 @@ public: // vst2
 //------------------------------
 
   void vst2_setParameter(VstInt32 index, float parameter) {
+    MIP_Print("index %i parameter %f\n",index,parameter);
     MParameterValues[index] = parameter;
     queueProcessMessage(index);
     #ifndef MIP_NO_GUI
@@ -286,6 +286,7 @@ public: // vst2
   //----------
 
   float vst2_getParameter(VstInt32 index) {
+    MIP_Print("index %i -> %f\n",index,MParameterValues[index]);
     return MParameterValues[index];
   }
 
@@ -324,7 +325,7 @@ public: // vst2
   VstIntPtr vst2_dispatcher(VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt) {
     VstIntPtr result    = 0;
     char*     cptr      = (char*)ptr;
-    char      str[256]  = {0};
+    //char      str[256]  = {0};
 
     switch (opcode) {
 
@@ -336,11 +337,14 @@ public: // vst2
       */
 
       case effOpen: // 0
-        //MIP_Vst2Trace("vst2: dispatcher/effOpen\n");
+        MIP_Print("effOpen\n");
         MIsOpen = true;
-//        MInstance->on_plugin_init();
-//        MInstance->setDefaultParameterValues();
-//        MInstance->updateAllParameters();
+
+        //MPlugin->init(MPlugin);
+
+        //MInstance->on_plugin_init();
+        //MInstance->setDefaultParameterValues();
+        //MInstance->updateAllParameters();
         break;
 
       //----------
@@ -351,18 +355,21 @@ public: // vst2
       */
 
       case effClose: // 1
-        //MIP_Vst2Trace("vst2: dispatcher/effClose\n");
+        MIP_Print("effClose\n");
         MIsOpen = false;
-//        MInstance->on_plugin_destroy();
+        //MInstance->on_plugin_destroy();
+
+        //MPlugin->destroy(MPlugin);
+
         break;
 
       //----------
 
       case effSetProgram: { // 2
-        //MIP_Vst2Trace("vst2: dispatcher/effSetProgram %i\n",(int)value);
         uint32_t program = (uint32_t)value;
+        MIP_Print("effSetProgram %i\n",program);
         if (program != MCurrentProgram) {
-//          on_programChange(program);
+          //on_programChange(program);
           MCurrentProgram = program;
         }
         break;
@@ -378,7 +385,7 @@ public: // vst2
       */
 
       case effGetProgram: // 3
-        ////MIP_Vst2Trace("vst2: dispatcher/effGetProgram\n");
+        MIP_Print("effGetProgram -> %i\n",MCurrentProgram);
         return MCurrentProgram;
         break;
 
@@ -392,7 +399,7 @@ public: // vst2
       */
 
       case effSetProgramName: { // 4
-        //MIP_Vst2Trace("vst2: dispatcher/effSetProgramName '%s'\n",cptr);
+        MIP_Print("effSetProgramName '%s'\n",ptr);
         //MIP_Strcpy(MProgramName,txt);
         break;
       }
@@ -407,7 +414,7 @@ public: // vst2
       */
 
       case effGetProgramName: // 5
-        //MIP_Vst2Trace("vst2: dispatcher/effGetProgramName\n");
+        MIP_Print("effGetProgramName\n");
         *cptr = 0;
         break;
         //MIP_Strcpy((char*)ptr,MProgramName);
@@ -426,8 +433,7 @@ public: // vst2
       */
 
       case effGetParamLabel: { // 6
-        //MIP_Vst2Trace("vst2: dispatcher/effGetParamLabel %i\n",index);
-//        MIP_Parameter* pa = MDescriptor->getParameter(index);
+        MIP_Print("effGetParamLabel -> ''\n");
         strcpy((char*)ptr,"");
         return 1;
 //        break;
@@ -442,10 +448,13 @@ public: // vst2
       */
 
       case effGetParamDisplay: { // 7
-        //MIP_Vst2Trace("vst2: dispatcher/effGetParamDisplay %i\n",index);
         float value = MParameterValues[index];
         if (MParams->value_to_text(MPlugin,index,value,cptr,strlen(cptr))) {
+          MIP_Print("effGetParamDisplay %i -> '%s'\n",index,cptr);
           return 1;
+        }
+        else {
+          MIP_Print("effGetParamDisplay %i -> ?'\n",index);
         }
         break;
       }
@@ -463,7 +472,11 @@ public: // vst2
         clap_param_info_t info;
         if (MParams->get_info(MPlugin,index,&info)) {
           strcpy((char*)ptr,info.name);
+          MIP_Print("effGetParamName %i -> '%s'\n",index,ptr);
           return 1;
+        }
+        else {
+          MIP_Print("effGetParamName %i -> ?'\n",index);
         }
         break;
       }
@@ -478,7 +491,7 @@ public: // vst2
       */
 
       case effSetSampleRate: // 10
-        //MIP_Vst2Trace("vst2: dispatcher/effSetSampleRate %.3f\n",opt);
+        MIP_Print("effSetSamplerate %f\n",opt);
         MSampleRate = opt;
 //        MInstance->on_sampleRate(MSampleRate);
         break;
@@ -492,7 +505,7 @@ public: // vst2
       */
 
       case effSetBlockSize: // 11
-        //MIP_Vst2Trace("vst2: dispatcher/effSetBlockSize %i\n",(int)value);
+        MIP_Print("effSetBlockSize %i\n",value);
         MMaxBlockSize = (VstInt32)value;
         break;
 
@@ -531,11 +544,13 @@ public: // vst2
       */
 
       case effMainsChanged: // 12
+        MIP_Print("effMainsChanged %i\n",value);
         //MIP_Vst2Trace("vst2: dispatcher/effMainsChanged %i\n",(int)value);
         if (value == 0) { // suspend
           MIsProcessing = false;
           MIsSuspended = true;
-//          MInstance->on_plugin_deactivate();
+          //MInstance->on_plugin_deactivate();
+//          MPlugin->deactivate(MPlugin);
         }
         else { // resume
           //if (!MIsInitialized) {
@@ -544,7 +559,8 @@ public: // vst2
           //}
           MIsProcessing = true;
           MIsSuspended = false;
-//          MInstance->on_plugin_activate(MSampleRate,0,MMaxBlockSize);
+          //MInstance->on_plugin_activate(MSampleRate,0,MMaxBlockSize);
+//          MPlugin->activate(MPlugin,MSampleRate,0,MMaxBlockSize);
         }
         break;
 
@@ -559,6 +575,7 @@ public: // vst2
       */
 
       case effEditGetRect: // 13
+        MIP_Print("effEditGetRect\n");
         //MIP_Vst2Trace("vst2: dispatcher/effEditGetRect\n");
         if (MGui) {
           uint32_t width  = 0;
@@ -584,20 +601,26 @@ public: // vst2
       */
 
       case effEditOpen: // 14
-        //MIP_Vst2Trace("vst2: dispatcher/effEditOpen\n");
+        MIP_Print("effEditOpen\n");
         #ifndef MIP_NO_GUI
-//          if (MGui) {
-//            if (!MIsEditorOpen) {
-//              MIsEditorOpen = true;
-//              MGui->create(MPlugin);
-//              MGui->set_scale(MPlugin,1.0);
-//              MGui->set_size(MPlugin,640,480);
-//              MGuiX11->attach(MPlugin,"",(unsigned long)ptr);
-//              //updateAllEditorParameters(MEditor,false);
-//              MGui->show(MPlugin);
-//              return 1;
-//            }
-//          }
+          if (MGui && MGui->is_api_supported(MPlugin,CLAP_WINDOW_API_X11,false)) {
+            if (!MIsEditorOpen) {
+              MIsEditorOpen = true;
+              MGui->create(MPlugin,CLAP_WINDOW_API_X11,false);
+              MGui->set_scale(MPlugin,1.0);
+              uint32_t width = 0;
+              uint32_t height = 0;
+              MGui->get_size(MPlugin,&width,&height);
+              MGui->set_size(MPlugin,width,height);
+              clap_window_t clap_window = {};
+              clap_window.api = CLAP_WINDOW_API_X11;
+              clap_window.x11 = (clap_xwnd)ptr;//MWindow->getXcbWindow();
+              MGui->set_parent(MPlugin,&clap_window);
+              //updateAllEditorParameters(MEditor,false);
+              MGui->show(MPlugin);
+              return 1;
+            }
+          }
         #endif // MIP_NO_GUI
         break;
 
@@ -607,16 +630,16 @@ public: // vst2
       */
 
       case effEditClose: // 15
-        //MIP_Vst2Trace("vst2: dispatcher/effEditClose\n");
+        MIP_Print("effEditClose\n");
         #ifndef MIP_NO_GUI
-//          if (MGui) {
-//            if (MIsEditorOpen) {
-//              MIsEditorOpen = false;
-//              MGui->hide(MPlugin);
-//              MGui->destroy(MPlugin);
-//              return 1;
-//            }
-//          }
+          if (MGui) {
+            if (MIsEditorOpen) {
+              MIsEditorOpen = false;
+              MGui->hide(MPlugin);
+              MGui->destroy(MPlugin);
+              return 1;
+            }
+          }
         #endif // MIP_NO_GUI
         break;
 
@@ -634,7 +657,7 @@ public: // vst2
       */
 
       case effEditIdle: // 19
-        //MIP_Vst2Trace("vst2: dispatcher/effEditIdle\n");
+        MIP_Print("effEditIdle\n");
         #ifndef MIP_NO_GUI
 //          if (MGui) {
 //            if (MIsEditorOpen) {
@@ -693,7 +716,7 @@ public: // vst2
       */
 
       case effGetChunk: // 23
-        //MIP_Vst2Trace("vst2: dispatcher/effGetChunk %i\n",index);
+        MIP_Print("effGetChunk\n");
         //if (index==0) return MInstance->on_saveBank((void**)ptr);
         //else return MInstance->on_saveProgram((void**)ptr);
         {
@@ -725,7 +748,7 @@ public: // vst2
       */
 
       case effSetChunk: // 24
-        //MIP_Vst2Trace("vst2: dispatcher/effSetChunk %i %i\n",index,(int)value);
+        MIP_Print("effSetChunk\n");
         {
 //          //if (index==0) return MInstance->on_loadBank(ptr,value); // was not retrurn
 //          //else  /*if (index==1)*/ return MInstance->on_loadProgram(ptr,value);
@@ -770,7 +793,7 @@ public: // vst2
       */
 
       case effProcessEvents: { // 25
-        //MIP_Vst2Trace("vst2: dispatcher/effProcessEvents\n");
+        MIP_Print("effProcessEvents\n");
         //if ((MDescriptor->isSynth()) || (MDescriptor->canReceiveMidi())) {
         //if (strstr(MDescriptor->features,"instrument")) {
           VstEvents* ev = (VstEvents*)ptr;
@@ -797,7 +820,7 @@ public: // vst2
       */
 
       case effCanBeAutomated: { // 26
-        //MIP_Vst2Trace("vst2: dispatcher/effCanBeAutomated %i\n",index);
+        MIP_Print("effCanBeAutomated\n");
         //if (MParams) {
         //  clap_param_info_t info;
         //  MParams->get_info(MPlugin,index,&info);
@@ -828,7 +851,7 @@ public: // vst2
       */
 
       case effString2Parameter: // 27
-        //MIP_Vst2Trace("vst2: dispatcher/effString2Parameter %i\n",index);
+        MIP_Print("effString2Parameter\n");
         //TODO
         break;
 
@@ -844,7 +867,7 @@ public: // vst2
       */
 
       case effGetProgramNameIndexed: // 29
-        //MIP_Vst2Trace("vst2: dispatcher/effGetProgramNameIndexed %i\n",index);
+        MIP_Print("effGetProgramNameIndexed\n");
         //KStrcpy((char*)ptr,MProgramName);
         //return (VstIntPtr)MPrograms[index]->getName();
         strncpy((char*)ptr,"default",24);
@@ -877,7 +900,7 @@ public: // vst2
 
       //TODO
       case effGetInputProperties: { // 33
-        //MIP_Vst2Trace("vst2: dispatcher/effGetInputProperties %i\n",index);
+        MIP_Print("effGetInputProperties\n");
         VstPinProperties* pin = (VstPinProperties*)ptr;
         /* char* pc = */ strcpy(pin->label,"input "); // returns ptr to end of string? ptr to the '\0', or after the 0?
         /* *pc++ = MIP_HEX_TABLE[index&0x0f];
@@ -894,7 +917,7 @@ public: // vst2
 
       //TODO
       case effGetOutputProperties: { // 34
-        //MIP_Vst2Trace("vst2: dispatcher/effGetOutputProperties %i\n",index);
+        MIP_Print("effGetOutputProperties\n");
         VstPinProperties* pin = (VstPinProperties*)ptr;
         /* char* pc = */ strcpy(pin->label,"output ");
         /* *pc++ = MIP_HEX_TABLE[index&0x0f];
@@ -925,11 +948,11 @@ public: // vst2
       */
 
       case effGetPlugCategory: { // 35
-        //MIP_Vst2Trace("vst2: dispatcher/effGetPlugCategory\n");
         uint32_t res = 0;
         if (strstr(MDescriptor->id,"instrument")) { res = kPlugCategSynth; }
         else if (strstr(MDescriptor->id,"audio_effect")) { res = kPlugCategEffect; }
         //if (MPlugin->hasFlag(kpf_tool)) res = kPlugCategGenerator;
+        MIP_Print("effGetPluginCategory -> %i\n",res);
         return res;
       }
 
@@ -955,7 +978,7 @@ public: // vst2
       */
 
       case effOfflinePrepare: // 39
-        //MIP_Vst2Trace("vst2: dispatcher/effOfflinePrepare\n");
+        MIP_Print("effOfflinePrepare\n");
         break;
 
       //----------
@@ -967,7 +990,7 @@ public: // vst2
       */
 
       case effOfflineRun: // 40
-        //MIP_Vst2Trace("vst2: dispatcher/effOfflineRun\n");
+        MIP_Print("effOfflineRun\n");
         break;
 
       //----------
@@ -978,7 +1001,7 @@ public: // vst2
       */
 
       case effProcessVarIo: // 41
-        //MIP_Vst2Trace("vst2: dispatcher/effProcessVarIo\n");
+        MIP_Print("effProcessVarIo\n");
         break;
 
       //----------
@@ -990,7 +1013,7 @@ public: // vst2
       */
 
       case effSetSpeakerArrangement: // 42
-        //MIP_Vst2Trace("vst2: dispatcher/effSetSpeakerArrangement\n");
+        MIP_Print("effSetSpeakerArrangement\n");
         break;
 
       //----------
@@ -1008,7 +1031,7 @@ public: // vst2
       */
 
       case effSetBypass: // 44
-        //MIP_Vst2Trace("vst2: dispatcher/effSetBypass %i\n",(int)value);
+        MIP_Print("effSetBypass %i\n",value);
         return 1;
 
       //----------
@@ -1019,18 +1042,19 @@ public: // vst2
       */
 
       case effGetEffectName: // 45
-        //MIP_Vst2Trace("vst2: dispatcher/effGetEffectName\n");
-        strcpy(str,MDescriptor->name);
+        MIP_Print("effGetEffectName -> '%s'\n",MDescriptor->name);
+        strcpy((char*)ptr,MDescriptor->name);
+//        strcpy(str,MDescriptor->name);
         //#ifdef MIP_32BIT
         //  str += "_32";
         //#endif
         //#ifdef MIP_64BIT
         //  str += "_64";
         //#endif
-        #ifdef MIP_DEBUG
-          strcat(str,"_debug"); // 32-6 = max 26....
-        #endif
-        strcpy((char*)ptr,(char*)str);
+//        #ifdef MIP_DEBUG
+//          strcat(str,"_debug"); // 32-6 = max 26....
+//        #endif
+//        strcpy((char*)ptr,(char*)str);
         return 1;
 
       //----------
@@ -1041,7 +1065,7 @@ public: // vst2
       */
 
       case effGetVendorString: // 47
-        //MIP_Vst2Trace("vst2: dispatcher/effGetVendorString\n");
+        MIP_Print("effGetVendorString -> '%s'\n",MDescriptor->vendor);
         strcpy((char*)ptr,(char*)MDescriptor->vendor);
         break;
 
@@ -1053,7 +1077,7 @@ public: // vst2
       */
 
       case effGetProductString: // 48
-        //MIP_Vst2Trace("vst2: dispatcher/effGetProductString\n");
+        MIP_Print("effGetProductStringn -> '%s'",MDescriptor->description);
         strcpy((char*)ptr,(char*)MDescriptor->description);
         break;
 
@@ -1067,9 +1091,9 @@ public: // vst2
       */
 
       case effGetVendorVersion: // 49
-        //MIP_Vst2Trace("vst2: dispatcher/effGetVendorVersion\n");
-//        return MDescriptor->getVersion();
-        break;
+        MIP_Print("effGetVendorVersion\n");
+        return 1;//MDescriptor->getVersion();
+        //break;
 
       //----------
 
@@ -1092,7 +1116,7 @@ public: // vst2
       */
 
       case effVendorSpecific: // 50
-        //MIP_Vst2Trace("vst2: dispatcher/effVendorSpecific\n");
+        MIP_Print("effVendorSpecific\n");
         break;
 
       //----------
@@ -1123,7 +1147,7 @@ public: // vst2
       */
 
       case effCanDo: { // 51
-
+        MIP_Print("effCanDo '%s'\n",ptr);
         char* p = (char*)ptr;
         // plug-in will send Vst/MIDI events to Host
         if (strcmp(p,"sendVstEvents")) { return 0; }
@@ -1160,7 +1184,7 @@ public: // vst2
       */
 
       case effGetTailSize: // 52
-        //MIP_Vst2Trace("vst2: dispatcher/effGetTailSize\n");
+        MIP_Print("effGetTailSize -> 0\n");
         //if (MTail == -1) return 1;
         return 0;
         //break;
@@ -1191,7 +1215,7 @@ public: // vst2
       */
 
       case effGetParameterProperties: { // 56
-        //MIP_Vst2Trace("vst2: dispatcher/effGetParameterProperties %i\n",index);
+        MIP_Print("effGetParameterProperties %i\n",index);
         break;
       }
 
@@ -1202,6 +1226,7 @@ public: // vst2
       */
 
       case effGetVstVersion: // 58
+        MIP_Print("effGetVstVersion -> 2\n");
         //MIP_Vst2Trace("vst2: dispatcher/effGetVstVersion\n");
         return 2;
         //break;
@@ -1338,7 +1363,7 @@ public: // vst2
       */
 
       case effGetSpeakerArrangement: // 69
-        //MIP_Vst2Trace("vst2: dispatcher/effGetSpeakerArrangement\n");
+        MIP_Print("effGetSpeakerArrangement\n");
         break;
 
       //----------
@@ -1351,7 +1376,7 @@ public: // vst2
       */
 
       case effShellGetNextPlugin: // 70
-        //MIP_Vst2Trace("vst2: dispatcher/effShellGetNextPlugin\n");
+        MIP_Print("effShellGetNextPlugin\n");
         break;
 
       //----------
@@ -1383,7 +1408,7 @@ public: // vst2
       */
 
       case effStartProcess: //71
-        //MIP_Vst2Trace("vst2: dispatcher/effStartProcess\n");
+        MIP_Print("effStartProcess\n");
         MIsProcessing = true;
         break;
 
@@ -1395,7 +1420,7 @@ public: // vst2
       */
 
       case effStopProcess: // 72
-        //MIP_Vst2Trace("vst2: dispatcher/effStopProcess\n");
+        MIP_Print("effStopProcess\n");
         MIsProcessing = false;
         break;
 
@@ -1457,7 +1482,7 @@ public: // vst2
       */
 
       case effSetProcessPrecision: // 77
-        //MIP_Vst2Trace("vst2: dispatcher/effSetProcessPrecision %i\n",(int)value);
+        MIP_Print("effSetprocessPrecision\n");
         break;
 
       //----------

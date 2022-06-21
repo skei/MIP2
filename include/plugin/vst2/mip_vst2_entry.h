@@ -28,13 +28,13 @@ public:
 //------------------------------
 
   MIP_Vst2Entry() {
-    //MIP_Print("MIP_Vst2Entry\n");
+    MIP_Print("\n");
   }
 
   //----------
 
   ~MIP_Vst2Entry() {
-    //MIP_Print("~MIP_Vst2Entry\n");
+    MIP_Print("\n");
   }
 
 //------------------------------
@@ -42,13 +42,16 @@ public:
 //------------------------------
 
   AEffect* entry(audioMasterCallback audioMaster) {
-    //MIP_Print("MIP_Vst2Entry.entry\n");
+    MIP_Print("\n");
     MIP_Vst2Host* host = new MIP_Vst2Host(audioMaster); // deleted in MIP_Vst2Plugin destructor
-    //const clap_plugin_descriptor_t* descriptor  = MIP_GetDescriptor(0);
+    //const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(0);
     const clap_plugin_descriptor_t* descriptor  = MIP_REGISTRY.getDescriptor(0);
-    //const clap_plugin_t*            plugin      = MIP_CreatePlugin(host->ptr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
+    //const clap_plugin_t* plugin = MIP_CreatePlugin(host->ptr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(0,descriptor,host->getHost());
     const clap_plugin_t* clap_plugin = plugin->getPlugin();
+
+    clap_plugin->init(clap_plugin);
+
     //MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
     MIP_Vst2Plugin* vst2plugin  = new MIP_Vst2Plugin(host,clap_plugin/*plugin->ptr()*/,audioMaster); // deleted in vst2_dispatcher_callback(effClose)
     /*
@@ -166,7 +169,7 @@ MIP_Vst2Entry GLOBAL_VST2_PLUGIN_ENTRY;
 //__MIP_EXPORT
 __attribute__ ((visibility ("default")))
 AEffect* mip_vst2_entry(audioMasterCallback audioMaster) {
-  MIP_Print("VSTPluginMain\n");
+  MIP_Print("\n");
   if (!audioMaster(0,audioMasterVersion,0,0,0,0)) return 0;
   return GLOBAL_VST2_PLUGIN_ENTRY.entry(audioMaster);
 }
