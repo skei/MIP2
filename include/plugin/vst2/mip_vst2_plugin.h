@@ -221,8 +221,10 @@ private:
   void flushGuiMessages() {
     uint32_t message = 0;
     while (MGuiMessageQueue.read(&message)) {
-//      float value = MParameterValues[message];
-//      MEditor->updateParameter(message,value);
+      float value = MParameterValues[message];
+      MEditor->updateParameter(message,value);
+      void setParameterValue(message,value,false);
+
     }
   }
 

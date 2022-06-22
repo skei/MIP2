@@ -692,6 +692,10 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/test/test_vst.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../source/test/test_widget.cpp">
 			<Option compile="0" />
 			<Option link="0" />

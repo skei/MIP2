@@ -43,7 +43,7 @@
 //#include "../source/plugins/sa_tyr.cpp"
 
 //#include "../source/plugins/test_gui1.cpp"
-#include "../source/plugins/sa_ts1.cpp"
+//#include "../source/plugins/sa_ts1.cpp"
 
 //----------
 
@@ -61,5 +61,6 @@
 
 //#include "../source/test/test_gui2.cpp"
 //#include "../source/test/test_widget.cpp"
+#include "../source/test/test_vst.cpp"
 
 

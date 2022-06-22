@@ -8,6 +8,9 @@
 #define EDITOR_WIDTH  640
 #define EDITOR_HEIGHT 480
 
+#define MIP_VST2
+#define MIP_VST3
+
 //----------
 
 #include "plugin/mip_plugin.h"
@@ -27,17 +30,23 @@ const char* template_features[] = {
 
 //----------
 
+
+
 const clap_plugin_descriptor_t template_descriptor = {
-  CLAP_VERSION,
-  "skei.audio/plugin_template",
-  "plugin_template",
-  "skei.audio",
-  "https://torhelgeskei.com",
-  "",
-  "",
-  "0.0.1",
-  "plugin_template description",
-  template_features
+  .clap_version = CLAP_VERSION,
+  .id           = "skei.audio/plugin_template",
+  .name         = "plugin_template",
+  .vendor       = "skei.audio",
+  .url          = "https://torhelgeskei.com",
+  .manual_url   = "",
+  .support_url  = "",
+  .version      = "0.0.1",
+  .description  = "plugin_template description",
+  //template_features
+  .features     = (const char*[]){
+    CLAP_PLUGIN_FEATURE_AUDIO_EFFECT,
+    nullptr
+  }
 };
 
 //----------
@@ -107,7 +116,6 @@ private:
   clap_process_status process(const clap_process_t *process) final {
     //MIP_PRINT;
     flushAudioParams();
-    MIP_Print("process->in_events->size() = %i\n",process->in_events->size(process->in_events));
     preProcessEvents(process->in_events,process->out_events);
     //..
     if (need_recalc) recalc(MSampleRate);
@@ -120,7 +128,6 @@ private:
       *in0++ = *out0++;
       *in1++ = *out1++;
     }
-    //
     postProcessEvents(process->in_events,process->out_events);
     flushHostParams(process->out_events);
     return CLAP_PROCESS_CONTINUE;

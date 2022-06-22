@@ -265,7 +265,7 @@ private: // window listener
       //MIP_Print("%i %.3f\n",index,value);
       //value = param->denormalizeValue(value);
       if (MListener) {
-        MIP_Print("letting the editor listener know...\n");
+        //MIP_Print("letting the editor listener know...\n");
         MListener->on_editor_listener_parameter(index,value);
       }
     }

@@ -203,8 +203,7 @@ public: // plugin
 
   clap_process_status process(const clap_process_t *process) override {
     flushAudioParams();
-
-    MIP_Print("process->in_events->size() = %i\n",process->in_events->size(process->in_events));
+    //MIP_Print("process->in_events->size() = %i\n",process->in_events->size(process->in_events));
     preProcessEvents(process->in_events,process->out_events);
     //..
     postProcessEvents(process->in_events,process->out_events);
