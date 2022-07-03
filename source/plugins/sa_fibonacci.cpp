@@ -76,8 +76,8 @@ private:
 public:
 //------------------------------
 
-  myPlugin(const clap_plugin_descriptor_t* ADescriptor)
-  : MIP_Plugin(ADescriptor) {
+  myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
+  : MIP_Plugin(ADescriptor,AHost) {
   }
 
   //----------
@@ -232,7 +232,7 @@ void MIP_Register(MIP_Registry* ARegistry) {
 
 MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
   if (AIndex == 0) {
-    return new myPlugin(ADescriptor);
+    return new myPlugin(ADescriptor,AHost);
   }
   return nullptr;
 }

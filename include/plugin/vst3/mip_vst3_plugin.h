@@ -2,6 +2,8 @@
 #define mip_vst3_plugin_included
 //----------------------------------------------------------------------
 
+// clap-as-vst3
+
 // this is a mess.. work in progress..
 
 //----------

@@ -7,14 +7,26 @@
 #include "plugin/mip_audio_port.h"
 #include "plugin/mip_editor.h"
 #include "plugin/mip_note_port.h"
-
 #include "plugin/mip_parameter_manager.h"
-
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_host.h"
 
-#define MIP_PLUGIN_MAX_PARAM_EVENTS 4096
-#define MIP_PLUGIN_MAX_GUI_EVENTS   32
+//----------------------------------------------------------------------
+
+/*
+  maximum number of parameters that can be sent per audio block
+  note that when initializing, the host can send updates for ALL
+  parameters..
+*/
+
+//#define MIP_PLUGIN_MAX_PARAM_EVENTS 4096
+
+/*
+  numbewr of events that can be sent back from the gui to the plugin
+  per
+*/
+
+//#define MIP_PLUGIN_MAX_GUI_EVENTS   32
 
 //----------------------------------------------------------------------
 //
@@ -40,9 +52,8 @@ class MIP_Plugin
 protected:
 //------------------------------
 
-  MIP_ProcessContext              MProcessContext;
-  MIP_ParameterManager            MParameters = {};
-
+  MIP_ProcessContext              MProcessContext   = {};
+  MIP_ParameterManager            MParameters       = {};
   MIP_AudioPortArray              MAudioInputPorts  = {};
   MIP_AudioPortArray              MAudioOutputPorts = {};
   MIP_NotePortArray               MNoteInputPorts   = {};
@@ -52,7 +63,7 @@ protected:
 public:
 //------------------------------
 
-  MIP_Plugin(const clap_plugin_descriptor_t* ADescriptor)
+  MIP_Plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_ClapPlugin(ADescriptor) {
   }
 
@@ -299,8 +310,6 @@ public: // process events
     uint32_t index = event->param_id;
     double value = event->value;
     MParameters[index]->setValue(value);
-    //queueAudioParams
-    //queueGuiParam
   }
 
   virtual void processParamModEvent(const clap_event_param_mod_t* event) {
@@ -308,7 +317,8 @@ public: // process events
     uint32_t index = event->param_id;
     double value = event->amount;
     MParameters[index]->setModulation(value);
-    // notify plugin...
+    // notify audio processor
+    // notify editor
   }
 
   virtual void processParamGestureBeginEvent(const clap_event_param_gesture_t* event) {
@@ -474,10 +484,15 @@ public: // wrapper listener
 public: // editor listener
 //------------------------------
 
+  /*
+    called by the editor when we tweak a widget that is connected to
+    a parameter.. let the host and audio processor know..
+  */
+
   void on_editor_listener_update_parameter(uint32_t AIndex, double AValue) final {
     MIP_Print("%i = %.3f\n",AIndex,AValue);
-    //queueAudioParam(AIndex,AValue);
-    //queueHostParam(AIndex,AValue);
+    // notify host
+    // notify audio processor
   }
 
   //----------

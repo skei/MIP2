@@ -2,6 +2,8 @@
 #define mip_vst2_plugin_included
 //----------------------------------------------------------------------
 
+// clap-as-vst2
+
 /*
   clap.audio-ports
 */
@@ -10,7 +12,7 @@
 #include "base/types/mip_queue.h"
 #include "plugin/clap/mip_clap.h"
 #include "plugin/vst2/mip_vst2.h"
-#include "plugin/vst2/mip_vst2_host.h"
+#include "plugin/vst2/mip_vst2_host_implementation.h"
 
 //----------------------------------------------------------------------
 
@@ -37,59 +39,34 @@ class MIP_Vst2Plugin {
 private:
 //------------------------------
 
-  AEffect                         MAEffect          = {0};
-  audioMasterCallback             MAudioMaster      = nullptr;
+  AEffect                         MAEffect              = {0};
+  audioMasterCallback             MAudioMaster          = nullptr;
+  MIP_Vst2Host*                   MHost                 = nullptr;
+  const clap_plugin_t*            MPlugin               = nullptr;
+  const clap_plugin_descriptor_t* MDescriptor           = nullptr;
+  const clap_plugin_gui_t*        MGui                  = nullptr;
+  const clap_plugin_params_t*     MParams               = nullptr;
+  float*                          MParameterValues      = nullptr;
+  MIP_IntQueue                    MProcessMessageQueue  = {};
+  MIP_IntQueue                    MGuiMessageQueue      = {};
+  MIP_VstEvents                   MVstEvents            = {0};
+  VstMidiEvent                    MVstMidiSendEvents[MIP_VST2_MAX_MIDI_SEND]  = {0};
 
-//  MIP_ClapHost*                   MHost             = nullptr;
-  MIP_Vst2Host*                   MHost             = nullptr;
-
-  const clap_plugin_t*            MPlugin           = nullptr;
-  const clap_plugin_descriptor_t* MDescriptor       = nullptr;
-
-  const clap_plugin_gui_t*        MGui              = nullptr;
-  //const clap_plugin_gui_x11_t*    MGuiX11           = nullptr;
-  const clap_plugin_params_t*     MParams           = nullptr;
-
-
-  float*        MParameterValues                            = nullptr;
-  MIP_IntQueue  MProcessMessageQueue                        = {};
-  MIP_IntQueue  MGuiMessageQueue                            = {};
-  MIP_VstEvents MVstEvents                                  = {0};
-  VstMidiEvent  MVstMidiSendEvents[MIP_VST2_MAX_MIDI_SEND]  = {0};
-
-  bool      MIsOpen         = false;
-  bool      MIsProcessing   = false;
-  bool      MIsEditorOpen   = false;
-  bool      MIsSuspended    = false;
-//  bool      MIsInitialized  = false;
-
-  uint32_t  MCurrentProgram = 0;
-  uint32_t  MKnobMode       = 0;
-
-  float     MSampleRate     = 0.0f;
-  uint32_t  MMaxBlockSize   = 0;
+  bool                            MIsOpen               = false;
+  bool                            MIsProcessing         = false;
+  bool                            MIsEditorOpen         = false;
+  bool                            MIsSuspended          = false;
+  //bool                            MIsInitialized        = false;
+  uint32_t                        MCurrentProgram       = 0;
+  uint32_t                        MKnobMode             = 0;
+  float                           MSampleRate           = 0.0f;
+  uint32_t                        MMaxBlockSize         = 0;
+  ERect                           MVstRect              = {0};
 
   //#ifndef MIP_NO_GUI
   //  MIP_Editor*         MEditor             = nullptr;
   //#endif // MIP_NO_GUI
 
-
-//  MIP_Vst2Host*       MVst2Host             = nullptr;
-//  AEffect             MAEffect              = {0};
-//  audioMasterCallback MAudioMaster          = nullptr;
-//  MIP_Descriptor*     MDescriptor           = nullptr;
-//  MIP_Instance*       MInstance             = nullptr;
-//  float               MTempo                = 0.0f;
-//  uint32_t            MTimeSigNum           = 0;
-//  uint32_t            MTimeSigDenom         = 0;
-//  uint32_t            MSamplePos            = 0;
-//  uint32_t            MPlayState            = 0;
-//  uint32_t            MPrevPlayState        = 0;
-//  float               MBeatPos              = 0.0f;
-////bool                MNeedToInitializeParameters = true;
-//  MIP_ProcessContext MProcessContext        = {0};
-
-  ERect               MVstRect              = {0};
 
 //------------------------------
 public:

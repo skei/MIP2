@@ -2,12 +2,16 @@
 #define mip_parameter_included
 //----------------------------------------------------------------------
 
+// TODO:
+//   setSmoothingFactor()
+//   getSmoothedValue()
+
 #include "mip.h"
 #include "base/types/mip_array.h"
 #include "plugin/clap/mip_clap.h"
 
-class MIP_Parameter;
-typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
+//class MIP_Parameter;
+//typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
 
 //----------------------------------------------------------------------
 //
@@ -107,7 +111,6 @@ public:
   void setMinValue(double AValue)             { MParamInfo.min_value = AValue; }
   void setMaxValue(double AValue)             { MParamInfo.max_value = AValue; }
   void setDefaultValue(double AValue)         { MParamInfo.default_value = AValue; }
-
 
   clap_id                   getId()           { return MParamInfo.id; }
   clap_param_info_flags     getFlags()        { return MParamInfo.flags; }

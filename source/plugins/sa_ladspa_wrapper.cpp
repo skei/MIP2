@@ -18,7 +18,7 @@
 #include "plugin/clap/mip_clap_entry.h"
 
 #include "plugin/ladspa//mip_ladspa.h"
-#include "plugin/ladspa//mip_wrapped_ladspa_plugin.h"
+#include "plugin/ladspa//mip_ladspa_plugin.h"
 
 //----------------------------------------------------------------------
 //
@@ -104,7 +104,7 @@ void MIP_RegisterLadspaDescriptors(MIP_Registry* ARegistry, const char* APath) {
 
 MIP_Plugin* MIP_CreateLadspaPlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
   MIP_Print("path: %s\n",MIP_REGISTRY.getPath());
-  return new MIP_WrappedLadspaPlugin(ADescriptor,AHost);
+  return new MIP_LadspaPlugin(ADescriptor,AHost);
 }
 
 //----------------------------------------------------------------------

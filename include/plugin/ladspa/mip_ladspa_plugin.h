@@ -2,6 +2,8 @@
 #define mip_wrapped_ladspa_plugin_included
 //----------------------------------------------------------------------
 
+// ladspa-as-clap
+
 #include "mip.h"
 #include "plugin/ladspa/mip_ladspa.h"
 
@@ -44,7 +46,7 @@ struct MIP_LadspaPort {
 //
 //----------------------------------------------------------------------
 
-class MIP_WrappedLadspaPlugin
+class MIP_LadspaPlugin
 : public MIP_Plugin {
 
 //------------------------------
@@ -81,8 +83,8 @@ private:
 public:
 //------------------------------
 
-  MIP_WrappedLadspaPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
-  : MIP_Plugin(ADescriptor/*,AHost*/) {
+  MIP_LadspaPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
+  : MIP_Plugin(ADescriptor,AHost) {
     strncpy(MPath,ADescriptor->id,1024);
     MHost = new MIP_ClapHost(AHost);
     const char* ptr = strstr(MPath,"#");  // find #
@@ -96,7 +98,7 @@ public:
 
   //----------
 
-  virtual ~MIP_WrappedLadspaPlugin() {
+  virtual ~MIP_LadspaPlugin() {
     MIP_Print("\n");
     unloadLadspaPlugin();
     delete MHost;

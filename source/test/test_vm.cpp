@@ -5,14 +5,10 @@
 //----------------------------------------------------------------------
 
 #include "plugin/mip_registry.h"
-
 #include "plugin/clap/mip_clap_entry.h"
 //#include "plugin/vst2/mip_vst2_entry.h"
-
 #include "base/utils/mip_vm.h"
 #include "base/utils/mip_vm_compiler.h"
-
-
 
 //----------------------------------------------------------------------
 //
@@ -82,8 +78,8 @@ private:
 public:
 //------------------------------
 
-  myPlugin(const clap_plugin_descriptor_t* ADescriptor)
-  : MIP_Plugin(ADescriptor) {
+  myPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
+  : MIP_Plugin(ADescriptor,AHost) {
   }
 
   //----------
@@ -104,18 +100,18 @@ public:
 
   void test_vm() {
 
-    const char* path = MIP_REGISTRY.getPath();
-    const char* filename = MIP_GetFilenameFromPath(path);
+    const char* filepath = MIP_REGISTRY.getPath();
+    const char* filename = MIP_GetFilenameFromPath(filepath);
     //MIP_Print("path '%s' filename '%s'\n",path,filename);
-    char path2[512] = {0};
-    MIP_GetPathOnly(path2,path);
-    strcat(path2,"data/");
-    strcat(path2,filename);
-    MIP_StripFileExt(path2);
-    strcat(path2,".script");
+    char path[512] = {0};
+    MIP_GetPathOnly(path,filepath);
+    strcat(path,"data/");
+    strcat(path,filename);
+    MIP_StripFileExt(path);
+    strcat(path,".script");
 
-    MIP_DPrint("Loading script: %s\n",path2);
-    FILE* fp = fopen(path2,"rb");
+    MIP_DPrint("Loading script: %s\n",path);
+    FILE* fp = fopen(path,"rb");
     fseek(fp,0,SEEK_END);
     MSourceSize = ftell(fp);
     fseek(fp,0,SEEK_SET);
@@ -126,13 +122,13 @@ public:
     MCompiler.parse(MSourceCode,MSourceSize);
     MCompiler.compile();
     uint32_t start = MCompiler.findLabel((char*)"start");
-    MIP_DPrint("Executing script\n");
+    MIP_DPrint("Calling script 'start' function\n");
     MVirtualMachine.registerExternal(&vm_callback);
     MVirtualMachine.translate(MCompiler.getOpcodes(),MCompiler.getNumOpcodes());
 
     MVirtualMachine.execute(start);
 
-    MIP_DPrint("Done!\n");
+    MIP_DPrint("All done!\n");
   }
 
   //----------
@@ -168,7 +164,7 @@ void MIP_Register(MIP_Registry* ARegistry) {
 
 MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
   if (AIndex == 0) {
-    return new myPlugin(ADescriptor);
+    return new myPlugin(ADescriptor,AHost);
   }
   return nullptr;
 }

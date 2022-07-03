@@ -8,8 +8,22 @@
 
 //----------------------------------------------------------------------
 
+/*
+  maximum number of parameters that can be sent per audio block
+  note that when initializing, the host can send updates for ALL
+  parameters..
+*/
+
 #define MIP_PLUGIN_MAX_PARAM_EVENTS 4096
+
+/*
+  max number of events that can be sent back from the gui to the plugin
+  per
+*/
+
 #define MIP_PLUGIN_MAX_GUI_EVENTS   32
+
+typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
 
 //----------------------------------------------------------------------
 //
