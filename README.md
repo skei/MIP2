@@ -4,16 +4,17 @@
 
 #### plugins, wrappers, abstractions, simplifications, helpers, ..
 
-
 v0.0.0  
 not production-ready, in progress, prototype, proof of concept, pre-, changes are frequent, code will break..
 
+NOTE: yet another structural/lowlevel update in progress.. be patient.. things will calm down again soon.. this will (hopefully) be the last major change before we can start behaving a bit more 'normal' and stable, with proper versioning and commits and stuff..
+
 ---
 
-- os: linux (maybe windows)
-- plugin: clap (with wrappers for exe, vst2, vst3, [maybe ladspa, lv2])
-- host: clap, ladspa (maybe other formats)
-- gui: xcb (optionally with cairo on top)
+- os: linux (windows later)
+- plugin: clap (with wrappers for exe, vst2, vst3)
+- host: clap, ladspa (todo: vst2/vst3)
+- gui: xcb (with cairo, opengl being investigated)
 - io: jack audio/midi (standalone executable)
 - other: too much to list..
 

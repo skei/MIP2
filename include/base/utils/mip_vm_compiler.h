@@ -2,11 +2,16 @@
 #define mip_vm_compiler_included
 //----------------------------------------------------------------------
 
-/* TODO:
+/*
+  TODO:
     - 2-pass, 2nd to resolve adresses to labels and words
     - macro, insert opcodes directly, instead of func call
     - do some of this in parsing...
     - jit (?)
+    - comments: { }
+
+    label & -> @
+    var   % -> #
 */
 
 #include "base/types/mip_stack.h"
@@ -118,8 +123,8 @@ public:
 
   //----------
 
-  void preprocess() {
-  }
+  //void preprocess() {
+  //}
 
   //----------
 
@@ -155,6 +160,16 @@ public:
 
   MIP_VMOpcode* getOpcodes() {
     return m_Opcodes;
+  }
+
+  //----------
+
+  uint32_t getNumTokens() {
+    return m_Tokens.size();
+  }
+
+  const char* getToken(uint32_t AIndex) {
+    return m_Tokens[AIndex];
   }
 
   //----------
@@ -342,7 +357,8 @@ private:
 
   //----------
 
-  // ->, <-
+  // <- push
+  // -> pop
 
   bool encode_var(const char* token) {
     if ((strcmp(token,"->") == 0)) {

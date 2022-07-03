@@ -5,6 +5,7 @@
 // work in progress..
 
 #include "mip.h"
+#include "base/system/mip_paths.h"
 #include "plugin/clap/mip_clap.h"
 //#include "plugin/clap/mip_clap_host.h"
 #include "plugin/vst2/mip_vst2.h"
@@ -45,30 +46,45 @@ public:
 
   AEffect* entry(audioMasterCallback audioMaster) {
     MIP_Print("\n");
+
+    char path[1024] = {};
+    //const char* plugin_path = MIP_GetLibPath(path);
+    const char* plugin_path = MIP_GetLibFilename(path);
+    MIP_Print("plugin_path '%s'\n",plugin_path);
+    MIP_REGISTRY.setPath(plugin_path);
+
     MIP_Vst2Host* host = new MIP_Vst2Host(audioMaster); // deleted in MIP_Vst2Plugin destructor
     //const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(0);
-    const clap_plugin_descriptor_t* descriptor  = MIP_REGISTRY.getDescriptor(0);
+
+    uint32_t index = 0; // TODO
+    const clap_plugin_descriptor_t* descriptor  = MIP_REGISTRY.getDescriptor(index);
+
     //const clap_plugin_t* plugin = MIP_CreatePlugin(host->ptr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(0,descriptor,host->getHost());
     const clap_plugin_t* clap_plugin = plugin->getPlugin();
+
     clap_plugin->init(clap_plugin); // destroy called in effClose
     //MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
     MIP_Vst2Plugin* vst2plugin  = new MIP_Vst2Plugin(host,clap_plugin/*plugin->ptr()*/,audioMaster); // deleted in vst2_dispatcher_callback(effClose)
+
     /*
       assumes stereo in & out
       TODO: check clap.audio-ports
       use number of channels in port with 'is_main'
     */
+
     uint32_t  num_inputs  = 2;
     uint32_t  num_outputs = 2;
     uint32_t  num_params  = 0;
     int32_t   flags       = effFlagsCanReplacing;
+
     /*
     if (strstr(descriptor->features,"instrument")) {
       flags |= effFlagsIsSynth;
       num_inputs = 0;
     }
     */
+
     const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)plugin->get_extension(CLAP_EXT_GUI);
     if (gui) {
       flags |= effFlagsHasEditor;

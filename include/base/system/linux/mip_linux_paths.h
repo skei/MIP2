@@ -32,10 +32,10 @@ const char* MIP_GetExePath(char* ABuffer) {
   long rd_res = readlink("/proc/self/exe", filepath, MIP_MAX_PATH_LENGTH);
   filepath[MIP_MAX_PATH_LENGTH-1] = '\0';
   if (rd_res) {
-    const char* slash = MIP_Strrchr(filepath, '/');
+    const char* slash = strrchr(filepath, '/');
     if (slash) {
       int len = (slash + 1) - (char*)filepath;
-      MIP_Strncpy(ABuffer, filepath, len);
+      strncpy(ABuffer, filepath, len);
       ABuffer[len] = '\0';
     }
     else {
@@ -51,9 +51,9 @@ const char* MIP_GetExePath(char* ABuffer) {
 char* MIP_GetHomePath(char* ABuffer) {
   ABuffer[0] = '\0';
   char* env = getenv("HOME");
-  if (env) MIP_Strcat(ABuffer,env);
+  if (env) strcat(ABuffer,env);
   //KStrcat(ABuffer, (char*)"\\");
-  MIP_Strcat(ABuffer, (char*)"/");
+  strcat(ABuffer, (char*)"/");
   return ABuffer;
 }
 
@@ -64,7 +64,7 @@ const char* MIP_GetLibFilename(char* ABuffer) {
   Dl_info dli;
   dladdr(__func__, &dli);
   //int32 len = MIP_Strlen(dli.dli_fname);
-  MIP_Strcpy(ABuffer,dli.dli_fname);
+  strcpy(ABuffer,dli.dli_fname);
   return ABuffer;//nullptr;
 }
 
@@ -73,14 +73,14 @@ const char* MIP_GetLibFilename(char* ABuffer) {
 const char* MIP_GetLibPath(char* ABuffer) {
   Dl_info dli;
   dladdr(__func__, &dli);
-  const char* slash = MIP_Strrchr(dli.dli_fname, '/');
+  const char* slash = strrchr(dli.dli_fname, '/');
   if (slash) {
     int len = (slash + 1) - (char*)dli.dli_fname;
-    MIP_Strncpy(ABuffer, dli.dli_fname, len);
+    strncpy(ABuffer, dli.dli_fname, len);
     ABuffer[len] = '\0';
   }
   else {
-    MIP_Strcat(ABuffer, (char*)"./");
+    strcat(ABuffer, (char*)"./");
   }
   return ABuffer;
 }

@@ -392,6 +392,7 @@ public:
 
 typedef MIP_Rect<float>    MIP_FRect;
 typedef MIP_Rect<int32_t>  MIP_IRect;
+typedef MIP_Rect<double>   MIP_DRect;
 
 //----------------------------------------------------------------------
 #endif

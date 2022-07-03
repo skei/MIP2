@@ -2,12 +2,13 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="MIP2" />
+		<Option title="mip2" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="exe debug">
 				<Option output="../bin/build_debug" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="../bin" />
 				<Option object_output="obj/debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -16,28 +17,49 @@
 					<Add option="-fno-pie" />
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
-					<Add option="-DMIP_EXE" />
 					<Add option="-DMIP_DEBUG" />
+					<Add option="-DMIP_EXE" />
 				</Compiler>
 				<Linker>
+					<Add option="-s" />
 					<Add option="-no-pie" />
 				</Linker>
 			</Target>
 			<Target title="exe release">
-				<Option output="../bin/build" prefix_auto="0" extension_auto="0" />
+				<Option output="../bin/build_release" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="../bin" />
 				<Option object_output="obj/release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-O2" />
 					<Add option="-fno-pie" />
-					<Add option="-s" />
 					<Add option="-DMIP_EXE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-no-pie" />
+				</Linker>
+			</Target>
+			<Target title="exe sanitize">
+				<Option output="../bin/build_sanitize" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="../bin" />
+				<Option object_output="obj/debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fno-pie" />
+					<Add option="-rdynamic" />
+					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-fsanitize=leak" />
+					<Add option="-DMIP_DEBUG" />
+					<Add option="-DMIP_EXE" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-no-pie" />
+					<Add option="-fsanitize=leak" />
 				</Linker>
 			</Target>
 			<Target title="plugin debug">
@@ -45,38 +67,52 @@
 				<Option object_output="obj/debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-fPIC" />
 					<Add option="-g" />
 					<Add option="-rdynamic" />
 					<Add option="-Wl,-Bsymbolic" />
-					<Add option="-DMIP_PLUGIN" />
 					<Add option="-DMIP_DEBUG" />
+					<Add option="-DMIP_PLUGIN" />
 				</Compiler>
-				<Linker>
-					<Add option="-fPIE" />
-				</Linker>
 			</Target>
 			<Target title="plugin release">
-				<Option output="../bin/build.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
+				<Option output="../bin/build_release.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-flto" />
 					<Add option="-O3" />
-					<Add option="-O2" />
 					<Add option="-fPIC" />
-					<Add option="-s" />
 					<Add option="-fvisibility=hidden" />
 					<Add option="-DMIP_PLUGIN" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />
 					<Add option="-s" />
-					<Add option="-fPIE" />
 					<Add option="-fvisibility=hidden" />
 				</Linker>
+			</Target>
+			<Target title="plugin sanitize">
+				<Option output="../bin/build_sanitize.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-fPIC" />
+					<Add option="-g" />
+					<Add option="-rdynamic" />
+					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-DMIP_DEBUG" />
+					<Add option="-DMIP_PLUGIN" />
+				</Compiler>
 			</Target>
 		</Build>
 		<Compiler>
@@ -84,21 +120,26 @@
 			<Add option="-std=c++17" />
 			<Add option="-Wl,--as-needed" />
 			<Add directory="../include" />
+			<Add directory="../include/extern/vst3" />
 		</Compiler>
 		<Linker>
-			<Add library="pthread" />
-			<Add library="m" />
-			<Add library="rt" />
-			<Add library="dl" />
+			<Add library="sndfile" />
 			<Add library="xcb" />
-			<Add library="xcb-util" />
 			<Add library="xcb-image" />
 			<Add library="xcb-cursor" />
 			<Add library="xcb-keysyms" />
+			<Add library="xcb-util" />
+			<Add library="pthread" />
+			<Add library="dl" />
+			<Add library="tcc" />
+			<Add library="rt" />
 			<Add library="cairo" />
-			<Add library="jack" />
-			<Add library="sndfile" />
+			<Add library="lua5.3" />
 		</Linker>
+		<Unit filename="../LICENSE" />
+		<Unit filename="../README.md" />
+		<Unit filename="../doc/compile.txt" />
+		<Unit filename="../doc/todo.txt" />
 		<Unit filename="../include/audio/analysis/mip_beat_detector.h" />
 		<Unit filename="../include/audio/analysis/mip_envelope_follower.h" />
 		<Unit filename="../include/audio/analysis/mip_envelope_follower2.h" />
@@ -158,6 +199,7 @@
 		<Unit filename="../include/audio/waveforms/mip_rochebois_waveform.h" />
 		<Unit filename="../include/audio/waveforms/mip_sinc_waveform.h" />
 		<Unit filename="../include/audio/waveforms/mip_table_waveform.h" />
+		<Unit filename="../include/audio2/mip_module.h" />
 		<Unit filename="../include/base/debug/mip_debug.h" />
 		<Unit filename="../include/base/debug/mip_debug_assert.h" />
 		<Unit filename="../include/base/debug/mip_debug_callstack.h" />
@@ -227,6 +269,7 @@
 		<Unit filename="../include/base/utils/mip_interpolation.h" />
 		<Unit filename="../include/base/utils/mip_isaac.h" />
 		<Unit filename="../include/base/utils/mip_json.h" />
+		<Unit filename="../include/base/utils/mip_lua.h" />
 		<Unit filename="../include/base/utils/mip_math.h" />
 		<Unit filename="../include/base/utils/mip_modular.h" />
 		<Unit filename="../include/base/utils/mip_neural.h" />
@@ -237,14 +280,13 @@
 		<Unit filename="../include/base/utils/mip_sort.h" />
 		<Unit filename="../include/base/utils/mip_strutils.h" />
 		<Unit filename="../include/base/utils/mip_tcc.h" />
+		<Unit filename="../include/base/utils/mip_tcc2.h" />
 		<Unit filename="../include/base/utils/mip_vm.h" />
+		<Unit filename="../include/base/utils/mip_vm_compiler.h" />
 		<Unit filename="../include/base/utils/mip_windowing.h" />
 		<Unit filename="../include/extern/clap/audio-buffer.h" />
 		<Unit filename="../include/extern/clap/clap.h" />
 		<Unit filename="../include/extern/clap/color.h" />
-		<Unit filename="../include/extern/clap/converters/clap-converter.h" />
-		<Unit filename="../include/extern/clap/converters/vst2-converter.h" />
-		<Unit filename="../include/extern/clap/converters/vst3-converter.h" />
 		<Unit filename="../include/extern/clap/entry.h" />
 		<Unit filename="../include/extern/clap/events.h" />
 		<Unit filename="../include/extern/clap/ext/audio-ports-config.h" />
@@ -385,59 +427,74 @@
 		<Unit filename="../include/gui/mip_surface.h" />
 		<Unit filename="../include/gui/mip_widget.h" />
 		<Unit filename="../include/gui/mip_widgets.h" />
+		<Unit filename="../include/gui/mip_widgets1.h" />
 		<Unit filename="../include/gui/mip_window.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui_painter.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui_surface.h" />
 		<Unit filename="../include/gui/nogui/mip_nogui_window.h" />
-		<Unit filename="../include/gui/widgets/mip_bitmap_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_button_row_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_button_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_cached_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_cairo_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_circular_waveform_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_container_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_curve_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_drag_value_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_dual_slider_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_graph_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_grid_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_group_box_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_image_strip_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_image_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_keyboard_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob2_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_knob3_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_knob4_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_knob5_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_main_menu_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_menu_item_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_menu_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_modmatrix_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_pages_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_panel_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_plot_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_range_slider_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_sa_header_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_saheader_widget (backup).h" />
-		<Unit filename="../include/gui/widgets/mip_scroll_bar_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_scroll_box_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_selector_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_sizer_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_slider_bank_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_slider_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_symbol_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_tabs_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_template_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_text_box_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_text_edit_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_text_header_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_text_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_timeline_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_value_graph_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_value_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_waveform_widget.h" />
-		<Unit filename="../include/gui/widgets/mip_xy_pad_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_bitmap_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_button_row_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_button_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_cached_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_cairo_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_circular_waveform_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_container_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_curve_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_drag_value_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_dual_slider_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_graph_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_grid_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_group_box_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_image_strip_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_image_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_keyboard_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_knob2_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_knob2b_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_knob3_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_knob4_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_knob5_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_knob_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_main_menu_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_menu_item_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_menu_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_modmatrix_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_pages_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_panel_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_plot_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_range_slider_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_sa_header_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_saheader_widget (backup).h" />
+		<Unit filename="../include/gui/widgets1/mip_scroll_bar_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_scroll_box_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_selector_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_sizer_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_slider_bank_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_slider_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_symbol_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_tabs_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_template_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_text_box_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_text_edit_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_text_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_timeline_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_value_graph_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_value_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_waveform_widget.h" />
+		<Unit filename="../include/gui/widgets1/mip_xy_pad_widget.h" />
 		<Unit filename="../include/gui/win32/mip_win32.h" />
 		<Unit filename="../include/gui/win32/mip_win32_surface.h" />
 		<Unit filename="../include/gui/win32/mip_win32_window.h" />
@@ -450,13 +507,18 @@
 		<Unit filename="../include/midi/mip_midi_file.h" />
 		<Unit filename="../include/midi/mip_midi_player.h" />
 		<Unit filename="../include/mip.h" />
+		<Unit filename="../include/plugin/backup/mip_voice_manager0.h" />
+		<Unit filename="../include/plugin/backup/mip_voice_manager1.h" />
+		<Unit filename="../include/plugin/backup/mip_voice_manager2.h" />
 		<Unit filename="../include/plugin/clap/mip_clap.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_entry.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_factory.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_host.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_host_implementation.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_hosted_plugin.h" />
+		<Unit filename="../include/plugin/clap/mip_clap_invalidation.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_plugin.h" />
+		<Unit filename="../include/plugin/clap/mip_clap_registry.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_utils.h" />
 		<Unit filename="../include/plugin/dssi/backup/kode_dssi.h" />
 		<Unit filename="../include/plugin/dssi/backup/kode_dssi_host.h" />
@@ -491,111 +553,34 @@
 		<Unit filename="../include/plugin/lv2/mip_lv2_host.h" />
 		<Unit filename="../include/plugin/lv2/mip_lv2_plugin.h" />
 		<Unit filename="../include/plugin/mip_audio_port.h" />
+		<Unit filename="../include/plugin/mip_block_voice_manager.h" />
 		<Unit filename="../include/plugin/mip_descriptor.h" />
 		<Unit filename="../include/plugin/mip_editor.h" />
 		<Unit filename="../include/plugin/mip_entry.h" />
 		<Unit filename="../include/plugin/mip_event_handler.h" />
 		<Unit filename="../include/plugin/mip_host.h" />
 		<Unit filename="../include/plugin/mip_note.h" />
-		<Unit filename="../include/plugin/mip_note_handler.h" />
 		<Unit filename="../include/plugin/mip_note_port.h" />
 		<Unit filename="../include/plugin/mip_parameter.h" />
-		<Unit filename="../include/plugin/mip_parameter_manager.h" />
 		<Unit filename="../include/plugin/mip_plugin.h" />
-		<Unit filename="../include/plugin/mip_process_handler.h" />
+		<Unit filename="../include/plugin/mip_quick_control.h" />
 		<Unit filename="../include/plugin/mip_registry.h" />
+		<Unit filename="../include/plugin/mip_split_voice_manager.h" />
+		<Unit filename="../include/plugin/mip_threaded_voice_manager.h" />
 		<Unit filename="../include/plugin/mip_voice.h" />
 		<Unit filename="../include/plugin/mip_voice_manager.h" />
-		<Unit filename="../include/plugin/vst2/backup/kode_hosted_lv2_plugin.h" />
-		<Unit filename="../include/plugin/vst2/backup/kode_lv2.h" />
-		<Unit filename="../include/plugin/vst2/backup/kode_lv2_host.h" />
-		<Unit filename="../include/plugin/vst2/backup/kode_lv2_instance.h" />
-		<Unit filename="../include/plugin/vst2/backup/kode_lv2_plugin.h" />
-		<Unit filename="../include/plugin/vst2/backup/kode_lv2_utils.h" />
-		<Unit filename="../include/plugin/vst2/mip_lv2.h" />
-		<Unit filename="../include/plugin/vst2/mip_lv2_entry.h" />
-		<Unit filename="../include/plugin/vst2/mip_lv2_host.h" />
-		<Unit filename="../include/plugin/vst2/mip_lv2_plugin.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2_entry.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2_host.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2_plugin.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_entry.h" />
-		<Unit filename="../include/plugin/vst3/mip_vst3_host.h" />
+		<Unit filename="../include/plugin/vst3/mip_vst3_host_implementation.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_plugin.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_utils.h" />
-		<Unit filename="../source/apps/backup/1/claptesthost.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/apps/backup/1/claptesthost_process.h" />
-		<Unit filename="../source/apps/backup/2/claphost.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/apps/backup/2/claphost_process.h" />
-		<Unit filename="../source/apps/backup/2/mip_clap_host.h" />
-		<Unit filename="../source/apps/backup/2/mip_clap_plugin.h" />
-		<Unit filename="../source/apps/backup/2/mip_clap_plugin_entry.h" />
-		<Unit filename="../source/apps/backup/3/arguments.hpp" />
-		<Unit filename="../source/apps/backup/3/audio_file.hpp" />
-		<Unit filename="../source/apps/backup/3/host.hpp" />
-		<Unit filename="../source/apps/backup/3/main.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/apps/backup/3/midi_file.hpp" />
-		<Unit filename="../source/apps/backup/3/midi_player.hpp" />
-		<Unit filename="../source/apps/backup/3/plugin.hpp" />
-		<Unit filename="../source/apps/backup/3/process.hpp" />
 		<Unit filename="../source/apps/clap-host/arguments.hpp" />
 		<Unit filename="../source/apps/clap-host/audio_file.hpp" />
-		<Unit filename="../source/apps/clap-host/clap/audio-buffer.h" />
-		<Unit filename="../source/apps/clap-host/clap/clap.h" />
-		<Unit filename="../source/apps/clap-host/clap/color.h" />
-		<Unit filename="../source/apps/clap-host/clap/converters/clap-converter.h" />
-		<Unit filename="../source/apps/clap-host/clap/converters/vst2-converter.h" />
-		<Unit filename="../source/apps/clap-host/clap/converters/vst3-converter.h" />
-		<Unit filename="../source/apps/clap-host/clap/entry.h" />
-		<Unit filename="../source/apps/clap-host/clap/events.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/audio-ports-config.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/audio-ports.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/ambisonic.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/check-for-update.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/cv.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/file-reference.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/midi-mappings.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/preset-load.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/quick-controls.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/surround.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/track-info.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/transport-control.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/draft/tuning.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/event-filter.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/event-registry.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/gui.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/latency.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/log.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/note-name.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/note-ports.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/params.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/posix-fd-support.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/render.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/state.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/tail.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/thread-check.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/thread-pool.h" />
-		<Unit filename="../source/apps/clap-host/clap/ext/timer-support.h" />
-		<Unit filename="../source/apps/clap-host/clap/fixedpoint.h" />
-		<Unit filename="../source/apps/clap-host/clap/hash.h" />
-		<Unit filename="../source/apps/clap-host/clap/host.h" />
-		<Unit filename="../source/apps/clap-host/clap/id.h" />
-		<Unit filename="../source/apps/clap-host/clap/plugin-factory.h" />
-		<Unit filename="../source/apps/clap-host/clap/plugin-invalidation.h" />
-		<Unit filename="../source/apps/clap-host/clap/plugin.h" />
-		<Unit filename="../source/apps/clap-host/clap/private/macros.h" />
-		<Unit filename="../source/apps/clap-host/clap/private/std.h" />
-		<Unit filename="../source/apps/clap-host/clap/process.h" />
-		<Unit filename="../source/apps/clap-host/clap/stream.h" />
-		<Unit filename="../source/apps/clap-host/clap/string-sizes.h" />
-		<Unit filename="../source/apps/clap-host/clap/version.h" />
+		<Unit filename="../source/apps/clap-host/compile.sh" />
 		<Unit filename="../source/apps/clap-host/host.hpp" />
 		<Unit filename="../source/apps/clap-host/json.hpp" />
 		<Unit filename="../source/apps/clap-host/main.cpp">
@@ -607,7 +592,9 @@
 		<Unit filename="../source/apps/clap-host/plugin.hpp" />
 		<Unit filename="../source/apps/clap-host/preset.hpp" />
 		<Unit filename="../source/apps/clap-host/print.hpp" />
+		<Unit filename="../source/apps/clap-host/print.py" />
 		<Unit filename="../source/apps/clap-host/process.hpp" />
+		<Unit filename="../source/apps/clap-host/readme.txt" />
 		<Unit filename="../source/apps/clap-host/test_midi.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -621,21 +608,8 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/sa_botage/backup/kode_debug_watch_panel.h" />
-		<Unit filename="../source/plugins/sa_botage/backup/sa_botage.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/plugins/sa_botage/backup/sa_botage_descriptor.h" />
-		<Unit filename="../source/plugins/sa_botage/backup/sa_botage_editor.h" />
-		<Unit filename="../source/plugins/sa_botage/backup/sa_botage_effects.h" />
-		<Unit filename="../source/plugins/sa_botage/backup/sa_botage_instance.h" />
-		<Unit filename="../source/plugins/sa_botage/backup/sa_botage_logo.h" />
-		<Unit filename="../source/plugins/sa_botage/backup/sa_botage_process.h" />
-		<Unit filename="../source/plugins/sa_botage/backup/sa_botage_widgets.h" />
 		<Unit filename="../source/plugins/sa_botage/sa_botage_editor.h" />
 		<Unit filename="../source/plugins/sa_botage/sa_botage_logo.h" />
-		<Unit filename="../source/plugins/sa_botage/sa_botage_widgets.h" />
 		<Unit filename="../source/plugins/sa_hexwave.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -673,11 +647,24 @@
 		<Unit filename="../source/plugins/sa_ports/sa_sonic_maximizer.h" />
 		<Unit filename="../source/plugins/sa_ports/sa_tilteq.h" />
 		<Unit filename="../source/plugins/sa_ports/sa_transient_killer.h" />
+		<Unit filename="../source/plugins/sa_tcc.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_ts1.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_editor.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_osc.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_parameters.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_res.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_voice.h" />
+		<Unit filename="../source/plugins/sa_ts1/sa_ts1_widgets.h" />
 		<Unit filename="../source/plugins/sa_tyr.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/sa_tyr/sa_tyr_descriptor.h" />
 		<Unit filename="../source/plugins/sa_tyr/sa_tyr_editor.h" />
 		<Unit filename="../source/plugins/sa_tyr/sa_tyr_voice.h" />
 		<Unit filename="../source/plugins/sa_tyr/sa_tyr_widgets.h" />
@@ -697,18 +684,15 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/test_synth1.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/plugins/test_synth1/test_synth1_editor.h" />
-		<Unit filename="../source/plugins/test_synth1/test_synth1_voice.h" />
-		<Unit filename="../source/plugins/test_synth1/test_synth1_widgets.h" />
 		<Unit filename="../source/test/test_gui.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/test/test_gui2.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_vst.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

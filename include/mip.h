@@ -2,26 +2,20 @@
 #define mip_included
 //----------------------------------------------------------------------
 
-// ordering is important!
-// be careful!
-
-//----------------------------------------------------------------------
-
-#include <stdarg.h>
-#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <dirent.h>
 #include <math.h>
 #include <memory.h>
 #include <string.h>
 
-#include <vector>
+//#include <sys/types.h>
+//#include <sys/stat.h>
+#include <dirent.h>
+#include <dlfcn.h>
 
-
-//----------------------------------------------------------------------
+//----------
 
 #include "base/mip_config.h"
 #include "base/mip_defines.h"
@@ -33,4 +27,3 @@
 
 //----------------------------------------------------------------------
 #endif
-

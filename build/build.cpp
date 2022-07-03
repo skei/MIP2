@@ -1,16 +1,13 @@
 
 
 
-
 //----------------------------------------------------------------------
 //
 // test
 //
 //----------------------------------------------------------------------
 
-
-//#include "test/test1.cpp"
-
+//#include "../source/test1.cpp"
 
 //----------------------------------------------------------------------
 //
@@ -18,14 +15,7 @@
 //
 //----------------------------------------------------------------------
 
-
-//#include "../source/apps/clap-host/main.cpp"
-//#include "../source/apps/clap-host/test_midi.cpp"
-
-//----------
-
-//#include "../source/apps/template_host.cpp"
-
+//#include "../source/apps/sa_vant.cpp"
 
 //----------------------------------------------------------------------
 //
@@ -33,34 +23,14 @@
 //
 //----------------------------------------------------------------------
 
-
+#include "../source/plugins/sa_bel.cpp"
 //#include "../source/plugins/sa_botage.cpp"
-//#include "../source/plugins/sa_hexwave.cpp"
-//#include "../source/plugins/sa_host2.cpp"
-//#include "../source/plugins/sa_ladspa.cpp"
-//#include "../source/plugins/sa_mini.cpp"
-//#include "../source/plugins/sa_ports.cpp"
+//#include "../source/plugins/sa_cred.cpp"
+//#include "../source/plugins/sa_dist.cpp"
+//#include "../source/plugins/sa_lad.cpp"
+//#include "../source/plugins/sa_liva.cpp"
+//#include "../source/plugins/sa_tanic.cpp"
 //#include "../source/plugins/sa_tyr.cpp"
 
-//#include "../source/plugins/test_gui1.cpp"
-//#include "../source/plugins/sa_ts1.cpp"
-
-//----------
-
-//#include "../source/plugins/template_plugin.cpp"
-//#include "../source/plugins/template_instrument.cpp"
-//#include "../source/plugins/template_note_effect.cpp"
-
-
-//----------------------------------------------------------------------
-//
-// test (aka templates)
-//
-//----------------------------------------------------------------------
-
-
-//#include "../source/test/test_gui2.cpp"
-//#include "../source/test/test_widget.cpp"
-#include "../source/test/test_vst.cpp"
 
 

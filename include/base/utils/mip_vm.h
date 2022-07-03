@@ -205,6 +205,7 @@ public:
       #define VM_POS(x)     MCodeSegment[x]
 
       MIP = &MCodeSegment[APosition];
+      //MIP_Print("APosition %i *MIP: %i\n",APosition,*MIP);
       VM_NEXT;
 
       //----- opcodes -----
@@ -405,7 +406,8 @@ public:
       _op_print: // print (int)
         {
           MIP_VMValue v = (MIP_VMValue)VM_POP;
-          printf("%i\n",(int)v);
+          //printf("%i\n",(int)v);
+          MIP_DPrint("%i\n",(int)v);
         }
         VM_NEXT;
 

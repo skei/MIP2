@@ -46,7 +46,7 @@ class MIP_Vst3Plugin
 , public IEditController2
 , public IPlugView
 , public ITimerHandler
-, public MIP_WindowListener {
+/*, public MIP_WindowListener*/ {
 
 //------------------------------
 private:

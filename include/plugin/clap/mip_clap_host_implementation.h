@@ -38,7 +38,7 @@ public:
 //------------------------------
 
   virtual const void* get_extension(const char *extension_id) {
-    CLAP_Print("id %s\n",extension_id);
+    MIP_Print("id %s\n",extension_id);
 //    if (MIP_IsEqual(id,CLAP_EXT_AMBISONIC))           return &MAmbisonic;
 //    if (MIP_IsEqual(id,CLAP_EXT_AUDIO_PORTS))         return &MAudioPorts;
 //    if (MIP_IsEqual(id,CLAP_EXT_AUDIO_PORTS_CONFIG))  return &MAudioPorts;
