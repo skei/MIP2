@@ -1,0 +1,305 @@
+# depslib dependency file v1.0
+1657030894 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/test/test_pugl.cpp"
+
+1656972879 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
+	"mip.h"
+	"extern/nanogfx.h"
+
+1656075099 /DISKS/sda2/code/git/MIP2/include/mip.h
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<memory.h>
+	<string.h>
+	<dirent.h>
+	<dlfcn.h>
+	"base/mip_config.h"
+	"base/mip_defines.h"
+	"base/mip_const.h"
+	"base/mip_enums.h"
+	"base/mip_attributes.h"
+	"base/debug/mip_debug.h"
+
+1655981920 /DISKS/sda2/code/git/MIP2/include/base/mip_config.h
+
+1655933131 /DISKS/sda2/code/git/MIP2/include/base/mip_defines.h
+
+1648766661 /DISKS/sda2/code/git/MIP2/include/base/mip_const.h
+
+1654852200 /DISKS/sda2/code/git/MIP2/include/base/mip_enums.h
+
+1641519085 /DISKS/sda2/code/git/MIP2/include/base/mip_attributes.h
+
+1652652014 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug.h
+	"base/debug/mip_debug_print.h"
+	"base/debug/mip_debug_assert.h"
+	"base/debug/mip_debug_watch.h"
+	"base/debug/mip_debug_callstack.h"
+	"base/debug/mip_debug_crash_handler.h"
+	"base/utils/mip_strutils.h"
+	<list>
+	"base/debug/mip_debug_memory.h"
+
+1653774130 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_print.h
+	<stdarg.h>
+	"mip.h"
+	<sys/time.h>
+	<unistd.h>
+	<sys/socket.h>
+	<sys/un.h>
+
+1642884055 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_assert.h
+	<assert.h>
+
+1655504781 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_watch.h
+	"mip.h"
+	"base/types/mip_array.h"
+
+1656429462 /DISKS/sda2/code/git/MIP2/include/base/types/mip_array.h
+	"base/utils/mip_integer_math.h"
+
+1640048869 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_integer_math.h
+	"mip.h"
+	<math.h>
+
+1651967541 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_callstack.h
+	<stdio.h>
+	<sys/unistd.h>
+	<cxxabi.h>
+	<execinfo.h>
+
+1651967514 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_crash_handler.h
+	<signal.h>
+
+1653771735 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_strutils.h
+	"mip.h"
+	"base/utils/mip_random.h"
+	<iconv.h>
+
+1639493110 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_random.h
+	"mip.h"
+	<stdlib.h>
+	<stdint.h>
+	<stdint.h>
+	<stdint.h>
+
+1647040827 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_memory.h
+
+1656969599 /DISKS/sda2/code/git/MIP2/include/extern/nanogfx.h
+	<nanogfx.h>
+	<X11/Xlib.h>
+	<X11/XKBlib.h>
+	<X11/Xatom.h>
+	<X11/Xutil.h>
+	<malloc.h>
+	<unistd.h>
+	<string.h>
+	<sys/time.h>
+	<pthread.h>
+	<GL/glx.h>
+	<EGL/egl.h>
+	<signal.h>
+	<time.h>
+	<windows.h>
+	<windowsx.h>
+	<vulkan/vulkan.h>
+	<vulkan/vulkan_win32.h>
+	<vulkan/vulkan_xlib.h>
+	<Cocoa/Cocoa.h>
+	<sys/time.h>
+	<pthread.h>
+	<MetalKit/MetalKit.h>
+	<Metal/Metal.h>
+	<OpenGL/gl.h>
+	<GL/gl.h>
+	<string>
+	<cstdio>
+	<cstdio>
+
+1656889307 /DISKS/sda2/code/git/MIP2/source/test/test_opengl.cpp
+	<GL/glx.h>
+	<X11/Xlib.h>
+	"extern/nanogfx.h"
+	"extern/nanovg/nanovg.c"
+	"extern/nanovg/nanovg_gl.h"
+	"mip.h"
+	<stdbool.h>
+	<stdio.h>
+	<stdlib.h>
+	<GL/glx.h>
+	<X11/Xlib.h>
+
+1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.c
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+	<memory.h>
+	"nanovg.h"
+	"fontstash.h"
+	"stb_image.h"
+
+1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.h
+
+1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/fontstash.h
+	<ft2build.h>
+	<math.h>
+	"stb_truetype.h"
+
+1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/stb_truetype.h
+	"stb_truetype.h"
+	<stdio.h>
+	"stb_truetype.h"
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<stdlib.h>
+	<assert.h>
+	<string.h>
+	<string.h>
+
+1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
+
+1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg_gl.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<math.h>
+	"nanovg.h"
+
+1657030696 /DISKS/sda2/code/git/MIP2/source/test/test_nanovg.cpp
+	"mip.h"
+	<X11/Xlib.h>
+	<X11/Xlib-xcb.h>
+	<xcb/xcb.h>
+	<GL/glew.h>
+	<GL/gl.h>
+	<GL/glx.h>
+	"extern/nanovg/nanovg.h"
+	"extern/nanovg/nanovg_gl.h"
+	"extern/nanovg/nanovg.c"
+
+1656942798 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.c.h
+	<stdlib.h>
+	<stdio.h>
+	<math.h>
+	<memory.h>
+	"android.h"
+	"nanovg.h"
+	"fontstash.h"
+	"stb_image.h"
+
+1647444999 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/android.h
+	<stdio.h>
+	<android/asset_manager.h>
+
+1647444999 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg_gl.c.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<math.h>
+	"android.h"
+	<GL/glew.h>
+	<GLES2/gl2.h>
+	<GLES2/gl2ext.h>
+	<GLES3/gl3.h>
+	<GL/gl.h>
+	"nanovg_gl.h"
+
+1656978011 /DISKS/sda2/code/git/MIP2/source/test/test_nuklear.cpp
+	"mip.h"
+	<GL/glew.h>
+	"extern/nuklear.h"
+
+1654157255 /DISKS/sda2/code/git/MIP2/include/extern/nuklear.h
+	<stdarg.h>
+	<sal.h>
+	<stdint.h>
+	<stdbool.h>
+	<stdlib.h>
+	<stdio.h>
+	<stdarg.h>
+	<assert.h>
+	<stdlib.h>
+	<assert.h>
+	"stb_truetype.h"
+	<stdio.h>
+	"stb_truetype.h"
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<stdlib.h>
+	<assert.h>
+	<string.h>
+	<string.h>
+
+1657021054 /DISKS/sda2/code/git/MIP2/source/test/test_window.cpp
+	"mip.h"
+	<X11/Xlib.h>
+	<X11/Xlib-xcb.h>
+	<xcb/xcb.h>
+	<GL/glx.h>
+	<GL/gl.h>
+
+1657032335 /DISKS/sda2/code/git/MIP2/source/test/test_pugl.cpp
+	<locale.h>
+	<math.h>
+	<stdio.h>
+	<string.h>
+	"mip.h"
+	"extern/pugl/pugl.h"
+	"extern/pugl/pugl_x11.c"
+	<GL/gl.h>
+
+1495798189 /DISKS/sda2/code/git/MIP2/include/extern/pugl/gl.h
+	"OpenGL/gl.h"
+	<windows.h>
+	"GL/gl.h"
+
+1495798189 /DISKS/sda2/code/git/MIP2/include/extern/pugl/pugl.h
+	<stdint.h>
+	<stdbool.h>
+
+1657031539 /DISKS/sda2/code/git/MIP2/include/extern/pugl/pugl_x11.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<X11/Xatom.h>
+	<X11/Xlib.h>
+	<X11/Xutil.h>
+	<X11/keysym.h>
+	<GL/gl.h>
+	<GL/glx.h>
+	<cairo/cairo.h>
+	<cairo/cairo-xlib.h>
+	"cairo_gl.h"
+	"pugl_internal.h"
+
+1495798189 /DISKS/sda2/code/git/MIP2/include/extern/pugl/cairo_gl.h
+	<cairo/cairo.h>
+	<stdint.h>
+	"pugl/gl.h"
+
+1657031271 /DISKS/sda2/code/git/MIP2/include/extern/pugl/pugl_internal.h
+	<stdlib.h>
+	<string.h>
+	"pugl.h"
+
