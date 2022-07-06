@@ -7,12 +7,11 @@
 //
 //----------------------------------------------------------------------
 
+//#include "../source/test/test_crtp.cpp"
 //#include "../source/test/test_nanogfx.cpp"
 //#include "../source/test/test_nanovg.cpp"
-//#include "../source/test/test_nuklear.cpp"
-//#include "../source/test/test_opengl.cpp"
+#include "../source/test/test_opengl.cpp"
 //#include "../source/test/test_opengl2.cpp"
-#include "../source/test/test_pugl.cpp"
 //#include "../source/test/test_vm.cpp"
 //#include "../source/test/test_window.cpp"
 

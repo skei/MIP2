@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1657030894 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../source/test/test_pugl.cpp"
+1657148682 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/test/test_opengl.cpp"
 
 1656972879 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
@@ -118,18 +118,12 @@
 	<cstdio>
 	<cstdio>
 
-1656889307 /DISKS/sda2/code/git/MIP2/source/test/test_opengl.cpp
-	<GL/glx.h>
-	<X11/Xlib.h>
-	"extern/nanogfx.h"
-	"extern/nanovg/nanovg.c"
-	"extern/nanovg/nanovg_gl.h"
+1657150187 /DISKS/sda2/code/git/MIP2/source/test/test_opengl.cpp
 	"mip.h"
-	<stdbool.h>
-	<stdio.h>
-	<stdlib.h>
-	<GL/glx.h>
-	<X11/Xlib.h>
+	"base/system/mip_time.h"
+	"base/system/mip_timer.h"
+	"gui/gl/mip_gl.h"
+	"gui/gl/mip_gl_window.h"
 
 1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.c
 	<stdlib.h>
@@ -259,15 +253,15 @@
 	<GL/glx.h>
 	<GL/gl.h>
 
-1657032335 /DISKS/sda2/code/git/MIP2/source/test/test_pugl.cpp
+1657108140 /DISKS/sda2/code/git/MIP2/source/test/test_pugl.cpp
 	<locale.h>
 	<math.h>
 	<stdio.h>
 	<string.h>
+	<GL/gl.h>
 	"mip.h"
 	"extern/pugl/pugl.h"
 	"extern/pugl/pugl_x11.c"
-	<GL/gl.h>
 
 1495798189 /DISKS/sda2/code/git/MIP2/include/extern/pugl/gl.h
 	"OpenGL/gl.h"
@@ -302,4 +296,113 @@
 	<stdlib.h>
 	<string.h>
 	"pugl.h"
+
+1657046988 /DISKS/sda2/code/git/MIP2/source/test/test_crtp.cpp
+	"mip.h"
+	<vector>
+
+1657098720 /DISKS/sda2/code/git/MIP2/source/test/test_lglw.cpp
+	"mip.h"
+	"extern/lglw/lglw.h"
+	"extern/lglw/lglw_linux.c"
+
+1558275472 /DISKS/sda2/code/git/MIP2/include/extern/lglw/lglw.h
+	"cplusplus_begin.h"
+	<stdint.h>
+	"cplusplus_end.h"
+
+1558275472 /DISKS/sda2/code/git/MIP2/include/extern/lglw/cplusplus_begin.h
+
+1558275472 /DISKS/sda2/code/git/MIP2/include/extern/lglw/cplusplus_end.h
+
+1657098541 /DISKS/sda2/code/git/MIP2/include/extern/lglw/lglw_linux.c
+	"lglw.h"
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	<stdarg.h>
+	<X11/Xlib.h>
+	<X11/Xutil.h>
+	<X11/Xos.h>
+	<X11/Xatom.h>
+	<GL/gl.h>
+	<GL/glx.h>
+	<sys/mman.h>
+	<unistd.h>
+
+1657140426 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb.h
+	<xcb/xcb.h>
+	<xcb/xcb_cursor.h>
+	<xcb/xcb_image.h>
+	<xcb/xcb_keysyms.h>
+	<xcb/xcb_util.h>
+	<xcb/xproto.h>
+
+1657139752 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_utils.h
+	"mip.h"
+	"gui/xcb/mip_xcb.h"
+
+1657141719 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+	"gui/xcb/mip_xcb.h"
+	"gui/xcb/mip_xcb_utils.h"
+	"gui/xlib/mip_xlib.h"
+
+1641606417 /DISKS/sda2/code/git/MIP2/include/base/system/mip_time.h
+	"mip.h"
+	"base/system/linux/mip_linux_time.h"
+	"base/system/win32/mip_win32_time.h"
+
+1645138755 /DISKS/sda2/code/git/MIP2/include/base/system/linux/mip_linux_time.h
+	<time.h>
+	<sys/time.h>
+	<signal.h>
+	<errno.h>
+	"base/mip_const.h"
+
+1641606850 /DISKS/sda2/code/git/MIP2/include/base/system/win32/mip_win32_time.h
+	<time.h>
+	<sys/time.h>
+	<signal.h>
+	<errno.h>
+	"base/mip_const.h"
+	"base/utils/mip_math.h"
+
+1654815401 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_math.h
+	<math.h>
+	<stdlib.h>
+	"mip.h"
+
+1611590956 /DISKS/sda2/code/git/MIP2/include/extern/simple-opengl-loader.h
+	<windows.h>
+	<stdint.h>
+	<inttypes.h>
+	<stdint.h>
+	<dlfcn.h>
+
+1657140437 /DISKS/sda2/code/git/MIP2/include/gui/xlib/mip_xlib.h
+	"mip.h"
+	<X11/Xlib.h>
+	<X11/Xlib-xcb.h>
+
+1657140926 /DISKS/sda2/code/git/MIP2/include/gui/gl/mip_gl.h
+	"mip.h"
+	"extern/simple-opengl-loader.h"
+
+1657144928 /DISKS/sda2/code/git/MIP2/include/gui/gl/mip_gl_window.h
+	"mip.h"
+	"gui/gl/mip_gl.h"
+	"gui/xlib/mip_xlib.h"
+	"gui/xcb/mip_xcb.h"
+	"gui/xcb/mip_xcb_window.h"
+	<GL/glx.h>
+
+1643928904 /DISKS/sda2/code/git/MIP2/include/base/system/mip_timer.h
+	"mip.h"
+	"base/system/linux/mip_linux_timer.h"
+	"base/system/win32/mip_win32_timer.h"
+
+1646870779 /DISKS/sda2/code/git/MIP2/include/base/system/linux/mip_linux_timer.h
+	<time.h>
+	<signal.h>
+	"base/utils/mip_math.h"
 
