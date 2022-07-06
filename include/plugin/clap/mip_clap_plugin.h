@@ -65,10 +65,8 @@ public: // extensions
   virtual uint32_t  audio_ports_config_count() { return 0; }
   virtual bool      audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) { return false; }
   virtual bool      audio_ports_config_select(clap_id config_id) { return false; }
-
   virtual uint32_t  audio_ports_count(bool is_input) { return 0; }
   virtual bool      audio_ports_get(uint32_t index, bool is_input, clap_audio_port_info_t *info) { return false; }
-
   virtual bool      gui_is_api_supported(const char *api, bool is_floating) { return false; }
   virtual bool      gui_get_preferred_api(const char **api, bool *is_floating) { return false; }
   virtual bool      gui_create(const char *api, bool is_floating) { return false; }
@@ -84,34 +82,24 @@ public: // extensions
   virtual void      gui_suggest_title(const char *title) {}
   virtual bool      gui_show() { return false; }
   virtual bool      gui_hide() { return false; }
-
   virtual uint32_t  latency_get() { return 0; }
-
   virtual uint32_t  note_names_count() { return 0; }
   virtual bool      note_names_get(uint32_t index, clap_note_name_t *note_name) { return false; }
-
   virtual uint32_t  note_ports_count(bool is_input) { return 0; }
   virtual bool      note_ports_get(uint32_t index, bool is_input, clap_note_port_info_t* info) { return false; }
-
   virtual uint32_t  params_count() { return 0; }
   virtual bool      params_get_info(uint32_t param_index, clap_param_info_t *param_info) { return false; }
   virtual bool      params_get_value(clap_id param_id, double *value) { return false; }
   virtual bool      params_value_to_text(clap_id param_id, double value, char *display, uint32_t size) { return false; }
   virtual bool      params_text_to_value(clap_id param_id, const char *display, double *value) { return false; }
   virtual void      params_flush(const clap_input_events_t *in, const clap_output_events_t *out) {}
-
   virtual void      posix_fd_support_on_fd(int fd, clap_posix_fd_flags_t flags) {}
-
   virtual bool      render_has_hard_realtime_requirement() { return false; }
   virtual bool      render_set(clap_plugin_render_mode mode) { return false; }
-
   virtual bool      state_save(const clap_ostream_t *stream) { return false; }
   virtual bool      state_load(const clap_istream_t *stream) { return false; }
-
   virtual uint32_t  tail_get() { return 0; }
-
   virtual void      thread_pool_exec(uint32_t task_index) {}
-
   virtual void      timer_support_on_timer(clap_id timer_id) {}
 
 //------------------------------
@@ -119,33 +107,23 @@ public: // draft
 //------------------------------
 
   virtual bool      ambisonic_get_info(bool is_input,  uint32_t port_index, clap_ambisonic_info_t *info) { return false; }
-
   virtual void      check_fur_updates_check(bool include_preview) {}
-
   virtual bool      cv_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index, uint32_t *channel_type) { return false; }
-
   virtual uint32_t  file_reference_count() { return 0; }
   virtual bool      file_reference_get(uint32_t index, clap_file_reference_t *file_reference) { return false; }
   virtual bool      file_reference_get_blake3_digest(clap_id resource_id, uint8_t *digest) { return false; }
   virtual bool      file_reference_get_file_size(clap_id resource_id, uint64_t *size) { return false; }
   virtual bool      file_reference_update_path(clap_id resource_id, const char *path) { return false; }
   virtual bool      file_reference_save_resources() { return false; }
-
   virtual uint32_t  midi_mappings_count() { return 0; }
   virtual bool      midi_mappings_get(uint32_t index, clap_midi_mapping_t *mapping) { return false; }
-
   virtual bool      preset_load_from_file(const char *path) { return false; }
-
   virtual uint32_t  quick_controls_count() { return 0; }
   virtual bool      quick_controls_get(uint32_t page_index, clap_quick_controls_page_t *page) { return false; }
-
   virtual uint32_t  surround_get_channel_map(bool is_input, uint32_t port_index, uint8_t *channel_map, uint32_t channel_map_capacity) { return 0; }
   virtual void      surround_changed() {}
-
   virtual void      track_info_changed() {}
-
   virtual void      tuning_changed() {}
-
   virtual bool      voice_info_get(clap_voice_info_t *info) { return false; }
 
 //--------------------------------------------------
