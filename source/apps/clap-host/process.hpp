@@ -187,10 +187,16 @@ private:
 
     double speedFactor = tempo / 60.0;
     double beatsPosFloat = MCurrentTime * speedFactor;
-
-    //printf("prepare_transport: beatsPosFloat: %f\n", beatsPosFloat);
+      
+    /*
+    printf("prepare_transport: tempo: %f\n", tempo);
+    printf("prepare_transport: MCurrentTime: %f\n", MCurrentTime);
+    printf("prepare_transport: beatsPosFloat: %f\n", beatsPosFloat);
+    printf("prepare_transport: barStart: %f\n", beatsPosFloat - fmod(beatsPosFloat, 4.0));
+     */
 
     clap_beattime bTime = round(CLAP_BEATTIME_FACTOR * beatsPosFloat);
+    clap_beattime barStart = CLAP_BEATTIME_FACTOR * (beatsPosFloat - fmod(beatsPosFloat, 4.0));
 
     MContextTransport.header.size = sizeof(clap_event_transport);
     MContextTransport.header.time         = 0;
@@ -202,8 +208,8 @@ private:
     MContextTransport.song_pos_seconds    = 0;
     MContextTransport.tempo               = tempo;
     MContextTransport.tempo_inc           = 0.0;
-    MContextTransport.bar_start           = 0;
-    MContextTransport.bar_number          = 0;
+    MContextTransport.bar_start           = barStart;
+    MContextTransport.bar_number          = (int)(beatsPosFloat/4);
     MContextTransport.loop_start_beats    = 0;
     MContextTransport.loop_end_beats      = 0;
     MContextTransport.loop_start_seconds  = 0;
