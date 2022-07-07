@@ -6,13 +6,21 @@
 #include "gui/gl/mip_gl.h"
 #include "gui/gl/mip_gl_window.h"
 
+#define NANOVG_GL3_IMPLEMENTATION	// Use GL2 implementation.
+#include "extern/nanovg/nanovg.h"
+#include "extern/nanovg/nanovg_gl.h"
+  // get rid of "warning: ‘visibility’ attribute ignored [-Wattributes]"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wmisleading-indentation"
+#include "extern/nanovg/nanovg.c"
+  #pragma GCC diagnostic pop
+
 //----------------------------------------------------------------------
 
 GLfloat MPositionData[] = {
   0,    0.9,
   0.9,  0,
  -0.9, -0.9,
-
 };
 
 //----------
@@ -65,14 +73,19 @@ private:
   GLuint      MFragmentShader = 0;
   GLuint      MProgram        = 0;
 
+  struct NVGcontext* vg = nullptr;
+
 //------------------------------
 public:
 //------------------------------
 
   myWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
   : MIP_GlWindow(AWidth,AHeight,AEmbedded) {
-    setup_gl();
     setListener(this);
+    setTitle("OpenGL + NanoVG");
+    setup_gl();
+    vg = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+    nvgCreateFont(vg,"Liberation","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
   }
 
   //----------
@@ -87,17 +100,33 @@ public: // window listener
   //void on_window_open() final { MIP_Print("\n"); }
   //void on_window_close() final { MIP_Print("\n"); }
   //void on_window_move(int32_t AXpos, int32_t AYpos) final { MIP_Print("x:%i y:%i\n",AXpos,AYpos); }
-
-  void on_window_resize(int32_t AWidth, int32_t AHeight) final {
-    MIP_Print("w:%i h:%i\n",AWidth,AHeight);
-    //glViewport(0,0,AWidth,AHeight);
-  }
+  //void on_window_resize(int32_t AWidth, int32_t AHeight) final { MIP_Print("w:%i h:%i\n",AWidth,AHeight); }
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) final {
-    MIP_Print("x:%i y:%i w:%i h:%i\n",AXpos,AYpos,AWidth,AHeight);
-    makeCurrent();
-    render_gl();
+    //MIP_Print("x:%i y:%i w:%i h:%i\n",AXpos,AYpos,AWidth,AHeight);
+    //makeCurrent();
+    //render_gl();
+
+    glViewport(0,0,MWindowWidth,MWindowHeight);
+
+    glClearColor(0.3, 0.3, 0.3, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    {
+      nvgBeginFrame(vg,MWindowWidth,MWindowHeight,1.0);
+      nvgBeginPath(vg);
+      nvgCircle(vg, 200,200,150);
+      nvgFillColor(vg, nvgRGB(128,96,0));
+      nvgFill(vg);
+      nvgFontFace(vg,"Liberation");
+      nvgFontSize(vg,32);
+      nvgFillColor(vg, nvgRGB(255,255,255));
+      nvgText(vg,30,130,"Hello world!",0);
+      nvgEndFrame(vg);
+    }
+
     swapBuffers();
+
   }
 
   //void on_window_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) final { MIP_Print("k: %i s:%i ts:%i\n",AKey,AState,ATime); }
@@ -127,7 +156,7 @@ public:
 //------------------------------
 
   void setup_gl() {
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(0.3, 0.3, 0.3, 1.0);
 
     // vertex array
     glGenVertexArrays(1,&MVertexArray);
