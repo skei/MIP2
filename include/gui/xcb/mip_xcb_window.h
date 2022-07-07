@@ -40,7 +40,7 @@ class MIP_XcbWindow {
   friend class MIP_GlWindow;
 
 //------------------------------
-private:
+protected:
 //------------------------------
 
   xcb_window_t                MWindow                       = XCB_NONE;

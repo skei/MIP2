@@ -12,14 +12,11 @@
 #define NANOVG_GL2_IMPLEMENTATION	// Use GL2 implementation.
 #include "extern/nanovg/nanovg.h"
 #include "extern/nanovg/nanovg_gl.h"
-
-// get rid of "warning: ‘visibility’ attribute ignored [-Wattributes]"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmisleading-indentation"
-
+  // get rid of "warning: ‘visibility’ attribute ignored [-Wattributes]"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wmisleading-indentation"
 #include "extern/nanovg/nanovg.c"
-
-#pragma GCC diagnostic pop
+  #pragma GCC diagnostic pop
 
 //----------------------------------------------------------------------
 

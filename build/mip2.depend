@@ -118,28 +118,31 @@
 	<cstdio>
 	<cstdio>
 
-1657150187 /DISKS/sda2/code/git/MIP2/source/test/test_opengl.cpp
+1657155270 /DISKS/sda2/code/git/MIP2/source/test/test_opengl.cpp
 	"mip.h"
 	"base/system/mip_time.h"
 	"base/system/mip_timer.h"
 	"gui/gl/mip_gl.h"
 	"gui/gl/mip_gl_window.h"
+	"extern/nanovg/nanovg.h"
+	"extern/nanovg/nanovg_gl.h"
+	"extern/nanovg/nanovg.c"
 
-1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.c
+1657152231 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.c
 	<stdlib.h>
 	<stdio.h>
 	<math.h>
 	<memory.h>
 	"nanovg.h"
 	"fontstash.h"
-	"stb_image.h"
+	"extern/stb/stb_image.h"
 
 1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.h
 
-1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/fontstash.h
+1657152225 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/fontstash.h
 	<ft2build.h>
 	<math.h>
-	"stb_truetype.h"
+	"extern/stb/stb_truetype.h"
 
 1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/stb_truetype.h
 	"stb_truetype.h"
@@ -342,7 +345,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 
-1657141719 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1657151243 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"gui/xcb/mip_xcb.h"
 	"gui/xcb/mip_xcb_utils.h"
 	"gui/xlib/mip_xlib.h"
@@ -388,7 +391,7 @@
 	"mip.h"
 	"extern/simple-opengl-loader.h"
 
-1657144928 /DISKS/sda2/code/git/MIP2/include/gui/gl/mip_gl_window.h
+1657151135 /DISKS/sda2/code/git/MIP2/include/gui/gl/mip_gl_window.h
 	"mip.h"
 	"gui/gl/mip_gl.h"
 	"gui/xlib/mip_xlib.h"
@@ -405,4 +408,33 @@
 	<time.h>
 	<signal.h>
 	"base/utils/mip_math.h"
+
+1648404219 /DISKS/sda2/code/git/MIP2/include/extern/stb/stb_truetype.h
+	"stb_truetype.h"
+	<stdio.h>
+	"stb_truetype.h"
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<math.h>
+	<stdlib.h>
+	<assert.h>
+	<string.h>
+	<string.h>
+
+1648404219 /DISKS/sda2/code/git/MIP2/include/extern/stb/stb_image.h
+	"stb_image.h"
+	<stdio.h>
+	<stdarg.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	<stdio.h>
+	<assert.h>
+	<stdint.h>
+	<emmintrin.h>
+	<intrin.h>
+	<arm_neon.h>
 
