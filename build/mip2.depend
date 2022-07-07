@@ -118,15 +118,11 @@
 	<cstdio>
 	<cstdio>
 
-1657155270 /DISKS/sda2/code/git/MIP2/source/test/test_opengl.cpp
+1657227934 /DISKS/sda2/code/git/MIP2/source/test/test_opengl.cpp
 	"mip.h"
-	"base/system/mip_time.h"
 	"base/system/mip_timer.h"
-	"gui/gl/mip_gl.h"
-	"gui/gl/mip_gl_window.h"
-	"extern/nanovg/nanovg.h"
-	"extern/nanovg/nanovg_gl.h"
-	"extern/nanovg/nanovg.c"
+	"gui/opengl/mip_opengl.h"
+	"gui/nanovg/mip_nanovg_window.h"
 
 1657152231 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.c
 	<stdlib.h>
@@ -345,7 +341,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 
-1657151243 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1657227966 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"gui/xcb/mip_xcb.h"
 	"gui/xcb/mip_xcb_utils.h"
 	"gui/xlib/mip_xlib.h"
@@ -387,11 +383,11 @@
 	<X11/Xlib.h>
 	<X11/Xlib-xcb.h>
 
-1657140926 /DISKS/sda2/code/git/MIP2/include/gui/gl/mip_gl.h
+1657223884 /DISKS/sda2/code/git/MIP2/include/gui/gl/mip_gl.h
 	"mip.h"
 	"extern/simple-opengl-loader.h"
 
-1657151135 /DISKS/sda2/code/git/MIP2/include/gui/gl/mip_gl_window.h
+1657224115 /DISKS/sda2/code/git/MIP2/include/gui/gl/mip_gl_window.h
 	"mip.h"
 	"gui/gl/mip_gl.h"
 	"gui/xlib/mip_xlib.h"
@@ -437,4 +433,32 @@
 	<emmintrin.h>
 	<intrin.h>
 	<arm_neon.h>
+
+1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg_gl_utils.h
+	<OpenGL/glext.h>
+
+1657226086 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl.h
+	"mip.h"
+	"extern/simple-opengl-loader.h"
+
+1657226261 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg_window.h
+	"mip.h"
+	"gui/opengl/mip_opengl_window.h"
+	"gui/nanovg/mip_nanovg.h"
+
+1657226253 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_window.h
+	"mip.h"
+	"gui/opengl/mip_opengl.h"
+	"gui/xlib/mip_xlib.h"
+	"gui/xcb/mip_xcb.h"
+	"gui/xcb/mip_xcb_window.h"
+	<GL/glx.h>
+
+1657226108 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg.h
+	"mip.h"
+	"gui/opengl/mip_opengl.h"
+	"extern/nanovg/nanovg.h"
+	"extern/nanovg/nanovg_gl.h"
+	"extern/nanovg/nanovg_gl_utils.h"
+	"extern/nanovg/nanovg.c"
 

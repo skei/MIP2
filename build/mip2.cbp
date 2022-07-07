@@ -94,6 +94,11 @@
 			<Add library="xcb-image" />
 			<Add library="xcb-cursor" />
 			<Add library="xcb-keysyms" />
+			<Add library="xkbcommon" />
+			<Add library="X11" />
+			<Add library="X11-xcb" />
+			<Add library="GL" />
+			<Add library="GLX" />
 		</Linker>
 		<Unit filename="../include/base/debug/mip_debug.h" />
 		<Unit filename="../include/base/debug/mip_debug_assert.h" />
@@ -225,11 +230,28 @@
 		<Unit filename="../include/extern/clap/stream.h" />
 		<Unit filename="../include/extern/clap/string-sizes.h" />
 		<Unit filename="../include/extern/clap/version.h" />
+		<Unit filename="../include/extern/nanogfx.h" />
+		<Unit filename="../include/extern/nanovg/LICENSE.txt" />
+		<Unit filename="../include/extern/nanovg/README.md" />
+		<Unit filename="../include/extern/nanovg/fontstash.h" />
+		<Unit filename="../include/extern/nanovg/nanovg.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../include/extern/nanovg/nanovg.h" />
+		<Unit filename="../include/extern/nanovg/nanovg_gl.h" />
+		<Unit filename="../include/extern/nanovg/nanovg_gl_utils.h" />
+		<Unit filename="../include/extern/simple-opengl-loader.h" />
+		<Unit filename="../include/extern/stb/stb_image.h" />
+		<Unit filename="../include/extern/stb/stb_truetype.h" />
 		<Unit filename="../include/gui/cairo/mip_cairo.h" />
-		<Unit filename="../include/gui/cairo/mip_cairo_painter.h" />
+		<Unit filename="../include/gui/gl/mip_gl.h" />
+		<Unit filename="../include/gui/gl/mip_gl_window.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb.h" />
-		<Unit filename="../include/gui/xcb/mip_xcb_surface.h" />
+		<Unit filename="../include/gui/xcb/mip_xcb_utils.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_window.h" />
+		<Unit filename="../include/gui/xlib/mip_xlib.h" />
 		<Unit filename="../include/mip.h" />
 		<Unit filename="../include/plugin/clap/mip_clap.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_entry.h" />
@@ -238,7 +260,7 @@
 		<Unit filename="../include/plugin/clap/mip_clap_host_implementation.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_plugin.h" />
 		<Unit filename="../include/plugin/ladspa/mip_ladspa.h" />
-		<Unit filename="../include/plugin/ladspa/mip_wrapped_ladspa_plugin.h" />
+		<Unit filename="../include/plugin/ladspa/mip_ladspa_plugin.h" />
 		<Unit filename="../include/plugin/mip_audio_port.h" />
 		<Unit filename="../include/plugin/mip_editor.h" />
 		<Unit filename="../include/plugin/mip_note_port.h" />
@@ -249,30 +271,68 @@
 		<Unit filename="../include/plugin/mip_wrapper.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2_entry.h" />
-		<Unit filename="../include/plugin/vst2/mip_vst2_host.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2_host_implementation.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2_plugin.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_entry.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_host_implementation.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_plugin.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_utils.h" />
-		<Unit filename="../source/apps/sa_vant.cpp">
+		<Unit filename="../source/apps/clap-host/arguments.hpp" />
+		<Unit filename="../source/apps/clap-host/audio_file.hpp" />
+		<Unit filename="../source/apps/clap-host/host.hpp" />
+		<Unit filename="../source/apps/clap-host/json.hpp" />
+		<Unit filename="../source/apps/clap-host/main.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/sa_bel.cpp">
+		<Unit filename="../source/apps/clap-host/midi_file.hpp" />
+		<Unit filename="../source/apps/clap-host/midi_player.hpp" />
+		<Unit filename="../source/apps/clap-host/plugin.hpp" />
+		<Unit filename="../source/apps/clap-host/preset.hpp" />
+		<Unit filename="../source/apps/clap-host/print.hpp" />
+		<Unit filename="../source/apps/clap-host/process.hpp" />
+		<Unit filename="../source/apps/clap-host/test_midi.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/sa_cred.cpp">
+		<Unit filename="../source/plugins/sa_fibonacci.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/sa_lad.cpp">
+		<Unit filename="../source/plugins/sa_ladspa_wrapper.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/test/test1.cpp">
+		<Unit filename="../source/plugins/template.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_crtp.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_nanogfx.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_nanovg.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_opengl.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_opengl2.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_vm.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_window.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

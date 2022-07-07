@@ -35,12 +35,13 @@ public:
 //
 //----------------------------------------------------------------------
 
-class MIP_XcbWindow {
+class MIP_XcbWindow
+: public MIP_WindowListener {
 
-  friend class MIP_GlWindow;
+  friend class MIP_OpenGLWindow;
 
 //------------------------------
-protected:
+private:
 //------------------------------
 
   xcb_window_t                MWindow                       = XCB_NONE;
@@ -50,17 +51,15 @@ protected:
   int32_t                     MWindowHeight                 = 0;
   bool                        MWindowMapped                 = false;
   bool                        MWindowExposed                = false;
+
   MIP_WindowListener*         MListener                     = nullptr;
-  bool                        MFillBackground               = true;
+  bool                        MFillBackground               = false;
   uint32_t                    MBackgroundColor              = 0x808080;
 
   // connection
-
   Display*                    MDisplay                      = nullptr;
   xcb_connection_t*           MConnection                   = nullptr;
-
   // screen
-
   int                         MDefaultScreen                = 0;
   xcb_screen_t*               MScreen                       = nullptr;
   uint32_t                    MScreenWidth                  = 0;
@@ -71,32 +70,22 @@ protected:
   xcb_visualid_t              MScreenVisual                 = XCB_NONE;
   xcb_drawable_t              MScreenDrawable               = XCB_NONE;
   xcb_gcontext_t              MScreenGC                     = XCB_NONE;
-
   // mouse
-
   xcb_pixmap_t                MEmptyPixmap                  = XCB_NONE;
   xcb_cursor_t                MHiddenCursor                 = XCB_NONE;
   xcb_cursor_t                MWindowCursor                 = XCB_NONE;
   bool                        MCursorHidden                 = false;
-
   // keyboard
-
   xcb_key_symbols_t*          MKeySyms                      = nullptr;
-
   // events
-
   char*                       MExposeEventBuffer[32]        = {0};
   char*                       MClientMessageEventBuffer[32] = {0};
   xcb_expose_event_t*         MExposeEvent                  = (xcb_expose_event_t*)MExposeEventBuffer;
   xcb_client_message_event_t* MClientMessageEvent           = (xcb_client_message_event_t*)MClientMessageEventBuffer;
-
   // wantQuitEvemts
-
   xcb_atom_t                  MWMProtocolsAtom              = XCB_NONE;
   xcb_atom_t                  MWMDeleteWindowAtom           = XCB_NONE;
-
   // event thread
-
   pthread_t                   MEventThread                  = 0;
   bool                        MEventThreadActive            = false;
 
@@ -105,14 +94,19 @@ public:
 //------------------------------
 
   MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
+    MListener = this;
     initConntection(nullptr);
     initScreen();
     initScreenGC();
     initWindow(AWidth,AHeight);
     initMouseCursor();
     initKeyboard();
-    if (AEmbedded) { removeDecorations(); }
-    else { wantQuitEvents(); }
+    if (AEmbedded) {
+      removeDecorations();
+    }
+    else {
+      wantQuitEvents();
+    }
   }
 
   //----------
@@ -129,6 +123,9 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  int32_t getWidth() { return MWindowWidth; }
+  int32_t getHeight() { return MWindowHeight; }
 
   void setFillBackground(bool AFill=true) { MFillBackground = AFill; }
   void setBackgroundColor(uint32_t AColor) { MBackgroundColor = AColor; }
@@ -277,43 +274,6 @@ public: // window
     xcb_flush(MConnection);
   }
 
-  //----------
-
-  xcb_window_t getXcbParent() {
-    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
-    xcb_query_tree_reply_t* reply = xcb_query_tree_reply(MConnection,cookie,nullptr);
-    xcb_window_t parent = reply->parent;
-    free(reply);
-    return parent;
-  }
-
-  //----------
-
-  uint32_t getXcbChildCount() {
-    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
-    xcb_query_tree_reply_t* reply;
-    if ((reply = xcb_query_tree_reply(MConnection,cookie,nullptr))) {
-      int num_children = xcb_query_tree_children_length(reply);
-      free(reply);
-      return num_children;
-    }
-    return 0;
-  }
-
-  //----------
-
-  uint32_t getXcbChild(uint32_t AIndex) {
-    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
-    xcb_query_tree_reply_t* reply;
-    if ((reply = xcb_query_tree_reply(MConnection,cookie,nullptr))) {
-      xcb_window_t *children = xcb_query_tree_children(reply);
-      xcb_window_t child = children[AIndex];
-      free(reply);
-      return child;
-    }
-    return 0;
-  }
-
 //------------------------------
 public: // mouse
 //------------------------------
@@ -400,7 +360,6 @@ public: // paint
 
   //----------
 
-
   void fill(uint32_t AColor) {
     fill(0,0,MWindowWidth,MWindowHeight,AColor);
   }
@@ -426,18 +385,10 @@ public: // paint
 
   //----------
 
-  void blitImage(int32_t ADstX, int32_t ADstY, xcb_image_t* AImage) {
-    xcb_image_put(
-      MConnection,  // xcb_connection_t *  conn,
-      MWindow,      // xcb_drawable_t      draw,
-      MScreenGC,    // xcb_gcontext_t      gc,
-      AImage,       // xcb_image_t *       image,
-      ADstX,        // int16_t             x,
-      ADstY,        // int16_t             y,
-      0             // uint8_t             left_pad
-    );
-    xcb_flush(MConnection);
-  }
+  // MIP_Bitmap->getWidth()
+  // MIP_Bitmap->getHeight()
+  // MIP_Bitmap->getData()
+  // MIP_Bitmap->getStride()
 
   void blitBitmap(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) {
       mip_xcb_put_image(
@@ -454,6 +405,23 @@ public: // paint
       );
       xcb_flush(MConnection);
   }
+
+  //----------
+
+  void blitImage(int32_t ADstX, int32_t ADstY, xcb_image_t* AImage) {
+    xcb_image_put(
+      MConnection,  // xcb_connection_t *  conn,
+      MWindow,      // xcb_drawable_t      draw,
+      MScreenGC,    // xcb_gcontext_t      gc,
+      AImage,       // xcb_image_t *       image,
+      ADstX,        // int16_t             x,
+      ADstY,        // int16_t             y,
+      0             // uint8_t             left_pad
+    );
+    xcb_flush(MConnection);
+  }
+
+  //----------
 
   void blitDrawable(int32_t ADstX, int32_t ADstY, xcb_drawable_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {
     xcb_copy_area(
@@ -477,6 +445,7 @@ private: // connection
 
   bool initConntection(const char* ADisplayName=nullptr) {
     //MConnection = xcb_connect(ADisplayName,&MDefaultScreen);
+    //XInitThreads();
     MDisplay = XOpenDisplay(ADisplayName);
     MConnection = XGetXCBConnection(MDisplay);
     XSetEventQueueOwner(MDisplay,XCBOwnsEventQueue);
@@ -486,8 +455,8 @@ private: // connection
   //----------
 
   void cleanupConnection() {
-    XCloseDisplay(MDisplay);
     //xcb_disconnect(MConnection);
+    XCloseDisplay(MDisplay);
     MConnection = nullptr;
   }
 
@@ -654,6 +623,45 @@ private: // window
         ptr
       );
     }
+  }
+
+//------------------------------
+private: // xcb hierarchy
+//------------------------------
+
+  xcb_window_t getXcbParent() {
+    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
+    xcb_query_tree_reply_t* reply = xcb_query_tree_reply(MConnection,cookie,nullptr);
+    xcb_window_t parent = reply->parent;
+    free(reply);
+    return parent;
+  }
+
+  //----------
+
+  uint32_t getXcbChildCount() {
+    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
+    xcb_query_tree_reply_t* reply;
+    if ((reply = xcb_query_tree_reply(MConnection,cookie,nullptr))) {
+      int num_children = xcb_query_tree_children_length(reply);
+      free(reply);
+      return num_children;
+    }
+    return 0;
+  }
+
+  //----------
+
+  uint32_t getXcbChild(uint32_t AIndex) {
+    xcb_query_tree_cookie_t cookie = xcb_query_tree(MConnection,MWindow);
+    xcb_query_tree_reply_t* reply;
+    if ((reply = xcb_query_tree_reply(MConnection,cookie,nullptr))) {
+      xcb_window_t *children = xcb_query_tree_children(reply);
+      xcb_window_t child = children[AIndex];
+      free(reply);
+      return child;
+    }
+    return 0;
   }
 
 //------------------------------

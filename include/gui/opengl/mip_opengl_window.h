@@ -1,10 +1,10 @@
-#ifndef mip_gl_window_included
-#define mip_gl_window_included
+#ifndef mip_opengl_window_included
+#define mip_opengl_window_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
 
-#include "gui/gl/mip_gl.h"
+#include "gui/opengl/mip_opengl.h"
 #include "gui/xlib/mip_xlib.h"
 #include "gui/xcb/mip_xcb.h"
 #include "gui/xcb/mip_xcb_window.h"
@@ -17,11 +17,11 @@ typedef GLXContext (*glXCreateContextAttribsARBFUNC)(Display*, GLXFBConfig, GLXC
 
 //----------------------------------------------------------------------
 
-class MIP_GlWindow
+class MIP_OpenGLWindow
 : public MIP_XcbWindow {
 
 //------------------------------
-public:
+protected:
 //------------------------------
 
   GLXContext  MGlxContext = nullptr;
@@ -30,52 +30,52 @@ public:
 public:
 //------------------------------
 
-  MIP_GlWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  MIP_OpenGLWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
   : MIP_XcbWindow(AWidth,AHeight,AEmbedded) {
-    initGl();
+    initOpenGL();
   }
 
   //----------
 
-  virtual ~MIP_GlWindow() {
-    cleanupGl();
+  virtual ~MIP_OpenGLWindow() {
+    cleanupOpenGL();
   }
 
 //------------------------------
-public:
+protected:
 //------------------------------
 
-  bool initGl() {
-    int numFBC = 0;
+  bool initOpenGL() {
     GLint visualAtt[] = {
-      GLX_RENDER_TYPE, GLX_RGBA_BIT,
-      GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-      GLX_DOUBLEBUFFER, True,
-      GLX_RED_SIZE, 1,
-      GLX_GREEN_SIZE, 1,
-      GLX_BLUE_SIZE, 1,
-      GLX_DEPTH_SIZE, 1,
-      GLX_STENCIL_SIZE, 1,
+      GLX_RENDER_TYPE,    GLX_RGBA_BIT,
+      GLX_DRAWABLE_TYPE,  GLX_WINDOW_BIT,
+      GLX_DOUBLEBUFFER,   True,
+      GLX_RED_SIZE,       8,  // 1,
+      GLX_GREEN_SIZE,     8,  // 1,
+      GLX_BLUE_SIZE,      8,  // 1,
+      GLX_DEPTH_SIZE,     24, // 1,
+      GLX_STENCIL_SIZE,   8,  // 1,
       None
     };
-    GLXFBConfig *fbc = glXChooseFBConfig(MDisplay, DefaultScreen(MDisplay), visualAtt, &numFBC);
+    int numFBC = 0;
+    GLXFBConfig* fbc = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),visualAtt,&numFBC);
     if (!fbc) {
       MIP_Print("Unable to get framebuffer\n");
       return false;
     }
-    glXCreateContextAttribsARBFUNC glXCreateContextAttribsARB = (glXCreateContextAttribsARBFUNC) glXGetProcAddress((const GLubyte *) "glXCreateContextAttribsARB");
+    glXCreateContextAttribsARBFUNC glXCreateContextAttribsARB = (glXCreateContextAttribsARBFUNC)glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
     if (!glXCreateContextAttribsARB) {
       MIP_Print("Unable to get proc glXCreateContextAttribsARB\n");
       XFree(fbc);
       return false;
     }
     static int contextAttribs[] = {
-      GLX_CONTEXT_MAJOR_VERSION_ARB, 4,
-      GLX_CONTEXT_MINOR_VERSION_ARB, 5,
-      GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+      GLX_CONTEXT_MAJOR_VERSION_ARB,  MIP_OPENGL_MAJOR, //4,
+      GLX_CONTEXT_MINOR_VERSION_ARB,  MIP_OPENGL_MINOR, //5,
+      GLX_CONTEXT_PROFILE_MASK_ARB,   GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
       None
     };
-    MGlxContext = glXCreateContextAttribsARB(MDisplay, *fbc, NULL, True, contextAttribs);
+    MGlxContext = glXCreateContextAttribsARB(MDisplay,*fbc,nullptr,True,contextAttribs);
     XFree(fbc);
     if (!MGlxContext) {
       MIP_Print("Unable to create OpenGL context\n");
@@ -83,7 +83,7 @@ public:
     }
     glXMakeCurrent(MDisplay,MWindow,MGlxContext);
     if (!sogl_loadOpenGL()) {
-      const char **failures = sogl_getFailures();
+      const char** failures = sogl_getFailures();
       while (*failures) {
         MIP_Print("sogl_loadOpenGL failed: %s\n", *failures);
         failures++;
@@ -94,10 +94,12 @@ public:
 
   //----------
 
-  void cleanupGl() {
+  void cleanupOpenGL() {
   }
 
-  //----------
+//------------------------------
+public:
+//------------------------------
 
   void makeCurrent() {
     glXMakeCurrent(MDisplay,MWindow,MGlxContext);
