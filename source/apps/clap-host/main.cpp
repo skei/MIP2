@@ -137,7 +137,11 @@ int main(int argc, char** argv) {
   arg_block_size        = arg_parser.getArgInt(                  "-b",   "--block_size");
   arg_num_audio_inputs  = arg_parser.getArgInt(                  "-c",   "--channels");
   arg_num_audio_outputs = arg_parser.getArgIntAfterSymbol( ':',  "-c",   "--channels");
-  arg_tempo             = arg_parser.getArgFloat(                "-t",   "--tempo");
+    
+  if (arg_parser.hasOption("-t","--tempo")) {
+    arg_tempo             = arg_parser.getArgFloat(                "-t",   "--tempo");
+  }
+      
   arg_decay_seconds     = arg_parser.getArgFloat(                "-d",   "--decay-seconds");
 
   arg_list_plugins      = arg_parser.hasOption(                  "-pl",  "--list-plugins");
