@@ -76,10 +76,10 @@ public: // window listener
     glClear(GL_COLOR_BUFFER_BIT);
     NVGcontext* nvg = MWindow->getNvgContext();
     nvgBeginFrame(nvg,MWindow->getWidth(),MWindow->getHeight(),1.0);
-    nvgBeginPath(nvg);
-    nvgCircle(nvg,200,200,150);
-    nvgFillColor(nvg,nvgRGB(255,255,255));
-    nvgFill(nvg);
+      nvgBeginPath(nvg);
+      nvgCircle(nvg,200,200,150);
+      nvgFillColor(nvg,nvgRGB(255,255,255));
+      nvgFill(nvg);
     nvgEndFrame(nvg);
     MWindow->swapBuffers(); // screen not updated without this
   }

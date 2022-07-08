@@ -2,19 +2,17 @@
 #define mip_opengl_window_included
 //----------------------------------------------------------------------
 
-// https://www.khronos.org/opengl/wiki/Tutorial:_OpenGL_3.0_Context_Creation_(GLX)
+//https://www.khronos.org/registry/OpenGL/specs/gl/glx1.4.pdf
 
 #include "mip.h"
 
 #include "gui/opengl/mip_opengl.h"
+#include "gui/opengl/mip_opengl_utils.h"
 #include "gui/xlib/mip_xlib.h"
 #include "gui/xcb/mip_xcb.h"
 #include "gui/xcb/mip_xcb_window.h"
 
 //----------------------------------------------------------------------
-
-#include <GL/gl.h>
-#include <GL/glx.h>
 
 typedef GLXContext (*glXCreateContextAttribsARBFUNC)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
 
@@ -90,48 +88,113 @@ protected:
 
     // https://www.ibm.com/docs/en/aix/7.1?topic=environment-glxgetfbconfigattrib-subroutine#glxgetfbconfigattrib
 
+    /*
+      GLX FBCONFIG ID             XID       XID of GLXFBConfig
+      GLX BUFFER SIZE             integer   depth of the color buffer
+      GLX LEVEL                   integer   frame buffer level
+      GLX DOUBLEBUFFER            boolean   True if color buffers have front/back pairs
+      GLX STEREO                  boolean   True if color buffers have left/right pairs
+      GLX AUX BUFFERS             integer   no. of auxiliary color buffers
+      GLX RED SIZE                integer   no. of bits of Red in the color buffer
+      GLX GREEN SIZE              integer   no. of bits of Green in the color buffer
+      GLX BLUE SIZE               integer   no. of bits of Blue in the color buffer
+      GLX ALPHA SIZE              integer   no. of bits of Alpha in the color buffer
+      GLX DEPTH SIZE              integer   no. of bits in the depth buffer
+      GLX STENCIL SIZE            integer   no. of bits in the stencil buffer
+      GLX ACCUM RED SIZE          integer   no. Red bits in the accum. buffer
+      GLX ACCUM GREEN SIZE        integer   no. Green bits in the accum. buffer
+      GLX ACCUM BLUE SIZE         integer   no. Blue bits in the accum. buffer
+      GLX ACCUM ALPHA SIZE        integer   no. of Alpha bits in the accum. buffer
+      GLX SAMPLE BUFFERS          integer   number of multisample buffers
+      GLX SAMPLES                 integer   number of samples per pixel
+      GLX RENDER TYPE             bitmask   which rendering modes are supported.
+      GLX DRAWABLE TYPE           bitmask   which GLX drawables are supported.
+      GLX X RENDERABLE            boolean   True if X can render to drawable
+      GLX X VISUAL TYPE           integer   X visual type of the associated visual
+      GLX CONFIG CAVEAT           enum      any caveats for the configuration
+      GLX TRANSPARENT TYPE        enum      type of transparency supported
+      GLX TRANSPARENT INDEX VALUE integer   transparent index value
+      GLX TRANSPARENT RED VALUE   integer   transparent red value
+      GLX TRANSPARENT GREEN VALUE integer   transparent green value
+      GLX TRANSPARENT BLUE VALUE  integer   transparent blue value
+      GLX TRANSPARENT ALPHA VALUE integer   transparent alpha value
+      GLX MAX PBUFFER WIDTH       integer   maximum width of GLXPbuffer
+      GLX MAX PBUFFER HEIGHT      integer   maximum height of GLXPbuffer
+      GLX MAX PBUFFER PIXELS      integer   maximum size of GLXPbuffer
+      GLX VISUAL ID               integer   XID of corresponding Visual
+    */
+
+    /*
+      GLX_X_VISUAL_TYPE
+        GLX_TRUE_COLOR    TrueColor             0x8002
+        GLX_DIRECT_COLOR  DirectColor           0x8003
+        GLX_PSEUDO_COLOR  PseudoColor           0x8004
+        GLX_STATIC_COLOR  StaticColor           0x8005
+        GLX_GRAY_SCALE    GrayScale             0x8006
+        GLX_STATIC_GRAY   StaticGray            0x8007
+        GLX_X_VISUAL_TYPE No Associated Visual  0x0022
+      */
+
+    /*
+      GLX_DRAWABLE_TYPE
+        GLX_WINDOW_BIT, GLX Windows are supported.    0x01
+        GLX_PIXMAP_BIT  GLX Pixmaps are supported.    0x02
+        GLX_PBUFFER_BIT GLX Pbuffers are supported.   0x04
+    */
+
+    /*
+      GLX_RENDER_TYPE
+        GLX_RGBA_BIT        RGBA rendering supported.         0x01
+        GLX_COLOR_INDEX_BIT Color index rendering supported.  0x02
+    */
+
     GLint visualAtt[] = {
-      //GLX_X_RENDERABLE,   True,
-      //GLX_X_VISUAL_TYPE,  GLX_TRUE_COLOR,
-      GLX_DRAWABLE_TYPE,  GLX_WINDOW_BIT, // WINDOW, PIXMAP, PBUFFER
+      GLX_X_RENDERABLE,   True,
+      GLX_X_VISUAL_TYPE,  GLX_TRUE_COLOR,
+      GLX_DRAWABLE_TYPE,  GLX_WINDOW_BIT,
       GLX_RENDER_TYPE,    GLX_RGBA_BIT,
+      GLX_BUFFER_SIZE,    24,
       GLX_DOUBLEBUFFER,   True,
       GLX_RED_SIZE,       8,
       GLX_GREEN_SIZE,     8,
       GLX_BLUE_SIZE,      8,
-      //GLX_ALPHA_SIZE,     8, // window can't have alpha
-      //GLX_STENCIL_SIZE,   1,    // nanovg needs stencil
-      //GLX_DEPTH_SIZE,   24,
-      //GLX_SAMPLE_BUFFERS, 1,
-      //GLX_SAMPLES,        4,
+      //GLX_ALPHA_SIZE,     0,  // window can't have alpha
+      GLX_STENCIL_SIZE,   1,  // nanovg needs stencil?
+      //GLX_DEPTH_SIZE,     24,
+      GLX_SAMPLE_BUFFERS, True,
+      //GLX_SAMPLES,        2,
       None
     };
 
-    int numFBC;
-    GLXFBConfig* fbc = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),visualAtt,&numFBC);
+    int num_fbc;
+    GLXFBConfig* fbc = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),visualAtt,&num_fbc);
     MIP_Assert(fbc);
+
+    MIP_Print("found %i fbc\n",num_fbc);
+    //MIP_printFBConfigs(MDisplay,fbc,num_fbc);
+
+    //MIP_Print("MScreenVisual %i\n",MScreenVisual);
 
     //----- find best fbc -----
 
-    //GLXFBConfig selected_fbc = fbc[0];
+    GLXFBConfig selected_fbc = fbc[0];
+    //GLXFBConfig selected_fbc = fbc[num_fbc - 1];
 
     /*
-    for (int i=0; i<numFBC; i++) {
+    int selected_samples  = -1;
+    for (int i=0; i<num_fbc; i++) {
       //XVisualInfo* vi = glXGetVisualFromFBConfig(MDisplay,fbc[i]);
-      //if (vi) {
-        int samp_buf;
-        int samples;
-        glXGetFBConfigAttrib( MDisplay, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf );
-        glXGetFBConfigAttrib( MDisplay, fbc[i], GLX_SAMPLES       , &samples  );
-        MIP_Print("%i. samp_buf %i samples %i\n",i,samp_buf,samples);
-        if ((samp_buf > 0) && (samples == 8)) {
-          best_fbc = fbc[i];
-          //break;
-        }
-      //}
       //XFree(vi);
+      int samples;
+      glXGetFBConfigAttrib( MDisplay, fbc[i], GLX_SAMPLES, &samples);
+      if (samples > selected_samples) {
+        selected_fbc = fbc[i];
+        selected_samples = samples;
+      }
     }
     */
+
+    MIP_Print("selected_fbc %i\n",selected_fbc);
 
     //----- get create context function -----
 
@@ -151,13 +214,14 @@ protected:
     //----- create context -----
 
     static int contextAttribs[] = {
-      GLX_CONTEXT_MAJOR_VERSION_ARB,  MIP_OPENGL_MAJOR, //4,
-      GLX_CONTEXT_MINOR_VERSION_ARB,  MIP_OPENGL_MINOR, //5,
+      GLX_CONTEXT_MAJOR_VERSION_ARB,  MIP_OPENGL_MAJOR,
+      GLX_CONTEXT_MINOR_VERSION_ARB,  MIP_OPENGL_MINOR,
       GLX_CONTEXT_PROFILE_MASK_ARB,   GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
       None
     };
 
-    MGlxContext = glXCreateContextAttribsARB(MDisplay,*fbc,nullptr,True,contextAttribs);
+    //MGlxContext = glXCreateContextAttribsARB(MDisplay,*fbc,nullptr,True,contextAttribs);
+    MGlxContext = glXCreateContextAttribsARB(MDisplay,selected_fbc,nullptr,True,contextAttribs);
     MIP_Assert(MGlxContext);
 
     XFree(fbc);

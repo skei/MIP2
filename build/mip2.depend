@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1657294954 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+1657302699 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
 	"../source/test/test_opengl.cpp"
 
 1656972879 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
@@ -344,7 +344,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 
-1657280994 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1657296398 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"gui/xcb/mip_xcb.h"
 	"gui/xcb/mip_xcb_utils.h"
 	"gui/xlib/mip_xlib.h"
@@ -440,23 +440,24 @@
 1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg_gl_utils.h
 	<OpenGL/glext.h>
 
-1657288683 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl.h
+1657299803 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl.h
 	"mip.h"
 	"extern/simple-opengl-loader.h"
+	<GL/gl.h>
+	<GL/glx.h>
 
 1657279079 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg_window.h
 	"mip.h"
 	"gui/opengl/mip_opengl_window.h"
 	"gui/nanovg/mip_nanovg.h"
 
-1657295166 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_window.h
+1657306647 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_window.h
 	"mip.h"
 	"gui/opengl/mip_opengl.h"
+	"gui/opengl/mip_opengl_utils.h"
 	"gui/xlib/mip_xlib.h"
 	"gui/xcb/mip_xcb.h"
 	"gui/xcb/mip_xcb_window.h"
-	<GL/gl.h>
-	<GL/glx.h>
 
 1657226108 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg.h
 	"mip.h"
@@ -691,7 +692,7 @@
 	"base/types/mip_array.h"
 	"plugin/clap/mip_clap.h"
 
-1657281090 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
+1657302387 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
 	"mip.h"
 	"plugin/clap/mip_clap.h"
 	"gui/mip_window.h"
@@ -736,7 +737,11 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
 
-1657281369 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1657298792 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"gui/nanovg/mip_nanovg_window.h"
+
+1657305100 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_utils.h
+	"mip.h"
+	"gui/opengl/mip_opengl.h"
 

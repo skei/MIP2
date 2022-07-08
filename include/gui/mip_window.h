@@ -38,29 +38,23 @@ public:
 public:
 //------------------------------
 
+  /*
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     MIP_Print("Mwidth %i MHeight %i\n",getWidth(),getHeight());
-
-    // crashes without this..
-    makeCurrent();
-
-//    glViewport(0,0,getWidth(),getHeight());
-
+    makeCurrent(); // crashes without this..
+    //glViewport(0,0,getWidth(),getHeight());
     glClearColor(1,1,1,1);
     glClear(GL_COLOR_BUFFER_BIT);
-
-//    NVGcontext* nvg = getNvgContext();
-//    nvgBeginFrame(nvg,getWidth(),getHeight(),1.0);
-//    nvgBeginPath(nvg);
-//    nvgCircle(nvg,200,200,150);
-//    nvgFillColor(nvg,nvgRGB(255,255,255));
-//    nvgFill(nvg);
-//    nvgEndFrame(nvg);
-
-    // screen not updated without this
-//    swapBuffers();
-
+    //NVGcontext* nvg = getNvgContext();
+    //nvgBeginFrame(nvg,getWidth(),getHeight(),1.0);
+    //nvgBeginPath(nvg);
+    //nvgCircle(nvg,200,200,150);
+    //nvgFillColor(nvg,nvgRGB(255,255,255));
+    //nvgFill(nvg);
+    //nvgEndFrame(nvg);
+    //swapBuffers(); // screen not updated without this
   }
+  */
 
 };
 
