@@ -146,6 +146,7 @@ protected:
     */
 
     glXCreateContextAttribsARBFUNC glXCreateContextAttribsARB = (glXCreateContextAttribsARBFUNC)glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
+    MIP_Assert(glXCreateContextAttribsARB);
 
     //----- create context -----
 
@@ -157,11 +158,8 @@ protected:
     };
 
     MGlxContext = glXCreateContextAttribsARB(MDisplay,*fbc,nullptr,True,contextAttribs);
-    //MGlxContext = glXCreateContextAttribsARB(MDisplay,selected_fbc,nullptr,True,contextAttribs);
+    MIP_Assert(MGlxContext);
 
-    //
-
-    // we don't need this anymore
     XFree(fbc);
 
     //----- make context current -----
