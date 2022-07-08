@@ -18,7 +18,7 @@ public:
   virtual void on_window_close() {}
   virtual void on_window_move(int32_t AXpos, int32_t AYpos) {}
   virtual void on_window_resize(int32_t AWidth, int32_t AHeight) {}
-  virtual void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
+  virtual void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) { MIP_PRINT; }
   virtual void on_window_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_window_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_window_mouse_press(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) {}
@@ -52,7 +52,7 @@ private:
   bool                        MWindowMapped                 = false;
   bool                        MWindowExposed                = false;
 
-  MIP_WindowListener*         MListener                     = nullptr;
+  MIP_WindowListener*         MListener                     = this;//nullptr;
   bool                        MFillBackground               = false;
   uint32_t                    MBackgroundColor              = 0x808080;
 
@@ -93,7 +93,7 @@ private:
 public:
 //------------------------------
 
-  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
+  MIP_XcbWindow(/*MIP_WindowListener* AListener,*/ uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
     MListener = this;
     initConntection(nullptr);
     initScreen();
@@ -124,6 +124,9 @@ public:
 public:
 //------------------------------
 
+  bool isExposed() { return MWindowExposed; }
+  bool isMapped() { return MWindowMapped; }
+
   int32_t getWidth() { return MWindowWidth; }
   int32_t getHeight() { return MWindowHeight; }
 
@@ -131,6 +134,10 @@ public:
   void setBackgroundColor(uint32_t AColor) { MBackgroundColor = AColor; }
 
   void setListener(MIP_WindowListener* AListener) { MListener = AListener; }
+
+  //void paint() {
+  //  if (MListener) MListener->on_window_paint(0,0,MWindowWidth,MWindowHeight);
+  //}
 
 //------------------------------
 public: // window
@@ -456,6 +463,7 @@ private: // connection
 
   void cleanupConnection() {
     //xcb_disconnect(MConnection);
+    XSetEventQueueOwner(MDisplay,XlibOwnsEventQueue);
     XCloseDisplay(MDisplay);
     MConnection = nullptr;
   }
@@ -1007,10 +1015,11 @@ private: // events
       while (window->MEventThreadActive) {
         xcb_generic_event_t* event = xcb_wait_for_event(connection);
         if (event) {
-          window->processEvent(event);
-          //if (window->processEvent(event)) {
-          //  return nullptr;
-          //}
+          //window->processEvent(event);
+          if (window->processEvent(event)) {
+            //MIP_Print("quit\n");
+            return nullptr;
+          }
         }
       }
     }

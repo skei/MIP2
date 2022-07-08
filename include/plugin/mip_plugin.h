@@ -64,6 +64,8 @@ protected:
   //MIP_VoiceManager
 
   MIP_Editor*                     MEditor           = {};
+  uint32_t                        MEditorWidth      = 512;
+  uint32_t                        MEditorHeight     = 512;
 
   uint32_t                        MSelectedAudioPortsConfig = 0;
   int32_t                         MRenderMode               = CLAP_RENDER_REALTIME;
@@ -311,7 +313,7 @@ public: // EXT gui
   //----------
 
   bool gui_create(const char *api, bool is_floating) override {
-    MEditor = new MIP_Editor(this);
+    MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
     return true;
   }
 

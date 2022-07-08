@@ -5,6 +5,9 @@
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 
+//#include "gui/nanovg/mip_nanovg_window.h"
+#include "gui/mip_window.h"
+
 //----------------------------------------------------------------------
 
 class MIP_EditorListener {
@@ -19,28 +22,38 @@ public:
 //
 //----------------------------------------------------------------------
 
-class MIP_Editor {
+class MIP_Editor
+: public MIP_WindowListener {
 
 //------------------------------
 private:
 //------------------------------
 
-  MIP_EditorListener* MListener = nullptr;
-  uint32_t            MWidth    = 640;
-  uint32_t            MHeight   = 480;
-  double              MScale    = 1.0;
+  MIP_EditorListener* MListener     = nullptr;
+  MIP_Window*         MWindow       = nullptr;
+  uint32_t            MWidth        = 256;
+  uint32_t            MHeight       = 256;
+  double              MScale        = 1.0;
+  bool                MIsWindowOpen = false;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Editor(MIP_EditorListener* AListener) {
+  MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight) {
     MListener = AListener;
+    MWidth = AWidth;
+    MHeight = AHeight;
+    MWindow = new MIP_Window(/*this,*/MWidth,MHeight,true);
+    MWindow->setListener(this);
+    //MWindow->setFillBackground();
   }
 
   //----------
 
   virtual ~MIP_Editor() {
+    if (MIsWindowOpen) hide();
+    delete MWindow;
   }
 
 //------------------------------
@@ -49,6 +62,26 @@ public:
 
   void updateParameter(uint32_t AIndex, double AValue, bool ARedraw=true) {
     // if index -> connected.. set value, redraw
+  }
+
+//------------------------------
+public: // window listener
+//------------------------------
+
+  void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    MIP_Print("Mwidth %i MHeight %i\n",MWidth,MHeight);
+    MWindow->makeCurrent(); // crashes without this..
+    glViewport(0,0,MWindow->getWidth(),MWindow->getHeight());
+    glClearColor(1,1,1,1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    NVGcontext* nvg = MWindow->getNvgContext();
+    nvgBeginFrame(nvg,MWindow->getWidth(),MWindow->getHeight(),1.0);
+    nvgBeginPath(nvg);
+    nvgCircle(nvg,200,200,150);
+    nvgFillColor(nvg,nvgRGB(255,255,255));
+    nvgFill(nvg);
+    nvgEndFrame(nvg);
+    MWindow->swapBuffers(); // screen not updated without this
   }
 
 //------------------------------
@@ -67,43 +100,57 @@ public:
   }
 
   virtual bool can_resize() {
-    return false;
+    return true;
   }
 
   virtual bool get_resize_hints(clap_gui_resize_hints_t *hints) {
-    hints->can_resize_horizontally  = false;
-    hints->can_resize_vertically    = false;
-    hints->aspect_ratio_width       = 1.0;
-    hints->aspect_ratio_height      = 1.0;
-    hints->preserve_aspect_ratio    = true;
-    return false;
+    hints->can_resize_horizontally  = true;
+    hints->can_resize_vertically    = true;
+    hints->aspect_ratio_width       = 16;
+    hints->aspect_ratio_height      = 9;
+    hints->preserve_aspect_ratio    = false;
+    return true;
   }
 
   virtual bool adjust_size(uint32_t *width, uint32_t *height) {
+    //*width = MWidth;
+    //*height = MHeight;
+    //return true;
     return false;
   }
 
   virtual bool set_size(uint32_t width, uint32_t height) {
-    return false;
+    MWidth = width;
+    MHeight = height;
+    MWindow->setSize(MWidth,MHeight);
+    return true;
   }
 
   virtual bool set_parent(const clap_window_t *window) {
-    return false;
+    MWindow->reparent(window->x11);
+    return true;
   }
 
   virtual bool set_transient(const clap_window_t *window) {
-    return false;
+    return true;
   }
 
   virtual void suggest_title(const char *title) {
+    MWindow->setTitle(title);
   }
 
   virtual bool show() {
-    return false;
+    MWindow->open();
+    MWindow->startEventThread();
+    MIsWindowOpen = true;
+    return true;
   }
 
   virtual bool hide() {
-    return false;
+    MIsWindowOpen = false;
+    MWindow->stopEventThread();
+    MWindow->close();
+    return true;
   }
 
 };

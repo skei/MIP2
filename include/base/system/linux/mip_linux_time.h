@@ -2,6 +2,7 @@
 #define mip_linux_time_included
 //----------------------------------------------------------------------
 
+// link to librt:
 // -lrt
 
 #include <time.h>     // timer

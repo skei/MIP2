@@ -1,8 +1,12 @@
 
 #include "mip.h"
+#include "base/system/mip_time.h"
 #include "base/system/mip_timer.h"
 #include "gui/opengl/mip_opengl.h"
 #include "gui/nanovg/mip_nanovg_window.h"
+
+#include "plugin/mip_editor.h"
+#include "gui/opengl/mip_opengl.h"
 
 //----------------------------------------------------------------------
 
@@ -52,7 +56,6 @@ class myWindow
 private:
 //------------------------------
 
-
   GLuint              MVertexArray    = 0;
   GLuint              MPosBuffer      = 0;
   GLuint              MColBuffer      = 0;
@@ -67,8 +70,9 @@ private:
 public:
 //------------------------------
 
-  myWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
-  : MIP_NanoVGWindow(AWidth,AHeight,AEmbedded) {
+  myWindow(/*MIP_WindowListener* AListener,*/ uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  : MIP_NanoVGWindow(/*AListener,*/AWidth,AHeight,AEmbedded) {
+    MIP_PRINT;
     setTitle("MIP_NanoVGWindow");
     setupTriangle();
     MBuffer = createFrameBuffer(AWidth,AHeight);
@@ -185,18 +189,27 @@ public: // window listener
 //------------------------------
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) final {
-    //MIP_Print("x:%i y:%i w:%i h:%i\n",AXpos,AYpos,AWidth,AHeight);
+    MIP_Print("x:%i y:%i w:%i h:%i\n",AXpos,AYpos,AWidth,AHeight);
+
+    makeCurrent();
 
     glViewport(0,0,getWidth(),getHeight());
+    MIP_OPENGL_ERROR_CHECK;
+
     glClearColor(0.3, 0.3, 0.3, 1.0);
+    MIP_OPENGL_ERROR_CHECK;
+
+    //glStencilMask(~0);
+    //glDisable(GL_SCISSOR_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
+    MIP_OPENGL_ERROR_CHECK;
 
     nvgBeginFrame(MNvgContext,getWidth(),getHeight(),1.0);
     renderBuffer();
     renderNanoVG();
     nvgEndFrame(MNvgContext);
-
     swapBuffers();
+    MIP_OPENGL_ERROR_CHECK;
   }
 
 //------------------------------
@@ -231,8 +244,16 @@ public: // timer
 
 int main() {
   myWindow* window = new myWindow(640,480);
+  //MIP_NanoVGWindow* window = new MIP_NanoVGWindow(640,480);
   window->open();
+
   window->eventLoop();
+
+  //window->startEventThread();
+  //window->paint();
+  //MIP_Sleep(5 * 1000);
+  //window->stopEventThread();
+
   window->close();
   delete window;
   return 0;

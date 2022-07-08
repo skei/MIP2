@@ -22,8 +22,8 @@ protected:
 public:
 //------------------------------
 
-  MIP_NanoVGWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
-  : MIP_OpenGLWindow(AWidth,AHeight,AEmbedded) {
+  MIP_NanoVGWindow(/*MIP_WindowListener* AListener,*/ uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  : MIP_OpenGLWindow(/*AListener,*/AWidth,AHeight,AEmbedded) {
     initNanoVG();
   }
 
@@ -37,8 +37,12 @@ public:
 public:
 //------------------------------
 
+  NVGcontext* getNvgContext() {return MNvgContext; }
+
   bool initNanoVG() {
+    MIP_PRINT;
     MNvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+    MIP_Assert(MNvgContext);
     nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
     return true;
   }
