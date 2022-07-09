@@ -1,3 +1,5 @@
+#if 0
+
 #ifndef mip_opengl_window_included
 #define mip_opengl_window_included
 //----------------------------------------------------------------------
@@ -14,7 +16,7 @@
 
 //----------------------------------------------------------------------
 
-typedef GLXContext (*glXCreateContextAttribsARBFUNC)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+//typedef GLXContext (*glXCreateContextAttribsARBFUNC)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
 
 //----------------------------------------------------------------------
 
@@ -43,6 +45,22 @@ public:
   }
 
 //------------------------------
+public:
+//------------------------------
+
+  void beginPaint() override  {
+    MIP_XcbWindow::beginPaint();
+    makeCurrent();
+  }
+
+  //----------
+
+  void endPaint() override  {
+    swapBuffers();
+    MIP_XcbWindow::endPaint();
+  }
+
+//------------------------------
 protected:
 //------------------------------
 
@@ -57,8 +75,8 @@ protected:
 
     //----- glx version -----
 
-    int glx_major, glx_minor;
     // FBConfigs were added in GLX version 1.3.
+    int glx_major, glx_minor;
     glXQueryVersion(MDisplay,&glx_major,&glx_minor);
     MIP_Print("glx version: %i.%i\n",glx_major,glx_minor);
 
@@ -149,11 +167,11 @@ protected:
     */
 
     GLint visualAtt[] = {
-      GLX_X_RENDERABLE,   True,
+      //GLX_X_RENDERABLE,   True,
       GLX_X_VISUAL_TYPE,  GLX_TRUE_COLOR,
       GLX_DRAWABLE_TYPE,  GLX_WINDOW_BIT,
       GLX_RENDER_TYPE,    GLX_RGBA_BIT,
-      GLX_BUFFER_SIZE,    24,
+      //GLX_BUFFER_SIZE,    24,
       GLX_DOUBLEBUFFER,   True,
       GLX_RED_SIZE,       8,
       GLX_GREEN_SIZE,     8,
@@ -161,7 +179,7 @@ protected:
       //GLX_ALPHA_SIZE,     0,  // window can't have alpha
       GLX_STENCIL_SIZE,   1,  // nanovg needs stencil?
       //GLX_DEPTH_SIZE,     24,
-      GLX_SAMPLE_BUFFERS, True,
+      //GLX_SAMPLE_BUFFERS, True,
       //GLX_SAMPLES,        2,
       None
     };
@@ -169,16 +187,10 @@ protected:
     int num_fbc;
     GLXFBConfig* fbc = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),visualAtt,&num_fbc);
     MIP_Assert(fbc);
-
-    MIP_Print("found %i fbc\n",num_fbc);
+    MIP_Print("found %i fb configs\n",num_fbc);
     //MIP_printFBConfigs(MDisplay,fbc,num_fbc);
 
-    //MIP_Print("MScreenVisual %i\n",MScreenVisual);
-
     //----- find best fbc -----
-
-    GLXFBConfig selected_fbc = fbc[0];
-    //GLXFBConfig selected_fbc = fbc[num_fbc - 1];
 
     /*
     int selected_samples  = -1;
@@ -194,18 +206,23 @@ protected:
     }
     */
 
+    GLXFBConfig selected_fbc = fbc[0]; // fbc[num_fbc - 1];
     MIP_Print("selected_fbc %i\n",selected_fbc);
+
+    //XVisualInfo* vi = glXGetVisualFromFBConfig(MDisplay,selected_fbc);
+
 
     //----- get create context function -----
 
     /*
-    // Get the default screen's GLX extension list
-    const char *glxExts = glXQueryExtensionsString( display, DefaultScreen( display ) );
-    // NOTE: It is not necessary to create or make current to a context before
-    // calling glXGetProcAddressARB
-    glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
-    glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
-    GLXContext ctx = 0;
+      // NOTE: It is not necessary to create or make current to a context before
+      // calling glXGetProcAddressARB
+
+      // Get the default screen's GLX extension list
+      const char *glxExts = glXQueryExtensionsString( display, DefaultScreen( display ) );
+      glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
+      glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc)glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
+      GLXContext ctx = 0;
     */
 
     glXCreateContextAttribsARBFUNC glXCreateContextAttribsARB = (glXCreateContextAttribsARBFUNC)glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
@@ -232,6 +249,7 @@ protected:
 
     //----- load opengl functions -----
 
+    // should this be done per window/context, or once per program/library?
     if (!sogl_loadOpenGL()) {
       MIP_Print("sogl_loadOpenGL failed!\n");
       const char** failures = sogl_getFailures();
@@ -249,6 +267,7 @@ protected:
   //----------
 
   void cleanupOpenGL() {
+    extern void sogl_cleanup();
   }
 
 //------------------------------
@@ -272,3 +291,8 @@ public:
 
 //----------------------------------------------------------------------
 #endif
+
+
+#endif // 0
+
+

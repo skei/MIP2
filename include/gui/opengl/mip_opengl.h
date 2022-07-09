@@ -7,8 +7,8 @@
 //#include <GL/gl.h>
 //#include <GL/glx.h>
 
-#define MIP_OPENGL_MAJOR 4
-#define MIP_OPENGL_MINOR 4
+#define MIP_OPENGL_MAJOR 3
+#define MIP_OPENGL_MINOR 1
 
 //
 

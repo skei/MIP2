@@ -7,10 +7,43 @@
 
 //----------------------------------------------------------------------
 
+
+
+
+//----------
+
+// make context current before calling this
+// should this be done per window/context, or once per program/library?
+
+bool MIP_loadOpenGL() {
+  if (!sogl_loadOpenGL()) {
+    MIP_Print("sogl_loadOpenGL failed!\n");
+    const char** failures = sogl_getFailures();
+    while (*failures) {
+      MIP_Print("%s\n",*failures);
+      failures++;
+    }
+    return false;
+  }
+  return true;
+}
+
+//----------
+
+//void makeCurrent() {
+//  glXMakeCurrent(MDisplay,MWindow,MGlxContext);
+//}
+
+//void swapBuffers() {
+//  glXSwapBuffers(MDisplay,MWindow);
+//}
+
+
+//----------------------------------------------------------------------
+
 // Helper to check for extension string presence. Adapted from:
 // http://www.opengl.org/resources/features/OGLextensions/
 
-//static
 bool isExtensionSupported(const char *extList, const char *extension) {
   const char *start;
   const char *where, *terminator;
@@ -95,58 +128,39 @@ void MIP_printFBConfigs(Display* ADisplay, GLXFBConfig* fbc, int num_fbc) {
       int fbc_max_pbuffer_pixels = -1;
       int fbc_visual_id = -1;
 
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_FBCONFIG_ID             , &fbc_fbconfig_id ); //XID       XID of GLXFBConfig
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_BUFFER_SIZE             , &fbc_buffer_size ); //integer   depth of the color buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_LEVEL                   , &fbc_level ); //integer   frame buffer level
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_DOUBLEBUFFER            , &fbc_doublebuffer ); //boolean   True if color buffers have front/back pairs
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_STEREO                  , &fbc_stereo ); //boolean   True if color buffers have left/right pairs
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_AUX_BUFFERS             , &fbc_aux_buffers ); //integer   no. of auxiliary color buffers
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_RED_SIZE                , &fbc_red_size ); //integer   no. of bits of Red in the color buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_GREEN_SIZE              , &fbc_green_size ); //integer   no. of bits of Green in the color buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_BLUE_SIZE               , &fbc_blue_size ); //integer   no. of bits of Blue in the color buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ALPHA_SIZE              , &fbc_alpha_size ); //integer   no. of bits of Alpha in the color buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_DEPTH_SIZE              , &fbc_depth_size ); //integer   no. of bits in the depth buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_STENCIL_SIZE            , &fbc_stencil_size ); //integer   no. of bits in the stencil buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ACCUM_RED_SIZE          , &fbc_accum_red_size ); //integer   no. Red bits in the accum. buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ACCUM_GREEN_SIZE        , &fbc_accum_green_size ); //integer   no. Green bits in the accum. buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ACCUM_BLUE_SIZE         , &fbc_accum_blue_size ); //integer   no. Blue bits in the accum. buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ACCUM_ALPHA_SIZE        , &fbc_accum_alpha_size ); //integer   no. of Alpha bits in the accum. buffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_SAMPLE_BUFFERS          , &fbc_sample_buffers ); //integer   number of multisample buffers
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_SAMPLES                 , &fbc_samples ); //integer   number of samples per pixel
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_RENDER_TYPE             , &fbc_render_type ); //bitmask   which rendering modes are supported.
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_DRAWABLE_TYPE           , &fbc_drawable_type ); //bitmask   which GLX drawables are supported.
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_X_RENDERABLE            , &fbc_x_renderable ); //boolean   True if X can render to drawable
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_X_VISUAL_TYPE           , &fbc_x_visual_type ); //integer   X visual type of the associated visual
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_CONFIG_CAVEAT           , &fbc_config_caveat ); //enum      any caveats for the configuration
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_TYPE        , &fbc_transparent_type ); //enum      type of transparency supported
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_INDEX_VALUE , &fbc_transparent_index_value ); //integer   transparent index value
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_RED_VALUE   , &fbc_transparent_red_value ); //integer   transparent red value
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_GREEN_VALUE , &fbc_transparent_green_value ); //integer   transparent green value
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_BLUE_VALUE  , &fbc_transparent_blue_value ); //integer   transparent blue value
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_ALPHA_VALUE , &fbc_transparent_alpha_value ); //integer   transparent alpha value
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_MAX_PBUFFER_WIDTH       , &fbc_max_pbuffer_width ); //integer   maximum width of GLXPbuffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_MAX_PBUFFER_HEIGHT      , &fbc_max_pbuffer_height ); //integer   maximum height of GLXPbuffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_MAX_PBUFFER_PIXELS      , &fbc_max_pbuffer_pixels ); //integer   maximum size of GLXPbuffer
-      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_VISUAL_ID               , &fbc_visual_id );                 //integer   XID of corresponding Visual
-
-      /*
-      typedef struct {
-        Visual *visual;
-        VisualID visualid;
-        int screen;
-        int depth;
-        int class;
-        unsigned long red_mask;
-        unsigned long green_mask;
-        unsigned long blue_mask;
-        int colormap_size;
-        int bits_per_rgb;
-      } XVisualInfo;
-      */
-
-      //XVisualInfo* vi = glXGetVisualFromFBConfig(ADisplay,fbc[i]);
-      //  MIP_Print("visualinfo.visualid: %i\n",vi->visualid);
-      //XFree(vi);
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_FBCONFIG_ID             , &fbc_fbconfig_id );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_BUFFER_SIZE             , &fbc_buffer_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_LEVEL                   , &fbc_level );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_DOUBLEBUFFER            , &fbc_doublebuffer );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_STEREO                  , &fbc_stereo );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_AUX_BUFFERS             , &fbc_aux_buffers );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_RED_SIZE                , &fbc_red_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_GREEN_SIZE              , &fbc_green_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_BLUE_SIZE               , &fbc_blue_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ALPHA_SIZE              , &fbc_alpha_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_DEPTH_SIZE              , &fbc_depth_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_STENCIL_SIZE            , &fbc_stencil_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ACCUM_RED_SIZE          , &fbc_accum_red_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ACCUM_GREEN_SIZE        , &fbc_accum_green_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ACCUM_BLUE_SIZE         , &fbc_accum_blue_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_ACCUM_ALPHA_SIZE        , &fbc_accum_alpha_size );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_SAMPLE_BUFFERS          , &fbc_sample_buffers );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_SAMPLES                 , &fbc_samples );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_RENDER_TYPE             , &fbc_render_type );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_DRAWABLE_TYPE           , &fbc_drawable_type );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_X_RENDERABLE            , &fbc_x_renderable );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_X_VISUAL_TYPE           , &fbc_x_visual_type );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_CONFIG_CAVEAT           , &fbc_config_caveat );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_TYPE        , &fbc_transparent_type );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_INDEX_VALUE , &fbc_transparent_index_value );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_RED_VALUE   , &fbc_transparent_red_value );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_GREEN_VALUE , &fbc_transparent_green_value );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_BLUE_VALUE  , &fbc_transparent_blue_value );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_TRANSPARENT_ALPHA_VALUE , &fbc_transparent_alpha_value );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_MAX_PBUFFER_WIDTH       , &fbc_max_pbuffer_width );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_MAX_PBUFFER_HEIGHT      , &fbc_max_pbuffer_height );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_MAX_PBUFFER_PIXELS      , &fbc_max_pbuffer_pixels );
+      glXGetFBConfigAttrib( ADisplay, fbc[i], GLX_VISUAL_ID               , &fbc_visual_id );
 
       MIP_DPrint("FBConfig: %i\n",i);
       MIP_DPrint("  xcb_fbconfig_id:              %i  XID of GLXFBConfig\n", fbc_fbconfig_id  );

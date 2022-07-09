@@ -246,8 +246,12 @@
 		<Unit filename="../include/extern/stb/stb_image.h" />
 		<Unit filename="../include/extern/stb/stb_truetype.h" />
 		<Unit filename="../include/gui/cairo/mip_cairo.h" />
-		<Unit filename="../include/gui/gl/mip_gl.h" />
-		<Unit filename="../include/gui/gl/mip_gl_window.h" />
+		<Unit filename="../include/gui/mip_window.h" />
+		<Unit filename="../include/gui/nanovg/mip_nanovg.h" />
+		<Unit filename="../include/gui/nanovg/mip_nanovg_window.h" />
+		<Unit filename="../include/gui/opengl/mip_opengl.h" />
+		<Unit filename="../include/gui/opengl/mip_opengl_utils.h" />
+		<Unit filename="../include/gui/opengl/mip_opengl_window.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_utils.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_window.h" />
@@ -309,6 +313,10 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/test/test_crtp.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_editor.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

@@ -53,6 +53,22 @@ public:
   }
 
 //------------------------------
+public:
+//------------------------------
+
+  void beginPaint() override  {
+    MIP_OpenGLWindow::beginPaint();
+    nvgBeginFrame(MNvgContext,getWidth(),getHeight(),1.0);
+  }
+
+  //----------
+
+  void endPaint() override  {
+    nvgEndFrame(MNvgContext);
+    MIP_OpenGLWindow::endPaint();
+  }
+
+//------------------------------
 public: // frame buffer
 //------------------------------
 

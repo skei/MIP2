@@ -11,10 +11,12 @@
 //#include "../source/test/test_editor.cpp"
 //#include "../source/test/test_nanogfx.cpp"
 //#include "../source/test/test_nanovg.cpp"
-#include "../source/test/test_opengl.cpp"
+//#include "../source/test/test_opengl.cpp"
 //#include "../source/test/test_opengl2.cpp"
 //#include "../source/test/test_vm.cpp"
-//#include "../source/test/test_window.cpp"
+#include "../source/test/test_window.cpp"
+
+
 
 //----------------------------------------------------------------------
 //

@@ -122,6 +122,7 @@ private:
     glAttachShader(MProgram,MVertexShader);
     glAttachShader(MProgram,MFragmentShader);
     glLinkProgram(MProgram);
+
     int params = -1;
     glGetProgramiv(MProgram,GL_LINK_STATUS,&params);
     if (params != GL_TRUE) {
@@ -191,8 +192,6 @@ public: // window listener
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) final {
     MIP_Print("x:%i y:%i w:%i h:%i\n",AXpos,AYpos,AWidth,AHeight);
 
-    makeCurrent();
-
     glViewport(0,0,getWidth(),getHeight());
     MIP_OPENGL_ERROR_CHECK;
 
@@ -201,15 +200,13 @@ public: // window listener
 
     //glStencilMask(~0);
     //glDisable(GL_SCISSOR_TEST);
+
     glClear(GL_COLOR_BUFFER_BIT);
     MIP_OPENGL_ERROR_CHECK;
 
-    nvgBeginFrame(MNvgContext,getWidth(),getHeight(),1.0);
     renderBuffer();
     renderNanoVG();
-    nvgEndFrame(MNvgContext);
-    swapBuffers();
-    MIP_OPENGL_ERROR_CHECK;
+
   }
 
 //------------------------------
@@ -244,7 +241,6 @@ public: // timer
 
 int main() {
   myWindow* window = new myWindow(640,480);
-  //MIP_NanoVGWindow* window = new MIP_NanoVGWindow(640,480);
   window->open();
 
   window->eventLoop();

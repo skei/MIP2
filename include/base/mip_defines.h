@@ -66,6 +66,8 @@
   #undef MIP_GUI_XCB
   #undef MIP_USE_XCB
   #undef MIP_USE_CAIRO
+  #undef MIP_USE_OPENGL
+  #undef MIP_USE_NANOVG
 #endif
 
 #ifdef MIP_GUI_XCB
@@ -83,15 +85,20 @@
   #define MIP_PAINTER_DEFINED
 #endif
 
+#ifdef MIP_PAINTER_OPENGL
+  #define MIP_USE_OPENGL
+  #define MIP_PAINTER_DEFINED
+#endif
+
 //----------
 
 #ifndef MIP_GUI_DEFINED
-  //#warning No Gui defined (MIP_GUI_*)
+  #warning No Gui defined (MIP_GUI_*)
   #define MIP_NO_GUI
 #endif
 
 #ifndef MIP_PAINTER_DEFINED
-  //#warning No Painter defined (MIP_PAINTER_*)
+  #warning No Painter defined (MIP_PAINTER_*)
   #define MIP_NO_GUI
 #endif
 
