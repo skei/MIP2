@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1657388824 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../source/test/test_window.cpp"
+1657476125 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/test/test_editor.cpp"
 
 1656972879 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
@@ -247,10 +247,11 @@
 	<string.h>
 	<string.h>
 
-1657410541 /DISKS/sda2/code/git/MIP2/source/test/test_window.cpp
+1657476104 /DISKS/sda2/code/git/MIP2/source/test/test_window.cpp
 	"mip.h"
 	"gui/mip_window.h"
 	"gui/mip_surface.h"
+	"gui/nanovg/mip_nanovg.h"
 
 1657108140 /DISKS/sda2/code/git/MIP2/source/test/test_pugl.cpp
 	<locale.h>
@@ -341,7 +342,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 
-1657405871 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1657411172 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"gui/mip_window_listener.h"
 	"gui/mip_paint_source.h"
 	"gui/mip_paint_target.h"
@@ -467,7 +468,7 @@
 	"extern/nanovg/nanovg_gl_utils.h"
 	"extern/nanovg/nanovg.c"
 
-1657235469 /DISKS/sda2/code/git/MIP2/source/test/test_editor.cpp
+1657455213 /DISKS/sda2/code/git/MIP2/source/test/test_editor.cpp
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_plugin.h"
 	"plugin/clap/mip_clap_entry.h"
@@ -692,9 +693,11 @@
 	"base/types/mip_array.h"
 	"plugin/clap/mip_clap.h"
 
-1657387854 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
+1657479713 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
 	"mip.h"
+	"gui/mip_surface.h"
 	"plugin/clap/mip_clap.h"
+	"gui/nanovg/mip_nanovg.h"
 	"gui/mip_window.h"
 
 1655967203 /DISKS/sda2/code/git/MIP2/include/plugin/mip_note_port.h
@@ -742,14 +745,14 @@
 	"gui/mip_widget.h"
 	"gui/xcb/mip_xcb_window.h"
 
-1657394726 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_utils.h
+1657472957 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_utils.h
 	"mip.h"
 	"gui/opengl/mip_opengl.h"
 
 1657389127 /DISKS/sda2/code/git/MIP2/include/gui/mip_window_listener.h
 	"mip.h"
 
-1657410367 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_painter.h
+1657477888 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_painter.h
 	"mip.h"
 	"gui/opengl/mip_opengl.h"
 	"gui/opengl/mip_opengl_utils.h"

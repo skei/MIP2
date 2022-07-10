@@ -44,8 +44,8 @@ class MIP_XcbWindow
   friend class MIP_OpenGLWindow;
 
 //------------------------------
-//private:
-public:
+private:
+//public:
 //------------------------------
 
   xcb_window_t                MWindow                       = XCB_NONE;

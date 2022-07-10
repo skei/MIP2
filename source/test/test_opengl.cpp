@@ -1,4 +1,7 @@
 
+#define MIP_GUI_XCB
+#define MIP_PAINTER_OPENGL
+
 #include "mip.h"
 #include "base/system/mip_time.h"
 #include "base/system/mip_timer.h"

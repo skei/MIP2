@@ -12,21 +12,21 @@
 
 //----------
 
-// make context current before calling this
-// should this be done per window/context, or once per program/library?
-
-bool MIP_loadOpenGL() {
-  if (!sogl_loadOpenGL()) {
-    MIP_Print("sogl_loadOpenGL failed!\n");
-    const char** failures = sogl_getFailures();
-    while (*failures) {
-      MIP_Print("%s\n",*failures);
-      failures++;
-    }
-    return false;
-  }
-  return true;
-}
+//// make context current before calling this
+//// should this be done per window/context, or once per program/library?
+//
+//bool MIP_LoadOpenGL() {
+//  if (!sogl_loadOpenGL()) {
+//    MIP_Print("sogl_loadOpenGL failed!\n");
+//    const char** failures = sogl_getFailures();
+//    while (*failures) {
+//      MIP_Print("%s\n",*failures);
+//      failures++;
+//    }
+//    return false;
+//  }
+//  return true;
+//}
 
 //----------
 
@@ -66,24 +66,27 @@ bool isExtensionSupported(const char *extList, const char *extension) {
 
 //----------------------------------------------------------------------
 
-#define MIP_OPENGL_ERROR_CHECK {                      \
-  GLint err = glGetError();                           \
-  if (err != GL_NO_ERROR) MIP_printOpenGLError(err);  \
+#define MIP_OPENGL_ERROR_CHECK {  \
+  GLint err = glGetError();       \
+  if (err != GL_NO_ERROR) {       \
+    MIP_Print("");                \
+    MIP_printOpenGLError(err);    \
+  }                                                   \
 }
 
 //#define MIP_OPENGL_ERROR_CHECK { MIP_Print("gl error: %i\n",glGetError()); }
 
 void MIP_printOpenGLError(GLint err) {
   switch (err) {
-    case GL_NO_ERROR:                       MIP_Print("OpenGL Error: No error has been recorded. The value of this symbolic constant is guaranteed to be 0.\n"); break;
-    case GL_INVALID_ENUM:                   MIP_Print("OpenGL Error: An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
-    case GL_INVALID_VALUE:                  MIP_Print("OpenGL Error: A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
-    case GL_INVALID_OPERATION:              MIP_Print("OpenGL Error: The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
-    case GL_INVALID_FRAMEBUFFER_OPERATION:  MIP_Print("OpenGL Error: The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
-    case GL_OUT_OF_MEMORY:                  MIP_Print("OpenGL Error: There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.\n"); break;
-    case GL_STACK_UNDERFLOW:                MIP_Print("OpenGL Error: An attempt has been made to perform an operation that would cause an internal stack to underflow.\n"); break;
-    case GL_STACK_OVERFLOW:                 MIP_Print("OpenGL Error: An attempt has been made to perform an operation that would cause an internal stack to overflow.\n"); break;
-    default:                                MIP_Print("OpenGL Error: Unknown error %i\n",err); break;
+    case GL_NO_ERROR:                       MIP_DPrint("OpenGL Error: No error has been recorded. The value of this symbolic constant is guaranteed to be 0.\n"); break;
+    case GL_INVALID_ENUM:                   MIP_DPrint("OpenGL Error: An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
+    case GL_INVALID_VALUE:                  MIP_DPrint("OpenGL Error: A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
+    case GL_INVALID_OPERATION:              MIP_DPrint("OpenGL Error: The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
+    case GL_INVALID_FRAMEBUFFER_OPERATION:  MIP_DPrint("OpenGL Error: The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
+    case GL_OUT_OF_MEMORY:                  MIP_DPrint("OpenGL Error: There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.\n"); break;
+    case GL_STACK_UNDERFLOW:                MIP_DPrint("OpenGL Error: An attempt has been made to perform an operation that would cause an internal stack to underflow.\n"); break;
+    case GL_STACK_OVERFLOW:                 MIP_DPrint("OpenGL Error: An attempt has been made to perform an operation that would cause an internal stack to overflow.\n"); break;
+    default:                                MIP_DPrint("OpenGL Error: Unknown error %i\n",err); break;
   }
 }
 //----------------------------------------------------------------------

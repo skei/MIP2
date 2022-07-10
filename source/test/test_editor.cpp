@@ -1,6 +1,9 @@
 
 //#define MIP_NO_ENTRY
 
+#define MIP_GUI_XCB
+#define MIP_PAINTER_OPENGL
+
 #define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket
 
