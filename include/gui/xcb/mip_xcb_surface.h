@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "gui/mip_paint_source.h"
 #include "gui/mip_paint_target.h"
 //#include "gui/mip_paint_target.h"
 #include "gui/xcb/mip_xcb.h"
@@ -19,7 +20,8 @@
 //----------------------------------------------------------------------
 
 class MIP_XcbSurface
-: public MIP_PaintTarget {
+: public MIP_PaintSource
+, public MIP_PaintTarget {
 
 //------------------------------
 private:
@@ -48,12 +50,12 @@ public:
   MIP_XcbSurface(MIP_PaintTarget* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
   //: MIP_BaseSurface() {
     // pixmap
-    MConnection     = ATarget->getXcbConnection();
-    MTargetDrawable = ATarget->getXcbDrawable();
-    MTargetVisual   = ATarget->getXcbVisual();
+    MConnection     = ATarget->paint_target_getXcbConnection();
+    MTargetDrawable = ATarget->paint_target_getXcbDrawable();
+    MTargetVisual   = ATarget->paint_target_getXcbVisual();
     MWidth          = AWidth;
     MHeight         = AHeight;
-    if (ADepth  == 0) MDepth  = ATarget->getDepth();
+    if (ADepth  == 0) MDepth  = ATarget->paint_target_getDepth();
     else MDepth  = ADepth;
     //if (AOwner->isWindow()) {
     //  MIsWindow = true;
@@ -105,21 +107,42 @@ public:
 public: // paint_source
 //------------------------------
 
-  bool                isSurface()         final { return true; }
-  bool                isDrawable()        final { return true; }
+  bool                paint_source_isSurface()         final { return true; }
+  bool                paint_source_isDrawable()        final { return true; }
 
-  uint32_t            getWidth()          final { return MWidth; }
-  uint32_t            getHeight()         final { return MHeight; }
-  uint32_t            getDepth()          final { return MDepth; }
+  uint32_t            paint_source_getWidth()          final { return MWidth; }
+  uint32_t            paint_source_getHeight()         final { return MHeight; }
+  uint32_t            paint_source_getDepth()          final { return MDepth; }
 
-  xcb_connection_t*   getXcbConnection()  final { return MConnection; }
-  xcb_visualid_t      getXcbVisual()      final { return MTargetVisual; }
-  xcb_drawable_t      getXcbDrawable()    final { return MPixmap; } //MTargetDrawable; }
-  xcb_pixmap_t        getXcbPixmap()      final { return MPixmap; }
+  xcb_connection_t*   paint_source_getXcbConnection()  final { return MConnection; }
+  xcb_visualid_t      paint_source_getXcbVisual()      final { return MTargetVisual; }
+  xcb_drawable_t      paint_source_getXcbDrawable()    final { return MPixmap; } //MTargetDrawable; }
+  xcb_pixmap_t        paint_source_getXcbPixmap()      final { return MPixmap; }
 
   //#ifdef MIP_USE_CAIRO
-  //bool                isCairo()           final { return true; }
-  //cairo_surface_t*    getCairoSurface()   final { return MCairoSurface; }
+  //bool                paint_source_isCairo()           final { return true; }
+  //cairo_surface_t*    paint_source_getCairoSurface()   final { return MCairoSurface; }
+  //#endif
+
+//------------------------------
+public: // paint_target
+//------------------------------
+
+  bool                paint_target_isSurface()         final { return true; }
+  bool                paint_target_isDrawable()        final { return true; }
+
+  uint32_t            paint_target_getWidth()          final { return MWidth; }
+  uint32_t            paint_target_getHeight()         final { return MHeight; }
+  uint32_t            paint_target_getDepth()          final { return MDepth; }
+
+  xcb_connection_t*   paint_target_getXcbConnection()  final { return MConnection; }
+  xcb_visualid_t      paint_target_getXcbVisual()      final { return MTargetVisual; }
+  xcb_drawable_t      paint_target_getXcbDrawable()    final { return MPixmap; } //MTargetDrawable; }
+  xcb_pixmap_t        paint_target_getXcbPixmap()      final { return MPixmap; }
+
+  //#ifdef MIP_USE_CAIRO
+  //bool                paint_target_isCairo()           final { return true; }
+  //cairo_surface_t*    paint_target_getCairoSurface()   final { return MCairoSurface; }
   //#endif
 
 //------------------------------

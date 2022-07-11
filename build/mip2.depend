@@ -342,7 +342,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 
-1657411172 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1657483723 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"gui/mip_window_listener.h"
 	"gui/mip_paint_source.h"
 	"gui/mip_paint_target.h"
@@ -441,7 +441,7 @@
 1648404219 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg_gl_utils.h
 	<OpenGL/glext.h>
 
-1657328012 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl.h
+1657482405 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl.h
 	"mip.h"
 	"extern/simple-opengl-loader.h"
 	<GL/gl.h>
@@ -693,7 +693,7 @@
 	"base/types/mip_array.h"
 	"plugin/clap/mip_clap.h"
 
-1657479713 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
+1657490522 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
 	"mip.h"
 	"gui/mip_surface.h"
 	"plugin/clap/mip_clap.h"
@@ -745,14 +745,14 @@
 	"gui/mip_widget.h"
 	"gui/xcb/mip_xcb_window.h"
 
-1657472957 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_utils.h
+1657480813 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_utils.h
 	"mip.h"
 	"gui/opengl/mip_opengl.h"
 
 1657389127 /DISKS/sda2/code/git/MIP2/include/gui/mip_window_listener.h
 	"mip.h"
 
-1657477888 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_painter.h
+1657490365 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_painter.h
 	"mip.h"
 	"gui/opengl/mip_opengl.h"
 	"gui/opengl/mip_opengl_utils.h"
@@ -765,8 +765,9 @@
 	"mip.h"
 	"gui/xcb/mip_xcb_surface.h"
 
-1657410148 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_surface.h
+1657483652 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_surface.h
 	"mip.h"
+	"gui/mip_paint_source.h"
 	"gui/mip_paint_target.h"
 	"gui/xcb/mip_xcb.h"
 
@@ -784,11 +785,13 @@
 	"gui/mip_paint_target.h"
 	"gui/opengl/mip_opengl_painter.h"
 
-1657405812 /DISKS/sda2/code/git/MIP2/include/gui/mip_paint_target.h
+1657483179 /DISKS/sda2/code/git/MIP2/include/gui/mip_paint_target.h
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 	"gui/opengl/mip_opengl.h"
 
-1657405735 /DISKS/sda2/code/git/MIP2/include/gui/mip_paint_source.h
-	"gui/mip_paint_target.h"
+1657483837 /DISKS/sda2/code/git/MIP2/include/gui/mip_paint_source.h
+	"mip.h"
+	"gui/xcb/mip_xcb.h"
+	"gui/opengl/mip_opengl.h"
 

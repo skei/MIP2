@@ -26,7 +26,7 @@ GLint MIP_GlxPixmapAttribs[] = {
   GLX_RED_SIZE,       8,
   GLX_GREEN_SIZE,     8,
   GLX_BLUE_SIZE,      8,
-  //GLX_ALPHA_SIZE,     0,  // window can't have alpha
+  //GLX_ALPHA_SIZE,     8,  // window can't have alpha
   //GLX_STENCIL_SIZE,   8,  // nanovg needs stencil?
   //GLX_DEPTH_SIZE,     24,
   //GLX_SAMPLE_BUFFERS, True,
@@ -87,9 +87,9 @@ public:
 
   MIP_OpenGLPainter(MIP_PaintTarget* ATarget, MIP_PaintSource* ASource) {
     MTarget = ATarget;
-    MDisplay = ASource->getXlibDisplay();
-    if (MTarget->isSurface()) createPixmapContext();
-    else if (MTarget->isWindow()) createWindowContext();
+    MDisplay = ASource->paint_source_getXlibDisplay();
+    if (MTarget->paint_target_isSurface()) createPixmapContext();
+    else if (MTarget->paint_target_isWindow()) createWindowContext();
     else MIP_Assert(false); // target not handled..
     makeCurrent();
     loadOpenGL();
@@ -121,6 +121,10 @@ public:
   void makeCurrent() {
     if (MPixmap != GLX_NONE) glXMakeCurrent(MDisplay,MPixmap,MContext);
     if (MWindow != GLX_NONE) glXMakeCurrent(MDisplay,MWindow,MContext);
+  }
+
+  void resetCurrent() {
+    glXMakeCurrent(MDisplay,0,0);
   }
 
   //----------
@@ -197,7 +201,7 @@ private: // context creation
     MFBConfig = MFBConfigList[0];
     //MIP_printFBConfigs(MDisplay,&MFBConfig,1);
     createContext();
-    MPixmap = glXCreatePixmap(MDisplay,MFBConfig,MTarget->getXcbPixmap(),nullptr);
+    MPixmap = glXCreatePixmap(MDisplay,MFBConfig,MTarget->paint_target_getXcbPixmap(),nullptr);
     return true;
   }
 
@@ -211,7 +215,7 @@ private: // context creation
     //MIP_printFBConfigs(MDisplay,&MFBConfig,1);
     createContext();
     //MVisualInfo = glXGetVisualFromFBConfig(MDisplay,MFBConfig);
-    MWindow = glXCreateWindow(MDisplay,MFBConfig,MTarget->getXcbWindow(),nullptr);
+    MWindow = glXCreateWindow(MDisplay,MFBConfig,MTarget->paint_target_getXcbWindow(),nullptr);
     return true;
   }
 

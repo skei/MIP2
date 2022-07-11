@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "base/system/mip_time.h"
 #include "gui/mip_surface.h"
 #include "plugin/clap/mip_clap.h"
 
@@ -87,7 +88,6 @@ private:
   MIP_Surface*        MSurface        = nullptr;
   NVGcontext*         MNvgContext     = nullptr;
   MIP_Painter*        MPixmapPainter  = nullptr;
-  //MIP_Painter*        MWindowPainter  = nullptr;
 
   // test
 
@@ -97,6 +97,8 @@ private:
   GLuint              MVertexShader   = 0;
   GLuint              MFragmentShader = 0;
   GLuint              MProgram        = 0;
+
+  bool MCreated = false;
 
 //------------------------------
 public:
@@ -108,36 +110,21 @@ public:
     MHeight = AHeight;
     MWindow = new MIP_Window(/*this,*/MWidth,MHeight,true);
     MWindow->setListener(this);
-
     MWindow->setFillBackground();
-    MSurface = new MIP_Surface(MWindow,256,256);
-
-    MPixmapPainter = new MIP_Painter(MSurface,MWindow);
-    MPixmapPainter->makeCurrent();
-    setupTriangle();
-    glClearColor(0.5,0,0,1);
-    glClear(GL_COLOR_BUFFER_BIT);
-    renderTriangle();
-    MPixmapPainter->swapBuffers();
-    //glXWaitGL();
-
-    MNvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
-    MIP_Assert(MNvgContext);
-    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
-
-    //MWindowPainter = new MIP_Painter(MWindow,MWindow);
-
+    //create();
   }
 
   //----------
 
   virtual ~MIP_Editor() {
-    //delete MWindowPainter;
-    nvgDeleteGL3(MNvgContext);
-    delete MPixmapPainter;
-    delete MSurface;
+    //destroy();
+    MIP_PRINT;
+    if (MCreated) destroy();
+    MIP_PRINT;
     if (MIsWindowOpen) hide();
+    MIP_PRINT;
     delete MWindow;
+    MIP_PRINT;
   }
 
 //------------------------------
@@ -154,49 +141,41 @@ public: // window listener
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     MIP_PRINT;
+
+    if (!MCreated) create();
+
+//----------
+double t1 = MIP_GetTimeMS();
+
     int32_t w = MWindow->getWidth();
     int32_t h = MWindow->getHeight();
-    MPixmapPainter->makeCurrent();
-
-    //glViewport(0,0,w,h);
     //glViewport(0,256-h,w,h);
-    //glMatrixMode(GL_PROJECTION);
-    //glLoadIdentity();
-    //gluOrtho2D(-320, 319,-240, 239);
-    //glDepthMask (GL_TRUE);
-    //glColorMask (GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-    glClearColor(1,0,1,1);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glFlush();
+    MPixmapPainter->makeCurrent();
+    //glViewport(0,0,w,h);
+    glViewport(0,256-h,w,h);
+    //glClearColor(0,0,0,0.5);
+    //glClear(GL_COLOR_BUFFER_BIT);
+    //glFlush();
+    //glViewport(0,0,256,256);
+    renderNanoVG(w,h);
+    //glXWaitGL();
 
-    nvgBeginFrame(MNvgContext,w,h,1.0);
-      nvgBeginPath(MNvgContext);
-      nvgCircle(MNvgContext, 128,128,127);
-      nvgFillColor(MNvgContext, nvgRGBA(128,64,64,255));
-      nvgFill(MNvgContext);
-      nvgFontFace(MNvgContext,"font1");
-      nvgFontSize(MNvgContext,32);
-      nvgFillColor(MNvgContext, nvgRGBA(255,255,255,128));
-      nvgText(MNvgContext,30,40,"Hello world!",0);
-      nvgFillColor(MNvgContext, nvgRGBA(0,0,0,255));
-      nvgFontSize(MNvgContext,8);
-      nvgText(MNvgContext,30,100,"Tiny, tiny 123 æøå",0);
-      nvgFontSize(MNvgContext,9);
-      nvgText(MNvgContext,30,110,"Tiny, tiny 123 æøå",0);
-      nvgFontSize(MNvgContext,10);
-      nvgText(MNvgContext,30,120,"Tiny, tiny 123 æøå",0);
-    nvgEndFrame(MNvgContext);
+double t2 = MIP_GetTimeMS();
+double elapsed = t2 - t1;
+MIP_Print("Elapsed: %.3f\n",elapsed);
+
+//----------
+
 
     MPixmapPainter->swapBuffers();
-    glXWaitGL();
-
     //MIP_Painter* window_painter = new MIP_Painter(MSurface,MWindow);
     //window_painter->makeCurrent();
     //window_painter->swapBuffers();
     //delete window_painter;
 
-    MWindow->blitDrawable(32,32,MSurface->getXcbDrawable(),0,0,256,256);
+    MWindow->flush();
+    MWindow->blitDrawable(32,32,MSurface->paint_source_getXcbDrawable(),0,0,256,256);
 
   }
 
@@ -269,14 +248,52 @@ public:
     return true;
   }
 
-
-
-
-
-
 //------------------------------
 private:
 //------------------------------
+
+  void create() {
+    MIP_PRINT;
+    MSurface = new MIP_Surface(MWindow,256,256);
+
+    MPixmapPainter = new MIP_Painter(MSurface,MWindow);
+    MPixmapPainter->makeCurrent();
+    setupTriangle();
+    glClearColor(0.5,0,0,1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    renderTriangle();
+
+    MNvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+    MIP_Assert(MNvgContext);
+    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+
+    //glViewport(0,0,256,256);
+    glViewport(0,256-MHeight,MWidth,MHeight);
+    //glViewport(0,0,w,h);
+//    renderNanoVG(MWidth,MHeight);
+
+    MPixmapPainter->swapBuffers();
+    //glXWaitGL();
+    MCreated = true;
+  }
+
+  //----------
+
+  void destroy() {
+    MIP_PRINT;
+    //delete MWindowPainter;
+    MPixmapPainter->resetCurrent();
+    nvgDeleteGL3(MNvgContext);
+    MIP_PRINT;
+    delete MPixmapPainter;
+    MIP_PRINT;
+    delete MSurface;
+    MIP_PRINT;
+    MCreated = false;
+    MIP_PRINT;
+  }
+
+  //----------
 
   void setupTriangle() {
 
@@ -317,11 +334,51 @@ private:
     }
   }
 
+  //----------
+
   void renderTriangle() {
     glClearColor(0.3, 0.1, 0.2, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(MProgram);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+  }
+
+  //----------
+
+  void renderNanoVG(int32_t w, int32_t h) {
+    nvgBeginFrame(MNvgContext,w,h,1.0);
+
+      /*
+      nvgBeginPath(MNvgContext);
+      nvgCircle(MNvgContext, 128,128, 80 );
+      nvgFillColor(MNvgContext, nvgRGBA(128,64,64,128));
+      nvgFill(MNvgContext);
+      nvgFontFace(MNvgContext,"font1");
+      nvgFontSize(MNvgContext,32);
+      nvgFillColor(MNvgContext, nvgRGBA(255,255,255,128));
+      nvgText(MNvgContext,30,40,"Hello world!",0);
+      nvgFillColor(MNvgContext, nvgRGBA(0,0,0,255));
+      nvgFontSize(MNvgContext,8);
+      nvgText(MNvgContext,30,100,"Tiny, tiny 123 æøå",0);
+      nvgFontSize(MNvgContext,9);
+      nvgText(MNvgContext,30,110,"Tiny, tiny 123 æøå",0);
+      nvgFontSize(MNvgContext,10);
+      nvgText(MNvgContext,30,120,"Tiny, tiny 123 æøå",0);
+      */
+
+      //nvgStrokeColor(MNvgContext,nvgRGBA(255,255,255,1));
+      nvgFillColor(MNvgContext, nvgRGBA(255,255,255,255));
+      nvgFontSize(MNvgContext,10);
+      nvgMoveTo(MNvgContext,128,128);
+      for (uint32_t i=0; i<10; i++) {
+        float x = MIP_RandomRange(0,255);
+        float y = MIP_RandomRange(0,255);
+        //nvgLineTo(MNvgContext,x,y);
+        nvgText(MNvgContext,x,y,"Testing, testing 123 ABC æøå",0);
+      }
+      //nvgStroke(MNvgContext);
+
+    nvgEndFrame(MNvgContext);
   }
 
 };

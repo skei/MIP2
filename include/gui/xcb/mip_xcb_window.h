@@ -39,6 +39,7 @@
 
 class MIP_XcbWindow
 : public MIP_WindowListener
+, public MIP_PaintSource
 , public MIP_PaintTarget {
 
   friend class MIP_OpenGLWindow;
@@ -130,8 +131,8 @@ public:
 
   bool    isExposed() { return MWindowExposed; }
   bool    isMapped()  { return MWindowMapped; }
-  //int32_t getWidth()  { return MWindowWidth; } // see paint_source
-  //int32_t getHeight() { return MWindowHeight; }
+  int32_t getWidth()  { return MWindowWidth; } // see paint_source
+  int32_t getHeight() { return MWindowHeight; }
 
   void    setFillBackground(bool AFill=true)         { MFillBackground = AFill; }
   void    setBackgroundColor(uint32_t AColor)        { MBackgroundColor = AColor; }
@@ -145,23 +146,46 @@ public:
 public: // paint_source
 //------------------------------
 
-  bool                isWindow()          final { return true; }
-  bool                isDrawable()        final { return true; }
+  bool                paint_source_isWindow()          final { return true; }
+  bool                paint_source_isDrawable()        final { return true; }
 
-  uint32_t            getWidth()          final { return MWindowWidth; }
-  uint32_t            getHeight()         final { return MWindowHeight; }
-  uint32_t            getDepth()          final { return MScreenDepth; }
+  uint32_t            paint_source_getWidth()          final { return MWindowWidth; }
+  uint32_t            paint_source_getHeight()         final { return MWindowHeight; }
+  uint32_t            paint_source_getDepth()          final { return MScreenDepth; }
 
-  xcb_connection_t*   getXcbConnection()  final { return MConnection; }
-  xcb_visualid_t      getXcbVisual()      final { return MScreenVisual; }
-  xcb_drawable_t      getXcbDrawable()    final { return MWindow; }
-  xcb_window_t        getXcbWindow()      final { return MWindow; }
+  xcb_connection_t*   paint_source_getXcbConnection()  final { return MConnection; }
+  xcb_visualid_t      paint_source_getXcbVisual()      final { return MScreenVisual; }
+  xcb_drawable_t      paint_source_getXcbDrawable()    final { return MWindow; }
+  xcb_window_t        paint_source_getXcbWindow()      final { return MWindow; }
 
-  Display*            getXlibDisplay()    final { return MDisplay; }
+  Display*            paint_source_getXlibDisplay()    final { return MDisplay; }
 
   //#ifdef MIP_USE_CAIRO
-  //bool                isCairo()           final { return true; }
-  //cairo_surface_t*    getCairoSurface()   final { return MCairoSurface; }
+  //bool                paint_source_isCairo()           final { return true; }
+  //cairo_surface_t*    paint_source_getCairoSurface()   final { return MCairoSurface; }
+  //#endif
+
+//------------------------------
+public: // paint_target
+//------------------------------
+
+  bool                paint_target_isWindow()          final { return true; }
+  bool                paint_target_isDrawable()        final { return true; }
+
+  uint32_t            paint_target_getWidth()          final { return MWindowWidth; }
+  uint32_t            paint_target_getHeight()         final { return MWindowHeight; }
+  uint32_t            paint_target_getDepth()          final { return MScreenDepth; }
+
+  xcb_connection_t*   paint_target_getXcbConnection()  final { return MConnection; }
+  xcb_visualid_t      paint_target_getXcbVisual()      final { return MScreenVisual; }
+  xcb_drawable_t      paint_target_getXcbDrawable()    final { return MWindow; }
+  xcb_window_t        paint_target_getXcbWindow()      final { return MWindow; }
+
+  Display*            paint_target_getXlibDisplay()    final { return MDisplay; }
+
+  //#ifdef MIP_USE_CAIRO
+  //bool                paint_target_isCairo()           final { return true; }
+  //cairo_surface_t*    paint_target_getCairoSurface()   final { return MCairoSurface; }
   //#endif
 
 //------------------------------
