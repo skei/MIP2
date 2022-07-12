@@ -23,7 +23,7 @@ NOTE: yet another structural/lowlevel update in progress.. be patient.. things w
 pro/con:
 
 - headers-only
-- lock-free
+- lock/wait-free
 - un-modern, un-cool c++
 - minimal setup
 - minimal dependencies
