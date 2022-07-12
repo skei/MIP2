@@ -11,10 +11,10 @@ NOTE: yet another structural/lowlevel update in progress.. be patient.. things w
 
 ---
 
-- os: linux (windows later)
+- os: linux (windows might come later)
 - plugin: clap (with wrappers for exe, vst2, vst3)
-- host: clap, ladspa (todo: vst2/vst3)
-- gui: xcb (with cairo, opengl being investigated)
+- host: clap, ladspa (coming: vst2/vst3)
+- gui: xcb, cairo, opengl, nanovg (all optional)
 - io: jack audio/midi (standalone executable)
 - other: too much to list..
 

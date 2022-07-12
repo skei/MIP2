@@ -119,8 +119,8 @@ public:
   : MIP_Editor(AListener,AWidth,AHeight) {
     setWindowFillBackground();
     //setThreadCallbacks(thread_start,thread_stop);
-
     create();
+    // unbind context, so that we can bind it again in the event thread
     MPixmapPainter->resetCurrent();
 
   }
