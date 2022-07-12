@@ -93,8 +93,8 @@ private:
   pthread_t                   MEventThread                  = 0;
   bool                        MEventThreadActive            = false;
 
-  void (*MEventThreadStartCallback)(void* AUser) = nullptr;
-  void (*MEventThreadStopCallback)(void* AUser) = nullptr;
+//  void (*MEventThreadStartCallback)(void* AUser) = nullptr;
+//  void (*MEventThreadStopCallback)(void* AUser) = nullptr;
 
 //------------------------------
 public:
@@ -344,10 +344,10 @@ public: // window
 
   //----------
 
-  virtual void setThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {
-    MEventThreadStartCallback = AStart;
-    MEventThreadStopCallback = AStop;
-  }
+//  virtual void setThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {
+//    MEventThreadStartCallback = AStart;
+//    MEventThreadStopCallback = AStop;
+//  }
 
 //------------------------------
 public: // mouse
@@ -1080,27 +1080,21 @@ private: // events
     //mip_xcb_event_thread_pid = getpid();
     MIP_XcbWindow* window = (MIP_XcbWindow*)AWindow;
     if (window) {
-      //window->on_window_init_event_thread();
-      window->xcb_event_thread_start_callback(window);
+      //window->xcb_event_thread_start_callback(window);
       xcb_connection_t* connection = window->MConnection;
       xcb_flush(connection);
       while (window->MEventThreadActive) {
         xcb_generic_event_t* event = xcb_wait_for_event(connection);
         if (event) {
           if (!window->processEvent(event)) {
-            //MIP_Print("quit\n");
-            //window->on_window_exit_event_thread();
-            window->xcb_event_thread_stop_callback(window);
+            //window->xcb_event_thread_stop_callback(window);
             return nullptr;
           }
         }
       }
-      //MIP_Print("inactive\n");
-      //window->on_window_exit_event_thread();
-      window->xcb_event_thread_stop_callback(window);
+      //window->xcb_event_thread_stop_callback(window);
       return nullptr;
     }
-    //MIP_Print("no window\n");
     return nullptr;
   }
 
@@ -1108,13 +1102,13 @@ private: // events
 //
 //------------------------------
 
-  void xcb_event_thread_start_callback(void* AUser) {
-    if (MEventThreadStartCallback) MEventThreadStartCallback(AUser);
-  }
-
-  void xcb_event_thread_stop_callback(void* AUser) {
-    if (MEventThreadStopCallback) MEventThreadStopCallback(AUser);
-  }
+//  void xcb_event_thread_start_callback(void* AUser) {
+//    if (MEventThreadStartCallback) MEventThreadStartCallback(AUser);
+//  }
+//
+//  void xcb_event_thread_stop_callback(void* AUser) {
+//    if (MEventThreadStopCallback) MEventThreadStopCallback(AUser);
+//  }
 
 };
 

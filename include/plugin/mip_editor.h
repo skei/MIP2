@@ -66,14 +66,6 @@ public:
 public:
 //------------------------------
 
-//  virtual void initEventThread(uint32_t AMode=0) {
-//    MIP_PRINT;
-//  }
-//
-//  virtual void exitEventThread(uint32_t AMode=0) {
-//    MIP_PRINT;
-//  }
-
   virtual bool gui_set_scale(double scale) {
     MEditorScale = scale;
     return true;

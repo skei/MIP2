@@ -4,6 +4,13 @@
 
 //glBindFramebuffer(GL_FRAMEBUFFER,MPixmap);
 
+/*
+  The thread a context is associated with is not immutable. There is a property
+  that a thread can only have one context bound to it at a time and that a
+  context can only be bound in one thread at a time, but you can release the
+  context from one thread and give it to another.
+*/
+
 
 #include "mip.h"
 #include "gui/opengl/mip_opengl.h"

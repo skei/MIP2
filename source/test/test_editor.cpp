@@ -117,17 +117,18 @@ public:
 
   myEditor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
   : MIP_Editor(AListener,AWidth,AHeight) {
-    /*MEditorWindow->*/setWindowFillBackground();
-    //MWindow->setWindowListener(this);
+    setWindowFillBackground();
+    //setThreadCallbacks(thread_start,thread_stop);
 
-    setThreadCallbacks(thread_start,thread_stop);
+    create();
+    MPixmapPainter->resetCurrent();
 
   }
 
   //----------
 
   virtual ~myEditor() {
-    //if (MCreated) destroy();
+    destroy();
   }
 
 //------------------------------
@@ -136,16 +137,16 @@ public:
 
   static
   void thread_start(void* AUserPtr) {
-    myEditor* editor = (myEditor*)AUserPtr;
-    editor->create();
+//    myEditor* editor = (myEditor*)AUserPtr;
+//    editor->create();
   }
 
   //----------
 
   static
   void thread_stop(void* AUserPtr) {
-    myEditor* editor = (myEditor*)AUserPtr;
-    editor->destroy();
+//    myEditor* editor = (myEditor*)AUserPtr;
+//    editor->destroy();
   }
 
 //------------------------------
@@ -154,33 +155,29 @@ public: // window listener
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     MIP_PRINT;
-    if (!MCreated) create();
+
+    MIP_Assert(MCreated);
+    //if (!MCreated) create();
     //double t1 = MIP_GetTimeMS();
 
     int32_t w = getWindowWidth();
     int32_t h = getWindowHeight();
 
-    //glViewport(0,256-h,w,h);
     MPixmapPainter->makeCurrent();
+
     //glViewport(0,0,w,h);
     glViewport(0,256-h,w,h);
+
     //glClearColor(0,0,0,0.5);
     //glClear(GL_COLOR_BUFFER_BIT);
-    //glFlush();
-    //glViewport(0,0,256,256);
     renderNanoVG(w,h);
-    //glXWaitGL();
+
     //double t2 = MIP_GetTimeMS();
     //double elapsed = t2 - t1;
     //MIP_Print("Elapsed: %.3f\n",elapsed);
 
     MPixmapPainter->swapBuffers();
-    //MIP_Painter* window_painter = new MIP_Painter(MSurface,MWindow);
-    //window_painter->makeCurrent();
-    //window_painter->swapBuffers();
-    //delete window_painter;
-
-    flush();
+    //flush();
     blitDrawable(32,32,MSurface->paint_source_getXcbDrawable(),0,0,256,256);
 
   }
