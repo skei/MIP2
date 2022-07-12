@@ -326,67 +326,67 @@ public: // EXT gui
   //----------
 
   bool gui_set_scale(double scale) override {
-    return MEditor->set_scale(scale);
+    return MEditor->gui_set_scale(scale);
   }
 
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
-    return MEditor->get_size(width,height);
+    return MEditor->gui_get_size(width,height);
   }
 
   //----------
 
   bool gui_can_resize() override {
-    return MEditor->can_resize();
+    return MEditor->gui_can_resize();
   }
 
   //----------
 
   bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) override {
-    return MEditor->get_resize_hints(hints);
+    return MEditor->gui_get_resize_hints(hints);
   }
 
   //----------
 
   bool gui_adjust_size(uint32_t *width, uint32_t *height) override {
-    return MEditor->adjust_size(width,height);
+    return MEditor->gui_adjust_size(width,height);
   }
 
   //----------
 
   bool gui_set_size(uint32_t width, uint32_t height) override {
-    return MEditor->set_size(width,height);
+    return MEditor->gui_set_size(width,height);
   }
 
   //----------
 
   bool gui_set_parent(const clap_window_t *window) override {
-    return MEditor->set_parent(window);
+    return MEditor->gui_set_parent(window);
   }
 
   //----------
 
   bool gui_set_transient(const clap_window_t *window) override {
-    return MEditor->set_transient(window);
+    return MEditor->gui_set_transient(window);
   }
 
   //----------
 
   void gui_suggest_title(const char *title) override {
-    MEditor->suggest_title(title);
+    MEditor->gui_suggest_title(title);
   }
 
   //----------
 
   bool gui_show() override {
-    return MEditor->show();
+    return MEditor->gui_show();
   }
 
   //----------
 
   bool gui_hide() override {
-    return MEditor->hide();
+    return MEditor->gui_hide();
   }
 
 //------------------------------

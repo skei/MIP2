@@ -2,9 +2,10 @@
 #define mip_xcb_window_included
 //----------------------------------------------------------------------
 
-#include "gui/mip_window_listener.h"
+//#include "gui/mip_window_listener.h"
 #include "gui/mip_paint_source.h"
 #include "gui/mip_paint_target.h"
+#include "gui/base/mip_base_window.h"
 #include "gui/xcb/mip_xcb.h"
 #include "gui/xcb/mip_xcb_utils.h"
 #include "gui/xlib/mip_xlib.h"
@@ -38,7 +39,7 @@
 //----------------------------------------------------------------------
 
 class MIP_XcbWindow
-: public MIP_WindowListener
+: public MIP_BaseWindow
 , public MIP_PaintSource
 , public MIP_PaintTarget {
 
@@ -46,7 +47,6 @@ class MIP_XcbWindow
 
 //------------------------------
 private:
-//public:
 //------------------------------
 
   xcb_window_t                MWindow                       = XCB_NONE;
@@ -57,7 +57,6 @@ private:
   bool                        MWindowMapped                 = false;
   bool                        MWindowExposed                = false;
 
-  MIP_WindowListener*         MListener                     = this;//nullptr;
   bool                        MFillBackground               = false;
   uint32_t                    MBackgroundColor              = 0x808080;
 
@@ -94,12 +93,15 @@ private:
   pthread_t                   MEventThread                  = 0;
   bool                        MEventThreadActive            = false;
 
+  void (*MEventThreadStartCallback)(void* AUser) = nullptr;
+  void (*MEventThreadStopCallback)(void* AUser) = nullptr;
+
 //------------------------------
 public:
 //------------------------------
 
   MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
-    //MListener = this;
+    //MWindowListener = this;
     initConntection(nullptr);
     initScreen();
     initScreenGC();
@@ -116,7 +118,7 @@ public:
 
   //----------
 
-  ~MIP_XcbWindow() {
+  virtual ~MIP_XcbWindow() {
     cleanupKeyboard();
     cleanupMouseCursor();
     cleanupWindow();
@@ -129,17 +131,16 @@ public:
 public:
 //------------------------------
 
-  bool    isExposed() { return MWindowExposed; }
-  bool    isMapped()  { return MWindowMapped; }
-  int32_t getWidth()  { return MWindowWidth; } // see paint_source
-  int32_t getHeight() { return MWindowHeight; }
+  bool    isWindowExposed() { return MWindowExposed; }
+  bool    isWindowMapped()  { return MWindowMapped; }
+  int32_t getWindowWidth()  { return MWindowWidth; }
+  int32_t getWindowHeight() { return MWindowHeight; }
 
-  void    setFillBackground(bool AFill=true)         { MFillBackground = AFill; }
-  void    setBackgroundColor(uint32_t AColor)        { MBackgroundColor = AColor; }
-  void    setListener(MIP_WindowListener* AListener) { MListener = AListener; }
+  void    setWindowFillBackground(bool AFill=true)          { MFillBackground = AFill; }
+  void    setWindowBackgroundColor(uint32_t AColor)         { MBackgroundColor = AColor; }
 
   //void paint() {
-  //  if (MListener) MListener->on_window_paint(0,0,MWindowWidth,MWindowHeight);
+  //  if (MWindowListener) MWindowListener->on_window_paint(0,0,MWindowWidth,MWindowHeight);
   //}
 
 //------------------------------
@@ -339,6 +340,13 @@ public: // window
 
   virtual void endPaint()  {
     xcb_flush(MConnection);
+  }
+
+  //----------
+
+  virtual void setThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {
+    MEventThreadStartCallback = AStart;
+    MEventThreadStopCallback = AStop;
   }
 
 //------------------------------
@@ -888,7 +896,7 @@ private: // events
 
   //----------
 
-  // returns true if we received MWMDeleteWindowAtom
+  // returns false if we received MWMDeleteWindowAtom
   // -> we are done (quit)
   // frees AEvent
 
@@ -897,13 +905,13 @@ private: // events
 
       case XCB_MAP_NOTIFY: {
         MWindowMapped = true;
-        if (MListener) MListener->on_window_open();
+        /*if (MWindowListener) MWindowListener->*/on_window_open();
         break;
       }
 
       case XCB_UNMAP_NOTIFY: {
         MWindowMapped = false;
-        if (MListener) MListener->on_window_close();
+        /*if (MWindowListener) MWindowListener->*/on_window_close();
         break;
       }
 
@@ -916,12 +924,12 @@ private: // events
         if ((x != MWindowXpos) || (y != MWindowYpos)) {
           MWindowXpos = x;
           MWindowYpos = y;
-          if (MListener) MListener->on_window_move(x,y);
+          /*if (MWindowListener) MWindowListener->*/on_window_move(x,y);
         }
         if ((w != MWindowWidth) || (h != MWindowHeight)) {
           MWindowWidth  = w;
           MWindowHeight = h;
-          if (MListener) MListener->on_window_resize(x,y);
+          /*if (MWindowListener) MWindowListener->*/on_window_resize(x,y);
         }
         break;
       }
@@ -935,7 +943,7 @@ private: // events
         int16_t h = expose->height;
         beginPaint();
         if (MFillBackground) fill(x,y,w,h,MBackgroundColor);
-        if (MListener) MListener->on_window_paint(x,y,w,h);
+        /*if (MWindowListener) MWindowListener->*/on_window_paint(x,y,w,h);
         //xcb_flush(MConnection);
         endPaint();
         break;
@@ -948,7 +956,7 @@ private: // events
         uint32_t ts = key_press->time;
         k = remapKey(k,s);
         s = remapState(s);
-        if (MListener) MListener->on_window_key_press(k,s,ts);
+        /*if (MWindowListener) MWindowListener->*/on_window_key_press(k,s,ts);
         break;
       }
 
@@ -959,7 +967,7 @@ private: // events
         uint32_t ts = key_release->time;
         k = remapKey(k,s);
         s = remapState(s);
-        if (MListener) MListener->on_window_key_release(k,s,ts);
+        /*if (MWindowListener) MWindowListener->*/on_window_key_release(k,s,ts);
         break;
       }
 
@@ -972,7 +980,7 @@ private: // events
         uint32_t ts = button_press->time;
         b = remapButton(b,s);
         s = remapState(s);
-        if (MListener) MListener->on_window_mouse_press(b,s,x,y,ts);
+        /*if (MWindowListener) MWindowListener->*/on_window_mouse_press(b,s,x,y,ts);
         break;
       }
 
@@ -985,7 +993,7 @@ private: // events
         uint32_t ts = button_release->time;
         b = remapButton(b,s);
         s = remapState(s);
-        if (MListener) MListener->on_window_mouse_release(b,s,x,y,ts);
+        /*if (MWindowListener) MWindowListener->*/on_window_mouse_release(b,s,x,y,ts);
         break;
       }
 
@@ -997,7 +1005,7 @@ private: // events
         int32_t   y = motion_notify->event_y;
         uint32_t ts = motion_notify->time;
         s = remapState(s);
-        if (MListener) MListener->on_window_mouse_move(s,x,y,ts);
+        /*if (MWindowListener) MWindowListener->*/on_window_mouse_move(s,x,y,ts);
         break;
       }
 
@@ -1008,7 +1016,7 @@ private: // events
         int32_t   x = enter_notify->event_x;
         int32_t   y = enter_notify->event_y;
         uint32_t ts = enter_notify->time;
-        if (MListener) MListener->on_window_enter(x,y,ts);
+        /*if (MWindowListener) MWindowListener->*/on_window_enter(x,y,ts);
         break;
       }
 
@@ -1019,7 +1027,7 @@ private: // events
         int32_t   x = leave_notify->event_x;
         int32_t   y = leave_notify->event_y;
         uint32_t ts = leave_notify->time;
-        if (MListener) MListener->on_window_leave(x,y,ts);
+        /*if (MWindowListener) MWindowListener->*/on_window_leave(x,y,ts);
         break;
       }
 
@@ -1027,7 +1035,7 @@ private: // events
         xcb_client_message_event_t* client_message = (xcb_client_message_event_t*)AEvent;
         xcb_atom_t type = client_message->type;
         uint32_t data = client_message->data.data32[0];
-        if (MListener) MListener->on_window_client_message(data);
+        /*if (MWindowListener) MWindowListener->*/on_window_client_message(data);
         switch(data) {
           /*
           case MIP_THREAD_ID_TIMER:
@@ -1044,14 +1052,14 @@ private: // events
           */
           case MIP_THREAD_ID_KILL:
             free(AEvent); // not malloc'ed
-            return true; // we re finished
+            return false; // we re finished
           default:
             break;
         }
         if (type == MWMProtocolsAtom) {
           if (data == MWMDeleteWindowAtom) {
             free(AEvent); // not malloc'ed
-            return true; // we re finished
+            return false; // we re finished
           }
         }
 
@@ -1060,7 +1068,7 @@ private: // events
 
     }
     free(AEvent);
-    return false; // we re not finished
+    return true; // we are still alive
   }
 
 //------------------------------
@@ -1069,23 +1077,43 @@ private: // events
 
   static
   void* xcb_event_thread_proc(void* AWindow) {
-  //mip_xcb_event_thread_pid = getpid();
-  MIP_XcbWindow* window = (MIP_XcbWindow*)AWindow;
+    //mip_xcb_event_thread_pid = getpid();
+    MIP_XcbWindow* window = (MIP_XcbWindow*)AWindow;
     if (window) {
+      //window->on_window_init_event_thread();
+      window->xcb_event_thread_start_callback(window);
       xcb_connection_t* connection = window->MConnection;
       xcb_flush(connection);
       while (window->MEventThreadActive) {
         xcb_generic_event_t* event = xcb_wait_for_event(connection);
         if (event) {
-          //window->processEvent(event);
-          if (window->processEvent(event)) {
+          if (!window->processEvent(event)) {
             //MIP_Print("quit\n");
+            //window->on_window_exit_event_thread();
+            window->xcb_event_thread_stop_callback(window);
             return nullptr;
           }
         }
       }
+      //MIP_Print("inactive\n");
+      //window->on_window_exit_event_thread();
+      window->xcb_event_thread_stop_callback(window);
+      return nullptr;
     }
+    //MIP_Print("no window\n");
     return nullptr;
+  }
+
+//------------------------------
+//
+//------------------------------
+
+  void xcb_event_thread_start_callback(void* AUser) {
+    if (MEventThreadStartCallback) MEventThreadStartCallback(AUser);
+  }
+
+  void xcb_event_thread_stop_callback(void* AUser) {
+    if (MEventThreadStopCallback) MEventThreadStopCallback(AUser);
   }
 
 };

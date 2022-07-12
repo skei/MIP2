@@ -2,9 +2,7 @@
 #define mip_opengl_painter_included
 //----------------------------------------------------------------------
 
-
-    //glBindFramebuffer(GL_FRAMEBUFFER,MPixmap);
-
+//glBindFramebuffer(GL_FRAMEBUFFER,MPixmap);
 
 
 #include "mip.h"

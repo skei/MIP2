@@ -2,18 +2,14 @@
 #define mip_opengl_included
 //----------------------------------------------------------------------
 
-#include "mip.h"
-
-//#include <GL/gl.h>
-//#include <GL/glx.h>
-
 #define MIP_OPENGL_MAJOR 3
 #define MIP_OPENGL_MINOR 2
 
-//
+//----------------------------------------------------------------------
+
+#include "mip.h"
 
 // https://github.com/tsherif/simple-opengl-loader
-
 #define SOGL_MAJOR_VERSION MIP_OPENGL_MAJOR
 #define SOGL_MINOR_VERSION MIP_OPENGL_MINOR
 //#define SOGL_IMPLEMENTATION_WIN32
@@ -22,7 +18,6 @@
 
 #include <GL/gl.h>
 #include <GL/glx.h>
-
 
 //----------------------------------------------------------------------
 #endif

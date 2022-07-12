@@ -3,202 +3,93 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "base/system/mip_time.h"
-#include "gui/mip_surface.h"
-#include "plugin/clap/mip_clap.h"
-
-#include "gui/nanovg/mip_nanovg.h"
 #include "gui/mip_window.h"
 
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-GLfloat MPositionData[] = {
-  0,    0.9,
-  0.9,  0,
- -0.9, -0.9,
-};
-
-//----------
-
-GLubyte MColorData[] = {
-  255, 0, 0,
-  0, 255, 0,
-  0, 0, 255
-};
-
-//----------
-
-const char* MVertexShaderSource =
-  " #version 450                      \n"
-  "  layout(location=0) in vec4 pos;  \n"
-  " layout(location=1)  in vec3 col;  \n"
-  " out vec3 vColor;                  \n"
-  " void main() {                     \n"
-  "   vColor = col;                   \n"
-  "   gl_Position = pos;              \n"
-  "}                                  \n";
-
-//----------
-
-const char* MFragmentShaderSource =
-  " #version 450                      \n"
-  " in vec3 vColor;                   \n"
-  " out vec4 fragColor;               \n"
-  " void main() {                     \n"
-  "   fragColor = vec4(vColor, 1.0);  \n"
-  " }                                 \n";
+class MIP_Editor;
 
 //----------------------------------------------------------------------
 //
-//
+// listeners
 //
 //----------------------------------------------------------------------
 
+// editor -> plugin
 
 class MIP_EditorListener {
 public:
-  virtual void on_editor_listener_update_parameter(uint32_t AIndex, double AValue) = 0;
-  virtual void on_editor_listener_resize_window(uint32_t AWidth, uint32_t AHeight) = 0;
+  virtual void on_editor_listener_update_parameter(uint32_t AIndex, double AValue) { MIP_PRINT; };
+  virtual void on_editor_listener_resize_window(uint32_t AWidth, uint32_t AHeight) { MIP_PRINT; };
 };
+
 
 //----------------------------------------------------------------------
 //
-//
+// editor
 //
 //----------------------------------------------------------------------
 
 class MIP_Editor
-: public MIP_WindowListener {
+: public MIP_Window {
 
 //------------------------------
-private:
+protected:
 //------------------------------
 
-  MIP_EditorListener* MListener       = nullptr;
-  MIP_Window*         MWindow         = nullptr;
-  uint32_t            MWidth          = 256;
-  uint32_t            MHeight         = 256;
-  double              MScale          = 1.0;
-  bool                MIsWindowOpen   = false;
-
-  MIP_Surface*        MSurface        = nullptr;
-  NVGcontext*         MNvgContext     = nullptr;
-  MIP_Painter*        MPixmapPainter  = nullptr;
-
-  // test
-
-  GLuint              MVertexArray    = 0;
-  GLuint              MPosBuffer      = 0;
-  GLuint              MColBuffer      = 0;
-  GLuint              MVertexShader   = 0;
-  GLuint              MFragmentShader = 0;
-  GLuint              MProgram        = 0;
-
-  bool MCreated = false;
+  MIP_EditorListener* MEditorListener = nullptr;
+  //MIP_Window*         MEditorWindow   = nullptr;
+  uint32_t            MEditorWidth    = 256;
+  uint32_t            MEditorHeight   = 256;
+  double              MEditorScale    = 1.0;
+  bool                MIsEditorOpen   = false;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight) {
-    MListener = AListener;
-    MWidth = AWidth;
-    MHeight = AHeight;
-    MWindow = new MIP_Window(/*this,*/MWidth,MHeight,true);
-    MWindow->setListener(this);
-    MWindow->setFillBackground();
-    //create();
+  MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
+  : MIP_Window(AWidth,AHeight,true) {
+    MEditorListener = AListener;
+    MEditorWidth = AWidth;
+    MEditorHeight = AHeight;
+    //MEditorWindow = new MIP_Window(AWidth,AHeight,true);
+    //MWindow->setWindowListener(this);
   }
 
   //----------
 
   virtual ~MIP_Editor() {
-    //destroy();
-    MIP_PRINT;
-    if (MCreated) destroy();
-    MIP_PRINT;
-    if (MIsWindowOpen) hide();
-    MIP_PRINT;
-    delete MWindow;
-    MIP_PRINT;
+    if (MIsEditorOpen) gui_hide();
+    //delete MEditorWindow;
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  void updateParameter(uint32_t AIndex, double AValue, bool ARedraw=true) {
-    // if index -> connected.. set value, redraw
-  }
+//  virtual void initEventThread(uint32_t AMode=0) {
+//    MIP_PRINT;
+//  }
+//
+//  virtual void exitEventThread(uint32_t AMode=0) {
+//    MIP_PRINT;
+//  }
 
-//------------------------------
-public: // window listener
-//------------------------------
-
-  void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    MIP_PRINT;
-
-    if (!MCreated) create();
-
-//----------
-double t1 = MIP_GetTimeMS();
-
-    int32_t w = MWindow->getWidth();
-    int32_t h = MWindow->getHeight();
-    //glViewport(0,256-h,w,h);
-
-    MPixmapPainter->makeCurrent();
-    //glViewport(0,0,w,h);
-    glViewport(0,256-h,w,h);
-    //glClearColor(0,0,0,0.5);
-    //glClear(GL_COLOR_BUFFER_BIT);
-    //glFlush();
-    //glViewport(0,0,256,256);
-    renderNanoVG(w,h);
-    //glXWaitGL();
-
-double t2 = MIP_GetTimeMS();
-double elapsed = t2 - t1;
-MIP_Print("Elapsed: %.3f\n",elapsed);
-
-//----------
-
-
-    MPixmapPainter->swapBuffers();
-    //MIP_Painter* window_painter = new MIP_Painter(MSurface,MWindow);
-    //window_painter->makeCurrent();
-    //window_painter->swapBuffers();
-    //delete window_painter;
-
-    MWindow->flush();
-    MWindow->blitDrawable(32,32,MSurface->paint_source_getXcbDrawable(),0,0,256,256);
-
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-  virtual bool set_scale(double scale) {
-    MScale = scale;
+  virtual bool gui_set_scale(double scale) {
+    MEditorScale = scale;
     return true;
   }
 
-  virtual bool get_size(uint32_t *width, uint32_t *height) {
-    *width = MWidth;
-    *height = MHeight;
+  virtual bool gui_get_size(uint32_t *width, uint32_t *height) {
+    *width = MEditorWidth;
+    *height = MEditorHeight;
     return true;
   }
 
-  virtual bool can_resize() {
+  virtual bool gui_can_resize() {
     return true;
   }
 
-  virtual bool get_resize_hints(clap_gui_resize_hints_t *hints) {
+  virtual bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) {
     hints->can_resize_horizontally  = true;
     hints->can_resize_vertically    = true;
     hints->aspect_ratio_width       = 16;
@@ -207,178 +98,45 @@ public:
     return true;
   }
 
-  virtual bool adjust_size(uint32_t *width, uint32_t *height) {
+  virtual bool gui_adjust_size(uint32_t *width, uint32_t *height) {
     //*width = MWidth;
     //*height = MHeight;
     //return true;
     return false;
   }
 
-  virtual bool set_size(uint32_t width, uint32_t height) {
-    MWidth = width;
-    MHeight = height;
-    MWindow->setSize(MWidth,MHeight);
+  virtual bool gui_set_size(uint32_t width, uint32_t height) {
+    MEditorWidth = width;
+    MEditorHeight = height;
+    /*MEditorWindow->*/setSize(width,height);
     return true;
   }
 
-  virtual bool set_parent(const clap_window_t *window) {
-    MWindow->reparent(window->x11);
+  virtual bool gui_set_parent(const clap_window_t *window) {
+    /*MEditorWindow->*/reparent(window->x11);
     return true;
   }
 
-  virtual bool set_transient(const clap_window_t *window) {
+  virtual bool gui_set_transient(const clap_window_t *window) {
     return true;
   }
 
-  virtual void suggest_title(const char *title) {
-    MWindow->setTitle(title);
+  virtual void gui_suggest_title(const char *title) {
+    /*MEditorWindow->*/setTitle(title);
   }
 
-  virtual bool show() {
-    MWindow->open();
-    MWindow->startEventThread();
-    MIsWindowOpen = true;
+  virtual bool gui_show() {
+    /*MEditorWindow->*/open();
+    /*MEditorWindow->*/startEventThread();
+    MIsEditorOpen = true;
     return true;
   }
 
-  virtual bool hide() {
-    MIsWindowOpen = false;
-    MWindow->stopEventThread();
-    MWindow->close();
+  virtual bool gui_hide() {
+    MIsEditorOpen = false;
+    /*MEditorWindow->*/stopEventThread();
+    /*MEditorWindow->*/close();
     return true;
-  }
-
-//------------------------------
-private:
-//------------------------------
-
-  void create() {
-    MIP_PRINT;
-    MSurface = new MIP_Surface(MWindow,256,256);
-
-    MPixmapPainter = new MIP_Painter(MSurface,MWindow);
-    MPixmapPainter->makeCurrent();
-    setupTriangle();
-    glClearColor(0.5,0,0,1);
-    glClear(GL_COLOR_BUFFER_BIT);
-    renderTriangle();
-
-    MNvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
-    MIP_Assert(MNvgContext);
-    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
-
-    //glViewport(0,0,256,256);
-    glViewport(0,256-MHeight,MWidth,MHeight);
-    //glViewport(0,0,w,h);
-//    renderNanoVG(MWidth,MHeight);
-
-    MPixmapPainter->swapBuffers();
-    //glXWaitGL();
-    MCreated = true;
-  }
-
-  //----------
-
-  void destroy() {
-    MIP_PRINT;
-    //delete MWindowPainter;
-    MPixmapPainter->resetCurrent();
-    nvgDeleteGL3(MNvgContext);
-    MIP_PRINT;
-    delete MPixmapPainter;
-    MIP_PRINT;
-    delete MSurface;
-    MIP_PRINT;
-    MCreated = false;
-    MIP_PRINT;
-  }
-
-  //----------
-
-  void setupTriangle() {
-
-    // vertex array
-    glGenVertexArrays(1,&MVertexArray);
-    glBindVertexArray(MVertexArray);
-    // positions
-    glGenBuffers(1,&MPosBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER,MPosBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 3 * 2 * sizeof(GLfloat), MPositionData, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(0);
-    // colors
-    glGenBuffers(1,&MColBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, MColBuffer);
-    glBufferData(GL_ARRAY_BUFFER, 3 * 3 * sizeof(GLubyte), MColorData, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_UNSIGNED_BYTE, GL_TRUE, 0, NULL);
-    glEnableVertexAttribArray(1);
-
-    // vs
-    MVertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(MVertexShader,1,&MVertexShaderSource,NULL);
-    glCompileShader(MVertexShader);
-    // fs
-    MFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(MFragmentShader,1,&MFragmentShaderSource, NULL);
-    glCompileShader(MFragmentShader);
-    // program
-    MProgram = glCreateProgram();
-    glAttachShader(MProgram,MVertexShader);
-    glAttachShader(MProgram,MFragmentShader);
-    glLinkProgram(MProgram);
-
-    int params = -1;
-    glGetProgramiv(MProgram,GL_LINK_STATUS,&params);
-    if (params != GL_TRUE) {
-      MIP_Print("Program did not link!\n");
-    }
-  }
-
-  //----------
-
-  void renderTriangle() {
-    glClearColor(0.3, 0.1, 0.2, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glUseProgram(MProgram);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-  }
-
-  //----------
-
-  void renderNanoVG(int32_t w, int32_t h) {
-    nvgBeginFrame(MNvgContext,w,h,1.0);
-
-      /*
-      nvgBeginPath(MNvgContext);
-      nvgCircle(MNvgContext, 128,128, 80 );
-      nvgFillColor(MNvgContext, nvgRGBA(128,64,64,128));
-      nvgFill(MNvgContext);
-      nvgFontFace(MNvgContext,"font1");
-      nvgFontSize(MNvgContext,32);
-      nvgFillColor(MNvgContext, nvgRGBA(255,255,255,128));
-      nvgText(MNvgContext,30,40,"Hello world!",0);
-      nvgFillColor(MNvgContext, nvgRGBA(0,0,0,255));
-      nvgFontSize(MNvgContext,8);
-      nvgText(MNvgContext,30,100,"Tiny, tiny 123 æøå",0);
-      nvgFontSize(MNvgContext,9);
-      nvgText(MNvgContext,30,110,"Tiny, tiny 123 æøå",0);
-      nvgFontSize(MNvgContext,10);
-      nvgText(MNvgContext,30,120,"Tiny, tiny 123 æøå",0);
-      */
-
-      //nvgStrokeColor(MNvgContext,nvgRGBA(255,255,255,1));
-      nvgFillColor(MNvgContext, nvgRGBA(255,255,255,255));
-      nvgFontSize(MNvgContext,10);
-      nvgMoveTo(MNvgContext,128,128);
-      for (uint32_t i=0; i<10; i++) {
-        float x = MIP_RandomRange(0,255);
-        float y = MIP_RandomRange(0,255);
-        //nvgLineTo(MNvgContext,x,y);
-        nvgText(MNvgContext,x,y,"Testing, testing 123 ABC æøå",0);
-      }
-      //nvgStroke(MNvgContext);
-
-    nvgEndFrame(MNvgContext);
   }
 
 };
