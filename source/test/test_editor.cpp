@@ -4,6 +4,11 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_OPENGL
 
+// resizing crashes if using pixmap..
+// investigate..
+
+#define USE_PIXMAP
+
 #define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket
 
@@ -17,8 +22,6 @@
 #include "gui/opengl/mip_opengl_painter.h"
 #include "gui/opengl/mip_opengl_utils.h"
 #include "gui/nanovg/mip_nanovg.h"
-
-
 
 //----------------------------------------------------------------------
 //
@@ -97,14 +100,15 @@ private:
 
   MIP_OpenGLPainter*  GL              = nullptr;
   NVGcontext*         MNvgContext     = nullptr;
-  //uint32_t            MWidth          = 0;
-  //uint32_t            MHeight         = 0;
   GLuint              MVertexArray    = 0;
   GLuint              MPosBuffer      = 0;
   GLuint              MColBuffer      = 0;
   GLuint              MVertexShader   = 0;
   GLuint              MFragmentShader = 0;
   GLuint              MProgram        = 0;
+  #ifdef USE_PIXMAP
+  MIP_Surface*        MSurface        = nullptr;
+  #endif
 
 //------------------------------
 public:
@@ -114,7 +118,7 @@ public:
     opengl want context creation and processing in the same thread.
     since we start out own event thread, and paint from there,
     we need to do some trickery.. we set a few callback pointers,
-    (using setThreadCallbacks), and when thr event thread starts,
+    (using setEventThreadCallbacks), and when thr event thread starts,
     it calls these, so that we can setup things the right thread..
   */
 
@@ -122,7 +126,7 @@ public:
   : MIP_Editor(AListener,AWidth,AHeight) {
     MIP_PRINT;
     //setWindowFillBackground();
-    setThreadCallbacks(thread_start,thread_stop);
+    setEventThreadCallbacks(thread_start,thread_stop);
   }
 
   //----------
@@ -159,29 +163,32 @@ public: // window listener
 //------------------------------
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    MIP_Print("paint %i,%i %i,%i : window %i,%i\n",AXpos,AYpos,AWidth,AHeight,getWindowWidth(),getWindowHeight());
     GL->makeCurrent();
     int32_t window_width = getWindowWidth();
     int32_t window_height = getWindowHeight();
-    MIP_Print("window size: %i,%i\n",window_width,window_height);
-    double start_time = MIP_GetTimeMS();
+    //double start_time = MIP_GetTimeMS();
     glViewport(0,0,window_width,window_height);
     glClearColor(0.5,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
     renderTriangle();
     renderNanoVG(window_width,window_height);
-    double elapsed = MIP_GetTimeMS() - start_time;
-    MIP_Print("Elapsed (ms): %f\n",elapsed);
+    //double elapsed = MIP_GetTimeMS() - start_time;
+    //MIP_Print("Elapsed (ms): %f\n",elapsed);
     GL->swapBuffers();
     GL->resetCurrent();
-    //blitDrawable(0,0,MSurface->drawable_getXcbDrawable(),AXpos,AYpos,AWidth,AHeight);
+    #ifdef USE_PIXMAP
+      blitDrawable(AXpos,AYpos,MSurface->drawable_getXcbDrawable(),AXpos,AYpos,AWidth,AHeight);
+    #endif
   }
 
   //----------
 
+  // this crashes if USE_PIXMAP
+
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    MIP_PRINT;
+    MIP_Print("%i,%i\n",AWidth,AHeight);
     exit_gl();
-    delete GL;
     init_gl(AWidth,AHeight);
     glViewport(0,0,AWidth,AHeight);
     prepare_gl(AWidth,AHeight);
@@ -192,32 +199,43 @@ private:
 //------------------------------
 
   void init_gl(int32_t AWidth, int32_t AHeight) {
-    MIP_PRINT;
-    GL = new MIP_OpenGLPainter(this,this);
+    //MIP_PRINT;
+    #ifdef USE_PIXMAP
+      MSurface = new MIP_Surface(this,AWidth,AHeight);
+      GL = new MIP_OpenGLPainter(MSurface,this);
+    #else
+      GL = new MIP_OpenGLPainter(this,this);
+    #endif
+    GL->makeCurrent();
+    MNvgContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
+    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
     GL->resetCurrent();
   }
 
   //----------
 
   void exit_gl() {
-    MIP_PRINT;
+    //MIP_PRINT;
     nvgDeleteGL3(MNvgContext);
-    MIP_GL_ERROR_CHECK;
     GL->destroyContext();
+    delete GL;
+    #ifdef USE_PIXMAP
+    delete MSurface;
+    #endif
   }
 
   //----------
 
   void prepare_gl(int32_t AWidth, int32_t AHeight) {
-    MIP_PRINT;
+    //MIP_PRINT;
     GL->makeCurrent();
     MIP_GL_ERROR_CHECK;
     setupTriangle();
     glClearColor(1,0,1,1);
     glClear(GL_COLOR_BUFFER_BIT);
     renderTriangle();
-    MNvgContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
-    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+//    MNvgContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
+//    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
     GL->resetCurrent();
     MIP_GL_ERROR_CHECK;
   }
@@ -225,7 +243,7 @@ private:
   //----------
 
   void setupTriangle() {
-    MIP_PRINT;
+    //MIP_PRINT;
     // vertex array
     glGenVertexArrays(1,&MVertexArray);
     glBindVertexArray(MVertexArray);
@@ -266,7 +284,7 @@ private:
   //----------
 
   void renderTriangle() {
-    MIP_PRINT;
+    //MIP_PRINT;
     glBindVertexArray(MVertexArray);
     glUseProgram(MProgram);
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -275,7 +293,7 @@ private:
   //----------
 
   void renderNanoVG(int32_t w, int32_t h) {
-    MIP_PRINT;
+    //MIP_PRINT;
     nvgBeginFrame(MNvgContext,w,h,1.0);
     for (uint32_t i=0; i<100; i++) {
 

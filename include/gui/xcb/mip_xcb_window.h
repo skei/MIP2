@@ -319,7 +319,7 @@ public: // window
 
   //----------
 
-  virtual void setThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {
+  virtual void setEventThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {
     MEventThreadStartCallback = AStart;
     MEventThreadStopCallback = AStop;
   }
@@ -906,7 +906,7 @@ private: // events
         if ((w != MWindowWidth) || (h != MWindowHeight)) {
           MWindowWidth  = w;
           MWindowHeight = h;
-          /*if (MWindowListener) MWindowListener->*/on_window_resize(x,y);
+          /*if (MWindowListener) MWindowListener->*/on_window_resize(w,h);
         }
         break;
       }

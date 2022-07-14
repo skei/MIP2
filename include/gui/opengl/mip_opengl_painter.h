@@ -2,25 +2,6 @@
 #define mip_opengl_painter_included
 //----------------------------------------------------------------------
 
-/*
-
-  GLX functions should not be called between glBegin and glEnd operations. If a
-  GLX function is called within a glBegin/glEnd pair, then the result is undefined;
-  however, no error is reported.
-
-  https://stackoverflow.com/questions/47918078/creating-opengl-structures-in-a-multithreaded-program
-  The requirement for OpenGL is that the context created for rendering should
-  be owned by single thread at any given point and the thread that owns context
-  should make it current and then call any gl related function. If you do that
-  without owning and making context current then you get segmentation faults.
-  By default the context will be current for the main thread.
-
-  .. other option is to make one context per thread and make it current when
-  thread starts.
-*/
-
-//----------------------------------------------------------------------
-
 #include "mip.h"
 #include "gui/mip_drawable.h"
 #include "gui/base/mip_base_painter.h"
@@ -44,12 +25,12 @@ GLint MIP_GlxPixmapAttribs[] = {
   GLX_DRAWABLE_TYPE,  GLX_PIXMAP_BIT,
   GLX_RENDER_TYPE,    GLX_RGBA_BIT,
   GLX_BUFFER_SIZE,    24,
-  //GLX_DOUBLEBUFFER,   False, // true = error (pixmap has no double buffer?)
+  GLX_DOUBLEBUFFER,   False, // true = error (pixmap has no double buffer?)
   GLX_RED_SIZE,       8,
   GLX_GREEN_SIZE,     8,
   GLX_BLUE_SIZE,      8,
-  //GLX_ALPHA_SIZE,     8,  // window can't have alpha
-  //GLX_STENCIL_SIZE,   8,  // nanovg needs stencil?
+  GLX_ALPHA_SIZE,     0,  // window can't have alpha
+  GLX_STENCIL_SIZE,   8,  // nanovg needs stencil?
   //GLX_DEPTH_SIZE,     24,
   //GLX_SAMPLE_BUFFERS, True,
   //GLX_SAMPLES,        2,
@@ -118,15 +99,12 @@ public:
 
   MIP_OpenGLPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
   : MIP_BasePainter(ASurface,ATarget) {
-    MIP_PRINT;
+    //MIP_PRINT;
     old_x_error_handler = XSetErrorHandler(x_error_handler);
-
-    MIP_PRINT;
+    //MIP_PRINT;
     MWidth = ASurface->drawable_getWidth();
     MHeight = ASurface->drawable_getHeight();
-
     Display* display = ATarget->drawable_getXlibDisplay();
-
     if (ASurface->drawable_isWindow()) {
       MFBConfig = findFBConfig(display,MIP_GlxWindowAttribs);
       MContext = createContext(MFBConfig);
@@ -147,7 +125,7 @@ public:
   //----------
 
   virtual ~MIP_OpenGLPainter() {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (MDrawableIsWindow) {
       glXDestroyWindow(MDisplay,MDrawable);
     }
@@ -165,7 +143,7 @@ public:
   // AAttribs : MIP_GlxPixmapAttribs or MIP_GlxWindowAttribs
 
   GLXFBConfig findFBConfig(Display* ADisplay, const int* AAttribs) {
-    MIP_PRINT;
+    //MIP_PRINT;
     MDisplay = ADisplay;
     int num_fbc = 0;
     GLXFBConfig* fbconfigs = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),AAttribs,&num_fbc);
@@ -176,13 +154,6 @@ public:
 
   //----------
 
-  //void cleanup() {
-  //  XFree(MFBConfigList);
-  //  //glXDestroyContext(MDisplay,MContext);
-  //}
-
-  //----------
-
   //glXCreateContextAttribsARBFUNC glXCreateContextAttribsARB = (glXCreateContextAttribsARBFUNC)glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
   //MIP_Assert(glXCreateContextAttribsARB);
   //MContext = glXCreateContextAttribsARB(MDisplay,MFBConfig,nullptr,True,MIP_GlxContextAttribs);
@@ -190,7 +161,7 @@ public:
   //    loadOpenGL();
 
   GLXContext createContext(GLXFBConfig fbconfig) {
-    MIP_PRINT;
+    //MIP_PRINT;
     GLXContext context = glXCreateNewContext(MDisplay,fbconfig,GLX_RGBA_TYPE,nullptr,True);
     loadOpenGL();
     return context;
@@ -199,7 +170,7 @@ public:
   //----------
 
   void destroyContext() {
-    MIP_PRINT;
+    //MIP_PRINT;
     glXDestroyContext(MDisplay,MContext);
   }
 
@@ -207,108 +178,10 @@ public:
 public:
 //------------------------------
 
-  /*
-    glXCreatePixmap creates an off-screen rendering area and returns its XID.
-    Any GLX rendering context that was created with respect to config can be
-    used to render into this window. Use glXMakeCurrent to associate the
-    rendering area with a GLX rendering context.
-
-    BadMatch is generated if pixmap was not created with a visual that corresponds to config.
-    BadMatch is generated if config does not support rendering to windows (e.g., GLX_DRAWABLE_TYPE does not contain GLX_WINDOW_BIT).
-    BadWindow is generated if pixmap is not a valid window XID. BadAlloc is generated if there is already a GLXFBConfig associated with pixmap.
-    BadAlloc is generated if the X server cannot allocate a new GLX window.
-    GLXBadFBConfig is generated if config is not a valid GLXFBConfig.
-  */
-
-  GLXPixmap createPixmap(Pixmap APixmap) {
-    MIP_PRINT;
-    return glXCreatePixmap(MDisplay,MFBConfig,APixmap,nullptr);
-  }
-
-  //----------
-
-  void deletePixmap(GLXPixmap APixmap) {
-    MIP_PRINT;
-    glXDestroyPixmap(MDisplay,APixmap);
-  }
-
-  //----------
-
-  /*
-    glXCreateWindow creates an on-screen rendering area from an existing X
-    window that was created with a visual matching config. The XID of the
-    GLXWindow is returned. Any GLX rendering context that was created with
-    respect to config can be used to render into this window. Use
-    glXMakeContextCurrent to associate the rendering area with a GLX rendering
-    context.
-
-    BadMatch is generated if win was not created with a visual that corresponds to config.
-    BadMatch is generated if config does not support rendering to windows (i.e., GLX_DRAWABLE_TYPE does not contain GLX_WINDOW_BIT).
-    BadWindow is generated if win is not a valid pixmap XID.
-    BadAlloc is generated if there is already a GLXFBConfig associated with win.
-    BadAlloc is generated if the X server cannot allocate a new GLX window.
-    GLXBadFBConfig is generated if config is not a valid GLXFBConfig.
-  */
-
-  GLXWindow createWindow(Window AWindow) {
-    MIP_PRINT;
-    return glXCreateWindow(MDisplay,MFBConfig,AWindow,nullptr);
-  }
-
-  //----------
-
-  void deleteWindow(GLXWindow AWindow) {
-    MIP_PRINT;
-    glXDestroyWindow(MDisplay,AWindow);
-  }
-
-  //----------
-
-  /*
-    The glXMakeCurrent subroutine does two things: (1) it makes the specified
-    Context parameter the current GLX rendering context of the calling thread,
-    replacing the previously current context if one exists, and (2) it attaches
-    Context to a GLX drawable (either a window or GLX pixmap). As a result of
-    these two actions, subsequent OpenGL rendering calls use Context as a
-    rendering context to modify the Drawable GLX drawable. Since the
-    glXMakeCurrent subroutine always replaces the current rendering context
-    with the specified Context, there can be only one current context per
-    thread.
-
-    Pending commands to the previous context, if any, are flushed before it is
-    released.
-
-    The first time Context is made current to any thread, its viewport is set
-    to the full size of Drawable. Subsequent calls by any thread to the
-    glXMakeCurrent subroutine using Context have no effect on its viewport.
-
-    To release the current context without assigning a new one, call the
-    glXMakeCurrent subroutine with the Drawable and Context parameters set to
-    None and Null, respectively.
-
-    The glXMakeCurrent subroutine returns True if it is successful, False
-    otherwise. If False is returned, the previously current rendering context
-    and drawable (if any) remain unchanged.
-
-    BadMatch is generated if draw and read are not compatible.
-    BadAccess is generated if ctx is current to some other thread.
-    GLXContextState is generated if there is a current rendering context and its render mode is either GLX_FEEDBACK or GLX_SELECT.
-    GLXBadContext is generated if ctx is not a valid GLX rendering context.
-    GLXBadDrawable is generated if draw or read is not a valid GLX drawable.
-    GLXBadWindow is generated if the underlying X window for either draw or read is no longer valid.
-    GLXBadCurrentDrawable is generated if the previous context of the calling thread has unflushed commands and the previous drawable is no longer valid.
-    BadAlloc is generated if the X server does not have enough resources to allocate the buffers.
-    BadMatch is generated if:
-      draw and read cannot fit into frame buffer memory simultaneously.
-      draw or read is a GLXPixmap and ctx is a direct-rendering context.
-      draw or read is a GLXPixmap and ctx was previously bound to a GLXWindow or GLXPbuffer.
-      draw or read is a GLXWindow or GLXPbuffer and ctx was previously bound to a GLXPixmap.
-  */
-
   // ADrawable: GLXPixmap, GLXWindow
 
   bool makeCurrent() {
-    MIP_PRINT;
+    //MIP_PRINT;
     bool res = glXMakeContextCurrent(MDisplay,MDrawable,MDrawable,MContext);
     if (!res) {
       MIP_Print("Error: makeCurrent returned false\n");
@@ -325,7 +198,7 @@ public:
   */
 
   bool resetCurrent() {
-    MIP_PRINT;
+    //MIP_PRINT;
     bool res = glXMakeContextCurrent(MDisplay,0,0,0);
     if (!res) {
       MIP_Print("Error: makeCurrent returned false\n");
@@ -337,7 +210,7 @@ public:
   //----------
 
   void swapBuffers() {
-    MIP_PRINT;
+    //MIP_PRINT;
     glXSwapBuffers(MDisplay,MDrawable);
   }
 
@@ -347,7 +220,7 @@ public:
   // should this be done per window/context, or once per program/library?
 
   bool loadOpenGL() {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (!sogl_loadOpenGL()) {
       MIP_Print("Error: sogl_loadOpenGL:\n");
       const char** failures = sogl_getFailures();
@@ -363,7 +236,7 @@ public:
   //----------
 
   bool getGlxVersion(int* AMajor, int* AMinor) {
-    MIP_PRINT;
+    //MIP_PRINT;
     bool res = glXQueryVersion(MDisplay,AMajor,AMinor);
     if (!res) {
       MIP_Print("Error: getGlxVersion returned false\n");
@@ -389,14 +262,16 @@ public:
   //----------
 
   Display* getCurrentDisplay() {
-    MIP_PRINT;
+    //MIP_PRINT;
     return glXGetCurrentDisplay();
   }
+
+  //----------
 
   // If there is no current context, NULL is returned.
 
   GLXContext getCurrentContext() {
-    MIP_PRINT;
+    //MIP_PRINT;
     return glXGetCurrentContext();
   }
 
@@ -404,12 +279,14 @@ public:
   // If there is no current draw drawable, None is returned.
 
   GLXDrawable getCurrentDrawable() {
-    MIP_PRINT;
+    //MIP_PRINT;
     return glXGetCurrentDrawable();
   }
 
+  //----------
+
   GLXDrawable getCurrentReadDrawable() {
-    MIP_PRINT;
+    //MIP_PRINT;
     return glXGetCurrentReadDrawable();
   }
 
@@ -445,25 +322,100 @@ private:
 //----------------------------------------------------------------------
 #endif
 
+/*
 
+  GLX functions should not be called between glBegin and glEnd operations. If a
+  GLX function is called within a glBegin/glEnd pair, then the result is undefined;
+  however, no error is reported.
 
+  https://stackoverflow.com/questions/47918078/creating-opengl-structures-in-a-multithreaded-program
+  The requirement for OpenGL is that the context created for rendering should
+  be owned by single thread at any given point and the thread that owns context
+  should make it current and then call any gl related function. If you do that
+  without owning and making context current then you get segmentation faults.
+  By default the context will be current for the main thread.
 
+  .. other option is to make one context per thread and make it current when
+  thread starts.
+*/
 
+//----------
 
+/*
+  The glXMakeCurrent subroutine does two things: (1) it makes the specified
+  Context parameter the current GLX rendering context of the calling thread,
+  replacing the previously current context if one exists, and (2) it attaches
+  Context to a GLX drawable (either a window or GLX pixmap). As a result of
+  these two actions, subsequent OpenGL rendering calls use Context as a
+  rendering context to modify the Drawable GLX drawable. Since the
+  glXMakeCurrent subroutine always replaces the current rendering context
+  with the specified Context, there can be only one current context per
+  thread.
 
+  Pending commands to the previous context, if any, are flushed before it is
+  released.
 
+  The first time Context is made current to any thread, its viewport is set
+  to the full size of Drawable. Subsequent calls by any thread to the
+  glXMakeCurrent subroutine using Context have no effect on its viewport.
 
+  To release the current context without assigning a new one, call the
+  glXMakeCurrent subroutine with the Drawable and Context parameters set to
+  None and Null, respectively.
 
+  The glXMakeCurrent subroutine returns True if it is successful, False
+  otherwise. If False is returned, the previously current rendering context
+  and drawable (if any) remain unchanged.
 
+  BadMatch is generated if draw and read are not compatible.
+  BadAccess is generated if ctx is current to some other thread.
+  GLXContextState is generated if there is a current rendering context and its render mode is either GLX_FEEDBACK or GLX_SELECT.
+  GLXBadContext is generated if ctx is not a valid GLX rendering context.
+  GLXBadDrawable is generated if draw or read is not a valid GLX drawable.
+  GLXBadWindow is generated if the underlying X window for either draw or read is no longer valid.
+  GLXBadCurrentDrawable is generated if the previous context of the calling thread has unflushed commands and the previous drawable is no longer valid.
+  BadAlloc is generated if the X server does not have enough resources to allocate the buffers.
+  BadMatch is generated if:
+    draw and read cannot fit into frame buffer memory simultaneously.
+    draw or read is a GLXPixmap and ctx is a direct-rendering context.
+    draw or read is a GLXPixmap and ctx was previously bound to a GLXWindow or GLXPbuffer.
+    draw or read is a GLXWindow or GLXPbuffer and ctx was previously bound to a GLXPixmap.
+*/
 
+//----------
 
+/*
+  glXCreatePixmap creates an off-screen rendering area and returns its XID.
+  Any GLX rendering context that was created with respect to config can be
+  used to render into this window. Use glXMakeCurrent to associate the
+  rendering area with a GLX rendering context.
 
+  BadMatch is generated if pixmap was not created with a visual that corresponds to config.
+  BadMatch is generated if config does not support rendering to windows (e.g., GLX_DRAWABLE_TYPE does not contain GLX_WINDOW_BIT).
+  BadWindow is generated if pixmap is not a valid window XID. BadAlloc is generated if there is already a GLXFBConfig associated with pixmap.
+  BadAlloc is generated if the X server cannot allocate a new GLX window.
+  GLXBadFBConfig is generated if config is not a valid GLXFBConfig.
+*/
 
+//----------
 
+/*
+  glXCreateWindow creates an on-screen rendering area from an existing X
+  window that was created with a visual matching config. The XID of the
+  GLXWindow is returned. Any GLX rendering context that was created with
+  respect to config can be used to render into this window. Use
+  glXMakeContextCurrent to associate the rendering area with a GLX rendering
+  context.
 
+  BadMatch is generated if win was not created with a visual that corresponds to config.
+  BadMatch is generated if config does not support rendering to windows (i.e., GLX_DRAWABLE_TYPE does not contain GLX_WINDOW_BIT).
+  BadWindow is generated if win is not a valid pixmap XID.
+  BadAlloc is generated if there is already a GLXFBConfig associated with win.
+  BadAlloc is generated if the X server cannot allocate a new GLX window.
+  GLXBadFBConfig is generated if config is not a valid GLXFBConfig.
+*/
 
-
-
+//----------
 
 
 
