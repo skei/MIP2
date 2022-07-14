@@ -5,6 +5,7 @@
 #include <pthread.h>
 //#include <unistd.h> // sleep
 
+#include "mip.h"
 #include "base/system/mip_time.h"
 
 //----------------------------------------------------------------------
@@ -76,7 +77,7 @@ private:
 
   static
   void* threadProc(void* data) {
-    MIP_Print("threadProc\n");
+    //MIP_Print("threadProc\n");
     MIP_Thread* thr = (MIP_Thread*)data;
     if (thr) {
       if (thr->MThreadSleep >= 0) {

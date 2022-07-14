@@ -2,6 +2,8 @@
 #define mip_plugin_included
 //----------------------------------------------------------------------
 
+// TODO: #ifndef MIP_NO_GUI around all editor stuff..
+
 #include "mip.h"
 #include "base/types/mip_queue.h"
 #include "plugin/mip_audio_port.h"
@@ -12,30 +14,14 @@
 #include "plugin/clap/mip_clap_host.h"
 
 //----------------------------------------------------------------------
-
-/*
-  maximum number of parameters that can be sent per audio block
-  note that when initializing, the host can send updates for ALL
-  parameters..
-*/
-
-//#define MIP_PLUGIN_MAX_PARAM_EVENTS 4096
-
-/*
-  numbewr of events that can be sent back from the gui to the plugin
-  per
-*/
-
-//#define MIP_PLUGIN_MAX_GUI_EVENTS   32
-
-//----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
 
 struct MIP_ProcessContext {
-  const clap_process_t* process;
+  const clap_process_t* process     = nullptr;
+  double                samplerate  = 0.0;
 };
 
 //----------------------------------------------------------------------
@@ -52,23 +38,20 @@ class MIP_Plugin
 protected:
 //------------------------------
 
-  MIP_AudioPortArray              MAudioInputPorts  = {};
-  MIP_AudioPortArray              MAudioOutputPorts = {};
-  MIP_NotePortArray               MNoteInputPorts   = {};
-  MIP_NotePortArray               MNoteOutputPorts  = {};
-  MIP_ParameterManager            MParameters       = {};
-
-  MIP_ProcessContext              MProcessContext   = {};
+  MIP_AudioPortArray              MAudioInputPorts          = {};
+  MIP_AudioPortArray              MAudioOutputPorts         = {};
+  MIP_NotePortArray               MNoteInputPorts           = {};
+  MIP_NotePortArray               MNoteOutputPorts          = {};
+  MIP_ParameterManager            MParameters               = {};
+  MIP_ProcessContext              MProcessContext           = {};
+  uint32_t                        MSelectedAudioPortsConfig = 0;
+  int32_t                         MRenderMode               = CLAP_RENDER_REALTIME;
+  uint32_t                        MEditorWidth              = 300;
+  uint32_t                        MEditorHeight             = 300;
+  MIP_Editor*                     MEditor                   = {};
 
   //MIP_AudioProcess
   //MIP_VoiceManager
-
-  MIP_Editor*                     MEditor           = {};
-  uint32_t                        MEditorWidth      = 512;
-  uint32_t                        MEditorHeight     = 512;
-
-  uint32_t                        MSelectedAudioPortsConfig = 0;
-  int32_t                         MRenderMode               = CLAP_RENDER_REALTIME;
 
 //------------------------------
 public:
@@ -90,41 +73,42 @@ public:
 public: // clap plugin
 //------------------------------
 
-  //bool init() override {
-  //  return true;
-  //}
+  bool init() override {
+    return true;
+  }
 
   //----------
 
-  //void destroy() override {
-  //}
+  void destroy() override {
+  }
 
   //----------
 
-  //bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) override {
-  //  return true;
-  //}
+  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) override {
+    MProcessContext.samplerate = sample_rate;
+    return true;
+  }
 
   //----------
 
-  //void deactivate() override {
-  //}
+  void deactivate() override {
+  }
 
   //----------
 
-  //bool start_processing() override {
-  //  return true;
-  //}
+  bool start_processing() override {
+    return true;
+  }
 
   //----------
 
-  //void stop_processing() override {
-  //}
+  void stop_processing() override {
+  }
 
   //----------
 
-  //void reset() override {
-  //}
+  void reset() override {
+  }
 
   //----------
 
@@ -171,8 +155,8 @@ public: // clap plugin
 
   //----------
 
-  //void on_main_thread() override {
-  //}
+  void on_main_thread() override {
+  }
 
 //------------------------------
 public: // DRAFT ambisonic

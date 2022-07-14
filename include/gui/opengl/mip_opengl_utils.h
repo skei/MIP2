@@ -44,7 +44,7 @@
 // Helper to check for extension string presence. Adapted from:
 // http://www.opengl.org/resources/features/OGLextensions/
 
-bool isExtensionSupported(const char *extList, const char *extension) {
+bool MIP_openGLExtensionSupported(const char *extList, const char *extension) {
   const char *start;
   const char *where, *terminator;
   // Extension names should not have spaces.
@@ -66,17 +66,17 @@ bool isExtensionSupported(const char *extList, const char *extension) {
 
 //----------------------------------------------------------------------
 
-#define MIP_OPENGL_ERROR_CHECK {  \
-  GLint err = glGetError();       \
-  if (err != GL_NO_ERROR) {       \
-    MIP_Print("");                \
-    MIP_printOpenGLError(err);    \
-  }                                                   \
+#define MIP_GL_ERROR_CHECK {    \
+  GLint err = glGetError();     \
+  if (err != GL_NO_ERROR) {     \
+    MIP_Print("");              \
+    MIP_PrintGLError(err);      \
+  }                             \
 }
 
 //#define MIP_OPENGL_ERROR_CHECK { MIP_Print("gl error: %i\n",glGetError()); }
 
-void MIP_printOpenGLError(GLint err) {
+void MIP_PrintGLError(GLint err) {
   switch (err) {
     case GL_NO_ERROR:                       MIP_DPrint("OpenGL Error: No error has been recorded. The value of this symbolic constant is guaranteed to be 0.\n"); break;
     case GL_INVALID_ENUM:                   MIP_DPrint("OpenGL Error: An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
@@ -89,6 +89,11 @@ void MIP_printOpenGLError(GLint err) {
     default:                                MIP_DPrint("OpenGL Error: Unknown error %i\n",err); break;
   }
 }
+
+void MIP_PrintGLXError(GLint err) {
+  MIP_PRINT;
+}
+
 //----------------------------------------------------------------------
 
 

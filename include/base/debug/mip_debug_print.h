@@ -12,12 +12,26 @@
 */
 
 #include <stdarg.h>   // va_
-#include "mip.h"
+#include <sys/syscall.h>
+#include <sys/unistd.h>
 
-//----------
+
+//----------------------------------------------------------------------
+
+#include "mip.h"
+//#include "base/system/mip_thread.h"
+
+//----------------------------------------------------------------------
 
 void MIP_NoPrint(const char*,...) {}
 
+//----------
+
+#define gettid() syscall(SYS_gettid)
+
+pid_t MIP_GetThreadId() {
+  return gettid();
+}
 //----------------------------------------------------------------------
 
 #ifdef MIP_DEBUG

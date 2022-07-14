@@ -2,24 +2,41 @@
 #define mip_opengl_painter_included
 //----------------------------------------------------------------------
 
-//glBindFramebuffer(GL_FRAMEBUFFER,MPixmap);
-
 /*
-  The thread a context is associated with is not immutable. There is a property
-  that a thread can only have one context bound to it at a time and that a
-  context can only be bound in one thread at a time, but you can release the
-  context from one thread and give it to another.
+
+  GLX functions should not be called between glBegin and glEnd operations. If a
+  GLX function is called within a glBegin/glEnd pair, then the result is undefined;
+  however, no error is reported.
+
+  https://stackoverflow.com/questions/47918078/creating-opengl-structures-in-a-multithreaded-program
+  The requirement for OpenGL is that the context created for rendering should
+  be owned by single thread at any given point and the thread that owns context
+  should make it current and then call any gl related function. If you do that
+  without owning and making context current then you get segmentation faults.
+  By default the context will be current for the main thread.
+
+  .. other option is to make one context per thread and make it current when
+  thread starts.
 */
-
-
-#include "mip.h"
-#include "gui/opengl/mip_opengl.h"
-#include "gui/opengl/mip_opengl_utils.h"
-#include "gui/mip_paint_target.h"
 
 //----------------------------------------------------------------------
 
-typedef GLXContext (*glXCreateContextAttribsARBFUNC)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+#include "mip.h"
+#include "gui/mip_drawable.h"
+#include "gui/base/mip_base_painter.h"
+#include "gui/opengl/mip_opengl.h"
+#include "gui/opengl/mip_opengl_utils.h"
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+#define MIP_OPENGL_MAJOR 3
+#define MIP_OPENGL_MINOR 2
+
+//----------
 
 GLint MIP_GlxPixmapAttribs[] = {
   GLX_X_RENDERABLE,   True,
@@ -27,7 +44,7 @@ GLint MIP_GlxPixmapAttribs[] = {
   GLX_DRAWABLE_TYPE,  GLX_PIXMAP_BIT,
   GLX_RENDER_TYPE,    GLX_RGBA_BIT,
   GLX_BUFFER_SIZE,    24,
-  //GLX_DOUBLEBUFFER,   True, // not for pixmap!
+  //GLX_DOUBLEBUFFER,   False, // true = error (pixmap has no double buffer?)
   GLX_RED_SIZE,       8,
   GLX_GREEN_SIZE,     8,
   GLX_BLUE_SIZE,      8,
@@ -40,18 +57,20 @@ GLint MIP_GlxPixmapAttribs[] = {
   None
 };
 
+//----------
+
 GLint MIP_GlxWindowAttribs[] = {
   GLX_X_RENDERABLE,   True,
   GLX_X_VISUAL_TYPE,  GLX_TRUE_COLOR,
   GLX_DRAWABLE_TYPE,  GLX_WINDOW_BIT,
   GLX_RENDER_TYPE,    GLX_RGBA_BIT,
-  //GLX_BUFFER_SIZE,    24,
-  //GLX_DOUBLEBUFFER,   True, // not for pixmap!
+  GLX_BUFFER_SIZE,    24,
+  GLX_DOUBLEBUFFER,   True,
   GLX_RED_SIZE,       8,
   GLX_GREEN_SIZE,     8,
   GLX_BLUE_SIZE,      8,
-  //GLX_ALPHA_SIZE,     0,  // window can't have alpha
-  //GLX_STENCIL_SIZE,   8,  // nanovg needs stencil?
+  GLX_ALPHA_SIZE,     0,  // 0 window can't have alpha
+  GLX_STENCIL_SIZE,   8,  // nanovg needs stencil?
   //GLX_DEPTH_SIZE,     24,
   //GLX_SAMPLE_BUFFERS, True,
   //GLX_SAMPLES,        2,
@@ -59,84 +78,267 @@ GLint MIP_GlxWindowAttribs[] = {
   None
 };
 
+//----------
+
+//static int MIP_GlxContextAttribs[] = {
+//  GLX_CONTEXT_MAJOR_VERSION_ARB,  MIP_OPENGL_MAJOR,
+//  GLX_CONTEXT_MINOR_VERSION_ARB,  MIP_OPENGL_MINOR,
+//  GLX_CONTEXT_PROFILE_MASK_ARB,   GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+//  None
+//};
+
+
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
 
-class MIP_OpenGLPainter {
+class MIP_OpenGLPainter
+: public MIP_BasePainter {
 
 //------------------------------
 private:
 //------------------------------
 
-  GLXContext        MContext      = nullptr;
-  MIP_PaintTarget*  MTarget       = nullptr;
-  MIP_PaintSource*  MSource       = nullptr;
-
-  Display*          MDisplay      = nullptr;
-  XVisualInfo*      MVisualInfo   = nullptr;
-  GLXFBConfig*      MFBConfigList = nullptr;
-  GLXFBConfig       MFBConfig     = nullptr;
-
-  GLXPixmap         MPixmap       = GLX_NONE;
-  GLXWindow         MWindow       = GLX_NONE;
+  Display*      MDisplay      = None;
+  GLXContext    MContext      = nullptr;
+  GLXFBConfig   MFBConfig     = nullptr;
+  uint32_t      MWidth        = 0;
+  uint32_t      MHeight       = 0;
+  GLXDrawable   MDrawable          = GLX_NONE;
+  bool          MDrawableIsWindow  = false;
 
 //------------------------------
 public:
 //------------------------------
 
-  // target = what we're painting to
-  // source = window (xcb connection, visual, etc)
+  // ASurface = pixmap
+  // ATarget  = window
 
-  MIP_OpenGLPainter(MIP_PaintTarget* ATarget, MIP_PaintSource* ASource) {
-    MTarget = ATarget;
-    MDisplay = ASource->paint_source_getXlibDisplay();
-    if (MTarget->paint_target_isSurface()) createPixmapContext();
-    else if (MTarget->paint_target_isWindow()) createWindowContext();
-    else MIP_Assert(false); // target not handled..
-    makeCurrent();
-    loadOpenGL();
+  MIP_OpenGLPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
+  : MIP_BasePainter(ASurface,ATarget) {
+    MIP_PRINT;
+    old_x_error_handler = XSetErrorHandler(x_error_handler);
+
+    MIP_PRINT;
+    MWidth = ASurface->drawable_getWidth();
+    MHeight = ASurface->drawable_getHeight();
+
+    Display* display = ATarget->drawable_getXlibDisplay();
+
+    if (ASurface->drawable_isWindow()) {
+      MFBConfig = findFBConfig(display,MIP_GlxWindowAttribs);
+      MContext = createContext(MFBConfig);
+      xcb_window_t window = ASurface->drawable_getXcbWindow();
+      MDrawable = glXCreateWindow(MDisplay,MFBConfig,window,nullptr);
+      MDrawableIsWindow = true;
+    }
+    else {
+      MFBConfig = findFBConfig(display,MIP_GlxPixmapAttribs);
+      MContext = createContext(MFBConfig);
+      xcb_pixmap_t pixmap = ASurface->drawable_getXcbPixmap();
+      MDrawable = glXCreatePixmap(MDisplay,MFBConfig,pixmap,nullptr);
+      MDrawableIsWindow = false;
+    }
+    //resetCurrent();
   }
 
   //----------
 
   virtual ~MIP_OpenGLPainter() {
-    if (MPixmap != GLX_NONE) {
-      glXDestroyPixmap(MDisplay,MPixmap);
-      MPixmap = GLX_NONE;
+    MIP_PRINT;
+    if (MDrawableIsWindow) {
+      glXDestroyWindow(MDisplay,MDrawable);
     }
-    if (MWindow != GLX_NONE) {
-      glXDestroyWindow(MDisplay,MWindow);
-      MWindow = GLX_NONE;
+    else {
+      glXDestroyPixmap(MDisplay,MDrawable);
     }
-    if (MFBConfigList) {
-      XFree(MFBConfigList);
-      MFBConfigList = nullptr;
-    }
+    XSetErrorHandler(old_x_error_handler);
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  //----------
+  // ADisplay : X11 Display*
+  // AAttribs : MIP_GlxPixmapAttribs or MIP_GlxWindowAttribs
 
-  void makeCurrent() {
-    if (MPixmap != GLX_NONE) glXMakeCurrent(MDisplay,MPixmap,MContext);
-    if (MWindow != GLX_NONE) glXMakeCurrent(MDisplay,MWindow,MContext);
+  GLXFBConfig findFBConfig(Display* ADisplay, const int* AAttribs) {
+    MIP_PRINT;
+    MDisplay = ADisplay;
+    int num_fbc = 0;
+    GLXFBConfig* fbconfigs = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),AAttribs,&num_fbc);
+    GLXFBConfig fbconfig = fbconfigs[0];
+    XFree(fbconfigs);
+    return fbconfig;
   }
 
-  void resetCurrent() {
-    glXMakeCurrent(MDisplay,0,0);
+  //----------
+
+  //void cleanup() {
+  //  XFree(MFBConfigList);
+  //  //glXDestroyContext(MDisplay,MContext);
+  //}
+
+  //----------
+
+  //glXCreateContextAttribsARBFUNC glXCreateContextAttribsARB = (glXCreateContextAttribsARBFUNC)glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
+  //MIP_Assert(glXCreateContextAttribsARB);
+  //MContext = glXCreateContextAttribsARB(MDisplay,MFBConfig,nullptr,True,MIP_GlxContextAttribs);
+  //    MContext = glXCreateNewContext(MDisplay,MFBConfig,GLX_RGBA_TYPE,nullptr,True);
+  //    loadOpenGL();
+
+  GLXContext createContext(GLXFBConfig fbconfig) {
+    MIP_PRINT;
+    GLXContext context = glXCreateNewContext(MDisplay,fbconfig,GLX_RGBA_TYPE,nullptr,True);
+    loadOpenGL();
+    return context;
+  }
+
+  //----------
+
+  void destroyContext() {
+    MIP_PRINT;
+    glXDestroyContext(MDisplay,MContext);
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  /*
+    glXCreatePixmap creates an off-screen rendering area and returns its XID.
+    Any GLX rendering context that was created with respect to config can be
+    used to render into this window. Use glXMakeCurrent to associate the
+    rendering area with a GLX rendering context.
+
+    BadMatch is generated if pixmap was not created with a visual that corresponds to config.
+    BadMatch is generated if config does not support rendering to windows (e.g., GLX_DRAWABLE_TYPE does not contain GLX_WINDOW_BIT).
+    BadWindow is generated if pixmap is not a valid window XID. BadAlloc is generated if there is already a GLXFBConfig associated with pixmap.
+    BadAlloc is generated if the X server cannot allocate a new GLX window.
+    GLXBadFBConfig is generated if config is not a valid GLXFBConfig.
+  */
+
+  GLXPixmap createPixmap(Pixmap APixmap) {
+    MIP_PRINT;
+    return glXCreatePixmap(MDisplay,MFBConfig,APixmap,nullptr);
+  }
+
+  //----------
+
+  void deletePixmap(GLXPixmap APixmap) {
+    MIP_PRINT;
+    glXDestroyPixmap(MDisplay,APixmap);
+  }
+
+  //----------
+
+  /*
+    glXCreateWindow creates an on-screen rendering area from an existing X
+    window that was created with a visual matching config. The XID of the
+    GLXWindow is returned. Any GLX rendering context that was created with
+    respect to config can be used to render into this window. Use
+    glXMakeContextCurrent to associate the rendering area with a GLX rendering
+    context.
+
+    BadMatch is generated if win was not created with a visual that corresponds to config.
+    BadMatch is generated if config does not support rendering to windows (i.e., GLX_DRAWABLE_TYPE does not contain GLX_WINDOW_BIT).
+    BadWindow is generated if win is not a valid pixmap XID.
+    BadAlloc is generated if there is already a GLXFBConfig associated with win.
+    BadAlloc is generated if the X server cannot allocate a new GLX window.
+    GLXBadFBConfig is generated if config is not a valid GLXFBConfig.
+  */
+
+  GLXWindow createWindow(Window AWindow) {
+    MIP_PRINT;
+    return glXCreateWindow(MDisplay,MFBConfig,AWindow,nullptr);
+  }
+
+  //----------
+
+  void deleteWindow(GLXWindow AWindow) {
+    MIP_PRINT;
+    glXDestroyWindow(MDisplay,AWindow);
+  }
+
+  //----------
+
+  /*
+    The glXMakeCurrent subroutine does two things: (1) it makes the specified
+    Context parameter the current GLX rendering context of the calling thread,
+    replacing the previously current context if one exists, and (2) it attaches
+    Context to a GLX drawable (either a window or GLX pixmap). As a result of
+    these two actions, subsequent OpenGL rendering calls use Context as a
+    rendering context to modify the Drawable GLX drawable. Since the
+    glXMakeCurrent subroutine always replaces the current rendering context
+    with the specified Context, there can be only one current context per
+    thread.
+
+    Pending commands to the previous context, if any, are flushed before it is
+    released.
+
+    The first time Context is made current to any thread, its viewport is set
+    to the full size of Drawable. Subsequent calls by any thread to the
+    glXMakeCurrent subroutine using Context have no effect on its viewport.
+
+    To release the current context without assigning a new one, call the
+    glXMakeCurrent subroutine with the Drawable and Context parameters set to
+    None and Null, respectively.
+
+    The glXMakeCurrent subroutine returns True if it is successful, False
+    otherwise. If False is returned, the previously current rendering context
+    and drawable (if any) remain unchanged.
+
+    BadMatch is generated if draw and read are not compatible.
+    BadAccess is generated if ctx is current to some other thread.
+    GLXContextState is generated if there is a current rendering context and its render mode is either GLX_FEEDBACK or GLX_SELECT.
+    GLXBadContext is generated if ctx is not a valid GLX rendering context.
+    GLXBadDrawable is generated if draw or read is not a valid GLX drawable.
+    GLXBadWindow is generated if the underlying X window for either draw or read is no longer valid.
+    GLXBadCurrentDrawable is generated if the previous context of the calling thread has unflushed commands and the previous drawable is no longer valid.
+    BadAlloc is generated if the X server does not have enough resources to allocate the buffers.
+    BadMatch is generated if:
+      draw and read cannot fit into frame buffer memory simultaneously.
+      draw or read is a GLXPixmap and ctx is a direct-rendering context.
+      draw or read is a GLXPixmap and ctx was previously bound to a GLXWindow or GLXPbuffer.
+      draw or read is a GLXWindow or GLXPbuffer and ctx was previously bound to a GLXPixmap.
+  */
+
+  // ADrawable: GLXPixmap, GLXWindow
+
+  bool makeCurrent() {
+    MIP_PRINT;
+    bool res = glXMakeContextCurrent(MDisplay,MDrawable,MDrawable,MContext);
+    if (!res) {
+      MIP_Print("Error: makeCurrent returned false\n");
+      return false;
+    }
+    return true;
+  }
+
+  //----------
+
+  /*
+    you have to make it UN-current in one thread
+    before you can make it current in another..
+  */
+
+  bool resetCurrent() {
+    MIP_PRINT;
+    bool res = glXMakeContextCurrent(MDisplay,0,0,0);
+    if (!res) {
+      MIP_Print("Error: makeCurrent returned false\n");
+      return false;
+    }
+    return true;
   }
 
   //----------
 
   void swapBuffers() {
-    if (MPixmap != GLX_NONE) glXSwapBuffers(MDisplay,MPixmap);
-    if (MWindow != GLX_NONE) glXSwapBuffers(MDisplay,MWindow);
+    MIP_PRINT;
+    glXSwapBuffers(MDisplay,MDrawable);
   }
 
   //----------
@@ -145,11 +347,12 @@ public:
   // should this be done per window/context, or once per program/library?
 
   bool loadOpenGL() {
+    MIP_PRINT;
     if (!sogl_loadOpenGL()) {
-      MIP_Print("sogl_loadOpenGL failed!\n");
+      MIP_Print("Error: sogl_loadOpenGL:\n");
       const char** failures = sogl_getFailures();
       while (*failures) {
-        MIP_Print("%s\n",*failures);
+        MIP_DPrint("  %s\n",*failures);
         failures++;
       }
       return false;
@@ -159,12 +362,14 @@ public:
 
   //----------
 
-  float getGlxVersion(Display* display) {
-    int major, minor;
-    glXQueryVersion(display,&major,&minor);
-    char buf[16] = {0};
-    sprintf(buf,"%i.%i",major,minor);
-    return atof(buf);
+  bool getGlxVersion(int* AMajor, int* AMinor) {
+    MIP_PRINT;
+    bool res = glXQueryVersion(MDisplay,AMajor,AMinor);
+    if (!res) {
+      MIP_Print("Error: getGlxVersion returned false\n");
+      return false;
+    }
+    return true;
   }
 
   //----------
@@ -181,67 +386,59 @@ public:
   }
   */
 
+  //----------
+
+  Display* getCurrentDisplay() {
+    MIP_PRINT;
+    return glXGetCurrentDisplay();
+  }
+
+  // If there is no current context, NULL is returned.
+
+  GLXContext getCurrentContext() {
+    MIP_PRINT;
+    return glXGetCurrentContext();
+  }
+
+  // get the XID of the current drawable used for rendering, call
+  // If there is no current draw drawable, None is returned.
+
+  GLXDrawable getCurrentDrawable() {
+    MIP_PRINT;
+    return glXGetCurrentDrawable();
+  }
+
+  GLXDrawable getCurrentReadDrawable() {
+    MIP_PRINT;
+    return glXGetCurrentReadDrawable();
+  }
+
 //------------------------------
-private: // context creation
+private:
 //------------------------------
 
-  /*
-    The glXCreatePixmap subroutine creates an off-screen rendering area and
-    returns its XID. Any GLX rendering context that was created with respect to
-    the config parameter can be used to render into this off-screen area. Use
-    the glXMakeContextCurrent subroutine to associate the rendering area with a
-    GLX rendering context.
-  */
+  //static
+  int (*old_x_error_handler)(Display*,XErrorEvent*);
 
-  //for (int i=0; i<num_fbc; i++) {
-  //  int attrib;
-  //  glXGetFBConfigAttrib( MDisplay, fbc[i], GLX_BUFFER_SIZE, &attrib);
-  //  MIP_Print("%i = %i\n",i,attrib);
+  //----------
+
+  static
+  int x_error_handler(Display* d, XErrorEvent* e) {
+    char error_text[512] = {0};
+    XGetErrorText(d,e->error_code,error_text,511);
+    MIP_DPrint("X Error %i: %s\n",e->error_code,error_text);
+    return 0;
+  }
+
+  //----------
+
+  //static void glx_error_message(const char *format, ...) {
+  //  va_list args;
+  //  va_start(args, format);
+  //  fprintf(stderr, "glx error: ");
+  //  vfprintf(stderr, format, args);
+  //  va_end(args);
   //}
-
-  bool createPixmapContext() {
-    int num_fbc = 0;
-    MFBConfigList = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),MIP_GlxPixmapAttribs,&num_fbc);
-    //MIP_Print("%i fb configs\n",num_fbc);
-    MFBConfig = MFBConfigList[0];
-    //MIP_printFBConfigs(MDisplay,&MFBConfig,1);
-    createContext();
-    MPixmap = glXCreatePixmap(MDisplay,MFBConfig,MTarget->paint_target_getXcbPixmap(),nullptr);
-    return true;
-  }
-
-  //----------
-
-  bool createWindowContext() {
-    int num_fbc = 0;
-    MFBConfigList = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),MIP_GlxWindowAttribs,&num_fbc);
-    //MIP_Print("%i fb configs\n",num_fbc);
-    MFBConfig = MFBConfigList[0];
-    //MIP_printFBConfigs(MDisplay,&MFBConfig,1);
-    createContext();
-    //MVisualInfo = glXGetVisualFromFBConfig(MDisplay,MFBConfig);
-    MWindow = glXCreateWindow(MDisplay,MFBConfig,MTarget->paint_target_getXcbWindow(),nullptr);
-    return true;
-  }
-
-  //----------
-
-  bool createContext() {
-    glXCreateContextAttribsARBFUNC glXCreateContextAttribsARB = (glXCreateContextAttribsARBFUNC)glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
-    MIP_Assert(glXCreateContextAttribsARB);
-    static int contextAttribs[] = {
-      GLX_CONTEXT_MAJOR_VERSION_ARB,  MIP_OPENGL_MAJOR,
-      GLX_CONTEXT_MINOR_VERSION_ARB,  MIP_OPENGL_MINOR,
-      GLX_CONTEXT_PROFILE_MASK_ARB,   GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
-      None
-    };
-    MContext = glXCreateContextAttribsARB(MDisplay,MFBConfig,nullptr,True,contextAttribs);
-    MIP_Assert(MContext);
-    return true;
-  }
-
-  //----------
-
 
 };
 
@@ -249,91 +446,25 @@ private: // context creation
 #endif
 
 
-    // ----- choose fb config -----
 
-    /*
-      The glXChooseFBConfig subroutine returns a pointer to a list of
-      GLX FBConfig structures that match a specified list of attributes. The
-      GLX attributes of the returned GLX FBConfigs match or exceed the the
-      specified values, based on the table, below. To free the data returned by
-      this function, use the XFree subroutine.
 
-      If an attribute is not specified in AttributeList then the default value
-      will be used instead. If the default value is GLX_DONT_CARE and the
-      attribute is not in AttributeList then the attribute will not be checked.
-      GLX_DONT_CARE may be specified for all attributes except GLX_LEVEL. If
-      GLX_DONT_CARE is specified for an attribute then the attribute will not
-      be checked. If AttributeList is NULL or empty (that is, the first
-      attribute is None (or 0)), then the selection and sorting of the
-      GLXFBConfigs is done according to the default values.
 
-      To retrieve a GLX FBConfig given its XID, use the GLX_FBCONFIG_ID
-      attribute. When GLX_FBCONFIG_ID is specified, all other attributes are
-      ignored and only the GLX FBConfig with the given XID is returned (NULL
-      (or 0) is returned if it does not exist).
-    */
 
-    // https://www.ibm.com/docs/en/aix/7.1?topic=environment-glxgetfbconfigattrib-subroutine#glxgetfbconfigattrib
 
-    /*
-      GLX FBCONFIG ID             XID       XID of GLXFBConfig
-      GLX BUFFER SIZE             integer   depth of the color buffer
-      GLX LEVEL                   integer   frame buffer level
-      GLX DOUBLEBUFFER            boolean   True if color buffers have front/back pairs
-      GLX STEREO                  boolean   True if color buffers have left/right pairs
-      GLX AUX BUFFERS             integer   no. of auxiliary color buffers
-      GLX RED SIZE                integer   no. of bits of Red in the color buffer
-      GLX GREEN SIZE              integer   no. of bits of Green in the color buffer
-      GLX BLUE SIZE               integer   no. of bits of Blue in the color buffer
-      GLX ALPHA SIZE              integer   no. of bits of Alpha in the color buffer
-      GLX DEPTH SIZE              integer   no. of bits in the depth buffer
-      GLX STENCIL SIZE            integer   no. of bits in the stencil buffer
-      GLX ACCUM RED SIZE          integer   no. Red bits in the accum. buffer
-      GLX ACCUM GREEN SIZE        integer   no. Green bits in the accum. buffer
-      GLX ACCUM BLUE SIZE         integer   no. Blue bits in the accum. buffer
-      GLX ACCUM ALPHA SIZE        integer   no. of Alpha bits in the accum. buffer
-      GLX SAMPLE BUFFERS          integer   number of multisample buffers
-      GLX SAMPLES                 integer   number of samples per pixel
-      GLX RENDER TYPE             bitmask   which rendering modes are supported.
-      GLX DRAWABLE TYPE           bitmask   which GLX drawables are supported.
-      GLX X RENDERABLE            boolean   True if X can render to drawable
-      GLX X VISUAL TYPE           integer   X visual type of the associated visual
-      GLX CONFIG CAVEAT           enum      any caveats for the configuration
-      GLX TRANSPARENT TYPE        enum      type of transparency supported
-      GLX TRANSPARENT INDEX VALUE integer   transparent index value
-      GLX TRANSPARENT RED VALUE   integer   transparent red value
-      GLX TRANSPARENT GREEN VALUE integer   transparent green value
-      GLX TRANSPARENT BLUE VALUE  integer   transparent blue value
-      GLX TRANSPARENT ALPHA VALUE integer   transparent alpha value
-      GLX MAX PBUFFER WIDTH       integer   maximum width of GLXPbuffer
-      GLX MAX PBUFFER HEIGHT      integer   maximum height of GLXPbuffer
-      GLX MAX PBUFFER PIXELS      integer   maximum size of GLXPbuffer
-      GLX VISUAL ID               integer   XID of corresponding Visual
-    */
 
-    /*
-      GLX_X_VISUAL_TYPE
-        GLX_TRUE_COLOR    TrueColor             0x8002
-        GLX_DIRECT_COLOR  DirectColor           0x8003
-        GLX_PSEUDO_COLOR  PseudoColor           0x8004
-        GLX_STATIC_COLOR  StaticColor           0x8005
-        GLX_GRAY_SCALE    GrayScale             0x8006
-        GLX_STATIC_GRAY   StaticGray            0x8007
-        GLX_X_VISUAL_TYPE No Associated Visual  0x0022
-      */
 
-    /*
-      GLX_DRAWABLE_TYPE
-        GLX_WINDOW_BIT, GLX Windows are supported.    0x01
-        GLX_PIXMAP_BIT  GLX Pixmaps are supported.    0x02
-        GLX_PBUFFER_BIT GLX Pbuffers are supported.   0x04
-    */
 
-    /*
-      GLX_RENDER_TYPE
-        GLX_RGBA_BIT        RGBA rendering supported.         0x01
-        GLX_COLOR_INDEX_BIT Color index rendering supported.  0x02
-    */
+
+
+
+
+
+
+
+
+
+
+
 
 
 

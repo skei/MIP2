@@ -3,8 +3,7 @@
 //----------------------------------------------------------------------
 
 //#include "gui/mip_window_listener.h"
-#include "gui/mip_paint_source.h"
-#include "gui/mip_paint_target.h"
+#include "gui/mip_drawable.h"
 #include "gui/base/mip_base_window.h"
 #include "gui/xcb/mip_xcb.h"
 #include "gui/xcb/mip_xcb_utils.h"
@@ -40,8 +39,7 @@
 
 class MIP_XcbWindow
 : public MIP_BaseWindow
-, public MIP_PaintSource
-, public MIP_PaintTarget {
+, public MIP_Drawable {
 
   friend class MIP_OpenGLWindow;
 
@@ -93,8 +91,8 @@ private:
   pthread_t                   MEventThread                  = 0;
   bool                        MEventThreadActive            = false;
 
-//  void (*MEventThreadStartCallback)(void* AUser) = nullptr;
-//  void (*MEventThreadStopCallback)(void* AUser) = nullptr;
+  void (*MEventThreadStartCallback)(void* AUser) = nullptr;
+  void (*MEventThreadStopCallback)(void* AUser) = nullptr;
 
 //------------------------------
 public:
@@ -144,49 +142,26 @@ public:
   //}
 
 //------------------------------
-public: // paint_source
+public: // drawable
 //------------------------------
 
-  bool                paint_source_isWindow()          final { return true; }
-  bool                paint_source_isDrawable()        final { return true; }
+  bool                drawable_isWindow()          final { return true; }
+  bool                drawable_isDrawable()        final { return true; }
 
-  uint32_t            paint_source_getWidth()          final { return MWindowWidth; }
-  uint32_t            paint_source_getHeight()         final { return MWindowHeight; }
-  uint32_t            paint_source_getDepth()          final { return MScreenDepth; }
+  uint32_t            drawable_getWidth()          final { return MWindowWidth; }
+  uint32_t            drawable_getHeight()         final { return MWindowHeight; }
+  uint32_t            drawable_getDepth()          final { return MScreenDepth; }
 
-  xcb_connection_t*   paint_source_getXcbConnection()  final { return MConnection; }
-  xcb_visualid_t      paint_source_getXcbVisual()      final { return MScreenVisual; }
-  xcb_drawable_t      paint_source_getXcbDrawable()    final { return MWindow; }
-  xcb_window_t        paint_source_getXcbWindow()      final { return MWindow; }
+  xcb_connection_t*   drawable_getXcbConnection()  final { return MConnection; }
+  xcb_visualid_t      drawable_getXcbVisual()      final { return MScreenVisual; }
+  xcb_drawable_t      drawable_getXcbDrawable()    final { return MWindow; }
+  xcb_window_t        drawable_getXcbWindow()      final { return MWindow; }
 
-  Display*            paint_source_getXlibDisplay()    final { return MDisplay; }
+  Display*            drawable_getXlibDisplay()    final { return MDisplay; }
 
   //#ifdef MIP_USE_CAIRO
-  //bool                paint_source_isCairo()           final { return true; }
-  //cairo_surface_t*    paint_source_getCairoSurface()   final { return MCairoSurface; }
-  //#endif
-
-//------------------------------
-public: // paint_target
-//------------------------------
-
-  bool                paint_target_isWindow()          final { return true; }
-  bool                paint_target_isDrawable()        final { return true; }
-
-  uint32_t            paint_target_getWidth()          final { return MWindowWidth; }
-  uint32_t            paint_target_getHeight()         final { return MWindowHeight; }
-  uint32_t            paint_target_getDepth()          final { return MScreenDepth; }
-
-  xcb_connection_t*   paint_target_getXcbConnection()  final { return MConnection; }
-  xcb_visualid_t      paint_target_getXcbVisual()      final { return MScreenVisual; }
-  xcb_drawable_t      paint_target_getXcbDrawable()    final { return MWindow; }
-  xcb_window_t        paint_target_getXcbWindow()      final { return MWindow; }
-
-  Display*            paint_target_getXlibDisplay()    final { return MDisplay; }
-
-  //#ifdef MIP_USE_CAIRO
-  //bool                paint_target_isCairo()           final { return true; }
-  //cairo_surface_t*    paint_target_getCairoSurface()   final { return MCairoSurface; }
+  //bool                drawable_isCairo()           final { return true; }
+  //cairo_surface_t*    drawable_getCairoSurface()   final { return MCairoSurface; }
   //#endif
 
 //------------------------------
@@ -344,10 +319,10 @@ public: // window
 
   //----------
 
-//  virtual void setThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {
-//    MEventThreadStartCallback = AStart;
-//    MEventThreadStopCallback = AStop;
-//  }
+  virtual void setThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {
+    MEventThreadStartCallback = AStart;
+    MEventThreadStopCallback = AStop;
+  }
 
 //------------------------------
 public: // mouse
@@ -520,7 +495,9 @@ private: // connection
 
   bool initConntection(const char* ADisplayName=nullptr) {
     //MConnection = xcb_connect(ADisplayName,&MDefaultScreen);
-    //XInitThreads();
+
+    XInitThreads();
+
     MDisplay = XOpenDisplay(ADisplayName);
     MConnection = XGetXCBConnection(MDisplay);
     XSetEventQueueOwner(MDisplay,XCBOwnsEventQueue);
@@ -937,6 +914,10 @@ private: // events
       case XCB_EXPOSE: {
         MWindowExposed = true;
         xcb_expose_event_t* expose = (xcb_expose_event_t *)AEvent;
+
+        // Unless this is the last contiguous expose, don’t draw
+        //if (e.xexpose.count == 0)
+
         int16_t x = expose->x;
         int16_t y = expose->y;
         int16_t w = expose->width;
@@ -1080,19 +1061,19 @@ private: // events
     //mip_xcb_event_thread_pid = getpid();
     MIP_XcbWindow* window = (MIP_XcbWindow*)AWindow;
     if (window) {
-      //window->xcb_event_thread_start_callback(window);
+      window->xcb_event_thread_start_callback(window);
       xcb_connection_t* connection = window->MConnection;
       xcb_flush(connection);
       while (window->MEventThreadActive) {
         xcb_generic_event_t* event = xcb_wait_for_event(connection);
         if (event) {
           if (!window->processEvent(event)) {
-            //window->xcb_event_thread_stop_callback(window);
+            window->xcb_event_thread_stop_callback(window);
             return nullptr;
           }
         }
       }
-      //window->xcb_event_thread_stop_callback(window);
+      window->xcb_event_thread_stop_callback(window);
       return nullptr;
     }
     return nullptr;
@@ -1102,13 +1083,13 @@ private: // events
 //
 //------------------------------
 
-//  void xcb_event_thread_start_callback(void* AUser) {
-//    if (MEventThreadStartCallback) MEventThreadStartCallback(AUser);
-//  }
-//
-//  void xcb_event_thread_stop_callback(void* AUser) {
-//    if (MEventThreadStopCallback) MEventThreadStopCallback(AUser);
-//  }
+  void xcb_event_thread_start_callback(void* AUser) {
+    if (MEventThreadStartCallback) MEventThreadStartCallback(AUser);
+  }
+
+  void xcb_event_thread_stop_callback(void* AUser) {
+    if (MEventThreadStopCallback) MEventThreadStopCallback(AUser);
+  }
 
 };
 

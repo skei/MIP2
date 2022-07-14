@@ -34,7 +34,9 @@ public:
 
 //----------------------------------------------------------------------
 
-typedef MIP_Point<float>   MIP_FPoint;
-typedef MIP_Point<int32_t> MIP_IPoint;
+typedef MIP_Point<float>    MIP_FPoint;
+typedef MIP_Point<double>   MIP_DPoint;
+typedef MIP_Point<int32_t>  MIP_IPoint;
+
 //----------------------------------------------------------------------
 #endif

@@ -5,8 +5,6 @@
 #include "mip.h"
 #include "gui/mip_window.h"
 
-class MIP_Editor;
-
 //----------------------------------------------------------------------
 //
 // listeners

@@ -9,16 +9,16 @@
 
 //----------------------------------------------------------------------
 
-//#include "plugin/clap/mip_clap.h"
+#include "base/system/mip_time.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
-
-// editor
-
-#include "base/system/mip_time.h"
 #include "gui/mip_surface.h"
 #include "gui/mip_window.h"
+#include "gui/opengl/mip_opengl_painter.h"
+#include "gui/opengl/mip_opengl_utils.h"
 #include "gui/nanovg/mip_nanovg.h"
+
+
 
 //----------------------------------------------------------------------
 //
@@ -51,7 +51,9 @@ public:
 class myEditor
 : public MIP_Editor {
 
+//------------------------------
 private:
+//------------------------------
 
   GLfloat MPositionData[3*2] = {
      0,  1,
@@ -89,14 +91,14 @@ private:
     "   fragColor = vec4(vColor, 1.0);  \n"
     " }                                 \n";
 
+//------------------------------
 private:
+//------------------------------
 
-  bool                MCreated        = false;
-
-  MIP_Surface*        MSurface        = nullptr;
+  MIP_OpenGLPainter*  GL              = nullptr;
   NVGcontext*         MNvgContext     = nullptr;
-  MIP_Painter*        MPixmapPainter  = nullptr;
-  // test
+  //uint32_t            MWidth          = 0;
+  //uint32_t            MHeight         = 0;
   GLuint              MVertexArray    = 0;
   GLuint              MPosBuffer      = 0;
   GLuint              MColBuffer      = 0;
@@ -104,8 +106,9 @@ private:
   GLuint              MFragmentShader = 0;
   GLuint              MProgram        = 0;
 
-
+//------------------------------
 public:
+//------------------------------
 
   /*
     opengl want context creation and processing in the same thread.
@@ -117,18 +120,15 @@ public:
 
   myEditor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
   : MIP_Editor(AListener,AWidth,AHeight) {
-    setWindowFillBackground();
-    //setThreadCallbacks(thread_start,thread_stop);
-    create();
-    // unbind context, so that we can bind it again in the event thread
-    MPixmapPainter->resetCurrent();
-
+    MIP_PRINT;
+    //setWindowFillBackground();
+    setThreadCallbacks(thread_start,thread_stop);
   }
 
   //----------
 
   virtual ~myEditor() {
-    destroy();
+    MIP_PRINT;
   }
 
 //------------------------------
@@ -137,16 +137,21 @@ public:
 
   static
   void thread_start(void* AUserPtr) {
-//    myEditor* editor = (myEditor*)AUserPtr;
-//    editor->create();
+    MIP_PRINT;
+    myEditor* editor = (myEditor*)AUserPtr;
+    uint32_t width = editor->getWindowWidth();
+    uint32_t height = editor->getWindowHeight();
+    editor->init_gl(width,height);
+    editor->prepare_gl(width,height);
   }
 
   //----------
 
   static
   void thread_stop(void* AUserPtr) {
-//    myEditor* editor = (myEditor*)AUserPtr;
-//    editor->destroy();
+    MIP_PRINT;
+    myEditor* editor = (myEditor*)AUserPtr;
+    editor->exit_gl();
   }
 
 //------------------------------
@@ -154,73 +159,67 @@ public: // window listener
 //------------------------------
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    GL->makeCurrent();
+    int32_t window_width = getWindowWidth();
+    int32_t window_height = getWindowHeight();
+    MIP_Print("window size: %i,%i\n",window_width,window_height);
+    double start_time = MIP_GetTimeMS();
+    glViewport(0,0,window_width,window_height);
+    glClearColor(0.5,0,0,1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    renderTriangle();
+    renderNanoVG(window_width,window_height);
+    double elapsed = MIP_GetTimeMS() - start_time;
+    MIP_Print("Elapsed (ms): %f\n",elapsed);
+    GL->swapBuffers();
+    GL->resetCurrent();
+    //blitDrawable(0,0,MSurface->drawable_getXcbDrawable(),AXpos,AYpos,AWidth,AHeight);
+  }
+
+  //----------
+
+  void on_window_resize(int32_t AWidth, int32_t AHeight) override {
     MIP_PRINT;
-
-    MIP_Assert(MCreated);
-    //if (!MCreated) create();
-    //double t1 = MIP_GetTimeMS();
-
-    int32_t w = getWindowWidth();
-    int32_t h = getWindowHeight();
-
-    MPixmapPainter->makeCurrent();
-
-    //glViewport(0,0,w,h);
-    glViewport(0,256-h,w,h);
-
-    //glClearColor(0,0,0,0.5);
-    //glClear(GL_COLOR_BUFFER_BIT);
-    renderNanoVG(w,h);
-
-    //double t2 = MIP_GetTimeMS();
-    //double elapsed = t2 - t1;
-    //MIP_Print("Elapsed: %.3f\n",elapsed);
-
-    MPixmapPainter->swapBuffers();
-    //flush();
-    blitDrawable(32,32,MSurface->paint_source_getXcbDrawable(),0,0,256,256);
-
+    exit_gl();
+    delete GL;
+    init_gl(AWidth,AHeight);
+    glViewport(0,0,AWidth,AHeight);
+    prepare_gl(AWidth,AHeight);
   }
 
 //------------------------------
 private:
 //------------------------------
 
-  void create() {
+  void init_gl(int32_t AWidth, int32_t AHeight) {
     MIP_PRINT;
-    MSurface = new MIP_Surface(this,256,256);
-
-    MPixmapPainter = new MIP_Painter(MSurface,this);
-    MPixmapPainter->makeCurrent();
-    setupTriangle();
-    glClearColor(0.5,0,0,1);
-    glClear(GL_COLOR_BUFFER_BIT);
-    renderTriangle();
-
-    MNvgContext = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
-    MIP_Assert(MNvgContext);
-    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
-
-    //glViewport(0,0,256,256);
-    glViewport(0,256-MEditorHeight,MEditorWidth,MEditorHeight);
-    //glViewport(0,0,w,h);
-//    renderNanoVG(MWidth,MHeight);
-
-    MPixmapPainter->swapBuffers();
-    //glXWaitGL();
-    MCreated = true;
+    GL = new MIP_OpenGLPainter(this,this);
+    GL->resetCurrent();
   }
 
   //----------
 
-  void destroy() {
+  void exit_gl() {
     MIP_PRINT;
-    //delete MWindowPainter;
-    MPixmapPainter->resetCurrent();
     nvgDeleteGL3(MNvgContext);
-    delete MPixmapPainter;
-    delete MSurface;
-    MCreated = false;
+    MIP_GL_ERROR_CHECK;
+    GL->destroyContext();
+  }
+
+  //----------
+
+  void prepare_gl(int32_t AWidth, int32_t AHeight) {
+    MIP_PRINT;
+    GL->makeCurrent();
+    MIP_GL_ERROR_CHECK;
+    setupTriangle();
+    glClearColor(1,0,1,1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    renderTriangle();
+    MNvgContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
+    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+    GL->resetCurrent();
+    MIP_GL_ERROR_CHECK;
   }
 
   //----------
@@ -256,7 +255,7 @@ private:
     glAttachShader(MProgram,MVertexShader);
     glAttachShader(MProgram,MFragmentShader);
     glLinkProgram(MProgram);
-
+    //
     int params = -1;
     glGetProgramiv(MProgram,GL_LINK_STATUS,&params);
     if (params != GL_TRUE) {
@@ -268,8 +267,7 @@ private:
 
   void renderTriangle() {
     MIP_PRINT;
-    glClearColor(0.3, 0.1, 0.2, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glBindVertexArray(MVertexArray);
     glUseProgram(MProgram);
     glDrawArrays(GL_TRIANGLES, 0, 3);
   }
@@ -279,18 +277,34 @@ private:
   void renderNanoVG(int32_t w, int32_t h) {
     MIP_PRINT;
     nvgBeginFrame(MNvgContext,w,h,1.0);
-    nvgFontSize(MNvgContext,16);
-    nvgMoveTo(MNvgContext,128,128);
-    for (uint32_t i=0; i<10; i++) {
-      float x = MIP_RandomRange(0,255);
-      float y = MIP_RandomRange(0,255);
-      //nvgLineTo(MNvgContext,x,y);
+    for (uint32_t i=0; i<100; i++) {
+
+      nvgBeginPath(MNvgContext);
+
+      float x1 = MIP_RandomRange(0,w);
+      float y1 = MIP_RandomRange(0,h);
+      nvgMoveTo(MNvgContext,x1,y1);
+      float x2 = MIP_RandomRange(0,w);
+      float y2 = MIP_RandomRange(0,h);
+      nvgLineTo(MNvgContext,x2,y2);
+
       uint8_t r = MIP_RandomRangeInt(0,255);
       uint8_t g = MIP_RandomRangeInt(0,255);
       uint8_t b = MIP_RandomRangeInt(0,255);
-      nvgFillColor(MNvgContext, nvgRGBA(r,g,b,128));
-      nvgText(MNvgContext,x,y,"Testing, testing 123 ABC æøå",0);
+      nvgStrokeColor(MNvgContext, nvgRGBA(r,g,b,128));
+      nvgStrokeWidth(MNvgContext,3);
+      nvgStroke(MNvgContext);
+
     }
+
+    nvgFontSize(MNvgContext,64);
+    float x = MIP_RandomRange(0,w);
+    float y = MIP_RandomRange(0,h);
+    nvgFillColor(MNvgContext,nvgRGBA(0,0,0,255));
+    nvgText(MNvgContext,x,y,"MIP2",0);
+    nvgFillColor(MNvgContext,nvgRGBA(255,255,255,255));
+    nvgText(MNvgContext,x+1,y+1,"MIP2",0);
+
     nvgEndFrame(MNvgContext);
   }
 
@@ -328,34 +342,34 @@ class template_plugin
 private:
 //------------------------------
 
-  enum myParameterEnums {
-    MY_PARAM1 = 0,
-    MY_PARAM2,
-    MY_PARAM3,
-    MY_PARAM_COUNT
-  };
-
-  const clap_param_info_t myParameters[MY_PARAM_COUNT] = {
-    { MY_PARAM1, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "param1", "", 0, 1, 0 },
-    { MY_PARAM2, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "param2", "", -1, 1, 1 },
-    { MY_PARAM3, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED, nullptr, "param3", "", -12, 12, 0 }
-  };
-
-  const clap_audio_port_info_t myAudioInputPorts[1] = {
-    { 0, "audio in 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
-  };
-
-  const clap_audio_port_info_t myAudioOutputPorts[1] = {
-    { 0, "audio out 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
-  };
-
-  const clap_note_port_info_t myNoteInputPorts[1] = {
-    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note in 1" }
-  };
-
-  const clap_note_port_info_t myNoteOutputPorts[1] = {
-    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note out 1" }
-  };
+//  enum myParameterEnums {
+//    MY_PARAM1 = 0,
+//    MY_PARAM2,
+//    MY_PARAM3,
+//    MY_PARAM_COUNT
+//  };
+//
+//  const clap_param_info_t myParameters[MY_PARAM_COUNT] = {
+//    { MY_PARAM1, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "param1", "", 0, 1, 0 },
+//    { MY_PARAM2, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "param2", "", -1, 1, 1 },
+//    { MY_PARAM3, CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED, nullptr, "param3", "", -12, 12, 0 }
+//  };
+//
+//  const clap_audio_port_info_t myAudioInputPorts[1] = {
+//    { 0, "audio in 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+//  };
+//
+//  const clap_audio_port_info_t myAudioOutputPorts[1] = {
+//    { 0, "audio out 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+//  };
+//
+//  const clap_note_port_info_t myNoteInputPorts[1] = {
+//    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note in 1" }
+//  };
+//
+//  const clap_note_port_info_t myNoteOutputPorts[1] = {
+//    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note out 1" }
+//  };
 
 //------------------------------
 public:
@@ -374,16 +388,23 @@ public:
 public: // plugin
 //------------------------------
 
+  //
+
   bool init() final {
-    appendAudioInputPort(&myAudioInputPorts[0]);
-    appendAudioOutputPort(&myAudioOutputPorts[0]);
-    appendNoteInputPort(&myNoteInputPorts[0]);
-    appendNoteOutputPort(&myNoteOutputPorts[0]);
-    for (uint32_t i=0; i<MY_PARAM_COUNT; i++) {
-      appendParameter(new MIP_Parameter(&myParameters[i]));
-    }
+    //appendAudioInputPort(&myAudioInputPorts[0]);
+    //appendAudioOutputPort(&myAudioOutputPorts[0]);
+    //appendNoteInputPort(&myNoteInputPorts[0]);
+    //appendNoteOutputPort(&myNoteOutputPorts[0]);
+    //for (uint32_t i=0; i<MY_PARAM_COUNT; i++) {
+    //  appendParameter(new MIP_Parameter(&myParameters[i]));
+    //}
+//    mip_old_x_error_handler = XSetErrorHandler(mip_x_error_handler);
     return true;
   }
+
+  //void destroy() final {
+  //  XSetErrorHandler(old_x_error_handler);
+  //}
 
   //bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
   //  return true;
@@ -400,9 +421,9 @@ public: // gui
 
   //----------
 
-  //void gui_destroy() override {
-  //  delete MEditor;
-  //}
+  void gui_destroy() override {
+    delete MEditor;
+  }
 
 //------------------------------
 public:

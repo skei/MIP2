@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "base/types/mip_point.h"
 #include "base/types/mip_rect.h"
 #include "gui/mip_paint_context.h"
 
@@ -66,7 +67,7 @@ public:
 public:
 //------------------------------
 
-  MIP_Widget* findChildWidget(double AXpos, double AYpos) {
+  MIP_Widget* findChildWidget(MIP_DPoint APos) {
     return nullptr;
   }
 
@@ -80,16 +81,16 @@ public:
 public:
 //------------------------------
 
-  virtual void on_widget_move(double AXpos, double AYpos) {}
-  virtual void on_widget_resize(double AWidth, double AHeight) {}
-  virtual void on_widget_paint(MIP_PaintContext* AContext, double AXpos, double AYpos, double AWidth, double AHeight) { MIP_PRINT; }
+  virtual void on_widget_move(MIP_DPoint APos) {}
+  virtual void on_widget_resize(MIP_DPoint ASize) {}
+  virtual void on_widget_paint(MIP_PaintContext* AContext, MIP_DRect ARect) { MIP_PRINT; }
   virtual void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
-  virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, int32_t AYpos, uint32_t ATime) {}
-  virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
-  virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
-  virtual void on_widget_enter(double AXpos, double AYpos, uint32_t ATime) {}
-  virtual void on_widget_leave(double AXpos, double AYpos, uint32_t ATime) {}
+  virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) {}
+  virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) {}
+  virtual void on_widget_mouse_move(uint32_t AState, MIP_DPoint APos, uint32_t ATime) {}
+  virtual void on_widget_enter(MIP_DPoint APos, uint32_t ATime) {}
+  virtual void on_widget_leave(MIP_DPoint APos, uint32_t ATime) {}
 
 //------------------------------
 public:

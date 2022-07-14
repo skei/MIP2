@@ -99,6 +99,8 @@
 			<Add library="X11-xcb" />
 			<Add library="GL" />
 			<Add library="GLX" />
+			<Add library="GLU" />
+			<Add library="glut" />
 		</Linker>
 		<Unit filename="../include/base/debug/mip_debug.h" />
 		<Unit filename="../include/base/debug/mip_debug_assert.h" />
@@ -245,14 +247,27 @@
 		<Unit filename="../include/extern/simple-opengl-loader.h" />
 		<Unit filename="../include/extern/stb/stb_image.h" />
 		<Unit filename="../include/extern/stb/stb_truetype.h" />
+		<Unit filename="../include/gui/base/mip_base_painter.h" />
+		<Unit filename="../include/gui/base/mip_base_surface.h" />
+		<Unit filename="../include/gui/base/mip_base_window.h" />
 		<Unit filename="../include/gui/cairo/mip_cairo.h" />
+		<Unit filename="../include/gui/mip_bitmap.h" />
+		<Unit filename="../include/gui/mip_paint_context.h" />
+		<Unit filename="../include/gui/mip_paint_source.h" />
+		<Unit filename="../include/gui/mip_paint_target.h" />
+		<Unit filename="../include/gui/mip_painter.h" />
+		<Unit filename="../include/gui/mip_surface.h" />
+		<Unit filename="../include/gui/mip_widget.h" />
 		<Unit filename="../include/gui/mip_window.h" />
 		<Unit filename="../include/gui/nanovg/mip_nanovg.h" />
 		<Unit filename="../include/gui/nanovg/mip_nanovg_window.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl.h" />
+		<Unit filename="../include/gui/opengl/mip_opengl_painter.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl_utils.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl_window.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb.h" />
+		<Unit filename="../include/gui/xcb/mip_xcb_painter.h" />
+		<Unit filename="../include/gui/xcb/mip_xcb_surface.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_utils.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_window.h" />
 		<Unit filename="../include/gui/xlib/mip_xlib.h" />

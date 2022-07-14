@@ -33,7 +33,7 @@ protected:
 public:
 //------------------------------
 
-  MIP_Surface(MIP_PaintTarget* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0)
+  MIP_Surface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0)
   : MIP_BaseSurface(ATarget,AWidth,AHeight,ADepth) {
   }
 

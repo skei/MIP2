@@ -3,8 +3,8 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "gui/mip_paint_source.h"
-#include "gui/mip_paint_target.h"
+#include "gui/mip_drawable.h"
+#include "gui/base/mip_base_painter.h"
 //#include "gui/mip_bitmap.h"
 //#include "gui/mip_surface.h"
 //#include "gui/mip_window.h"
@@ -15,10 +15,12 @@
 //
 //----------------------------------------------------------------------
 
-#ifdef MIP_PAINTER_OPENGL
-  #include "gui/opengl/mip_opengl_painter.h"
-  typedef MIP_OpenGLPainter MIP_BasePainter;
-#endif
+//#ifdef MIP_PAINTER_OPENGL
+//  #include "gui/opengl/mip_opengl_painter.h"
+//  typedef MIP_OpenGLPainter MIP_BasePainter;
+//#endif
+
+typedef MIP_BasePainter MIP_ImplementedPainter;
 
 //----------------------------------------------------------------------
 //
@@ -27,7 +29,7 @@
 //----------------------------------------------------------------------
 
 class MIP_Painter
-: public MIP_BasePainter {
+: public MIP_ImplementedPainter {
 
 //------------------------------
 protected:
@@ -38,8 +40,8 @@ protected:
 public:
 //------------------------------
 
-  MIP_Painter(MIP_PaintTarget* ATarget, MIP_PaintSource* ASource)
-  : MIP_BasePainter(ATarget,ASource) {
+  MIP_Painter(MIP_Drawable* ATarget, MIP_Drawable* ASource)
+  : MIP_ImplementedPainter(ATarget,ASource) {
   }
 
   //----------
