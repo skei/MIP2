@@ -178,7 +178,7 @@ public: // window
 
   virtual void setSize(uint32_t AWidth, uint32_t AHeight) {
     MWindowWidth = AWidth;
-    MWindowHeight = AWidth;
+    MWindowHeight = AHeight;
     uint32_t values[] = { AWidth, AHeight };
     xcb_configure_window(MConnection,MWindow,XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT,values);
     xcb_flush(MConnection);

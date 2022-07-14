@@ -35,8 +35,8 @@ protected:
 
   MIP_EditorListener* MEditorListener = nullptr;
   //MIP_Window*         MEditorWindow   = nullptr;
-  uint32_t            MEditorWidth    = 256;
-  uint32_t            MEditorHeight   = 256;
+  uint32_t            MEditorWidth    = 100;
+  uint32_t            MEditorHeight   = 100;
   double              MEditorScale    = 1.0;
   bool                MIsEditorOpen   = false;
 

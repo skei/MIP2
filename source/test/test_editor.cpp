@@ -4,10 +4,7 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_OPENGL
 
-// resizing crashes if using pixmap..
-// investigate..
-
-#define USE_PIXMAP
+//#define USE_PIXMAP
 
 #define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket
@@ -22,6 +19,9 @@
 #include "gui/opengl/mip_opengl_painter.h"
 #include "gui/opengl/mip_opengl_utils.h"
 #include "gui/nanovg/mip_nanovg.h"
+
+#include "extern/oui-blendish/blendish.h"
+#include "extern/oui-blendish/blendish.c"
 
 //----------------------------------------------------------------------
 //
@@ -91,7 +91,7 @@ private:
     " in vec3 vColor;                   \n"
     " out vec4 fragColor;               \n"
     " void main() {                     \n"
-    "   fragColor = vec4(vColor, 1.0);  \n"
+    "   fragColor = vec4(vColor, 0.4);  \n"
     " }                                 \n";
 
 //------------------------------
@@ -99,13 +99,18 @@ private:
 //------------------------------
 
   MIP_OpenGLPainter*  GL              = nullptr;
-  NVGcontext*         MNvgContext     = nullptr;
+
   GLuint              MVertexArray    = 0;
   GLuint              MPosBuffer      = 0;
   GLuint              MColBuffer      = 0;
   GLuint              MVertexShader   = 0;
   GLuint              MFragmentShader = 0;
   GLuint              MProgram        = 0;
+
+  NVGcontext*         MNvgContext     = nullptr;
+  int                 MNvgFont        = 0;
+  int                 MNvgIconImage   = 0;
+
   #ifdef USE_PIXMAP
   MIP_Surface*        MSurface        = nullptr;
   #endif
@@ -127,6 +132,8 @@ public:
     MIP_PRINT;
     //setWindowFillBackground();
     setEventThreadCallbacks(thread_start,thread_stop);
+    MEditorWidth = AWidth;//640;
+    MEditorHeight = AHeight;//480;
   }
 
   //----------
@@ -145,6 +152,7 @@ public:
     myEditor* editor = (myEditor*)AUserPtr;
     uint32_t width = editor->getWindowWidth();
     uint32_t height = editor->getWindowHeight();
+    MIP_Print("width %i height %i\n",width,height);
     editor->init_gl(width,height);
     editor->prepare_gl(width,height);
   }
@@ -171,8 +179,8 @@ public: // window listener
     glViewport(0,0,window_width,window_height);
     glClearColor(0.5,0,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
-    renderTriangle();
     renderNanoVG(window_width,window_height);
+    renderTriangle();
     //double elapsed = MIP_GetTimeMS() - start_time;
     //MIP_Print("Elapsed (ms): %f\n",elapsed);
     GL->swapBuffers();
@@ -190,7 +198,6 @@ public: // window listener
     MIP_Print("%i,%i\n",AWidth,AHeight);
     exit_gl();
     init_gl(AWidth,AHeight);
-    glViewport(0,0,AWidth,AHeight);
     prepare_gl(AWidth,AHeight);
   }
 
@@ -199,7 +206,6 @@ private:
 //------------------------------
 
   void init_gl(int32_t AWidth, int32_t AHeight) {
-    //MIP_PRINT;
     #ifdef USE_PIXMAP
       MSurface = new MIP_Surface(this,AWidth,AHeight);
       GL = new MIP_OpenGLPainter(MSurface,this);
@@ -208,14 +214,18 @@ private:
     #endif
     GL->makeCurrent();
     MNvgContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
-    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+    MNvgFont = nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+    MNvgIconImage = nvgCreateImage(MNvgContext,"/DISKS/sda2/code/git/MIP2/include/extern/oui-blendish/blender_icons16.png",0); // NVG_IMAGE_PREMULTIPLIED
+
+    bndSetFont(MNvgFont);
+    bndSetIconImage(MNvgIconImage);
+
     GL->resetCurrent();
   }
 
   //----------
 
   void exit_gl() {
-    //MIP_PRINT;
     nvgDeleteGL3(MNvgContext);
     GL->destroyContext();
     delete GL;
@@ -227,23 +237,18 @@ private:
   //----------
 
   void prepare_gl(int32_t AWidth, int32_t AHeight) {
-    //MIP_PRINT;
     GL->makeCurrent();
-    MIP_GL_ERROR_CHECK;
+    glViewport(0,0,AWidth,AHeight);
     setupTriangle();
-    glClearColor(1,0,1,1);
-    glClear(GL_COLOR_BUFFER_BIT);
-    renderTriangle();
-//    MNvgContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
-//    nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+    //glClearColor(1,0,1,1);
+    //glClear(GL_COLOR_BUFFER_BIT);
+    //renderTriangle();
     GL->resetCurrent();
-    MIP_GL_ERROR_CHECK;
   }
 
   //----------
 
   void setupTriangle() {
-    //MIP_PRINT;
     // vertex array
     glGenVertexArrays(1,&MVertexArray);
     glBindVertexArray(MVertexArray);
@@ -284,7 +289,6 @@ private:
   //----------
 
   void renderTriangle() {
-    //MIP_PRINT;
     glBindVertexArray(MVertexArray);
     glUseProgram(MProgram);
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -293,34 +297,51 @@ private:
   //----------
 
   void renderNanoVG(int32_t w, int32_t h) {
-    //MIP_PRINT;
     nvgBeginFrame(MNvgContext,w,h,1.0);
+
+    bndBackground(MNvgContext,0,0,w,h);
+
     for (uint32_t i=0; i<100; i++) {
-
       nvgBeginPath(MNvgContext);
-
       float x1 = MIP_RandomRange(0,w);
       float y1 = MIP_RandomRange(0,h);
       nvgMoveTo(MNvgContext,x1,y1);
       float x2 = MIP_RandomRange(0,w);
       float y2 = MIP_RandomRange(0,h);
       nvgLineTo(MNvgContext,x2,y2);
-
       uint8_t r = MIP_RandomRangeInt(0,255);
       uint8_t g = MIP_RandomRangeInt(0,255);
       uint8_t b = MIP_RandomRangeInt(0,255);
       nvgStrokeColor(MNvgContext, nvgRGBA(r,g,b,128));
       nvgStrokeWidth(MNvgContext,3);
       nvgStroke(MNvgContext);
-
     }
+
+    float H  = BND_WIDGET_HEIGHT;
+    float H2 = H + 2;
+
+    bndLabel(             MNvgContext,  10, H2*1,  150, H,                              BND_ICON_INFO,  "Label" );
+    bndToolButton(        MNvgContext,  10, H2*2,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_CANCEL,"ToolButton" );
+    bndRadioButton(       MNvgContext,  10, H2*3,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_RADIO, "RadioButton" );
+    bndTextField(         MNvgContext,  10, H2*4,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_PLAY,  "TextField", 2, 7 );
+    bndChoiceButton(      MNvgContext,  10, H2*5,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_PLAY,  "ChoiceButton" );
+    bndNumberField(       MNvgContext,  10, H2*6,  150, H, BND_CORNER_ALL, BND_DEFAULT, "Number", "0.0" );
+    bndSlider(            MNvgContext,  10, H2*7,  150, H, BND_CORNER_ALL, BND_DEFAULT, 0.5, "Slider", "0.50" );
+    bndScrollBar(         MNvgContext,  10, H2*8,  150, H, BND_DEFAULT, 0.5, 0.2 );
+    bndMenuItem(          MNvgContext,  10, H2*9,  150, H, BND_ACTIVE, BND_ICON_ANIM, "MenuLabel" );
+    bndSplitterWidgets(   MNvgContext,  10, H2*10, 150, H );
+    bndJoinAreaOverlay(   MNvgContext,  10, H2*11, 150, H, 0, 1 );
+
+
+
+
 
     nvgFontSize(MNvgContext,64);
     float x = MIP_RandomRange(0,w);
     float y = MIP_RandomRange(0,h);
-    nvgFillColor(MNvgContext,nvgRGBA(0,0,0,255));
+    nvgFillColor(MNvgContext,nvgRGBA(0,0,0,128));
     nvgText(MNvgContext,x,y,"MIP2",0);
-    nvgFillColor(MNvgContext,nvgRGBA(255,255,255,255));
+    nvgFillColor(MNvgContext,nvgRGBA(255,255,255,128));
     nvgText(MNvgContext,x+1,y+1,"MIP2",0);
 
     nvgEndFrame(MNvgContext);
@@ -395,6 +416,8 @@ public:
 
   template_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
+    MEditorWidth = 640;
+    MEditorHeight = 480;
   }
 
   //----------
@@ -406,8 +429,9 @@ public:
 public: // plugin
 //------------------------------
 
-  //
+  // we don't need audio/notes
 
+  /*
   bool init() final {
     //appendAudioInputPort(&myAudioInputPorts[0]);
     //appendAudioOutputPort(&myAudioOutputPorts[0]);
@@ -416,17 +440,9 @@ public: // plugin
     //for (uint32_t i=0; i<MY_PARAM_COUNT; i++) {
     //  appendParameter(new MIP_Parameter(&myParameters[i]));
     //}
-//    mip_old_x_error_handler = XSetErrorHandler(mip_x_error_handler);
     return true;
   }
-
-  //void destroy() final {
-  //  XSetErrorHandler(old_x_error_handler);
-  //}
-
-  //bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
-  //  return true;
-  //}
+  */
 
 //------------------------------
 public: // gui
