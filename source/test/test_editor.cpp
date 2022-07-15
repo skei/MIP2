@@ -131,40 +131,49 @@ public:
   : MIP_Editor(AListener,AWidth,AHeight) {
     MIP_PRINT;
     //setWindowFillBackground();
-    setEventThreadCallbacks(thread_start,thread_stop);
     MEditorWidth = AWidth;//640;
     MEditorHeight = AHeight;//480;
+
+    //setEventThreadCallbacks(thread_start,thread_stop);
+
+    uint32_t width = getWindowWidth();
+    uint32_t height = getWindowHeight();
+    MIP_Print("width %i height %i\n",width,height);
+    init_gl(width,height);
+    prepare_gl(width,height);
+
   }
 
   //----------
 
   virtual ~myEditor() {
     MIP_PRINT;
+    exit_gl();
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  static
-  void thread_start(void* AUserPtr) {
-    MIP_PRINT;
-    myEditor* editor = (myEditor*)AUserPtr;
-    uint32_t width = editor->getWindowWidth();
-    uint32_t height = editor->getWindowHeight();
-    MIP_Print("width %i height %i\n",width,height);
-    editor->init_gl(width,height);
-    editor->prepare_gl(width,height);
-  }
-
-  //----------
-
-  static
-  void thread_stop(void* AUserPtr) {
-    MIP_PRINT;
-    myEditor* editor = (myEditor*)AUserPtr;
-    editor->exit_gl();
-  }
+//  static
+//  void thread_start(void* AUserPtr) {
+//    MIP_PRINT;
+//    myEditor* editor = (myEditor*)AUserPtr;
+//    uint32_t width = editor->getWindowWidth();
+//    uint32_t height = editor->getWindowHeight();
+//    MIP_Print("width %i height %i\n",width,height);
+//    editor->init_gl(width,height);
+//    editor->prepare_gl(width,height);
+//  }
+//
+//  //----------
+//
+//  static
+//  void thread_stop(void* AUserPtr) {
+//    MIP_PRINT;
+//    myEditor* editor = (myEditor*)AUserPtr;
+//    editor->exit_gl();
+//  }
 
 //------------------------------
 public: // window listener
@@ -301,6 +310,8 @@ private:
 
     bndBackground(MNvgContext,0,0,w,h);
 
+    // a bunch of lines
+
     for (uint32_t i=0; i<100; i++) {
       nvgBeginPath(MNvgContext);
       float x1 = MIP_RandomRange(0,w);
@@ -317,32 +328,37 @@ private:
       nvgStroke(MNvgContext);
     }
 
+    // a bunch of blendish 'widgets'
+
     float H  = BND_WIDGET_HEIGHT;
     float H2 = H + 2;
 
-    bndLabel(             MNvgContext,  10, H2*1,  150, H,                              BND_ICON_INFO,  "Label" );
-    bndToolButton(        MNvgContext,  10, H2*2,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_CANCEL,"ToolButton" );
-    bndRadioButton(       MNvgContext,  10, H2*3,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_RADIO, "RadioButton" );
-    bndTextField(         MNvgContext,  10, H2*4,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_PLAY,  "TextField", 2, 7 );
-    bndChoiceButton(      MNvgContext,  10, H2*5,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_PLAY,  "ChoiceButton" );
-    bndNumberField(       MNvgContext,  10, H2*6,  150, H, BND_CORNER_ALL, BND_DEFAULT, "Number", "0.0" );
-    bndSlider(            MNvgContext,  10, H2*7,  150, H, BND_CORNER_ALL, BND_DEFAULT, 0.5, "Slider", "0.50" );
-    bndScrollBar(         MNvgContext,  10, H2*8,  150, H, BND_DEFAULT, 0.5, 0.2 );
-    bndMenuItem(          MNvgContext,  10, H2*9,  150, H, BND_ACTIVE, BND_ICON_ANIM, "MenuLabel" );
-    bndSplitterWidgets(   MNvgContext,  10, H2*10, 150, H );
-    bndJoinAreaOverlay(   MNvgContext,  10, H2*11, 150, H, 0, 1 );
+    bndLabel(           MNvgContext, 10, H2*1,  150, H,                              BND_ICON_INFO,   "Label" );
+    bndToolButton(      MNvgContext, 10, H2*2,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_CANCEL, "ToolButton" );
+    bndRadioButton(     MNvgContext, 10, H2*3,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_RADIO,  "RadioButton" );
+    bndTextField(       MNvgContext, 10, H2*4,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_PLAY,   "TextField", 2, 7 );
+    bndChoiceButton(    MNvgContext, 10, H2*5,  150, H, BND_CORNER_ALL, BND_DEFAULT, BND_ICON_PLAY,   "ChoiceButton" );
+    bndNumberField(     MNvgContext, 10, H2*6,  150, H, BND_CORNER_ALL, BND_DEFAULT,                  "Number", "0.0" );
+    bndSlider(          MNvgContext, 10, H2*7,  150, H, BND_CORNER_ALL, BND_DEFAULT,                  0.5, "Slider", "0.50" );
+    bndScrollBar(       MNvgContext, 10, H2*8,  150, H,                 BND_DEFAULT,                  0.5, 0.2 );
+    bndMenuItem(        MNvgContext, 10, H2*9,  150, H,                 BND_ACTIVE,  BND_ICON_ANIM,   "MenuLabel" );
+    bndSplitterWidgets( MNvgContext, 10, H2*10, 150, H );
+    bndJoinAreaOverlay( MNvgContext, 10, H2*11, 150, H, 0, 1 );
 
+    // big MIP2 text
 
-
-
-
-    nvgFontSize(MNvgContext,64);
+    nvgFontSize(MNvgContext,60);
     float x = MIP_RandomRange(0,w);
     float y = MIP_RandomRange(0,h);
-    nvgFillColor(MNvgContext,nvgRGBA(0,0,0,128));
-    nvgText(MNvgContext,x,y,"MIP2",0);
-    nvgFillColor(MNvgContext,nvgRGBA(255,255,255,128));
-    nvgText(MNvgContext,x+1,y+1,"MIP2",0);
+    nvgFontBlur(MNvgContext,5);
+    nvgFillColor(MNvgContext,nvgRGBA(0,0,0,255));
+    nvgText(MNvgContext,x+3,y+3, "multum",0);
+    nvgText(MNvgContext,x+3,y+63,"in parvo",0);
+
+    nvgFontBlur(MNvgContext,0);
+    nvgFillColor(MNvgContext,nvgRGBA(255,255,255,255));
+    nvgText(MNvgContext,x,y,   "multum",0);
+    nvgText(MNvgContext,x,y+60,"in parvo",0);
 
     nvgEndFrame(MNvgContext);
   }
