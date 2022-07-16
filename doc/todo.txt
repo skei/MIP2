@@ -14,7 +14,7 @@
   base: thread, timer, attributes,
   debug: print_socket, crash_handler, call_stack
   plugin: dll-entry
-  gui: window, painter, surface classes
+  gui: window, painter, surface classes, opengl..
 
 * doubles
 
@@ -22,7 +22,7 @@
 
 //----------------------------------------------------------------------
 //
-// /BASE
+// BASE
 //
 //----------------------------------------------------------------------
 
@@ -33,27 +33,64 @@
 
 //----------------------------------------------------------------------
 //
-// /PLUGIN
+// PLUGIN
 //
 //----------------------------------------------------------------------
 
 * parameter smoothing
 
   MIP_Parameter:
+  (MIP_ParameterManager?)
+
     setValue()
     getValue()
     getSmoothValue() ?
 
 * vst2/3 adapters
 
-* vst2/3 hosting
+  clap-as-vst2 (in progress, partially works)
+  clap-as-vst3 (in progress)
+
+  hosting:
+
+  ladspa-as-clap (works, more or less)
+  vst2-as-clap
+  vst3-as-clap
 
 //----------------------------------------------------------------------
 //
-// /GUI
+// GUI
 //
 //----------------------------------------------------------------------
 
+[starting over, because of opengl/nanovg]
+
+* reduce resizing frequency
+
+  - we have to tear down, and revuild the opengl context when we resize the
+    window, and mouse events can generate a lot of them, so the repainting
+    lags..
+    we can start a (countdown) timer, and only draw the last one received
+    or something similar..
+
+* backbuffer
+
+  same thing if we have a pixmap (or whatever else) backbuffer,
+  we have to recreate it..
+  we can optimize this a little by having a potentially larger buffer
+  than screen/editor.. we calculating next power of two sizes,
+  and only resize the buffer (and gl context, etc) if it changes..
+  and blit only the used part..
+
+* clipping
+
+  nvgScissor
+  nvgIntersectScissor
+  nvgResetScissor
+
+
+
+--- [previous]
 
 * widgets
 
@@ -96,5 +133,27 @@
   - if there is a timer running: nothing
   - else: start timer w/timeout (100ms?)
   - when timeout: stop timer, send resize event (latest wanted size)
+
+
+
+//----------------------------------------------------------------------
+//
+// AUDIO
+//
+//----------------------------------------------------------------------
+
+* filter frequency response
+* voice manager
+* modulation_manager? (mod matrix)
+
+* generalize building blocks
+  filters, dsp, fft, ..
+
+//----------------------------------------------------------------------
+//
+// GFX
+//
+//----------------------------------------------------------------------
+
 
 
