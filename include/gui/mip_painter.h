@@ -15,12 +15,15 @@
 //
 //----------------------------------------------------------------------
 
-//#ifdef MIP_PAINTER_OPENGL
-//  #include "gui/opengl/mip_opengl_painter.h"
-//  typedef MIP_OpenGLPainter MIP_BasePainter;
-//#endif
+#ifdef MIP_PAINTER_OPENGL
+  #include "gui/opengl/mip_opengl_painter.h"
+  typedef MIP_OpenGLPainter MIP_ImplementedPainter;
+#endif
 
-typedef MIP_BasePainter MIP_ImplementedPainter;
+#ifdef MIP_PAINTER_NANOVG
+  #include "gui/nanovg/mip_nanovg_painter.h"
+  typedef MIP_NanoVGPainter MIP_ImplementedPainter;
+#endif
 
 //----------------------------------------------------------------------
 //

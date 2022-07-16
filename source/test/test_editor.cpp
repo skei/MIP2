@@ -215,28 +215,35 @@ private:
 //------------------------------
 
   void init_gl(int32_t AWidth, int32_t AHeight) {
+MIP_PRINT;
     #ifdef USE_PIXMAP
       MSurface = new MIP_Surface(this,AWidth,AHeight);
+MIP_PRINT;
       GL = new MIP_OpenGLPainter(MSurface,this);
     #else
+MIP_PRINT;
       GL = new MIP_OpenGLPainter(this,this);
     #endif
+MIP_PRINT;
     GL->makeCurrent();
+
+MIP_PRINT;
     MNvgContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
     MNvgFont = nvgCreateFont(MNvgContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
     MNvgIconImage = nvgCreateImage(MNvgContext,"/DISKS/sda2/code/git/MIP2/include/extern/oui-blendish/blender_icons16.png",0); // NVG_IMAGE_PREMULTIPLIED
-
     bndSetFont(MNvgFont);
     bndSetIconImage(MNvgIconImage);
 
+MIP_PRINT;
     GL->resetCurrent();
+MIP_PRINT;
   }
 
   //----------
 
   void exit_gl() {
     nvgDeleteGL3(MNvgContext);
-    GL->destroyContext();
+    //GL->destroyContext();
     delete GL;
     #ifdef USE_PIXMAP
     delete MSurface;

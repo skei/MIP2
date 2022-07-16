@@ -2,6 +2,10 @@
 #define mip_opengl_painter_included
 //----------------------------------------------------------------------
 
+// aka: opengl context wrapper (for pixmap/window)
+
+//----------------------------------------------------------------------
+
 #include "mip.h"
 #include "gui/mip_drawable.h"
 #include "gui/base/mip_base_painter.h"
@@ -82,13 +86,14 @@ class MIP_OpenGLPainter
 private:
 //------------------------------
 
-  Display*      MDisplay      = None;
-  GLXContext    MContext      = nullptr;
-  GLXFBConfig   MFBConfig     = nullptr;
-  uint32_t      MWidth        = 0;
-  uint32_t      MHeight       = 0;
-  GLXDrawable   MDrawable          = GLX_NONE;
-  bool          MDrawableIsWindow  = false;
+  Display*    MDisplay          = None;
+  GLXContext  MContext          = nullptr;
+  GLXFBConfig MFBConfig         = nullptr;
+  uint32_t    MWidth            = 0;
+  uint32_t    MHeight           = 0;
+  GLXDrawable MDrawable         = GLX_NONE;
+  bool        MDrawableIsWindow = false;
+  bool        MIsPainting       = false;
 
 //------------------------------
 public:
@@ -104,16 +109,16 @@ public:
     //MIP_PRINT;
     MWidth = ASurface->drawable_getWidth();
     MHeight = ASurface->drawable_getHeight();
-    Display* display = ATarget->drawable_getXlibDisplay();
+    MDisplay = ATarget->drawable_getXlibDisplay();
     if (ASurface->drawable_isWindow()) {
-      MFBConfig = findFBConfig(display,MIP_GlxWindowAttribs);
+      MFBConfig = findFBConfig(MIP_GlxWindowAttribs);
       MContext = createContext(MFBConfig);
       xcb_window_t window = ASurface->drawable_getXcbWindow();
       MDrawable = glXCreateWindow(MDisplay,MFBConfig,window,nullptr);
       MDrawableIsWindow = true;
     }
     else {
-      MFBConfig = findFBConfig(display,MIP_GlxPixmapAttribs);
+      MFBConfig = findFBConfig(MIP_GlxPixmapAttribs);
       MContext = createContext(MFBConfig);
       xcb_pixmap_t pixmap = ASurface->drawable_getXcbPixmap();
       MDrawable = glXCreatePixmap(MDisplay,MFBConfig,pixmap,nullptr);
@@ -132,6 +137,7 @@ public:
     else {
       glXDestroyPixmap(MDisplay,MDrawable);
     }
+    destroyContext();
     XSetErrorHandler(old_x_error_handler);
   }
 
@@ -139,43 +145,26 @@ public:
 public:
 //------------------------------
 
-  // ADisplay : X11 Display*
-  // AAttribs : MIP_GlxPixmapAttribs or MIP_GlxWindowAttribs
+//  void select() override {
+//    makeCurrent();
+//  }
+//
+//  void deselect() override {
+//    resetCurrent();
+//  }
 
-  GLXFBConfig findFBConfig(Display* ADisplay, const int* AAttribs) {
-    //MIP_PRINT;
-    MDisplay = ADisplay;
-    int num_fbc = 0;
-    GLXFBConfig* fbconfigs = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),AAttribs,&num_fbc);
-    GLXFBConfig fbconfig = fbconfigs[0];
-    XFree(fbconfigs);
-    return fbconfig;
+  void beginPaint(int32_t AWidth, int32_t AHeight) override {
+    glViewport(0,0,AWidth,AHeight);
+    makeCurrent();
   }
 
-  //----------
-
-  //glXCreateContextAttribsARBFUNC glXCreateContextAttribsARB = (glXCreateContextAttribsARBFUNC)glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
-  //MIP_Assert(glXCreateContextAttribsARB);
-  //MContext = glXCreateContextAttribsARB(MDisplay,MFBConfig,nullptr,True,MIP_GlxContextAttribs);
-  //    MContext = glXCreateNewContext(MDisplay,MFBConfig,GLX_RGBA_TYPE,nullptr,True);
-  //    loadOpenGL();
-
-  GLXContext createContext(GLXFBConfig fbconfig) {
-    //MIP_PRINT;
-    GLXContext context = glXCreateNewContext(MDisplay,fbconfig,GLX_RGBA_TYPE,nullptr,True);
-    loadOpenGL();
-    return context;
-  }
-
-  //----------
-
-  void destroyContext() {
-    //MIP_PRINT;
-    glXDestroyContext(MDisplay,MContext);
+  void endPaint() override {
+    swapBuffers();
+    resetCurrent();
   }
 
 //------------------------------
-public:
+protected:
 //------------------------------
 
   // ADrawable: GLXPixmap, GLXWindow
@@ -212,6 +201,46 @@ public:
   void swapBuffers() {
     //MIP_PRINT;
     glXSwapBuffers(MDisplay,MDrawable);
+  }
+
+
+//------------------------------
+private:
+//------------------------------
+
+  // ADisplay : X11 Display*
+  // AAttribs : MIP_GlxPixmapAttribs or MIP_GlxWindowAttribs
+
+  GLXFBConfig findFBConfig(const int* AAttribs) {
+    //MIP_PRINT;
+    //MDisplay = ADisplay;
+    int num_fbc = 0;
+    GLXFBConfig* fbconfigs = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),AAttribs,&num_fbc);
+    GLXFBConfig fbconfig = fbconfigs[0];
+    XFree(fbconfigs);
+    return fbconfig;
+  }
+
+  //----------
+
+  //glXCreateContextAttribsARBFUNC glXCreateContextAttribsARB = (glXCreateContextAttribsARBFUNC)glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
+  //MIP_Assert(glXCreateContextAttribsARB);
+  //MContext = glXCreateContextAttribsARB(MDisplay,MFBConfig,nullptr,True,MIP_GlxContextAttribs);
+  //    MContext = glXCreateNewContext(MDisplay,MFBConfig,GLX_RGBA_TYPE,nullptr,True);
+  //    loadOpenGL();
+
+  GLXContext createContext(GLXFBConfig fbconfig) {
+    //MIP_PRINT;
+    GLXContext context = glXCreateNewContext(MDisplay,fbconfig,GLX_RGBA_TYPE,nullptr,True);
+    loadOpenGL();
+    return context;
+  }
+
+  //----------
+
+  void destroyContext() {
+    //MIP_PRINT;
+    glXDestroyContext(MDisplay,MContext);
   }
 
   //----------

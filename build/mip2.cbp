@@ -252,9 +252,8 @@
 		<Unit filename="../include/gui/base/mip_base_window.h" />
 		<Unit filename="../include/gui/cairo/mip_cairo.h" />
 		<Unit filename="../include/gui/mip_bitmap.h" />
+		<Unit filename="../include/gui/mip_drawable.h" />
 		<Unit filename="../include/gui/mip_paint_context.h" />
-		<Unit filename="../include/gui/mip_paint_source.h" />
-		<Unit filename="../include/gui/mip_paint_target.h" />
 		<Unit filename="../include/gui/mip_painter.h" />
 		<Unit filename="../include/gui/mip_surface.h" />
 		<Unit filename="../include/gui/mip_widget.h" />

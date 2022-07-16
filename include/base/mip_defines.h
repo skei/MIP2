@@ -90,6 +90,12 @@
   #define MIP_PAINTER_DEFINED
 #endif
 
+#ifdef MIP_PAINTER_NANOVG
+  #define MIP_USE_OPENGL
+  #define MIP_USE_NANOVG
+  #define MIP_PAINTER_DEFINED
+#endif
+
 //----------
 
 #ifndef MIP_GUI_DEFINED

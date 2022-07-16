@@ -233,7 +233,7 @@ public: // window
   virtual void eventLoop() {
     xcb_generic_event_t* event = getEvent(true);
     while (event) {
-      bool quit = processEvent(event);
+      bool quit = !processEvent(event);
       if (quit) break;
       event = getEvent(true);
     }
@@ -297,6 +297,10 @@ public: // window
       (char*)MExposeEvent
     );
     xcb_flush(MConnection);
+  }
+
+  virtual void redraw(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
+    invalidate(AXpos,AYpos,AWidth,AHeight);
   }
 
   //----------

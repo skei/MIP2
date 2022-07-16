@@ -28,6 +28,11 @@ public:
   virtual ~MIP_BasePainter() {
   }
 
+  //----------
+
+  virtual void beginPaint(int32_t AWidth, int32_t AHeight) {}
+  virtual void endPaint() {}
+
 };
 
 //----------------------------------------------------------------------

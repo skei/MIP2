@@ -1,8 +1,8 @@
 # depslib dependency file v1.0
-1657660544 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../source/test/test_editor.cpp"
+1657926117 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/test/test_widget.cpp"
 
-1656972879 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
+1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
 	"extern/nanogfx.h"
 
@@ -24,7 +24,7 @@
 
 1655981920 /DISKS/sda2/code/git/MIP2/include/base/mip_config.h
 
-1657404624 /DISKS/sda2/code/git/MIP2/include/base/mip_defines.h
+1657929879 /DISKS/sda2/code/git/MIP2/include/base/mip_defines.h
 
 1648766661 /DISKS/sda2/code/git/MIP2/include/base/mip_const.h
 
@@ -344,7 +344,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 
-1657836510 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1657924377 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_window.h"
 	"gui/xcb/mip_xcb.h"
@@ -747,7 +747,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
 
-1657614098 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1657934359 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/types/mip_array.h"
 	"gui/mip_widget.h"
@@ -760,7 +760,7 @@
 1657389127 /DISKS/sda2/code/git/MIP2/include/gui/mip_window_listener.h
 	"mip.h"
 
-1657829615 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_painter.h
+1657934020 /DISKS/sda2/code/git/MIP2/include/gui/opengl/mip_opengl_painter.h
 	"mip.h"
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_painter.h"
@@ -779,7 +779,7 @@
 	"gui/mip_drawable.h"
 	"gui/xcb/mip_xcb.h"
 
-1657748483 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1657926904 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"base/types/mip_point.h"
 	"base/types/mip_rect.h"
@@ -789,10 +789,12 @@
 	"mip.h"
 	"gui/mip_painter.h"
 
-1657756148 /DISKS/sda2/code/git/MIP2/include/gui/mip_painter.h
+1657929755 /DISKS/sda2/code/git/MIP2/include/gui/mip_painter.h
 	"mip.h"
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_painter.h"
+	"gui/opengl/mip_opengl_painter.h"
+	"gui/nanovg/mip_nanovg_painter.h"
 
 1657483179 /DISKS/sda2/code/git/MIP2/include/gui/mip_paint_target.h
 	"mip.h"
@@ -804,25 +806,29 @@
 	"gui/xcb/mip_xcb.h"
 	"gui/opengl/mip_opengl.h"
 
-1657561506 /DISKS/sda2/code/git/MIP2/include/base/types/mip_rect.h
+1657918485 /DISKS/sda2/code/git/MIP2/include/base/types/mip_rect.h
 	"mip.h"
+	"base/types/mip_point.h"
 
-1657560670 /DISKS/sda2/code/git/MIP2/include/gui/mip_paint_context.h
+1657926605 /DISKS/sda2/code/git/MIP2/include/gui/mip_paint_context.h
 	"mip.h"
 	"base/types/mip_rect.h"
 	"gui/mip_painter.h"
+	"gui/mip_theme.h"
+	"gui/mip_widget.h"
 
 1657614275 /DISKS/sda2/code/git/MIP2/include/gui/base/mip_base_window.h
 	"mip.h"
 
 1657748407 /DISKS/sda2/code/git/MIP2/include/base/types/mip_point.h
 
-1657755072 /DISKS/sda2/code/git/MIP2/include/gui/mip_drawable.h
+1657929829 /DISKS/sda2/code/git/MIP2/include/gui/mip_drawable.h
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 	"gui/opengl/mip_opengl.h"
+	"gui/nanovg/mip_nanovg.h"
 
-1657820928 /DISKS/sda2/code/git/MIP2/include/gui/base/mip_base_painter.h
+1657934126 /DISKS/sda2/code/git/MIP2/include/gui/base/mip_base_painter.h
 	"mip.h"
 	"gui/mip_drawable.h"
 
@@ -835,4 +841,18 @@
 	<math.h>
 	"blendish.h"
 	<float.h>
+
+1657919310 source:/DISKS/sda2/code/git/MIP2/source/test/test_widget.cpp
+
+1657933842 /DISKS/sda2/code/git/MIP2/source/test/test_widget.cpp
+	"mip.h"
+	"gui/mip_window.h"
+
+1657924911 /DISKS/sda2/code/git/MIP2/include/gui/mip_theme.h
+	"mip.h"
+
+1657934215 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg_painter.h
+	"mip.h"
+	"gui/opengl/mip_opengl_painter.h"
+	"gui/nanovg/mip_nanovg.h"
 

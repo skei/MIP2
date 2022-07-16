@@ -1,5 +1,9 @@
 
+#define MIP_GUI_XCB
+#define MIP_PAINTER_OPENGL
+
 #include "mip.h"
+
 
 // get rid of "warning: ‘visibility’ attribute ignored [-Wattributes]"
 #pragma GCC diagnostic push
