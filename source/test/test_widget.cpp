@@ -4,7 +4,48 @@
 //#define MIP_PAINTER_OPENGL
 
 #include "mip.h"
+#include "base/types/mip_color.h"
 #include "gui/mip_window.h"
+
+//----------------------------------------------------------------------
+
+NVGcolor nvg_color(MIP_Color AColor) {
+  NVGcolor color;
+  color.r = AColor.r;
+  color.g = AColor.g;
+  color.b = AColor.b;
+  color.a = AColor.a;
+  return color;
+}
+
+//----------------------------------------------------------------------
+
+class MIP_ColorWidget
+: public MIP_Widget {
+
+private:
+
+  MIP_Color MFillColor = MIP_COLOR_BLACK;
+
+public:
+
+  MIP_ColorWidget(MIP_DRect ARect, MIP_Color AColor)
+  : MIP_Widget(ARect) {
+    MFillColor = AColor;
+  }
+
+public:
+
+  void on_widget_paint(MIP_PaintContext* AContext) override {
+    NVGcontext* nvg = AContext->painter->getNvgContext();
+    nvgBeginPath(nvg);
+    nvgRect(nvg,MRect.x,MRect.y,MRect.w,MRect.h);
+    nvgFillColor(nvg, nvg_color(MFillColor) );
+    nvgFill(nvg);
+    paintChildWidgets(AContext);
+  }
+
+};
 
 //----------------------------------------------------------------------
 
@@ -17,6 +58,12 @@ public:
 
   myWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
   : MIP_Window(AWidth,AHeight,AEmbedded) {
+
+    MIP_Widget* w1 = appendChildWidget(new MIP_ColorWidget(MIP_DRect( 10,10,100,100), MIP_Color(1,0,0,0.5)));
+    MIP_Widget* w2 = appendChildWidget(new MIP_ColorWidget(MIP_DRect(120,10,100,100), MIP_Color(0,1,0,0.5)));
+    MIP_Widget* w3 = appendChildWidget(new MIP_ColorWidget(MIP_DRect(230,10,100,100), MIP_Color(0,0,1,0.5)));
+    w2->appendChildWidget(new MIP_ColorWidget(MIP_DRect( 0,0,50,50), MIP_Color(1,1,1,0.5)));
+
   }
 
 //------------------------------
@@ -29,8 +76,8 @@ public:
     double w = MRect.w;
     double h = MRect.h;
     painter->beginPaint(w,h);
-    //paintChildren(getPaintContext());
     paint_nanovg(painter,w,h);
+    paintChildWidgets(getPaintContext());
     painter->endPaint();
   }
 
@@ -40,7 +87,7 @@ public:
 
   void paint_nanovg(MIP_Painter* painter, double w, double h) {
     NVGcontext* nvg = painter->getNvgContext();
-    for (uint32_t i=0; i<100; i++) {
+    for (uint32_t i=0; i<10000; i++) {
       nvgBeginPath(nvg);
       float x1 = MIP_RandomRange(0,w);
       float y1 = MIP_RandomRange(0,h);
@@ -51,7 +98,7 @@ public:
       uint8_t r = MIP_RandomRangeInt(0,255);
       uint8_t g = MIP_RandomRangeInt(0,255);
       uint8_t b = MIP_RandomRangeInt(0,255);
-      nvgStrokeColor(nvg, nvgRGBA(r,g,b,128));
+      nvgStrokeColor(nvg, nvgRGBA(r,g,b,64));
       nvgStrokeWidth(nvg,3);
       nvgStroke(nvg);
     }

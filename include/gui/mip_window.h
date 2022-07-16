@@ -51,18 +51,16 @@ public:
   MIP_Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
   : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
-
+    //MIP_Print("MRect: %.0f,%.0f - %.0f,%.0f\n",MRect.x,MRect.y,MRect.w,MRect.h);
     MWindowPainter = new MIP_Painter(this,this);
     MPaintContext.painter = MWindowPainter;
-
+    MRect.setPos(0.0);
   }
 
   //----------
 
   virtual ~MIP_Window() {
-
     delete MWindowPainter;
-
   }
 
 //------------------------------
@@ -85,8 +83,15 @@ public:
 public: // window
 //------------------------------
 
+  /*
+    standalone: on_window_resize() will be called afterwards..
+    TODO: check plugin..
+  */
+
   void on_window_open() override {
     //MIP_PRINT;
+    //MIP_Print("aligning..\n");
+    //alignChildWidgets();
   }
 
   //----------
@@ -99,21 +104,22 @@ public: // window
 
   void on_window_move(int32_t AXpos, int32_t AYpos) override {
     //MIP_PRINT;
-    MRect.setPos(AXpos,AYpos);
+    //MRect.setPos(AXpos,AYpos);
+    MRect.setPos(0,0); // because of alignChildWidgets
   }
 
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
     //MIP_PRINT;
-    // TODO: power of two..
-//    int32_t w = MIP_NextPowerOfTwo(AWidth);
-//    int32_t h = MIP_NextPowerOfTwo(AWidth);
+    //int32_t new_width = MIP_NextPowerOfTwo(AWidth);
+    //int32_t new_height = MIP_NextPowerOfTwo(AWidth);
     delete MWindowPainter;
     MWindowPainter = new MIP_Painter(this,this);
     MPaintContext.painter = MWindowPainter;
     MRect.setSize(AWidth,AHeight);
-    alignChildren();
+    //MIP_Print("aligning..\n");
+    alignChildWidgets();
   }
 
   //----------
@@ -217,7 +223,7 @@ public: // child to parent
 
   void do_widget_redraw(MIP_Widget* ASender, uint32_t AMode=0) override {
     MDirtyWidgets.append(ASender);
-    MIP_DRect rect = ASender->getRect();
+    MIP_DRect rect = ASender->getWidgetRect();
     // should this ne called something less 'low-level'? redraw() ??
     invalidate(rect.x,rect.y,rect.w,rect.h);
   }
