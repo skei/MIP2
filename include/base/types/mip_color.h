@@ -4,14 +4,33 @@
 
 #include "mip.h"
 
+/*
+struct NVGcolor {
+	union {
+		float rgba[4];
+		struct {
+			float r,g,b,a;
+		};
+	};
+};
+
+*/
+
+
+
+
 class MIP_Color {
 
 public:
 
-  float r = 0.0f;
-  float g = 0.0f;
-  float b = 0.0f;
-  float a = 1.0f;
+  //float r = 0.0f;
+  //float g = 0.0f;
+  //float b = 0.0f;
+  //float a = 1.0f;
+  union {
+    float rgba[4];
+    struct { float r,g,b,a; };
+  };
 
 //------------------------------
 public:
