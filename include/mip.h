@@ -25,5 +25,12 @@
 
 #include "base/debug/mip_debug.h"
 
+//----------
+
+#include "base/types/mip_types.h"
+//#include "base/types/mip_color.h"
+//#include "base/types/mip_point.h"
+//#include "base/types/mip_rect.h"
+
 //----------------------------------------------------------------------
 #endif
