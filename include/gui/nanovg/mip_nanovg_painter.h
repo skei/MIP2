@@ -2,18 +2,18 @@
 #define mip_nanovg_painter_included
 //----------------------------------------------------------------------
 
-// TODO: setcolors -> accepts/returns MIP_Color
+/*
+  TODO: find liberal licensed font to include
+*/
+
 
 #include "mip.h"
 #include "gui/opengl/mip_opengl_painter.h"
 #include "gui/nanovg/mip_nanovg.h"
+#include "gui/nanovg/mip_nanovg_utils.h"
 
-//TODO: abstract..
 // so we can make the mip_painter layer cross-backend..
-
-//typedef NVGcolor MIP_PColor;
-//typedef NVGpaint MIP_PPaint;
-//typedef NVGimage MIP_PImage;
+typedef NVGpaint MIP_PaintSource;
 
 //----------------------------------------------------------------------
 //
@@ -29,7 +29,7 @@ private:
 //------------------------------
 
   NVGcontext* MContext    = nullptr;
-  //int         MFont       = 0;
+  int         MFont       = 0;
   //int         MIconImage  = 0;
 
 //------------------------------
@@ -40,12 +40,15 @@ public:
   : MIP_OpenGLPainter(ASurface,ATarget) {
     MIP_OpenGLPainter::makeCurrent();
 
-    MContext    = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
+    MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
+    MFont = nvgCreateFont(MContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+    nvgFontFaceId(MContext,MFont);
+    //nvgFontSize(MContext,10);
 
-    //MFont       = nvgCreateFont(MContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
     //MIconImage  = nvgCreateImage(MContext,"/DISKS/sda2/code/git/MIP2/include/extern/oui-blendish/blender_icons16.png",0); // NVG_IMAGE_PREMULTIPLIED
     //bndSetFont(MFont);
     //bndSetIconImage(MIconImage);
+
 
     MIP_OpenGLPainter::resetCurrent();
   }
@@ -61,13 +64,13 @@ public:
 public:
 //------------------------------
 
-//  NVGcontext* getNvgContext() {
-//    return MContext;
-//  }
+  NVGcontext* getNvgContext() {
+    return MContext;
+  }
 
-//  int getNvgFont(int index=0) {
-//    return MFont;
-//  }
+  int getNvgFont(int index=0) {
+    return MFont;
+  }
 
   //int getNvgIconImage(int index=0) {
   //  return MIconImage;
@@ -123,41 +126,41 @@ public:
 
   // Color utils
 
-  NVGcolor RGB(unsigned char r, unsigned char g, unsigned char b) {
-    return nvgRGB(r, g, b);
-  }
-
-  NVGcolor RGBf(float r, float g, float b) {
-    return nvgRGBf(r, g, b);
-  }
-
-  NVGcolor RGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-    return nvgRGBA(r, g, b, a);
-  }
-
-  NVGcolor RGBAf(float r, float g, float b, float a) {
-    return nvgRGBAf(r, g, b, a);
-  }
-
-  NVGcolor LerpRGBA(NVGcolor c0, NVGcolor c1, float u) {
-    return nvgLerpRGBA(c0,c1,u);
-  }
-
-  NVGcolor TransRGBA(NVGcolor c0, unsigned char a) {
-    return nvgTransRGBA(c0,a);
-  }
-
-  NVGcolor TransRGBAf(NVGcolor c0, float a) {
-    return nvgTransRGBAf(c0,a);
-  }
-
-  NVGcolor HSL(float h, float s, float l) {
-    return nvgHSL(h, s, l);
-  }
-
-  NVGcolor HSLA(float h, float s, float l, unsigned char a) {
-    return nvgHSLA(h, s, l, a);
-  }
+//  NVGcolor RGB(unsigned char r, unsigned char g, unsigned char b) {
+//    return nvgRGB(r, g, b);
+//  }
+//
+//  NVGcolor RGBf(float r, float g, float b) {
+//    return nvgRGBf(r, g, b);
+//  }
+//
+//  NVGcolor RGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+//    return nvgRGBA(r, g, b, a);
+//  }
+//
+//  NVGcolor RGBAf(float r, float g, float b, float a) {
+//    return nvgRGBAf(r, g, b, a);
+//  }
+//
+//  NVGcolor LerpRGBA(NVGcolor c0, NVGcolor c1, float u) {
+//    return nvgLerpRGBA(c0,c1,u);
+//  }
+//
+//  NVGcolor TransRGBA(NVGcolor c0, unsigned char a) {
+//    return nvgTransRGBA(c0,a);
+//  }
+//
+//  NVGcolor TransRGBAf(NVGcolor c0, float a) {
+//    return nvgTransRGBAf(c0,a);
+//  }
+//
+//  NVGcolor HSL(float h, float s, float l) {
+//    return nvgHSL(h, s, l);
+//  }
+//
+//  NVGcolor HSLA(float h, float s, float l, unsigned char a) {
+//    return nvgHSLA(h, s, l, a);
+//  }
 
   // State Handling
 
@@ -179,19 +182,22 @@ public:
     nvgShapeAntiAlias(MContext,enabled);
   }
 
-  void strokeColor(NVGcolor color) {
-    nvgStrokeColor(MContext,color);
+  //void strokeColor(NVGcolor color) {
+  void strokeColor(MIP_Color color) {
+    nvgStrokeColor(MContext,nvg_color(color));
   }
 
-  void strokePaint(NVGpaint paint) {
+  //void strokePaint(NVGpaint paint) {
+  void strokePaint(MIP_PaintSource paint) {
     nvgStrokePaint(MContext,paint);
   }
 
-  void fillColor(NVGcolor color) {
-    nvgFillColor(MContext,color);
+  //void fillColor(NVGcolor color) {
+  void fillColor(MIP_Color color) {
+    nvgFillColor(MContext,nvg_color(color));
   }
 
-  void fillPaint(NVGpaint paint) {
+  void fillPaint(MIP_PaintSource paint) {
     nvgFillPaint(MContext,paint);
   }
 
@@ -217,83 +223,83 @@ public:
 
   // Transforms
 
-  void ResetTransform() {
+  void resetTransform() {
     nvgResetTransform(MContext);
   }
 
-  void Transform(float a, float b, float c, float d, float e, float f) {
+  void transform(float a, float b, float c, float d, float e, float f) {
     nvgTransform(MContext,a,b,c,d,e,f);
   }
 
-  void Translate(float x, float y) {
+  void translate(float x, float y) {
     nvgTranslate(MContext,x,y);
   }
 
-  void Rotate(float angle) {
+  void rotate(float angle) {
     nvgRotate(MContext,angle);
   }
 
-  void SkewX(float angle) {
+  void skewX(float angle) {
     nvgSkewX(MContext,angle);
   }
 
-  void SkewY(float angle) {
+  void skewY(float angle) {
     nvgSkewY(MContext,angle);
   }
 
-  void Scale(float x, float y) {
+  void scale(float x, float y) {
     nvgScale(MContext,x,y);
   }
 
-  void CurrentTransform(float* xform) {
+  void currentTransform(float* xform) {
     nvgCurrentTransform(MContext,xform);
   }
 
-  void TransformIdentity(float* dst) {
+  void transformIdentity(float* dst) {
     nvgTransformIdentity(dst);
   }
 
-  void TransformTranslate(float* dst, float tx, float ty) {
+  void transformTranslate(float* dst, float tx, float ty) {
     nvgTransformTranslate(dst,tx,ty);
   }
 
-  void TransformScale(float* dst, float sx, float sy) {
+  void transformScale(float* dst, float sx, float sy) {
     nvgTransformScale(dst,sx,sy);
   }
 
-  void TransformRotate(float* dst, float a) {
+  void transformRotate(float* dst, float a) {
     nvgTransformRotate(dst,a);
   }
 
-  void TransformSkewX(float* dst, float a) {
+  void transformSkewX(float* dst, float a) {
     nvgTransformSkewX(dst,a);
   }
 
-  void TransformSkewY(float* dst, float a) {
+  void transformSkewY(float* dst, float a) {
     nvgTransformSkewY(dst,a);
   }
 
-  void TransformMultiply(float* dst, const float* src) {
+  void transformMultiply(float* dst, const float* src) {
     nvgTransformMultiply(dst,src);
   }
 
-  void TransformPremultiply(float* dst, const float* src) {
+  void transformPremultiply(float* dst, const float* src) {
     nvgTransformPremultiply(dst,src);
   }
 
-  int TransformInverse(float* dst, const float* src) {
+  int transformInverse(float* dst, const float* src) {
     return nvgTransformInverse(dst,src);
   }
 
-  void TransformPoint(float* dstx, float* dsty, const float* xform, float srcx, float srcy) {
+  void transformPoint(float* dstx, float* dsty, const float* xform, float srcx, float srcy) {
     nvgTransformPoint(dstx,dsty,xform,srcx,srcy);
   }
 
-  float DegToRad(float deg) {
+  float degToRad(float deg) {
     return nvgDegToRad(deg);
   }
 
-  float RadToDeg(float rad) {
+  float radToDeg(float rad) {
     return nvgRadToDeg(rad);
   }
 
@@ -324,19 +330,28 @@ public:
   }
 
   // Paints
-  NVGpaint linearGradient(float sx, float sy, float ex, float ey, NVGcolor icol, NVGcolor ocol) {
-    return nvgLinearGradient(MContext,sx,sy,ex,ey,icol,ocol);
+  //NVGpaint linearGradient(float sx, float sy, float ex, float ey, NVGcolor icol, NVGcolor ocol) {
+  MIP_PaintSource linearGradient(float sx, float sy, float ex, float ey, MIP_Color icol, MIP_Color ocol) {
+    NVGcolor ic = nvg_color(icol);
+    NVGcolor oc = nvg_color(ocol);
+    return nvgLinearGradient(MContext,sx,sy,ex,ey,ic,oc);
   }
 
-  NVGpaint boxGradient(float x, float y, float w, float h, float r, float f, NVGcolor icol, NVGcolor ocol) {
-    return nvgBoxGradient(MContext,x,y,w,h,r,f,icol,ocol);
+  //NVGpaint boxGradient(float x, float y, float w, float h, float r, float f, NVGcolor icol, NVGcolor ocol) {
+  MIP_PaintSource boxGradient(float x, float y, float w, float h, float r, float f, MIP_Color icol, MIP_Color ocol) {
+    NVGcolor ic = nvg_color(icol);
+    NVGcolor oc = nvg_color(ocol);
+    return nvgBoxGradient(MContext,x,y,w,h,r,f,ic,oc);
   }
 
-  NVGpaint radialGradient(float cx, float cy, float inr, float outr, NVGcolor icol, NVGcolor ocol) {
-    return nvgRadialGradient(MContext,cx,cy,inr,outr,icol,ocol);
+  //NVGpaint radialGradient(float cx, float cy, float inr, float outr, NVGcolor icol, NVGcolor ocol) {
+  MIP_PaintSource radialGradient(float cx, float cy, float inr, float outr, MIP_Color icol, MIP_Color ocol) {
+    NVGcolor ic = nvg_color(icol);
+    NVGcolor oc = nvg_color(ocol);
+    return nvgRadialGradient(MContext,cx,cy,inr,outr,ic,oc);
   }
 
-  NVGpaint imagePattern(float ox, float oy, float ex, float ey, float angle, int image, float alpha) {
+  MIP_PaintSource imagePattern(float ox, float oy, float ex, float ey, float angle, int image, float alpha) {
     return nvgImagePattern(MContext,ox,oy,ex,ey,angle,image,alpha);
   }
 

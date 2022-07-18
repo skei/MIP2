@@ -3,11 +3,14 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "gui/widgets/template.h"
 
-#ifdef MIP_PAINTER_NANOVG
-  #include "gui/widgets/nanovg/mip_color_widget.h"
-  #include "gui/widgets/nanovg/mip_panel_widget.h"
-#endif
+//----------------------------------------------------------------------
+
+#include "gui/widgets/mip_color_widget.h"
+#include "gui/widgets/mip_panel_widget.h"
+#include "gui/widgets/mip_text_widget.h"
+#include "gui/widgets/mip_value_widget.h"
 
 //----------------------------------------------------------------------
 #endif

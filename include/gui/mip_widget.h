@@ -14,6 +14,8 @@
 class MIP_Widget;
 typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 
+#define MIP_MAX_PARAMETERS_PER_WIDGET 16
+
 //----------
 
 struct MIP_WidgetLayout {
@@ -57,7 +59,8 @@ protected:
   MIP_WidgetArray   MChildren   = {};
   MIP_DRect         MRect       = {0};
   uint32_t          MIndex      = 0;
-  MIP_WidgetState   State      = {};
+  MIP_WidgetState   MState      = {};
+  int32_t           MParameter  = -1;
 
 //------------------------------
 public:
@@ -84,33 +87,43 @@ public:
 public:
 //------------------------------
 
-  MIP_Widget* getParentWidget() { return MParent; }
-  MIP_DRect   getWidgetRect()   { return MRect; }
-  double      getWidgetXPos()   { return MRect.x; }
-  double      getWidgetYPos()   { return MRect.y; }
-  double      getWidgetWidth()  { return MRect.w; }
-  double      getWidgetHeight() { return MRect.h; }
+  virtual MIP_Widget* getParentWidget() { return MParent; }
+  virtual MIP_DRect   getWidgetRect()   { return MRect; }
+  virtual double      getWidgetXPos()   { return MRect.x; }
+  virtual double      getWidgetYPos()   { return MRect.y; }
+  virtual double      getWidgetWidth()  { return MRect.w; }
+  virtual double      getWidgetHeight() { return MRect.h; }
+  virtual uint32_t    getWidgetIndex()  { return MIndex; }
+  virtual uint32_t    getParameter()    { return MParameter; }
+
+  bool isInteractive()  { return MState.interactive; }
+  bool isDirty()        { return MState.dirty; }
+
 
 //------------------------------
 public:
 //------------------------------
 
-  void setParentWidget(MIP_Widget* AParent) { MParent = AParent; }
-  void setWidgetRect(MIP_DRect ARect)       { MRect   = ARect; }
-  void setWidgetXPos(double AXpos)          { MRect.x = AXpos; }
-  void setWidgetYPos(double AYpos)          { MRect.y = AYpos; }
-  void setWidgetWidth(double AWidth)        { MRect.w = AWidth; }
-  void setWidgetHeight(double AHeight)      { MRect.h = AHeight; }
+  virtual void setParentWidget(MIP_Widget* AParent)         { MParent = AParent; }
+  virtual void setWidgetRect(MIP_DRect ARect)               { MRect   = ARect; }
+  virtual void setWidgetPos(double AXpos, double AYpos)     { MRect.setPos(AXpos,AYpos); }
+  virtual void setWidgetXPos(double AXpos)                  { MRect.x = AXpos; }
+  virtual void setWidgetYPos(double AYpos)                  { MRect.y = AYpos; }
+  virtual void setWidgetSize(double AWidth, double AHeight) { MRect.setSize(AWidth,AHeight); }
+  virtual void setWidgetWidth(double AWidth)                { MRect.w = AWidth; }
+  virtual void setWidgetHeight(double AHeight)              { MRect.h = AHeight; }
+  virtual void setWidgetindex(uint32_t AIndex)              { MIndex = AIndex; }
+  virtual void setParameter(uint32_t AIndex)                { MParameter = AIndex; }
 
-  void setWidgetPos(double AXpos, double AYpos) {
-    MRect.x = AXpos;
-    MRect.y = AYpos;
-  }
+  //virtual void setWidgetPos(double AXpos, double AYpos) {
+  //  MRect.x = AXpos;
+  //  MRect.y = AYpos;
+  //}
 
-  void setWidgetWidth(double AWidth, double AHeight) {
-    MRect.w = AWidth;
-    MRect.h = AHeight;
-  }
+  //virtual void setWidgetWidth(double AWidth, double AHeight) {
+  //  MRect.w = AWidth;
+  //  MRect.h = AHeight;
+  //}
 
 //------------------------------
 public: // parent to child
@@ -119,23 +132,15 @@ public: // parent to child
   virtual void on_widget_move(MIP_DPoint APos) {}
   virtual void on_widget_resize(MIP_DPoint ASize) {}
   virtual void on_widget_align(bool ARecursive=true) {}
-
-  virtual void on_widget_paint(MIP_PaintContext* AContext) {
-    paintChildWidgets(AContext);
-  }
-
+  virtual void on_widget_paint(MIP_PaintContext* AContext) { paintChildWidgets(AContext); }
   virtual void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
-
   virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) {}
   virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) {}
   virtual void on_widget_mouse_move(uint32_t AState, MIP_DPoint APos, uint32_t ATime) {}
-
   virtual void on_widget_enter(MIP_DPoint APos, uint32_t ATime) {}
   virtual void on_widget_leave(MIP_DPoint APos, uint32_t ATime) {}
-
-  //virtual void on_widget_connect(MIP_Parameter* AParameter) {
-  //}
+  //virtual void on_widget_connect(MIP_Parameter* AParameter) {}
 
 //------------------------------
 public: // child to parent
@@ -166,7 +171,7 @@ public: // child to parent
   }
 
 //------------------------------
-public:
+public: // hierarchy
 //------------------------------
 
   MIP_Widget* appendChildWidget(MIP_Widget* AChild) {
@@ -192,12 +197,27 @@ public:
 
   //----------
 
+  void scaleChildWidgets(double AScale, bool ARecursive=true) {
+    uint32_t num = 0;
+    num = MChildren.size();
+    for (uint32_t i=0; i<num; i++) {
+      MIP_Widget* child = MChildren[i];
+      if (child) {
+        child->MRect.scale(AScale);
+        if (ARecursive) child->scaleChildWidgets(AScale,ARecursive);
+      }
+    }
+  }
+
+  //----------
+
   MIP_Widget* findChildWidget(MIP_DPoint APos) {
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* widget = MChildren[i];
       if (widget) {
-        if (MRect.contains(APos.x,APos.y)) {
+        MIP_DRect rect = widget->MRect;
+        if (rect.contains(APos.x,APos.y)) {
           MIP_Widget* child = widget->findChildWidget(APos);
           return child;
         }
@@ -214,7 +234,7 @@ public:
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* widget = MChildren[i];
-      MIP_DRect widgetrect = widget->getWidgetRect();
+      MIP_DRect widgetrect = widget->MRect;
       if (widgetrect.intersects(updaterect)) {
         // check if  AContext->updateRect
         widget->on_widget_paint(AContext);
@@ -228,13 +248,10 @@ public:
     MIP_DRect parentrect = MRect;
     MIP_DRect clientrect = MRect;
     //MIP_Print("rect: %.0f,%.0f - %.0f,%.0f\n",rect.x,rect.y,rect.w,rect.h);
-
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
-
       MIP_Widget* widget = MChildren[i];
       MIP_DRect widgetrect = widget->Layout.baseRect;
-
       switch (widget->Layout.alignment) {
         case MIP_WIDGET_ALIGN_NONE: {
           break;
@@ -252,15 +269,11 @@ public:
           break;
         }
       }
-
       //MIP_Print("widgetrect: %.0f,%.0f - %.0f,%.0f\n",widgetrect.x,widgetrect.y,widgetrect.w,widgetrect.h);
-      widget->setWidgetRect(widgetrect);
-
+      widget->MRect = widgetrect;
       if (ARecursive) {
         widget->alignChildWidgets(ARecursive);
       }
-
-
     }
   }
 

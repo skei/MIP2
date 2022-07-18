@@ -56,6 +56,29 @@ public:
 public:
 //------------------------------
 
+  virtual void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {
+    float bounds[4];;
+    textBounds(ARect.x,ARect.y,AText,nullptr,bounds);
+    float xmin = bounds[0];
+    float ymin = bounds[1];
+    float xmax = bounds[2];
+    float ymax = bounds[3];
+    float width = xmax - xmin;
+    float height = ymax - ymin;
+    float x_avail = ARect.w - width;
+    float y_avail = ARect.h - height;
+    float x = ARect.x + (ARect.x - xmin);
+    float y = ARect.y + (ARect.y - ymin);
+    if (AAlignment & MIP_TEXT_ALIGN_LEFT) {}
+    else if (AAlignment & MIP_TEXT_ALIGN_RIGHT) { x += x_avail; }
+    else { x += (x_avail * 0.5); }
+    if (AAlignment & MIP_TEXT_ALIGN_TOP) {}
+    else if (AAlignment & MIP_TEXT_ALIGN_BOTTOM) { y += y_avail; }
+    else { y += (y_avail * 0.5); }
+    fillColor(AColor);
+    text(x,y,AText,nullptr);
+  }
+
 };
 
 //----------------------------------------------------------------------

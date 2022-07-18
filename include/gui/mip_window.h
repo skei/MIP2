@@ -50,10 +50,13 @@ public:
   MIP_Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
   : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
-    //MIP_Print("MRect: %.0f,%.0f - %.0f,%.0f\n",MRect.x,MRect.y,MRect.w,MRect.h);
     MWindowPainter = new MIP_Painter(this,this);
     MPaintContext.painter = MWindowPainter;
+    MParent = nullptr;
     MRect.setPos(0.0);
+    Layout.baseRect = MRect;
+    MIndex = -1;
+    MParameter = -1;
   }
 
   //----------

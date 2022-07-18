@@ -7,6 +7,9 @@
 
 //----------------------------------------------------------------------
 
+//typedef NVGpaint MIP_PaintSource;
+//struct MIP_PaintSource;
+//typedef NVGpaint MIP_PaintSource;
 
 //----------------------------------------------------------------------
 //
@@ -28,10 +31,16 @@ public:
   virtual ~MIP_BasePainter() {
   }
 
-  //----------
+//------------------------------
+public:
+//------------------------------
 
   virtual void beginPaint(int32_t AWidth, int32_t AHeight) {}
   virtual void endPaint() {}
+
+  virtual void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) {}
+
+
 
 };
 

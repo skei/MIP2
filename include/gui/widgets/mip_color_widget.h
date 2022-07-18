@@ -15,7 +15,13 @@ class MIP_ColorWidget
 private:
 //------------------------------
 
-  MIP_Color MFillColor = MIP_COLOR_BLACK;
+  MIP_Color MColor = MIP_COLOR_BLACK;
+
+//------------------------------
+public:
+//------------------------------
+
+  virtual void setColor(MIP_Color AColor) { MColor = AColor; }
 
 //------------------------------
 public:
@@ -23,7 +29,7 @@ public:
 
   MIP_ColorWidget(MIP_DRect ARect, MIP_Color AColor)
   : MIP_Widget(ARect) {
-    MFillColor = AColor;
+    MColor = AColor;
   }
 
 //------------------------------
@@ -34,7 +40,7 @@ public:
     MIP_Painter* painter = AContext->painter;
     painter->beginPath();
     painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
-    painter->fillColor(nvg_color(MFillColor) );
+    painter->fillColor(MColor);
     painter->fill();
     paintChildWidgets(AContext);
 
