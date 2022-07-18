@@ -7,11 +7,14 @@
 #include "mip.h"
 #include "base/types/mip_queue.h"
 #include "plugin/mip_audio_port.h"
-#include "plugin/mip_editor.h"
 #include "plugin/mip_note_port.h"
 #include "plugin/mip_parameter_manager.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_host.h"
+
+#ifndef MIP_NO_GUI
+  #include "plugin/mip_editor.h"
+#endif
 
 //----------------------------------------------------------------------
 //
@@ -31,8 +34,11 @@ struct MIP_ProcessContext {
 //----------------------------------------------------------------------
 
 class MIP_Plugin
-: public MIP_ClapPlugin
-, public MIP_EditorListener {
+:
+#ifndef MIP_NO_GUI
+  public MIP_EditorListener,
+#endif
+  public MIP_ClapPlugin {
 
 //------------------------------
 protected:
@@ -48,7 +54,10 @@ protected:
   int32_t                         MRenderMode               = CLAP_RENDER_REALTIME;
   uint32_t                        MEditorWidth              = 300;
   uint32_t                        MEditorHeight             = 300;
+
+  #ifndef MIP_NO_GUI
   MIP_Editor*                     MEditor                   = {};
+  #endif
 
   //MIP_AudioProcess
   //MIP_VoiceManager
@@ -279,6 +288,8 @@ public: // DRAFT file reference
 public: // EXT gui
 //------------------------------
 
+  #ifndef MIP_NO_GUI
+
   bool gui_is_api_supported(const char *api, bool is_floating) override {
     if ((strcmp(api,CLAP_WINDOW_API_X11) == 0) && (is_floating == false)) {
       return true;
@@ -372,6 +383,8 @@ public: // EXT gui
   bool gui_hide() override {
     return MEditor->gui_hide();
   }
+
+  #endif
 
 //------------------------------
 public: // EXT latency
@@ -879,6 +892,8 @@ public: // wrapper listener
 public: // editor listener
 //------------------------------
 
+  #ifndef MIP_NO_GUI
+
   void on_editor_listener_update_parameter(uint32_t AIndex, double AValue) final {
     MIP_Print("%i = %.3f\n",AIndex,AValue);
     // notify host
@@ -889,6 +904,8 @@ public: // editor listener
 
   void on_editor_listener_resize_window(uint32_t AWidth, uint32_t AHeight) final {
   }
+
+  #endif
 
 };
 
