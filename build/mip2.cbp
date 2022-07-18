@@ -102,6 +102,8 @@
 			<Add library="GLU" />
 			<Add library="glut" />
 		</Linker>
+		<Unit filename="../doc/compile.txt" />
+		<Unit filename="../doc/todo.txt" />
 		<Unit filename="../include/base/debug/mip_debug.h" />
 		<Unit filename="../include/base/debug/mip_debug_assert.h" />
 		<Unit filename="../include/base/debug/mip_debug_callstack.h" />
@@ -256,14 +258,19 @@
 		<Unit filename="../include/gui/mip_paint_context.h" />
 		<Unit filename="../include/gui/mip_painter.h" />
 		<Unit filename="../include/gui/mip_surface.h" />
+		<Unit filename="../include/gui/mip_theme.h" />
 		<Unit filename="../include/gui/mip_widget.h" />
 		<Unit filename="../include/gui/mip_window.h" />
 		<Unit filename="../include/gui/nanovg/mip_nanovg.h" />
-		<Unit filename="../include/gui/nanovg/mip_nanovg_window.h" />
+		<Unit filename="../include/gui/nanovg/mip_nanovg_painter.h" />
+		<Unit filename="../include/gui/nanovg/mip_nanovg_utils.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl_painter.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl_utils.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl_window.h" />
+		<Unit filename="../include/gui/widgets/mip_widgets.h" />
+		<Unit filename="../include/gui/widgets/nanovg/mip_color_widget.h" />
+		<Unit filename="../include/gui/widgets/nanovg/mip_panel_widget.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_painter.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_surface.h" />
@@ -326,35 +333,11 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/test/test_crtp.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
 		<Unit filename="../source/test/test_editor.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/test/test_nanogfx.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/test/test_nanovg.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/test/test_opengl.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/test/test_opengl2.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/test/test_vm.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/test/test_window.cpp">
+		<Unit filename="../source/test/test_widget.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

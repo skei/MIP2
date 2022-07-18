@@ -19,7 +19,7 @@
 template <int SIZE=256>
 class MIP_StaticString
 //: public MIP_StaticBuffer<char,SIZE> {
-: public MIP_StaticBuffer<char,SIZE=> {
+: public MIP_StaticBuffer<char,SIZE> {
 };
 
 //

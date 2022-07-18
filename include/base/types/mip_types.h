@@ -2,7 +2,7 @@
 #define mip_types_included
 //----------------------------------------------------------------------
 
-#include <stdint.h>
+//#include <stdint.h>
 
 //#ifndef _STDINT_H
 //  typedef unsigned char       uint8_t;
@@ -21,13 +21,13 @@
 #include "base/types/mip_array.h"
 #include "base/types/mip_assoc_array.h"
 #include "base/types/mip_buffer.h"
-#include "base/types/mip_complex.h"
 #include "base/types/mip_list.h"
 #include "base/types/mip_queue.h"
 #include "base/types/mip_stack.h"
 #include "base/types/mip_tree.h"
 
 #include "base/types/mip_color.h"
+#include "base/types/mip_complex.h"
 #include "base/types/mip_matrix.h"
 #include "base/types/mip_point.h"
 #include "base/types/mip_quaternion.h"
