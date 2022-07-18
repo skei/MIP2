@@ -169,6 +169,8 @@ protected:
 
   // ADrawable: GLXPixmap, GLXWindow
 
+  //TOSO: save prev context?
+
   bool makeCurrent() {
     //MIP_PRINT;
     bool res = glXMakeContextCurrent(MDisplay,MDrawable,MDrawable,MContext);
@@ -185,6 +187,8 @@ protected:
     you have to make it UN-current in one thread
     before you can make it current in another..
   */
+
+  //TOSO: restore prev context?
 
   bool resetCurrent() {
     //MIP_PRINT;

@@ -3,7 +3,6 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "base/types/mip_array.h"
 #include "gui/mip_widget.h"
 
 //----------------------------------------------------------------------
@@ -124,11 +123,21 @@ public: // window
 
   //----------
 
+  //
+
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
-    MPaintContext.theme       = &MIP_DefaultTheme;
-    MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
-    MPaintContext.painter     = MWindowPainter;
+    setupContext(AXpos,AYpos,AWidth,AHeight);
+    MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
+    painter->beginPaint(MRect.w,MRect.h);
+    paintChildWidgets(getPaintContext());
+    painter->endPaint();
+
+    //paintChildWidgets(&MPaintContext);
+    //MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
+    //MPaintContext.theme       = &MIP_DefaultTheme;
+    //MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
+    //MPaintContext.painter     = MWindowPainter;
+
   }
 
   //----------
@@ -258,6 +267,13 @@ public: // child to parent
 //------------------------------
 public:
 //------------------------------
+
+  void setupContext(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
+    MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
+    MPaintContext.theme       = &MIP_DefaultTheme;
+    MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
+    MPaintContext.painter     = MWindowPainter;
+  }
 
 };
 

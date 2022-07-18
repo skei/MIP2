@@ -3,8 +3,6 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "base/types/mip_point.h"
-#include "base/types/mip_rect.h"
 #include "gui/mip_paint_context.h"
 
 //----------------------------------------------------------------------
@@ -19,31 +17,33 @@ typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 //----------
 
 struct MIP_WidgetLayout {
-  uint32_t    alignment   = MIP_WIDGET_ALIGN_PARENT;
-  MIP_DRect   baseRect    = MIP_DRect(0,0,0,0);
-  MIP_DRect   innerBorder = MIP_DRect(0,0,0,0);
-  MIP_DPoint  spacing     = MIP_DPoint(0,0);
-  MIP_DPoint  minSize     = MIP_DPoint(0,0);
-  MIP_DPoint  maxSize     = MIP_DPoint(-1,-1);
+  uint32_t    alignment = MIP_WIDGET_ALIGN_PARENT;
+  MIP_DRect   baseRect  = MIP_DRect(0,0,0,0);
+  MIP_DRect   border    = MIP_DRect(0,0,0,0);
+  MIP_DPoint  spacing   = MIP_DPoint(0,0);
+  MIP_DPoint  minSize   = MIP_DPoint(0,0);
+  MIP_DPoint  maxSize   = MIP_DPoint(-1,-1);
 };
 
 //----------
 
 struct MIP_WidgetOptions {
+  bool active       = true;
+  bool visible      = true;
+  bool vertical     = false;
+  bool proportional = false;
 };
 
 //----------
 
 struct MIP_WidgetState {
-  bool active       = true;
-  bool visible      = true;
   bool interactive  = false;
   bool dirty        = false;
 };
 
 //----------------------------------------------------------------------
 //
-//
+// widget
 //
 //----------------------------------------------------------------------
 
@@ -57,6 +57,7 @@ protected:
   MIP_WidgetArray   MChildren   = {};
   MIP_DRect         MRect       = {0};
   uint32_t          MIndex      = 0;
+  MIP_WidgetState   State      = {};
 
 //------------------------------
 public:
@@ -64,8 +65,6 @@ public:
 
   MIP_WidgetLayout  Layout     = {};
   MIP_WidgetOptions Options    = {};
-  MIP_WidgetState   State      = {};
-
 
 //------------------------------
 public:
@@ -117,17 +116,9 @@ public:
 public: // parent to child
 //------------------------------
 
-  virtual void on_widget_move(MIP_DPoint APos) {
-    MRect.setPos(APos);
-  }
-
-  virtual void on_widget_resize(MIP_DPoint ASize) {
-    MRect.setSize(ASize);
-  }
-
-  virtual void on_widget_align(bool ARecursive=true) {
-    alignChildWidgets(ARecursive);
-  }
+  virtual void on_widget_move(MIP_DPoint APos) {}
+  virtual void on_widget_resize(MIP_DPoint ASize) {}
+  virtual void on_widget_align(bool ARecursive=true) {}
 
   virtual void on_widget_paint(MIP_PaintContext* AContext) {
     paintChildWidgets(AContext);
@@ -145,7 +136,6 @@ public: // parent to child
 
   //virtual void on_widget_connect(MIP_Parameter* AParameter) {
   //}
-
 
 //------------------------------
 public: // child to parent
@@ -255,8 +245,10 @@ public:
           break;
         }
         case MIP_WIDGET_ALIGN_CLIENT: {
-          widgetrect.x += clientrect.x;
-          widgetrect.y += clientrect.y;
+          widgetrect.x = clientrect.x;
+          widgetrect.y = clientrect.y;
+          widgetrect.w = clientrect.w;
+          widgetrect.h = clientrect.h;
           break;
         }
       }
