@@ -124,6 +124,7 @@ public:
       MDrawable = glXCreatePixmap(MDisplay,MFBConfig,pixmap,nullptr);
       MDrawableIsWindow = false;
     }
+    MIP_GLXDisableVSync(MDisplay,MDrawable);
     //resetCurrent();
   }
 

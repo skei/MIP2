@@ -6,45 +6,27 @@
 #include "gui/opengl/mip_opengl.h"
 
 //----------------------------------------------------------------------
-
-
-
-
-//----------
-
-//// make context current before calling this
-//// should this be done per window/context, or once per program/library?
 //
-//bool MIP_LoadOpenGL() {
-//  if (!sogl_loadOpenGL()) {
-//    MIP_Print("sogl_loadOpenGL failed!\n");
-//    const char** failures = sogl_getFailures();
-//    while (*failures) {
-//      MIP_Print("%s\n",*failures);
-//      failures++;
-//    }
-//    return false;
-//  }
-//  return true;
-//}
+//
+//
+//----------------------------------------------------------------------
+
+typedef void (*glXSwapIntervalEXT_t)(Display *dpy, GLXDrawable drawable, int interval);
 
 //----------
 
-//void makeCurrent() {
-//  glXMakeCurrent(MDisplay,MWindow,MGlxContext);
-//}
+glXSwapIntervalEXT_t glXSwapIntervalEXT = nullptr;
 
-//void swapBuffers() {
-//  glXSwapBuffers(MDisplay,MWindow);
-//}
-
-
+//----------------------------------------------------------------------
+//
+//
+//
 //----------------------------------------------------------------------
 
 // Helper to check for extension string presence. Adapted from:
 // http://www.opengl.org/resources/features/OGLextensions/
 
-bool MIP_openGLExtensionSupported(const char *extList, const char *extension) {
+bool MIP_GLExtensionSupported(const char *extList, const char *extension) {
   const char *start;
   const char *where, *terminator;
   // Extension names should not have spaces.
@@ -63,6 +45,49 @@ bool MIP_openGLExtensionSupported(const char *extList, const char *extension) {
   }
   return false;
 }
+
+//----------------------------------------------------------------------
+
+void MIP_GLXDisableVSync(Display* ADisplay, GLXDrawable ADrawable) {
+  const char* glXExtensions = glXQueryExtensionsString(ADisplay,DefaultScreen(ADisplay));
+  if (strstr(glXExtensions,"GLX_EXT_swap_control") != nullptr) {
+    MIP_PRINT;
+    glXSwapIntervalEXT = (glXSwapIntervalEXT_t)glXGetProcAddress((GLubyte *)"glXSwapIntervalEXT");
+    glXSwapIntervalEXT(ADisplay,ADrawable,0);
+  }
+}
+
+  //} else if (strstr(glXExtensions, "GLX_MESA_swap_control") != nullptr) {
+  //  glXSwapIntervalMESA = reinterpret_cast<PFNGLXSWAPINTERVALMESAPROC>(glXGetProcAddress((GLubyte *)"glXSwapIntervalMESA"));
+  //} else {
+  //  #ifdef DISPLAY_GLX_INFO
+  //  puts("VSync not supported");
+  //  #endif
+  //  return;
+  //}
+  //if (glXSwapIntervalEXT) {
+  //  if (strstr(glXExtensions, "GLX_EXT_swap_control_tear") != nullptr) {
+  //    #ifdef DISPLAY_GLX_INFO
+  //    puts("Enabling ADAPTIVE VSync");
+  //    #endif
+  //    glXSwapIntervalEXT(dpy, xWin, -1);
+  //  } else {
+  //    #ifdef DISPLAY_GLX_INFO
+  //    puts("Enabling VSync");
+  //    #endif
+  //    glXSwapIntervalEXT(dpy, xWin, 1);
+  //  }
+  //} else if (glXSwapIntervalMESA) {
+  //    #ifdef DISPLAY_GLX_INFO
+  //    puts("Enabling VSync");
+  //    #endif
+  //    glXSwapIntervalMESA(1);
+  //  } else {
+  //    #ifdef DISPLAY_GLX_INFO
+  //    puts("Failed to load swap control function");
+  //    #endif
+  //  }
+  //}
 
 //----------------------------------------------------------------------
 
