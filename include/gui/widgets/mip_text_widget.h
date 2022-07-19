@@ -30,6 +30,7 @@ public:
 
   MIP_TextWidget(MIP_DRect ARect, const char* AText)
   : MIP_PanelWidget(ARect) {
+    MName = "MIP_TextWidget";
     setDrawRoundedCorners(false);
     strcpy(MText,AText);
   }

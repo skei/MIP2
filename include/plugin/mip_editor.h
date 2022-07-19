@@ -61,7 +61,7 @@ public:
   }
 
 //------------------------------
-public:
+public: // clap gui
 //------------------------------
 
   virtual bool gui_set_scale(double scale) {
@@ -128,6 +128,15 @@ public:
     /*MEditorWindow->*/close();
     return true;
   }
+
+//------------------------------
+public:
+//------------------------------
+
+  virtual void connect(MIP_Parameter* AParameter, MIP_Widget* AWidget) {
+    uint32_t parameter_index = AParameter->getIndex();
+    uint32_t parameter_index = AParameter->getIndex();
+  };
 
 };
 

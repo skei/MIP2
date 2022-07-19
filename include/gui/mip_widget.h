@@ -5,6 +5,10 @@
 #include "mip.h"
 #include "gui/mip_paint_context.h"
 
+#ifndef MIP_NO_GUI
+#include "plugin/mip_parameter.h"
+#endif
+
 //----------------------------------------------------------------------
 //
 //
@@ -34,6 +38,7 @@ struct MIP_WidgetOptions {
   bool visible      = true;
   bool vertical     = false;
   bool proportional = false;
+  bool captureMouse = true;
 };
 
 //----------
@@ -55,12 +60,14 @@ class MIP_Widget {
 protected:
 //------------------------------
 
+  const char*       MName       = "MIP_Widget";
   MIP_Widget*       MParent     = nullptr;
   MIP_WidgetArray   MChildren   = {};
   MIP_DRect         MRect       = {0};
-  uint32_t          MIndex      = 0;
+  int32_t           MIndex      = 0;
   MIP_WidgetState   MState      = {};
-  int32_t           MParameter  = -1;
+
+  MIP_Parameter*    MParameters[MIP_MAX_PARAMETERS_PER_WIDGET] = {0};
 
 //------------------------------
 public:
@@ -87,14 +94,19 @@ public:
 public:
 //------------------------------
 
+  const char* getWidgetName() { return MName; }
+
   virtual MIP_Widget* getParentWidget() { return MParent; }
   virtual MIP_DRect   getWidgetRect()   { return MRect; }
   virtual double      getWidgetXPos()   { return MRect.x; }
   virtual double      getWidgetYPos()   { return MRect.y; }
   virtual double      getWidgetWidth()  { return MRect.w; }
   virtual double      getWidgetHeight() { return MRect.h; }
-  virtual uint32_t    getWidgetIndex()  { return MIndex; }
-  virtual uint32_t    getParameter()    { return MParameter; }
+  virtual int32_t     getWidgetIndex()  { return MIndex; }
+
+  #ifndef MIP_NO_GUI
+  virtual MIP_Parameter* getParameter(uint32_t AIndex=0)    { return MParameters[0]; }
+  #endif
 
   bool isInteractive()  { return MState.interactive; }
   bool isDirty()        { return MState.dirty; }
@@ -112,8 +124,11 @@ public:
   virtual void setWidgetSize(double AWidth, double AHeight) { MRect.setSize(AWidth,AHeight); }
   virtual void setWidgetWidth(double AWidth)                { MRect.w = AWidth; }
   virtual void setWidgetHeight(double AHeight)              { MRect.h = AHeight; }
-  virtual void setWidgetindex(uint32_t AIndex)              { MIndex = AIndex; }
-  virtual void setParameter(uint32_t AIndex)                { MParameter = AIndex; }
+  virtual void setWidgetindex(int32_t AIndex)               { MIndex = AIndex; }
+
+  #ifndef MIP_NO_GUI
+  virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
+  #endif
 
   //virtual void setWidgetPos(double AXpos, double AYpos) {
   //  MRect.x = AXpos;
@@ -129,17 +144,18 @@ public:
 public: // parent to child
 //------------------------------
 
-  virtual void on_widget_move(MIP_DPoint APos) {}
-  virtual void on_widget_resize(MIP_DPoint ASize) {}
+  virtual void on_widget_move(double AXpos, double AYpos)  {}
+  virtual void on_widget_resize(double AWidth, double AHeight) {}
   virtual void on_widget_align(bool ARecursive=true) {}
   virtual void on_widget_paint(MIP_PaintContext* AContext) { paintChildWidgets(AContext); }
   virtual void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
-  virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) {}
-  virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) {}
-  virtual void on_widget_mouse_move(uint32_t AState, MIP_DPoint APos, uint32_t ATime) {}
-  virtual void on_widget_enter(MIP_DPoint APos, uint32_t ATime) {}
-  virtual void on_widget_leave(MIP_DPoint APos, uint32_t ATime) {}
+  virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s\n",getWidgetName()); }
+  virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s\n",getWidgetName()); }
+  virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s\n",getWidgetName()); }
+  virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s from %s\n",getWidgetName(),AFrom?AFrom->getWidgetName():"(null)"); }
+  virtual void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s to %s\n",getWidgetName(),ATo?ATo->getWidgetName():"(null)"); }
+
   //virtual void on_widget_connect(MIP_Parameter* AParameter) {}
 
 //------------------------------
@@ -175,8 +191,9 @@ public: // hierarchy
 //------------------------------
 
   MIP_Widget* appendChildWidget(MIP_Widget* AChild) {
-    uint32_t index = MChildren.size();
+    int32_t index = MChildren.size();
     AChild->MIndex = index;
+    AChild->MParent = this;
     //AChild->on_widget_append(this);
     MChildren.append(AChild);
     return AChild;
@@ -211,19 +228,19 @@ public: // hierarchy
 
   //----------
 
-  MIP_Widget* findChildWidget(MIP_DPoint APos) {
+  // returns 'this' if not hovering over any child widget
+
+  MIP_Widget* findChildWidget(double AXpos, double AYpos) {
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* widget = MChildren[i];
-      if (widget) {
-        MIP_DRect rect = widget->MRect;
-        if (rect.contains(APos.x,APos.y)) {
-          MIP_Widget* child = widget->findChildWidget(APos);
-          return child;
-        }
+      MIP_DRect rect = widget->MRect;
+      if (rect.contains(AXpos,AYpos)) {
+        MIP_Widget* child = widget->findChildWidget(AXpos,AYpos);
+        return child;
       }
     }
-    return nullptr;
+    return this;//nullptr;
   }
 
   //----------

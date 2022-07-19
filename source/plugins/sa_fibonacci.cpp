@@ -15,8 +15,8 @@
 
 const clap_plugin_descriptor_t myDescriptor = {
    .clap_version  = CLAP_VERSION,
-   .id            = "skei.audio/sa_cred/0.0.1",
-   .name          = "sa_cred",
+   .id            = "skei.audio/sa_fibonacci/0.0.1",
+   .name          = "sa_fibonacci",
    .vendor        = "skei.audio",
    .url           = "",
    .manual_url    = "",

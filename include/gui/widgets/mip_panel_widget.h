@@ -4,9 +4,6 @@
 
 #include "mip.h"
 #include "gui/mip_widget.h"
-#include "gui/nanovg/mip_nanovg_utils.h"
-
-#include "extern/oui-blendish/blendish.c"
 
 //----------------------------------------------------------------------
 
@@ -43,6 +40,7 @@ public:
 
   MIP_PanelWidget(MIP_DRect ARect)
   : MIP_Widget(ARect) {
+    MName = "MIP_PanelWidget";
   }
 
   //----------

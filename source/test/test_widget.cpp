@@ -33,8 +33,8 @@ public:
     appendChildWidget(background);
     background->Layout.alignment = MIP_WIDGET_ALIGN_CLIENT;
 
-    #define H  25
-    #define H2 30
+    #define H  22
+    #define H2 25
 
     MIP_ColorWidget*  color1  = new MIP_ColorWidget(  MIP_DRect( 10,10 + (0 * H2), 150, H ), MIP_COLOR_RED );
     MIP_PanelWidget*  panel1  = new MIP_PanelWidget(  MIP_DRect( 10,10 + (1 * H2), 150, H ) );

@@ -36,7 +36,8 @@ protected:
 
   MIP_WidgetArray   MDirtyWidgets       = {};
   MIP_Widget*       MHoverWidget        = nullptr;
-  MIP_Widget*       MModalWidget        = nullptr;
+  MIP_Widget*       MMouseClickedWidget = nullptr;
+  MIP_Widget*       MMouseModalWidget   = nullptr;
   MIP_Widget*       MMouseCaptureWidget = nullptr;
   MIP_Widget*       MKeyCaptureWidget   = nullptr;
 
@@ -50,13 +51,13 @@ public:
   MIP_Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
   : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
+    MName = "MIP_Window";
     MWindowPainter = new MIP_Painter(this,this);
     MPaintContext.painter = MWindowPainter;
     MParent = nullptr;
     MRect.setPos(0.0);
     Layout.baseRect = MRect;
     MIndex = -1;
-    MParameter = -1;
   }
 
   //----------
@@ -73,13 +74,56 @@ public:
     return MWindowPainter;
   }
 
+  //----------
+
   MIP_PaintContext* getPaintContext() {
     return &MPaintContext;
   }
 
-  MIP_Widget* findHoverWidget(int32_t AXpos, int32_t AYpos) {
-    return nullptr;
+  //----------
+
+  // returns 'this' if not hovering over any child widget
+
+  //MIP_Widget* findHoverWidget(int32_t AXpos, int32_t AYpos) {
+  //  MIP_Widget* hover = findChildWidget(AXpos,AYpos);
+  //  return hover;
+  //}
+
+  void updateHoverWidget(int32_t AXpos, int32_t AYpos, uint32_t ATime) {
+    MIP_Widget* hover = findChildWidget(AXpos,AYpos);
+    if (hover != MHoverWidget) {
+      if (!MMouseClickedWidget) {
+        if (MHoverWidget) MHoverWidget->on_widget_leave(hover,AXpos,AYpos,ATime);
+        if (hover) hover->on_widget_enter(MHoverWidget,AXpos,AYpos,ATime);
+        //MHoverWidget = hover; // don't update when dragging?
+      }
+      MHoverWidget = hover;
+    }
+    //return hover;
   }
+
+  //----------
+
+  // when releasing mouse cursor after dragging
+  // and entering window
+
+  void updateHoverWidgetFrom(MIP_Widget* AFrom, int32_t AXpos, int32_t AYpos, uint32_t ATime) {
+    //MIP_Widget* hover = findChildWidget(AXpos,AYpos);
+    if (MHoverWidget != AFrom) {
+      if (AFrom) AFrom->on_widget_leave(MHoverWidget,AXpos,AYpos,ATime);
+      if (MHoverWidget) MHoverWidget->on_widget_enter(AFrom,AXpos,AYpos,ATime);
+    }
+    //MHoverWidget = hover;
+  }
+
+//  void updateHoverWidgetTo(MIP_Widget* ATo, int32_t AXpos, int32_t AYpos, uint32_t ATime) {
+//    //MIP_Widget* hover = findChildWidget(AXpos,AYpos);
+//    if (MHoverWidget != To) {
+//      if (AFrom) AFrom->on_widget_leave(MHoverWidget,AXpos,AYpos,ATime);
+//      if (MHoverWidget) MHoverWidget->on_widget_enter(AFrom,AXpos,AYpos,ATime);
+//    }
+//    //MHoverWidget = hover;
+//  }
 
 //------------------------------
 public: // window
@@ -126,13 +170,24 @@ public: // window
 
   //----------
 
-  //
+  /*
+    not all platforms support partially updates=.. :-/
+    (scissor taken into account in swapBuffers)
+
+    if we must, we could render to a background pixmap, and blit just the
+    updated part from this.. but if so, we need to jeep track of, and update
+    the pixmap size when the window resizes..
+
+  */
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     setupContext(AXpos,AYpos,AWidth,AHeight);
     MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
+
     painter->beginPaint(MRect.w,MRect.h);
+    painter->scissor(AXpos,AYpos,AWidth,AHeight);
     paintChildWidgets(getPaintContext());
+    painter->resetScissor();
     painter->endPaint();
 
     //paintChildWidgets(&MPaintContext);
@@ -159,30 +214,54 @@ public: // window
 
   void on_window_mouse_press(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     //MIP_PRINT;
+    if (MHoverWidget != this) {
+      MMouseClickedWidget = MHoverWidget;
+      if (MMouseClickedWidget->Options.captureMouse) MMouseCaptureWidget = MMouseClickedWidget;
+      MHoverWidget->on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
+    }
   }
 
   //----------
 
   void on_window_mouse_release(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     //MIP_PRINT;
+    if (MMouseCaptureWidget) {
+      MMouseCaptureWidget->on_widget_mouse_release(AButton,AState,AXpos,AYpos,ATime);
+      updateHoverWidgetFrom(MMouseCaptureWidget,AXpos,AYpos,ATime);
+      MMouseCaptureWidget = nullptr;
+    }
+    MMouseClickedWidget = nullptr;
+    //else if (MMouseClickedWidget) {
+    //  MMouseClickedWidget->on_widget_mouse_release(AButton,AState,AXpos,AYpos,ATime);
+    //  updateHoverWidgetFrom(MMouseClickedWidget,AXpos,AYpos,ATime);
+    //  MMouseClickedWidget = nullptr;
+    //}
   }
 
   //----------
 
   void on_window_mouse_move(uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
-    //MIP_PRINT;
+    updateHoverWidget(AXpos,AYpos,ATime);
+    if (MMouseCaptureWidget) {
+      MMouseCaptureWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
+    }
+    //else {
+    //  updateHoverWidget(AXpos,AYpos,ATime);
+    //}
   }
 
   //----------
 
   void on_window_enter(int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     //MIP_PRINT;
+    //updateHoverWidgetFrom(nullptr,AXpos,AYpos,ATime);
   }
 
   //----------
 
   void on_window_leave(int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     //MIP_PRINT;
+    //updateHoverWidgetTo(nullptr,AXpos,AYpos,ATime);
   }
 
   //----------

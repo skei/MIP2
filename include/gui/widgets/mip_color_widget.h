@@ -29,6 +29,7 @@ public:
 
   MIP_ColorWidget(MIP_DRect ARect, MIP_Color AColor)
   : MIP_Widget(ARect) {
+    MName = "MIP_ColorWidget";
     MColor = AColor;
   }
 

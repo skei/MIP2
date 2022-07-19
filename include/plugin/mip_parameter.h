@@ -58,6 +58,7 @@ private:
 
   double MValue       = 0.0;
   double MModulation  = 0.0;
+  int32_t  MIndex     = -1;
 
 //------------------------------
 public:
@@ -102,6 +103,9 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  void setIndex(int32_t AIndex)  { MIndex = AIndex; }
+  int32_t getIndex()  { return MIndex; }
 
   void setId(clap_id AId)                     { MParamInfo.id = AId; }
   void setFlags(clap_param_info_flags AFlags) { MParamInfo.flags = AFlags; }
