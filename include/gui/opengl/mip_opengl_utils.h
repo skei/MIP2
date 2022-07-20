@@ -48,10 +48,14 @@ bool MIP_GLExtensionSupported(const char *extList, const char *extension) {
 
 //----------------------------------------------------------------------
 
+// TODO:
+//   - bool argument -> setVSync(bool AState)
+//   - add the other variants..
+
 void MIP_GLXDisableVSync(Display* ADisplay, GLXDrawable ADrawable) {
   const char* glXExtensions = glXQueryExtensionsString(ADisplay,DefaultScreen(ADisplay));
   if (strstr(glXExtensions,"GLX_EXT_swap_control") != nullptr) {
-    MIP_PRINT;
+    //MIP_PRINT;
     glXSwapIntervalEXT = (glXSwapIntervalEXT_t)glXGetProcAddress((GLubyte *)"glXSwapIntervalEXT");
     glXSwapIntervalEXT(ADisplay,ADrawable,0);
   }

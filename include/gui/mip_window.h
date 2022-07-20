@@ -181,11 +181,15 @@ public: // window
   */
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
     setupContext(AXpos,AYpos,AWidth,AHeight);
     MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
-
     painter->beginPaint(MRect.w,MRect.h);
     painter->scissor(AXpos,AYpos,AWidth,AHeight);
+
+    //glClearColor(1,0,1,1);
+    //glClear(GL_COLOR_BUFFER_BIT);
+
     paintChildWidgets(getPaintContext());
     painter->resetScissor();
     painter->endPaint();
