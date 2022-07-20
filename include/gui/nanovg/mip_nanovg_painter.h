@@ -38,6 +38,7 @@ public:
 
   MIP_NanoVGPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
   : MIP_OpenGLPainter(ASurface,ATarget) {
+    //MIP_PRINT;
     MIP_OpenGLPainter::makeCurrent();
 
     MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
@@ -65,6 +66,7 @@ public:
 //------------------------------
 
   NVGcontext* getNvgContext() {
+    //MIP_PRINT;
     return MContext;
   }
 

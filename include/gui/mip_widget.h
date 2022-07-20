@@ -34,11 +34,14 @@ struct MIP_WidgetLayout {
 //----------
 
 struct MIP_WidgetOptions {
-  bool active       = true;
-  bool visible      = true;
-  bool vertical     = false;
-  bool proportional = false;
-  bool captureMouse = true;
+  bool active         = true;
+  bool visible        = true;
+  bool vertical       = false;
+  bool proportional   = false;
+  bool captureMouse   = true;
+  bool autoSetCursor  = true;
+  bool autoHideCursor = false;
+  bool autoLockCursor = false;
 };
 
 //----------
@@ -60,13 +63,13 @@ class MIP_Widget {
 protected:
 //------------------------------
 
-  const char*       MName       = "MIP_Widget";
-  MIP_Widget*       MParent     = nullptr;
-  MIP_WidgetArray   MChildren   = {};
-  MIP_DRect         MRect       = {0};
-  int32_t           MIndex      = 0;
-  MIP_WidgetState   MState      = {};
-
+  const char*       MName         = "MIP_Widget";
+  MIP_Widget*       MParent       = nullptr;
+  MIP_WidgetArray   MChildren     = {};
+  MIP_DRect         MRect         = {0};
+  int32_t           MIndex        = 0;
+  MIP_WidgetState   MState        = {};
+  uint32_t          MMouseCursor  = MIP_CURSOR_DEFAULT;
   MIP_Parameter*    MParameters[MIP_MAX_PARAMETERS_PER_WIDGET] = {0};
 
 //------------------------------
@@ -153,8 +156,13 @@ public: // parent to child
   virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s\n",getWidgetName()); }
   virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s\n",getWidgetName()); }
   virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s\n",getWidgetName()); }
-  virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s from %s\n",getWidgetName(),AFrom?AFrom->getWidgetName():"(null)"); }
-  virtual void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s to %s\n",getWidgetName(),ATo?ATo->getWidgetName():"(null)"); }
+
+  virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {
+    if (Options.autoSetCursor) do_widget_cursor(this,MMouseCursor);
+  }
+
+  virtual void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) {
+  }
 
   //virtual void on_widget_connect(MIP_Parameter* AParameter) {}
 

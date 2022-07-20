@@ -155,8 +155,8 @@ public:
 //  }
 
   void beginPaint(int32_t AWidth, int32_t AHeight) override {
-    glViewport(0,0,AWidth,AHeight);
     makeCurrent();
+    glViewport(0,0,AWidth,AHeight);
   }
 
   void endPaint() override {

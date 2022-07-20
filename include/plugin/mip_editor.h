@@ -46,6 +46,7 @@ public:
 
   MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
   : MIP_Window(AWidth,AHeight,true) {
+    //MIP_PRINT;
     MEditorListener = AListener;
     MEditorWidth = AWidth;
     MEditorHeight = AHeight;
@@ -56,6 +57,7 @@ public:
   //----------
 
   virtual ~MIP_Editor() {
+    //MIP_PRINT;
     if (MIsEditorOpen) gui_hide();
     //delete MEditorWindow;
   }
@@ -134,8 +136,7 @@ public:
 //------------------------------
 
   virtual void connect(MIP_Parameter* AParameter, MIP_Widget* AWidget) {
-    uint32_t parameter_index = AParameter->getIndex();
-    uint32_t parameter_index = AParameter->getIndex();
+    //uint32_t parameter_index = AParameter->getIndex();
   };
 
 };

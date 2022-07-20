@@ -39,10 +39,25 @@ public:
 
   void on_widget_paint(MIP_PaintContext* AContext) override {
     MIP_Painter* painter = AContext->painter;
+    MIP_DRect rect = MRect;
+    rect.overlap(AContext->updateRect);
     painter->beginPath();
-    painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
+    //painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
+    painter->rect(rect.x,rect.y,rect.w,rect.h);
     painter->fillColor(MColor);
     painter->fill();
+
+//    painter->beginPath();
+//    painter->moveTo(0,0);
+//    for (uint32_t i=0; i<30000; i++) {
+//      double x = MIP_RandomRange(0,MRect.w);
+//      double y = MIP_RandomRange(0,MRect.h);
+//      painter->lineTo(x,y);
+//    }
+//    painter->strokeColor(MIP_Color(0,0,0,0.1));
+//    painter->strokeWidth(1);
+//    painter->stroke();
+
     paintChildWidgets(AContext);
   }
 

@@ -246,6 +246,12 @@
 		<Unit filename="../include/extern/nanovg/nanovg.h" />
 		<Unit filename="../include/extern/nanovg/nanovg_gl.h" />
 		<Unit filename="../include/extern/nanovg/nanovg_gl_utils.h" />
+		<Unit filename="../include/extern/oui-blendish/blendish.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../include/extern/oui-blendish/blendish.h" />
 		<Unit filename="../include/extern/simple-opengl-loader.h" />
 		<Unit filename="../include/extern/stb/stb_image.h" />
 		<Unit filename="../include/extern/stb/stb_truetype.h" />
@@ -267,10 +273,16 @@
 		<Unit filename="../include/gui/opengl/mip_opengl.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl_painter.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl_utils.h" />
-		<Unit filename="../include/gui/opengl/mip_opengl_window.h" />
+		<Unit filename="../include/gui/widgets/mip_button_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_color_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_drag_value_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_knob_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_panel_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_slider_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_text_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_value_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_widgets.h" />
-		<Unit filename="../include/gui/widgets/nanovg/mip_color_widget.h" />
-		<Unit filename="../include/gui/widgets/nanovg/mip_panel_widget.h" />
+		<Unit filename="../include/gui/widgets/template.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_painter.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_surface.h" />
@@ -334,6 +346,10 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/test/test_editor.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_editor2.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

@@ -37,6 +37,9 @@ public:
   MIP_DragValueWidget(MIP_DRect ARect, const char* AText, double AValue)
   : MIP_ValueWidget(ARect,AText,AValue) {
     MName = "MIP_DragValueWidget";
+    MMouseCursor = MIP_CURSOR_ARROW_UP_DOWN;
+    Options.autoHideCursor = false;//true;
+    Options.autoLockCursor = true;
   }
 
   //----------
@@ -56,11 +59,12 @@ public: // parent to child
   void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     switch (AButton) {
       case MIP_BUTTON_LEFT: {
+        if (Options.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_HIDE);
+        if (Options.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_LOCK);
         MMousePrevX = AXpos;
         MMousePrevY = AYpos;
-        MDragValue    = MValue;
-        //MIP_Print("click! MValue: %.3f\n",MValue);
-        MIsDragging   = true;
+        MDragValue  = MValue;
+        MIsDragging = true;
         break;
       }
     }
@@ -69,7 +73,9 @@ public: // parent to child
   void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     switch (AButton) {
       case MIP_BUTTON_LEFT: {
-        MIsDragging   = false;
+        if (Options.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_SHOW);
+        if (Options.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_UNLOCK);
+        MIsDragging = false;
         break;
       }
     }

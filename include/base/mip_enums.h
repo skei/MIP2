@@ -106,8 +106,10 @@ enum MIP_EPluginStates {
 
 enum MIP_EMouseCursors {
 
-  MIP_CURSOR_GRAB                = -4,
-  MIP_CURSOR_RELEASE             = -3,
+  //MIP_CURSOR_GRAB                = -4,
+  //MIP_CURSOR_RELEASE             = -3,
+  MIP_CURSOR_LOCK                = -4,
+  MIP_CURSOR_UNLOCK              = -3,
   MIP_CURSOR_SHOW                = -2,
   MIP_CURSOR_HIDE                = -1,
 

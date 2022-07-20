@@ -14,6 +14,7 @@
 #include "gui/widgets/mip_drag_value_widget.h"
 #include "gui/widgets/mip_slider_widget.h"
 #include "gui/widgets/mip_knob_widget.h"
+#include "gui/widgets/mip_button_widget.h"
 
 //----------------------------------------------------------------------
 #endif

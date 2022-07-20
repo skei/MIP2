@@ -39,10 +39,20 @@ protected:
   MIP_Widget*       MMouseClickedWidget = nullptr;
   MIP_Widget*       MMouseModalWidget   = nullptr;
   MIP_Widget*       MMouseCaptureWidget = nullptr;
+  MIP_Widget*       MMouseLockedWidget  = nullptr;
   MIP_Widget*       MKeyCaptureWidget   = nullptr;
 
   MIP_Painter*      MWindowPainter      = nullptr;
   MIP_PaintContext  MPaintContext       = {};
+
+  uint32_t          MCurrentMouseCursor = MIP_CURSOR_DEFAULT;
+
+  int32_t           MMouseClickedX      = 0;
+  int32_t           MMouseClickedY      = 0;
+  int32_t           MMousePrevX         = 0;
+  int32_t           MMousePrevY         = 0;
+  int32_t           MMouseDragX         = 0;
+  int32_t           MMouseDragY         = 0;
 
 //------------------------------
 public:
@@ -51,6 +61,7 @@ public:
   MIP_Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
   : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
+
     MName = "MIP_Window";
     MWindowPainter = new MIP_Painter(this,this);
     MPaintContext.painter = MWindowPainter;
@@ -58,6 +69,7 @@ public:
     MRect.setPos(0.0);
     Layout.baseRect = MRect;
     MIndex = -1;
+
   }
 
   //----------
@@ -135,7 +147,6 @@ public: // window
   */
 
   void on_window_open() override {
-    //MIP_PRINT;
     //MIP_Print("aligning..\n");
     //alignChildWidgets();
   }
@@ -181,15 +192,11 @@ public: // window
   */
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
+    //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
     setupContext(AXpos,AYpos,AWidth,AHeight);
     MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
     painter->beginPaint(MRect.w,MRect.h);
     painter->scissor(AXpos,AYpos,AWidth,AHeight);
-
-    //glClearColor(1,0,1,1);
-    //glClear(GL_COLOR_BUFFER_BIT);
-
     paintChildWidgets(getPaintContext());
     painter->resetScissor();
     painter->endPaint();
@@ -218,6 +225,14 @@ public: // window
 
   void on_window_mouse_press(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     //MIP_PRINT;
+
+    MMouseClickedX  = AXpos;
+    MMouseClickedY  = AYpos;
+    MMousePrevX     = AXpos;
+    MMousePrevY     = AYpos;
+    MMouseDragX     = AXpos;
+    MMouseDragY     = AYpos;
+
     if (MHoverWidget != this) {
       MMouseClickedWidget = MHoverWidget;
       if (MMouseClickedWidget->Options.captureMouse) MMouseCaptureWidget = MMouseClickedWidget;
@@ -244,14 +259,35 @@ public: // window
 
   //----------
 
+  /*
+  }
+
+  */
+
   void on_window_mouse_move(uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
-    updateHoverWidget(AXpos,AYpos,ATime);
-    if (MMouseCaptureWidget) {
-      MMouseCaptureWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
+    //MMouseX = AXpos;
+    //MMouseY = AYpos;
+    if (MMouseLockedWidget) {
+      if ((AXpos == MMouseClickedX) && (AYpos == MMouseClickedY)) {
+        MMousePrevX = AXpos;
+        MMousePrevY = AYpos;
+        return;
+      }
+      int32_t deltax = AXpos - MMouseClickedX;
+      int32_t deltay = AYpos - MMouseClickedY;
+      MMouseDragX += deltax;
+      MMouseDragY += deltay;
+      MMouseClickedWidget->on_widget_mouse_move(AState,MMouseDragX,MMouseDragY,ATime);
+      setMouseCursorPos(MMouseClickedX,MMouseClickedY);
     }
-    //else {
-    //  updateHoverWidget(AXpos,AYpos,ATime);
-    //}
+    else {
+      updateHoverWidget(AXpos,AYpos,ATime);
+      if (MMouseCaptureWidget) {
+        MMouseCaptureWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
+      }
+    }
+    MMousePrevX = AXpos;
+    MMousePrevY = AYpos;
   }
 
   //----------
@@ -332,11 +368,27 @@ public: // child to parent
 
   void do_widget_cursor(MIP_Widget* ASender, uint32_t ACursor) override {
     switch (ACursor) {
-      case MIP_CURSOR_GRAB:     break;
-      case MIP_CURSOR_RELEASE:  break;
-      case MIP_CURSOR_SHOW:     break;
-      case MIP_CURSOR_HIDE:     break;
-      default:                  break;
+      case MIP_CURSOR_LOCK:
+        //grabMouseCursor();
+        MMouseLockedWidget = ASender;
+        break;
+      case MIP_CURSOR_UNLOCK:
+        //releaseMouseCursor();
+        MMouseLockedWidget = nullptr;
+        break;
+      case MIP_CURSOR_SHOW:
+        showMouseCursor();
+        setMouseCursor(MCurrentMouseCursor);
+        break;
+      case MIP_CURSOR_HIDE:
+        hideMouseCursor();
+        break;
+      default:
+        if (ACursor != MCurrentMouseCursor) {
+          setMouseCursor(ACursor);
+          MCurrentMouseCursor = ACursor;
+        }
+        break;
     }
   }
 

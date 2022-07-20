@@ -42,6 +42,7 @@ public:
     MIP_ValueWidget*      value1      = new MIP_ValueWidget(      MIP_DRect(  10, 10 + (3 * H2), 150, H ), "Value", 0.3 );
     MIP_DragValueWidget*  dragvalue1  = new MIP_DragValueWidget(  MIP_DRect(  10, 10 + (4 * H2), 150, H ), "DragValue", 0.3 );
     MIP_SliderWidget*     slider1     = new MIP_SliderWidget(     MIP_DRect(  10, 10 + (5 * H2), 150, H ), "Slider", 0.3 );
+    MIP_ButtonWidget*     button1     = new MIP_ButtonWidget(     MIP_DRect(  10, 10 + (6 * H2), 150, H ), "On", "Off", 0 );
 
     MIP_KnobWidget*       knob1       = new MIP_KnobWidget(       MIP_DRect( 170, 10, 40,40), "Knob", 0.3 );
 
@@ -51,10 +52,14 @@ public:
     background->appendChildWidget(value1);
     background->appendChildWidget(dragvalue1);
     background->appendChildWidget(slider1);
+    background->appendChildWidget(button1);
+
     background->appendChildWidget(knob1);
 
     knob1->setFillBackground(false);
     knob1->setDrawBorder(false);
+
+    button1->setTextColor(MIP_COLOR_BLACK);
 
   }
 

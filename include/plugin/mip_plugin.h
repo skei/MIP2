@@ -291,6 +291,7 @@ public: // EXT gui
   #ifndef MIP_NO_GUI
 
   bool gui_is_api_supported(const char *api, bool is_floating) override {
+    //MIP_PRINT;
     if ((strcmp(api,CLAP_WINDOW_API_X11) == 0) && (is_floating == false)) {
       return true;
     }
@@ -300,6 +301,7 @@ public: // EXT gui
   //----------
 
   bool gui_get_preferred_api(const char **api, bool *is_floating) override {
+    //MIP_PRINT;
     *api = CLAP_WINDOW_API_X11;
     *is_floating = false;
     return true;
@@ -308,6 +310,7 @@ public: // EXT gui
   //----------
 
   bool gui_create(const char *api, bool is_floating) override {
+    //MIP_PRINT;
     MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
     return true;
   }
@@ -315,72 +318,85 @@ public: // EXT gui
   //----------
 
   void gui_destroy() override {
+    //MIP_PRINT;
     delete MEditor;
   }
 
   //----------
 
   bool gui_set_scale(double scale) override {
+    //MIP_PRINT;
     return MEditor->gui_set_scale(scale);
   }
 
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
+    //MIP_PRINT;
     return MEditor->gui_get_size(width,height);
   }
 
   //----------
 
   bool gui_can_resize() override {
+    //MIP_PRINT;
     return MEditor->gui_can_resize();
   }
 
   //----------
 
   bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) override {
+    //MIP_PRINT;
     return MEditor->gui_get_resize_hints(hints);
   }
 
   //----------
 
   bool gui_adjust_size(uint32_t *width, uint32_t *height) override {
+    //MIP_PRINT;
     return MEditor->gui_adjust_size(width,height);
   }
 
   //----------
 
   bool gui_set_size(uint32_t width, uint32_t height) override {
+    //MIP_PRINT;
     return MEditor->gui_set_size(width,height);
   }
 
   //----------
 
   bool gui_set_parent(const clap_window_t *window) override {
+    //MIP_PRINT;
     return MEditor->gui_set_parent(window);
   }
 
   //----------
 
   bool gui_set_transient(const clap_window_t *window) override {
+    //MIP_PRINT;
     return MEditor->gui_set_transient(window);
   }
 
   //----------
 
   void gui_suggest_title(const char *title) override {
+    //MIP_PRINT;
     MEditor->gui_suggest_title(title);
   }
 
   //----------
 
   bool gui_show() override {
+    //MIP_PRINT;
     return MEditor->gui_show();
+    //MIP_PRINT;
   }
 
   //----------
 
   bool gui_hide() override {
+    //MIP_PRINT;
     return MEditor->gui_hide();
   }
 
