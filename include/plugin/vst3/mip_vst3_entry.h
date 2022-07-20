@@ -173,25 +173,20 @@ public:
     int32_t index = findPluginIndex(cid);
     if (index < 0) return kNotImplemented;
     const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
-
     //MIP_Vst3Host* vst3_host = new MIP_Vst3Host();
     MIP_Vst3HostImplementation* vst3_host = new MIP_Vst3HostImplementation();
-
     //MIP_Print("vst3_host: %p\n",vst3_host);
     //MIP_Print("vst3_host->getHost(): %p\n",vst3_host->getHost());
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,vst3_host->getHost());
     plugin->init();
     MIP_Vst3Plugin* vst3plugin = new MIP_Vst3Plugin(plugin,vst3_host);
-
     MIP_Plugin* pl = (MIP_Plugin*)plugin;
     MIP_ParameterArray* pa = pl->getParameters();
     vst3plugin->setParameters(pa);
-
 //      plugin->setListener(vst3_instance);
 //      plugin->on_plugin_open();
 //      plugin->setDefaultParameterValues();
 //      plugin->updateAllParameters();
-
       *obj = (Vst::IComponent*)vst3plugin;
       return kResultOk;
     return kNotImplemented;
