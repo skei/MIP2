@@ -4,6 +4,7 @@
 
 #include "mip.h"
 #include "gui/mip_window.h"
+//#include "gui/widgets/mip_widgets.h"
 
 //----------------------------------------------------------------------
 //
@@ -50,6 +51,9 @@ public:
     MEditorListener = AListener;
     MEditorWidth = AWidth;
     MEditorHeight = AHeight;
+
+    setWidgetSize(AWidth,AHeight);
+
     //MEditorWindow = new MIP_Window(AWidth,AHeight,true);
     //MWindow->setWindowListener(this);
   }
@@ -100,7 +104,12 @@ public: // clap gui
   virtual bool gui_set_size(uint32_t width, uint32_t height) {
     MEditorWidth = width;
     MEditorHeight = height;
+    setWidgetSize(width,height);
     /*MEditorWindow->*/setSize(width,height);
+
+//    on_window_resize(width,height);
+    alignChildWidgets();
+
     return true;
   }
 
