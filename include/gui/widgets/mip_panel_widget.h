@@ -80,7 +80,7 @@ public:
       if (MDrawRoundedCorners) painter->roundedRect(MRect.x,MRect.y,MRect.w,MRect.h, MRoundedCorners);
       else painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
       if (MFillGradient) {
-        NVGpaint paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y + MRect.y2(), MGradientColor1, MGradientColor2);
+        MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y + MRect.y2(), MGradientColor1, MGradientColor2);
         painter->fillPaint(paint);
       }
       else {

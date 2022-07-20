@@ -35,18 +35,6 @@ protected:
   uint32_t  MModulationAlignment  = MIP_TEXT_ALIGN_CENTER;
   float     MModulationSize       = 10.0;
 
-  bool      MIsDragging           = false;
-  double    MDragSensitivity      = 0.0005;
-  double    MDragSensitivity2     = 0.025;
-
-  double    MDragValue            = 0.0;
-  double    MMousePrevX           = 0.0;
-  double    MMousePrevY           = 0.0;
-
-  //double    MClickedX             = 0.0;
-  //double    MClickedY             = 0.0;
-  //double    MClickedValue         = 0.0;
-
 //------------------------------
 public:
 //------------------------------
@@ -93,42 +81,6 @@ public: // parent to child
     drawValue(AContext);
     drawModulation(AContext);
     drawBorder(AContext);
-  }
-
-  void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-    switch (AButton) {
-      case MIP_BUTTON_LEFT: {
-        MMousePrevX = AXpos;
-        MMousePrevY = AYpos;
-        MDragValue    = MValue;
-        //MIP_Print("click! MValue: %.3f\n",MValue);
-        MIsDragging   = true;
-        break;
-      }
-    }
-  }
-
-  void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-    switch (AButton) {
-      case MIP_BUTTON_LEFT: {
-        MIsDragging   = false;
-        break;
-      }
-    }
-  }
-
-  void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-    if (MIsDragging) {
-      double xdiff = AXpos - MMousePrevX;
-      double ydiff = MMousePrevY - AYpos;
-      MDragValue += (ydiff * MDragSensitivity);
-      MMousePrevX = AXpos;
-      MMousePrevY = AYpos;
-      MDragValue = MIP_Clamp(MDragValue,MMinValue,MMaxValue);
-      setValue(MDragValue);
-      do_widget_update(this);
-      do_widget_redraw(this);
-    }
   }
 
 //------------------------------

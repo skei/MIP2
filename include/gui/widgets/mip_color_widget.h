@@ -44,7 +44,6 @@ public:
     painter->fillColor(MColor);
     painter->fill();
     paintChildWidgets(AContext);
-
   }
 
 };
