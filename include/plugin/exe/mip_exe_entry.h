@@ -3,8 +3,9 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "plugin/clap/mip_clap_host_implementation.h"
 #include "plugin/mip_registry.h"
+#include "plugin/clap/mip_clap_host_implementation.h"
+#include "plugin/exe/mip_exe_host.h"
 
 #include "gui/mip_window.h"
 
@@ -14,10 +15,6 @@
 //
 //----------------------------------------------------------------------
 
-class MIP_ExeHostImplementation
-: public MIP_ClapHostImplementation {
-
-};
 
 //----------------------------------------------------------------------
 //
@@ -86,35 +83,18 @@ int main(int argc, char** argv) {
           clap_plugin_gui_t* gui = (clap_plugin_gui_t*)plugin->get_extension(CLAP_EXT_GUI);
           if (gui) {
 
-            uint32_t width = 640;
-            uint32_t height = 480;
-
-/// Showing the GUI works as follow:
-///  1. clap_plugin_gui->is_api_supported(), check what can work
-///  2. clap_plugin_gui->create(), allocates gui resources
-///  3. if the plugin window is floating
-///  4.    -> clap_plugin_gui->set_transient()
-///  5.    -> clap_plugin_gui->suggest_title()
-///  6. else
-///  7.    -> clap_plugin_gui->set_scale()
-///  8.    -> clap_plugin_gui->can_resize()
-///  9.    -> if resizable and has known size from previous session, clap_plugin_gui->set_size()
-/// 10.    -> else clap_plugin_gui->get_size(), gets initial size
-/// 11.    -> clap_plugin_gui->set_parent()
-/// 12. clap_plugin_gui->show()
-/// 13. clap_plugin_gui->hide()/show() ...
-/// 14. clap_plugin_gui->destroy() when done with the gui
+            uint32_t width, height;
 
             if (gui->is_api_supported(clap_plugin,CLAP_WINDOW_API_X11,false)) {
               gui->create(clap_plugin,CLAP_WINDOW_API_X11,false);
               gui->set_scale(clap_plugin,1.0);
-              bool can_resize = gui->can_resize(clap_plugin);
+              //bool can_resize = gui->can_resize(clap_plugin);
               //if (can_resize) {
-              //  gui->get_size(clap_plugin,&width,&height);
+              gui->get_size(clap_plugin,&width,&height);
               //}
               //else {
               //}
-              gui->set_size(clap_plugin,width,height);
+              //gui->set_size(clap_plugin,width,height);
 
               MIP_ExeWindow* exe_window = new MIP_ExeWindow(width,height,clap_plugin,gui);
               exe_window->open();
