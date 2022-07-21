@@ -187,7 +187,7 @@ private:
 
     double speedFactor = tempo / 60.0;
     double beatsPosFloat = MCurrentTime * speedFactor;
-      
+
     /*
     printf("prepare_transport: tempo: %f\n", tempo);
     printf("prepare_transport: MCurrentTime: %f\n", MCurrentTime);
@@ -484,6 +484,7 @@ public:
     MCurrentTime = 0.0;   // current position (in seconds)
 
     printf("processing %i samples\n",num_samples);
+    is_processing = true;
 
     while (num_samples > 0) {
 
@@ -531,6 +532,7 @@ public:
 
     }
 
+    is_processing = false;
     printf("Finished processing\n");
 
     // cleanup

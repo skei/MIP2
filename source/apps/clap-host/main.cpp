@@ -30,6 +30,12 @@
 #include "midi_file.hpp"
 #include "midi_player.hpp"
 
+// ugly hack.. we access this from different places, so we put it here,
+// before the #include stuff below, so it's available everywhere...
+// DON*T do this in a plugin!
+
+bool is_processing = false;
+
 #include "arguments.hpp"
 #include "host.hpp"
 #include "print.hpp"
@@ -62,6 +68,7 @@ const char*           arg_json_file         = "";
 bool                  arg_list_plugins      = false;
 bool                  arg_print_descriptor  = false;
 bool                  arg_print_parameters  = false;
+
 
 //----------------------------------------------------------------------
 
@@ -137,11 +144,11 @@ int main(int argc, char** argv) {
   arg_block_size        = arg_parser.getArgInt(                  "-b",   "--block_size");
   arg_num_audio_inputs  = arg_parser.getArgInt(                  "-c",   "--channels");
   arg_num_audio_outputs = arg_parser.getArgIntAfterSymbol( ':',  "-c",   "--channels");
-    
+
   if (arg_parser.hasOption("-t","--tempo")) {
     arg_tempo             = arg_parser.getArgFloat(                "-t",   "--tempo");
   }
-      
+
   arg_decay_seconds     = arg_parser.getArgFloat(                "-d",   "--decay-seconds");
 
   arg_list_plugins      = arg_parser.hasOption(                  "-pl",  "--list-plugins");
@@ -190,7 +197,10 @@ int main(int argc, char** argv) {
       load_preset(plugin,arg_preset_file);
     }
     plugin->activate(plugin,arg_sample_rate,1,arg_block_size);
+
+    // should this be moved close to the processing lop?
     plugin->start_processing(plugin);
+
     Process proc = Process(plugin);
     result = proc.process();
     plugin->stop_processing(plugin);

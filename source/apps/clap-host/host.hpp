@@ -199,8 +199,15 @@ public: // extensions
   virtual void state_mark_dirty() {}
   virtual void surround_changed() {}
   virtual void surround_get_preferred_channel_map(uint8_t* channel_map, uint32_t channel_map_capacity, uint32_t* channel_count) {}
-  virtual bool thread_check_is_main_thread() { return true; }
-  virtual bool thread_check_is_audio_thread() { return true; }
+
+  virtual bool thread_check_is_main_thread() {
+    return !is_processing; //true;
+  }
+
+  virtual bool thread_check_is_audio_thread() {
+    return is_processing; //true;
+  }
+
   virtual bool thread_pool_request_exec(uint32_t num_tasks) { return false; }
   virtual bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) { return false; }
   virtual bool timer_support_unregister_timer(clap_id timer_id) { return false; }
