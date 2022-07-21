@@ -1,11 +1,7 @@
 
-//#define MIP_NO_ENTRY
-
 #ifndef MIP_EXE
-
-#define MIP_DEBUG_PRINT_SOCKET
-// nc -U -l -k /tmp/mip.socket
-
+  #define MIP_DEBUG_PRINT_SOCKET
+  // nc -U -l -k /tmp/mip.socket
 #endif // MIP_EXE
 
 //----------------------------------------------------------------------
@@ -20,7 +16,7 @@
 
 //----------------------------------------------------------------------
 //
-//
+// descriptor
 //
 //----------------------------------------------------------------------
 
@@ -39,7 +35,7 @@ const clap_plugin_descriptor_t template_descriptor = {
 
 //----------------------------------------------------------------------
 //
-//
+// editor
 //
 //----------------------------------------------------------------------
 
@@ -102,7 +98,7 @@ public:
 
 //----------------------------------------------------------------------
 //
-//
+// plugin
 //
 //----------------------------------------------------------------------
 
@@ -223,31 +219,27 @@ public: // gui
 
 //----------------------------------------------------------------------
 //
-//
+// entry
 //
 //----------------------------------------------------------------------
 
-#ifndef MIP_NO_ENTRY
+#include "plugin/clap/mip_clap_entry.h"
+#include "plugin/exe/mip_exe_entry.h"
 
-  #include "plugin/clap/mip_clap_entry.h"
-  #include "plugin/exe/mip_exe_entry.h"
+#include "plugin/mip_registry.h"
 
-  #include "plugin/mip_registry.h"
+//----------
 
-  //----------
+void MIP_Register(MIP_Registry* ARegistry) {
+  ARegistry->appendDescriptor(&template_descriptor);
+};
 
-  void MIP_Register(MIP_Registry* ARegistry) {
-    ARegistry->appendDescriptor(&template_descriptor);
-  };
+//----------
 
-  //----------
-
-  MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-    if (AIndex == 0) {
-      return new test_editor2_plugin(ADescriptor,AHost);
-    }
-    return nullptr;
+MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
+  if (AIndex == 0) {
+    return new test_editor2_plugin(ADescriptor,AHost);
   }
-
-#endif
+  return nullptr;
+}
 
