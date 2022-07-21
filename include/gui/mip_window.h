@@ -168,7 +168,7 @@ public: // window
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    //MIP_PRINT;
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
     //int32_t new_width = MIP_NextPowerOfTwo(AWidth);
     //int32_t new_height = MIP_NextPowerOfTwo(AWidth);
     delete MWindowPainter;

@@ -41,7 +41,7 @@ public:
     //MIP_PRINT;
     MIP_OpenGLPainter::makeCurrent();
 
-    MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES);
+    MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES); // NVG_DEBUG
     MFont = nvgCreateFont(MContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
     nvgFontFaceId(MContext,MFont);
     //nvgFontSize(MContext,10);

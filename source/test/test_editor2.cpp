@@ -1,8 +1,12 @@
 
 //#define MIP_NO_ENTRY
 
+#ifndef MIP_EXE
+
 #define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket
+
+#endif // MIP_EXE
 
 //----------------------------------------------------------------------
 
@@ -73,8 +77,15 @@ public:
     MIP_DragValueWidget*  dragvalue1  = new MIP_DragValueWidget(  MIP_DRect(  10, 10 + (4 * H2), 150, H ), "DragValue", 0.3 );
     MIP_SliderWidget*     slider1     = new MIP_SliderWidget(     MIP_DRect(  10, 10 + (5 * H2), 150, H ), "Slider", 0.3 );
     MIP_ButtonWidget*     button1     = new MIP_ButtonWidget(     MIP_DRect(  10, 10 + (6 * H2), 150, H ), "On", "Off", 0 );
-
     MIP_KnobWidget*       knob1       = new MIP_KnobWidget(       MIP_DRect( 170, 10, 40,40), "Knob", 0.3 );
+
+    #undef H
+    #undef H2
+
+    background->appendChildWidget(knob1);
+    knob1->setFillBackground(false);
+    knob1->setDrawBorder(false);
+    button1->setTextColor(MIP_COLOR_BLACK);
 
     background->appendChildWidget(color1);
     background->appendChildWidget(panel1);
@@ -84,12 +95,6 @@ public:
     background->appendChildWidget(slider1);
     background->appendChildWidget(button1);
 
-    background->appendChildWidget(knob1);
-
-    knob1->setFillBackground(false);
-    knob1->setDrawBorder(false);
-
-    button1->setTextColor(MIP_COLOR_BLACK);
 
   }
 
@@ -165,13 +170,13 @@ public: // plugin
     return true;
   }
 
-  bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
-    return true;
-  }
+  //bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
+  //  return true;
+  //}
 
-  bool start_processing() final {
-    return true;
-  }
+  //bool start_processing() final {
+  //  return true;
+  //}
 
   //----------
 
@@ -179,6 +184,7 @@ public: // plugin
   //void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
   //void processEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
   //void processEvent(const clap_event_header_t* header) final {}
+
   //void processNoteOnEvent(const clap_event_note_t* event) final {}
   //void processNoteOffEvent(const clap_event_note_t* event) final {}
   //void processNoteChokeEvent(const clap_event_note_t* event) final {}
@@ -192,8 +198,10 @@ public: // plugin
   //void processMidiEvent(const clap_event_midi_t* event) final {}
   //void processMidiSysexEvent(const clap_event_midi_sysex_t* event) final {}
   //void processMidi2Event(const clap_event_midi2_t* event) final {}
+
   //void processAudioBlock(const clap_process_t* process) final { MIP_PRINT; }
-  //void processTransport(const clap_event_transport_t* transport) final {}
+
+  void processTransport(const clap_event_transport_t* transport) final {}
 
 //------------------------------
 public: // gui
@@ -222,6 +230,8 @@ public: // gui
 #ifndef MIP_NO_ENTRY
 
   #include "plugin/clap/mip_clap_entry.h"
+  #include "plugin/exe/mip_exe_entry.h"
+
   #include "plugin/mip_registry.h"
 
   //----------
