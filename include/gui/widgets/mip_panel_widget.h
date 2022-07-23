@@ -15,7 +15,7 @@ protected:
 //------------------------------
 
   bool      MDrawRoundedCorners   = true;
-  float     MRoundedCorners       = 5;
+  float     MRoundedCorners       = 4;
 
   bool      MFillBackground       = true;
   bool      MFillGradient         = true;

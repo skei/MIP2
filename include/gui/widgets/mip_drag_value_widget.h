@@ -51,6 +51,12 @@ public:
 public:
 //------------------------------
 
+  virtual void setDragSensitivity(double ASen)      { MDragSensitivity = ASen; }
+  virtual void setDragSensitivity2(double ASen)     { MDragSensitivity2 = ASen; }
+
+  virtual void scaleDragSensitivity(double AScale)  { MDragSensitivity *= AScale; }
+  virtual void scaleDragSensitivity2(double AScale) { MDragSensitivity2 *= AScale; }
+
 
 //------------------------------
 public: // parent to child

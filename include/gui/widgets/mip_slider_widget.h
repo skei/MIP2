@@ -63,7 +63,7 @@ public:
   virtual void drawSlider(MIP_PaintContext* AContext) {
     if (MDrawSlider) {
       MIP_Painter* painter = AContext->painter;
-      double value = MValue;
+      double value  = MValue;
       double minval = MMinValue;
       double maxval = MMaxValue;
       if (MDrawParameterValue) {
@@ -76,7 +76,7 @@ public:
       }
       double range = maxval - minval;
       if (range > 0) {
-        double v = value / range; // 0..1
+        double v = (value - minval) / range; // 0..1
         painter->beginPath();
         painter->fillColor(MSliderColor);
         painter->rect(MRect.x,MRect.y,MRect.w * v, MRect.h);

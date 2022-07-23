@@ -57,13 +57,13 @@ public:
 //------------------------------
 
   virtual void  setDrawParameterValue(bool ADraw=true)  { MDrawParameterValue = ADraw; }
-
   virtual void  setDrawValue(bool ADraw=true)           { MDrawValue = ADraw; }
   virtual void  setValue(double AValue)                 { MValue = AValue; }
+  virtual void  setMinValue(double AValue)              { MMinValue = AValue; }
+  virtual void  setMaxValue(double AValue)              { MMaxValue = AValue; }
   virtual void  setValueColor(MIP_Color AColor)         { MValueColor = AColor; }
   virtual void  setValueAlignment(uint32_t AAlign)      { MValueAlignment = AAlign; }
   virtual void  setValueSize(float ASize)               { MValueSize = ASize; }
-
   virtual void  setDrawModulation(bool ADraw=true)      { MDrawModulation = ADraw; }
   virtual void  setModulation(double AValue)            { MModulation = AValue; }
   virtual void  setModulationColor(MIP_Color AColor)    { MModulationColor = AColor; }

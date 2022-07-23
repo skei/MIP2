@@ -5,6 +5,12 @@
 #include "mip.h"
 #include "plugin/clap/mip_clap_host_implementation.h"
 
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
 class MIP_ExeHostImplementation
 : public MIP_ClapHostImplementation {
 

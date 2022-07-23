@@ -25,6 +25,7 @@ typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 struct MIP_WidgetLayout {
   uint32_t    alignment = MIP_WIDGET_ALIGN_PARENT;
   MIP_DRect   baseRect  = MIP_DRect(0,0,0,0);
+  //double    baseScale = 1.0;
   MIP_DRect   border    = MIP_DRect(0,0,0,0);
   MIP_DPoint  spacing   = MIP_DPoint(0,0);
   MIP_DPoint  minSize   = MIP_DPoint(0,0);
@@ -97,23 +98,22 @@ public:
 public:
 //------------------------------
 
-  const char* getWidgetName() { return MName; }
+  const char*             getWidgetName() { return MName; }
 
-  virtual MIP_Widget* getParentWidget() { return MParent; }
-  virtual MIP_DRect   getWidgetRect()   { return MRect; }
-  virtual double      getWidgetXPos()   { return MRect.x; }
-  virtual double      getWidgetYPos()   { return MRect.y; }
-  virtual double      getWidgetWidth()  { return MRect.w; }
-  virtual double      getWidgetHeight() { return MRect.h; }
-  virtual int32_t     getWidgetIndex()  { return MIndex; }
+  virtual MIP_Widget*     getParentWidget() { return MParent; }
+  virtual MIP_DRect       getWidgetRect()   { return MRect; }
+  virtual double          getWidgetXPos()   { return MRect.x; }
+  virtual double          getWidgetYPos()   { return MRect.y; }
+  virtual double          getWidgetWidth()  { return MRect.w; }
+  virtual double          getWidgetHeight() { return MRect.h; }
+  virtual int32_t         getWidgetIndex()  { return MIndex; }
 
   #ifndef MIP_NO_GUI
-  virtual MIP_Parameter* getParameter(uint32_t AIndex=0)    { return MParameters[0]; }
+  virtual MIP_Parameter*  getParameter(uint32_t AIndex=0)    { return MParameters[0]; }
   #endif
 
   bool isInteractive()  { return MState.interactive; }
   bool isDirty()        { return MState.dirty; }
-
 
 //------------------------------
 public:
@@ -153,9 +153,9 @@ public: // parent to child
   virtual void on_widget_paint(MIP_PaintContext* AContext) { paintChildWidgets(AContext); }
   virtual void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
-  virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s\n",getWidgetName()); }
-  virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s\n",getWidgetName()); }
-  virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {} //{ MIP_Print("%s\n",getWidgetName()); }
+  virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
+  virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
+  virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
 
   virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {
     if (Options.autoSetCursor) do_widget_cursor(this,MMouseCursor);
@@ -270,34 +270,34 @@ public: // hierarchy
   //----------
 
   void alignChildWidgets(bool ARecursive=true) {
-    MIP_DRect parentrect = MRect;
-    MIP_DRect clientrect = MRect;
-    //MIP_Print("rect: %.0f,%.0f - %.0f,%.0f\n",rect.x,rect.y,rect.w,rect.h);
+    MIP_DRect parent_rect = MRect;
+    MIP_DRect client_rect = MRect;
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
-      MIP_Widget* widget = MChildren[i];
-      MIP_DRect widgetrect = widget->Layout.baseRect;
-      switch (widget->Layout.alignment) {
+      MIP_Widget* child = MChildren[i];
+
+      MIP_DRect child_rect = child->Layout.baseRect;
+
+      switch (child->Layout.alignment) {
         case MIP_WIDGET_ALIGN_NONE: {
           break;
         }
         case MIP_WIDGET_ALIGN_PARENT: {
-          widgetrect.x += parentrect.x;
-          widgetrect.y += parentrect.y;
+          child_rect.x += parent_rect.x;
+          child_rect.y += parent_rect.y;
           break;
         }
         case MIP_WIDGET_ALIGN_CLIENT: {
-          widgetrect.x = clientrect.x;
-          widgetrect.y = clientrect.y;
-          widgetrect.w = clientrect.w;
-          widgetrect.h = clientrect.h;
+          child_rect.x = client_rect.x;
+          child_rect.y = client_rect.y;
+          child_rect.w = client_rect.w;
+          child_rect.h = client_rect.h;
           break;
         }
       }
-      //MIP_Print("widgetrect: %.0f,%.0f - %.0f,%.0f\n",widgetrect.x,widgetrect.y,widgetrect.w,widgetrect.h);
-      widget->MRect = widgetrect;
+      child->MRect = child_rect;
       if (ARecursive) {
-        widget->alignChildWidgets(ARecursive);
+        child->alignChildWidgets(ARecursive);
       }
     }
   }

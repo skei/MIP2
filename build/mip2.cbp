@@ -188,6 +188,16 @@
 		<Unit filename="../include/base/utils/mip_vm.h" />
 		<Unit filename="../include/base/utils/mip_vm_compiler.h" />
 		<Unit filename="../include/base/utils/mip_windowing.h" />
+		<Unit filename="../include/extern/blendish/blendish.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../include/extern/blendish/blendish.h" />
+		<Unit filename="../include/extern/blendish/example.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../include/extern/clap/audio-buffer.h" />
 		<Unit filename="../include/extern/clap/clap.h" />
 		<Unit filename="../include/extern/clap/color.h" />
@@ -246,12 +256,6 @@
 		<Unit filename="../include/extern/nanovg/nanovg.h" />
 		<Unit filename="../include/extern/nanovg/nanovg_gl.h" />
 		<Unit filename="../include/extern/nanovg/nanovg_gl_utils.h" />
-		<Unit filename="../include/extern/oui-blendish/blendish.c">
-			<Option compilerVar="CC" />
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../include/extern/oui-blendish/blendish.h" />
 		<Unit filename="../include/extern/simple-opengl-loader.h" />
 		<Unit filename="../include/extern/stb/stb_image.h" />
 		<Unit filename="../include/extern/stb/stb_truetype.h" />
@@ -296,6 +300,10 @@
 		<Unit filename="../include/plugin/clap/mip_clap_host.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_host_implementation.h" />
 		<Unit filename="../include/plugin/clap/mip_clap_plugin.h" />
+		<Unit filename="../include/plugin/exe/mip_exe.h" />
+		<Unit filename="../include/plugin/exe/mip_exe_entry.h" />
+		<Unit filename="../include/plugin/exe/mip_exe_host.h" />
+		<Unit filename="../include/plugin/exe/mip_exe_plugin.h" />
 		<Unit filename="../include/plugin/ladspa/mip_ladspa.h" />
 		<Unit filename="../include/plugin/ladspa/mip_ladspa_plugin.h" />
 		<Unit filename="../include/plugin/mip_audio_port.h" />

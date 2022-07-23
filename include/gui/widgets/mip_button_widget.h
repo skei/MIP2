@@ -18,8 +18,9 @@ class MIP_ButtonWidget
 protected:
 //------------------------------
 
-  const char* MOnText = "On";
-  const char* MOffText = "Off";
+  const char* MOnText   = "On";
+  const char* MOffText  = "Off";
+  bool        MIsToggle = true;
 
 //------------------------------
 public:
@@ -41,23 +42,51 @@ public:
   }
 
 //------------------------------
+public:
+//------------------------------
+
+  virtual void setIsToggle(bool AToggle) { MIsToggle = AToggle; }
+
+//------------------------------
 public: // parent to child
 //------------------------------
 
 //  void on_widget_paint(MIP_PaintContext* AContext) override { paintChildWidgets(AContext); }
 
   void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-    // toggle
-    if (MValue >= 0.5) {
-      MValue = 0.0;
-      setText(MOffText);
+    MState.interactive = true;
+    if (MIsToggle) {
+      if (MValue >= 0.5) {
+        MValue = 0.0;
+        setText(MOffText);
+      }
+      else {
+        MValue = 1.0;
+        setText(MOnText);
+      }
+      do_widget_update(this);
+      do_widget_redraw(this);
     }
     else {
       MValue = 1.0;
       setText(MOnText);
+      do_widget_update(this);
+      do_widget_redraw(this);
     }
-    do_widget_update(this);
-    do_widget_redraw(this);
+  }
+
+  //----------
+
+  void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
+    MState.interactive = false;
+    if (MIsToggle) {
+    }
+    else {
+      MValue = 0.0;
+      setText(MOffText);
+      do_widget_update(this);
+      do_widget_redraw(this);
+    }
   }
 
 //  void on_widget_mouse_release(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) override {}

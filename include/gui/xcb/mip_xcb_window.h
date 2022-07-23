@@ -204,10 +204,10 @@ public: // window
 
   virtual void open() {
     xcb_map_window(MConnection,MWindow);
+    xcb_flush(MConnection);
     #ifdef MIP_XCB_WAIT_FOR_MAPNOTIFY
       waitForMapNotify();
     #endif
-    xcb_flush(MConnection);
   }
 
   //----------
@@ -919,8 +919,10 @@ private: // events
         MWindowExposed = true;
         xcb_expose_event_t* expose = (xcb_expose_event_t *)AEvent;
 
-        // Unless this is the last contiguous expose, don’t draw
-        //if (e.xexpose.count == 0)
+        // Unless this is the last contiguous expose, don’t draw the window
+        //if (e.xexpose.count == 0) {
+        //  // DRAW THINGS
+        //}
 
         int16_t x = expose->x;
         int16_t y = expose->y;

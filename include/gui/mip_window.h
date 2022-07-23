@@ -353,15 +353,16 @@ public: // child to parent
   //----------
 
   void do_widget_redraw(MIP_Widget* ASender, uint32_t AMode=0) override {
-    MDirtyWidgets.append(ASender);
+    //MDirtyWidgets.append(ASender);
     MIP_DRect rect = ASender->getWidgetRect();
-    // should this ne called something less 'low-level'? redraw() ??
+    // should this ne called something less 'low-level'? redraw() ?? markDirty..
     invalidate(rect.x,rect.y,rect.w,rect.h);
   }
 
   //----------
 
   void do_widget_modal(MIP_Widget* ASender, uint32_t AMode=0) override {
+    // ignore event outside of modal widget (menus, etc)
   }
 
   //----------

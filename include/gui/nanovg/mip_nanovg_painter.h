@@ -12,6 +12,9 @@
 #include "gui/nanovg/mip_nanovg.h"
 #include "gui/nanovg/mip_nanovg_utils.h"
 
+//#include "extern/blendish/blendish.h"
+//#include "extern/blendish/blendish.c"
+
 // so we can make the mip_painter layer cross-backend..
 typedef NVGpaint MIP_PaintSource;
 
@@ -43,10 +46,16 @@ public:
 
     MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES); // NVG_DEBUG
     MFont = nvgCreateFont(MContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+
     nvgFontFaceId(MContext,MFont);
     //nvgFontSize(MContext,10);
 
+    #ifdef BLENDISH_H
+    bndSetFont(MFont);
+    #endif
+
     //MIconImage  = nvgCreateImage(MContext,"/DISKS/sda2/code/git/MIP2/include/extern/oui-blendish/blender_icons16.png",0); // NVG_IMAGE_PREMULTIPLIED
+
     //bndSetFont(MFont);
     //bndSetIconImage(MIconImage);
 
