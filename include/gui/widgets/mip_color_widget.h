@@ -22,6 +22,7 @@ public:
 //------------------------------
 
   virtual void setColor(MIP_Color AColor) { MColor = AColor; }
+  virtual MIP_Color getColor() { return MColor; }
 
 //------------------------------
 public:

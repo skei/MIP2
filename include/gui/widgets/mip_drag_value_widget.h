@@ -38,8 +38,8 @@ public:
   : MIP_ValueWidget(ARect,AText,AValue) {
     MName = "MIP_DragValueWidget";
     MMouseCursor = MIP_CURSOR_ARROW_UP_DOWN;
-    Options.autoHideCursor = false;//true;
-    Options.autoLockCursor = true;
+    Flags.autoHideCursor = false;//true;
+    Flags.autoLockCursor = true;
   }
 
   //----------
@@ -65,8 +65,8 @@ public: // parent to child
   void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     switch (AButton) {
       case MIP_BUTTON_LEFT: {
-        if (Options.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_HIDE);
-        if (Options.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_LOCK);
+        if (Flags.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_HIDE);
+        if (Flags.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_LOCK);
         MMousePrevX = AXpos;
         MMousePrevY = AYpos;
         MDragValue  = MValue;
@@ -79,8 +79,8 @@ public: // parent to child
   void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     switch (AButton) {
       case MIP_BUTTON_LEFT: {
-        if (Options.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_SHOW);
-        if (Options.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_UNLOCK);
+        if (Flags.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_SHOW);
+        if (Flags.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_UNLOCK);
         MIsDragging = false;
         break;
       }

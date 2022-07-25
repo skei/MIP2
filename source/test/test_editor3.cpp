@@ -57,7 +57,9 @@ private:
   MIP_SliderWidget*     slider1     = nullptr;
   MIP_ButtonWidget*     button1     = nullptr;
   MIP_ButtonWidget*     button2     = nullptr;
+
   MIP_MenuItemWidget*   menuitem1   = nullptr;
+  MIP_MenuWidget*       menu1       = nullptr;
 
   MIP_KnobWidget*       knob1       = nullptr;
   //MIP_ImageWidget*      image1      = nullptr;
@@ -107,6 +109,8 @@ public:
     //image1      = new MIP_ImageWidget(      MIP_DRect( 170, 10, 320,240), voxelbuffer, 320,240);
     waveform1   = new MIP_WaveformWidget(   MIP_DRect( 170, 60, 320,80) );
 
+    menu1       = new MIP_MenuWidget(       MIP_DRect( 170, 150, 160,100) );
+
     #undef H
     #undef H2
 
@@ -118,8 +122,13 @@ public:
     button1->setTextColor(MIP_COLOR_BLACK);
     button2->setTextColor(MIP_COLOR_RED);
     button2->setIsToggle(false);
-
     waveform1->setBuffer(MWaveform,1024);
+
+    menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 0,160,20), "item1" ));
+    menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,20,160,20), "item2" ));
+    menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,40,160,20), "item3" ));
+    menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,60,160,20), "item4" ));
+    menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,80,160,20), "item5" ));
 
     background->appendChildWidget(color1);
     background->appendChildWidget(panel1);
@@ -134,6 +143,11 @@ public:
     background->appendChildWidget(knob1);
     //background->appendChildWidget(image1);
     background->appendChildWidget(waveform1);
+
+    background->appendChildWidget(menu1);
+
+    //MModalWidget = menu1;
+
   }
 
   //
@@ -205,7 +219,7 @@ public:
   test_editor3_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
     MEditorWidth = 500;
-    MEditorHeight = 300;
+    MEditorHeight = 400;
   }
 
   //----------

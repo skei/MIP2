@@ -54,7 +54,7 @@ public: // parent to child
 //  void on_widget_paint(MIP_PaintContext* AContext) override { paintChildWidgets(AContext); }
 
   void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-    MState.interactive = true;
+    Flags.interactive = true;
     if (MIsToggle) {
       if (MValue >= 0.5) {
         MValue = 0.0;
@@ -78,7 +78,7 @@ public: // parent to child
   //----------
 
   void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-    MState.interactive = false;
+    Flags.interactive = false;
     if (MIsToggle) {
     }
     else {

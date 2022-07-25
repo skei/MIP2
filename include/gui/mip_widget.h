@@ -34,8 +34,9 @@ struct MIP_WidgetLayout {
 
 //----------
 
-struct MIP_WidgetOptions {
+struct MIP_WidgetFlags {
   bool active         = true;
+  bool interactive    = false;
   bool visible        = true;
   bool vertical       = false;
   bool proportional   = false;
@@ -43,13 +44,7 @@ struct MIP_WidgetOptions {
   bool autoSetCursor  = true;
   bool autoHideCursor = false;
   bool autoLockCursor = false;
-};
-
-//----------
-
-struct MIP_WidgetState {
-  bool interactive  = false;
-  bool dirty        = false;
+  bool dirty          = false;
 };
 
 //----------------------------------------------------------------------
@@ -69,7 +64,6 @@ protected:
   MIP_WidgetArray   MChildren     = {};
   MIP_DRect         MRect         = {0};
   int32_t           MIndex        = 0;
-  MIP_WidgetState   MState        = {};
   uint32_t          MMouseCursor  = MIP_CURSOR_DEFAULT;
   MIP_Parameter*    MParameters[MIP_MAX_PARAMETERS_PER_WIDGET] = {0};
 
@@ -78,7 +72,7 @@ public:
 //------------------------------
 
   MIP_WidgetLayout  Layout     = {};
-  MIP_WidgetOptions Options    = {};
+  MIP_WidgetFlags   Flags      = {};
 
 //------------------------------
 public:
@@ -112,8 +106,8 @@ public:
   virtual MIP_Parameter*  getParameter(uint32_t AIndex=0)    { return MParameters[0]; }
   #endif
 
-  bool isInteractive()  { return MState.interactive; }
-  bool isDirty()        { return MState.dirty; }
+  bool isInteractive()  { return Flags.interactive; }
+  bool isDirty()        { return Flags.dirty; }
 
 //------------------------------
 public:
@@ -158,7 +152,7 @@ public: // parent to child
   virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
 
   virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {
-    if (Options.autoSetCursor) do_widget_cursor(this,MMouseCursor);
+    if (Flags.autoSetCursor) do_widget_cursor(this,MMouseCursor);
   }
 
   virtual void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) {
@@ -242,10 +236,12 @@ public: // hierarchy
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* widget = MChildren[i];
-      MIP_DRect rect = widget->MRect;
-      if (rect.contains(AXpos,AYpos)) {
-        MIP_Widget* child = widget->findChildWidget(AXpos,AYpos);
-        return child;
+      if (widget->Flags.active) {
+        MIP_DRect rect = widget->MRect;
+        if (rect.contains(AXpos,AYpos)) {
+          MIP_Widget* child = widget->findChildWidget(AXpos,AYpos);
+          return child;
+        }
       }
     }
     return this;//nullptr;
@@ -259,10 +255,12 @@ public: // hierarchy
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* widget = MChildren[i];
-      MIP_DRect widgetrect = widget->MRect;
-      if (widgetrect.intersects(updaterect)) {
-        // check if  AContext->updateRect
-        widget->on_widget_paint(AContext);
+      if (widget->Flags.visible) {
+        MIP_DRect widgetrect = widget->MRect;
+        if (widgetrect.intersects(updaterect)) {
+          // check if  AContext->updateRect
+          widget->on_widget_paint(AContext);
+        }
       }
     }
   }
@@ -279,14 +277,17 @@ public: // hierarchy
       MIP_DRect child_rect = child->Layout.baseRect;
 
       switch (child->Layout.alignment) {
+
         case MIP_WIDGET_ALIGN_NONE: {
           break;
         }
+
         case MIP_WIDGET_ALIGN_PARENT: {
           child_rect.x += parent_rect.x;
           child_rect.y += parent_rect.y;
           break;
         }
+
         case MIP_WIDGET_ALIGN_CLIENT: {
           child_rect.x = client_rect.x;
           child_rect.y = client_rect.y;
@@ -294,6 +295,7 @@ public: // hierarchy
           child_rect.h = client_rect.h;
           break;
         }
+
       }
       child->MRect = child_rect;
       if (ARecursive) {

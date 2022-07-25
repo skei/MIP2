@@ -59,8 +59,15 @@ public: // parent to child
   //----------
 
   void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-    //do_widget_notify(this,0,MIndex);
-    do_widget_update(this);
+    switch (AButton) {
+      case MIP_BUTTON_LEFT:
+        do_widget_notify(this,0,MIndex);
+        break;
+      case MIP_BUTTON_RIGHT:
+        do_widget_notify(this,0,-1);
+        break;
+    }
+    //do_widget_update(this);
   }
 
   //----------

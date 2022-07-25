@@ -36,11 +36,12 @@ protected:
 
   MIP_WidgetArray   MDirtyWidgets       = {};
   MIP_Widget*       MHoverWidget        = nullptr;
-  MIP_Widget*       MMouseClickedWidget = nullptr;
-  MIP_Widget*       MMouseModalWidget   = nullptr;
-  MIP_Widget*       MMouseCaptureWidget = nullptr;
-  MIP_Widget*       MMouseLockedWidget  = nullptr;
-  MIP_Widget*       MKeyCaptureWidget   = nullptr;
+  MIP_Widget*       MClickedWidget      = nullptr;
+  MIP_Widget*       MModalWidget        = nullptr;
+  MIP_Widget*       MFocusWidget        = nullptr;
+  MIP_Widget*       MCapturedWidget     = nullptr;
+  MIP_Widget*       MLockedWidget       = nullptr;
+  MIP_Widget*       MKeyInputWidget     = nullptr;
 
   MIP_Painter*      MWindowPainter      = nullptr;
   MIP_PaintContext  MPaintContext       = {};
@@ -102,9 +103,14 @@ public:
   //}
 
   void updateHoverWidget(int32_t AXpos, int32_t AYpos, uint32_t ATime) {
-    MIP_Widget* hover = findChildWidget(AXpos,AYpos);
+    MIP_Widget* hover = nullptr;
+    if (MModalWidget) {
+      hover = MModalWidget->findChildWidget(AXpos,AYpos);
+    } else {
+      hover = findChildWidget(AXpos,AYpos);
+    }
     if (hover != MHoverWidget) {
-      if (!MMouseClickedWidget) {
+      if (!MClickedWidget) {
         if (MHoverWidget) MHoverWidget->on_widget_leave(hover,AXpos,AYpos,ATime);
         if (hover) hover->on_widget_enter(MHoverWidget,AXpos,AYpos,ATime);
         //MHoverWidget = hover; // don't update when dragging?
@@ -234,8 +240,8 @@ public: // window
     MMouseDragY     = AYpos;
 
     if (MHoverWidget != this) {
-      MMouseClickedWidget = MHoverWidget;
-      if (MMouseClickedWidget->Options.captureMouse) MMouseCaptureWidget = MMouseClickedWidget;
+      MClickedWidget = MHoverWidget;
+      if (MClickedWidget->Flags.captureMouse) MCapturedWidget = MClickedWidget;
       MHoverWidget->on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
     }
   }
@@ -244,12 +250,12 @@ public: // window
 
   void on_window_mouse_release(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     //MIP_PRINT;
-    if (MMouseCaptureWidget) {
-      MMouseCaptureWidget->on_widget_mouse_release(AButton,AState,AXpos,AYpos,ATime);
-      updateHoverWidgetFrom(MMouseCaptureWidget,AXpos,AYpos,ATime);
-      MMouseCaptureWidget = nullptr;
+    if (MCapturedWidget) {
+      MCapturedWidget->on_widget_mouse_release(AButton,AState,AXpos,AYpos,ATime);
+      updateHoverWidgetFrom(MCapturedWidget,AXpos,AYpos,ATime);
+      MCapturedWidget = nullptr;
     }
-    MMouseClickedWidget = nullptr;
+    MClickedWidget = nullptr;
     //else if (MMouseClickedWidget) {
     //  MMouseClickedWidget->on_widget_mouse_release(AButton,AState,AXpos,AYpos,ATime);
     //  updateHoverWidgetFrom(MMouseClickedWidget,AXpos,AYpos,ATime);
@@ -267,7 +273,7 @@ public: // window
   void on_window_mouse_move(uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     //MMouseX = AXpos;
     //MMouseY = AYpos;
-    if (MMouseLockedWidget) {
+    if (MLockedWidget) {
       if ((AXpos == MMouseClickedX) && (AYpos == MMouseClickedY)) {
         MMousePrevX = AXpos;
         MMousePrevY = AYpos;
@@ -277,13 +283,13 @@ public: // window
       int32_t deltay = AYpos - MMouseClickedY;
       MMouseDragX += deltax;
       MMouseDragY += deltay;
-      MMouseClickedWidget->on_widget_mouse_move(AState,MMouseDragX,MMouseDragY,ATime);
+      MClickedWidget->on_widget_mouse_move(AState,MMouseDragX,MMouseDragY,ATime);
       setMouseCursorPos(MMouseClickedX,MMouseClickedY);
     }
     else {
       updateHoverWidget(AXpos,AYpos,ATime);
-      if (MMouseCaptureWidget) {
-        MMouseCaptureWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
+      if (MCapturedWidget) {
+        MCapturedWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
       }
     }
     MMousePrevX = AXpos;
@@ -363,6 +369,7 @@ public: // child to parent
 
   void do_widget_modal(MIP_Widget* ASender, uint32_t AMode=0) override {
     // ignore event outside of modal widget (menus, etc)
+    MModalWidget = ASender;
   }
 
   //----------
@@ -371,11 +378,11 @@ public: // child to parent
     switch (ACursor) {
       case MIP_CURSOR_LOCK:
         //grabMouseCursor();
-        MMouseLockedWidget = ASender;
+        MLockedWidget = ASender;
         break;
       case MIP_CURSOR_UNLOCK:
         //releaseMouseCursor();
-        MMouseLockedWidget = nullptr;
+        MLockedWidget = nullptr;
         break;
       case MIP_CURSOR_SHOW:
         showMouseCursor();

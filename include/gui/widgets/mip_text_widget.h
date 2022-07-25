@@ -50,6 +50,8 @@ public:
   virtual void  setTextAlignment(uint32_t AAlign) { MTextAlignment = AAlign; }
   virtual void  setTextSize(float ASize)          { MTextSize = ASize; }
 
+  virtual const char* getText() { return MText; }
+
 //------------------------------
 public: // parent to child
 //------------------------------
