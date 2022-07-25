@@ -39,13 +39,13 @@
 
   void* operator new(size_t size, const char* file, const char* func, int line) /*throw(std::bad_alloc)*/ {
     void *ptr = (void *)malloc(size);
-    MIP_GLOBAL_DEBUG.addMemoryNode(ptr,size,file,func,line);
+//    MIP_GLOBAL_DEBUG.addMemoryNode(ptr,size,file,func,line);
     return(ptr);
   };
 
   void* operator new [] (size_t size, const char* file, const char* func, int line) /*throw(std::bad_alloc)*/ {
     void *ptr = (void *)malloc(size);
-    MIP_GLOBAL_DEBUG.addMemoryNode(ptr,size,file,func,line);
+//    MIP_GLOBAL_DEBUG.addMemoryNode(ptr,size,file,func,line);
     return(ptr);
   };
 
@@ -57,12 +57,12 @@
 //    kode_delete_line = 0;
 
   void operator delete(void *p) /*_GLIBCXX_USE_NOEXCEPT*/ {
-    MIP_GLOBAL_DEBUG.removeMemoryNode(p);
+//    MIP_GLOBAL_DEBUG.removeMemoryNode(p);
     free(p);
   };
 
   void operator delete [] (void *p) /*_GLIBCXX_USE_NOEXCEPT*/ {
-    MIP_GLOBAL_DEBUG.removeMemoryNode(p);
+//    MIP_GLOBAL_DEBUG.removeMemoryNode(p);
     free(p);
   };
 

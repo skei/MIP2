@@ -26,8 +26,8 @@
 
 const clap_plugin_descriptor_t template_descriptor = {
    .clap_version  = CLAP_VERSION,
-   .id            = "me/test_editor2/0",
-   .name          = "test_editor2",
+   .id            = "me/test_editor3/0",
+   .name          = "test_editor3",
    .vendor        = "me",
    .url           = "https://my_website.com",
    .manual_url    = "",
@@ -43,46 +43,38 @@ const clap_plugin_descriptor_t template_descriptor = {
 //
 //----------------------------------------------------------------------
 
-class test_editor2_editor
-: public MIP_Editor
-, public MIP_TimerListener {
+class test_editor3_editor
+: public MIP_Editor {
 
 private:
 
-  MIP_ColorWidget*      background = nullptr;
-  MIP_ColorWidget*      color1 = nullptr;
-  MIP_PanelWidget*      panel1 = nullptr;
-  MIP_TextWidget*       text1 = nullptr;
-  MIP_ValueWidget*      value1 = nullptr;
-  MIP_DragValueWidget*  dragvalue1 = nullptr;
-  MIP_SliderWidget*     slider1 = nullptr;
-  MIP_ButtonWidget*     button1 = nullptr;
-  MIP_ButtonWidget*     button2 = nullptr;
+  MIP_ColorWidget*      background  = nullptr;
+  MIP_ColorWidget*      color1      = nullptr;
+  MIP_PanelWidget*      panel1      = nullptr;
+  MIP_TextWidget*       text1       = nullptr;
+  MIP_ValueWidget*      value1      = nullptr;
+  MIP_DragValueWidget*  dragvalue1  = nullptr;
+  MIP_SliderWidget*     slider1     = nullptr;
+  MIP_ButtonWidget*     button1     = nullptr;
+  MIP_ButtonWidget*     button2     = nullptr;
+  MIP_MenuItemWidget*   menuitem1   = nullptr;
 
-  MIP_KnobWidget*       knob1 = nullptr;
-  MIP_ImageWidget*      image1 = nullptr;
+  MIP_KnobWidget*       knob1       = nullptr;
+  //MIP_ImageWidget*      image1      = nullptr;
+  MIP_WaveformWidget*   waveform1   = nullptr;
 
-  mip_voxel_t*    voxel                 = nullptr;
-  uint32_t        voxelbuffer[320*240]  = {0};
-  MIP_Timer       timer                 = MIP_Timer(this);
-  MIP_Bitmap      bitmap                = {};
+  float MWaveform[1024] = {0};
 
-  int32_t px  =  160;
-  int32_t py  =  100;
-  float pa    = 0.0;
 
 public:
 
-  test_editor2_editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
+  test_editor3_editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
   : MIP_Editor(AListener,AWidth,AHeight) {
     setup_widgets(AWidth,AHeight);
     setWindowFillBackground(false);
-    voxel = voxel_create();
-    voxel_make_map(voxel);
   }
 
-  virtual ~test_editor2_editor() {
-    voxel_destroy(voxel);
+  virtual ~test_editor3_editor() {
   }
 
 //------------------------------
@@ -90,6 +82,9 @@ public:
 //------------------------------
 
   void setup_widgets(uint32_t AWidth, uint32_t AHeight) {
+
+    for (uint32_t i=0; i<1024; i++) MWaveform[i] = MIP_RandomRange(-1,1);
+
     // background
     background = new MIP_ColorWidget( MIP_DRect( 0,0,500,400), MIP_COLOR_GRAY );
     appendChildWidget(background);
@@ -106,9 +101,11 @@ public:
     slider1     = new MIP_SliderWidget(     MIP_DRect(  10, 10 + (5 * H2), 150, H ), "Slider", 0.3 );
     button1     = new MIP_ButtonWidget(     MIP_DRect(  10, 10 + (6 * H2), 150, H ), "On", "Off", 0 );
     button2     = new MIP_ButtonWidget(     MIP_DRect(  10, 10 + (7 * H2), 150, H ), "On", "Off", 0 );
+    menuitem1   = new MIP_MenuItemWidget(   MIP_DRect(  10, 10 + (8 * H2), 150, H ), "MenuItem1" );
 
     knob1       = new MIP_KnobWidget(       MIP_DRect( 170, 10, 40,40),   "Knob", 0.3 );
-    image1      = new MIP_ImageWidget(      MIP_DRect( 170, 10, 320,240), voxelbuffer, 320,240);
+    //image1      = new MIP_ImageWidget(      MIP_DRect( 170, 10, 320,240), voxelbuffer, 320,240);
+    waveform1   = new MIP_WaveformWidget(   MIP_DRect( 170, 60, 320,80) );
 
     #undef H
     #undef H2
@@ -122,6 +119,8 @@ public:
     button2->setTextColor(MIP_COLOR_RED);
     button2->setIsToggle(false);
 
+    waveform1->setBuffer(MWaveform,1024);
+
     background->appendChildWidget(color1);
     background->appendChildWidget(panel1);
     background->appendChildWidget(text1);
@@ -130,38 +129,30 @@ public:
     background->appendChildWidget(slider1);
     background->appendChildWidget(button1);
     background->appendChildWidget(button2);
+    background->appendChildWidget(menuitem1);
 
     background->appendChildWidget(knob1);
-    background->appendChildWidget(image1);
+    //background->appendChildWidget(image1);
+    background->appendChildWidget(waveform1);
   }
 
   //
 
   bool gui_show() override {
     bool result = MIP_Editor::gui_show();
-    timer.start(50);
+    //timer.start(50);
     return result;
   }
 
   bool gui_hide() override {
-    timer.stop();
+    //timer.stop();
     bool result = MIP_Editor::gui_hide();
     return result;
   }
 
-  void on_timerCallback() final {
-    MIP_PRINT;
-    memset(voxelbuffer,0,sizeof(voxelbuffer));
-    voxel_render_frame(voxel,voxelbuffer,px * 65536,py * 65536,pa);
-    px += 1;
-    //py += 1;
-    pa += 0.05;
-    if (px >= 320) px = 0;
-    if (py >= 240) py = 0;
-    if (pa >= MIP_PI2)   pa -= MIP_PI2;
-    do_widget_redraw(image1);
-
-  }
+  //void on_timerCallback() final {
+  //  //do_widget_redraw(image1);
+  //}
 
 };
 
@@ -171,7 +162,7 @@ public:
 //
 //----------------------------------------------------------------------
 
-class test_editor2_plugin
+class test_editor3_plugin
 : public MIP_Plugin {
 
 //------------------------------
@@ -211,7 +202,7 @@ private:
 public:
 //------------------------------
 
-  test_editor2_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
+  test_editor3_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
     MEditorWidth = 500;
     MEditorHeight = 300;
@@ -219,7 +210,7 @@ public:
 
   //----------
 
-  virtual ~test_editor2_plugin() {
+  virtual ~test_editor3_plugin() {
   }
 
 //------------------------------
@@ -278,7 +269,7 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) override {
-    MEditor = new test_editor2_editor(this,MEditorWidth,MEditorHeight);
+    MEditor = new test_editor3_editor(this,MEditorWidth,MEditorHeight);
     return true;
   }
 
@@ -321,7 +312,7 @@ void MIP_Register(MIP_Registry* ARegistry) {
 
 MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
   if (AIndex == 0) {
-    return new test_editor2_plugin(ADescriptor,AHost);
+    return new test_editor3_plugin(ADescriptor,AHost);
   }
   return nullptr;
 }

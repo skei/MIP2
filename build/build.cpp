@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------
 
 //#include "../source/test/test_editor.cpp"
-#include "../source/test/test_editor2.cpp"
+//#include "../source/test/test_editor2.cpp"
+#include "../source/test/test_editor3.cpp"
 //#include "../source/test/test_widget.cpp"
 
 //#include "../source/test/test_nanogfx.cpp"

@@ -14,7 +14,7 @@ class MIP_PanelWidget
 protected:
 //------------------------------
 
-  bool      MDrawRoundedCorners   = true;
+  bool      MDrawRoundedCorners   = false;
   float     MRoundedCorners       = 4;
 
   bool      MFillBackground       = true;

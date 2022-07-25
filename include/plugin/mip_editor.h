@@ -4,6 +4,8 @@
 
 #include "mip.h"
 #include "gui/mip_window.h"
+#include "base/system/mip_timer.h"
+
 //#include "gui/widgets/mip_widgets.h"
 
 //----------------------------------------------------------------------
@@ -28,7 +30,8 @@ public:
 //----------------------------------------------------------------------
 
 class MIP_Editor
-: public MIP_Window {
+: public MIP_Window
+, public MIP_TimerListener {
 
 //------------------------------
 protected:
@@ -139,6 +142,13 @@ public: // clap gui
     /*MEditorWindow->*/close();
     return true;
   }
+
+//------------------------------
+public: // timer listener
+//------------------------------
+
+  //void on_timerCallback() override {
+  //}
 
 //------------------------------
 public:

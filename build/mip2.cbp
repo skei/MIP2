@@ -280,7 +280,10 @@
 		<Unit filename="../include/gui/widgets/mip_button_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_color_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_drag_value_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_image_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_menu_item_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_menu_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_panel_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_slider_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_text_widget.h" />
@@ -353,11 +356,16 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/private/voxel.h" />
 		<Unit filename="../source/test/test_editor.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/test/test_editor2.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_editor3.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
