@@ -2,6 +2,10 @@
 #define mip_window_included
 //----------------------------------------------------------------------
 
+/*
+  resize window: un-modal (like right-clicking)
+*/
+
 #include "mip.h"
 #include "gui/mip_widget.h"
 
@@ -370,6 +374,7 @@ public: // child to parent
   void do_widget_modal(MIP_Widget* ASender, uint32_t AMode=0) override {
     // ignore event outside of modal widget (menus, etc)
     MModalWidget = ASender;
+    updateHoverWidget(MMousePrevX,MMousePrevY,0);
   }
 
   //----------

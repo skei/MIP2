@@ -44,7 +44,8 @@ const clap_plugin_descriptor_t template_descriptor = {
 //----------------------------------------------------------------------
 
 class test_editor3_editor
-: public MIP_Editor {
+: public MIP_Editor
+, public MIP_MenuListener {
 
 private:
 
@@ -57,8 +58,9 @@ private:
   MIP_SliderWidget*     slider1     = nullptr;
   MIP_ButtonWidget*     button1     = nullptr;
   MIP_ButtonWidget*     button2     = nullptr;
-
   MIP_MenuItemWidget*   menuitem1   = nullptr;
+  MIP_SelectorWidget*   selector1   = nullptr;
+
   MIP_MenuWidget*       menu1       = nullptr;
 
   MIP_KnobWidget*       knob1       = nullptr;
@@ -95,6 +97,8 @@ public:
     #define H  22
     #define H2 25
 
+    menu1       = new MIP_MenuWidget(       MIP_DRect( 170, 150, 160,100), this );
+
     color1      = new MIP_ColorWidget(      MIP_DRect(  10, 10 + (0 * H2), 150, H ), MIP_COLOR_RED );
     panel1      = new MIP_PanelWidget(      MIP_DRect(  10, 10 + (1 * H2), 150, H ) );
     text1       = new MIP_TextWidget(       MIP_DRect(  10, 10 + (2 * H2), 150, H ), "Text" );
@@ -104,12 +108,11 @@ public:
     button1     = new MIP_ButtonWidget(     MIP_DRect(  10, 10 + (6 * H2), 150, H ), "On", "Off", 0 );
     button2     = new MIP_ButtonWidget(     MIP_DRect(  10, 10 + (7 * H2), 150, H ), "On", "Off", 0 );
     menuitem1   = new MIP_MenuItemWidget(   MIP_DRect(  10, 10 + (8 * H2), 150, H ), "MenuItem1" );
+    selector1   = new MIP_SelectorWidget(   MIP_DRect(  10, 10 + (9 * H2), 150, H ), "Selector1", menu1 );
 
     knob1       = new MIP_KnobWidget(       MIP_DRect( 170, 10, 40,40),   "Knob", 0.3 );
     //image1      = new MIP_ImageWidget(      MIP_DRect( 170, 10, 320,240), voxelbuffer, 320,240);
     waveform1   = new MIP_WaveformWidget(   MIP_DRect( 170, 60, 320,80) );
-
-    menu1       = new MIP_MenuWidget(       MIP_DRect( 170, 150, 160,100) );
 
     #undef H
     #undef H2
@@ -139,6 +142,7 @@ public:
     background->appendChildWidget(button1);
     background->appendChildWidget(button2);
     background->appendChildWidget(menuitem1);
+    background->appendChildWidget(selector1);
 
     background->appendChildWidget(knob1);
     //background->appendChildWidget(image1);
@@ -167,6 +171,10 @@ public:
   //void on_timerCallback() final {
   //  //do_widget_redraw(image1);
   //}
+
+  void on_menu_selected(int32_t AIndex) override {
+    MIP_Print("index %i\n",AIndex);
+  }
 
 };
 
