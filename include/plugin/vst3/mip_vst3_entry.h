@@ -180,9 +180,9 @@ public:
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(index,descriptor,vst3_host->getHost());
     plugin->init();
     MIP_Vst3Plugin* vst3plugin = new MIP_Vst3Plugin(plugin,vst3_host);
-    MIP_Plugin* pl = (MIP_Plugin*)plugin;
-    MIP_ParameterArray* pa = pl->getParameters();
-    vst3plugin->setParameters(pa);
+//    MIP_Plugin* pl = (MIP_Plugin*)plugin;
+//    MIP_ParameterArray* pa = pl->getParameters();
+//    vst3plugin->setParameters(pa);
 //      plugin->setListener(vst3_instance);
 //      plugin->on_plugin_open();
 //      plugin->setDefaultParameterValues();

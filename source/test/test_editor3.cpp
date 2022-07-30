@@ -61,18 +61,14 @@ private:
   MIP_MenuItemWidget*   menuitem1   = nullptr;
   MIP_SelectorWidget*   selector1   = nullptr;
   MIP_ButtonRowWidget*  buttonrow1  = nullptr;
-
   MIP_MenuWidget*       menu1       = nullptr;
-
   MIP_KnobWidget*       knob1       = nullptr;
   //MIP_ImageWidget*      image1      = nullptr;
   MIP_WaveformWidget*   waveform1   = nullptr;
   MIP_GridWidget*       grid1       = nullptr;
 
   float MWaveform[1024] = {0};
-
   const char* button_txt[5] = { "1", "2", "3", "4", "5" };
-
 
 public:
 
@@ -91,75 +87,85 @@ public:
 
   void setup_widgets(uint32_t AWidth, uint32_t AHeight) {
 
+    #define H  22
+    #define H2 25
+
     for (uint32_t i=0; i<1024; i++) MWaveform[i] = MIP_RandomRange(-1,1);
 
     // background
     background = new MIP_ColorWidget( MIP_DRect( 0,0,500,400), MIP_COLOR_GRAY );
     appendChildWidget(background);
-    background->Layout.alignment = MIP_WIDGET_ALIGN_CLIENT;
+    background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
 
-    #define H  22
-    #define H2 25
 
     menu1       = new MIP_MenuWidget(       MIP_DRect( 170, 150, 160,100), this );
-
-    color1      = new MIP_ColorWidget(      MIP_DRect(  10,  10 + ( 0 * H2), 150, H ), MIP_COLOR_RED );
-    panel1      = new MIP_PanelWidget(      MIP_DRect(  10,  10 + ( 1 * H2), 150, H ) );
-    text1       = new MIP_TextWidget(       MIP_DRect(  10,  10 + ( 2 * H2), 150, H ), "Text" );
-    value1      = new MIP_ValueWidget(      MIP_DRect(  10,  10 + ( 3 * H2), 150, H ), "Value", 0.3 );
-    dragvalue1  = new MIP_DragValueWidget(  MIP_DRect(  10,  10 + ( 4 * H2), 150, H ), "DragValue", 0.3 );
-    slider1     = new MIP_SliderWidget(     MIP_DRect(  10,  10 + ( 5 * H2), 150, H ), "Slider", 0.3 );
-    button1     = new MIP_ButtonWidget(     MIP_DRect(  10,  10 + ( 6 * H2), 150, H ), "On", "Off", 0 );
-    button2     = new MIP_ButtonWidget(     MIP_DRect(  10,  10 + ( 7 * H2), 150, H ), "On", "Off", 0 );
-    menuitem1   = new MIP_MenuItemWidget(   MIP_DRect(  10,  10 + ( 8 * H2), 150, H ), "MenuItem1" );
-    selector1   = new MIP_SelectorWidget(   MIP_DRect(  10,  10 + ( 9 * H2), 150, H ), "Selector1", menu1 );
-    buttonrow1  = new MIP_ButtonRowWidget(  MIP_DRect(  10,  10 + (10 * H2), 150, H ), 5, button_txt,0);
-
-    knob1       = new MIP_KnobWidget(       MIP_DRect( 170,  10, 40,40),   "Knob", 0.3 );
-    //image1      = new MIP_ImageWidget(      MIP_DRect( 170, 10, 320,240), voxelbuffer, 320,240);
-
-    waveform1   = new MIP_WaveformWidget(   MIP_DRect( 170,  60, 320,80) );
-    grid1       = new MIP_GridWidget(       MIP_DRect( 170, 160, 320,160), 8,8 );
-
-    #undef H
-    #undef H2
-
-    slider1->setMinValue(-5);
-    slider1->setMaxValue(5);
-    slider1->scaleDragSensitivity(10);
-    knob1->setFillBackground(false);
-    knob1->setDrawBorder(false);
-    button1->setTextColor(MIP_COLOR_BLACK);
-    button2->setTextColor(MIP_COLOR_RED);
-    button2->setIsToggle(false);
-    waveform1->setBuffer(MWaveform,1024);
-
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 0,160,20), "item1" ));
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,20,160,20), "item2" ));
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,40,160,20), "item3" ));
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,60,160,20), "item4" ));
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,80,160,20), "item5" ));
 
+    color1      = new MIP_ColorWidget(      MIP_DRect(  10,  10 + ( 0 * H2), 150, H ), MIP_COLOR_RED );
     background->appendChildWidget(color1);
-    background->appendChildWidget(panel1);
-    background->appendChildWidget(text1);
-    background->appendChildWidget(value1);
-    background->appendChildWidget(dragvalue1);
-    background->appendChildWidget(slider1);
-    background->appendChildWidget(button1);
-    background->appendChildWidget(button2);
-    background->appendChildWidget(menuitem1);
-    background->appendChildWidget(selector1);
-    background->appendChildWidget(buttonrow1);
 
+    panel1      = new MIP_PanelWidget(      MIP_DRect(  10,  10 + ( 1 * H2), 150, H ) );
+    background->appendChildWidget(panel1);
+
+    text1       = new MIP_TextWidget(       MIP_DRect(  10,  10 + ( 2 * H2), 150, H ), "Text" );
+    background->appendChildWidget(text1);
+
+    value1      = new MIP_ValueWidget(      MIP_DRect(  10,  10 + ( 3 * H2), 150, H ), "Value", 0.3 );
+    background->appendChildWidget(value1);
+
+    dragvalue1  = new MIP_DragValueWidget(  MIP_DRect(  10,  10 + ( 4 * H2), 150, H ), "DragValue", 0.3 );
+    background->appendChildWidget(dragvalue1);
+
+    slider1     = new MIP_SliderWidget(     MIP_DRect(  10,  10 + ( 5 * H2), 150, H ), "Slider", 0.3 );
+    background->appendChildWidget(slider1);
+    slider1->setMinValue(-5);
+    slider1->setMaxValue(5);
+    slider1->scaleDragSensitivity(10);
+
+    button1     = new MIP_ButtonWidget(     MIP_DRect(  10,  10 + ( 6 * H2), 150, H ), "On", "Off", 0 );
+    background->appendChildWidget(button1);
+    button1->setTextColor(MIP_COLOR_BLACK);
+
+    button2     = new MIP_ButtonWidget(     MIP_DRect(  10,  10 + ( 7 * H2), 150, H ), "On", "Off", 0 );
+    background->appendChildWidget(button2);
+    button2->setTextColor(MIP_COLOR_RED);
+    button2->setIsToggle(false);
+
+    menuitem1   = new MIP_MenuItemWidget(   MIP_DRect(  10,  10 + ( 8 * H2), 150, H ), "MenuItem1" );
+    background->appendChildWidget(menuitem1);
+
+    selector1   = new MIP_SelectorWidget(   MIP_DRect(  10,  10 + ( 9 * H2), 150, H ), "Selector1", menu1 );
+    background->appendChildWidget(selector1);
+
+    buttonrow1  = new MIP_ButtonRowWidget(  MIP_DRect(  10,  10 + (10 * H2), 150, H ), 5, button_txt,MIP_BUTTON_ROW_MULTI);
+    background->appendChildWidget(buttonrow1);
+    buttonrow1->setButtonState(0,true);
+
+    knob1       = new MIP_KnobWidget(       MIP_DRect( 170,  10, 40,40),   "Knob", 0.3 );
     background->appendChildWidget(knob1);
+    knob1->setFillBackground(false);
+    knob1->setDrawBorder(false);
+
+    //image1      = new MIP_ImageWidget(      MIP_DRect( 170, 10, 320,240), voxelbuffer, 320,240);
     //background->appendChildWidget(image1);
+
+    waveform1   = new MIP_WaveformWidget(   MIP_DRect( 170,  60, 320,80) );
     background->appendChildWidget(waveform1);
+    waveform1->setBuffer(MWaveform,1024);
+
+    grid1       = new MIP_GridWidget(       MIP_DRect( 170, 160, 320,160), 8,8 );
     background->appendChildWidget(grid1);
 
     background->appendChildWidget(menu1);
 
     //MModalWidget = menu1;
+
+    #undef H
+    #undef H2
 
   }
 
@@ -330,6 +336,8 @@ public: // gui
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
+//#include "plugin/vst2/mip_vst2_entry.h"
+//#include "plugin/vst3/mip_vst3_entry.h"
 
 #include "plugin/mip_registry.h"
 

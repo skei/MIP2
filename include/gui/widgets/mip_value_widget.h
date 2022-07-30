@@ -21,10 +21,10 @@ protected:
   bool      MDrawParameterValue   = true;
 
   bool      MDrawValue            = true;
-  double    MValue                = 0.0;
-  double    MMinValue             = 0.0;
-  double    MMaxValue             = 1.0;
-  double    MDefValue             = 0.0;
+  //double    MValue                = 0.0;
+  //double    MMinValue             = 0.0;
+  //double    MMaxValue             = 1.0;
+  //double    MDefValue             = 0.0;
   MIP_Color MValueColor           = MIP_COLOR_BLACK;
   uint32_t  MValueAlignment       = MIP_TEXT_ALIGN_RIGHT;
   float     MValueSize            = 13.0;
@@ -42,8 +42,8 @@ public:
   MIP_ValueWidget(MIP_DRect ARect, const char* AText, double AValue)
   : MIP_TextWidget(ARect,AText) {
     MName = "MIP_ValueWidget";
-    MValue = AValue;
-    MDefValue = MValue;
+    setValue(AValue);
+    setDefValue(AValue);
     MTextAlignment = MIP_TEXT_ALIGN_LEFT;
   }
 
@@ -58,9 +58,9 @@ public:
 
   virtual void  setDrawParameterValue(bool ADraw=true)  { MDrawParameterValue = ADraw; }
   virtual void  setDrawValue(bool ADraw=true)           { MDrawValue = ADraw; }
-  virtual void  setValue(double AValue)                 { MValue = AValue; }
-  virtual void  setMinValue(double AValue)              { MMinValue = AValue; }
-  virtual void  setMaxValue(double AValue)              { MMaxValue = AValue; }
+//  virtual void  setValue(double AValue)                 { MValue = AValue; }
+//  virtual void  setMinValue(double AValue)              { MMinValue = AValue; }
+//  virtual void  setMaxValue(double AValue)              { MMaxValue = AValue; }
   virtual void  setValueColor(MIP_Color AColor)         { MValueColor = AColor; }
   virtual void  setValueAlignment(uint32_t AAlign)      { MValueAlignment = AAlign; }
   virtual void  setValueSize(float ASize)               { MValueSize = ASize; }
@@ -91,7 +91,7 @@ public:
     if (MDrawValue) {
       MIP_Painter* painter = AContext->painter;
       char temp[16];
-      double value = MValue;
+      double value = getValue();
       if (MDrawParameterValue) {
         MIP_Parameter* parameter = getParameter();
         if (parameter) {
@@ -112,7 +112,7 @@ public:
   virtual void drawModulation(MIP_PaintContext* AContext) {
     if (MDrawModulation) {
       MIP_Painter* painter = AContext->painter;
-      __MIP_UNUSED double value = MValue;
+      __MIP_UNUSED double value = getValue();
       double modulation = MModulation;
       if (MDrawParameterValue) {
         MIP_Parameter* parameter = getParameter();

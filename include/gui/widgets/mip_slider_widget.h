@@ -63,9 +63,9 @@ public:
   virtual void drawSlider(MIP_PaintContext* AContext) {
     if (MDrawSlider) {
       MIP_Painter* painter = AContext->painter;
-      double value  = MValue;
-      double minval = MMinValue;
-      double maxval = MMaxValue;
+      double value  = getValue();
+      double minval = getMinValue();
+      double maxval = getMaxValue();
       if (MDrawParameterValue) {
         MIP_Parameter* parameter = getParameter();
         if (parameter) {

@@ -31,8 +31,8 @@ protected:
   bool        MValueIsBits            = false;
   uint32_t    MNumBits                = 0;
 
-  bool MDrawRoundedBottom = true;
-  float MRounded = 8;
+  bool        MDrawRoundedBottom      = true;
+  float       MRounded                = 8;
 
 //------------------------------
 public:

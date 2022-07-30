@@ -83,38 +83,40 @@ public:
   //----------
 
   void start(float ms, bool oneshot=false) {
-    float s = ms * 0.001f;
-    float sec = MIP_Trunc(s);
-    float nsec = (s-sec) * 1000000000; // 1000000.0f * (sec - MIP_Fract(s));
-    time_t isec = sec;
-    long insec = nsec;
-    //MIP_Print("s %.4f sec %.4f nsec %.4f isec %i insec %i\n",s,sec,nsec,isec,insec);
-    if (oneshot) {
-      MTimerSpec.it_interval.tv_sec   = 0;
-      MTimerSpec.it_interval.tv_nsec  = 0;
-    }
-    else {
-      MTimerSpec.it_interval.tv_sec   = isec;
-      MTimerSpec.it_interval.tv_nsec  = insec;
-    }
-    MTimerSpec.it_value.tv_sec      = isec;
-    MTimerSpec.it_value.tv_nsec     = insec;
-    //int res =
-    timer_settime(MTimer, 0, &MTimerSpec, 0);
-    /*if (res == -1) {
-      switch(errno) {
-        case EFAULT:
-          MIP_Print("timer_settime error: new_value, old_value, or curr_value is not a valid pointer.\n");
-          break;
-        //case EINVAL:
-        //  MIP_Print("timer_settime error: timerid is invalid.\n");
-        //  break;
-        case EINVAL:
-          MIP_Print("timer_settime: new_value.it_value is negative; or new_value.it_value.tv_nsec is negative or greater than 999,999,999.\n");
-          break;
+    if (!MRunning) {
+      float s = ms * 0.001f;
+      float sec = MIP_Trunc(s);
+      float nsec = (s-sec) * 1000000000; // 1000000.0f * (sec - MIP_Fract(s));
+      time_t isec = sec;
+      long insec = nsec;
+      //MIP_Print("s %.4f sec %.4f nsec %.4f isec %i insec %i\n",s,sec,nsec,isec,insec);
+      if (oneshot) {
+        MTimerSpec.it_interval.tv_sec   = 0;
+        MTimerSpec.it_interval.tv_nsec  = 0;
       }
-    }*/
-    MRunning = true;
+      else {
+        MTimerSpec.it_interval.tv_sec   = isec;
+        MTimerSpec.it_interval.tv_nsec  = insec;
+      }
+      MTimerSpec.it_value.tv_sec      = isec;
+      MTimerSpec.it_value.tv_nsec     = insec;
+      //int res =
+      timer_settime(MTimer, 0, &MTimerSpec, 0);
+      /*if (res == -1) {
+        switch(errno) {
+          case EFAULT:
+            MIP_Print("timer_settime error: new_value, old_value, or curr_value is not a valid pointer.\n");
+            break;
+          //case EINVAL:
+          //  MIP_Print("timer_settime error: timerid is invalid.\n");
+          //  break;
+          case EINVAL:
+            MIP_Print("timer_settime: new_value.it_value is negative; or new_value.it_value.tv_nsec is negative or greater than 999,999,999.\n");
+            break;
+        }
+      }*/
+      MRunning = true;
+    }
   }
 
   //----------
@@ -133,6 +135,7 @@ public:
       MTimerSpec.it_value.tv_sec      = 0;
       MTimerSpec.it_value.tv_nsec     = 0;
       timer_settime(MTimer, 0, &MTimerSpec, 0);
+      MRunning = false;
     }
   }
 

@@ -56,6 +56,15 @@ struct MIP_WidgetFlags {
 class MIP_Widget {
 
 //------------------------------
+private:
+//------------------------------
+
+  double    MValue      = 0.0;
+  double    MMinValue   = 0.0;
+  double    MMaxValue   = 1.0;
+  double    MDefValue   = 0.0;
+
+//------------------------------
 protected:
 //------------------------------
 
@@ -92,6 +101,20 @@ public:
 public:
 //------------------------------
 
+  virtual double getValue()     { return MValue; }
+  virtual double getMinValue()  { return MMinValue; }
+  virtual double getMaxValue()  { return MMaxValue; }
+  virtual double getDefValue()  { return MDefValue; }
+
+  virtual void   setValue(double v)     { MValue = v; }
+  virtual void   setMinValue(double v)  { MMinValue = v; }
+  virtual void   setMaxValue(double v)  { MMaxValue = v; }
+  virtual void   setDefValue(double v)  { MDefValue = v; }
+
+//------------------------------
+public:
+//------------------------------
+
   const char*             getWidgetName() { return MName; }
 
   virtual MIP_Widget*     getParentWidget() { return MParent; }
@@ -101,6 +124,8 @@ public:
   virtual double          getWidgetWidth()  { return MRect.w; }
   virtual double          getWidgetHeight() { return MRect.h; }
   virtual int32_t         getWidgetIndex()  { return MIndex; }
+
+  // ???
 
   #ifndef MIP_NO_GUI
   virtual MIP_Parameter*  getParameter(uint32_t AIndex=0)    { return MParameters[0]; }
@@ -288,13 +313,48 @@ public: // hierarchy
           break;
         }
 
-        case MIP_WIDGET_ALIGN_CLIENT: {
+        case MIP_WIDGET_ALIGN_FILL_CLIENT: {
           child_rect.x = client_rect.x;
           child_rect.y = client_rect.y;
           child_rect.w = client_rect.w;
           child_rect.h = client_rect.h;
           break;
         }
+
+        case MIP_WIDGET_ALIGN_FILL_TOP: {
+          child_rect.x = client_rect.x;
+          child_rect.y = client_rect.y;
+          child_rect.w = client_rect.w;
+          client_rect.y += child_rect.h;
+          client_rect.h -= child_rect.h;
+          break;
+        }
+
+        case MIP_WIDGET_ALIGN_FILL_BOTTOM: {
+          child_rect.x = client_rect.x;
+          child_rect.y = client_rect.y2() - child_rect.h;
+          child_rect.w = client_rect.w;
+          client_rect.h -= child_rect.h;
+          break;
+        }
+
+        case MIP_WIDGET_ALIGN_FILL_LEFT: {
+          child_rect.x = client_rect.x;
+          child_rect.y = client_rect.y;
+          child_rect.h = client_rect.h;
+          client_rect.x += child_rect.w;
+          client_rect.w -= child_rect.w;
+          break;
+        }
+
+        case MIP_WIDGET_ALIGN_FILL_RIGHT: {
+          child_rect.x = client_rect.x2() - child_rect.w;
+          child_rect.y = client_rect.y;
+          child_rect.h = client_rect.h;
+          client_rect.w -= child_rect.w;
+          break;
+        }
+
 
       }
       child->MRect = child_rect;

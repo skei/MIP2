@@ -44,6 +44,8 @@ protected:
   double              MEditorScale    = 1.0;
   bool                MIsEditorOpen   = false;
 
+  MIP_Timer           MTimer          = MIP_Timer(this);
+
 //------------------------------
 public:
 //------------------------------
@@ -130,25 +132,38 @@ public: // clap gui
   }
 
   virtual bool gui_show() {
-    /*MEditorWindow->*/open();
-    /*MEditorWindow->*/startEventThread();
-    MIsEditorOpen = true;
+    if (!MIsEditorOpen) {
+      /*MEditorWindow->*/open();
+      /*MEditorWindow->*/startEventThread();
+      MIsEditorOpen = true;
+    }
     return true;
   }
 
   virtual bool gui_hide() {
-    MIsEditorOpen = false;
-    /*MEditorWindow->*/stopEventThread();
-    /*MEditorWindow->*/close();
+    if (MIsEditorOpen) {
+      MIsEditorOpen = false;
+      /*MEditorWindow->*/stopEventThread();
+      /*MEditorWindow->*/close();
+    }
     return true;
   }
 
 //------------------------------
-public: // timer listener
+public: // timer
 //------------------------------
 
-  //void on_timerCallback() override {
-  //}
+//  virtual void startTimer(uint32_t ms) {
+//    MTimer.start(ms);
+//  }
+//
+//  virtual void stopTimer() {
+//    MTimer.stop();
+//  }
+//
+//  void on_timerCallback() override {
+//    MIP_PRINT;
+//  }
 
 //------------------------------
 public:

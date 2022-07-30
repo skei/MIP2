@@ -244,7 +244,6 @@
 		<Unit filename="../include/extern/clap/stream.h" />
 		<Unit filename="../include/extern/clap/string-sizes.h" />
 		<Unit filename="../include/extern/clap/version.h" />
-		<Unit filename="../include/extern/nanogfx.h" />
 		<Unit filename="../include/extern/nanovg/LICENSE.txt" />
 		<Unit filename="../include/extern/nanovg/README.md" />
 		<Unit filename="../include/extern/nanovg/fontstash.h" />
@@ -277,9 +276,11 @@
 		<Unit filename="../include/gui/opengl/mip_opengl.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl_painter.h" />
 		<Unit filename="../include/gui/opengl/mip_opengl_utils.h" />
+		<Unit filename="../include/gui/widgets/mip_button_row_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_button_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_color_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_drag_value_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_grid_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_image_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_menu_item_widget.h" />
@@ -344,6 +345,10 @@
 		<Unit filename="../source/apps/clap-host/print.hpp" />
 		<Unit filename="../source/apps/clap-host/process.hpp" />
 		<Unit filename="../source/apps/clap-host/test_midi.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_botage.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

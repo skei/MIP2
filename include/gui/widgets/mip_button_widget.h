@@ -56,19 +56,19 @@ public: // parent to child
   void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     Flags.interactive = true;
     if (MIsToggle) {
-      if (MValue >= 0.5) {
-        MValue = 0.0;
+      if (getValue() >= 0.5) {
+        setValue(0.0);
         setText(MOffText);
       }
       else {
-        MValue = 1.0;
+        setValue(1.0);
         setText(MOnText);
       }
       do_widget_update(this);
       do_widget_redraw(this);
     }
     else {
-      MValue = 1.0;
+      setValue(1.0);
       setText(MOnText);
       do_widget_update(this);
       do_widget_redraw(this);
@@ -82,7 +82,7 @@ public: // parent to child
     if (MIsToggle) {
     }
     else {
-      MValue = 0.0;
+      setValue(0.0);
       setText(MOffText);
       do_widget_update(this);
       do_widget_redraw(this);

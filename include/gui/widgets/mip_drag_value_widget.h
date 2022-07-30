@@ -69,7 +69,7 @@ public: // parent to child
         if (Flags.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_LOCK);
         MMousePrevX = AXpos;
         MMousePrevY = AYpos;
-        MDragValue  = MValue;
+        MDragValue  = getValue();
         MIsDragging = true;
         break;
       }
@@ -94,7 +94,7 @@ public: // parent to child
       MDragValue += (ydiff * MDragSensitivity);
       MMousePrevX = AXpos;
       MMousePrevY = AYpos;
-      MDragValue = MIP_Clamp(MDragValue,MMinValue,MMaxValue);
+      MDragValue = MIP_Clamp(MDragValue,getMinValue(),getMaxValue());
       setValue(MDragValue);
       do_widget_update(this);
       do_widget_redraw(this);

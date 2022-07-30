@@ -10,7 +10,7 @@
 //#include "plugin/clap/mip_clap_host.h"
 #include "plugin/vst2/mip_vst2.h"
 #include "plugin/vst2/mip_vst2_plugin.h"
-#include "plugin/vst2/mip_vst2_host.h"
+#include "plugin/vst2/mip_vst2_host_implementation.h"
 
 //----------------------------------------------------------------------
 //
