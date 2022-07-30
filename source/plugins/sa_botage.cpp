@@ -198,26 +198,7 @@ public: // timer
 
   void on_timerCallback() override {
     sa_botage_editor* editor = (sa_botage_editor*)MEditor;
-    editor->MWaveform->setBuffer(MProcess.MBuffer,MProcess.MBufferLength);
-    editor->MWaveform->setNumGrid(MProcess.par_num_beats);
-    editor->MWaveform->setNumSubGrid(MProcess.par_num_slices);
-
-    editor->MWaveform->setMarkerActive(0,true);
-    editor->MWaveform->setMarkerPos(0,MProcess.MWritePos);
-    editor->MWaveform->setMarkerColor(0, MIP_Color(1,0,0,1) );
-    editor->MWaveform->setMarkerWidth(0,1);
-
-    editor->MWaveform->setMarkerActive(1,true);
-    editor->MWaveform->setMarkerPos(1,MProcess.MReadPos);
-    editor->MWaveform->setMarkerColor(1, MIP_Color(0,1,0,1) );
-    editor->MWaveform->setMarkerWidth(1,1);
-
-    editor->MWaveform->setAreaActive(0,true);
-    editor->MWaveform->setAreaStart(0,MProcess.MCurrentSliceStart);
-    editor->MWaveform->setAreaLength(0,MProcess.MCurrentSliceLength);
-    editor->MWaveform->setAreaColor(0, MIP_Color(0,0,0,0.3) );
-
-    editor->MWaveform->do_widget_redraw(editor->MWaveform);
+    editor->timer(&MProcess);
   }
 
 };
