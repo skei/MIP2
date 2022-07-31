@@ -19,7 +19,7 @@ protected:
 //------------------------------
 
   bool      MIsDragging           = false;
-  double    MDragSensitivity      = 0.002;
+  double    MDragSensitivity      = 0.01;
   double    MDragSensitivity2     = 0.02;
 
   double    MDragValue            = 0.0;
