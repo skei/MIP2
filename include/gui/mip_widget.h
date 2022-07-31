@@ -74,7 +74,8 @@ protected:
   MIP_DRect         MRect         = {0};
   int32_t           MIndex        = 0;
   uint32_t          MMouseCursor  = MIP_CURSOR_DEFAULT;
-  MIP_Parameter*    MParameters[MIP_MAX_PARAMETERS_PER_WIDGET] = {0};
+  //MIP_Parameter*    MParameters[MIP_MAX_PARAMETERS_PER_WIDGET] = {0};
+  MIP_Parameter*    MParameter    = {0};
 
 //------------------------------
 public:
@@ -101,15 +102,15 @@ public:
 public:
 //------------------------------
 
-  virtual double getValue()     { return MValue; }
-  virtual double getMinValue()  { return MMinValue; }
-  virtual double getMaxValue()  { return MMaxValue; }
-  virtual double getDefValue()  { return MDefValue; }
+  virtual double getValue()                 { return MValue; }
+  virtual double getMinValue()              { return MMinValue; }
+  virtual double getMaxValue()              { return MMaxValue; }
+  virtual double getDefaultValue()          { return MDefValue; }
 
-  virtual void   setValue(double v)     { MValue = v; }
-  virtual void   setMinValue(double v)  { MMinValue = v; }
-  virtual void   setMaxValue(double v)  { MMaxValue = v; }
-  virtual void   setDefValue(double v)  { MDefValue = v; }
+  virtual void   setValue(double v)         { MValue = v; }
+  virtual void   setMinValue(double v)      { MMinValue = v; }
+  virtual void   setMaxValue(double v)      { MMaxValue = v; }
+  virtual void   setDefaultValue(double v)  { MDefValue = v; }
 
 //------------------------------
 public:
@@ -127,9 +128,10 @@ public:
 
   // ???
 
-  #ifndef MIP_NO_GUI
-  virtual MIP_Parameter*  getParameter(uint32_t AIndex=0)    { return MParameters[0]; }
-  #endif
+  //#ifndef MIP_NO_GUI
+  //virtual MIP_Parameter*  getParameter(uint32_t AIndex=0)    { return MParameters[0]; }
+  virtual MIP_Parameter*  getParameter()    { return MParameter; }
+  //#endif
 
   bool isInteractive()  { return Flags.interactive; }
   bool isDirty()        { return Flags.dirty; }
@@ -148,9 +150,10 @@ public:
   virtual void setWidgetHeight(double AHeight)              { MRect.h = AHeight; }
   virtual void setWidgetindex(int32_t AIndex)               { MIndex = AIndex; }
 
-  #ifndef MIP_NO_GUI
-  virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
-  #endif
+  //#ifndef MIP_NO_GUI
+  //virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
+  virtual void setParameter(MIP_Parameter* AParameter) { MParameter = AParameter; }
+  //#endif
 
   //virtual void setWidgetPos(double AXpos, double AYpos) {
   //  MRect.x = AXpos;
@@ -211,6 +214,14 @@ public: // child to parent
 
   virtual void do_widget_notify(MIP_Widget* ASender, uint32_t AMode, int32_t AValue) {
     if (MParent) MParent->do_widget_notify(ASender,AMode,AValue);
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  void redraw() {
+    do_widget_redraw(this);
   }
 
 //------------------------------

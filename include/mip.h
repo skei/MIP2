@@ -32,5 +32,7 @@
 //#include "base/types/mip_point.h"
 //#include "base/types/mip_rect.h"
 
+#include <vector>
+
 //----------------------------------------------------------------------
 #endif

@@ -7,7 +7,7 @@
 v0.0.0  
 not production-ready, in progress, prototype, proof of concept, pre-, changes are frequent, code will break..
 
-be patient.. things will hopefully calm down soon.. then we can start behaving a bit more 'normal' and stable, with proper versioning and commits and stuff..
+things will hopefully calm down soon.. then we can start behaving a bit more 'normal' and stable, with proper versioning and commits and stuff..
 
 ---
 
@@ -23,8 +23,8 @@ be patient.. things will hopefully calm down soon.. then we can start behaving a
 pro/con:
 
 - headers-only
-- lock/wait-free
 - un-modern, un-cool c++
+- preprocessor abuse
 - minimal setup
 - minimal dependencies
 - permissive license

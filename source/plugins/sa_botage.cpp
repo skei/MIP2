@@ -2,8 +2,10 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_NANOVG
 
-#define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket
+#ifndef MIP_EXE
+  #define MIP_DEBUG_PRINT_SOCKET
+#endif
 
 //----------------------------------------------------------------------
 
@@ -43,7 +45,7 @@ const clap_plugin_descriptor_t myDescriptor = {
 
 class sa_botage_plugin
 : public MIP_Plugin
-, public MIP_TimerListener {
+/*, public MIP_TimerListener*/ {
 
 //------------------------------
 private:
@@ -69,7 +71,7 @@ private:
 private:
 //------------------------------
 
-  MIP_Timer         MTimer    = MIP_Timer(this);
+//  MIP_Timer         MTimer    = MIP_Timer(this);
   sa_botage_process MProcess  = {};
 
 //------------------------------
@@ -97,7 +99,10 @@ public: // plugin
     appendNoteInputPort(  &myNoteInputPorts[0]  );
     appendNoteOutputPort( &myNoteOutputPorts[0] );
     for (uint32_t i=0; i<SA_BOTAGE_PARAM_COUNT; i++) {
-      appendParameter( new MIP_Parameter(&sa_botage_params[i]) );
+      const clap_param_info_t* param_info = &sa_botage_params[i];
+      MIP_Parameter* parameter = new MIP_Parameter(param_info);
+      //MIP_Print("param %i: %s\n",i,parameter->getName());
+      appendParameter(parameter);
     }
     return true;
   }
@@ -118,6 +123,7 @@ public: // plugin
 
   //void preProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
   //void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
+
   //void processEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
   //void processEvent(const clap_event_header_t* header) final {}
 
@@ -130,6 +136,7 @@ public: // plugin
   //----------
 
   void processParamValueEvent(const clap_event_param_value_t* event) final {
+    MIP_Plugin::processParamValueEvent(event);
     MProcess.setParamValue(event->param_id,event->value);
   }
 
@@ -146,6 +153,7 @@ public: // plugin
   //----------
 
   void processTransport(const clap_event_transport_t* transport) final {
+    MIP_Plugin::processTransport(transport);
     MProcess.transport(transport->flags);
 
   }
@@ -154,7 +162,6 @@ public: // plugin
 
   void processAudioBlock(const clap_process_t* process) final {
     MProcess.processAudioBlock(process);
-
   }
 
 //------------------------------
@@ -163,7 +170,7 @@ public: // gui
 
   bool gui_create(const char *api, bool is_floating) override {
     // don't call MIP_Plugin::, we create the editor ourselves..
-    MEditor = new sa_botage_editor(this,MEditorWidth,MEditorHeight);
+    MEditor = new sa_botage_editor(this,MEditorWidth,MEditorHeight,MParameters);
     return true;
   }
 
@@ -171,34 +178,38 @@ public: // gui
 
   void gui_destroy() override {
     // same..
-    MTimer.stop();
-    delete MEditor;
+//    MTimer.stop();
+    //delete MEditor;
+    delete (sa_botage_editor*)MEditor;
+
   }
 
   //----------
 
-  bool gui_show() override {
-    MTimer.start(20);
-    return MIP_Plugin::gui_show();
-  }
+//  bool gui_show() override {
+//    MTimer.start(20);
+//    return MIP_Plugin::gui_show();
+//  }
 
   //----------
 
-  bool gui_hide() override {
-    MTimer.stop();
-    return MIP_Plugin::gui_hide();
-  }
+//  bool gui_hide() override {
+//    MTimer.stop();
+//    return MIP_Plugin::gui_hide();
+//  }
 
 //------------------------------
 public: // timer
 //------------------------------
 
   // we (just) read from MProcess directly...
-  //
 
   void on_timerCallback() override {
+    // flush parameters..
+    MIP_Plugin::on_timerCallback();
+    // update
     sa_botage_editor* editor = (sa_botage_editor*)MEditor;
-    editor->timer(&MProcess);
+    editor->timer_callback(&MProcess);
   }
 
 };

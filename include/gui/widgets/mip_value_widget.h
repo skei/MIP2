@@ -43,7 +43,7 @@ public:
   : MIP_TextWidget(ARect,AText) {
     MName = "MIP_ValueWidget";
     setValue(AValue);
-    setDefValue(AValue);
+    setDefaultValue(AValue);
     MTextAlignment = MIP_TEXT_ALIGN_LEFT;
   }
 
@@ -90,15 +90,17 @@ public:
   virtual void drawValue(MIP_PaintContext* AContext) {
     if (MDrawValue) {
       MIP_Painter* painter = AContext->painter;
-      char temp[16];
+      char temp[16] = {0};
       double value = getValue();
+      sprintf(temp,"%.3f",value);
       if (MDrawParameterValue) {
         MIP_Parameter* parameter = getParameter();
         if (parameter) {
-          value = parameter->getValue();
+          //value = parameter->getValue();
+          //MIP_Print("value: %f\n",value);
+          parameter->valueToText(value,temp,16);
         }
       }
-      sprintf(temp,"%.3f",value);
       MIP_DRect rect = MRect;
       rect.shrink(2);
       painter->fontSize(MValueSize);

@@ -352,6 +352,9 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/plugins/sa_botage/sa_botage_editor.h" />
+		<Unit filename="../source/plugins/sa_botage/sa_botage_params.h" />
+		<Unit filename="../source/plugins/sa_botage/sa_botage_process.h" />
 		<Unit filename="../source/plugins/sa_fibonacci.cpp">
 			<Option compile="0" />
 			<Option link="0" />

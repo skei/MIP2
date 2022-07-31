@@ -73,7 +73,7 @@ public:
       if (MDrawParameterValue) {
         MIP_Parameter* parameter = getParameter();
         if (parameter) {
-          value  = parameter->getValue();
+          //value  = parameter->getValue();
           minval = parameter->getMinValue();
           maxval = parameter->getMaxValue();
         }

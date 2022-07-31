@@ -87,7 +87,10 @@ private:
 //------------------------------
 
   Display*    MDisplay          = None;
+
   GLXContext  MContext          = nullptr;
+  GLXContext  MPrevContext      = nullptr;
+
   GLXFBConfig MFBConfig         = nullptr;
   uint32_t    MWidth            = 0;
   uint32_t    MHeight           = 0;
@@ -174,6 +177,8 @@ protected:
 
   bool makeCurrent() {
     //MIP_PRINT;
+
+    //MPrevContext = glXGetCurrentContext();
     bool res = glXMakeContextCurrent(MDisplay,MDrawable,MDrawable,MContext);
     if (!res) {
       MIP_Print("Error: makeCurrent returned false\n");
@@ -193,7 +198,10 @@ protected:
 
   bool resetCurrent() {
     //MIP_PRINT;
+
     bool res = glXMakeContextCurrent(MDisplay,0,0,0);
+    //bool res = glXMakeContextCurrent(MDisplay,MDrawable,MDrawable,MPrevContext); // error
+
     if (!res) {
       MIP_Print("Error: makeCurrent returned false\n");
       return false;

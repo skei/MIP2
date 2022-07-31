@@ -8,6 +8,8 @@
 
 //#include "gui/widgets/mip_widgets.h"
 
+#define MIP_EDITOR_MAX_PARAMS 4096
+
 //----------------------------------------------------------------------
 //
 // listeners
@@ -44,7 +46,7 @@ protected:
   double              MEditorScale    = 1.0;
   bool                MIsEditorOpen   = false;
 
-  MIP_Timer           MTimer          = MIP_Timer(this);
+  MIP_Widget**        MParameterToWidget  = nullptr;
 
 //------------------------------
 public:
@@ -61,6 +63,10 @@ public:
 
     //MEditorWindow = new MIP_Window(AWidth,AHeight,true);
     //MWindow->setWindowListener(this);
+
+    uint32_t size = MIP_EDITOR_MAX_PARAMS * sizeof(MIP_Widget*);
+    MParameterToWidget = (MIP_Widget**)malloc(size);
+    memset(MParameterToWidget,0,size);
   }
 
   //----------
@@ -68,6 +74,7 @@ public:
   virtual ~MIP_Editor() {
     //MIP_PRINT;
     if (MIsEditorOpen) gui_hide();
+    free(MParameterToWidget);
     //delete MEditorWindow;
   }
 
@@ -80,15 +87,21 @@ public: // clap gui
     return true;
   }
 
+  //----------
+
   virtual bool gui_get_size(uint32_t *width, uint32_t *height) {
     *width = MEditorWidth;
     *height = MEditorHeight;
     return true;
   }
 
+  //----------
+
   virtual bool gui_can_resize() {
     return true;
   }
+
+  //----------
 
   virtual bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) {
     hints->can_resize_horizontally  = true;
@@ -99,12 +112,16 @@ public: // clap gui
     return true;
   }
 
+  //----------
+
   virtual bool gui_adjust_size(uint32_t *width, uint32_t *height) {
     //*width = MWidth;
     //*height = MHeight;
     //return true;
     return false;
   }
+
+  //----------
 
   virtual bool gui_set_size(uint32_t width, uint32_t height) {
     MEditorWidth = width;
@@ -118,18 +135,26 @@ public: // clap gui
     return true;
   }
 
+  //----------
+
   virtual bool gui_set_parent(const clap_window_t *window) {
     /*MEditorWindow->*/reparent(window->x11);
     return true;
   }
 
+  //----------
+
   virtual bool gui_set_transient(const clap_window_t *window) {
     return true;
   }
 
+  //----------
+
   virtual void gui_suggest_title(const char *title) {
     /*MEditorWindow->*/setTitle(title);
   }
+
+  //----------
 
   virtual bool gui_show() {
     if (!MIsEditorOpen) {
@@ -140,6 +165,8 @@ public: // clap gui
     return true;
   }
 
+  //----------
+
   virtual bool gui_hide() {
     if (MIsEditorOpen) {
       MIsEditorOpen = false;
@@ -147,6 +174,20 @@ public: // clap gui
       /*MEditorWindow->*/close();
     }
     return true;
+  }
+
+//------------------------------
+public: // widget
+//------------------------------
+
+  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
+    //MIP_PRINT;
+    MIP_Parameter* parameter = ASender->getParameter();
+    if (parameter) {
+      uint32_t index = parameter->getIndex();
+      double value = ASender->getValue();
+      if (MEditorListener) MEditorListener->on_editor_listener_update_parameter(index,value);
+    }
   }
 
 //------------------------------
@@ -169,9 +210,33 @@ public: // timer
 public:
 //------------------------------
 
-  virtual void connect(MIP_Parameter* AParameter, MIP_Widget* AWidget) {
-    //uint32_t parameter_index = AParameter->getIndex();
+  void connectWidget(MIP_Parameter* AParameter, MIP_Widget* AWidget) {
+    uint32_t param_index = AParameter->getIndex();
+    MParameterToWidget[param_index] = AWidget;
+    AWidget->setParameter(AParameter);
+//    AParameter->setParameter(AParameter);
+    AWidget->setMinValue(AParameter->getMinValue());
+    AWidget->setMaxValue(AParameter->getMaxValue());
+    AWidget->setDefaultValue(AParameter->getDefaultValue());
+    AWidget->setValue(AParameter->getDefaultValue());
   };
+
+  //----------
+
+  void updateParameter(uint32_t AIndex, double AValue) {
+    //MIP_Print("%i = %.3f\n",AIndex,AValue);
+    MIP_Widget* widget = MParameterToWidget[AIndex];
+    if (widget) {
+      widget->setValue(AValue);
+      widget->redraw();
+    }
+  }
+
+  //----------
+
+  void updateModulation(uint32_t AIndex, double AValue) {
+    //MIP_Print("%i = %.3f\n",AIndex,AValue);
+  }
 
 };
 

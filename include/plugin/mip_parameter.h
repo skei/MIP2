@@ -104,8 +104,8 @@ public:
 public:
 //------------------------------
 
-  void setIndex(int32_t AIndex)  { MIndex = AIndex; }
-  int32_t getIndex()  { return MIndex; }
+  void    setIndex(int32_t AIndex)  { MIndex = AIndex; }
+  int32_t getIndex()                { return MIndex; }
 
   void setId(clap_id AId)                     { MParamInfo.id = AId; }
   void setFlags(clap_param_info_flags AFlags) { MParamInfo.flags = AFlags; }
@@ -165,10 +165,10 @@ public:
 
   const char* valueToText(double AValue, char* AText, uint32_t ASize) {
     if (hasFlag(CLAP_PARAM_IS_STEPPED)) {
-      sprintf(AText,"%i\n",(int)AValue);
+      sprintf(AText,"%i",(int)AValue);
     }
     else {
-      sprintf(AText,"%.3f\n",AValue);
+      sprintf(AText,"%.3f",AValue);
     }
     return AText;
   }
