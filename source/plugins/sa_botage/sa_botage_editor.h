@@ -56,11 +56,17 @@ public:
     background->appendChildWidget(w_slices);
     connectWidget( AParameters[PAR_NUM_SLICES], w_slices);
 
+    // knob2
+
+    MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(MIP_DRect(10,150,42,74), "Knob", 0.5);
+    background->appendChildWidget(knob1);
+    connectWidget( AParameters[PAR_TEST], knob1);
   }
 
   //----------
 
   virtual ~sa_botage_editor() {
+    //MIP_PRINT;
   }
 
 //------------------------------
@@ -68,26 +74,27 @@ public:
 //------------------------------
 
   void timer_callback(sa_botage_process* process) {
-    MWaveform->setBuffer(process->MBuffer,process->MBufferLength);
-    MWaveform->setNumGrid(process->par_num_beats);
-    MWaveform->setNumSubGrid(process->par_num_slices);
 
-    MWaveform->setMarkerActive(0,true);
-    MWaveform->setMarkerPos(0,process->MWritePos);
-    MWaveform->setMarkerColor(0, MIP_Color(1,0,0,1) );
-    MWaveform->setMarkerWidth(0,1);
+    //MIP_Assert(MWaveform);
 
-    MWaveform->setMarkerActive(1,true);
-    MWaveform->setMarkerPos(1,process->MReadPos);
-    MWaveform->setMarkerColor(1, MIP_Color(0,1,0,1) );
-    MWaveform->setMarkerWidth(1,1);
-
-    MWaveform->setAreaActive(0,true);
-    MWaveform->setAreaStart(0,process->MCurrentSliceStart);
-    MWaveform->setAreaLength(0,process->MCurrentSliceLength);
-    MWaveform->setAreaColor(0, MIP_Color(0,0,0,0.3) );
-
-    MWaveform->redraw();//do_widget_redraw(MWaveform);
+    if (MIsEditorOpen) {
+      MWaveform->setBuffer(process->MLeftBuffer,process->MBufferLength);
+      MWaveform->setNumGrid(process->par_num_beats);
+      MWaveform->setNumSubGrid(process->par_num_slices);
+      MWaveform->setMarkerActive(0,true);
+      MWaveform->setMarkerPos(0,process->MWritePos);
+      MWaveform->setMarkerColor(0, MIP_Color(1,0,0,1) );
+      MWaveform->setMarkerWidth(0,1);
+      MWaveform->setMarkerActive(1,true);
+      MWaveform->setMarkerPos(1,process->MReadPos);
+      MWaveform->setMarkerColor(1, MIP_Color(0,1,0,1) );
+      MWaveform->setMarkerWidth(1,1);
+      MWaveform->setAreaActive(0,true);
+      MWaveform->setAreaStart(0,process->MSliceStart);
+      MWaveform->setAreaLength(0,process->MSliceLength);
+      MWaveform->setAreaColor(0, MIP_Color(0,0,0,0.3) );
+      MWaveform->redraw();//do_widget_redraw(MWaveform);
+    }
   }
 
 

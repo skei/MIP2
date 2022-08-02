@@ -3,9 +3,9 @@
 #define MIP_PAINTER_NANOVG
 
 // nc -U -l -k /tmp/mip.socket
-#ifndef MIP_EXE
-  #define MIP_DEBUG_PRINT_SOCKET
-#endif
+//#ifndef MIP_EXE
+//  #define MIP_DEBUG_PRINT_SOCKET
+//#endif
 
 //----------------------------------------------------------------------
 
@@ -169,6 +169,7 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) override {
+    //MIP_PRINT;
     // don't call MIP_Plugin::, we create the editor ourselves..
     MEditor = new sa_botage_editor(this,MEditorWidth,MEditorHeight,MParameters);
     return true;
@@ -177,11 +178,13 @@ public: // gui
   //----------
 
   void gui_destroy() override {
+    //MIP_PRINT;
     // same..
-//    MTimer.stop();
+    MGuiTimer.stop(); // todo: error prone if our plugins have to call this..
     //delete MEditor;
     delete (sa_botage_editor*)MEditor;
-
+    MEditor = nullptr;
+    //MIP_Print("MEditor is now: %p\n",MEditor);
   }
 
   //----------
@@ -205,11 +208,17 @@ public: // timer
   // we (just) read from MProcess directly...
 
   void on_timerCallback() override {
+    //MIP_PRINT;
     // flush parameters..
-    MIP_Plugin::on_timerCallback();
+    MIP_Plugin::on_timerCallback(); // flush queues
     // update
     sa_botage_editor* editor = (sa_botage_editor*)MEditor;
-    editor->timer_callback(&MProcess);
+    //MIP_Assert(editor);
+    if (editor) {
+      //MIP_Print("pre..\n");
+      editor->timer_callback(&MProcess);
+      //MIP_Print("..post\n");
+    }
   }
 
 };

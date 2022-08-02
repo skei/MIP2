@@ -22,9 +22,12 @@ class MIP_TimerListener {
 
 //----------------------------------------------------------------------
 
+static
 void mip_timer_callback(sigval val) {
+  //MIP_PRINT;
   MIP_TimerListener* listener = (MIP_TimerListener*)val.sival_ptr;
   if (listener) listener->on_timerCallback();
+  //MIP_PRINT;
 }
 
 //----------------------------------------------------------------------
@@ -134,7 +137,8 @@ public:
       MTimerSpec.it_interval.tv_nsec  = 0;
       MTimerSpec.it_value.tv_sec      = 0;
       MTimerSpec.it_value.tv_nsec     = 0;
-      timer_settime(MTimer, 0, &MTimerSpec, 0);
+      /*int res =*/ timer_settime(MTimer, 0, &MTimerSpec, 0);
+      //if (res != 0) { MIP_Print("error stopping timer\n"); }
       MRunning = false;
     }
   }

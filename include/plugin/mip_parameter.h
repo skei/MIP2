@@ -56,9 +56,12 @@ private:
     .default_value  = 0.0
   };
 
-  double MValue       = 0.0;
-  double MModulation  = 0.0;
-  int32_t  MIndex     = -1;
+  double  MValue          = 0.0;
+  double  MModulation     = 0.0;
+  int32_t MIndex          = -1;
+
+  bool    MModulated      = false;
+  bool    MPolyModulated  = false;
 
 //------------------------------
 public:
@@ -104,44 +107,43 @@ public:
 public:
 //------------------------------
 
-  void    setIndex(int32_t AIndex)  { MIndex = AIndex; }
-  int32_t getIndex()                { return MIndex; }
 
-  void setId(clap_id AId)                     { MParamInfo.id = AId; }
-  void setFlags(clap_param_info_flags AFlags) { MParamInfo.flags = AFlags; }
-  void setCookie(void* ACookie)               { MParamInfo.cookie = ACookie; }
-  void setName(const char* AName)             { strcpy(MParamInfo.name,AName); }
-  void setModule(const char* AModule)         { strcpy(MParamInfo.module,AModule); }
-  void setMinValue(double AValue)             { MParamInfo.min_value = AValue; }
-  void setMaxValue(double AValue)             { MParamInfo.max_value = AValue; }
-  void setDefaultValue(double AValue)         { MParamInfo.default_value = AValue; }
+  void    setCookie(void* ACookie)                { MParamInfo.cookie = ACookie; }
+  void    setDefaultValue(double AValue)          { MParamInfo.default_value = AValue; }
+  void    setFlags(clap_param_info_flags AFlags)  { MParamInfo.flags = AFlags; }
+  void    setId(clap_id AId)                      { MParamInfo.id = AId; }
+  void    setIndex(int32_t AIndex)                { MIndex = AIndex; }
+  void    setMaxValue(double AValue)              { MParamInfo.max_value = AValue; }
+  void    setMinValue(double AValue)              { MParamInfo.min_value = AValue; }
+  void    setModulated(bool AMod)                 { MModulated = AMod; }
+  void    setModulation(double AValue)            { MModulation = AValue; }
+  void    setModule(const char* AModule)          { strcpy(MParamInfo.module,AModule); }
+  void    setName(const char* AName)              { strcpy(MParamInfo.name,AName); }
+  void    setPolyModulated(bool AMod)             { MPolyModulated = AMod; }
+  void    setValue(double AValue)                 { MValue = AValue; }
 
-  clap_id                   getId()           { return MParamInfo.id; }
-  clap_param_info_flags     getFlags()        { return MParamInfo.flags; }
-  void*                     getCookie()       { return MParamInfo.cookie; }
-  const char*               getName()         { return MParamInfo.name; }
-  const char*               getModule()       { return MParamInfo.module; }
-  double                    getMinValue()     { return MParamInfo.min_value; }
-  double                    getMaxValue()     { return MParamInfo.max_value; }
-  double                    getDefaultValue() { return MParamInfo.default_value; }
+  void    setFlag(clap_param_info_flags AFlag)    { MParamInfo.flags |= AFlag; }
+  void    clearFlag(clap_param_info_flags AFlag)  { MParamInfo.flags &= ~AFlag; }
+  bool    hasFlag(clap_param_info_flags AFlag)    { return (MParamInfo.flags & AFlag); }
 
-  const clap_param_info_t*  getParamInfo()    { return &MParamInfo; }
-
-  bool hasFlag(clap_param_info_flags AFlag)   { return (MParamInfo.flags & AFlag); }
-  void setFlag(clap_param_info_flags AFlag)   { MParamInfo.flags |= AFlag; }
-  void clearFlag(clap_param_info_flags AFlag) { MParamInfo.flags &= ~AFlag; }
+  void*                     getCookie()           { return MParamInfo.cookie; }
+  double                    getDefaultValue()     { return MParamInfo.default_value; }
+  clap_param_info_flags     getFlags()            { return MParamInfo.flags; }
+  clap_id                   getId()               { return MParamInfo.id; }
+  int32_t                   getIndex()            { return MIndex; }
+  double                    getMaxValue()         { return MParamInfo.max_value; }
+  double                    getMinValue()         { return MParamInfo.min_value; }
+  bool                      getModulated()        { return MModulated; }
+  double                    getModulation()       { return MModulation; }
+  const char*               getModule()           { return MParamInfo.module; }
+  const char*               getName()             { return MParamInfo.name; }
+  const clap_param_info_t*  getParamInfo()        { return &MParamInfo; }
+  bool                      getPolyModulated()    { return MPolyModulated; }
+  double                    getValue()            { return MValue; }
 
 //------------------------------
 public:
 //------------------------------
-
-  void    setValue(double AValue)       { MValue = AValue; }
-  void    setModulation(double AValue)  { MModulation = AValue; }
-
-  double  getValue()                    { return MValue; }
-  double  getModulation()               { return MModulation; }
-
-  //----------
 
   double normalize(double AValue) {
     double range = MParamInfo.max_value - MParamInfo.min_value;
@@ -159,19 +161,17 @@ public:
 
   //----------
 
-  //const char* getDisplayText(double value) {
-  //  return "";
-  //}
-
   const char* valueToText(double AValue, char* AText, uint32_t ASize) {
     if (hasFlag(CLAP_PARAM_IS_STEPPED)) {
       sprintf(AText,"%i",(int)AValue);
     }
     else {
-      sprintf(AText,"%.3f",AValue);
+      sprintf(AText,"%.2f",AValue);
     }
     return AText;
   }
+
+  //----------
 
   double textToValue(const char* AText) {
     double f = atof(AText);

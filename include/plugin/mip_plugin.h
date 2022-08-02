@@ -8,7 +8,6 @@
 #include "base/types/mip_queue.h"
 #include "plugin/mip_audio_port.h"
 #include "plugin/mip_note_port.h"
-#include "plugin/mip_parameter_manager.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_host.h"
 
@@ -25,19 +24,16 @@
 #define MIP_GUI_UPDATE_RATE_MS      20
 #define MIP_PLUGIN_MAX_GUI_EVENTS   32
 #define MIP_PLUGIN_MAX_PARAM_EVENTS 4096
-#define MIP_PLUGIN_MAX_PARAMS       4096
-
+//#define MIP_PLUGIN_MAX_PARAMS       4096
 
 typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
 
 //----------
 
 struct MIP_ProcessContext {
-  const clap_process_t* process     = nullptr;
-  double                samplerate  = 0.0;
+  const clap_process_t* process = nullptr;
+  double samplerate = 0.0;
 };
-
-
 
 //----------------------------------------------------------------------
 //
@@ -56,28 +52,28 @@ class MIP_Plugin
 protected:
 //------------------------------
 
-  MIP_AudioPortArray              MAudioInputPorts          = {};
-  MIP_AudioPortArray              MAudioOutputPorts         = {};
-  MIP_NotePortArray               MNoteInputPorts           = {};
-  MIP_NotePortArray               MNoteOutputPorts          = {};
+  MIP_AudioPortArray  MAudioInputPorts          = {};
+  MIP_AudioPortArray  MAudioOutputPorts         = {};
+  MIP_NotePortArray   MNoteInputPorts           = {};
+  MIP_NotePortArray   MNoteOutputPorts          = {};
 
-  MIP_ProcessContext              MProcessContext           = {};
+  MIP_ProcessContext  MProcessContext           = {};
 
-  uint32_t                        MSelectedAudioPortsConfig = 0;
-  int32_t                         MRenderMode               = CLAP_RENDER_REALTIME;
-  uint32_t                        MEditorWidth              = 300;
-  uint32_t                        MEditorHeight             = 300;
+  uint32_t            MSelectedAudioPortsConfig = 0;
+  int32_t             MRenderMode               = CLAP_RENDER_REALTIME;
+  uint32_t            MEditorWidth              = 300;
+  uint32_t            MEditorHeight             = 300;
 
   #ifndef MIP_NO_GUI
-  MIP_Editor*                     MEditor                   = {};
+  MIP_Editor*         MEditor                   = {};
   #endif
 
-  MIP_Timer MGuiTimer = MIP_Timer(this);
+  MIP_Timer           MGuiTimer                 = MIP_Timer(this);
 
   //MIP_AudioProcess
   //MIP_VoiceManager
 
-  MIP_ParameterArray                              MParameters         = {};
+  MIP_ParameterArray  MParameters               = {};
 
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessParamQueue  = {};
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessModQueue    = {};
@@ -85,12 +81,11 @@ protected:
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MGuiModQueue        = {};
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS>   MHostParamQueue     = {};
 
-  double  MQueuedProcessParamValues[MIP_PLUGIN_MAX_PARAMS]  = {0};
-  double  MQueuedProcessModValues[MIP_PLUGIN_MAX_PARAMS]    = {0};
-  double  MQueuedGuiParamValues[MIP_PLUGIN_MAX_PARAMS]      = {0};
-  double  MQueuedGuiModValues[MIP_PLUGIN_MAX_PARAMS]        = {0};
-  double  MQueuedHostParamValues[MIP_PLUGIN_MAX_PARAMS]     = {0};
-
+  double  MQueuedProcessParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]  = {0};
+  double  MQueuedProcessModValues[MIP_PLUGIN_MAX_PARAM_EVENTS]    = {0};
+  double  MQueuedGuiParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]      = {0};
+  double  MQueuedGuiModValues[MIP_PLUGIN_MAX_PARAM_EVENTS]        = {0};
+  double  MQueuedHostParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]     = {0};
 
 //------------------------------
 public:
@@ -287,6 +282,13 @@ public: // DRAFT file reference
   //----------
 
   bool file_reference_get(uint32_t index, clap_file_reference_t *file_reference) override {
+    /*
+    file_reference->resource_id = 0;
+    file_reference->belongs_to_plugin_collection = false;
+    //file_reference->path_capacity;    // [in] the number of bytes reserved in path
+    file_reference->path_size = 0;      // [out] the actual length of the path, can be bigger than path_capacity
+    strcpy(file_reference->path,"");    // [in,out] path to the file on the disk, must be null terminated, and maybe truncated if the capacity is less than the size
+    */
     return false;
   }
 
@@ -342,6 +344,7 @@ public: // EXT gui
   bool gui_create(const char *api, bool is_floating) override {
     //MIP_PRINT;
     MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
+    MIP_Assert(MEditor);
     return true;
   }
 
@@ -350,85 +353,88 @@ public: // EXT gui
   void gui_destroy() override {
     //MIP_PRINT;
     MGuiTimer.stop();
+    MIP_Assert(MEditor);
     delete MEditor;
+    MEditor = nullptr;
+    MIP_PRINT;
   }
 
   //----------
 
   bool gui_set_scale(double scale) override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     return MEditor->gui_set_scale(scale);
   }
 
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     return MEditor->gui_get_size(width,height);
   }
 
   //----------
 
   bool gui_can_resize() override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     return MEditor->gui_can_resize();
   }
 
   //----------
 
   bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     return MEditor->gui_get_resize_hints(hints);
   }
 
   //----------
 
   bool gui_adjust_size(uint32_t *width, uint32_t *height) override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     return MEditor->gui_adjust_size(width,height);
   }
 
   //----------
 
   bool gui_set_size(uint32_t width, uint32_t height) override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     return MEditor->gui_set_size(width,height);
   }
 
   //----------
 
   bool gui_set_parent(const clap_window_t *window) override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     return MEditor->gui_set_parent(window);
   }
 
   //----------
 
   bool gui_set_transient(const clap_window_t *window) override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     return MEditor->gui_set_transient(window);
   }
 
   //----------
 
   void gui_suggest_title(const char *title) override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     MEditor->gui_suggest_title(title);
   }
 
   //----------
 
   bool gui_show() override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
+    bool result = MEditor->gui_show();
     MGuiTimer.start(MIP_GUI_UPDATE_RATE_MS);
-    return MEditor->gui_show();
-    //MIP_PRINT;
+    return result;
   }
 
   //----------
 
   bool gui_hide() override {
-    //MIP_PRINT;
+    MIP_Assert(MEditor);
     MGuiTimer.stop();
     return MEditor->gui_hide();
   }
@@ -454,6 +460,11 @@ public: // DRAFT midi mappings
   //----------
 
   bool midi_mappings_get(uint32_t index, clap_midi_mapping_t *mapping) override {
+    /*
+    mapping->channel  = 0;
+    mapping->number   = 0;
+    mapping->param_id = 0;
+    */
     return false;
   }
 
@@ -468,6 +479,12 @@ public: // EXT note names
   //----------
 
   bool note_names_get(uint32_t index, clap_note_name_t *note_name) override {
+    /*
+    strcpy(note_name->name,"");
+    note_name->port     = -1;   // -1 for every port
+    note_name->key      = -1;   // -1 for every key
+    note_name->channel  = -1;   // -1 for every channel
+    */
     return false;
   }
 
@@ -677,16 +694,17 @@ public: // DRAFT voice info
 //------------------------------
 
   bool voice_info_get(clap_voice_info_t *info) override {
+    /*
+    info->voice_count     = 0;
+    info->voice_capacity  = 0;
+    info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;
+    */
     return false;
   }
 
-//------------------------------
-public:
-//------------------------------
-
-//------------------------------
-public: // parameters
-//------------------------------
+//------------------------------------------------------------
+//
+//------------------------------------------------------------
 
 //------------------------------
 public: // process events
@@ -714,8 +732,7 @@ public: // process events
 
   //----------
 
-  //virtual
-  void processEvent(const clap_event_header_t* header) {
+  virtual void processEvent(const clap_event_header_t* header) {
     switch (header->type) {
       case CLAP_EVENT_NOTE_ON:              processNoteOnEvent(             (const clap_event_note_t*)            header  );  break;
       case CLAP_EVENT_NOTE_OFF:             processNoteOffEvent(            (const clap_event_note_t*)            header  );  break;
@@ -809,6 +826,10 @@ public: // process transport
   virtual void processTransport(const clap_event_transport_t* transport) {
   }
 
+//------------------------------------------------------------
+//
+//------------------------------------------------------------
+
 //------------------------------
 public: // queues
 //------------------------------
@@ -829,11 +850,16 @@ public: // queues
 
   //----------
 
+  /*
+    send 'fake' param value events to our plugin
+    so we can handle them via the usual methods.. make sure you call
+    processParamValueEvent yourself if you override processEvent/s
+  */
+
   void flushProcessParams() {
     uint32_t index;
     while (MProcessParamQueue.read(&index)) {
       double value = MQueuedProcessParamValues[index];
-      //MIP_Print("TODO: send to audio: %i = %.3f\n",index,value);
       clap_event_param_value_t event;
       event.header.size     = sizeof(clap_event_param_value_t);
       event.header.time     = 0;
@@ -899,7 +925,7 @@ public: // queues
     host -> gui
 
     when a parameter is updated, we also want to update the gui..
-    we queue the events, and fliush them all in a timer callback
+    we queue the events, and flush them all in a timer callback
   */
 
   void queueGuiParam(uint32_t AIndex, double AValue) {
@@ -910,11 +936,13 @@ public: // queues
   //----------
 
   void flushGuiParams() {
+    //MIP_PRINT;
     uint32_t index;
     while (MGuiParamQueue.read(&index)) {
       double value = MQueuedGuiParamValues[index];
       //double value = MParameters[index]->getValue();
       //MIP_Print("%i = %.3f\n",index,value);
+      MIP_Assert(MEditor);
       MEditor->updateParameter(index,value);
     }
   }
@@ -922,10 +950,7 @@ public: // queues
   //----------
 
   /*
-    host -> gui
-
-    when a parameter is updated, we also want to update the gui..
-    we queue the events, and fliush them all in a timer callback
+    and same thing widy modulators..
   */
 
   void queueGuiMod(uint32_t AIndex, double AValue) {
@@ -936,12 +961,16 @@ public: // queues
   //----------
 
   void flushGuiMods() {
+    //MIP_PRINT;
     uint32_t index;
     while (MGuiModQueue.read(&index)) {
       double value = MQueuedGuiModValues[index];
       //double value = MParameters[index]->getValue();
       //MIP_Print("%i = %.3f\n",index,value);
       //MEditor->updateParameter(index,value);
+
+      MIP_Assert(MEditor);
+
       MEditor->updateModulation(index,value);
     }
   }
@@ -949,23 +978,6 @@ public: // queues
 //------------------------------
 public: // parameters
 //------------------------------
-
-//  void appendParameter(MIP_Parameter* AParameter) {
-//    MParameterManager.appendParameter(AParameter);
-//  }
-//
-//  //----------
-//
-//  void deleteParameters() {
-//    MParameterManager.deleteParameters();
-//  }
-//
-//  //----------
-//
-//  //MIP_AudioPort* getAudioInputPort(uint32_t AIndex) {
-//  const MIP_Parameter* getParameter(uint32_t AIndex) {
-//    return MParameterManager.getParameter(AIndex);
-//  }
 
   void appendParameter(MIP_Parameter* AParameter) {
     uint32_t index = MParameters.size();
@@ -1115,8 +1127,10 @@ public: // note outputs
   }
 
 //------------------------------
-public: // wrapper listener
+public: // 'wrapper' listener
 //------------------------------
+
+
 
 //------------------------------
 public: // editor listener
@@ -1146,8 +1160,11 @@ public: // timer listener
   void on_timerCallback() override {
     //sa_botage_editor* editor = (sa_botage_editor*)MEditor;
     //editor->timer(&MProcess);
-    flushGuiParams();
-    flushGuiMods();
+    if (MEditor) {
+      //MIP_PRINT;
+      flushGuiParams();
+      flushGuiMods();
+    }
   }
 
 

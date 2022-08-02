@@ -32,6 +32,9 @@ protected:
 
   //
 
+  float*    MLeftBuffer   = nullptr;
+  float*    MRightBuffer  = nullptr;
+
   float*    MBuffer       = nullptr;
   uint32_t  MNumSamples   = 0;
 
@@ -77,6 +80,12 @@ public:
 
   virtual void setBuffer(float* ABuffer, uint32_t ASamples) {
     MBuffer       = ABuffer;
+    MNumSamples   = ASamples;
+  }
+
+  virtual void setBuffers(float* ALeftBuffer, float* ARightBuffer, uint32_t ASamples) {
+    MLeftBuffer   = ALeftBuffer;
+    MRightBuffer  = ARightBuffer;
     MNumSamples   = ASamples;
   }
 
@@ -141,38 +150,34 @@ public:
 //------------------------------
 
   virtual void drawWaveform(MIP_PaintContext* AContext) {
-
     //MIP_Print("MRect.w %.2f MBuffer %p MNumSamples %i\n",MRect.w,MBuffer,MNumSamples);
-
-    uint32_t widget_width = MRect.w;
+    double widget_width = MRect.w;
     if (widget_width <= 0.0) return;
-
     double half_height = MRect.h * 0.5;
-
-    //double x = MRect.x;
     double mid_y = MRect.y + half_height;
-
     MIP_Painter* painter = AContext->painter;
 
     // waveform
 
     if (MDrawWaveform) {
-      if (!MBuffer) return;
-      if (MNumSamples == 0) return;
-      double pos = 0;
-      double step = (double)MNumSamples / MRect.w;
-      painter->beginPath();
-      painter->strokeColor(MWaveformColor);
-      painter->strokeWidth(MWaveformWidth);
-      for (uint32_t i=0; i<widget_width; i++) {
-        uint32_t p = (uint32_t)pos;
-        float v = MBuffer[p] * half_height;
-        float y2 = mid_y - v;
-        if (i==0) painter->moveTo(MRect.x,y2);
-        else painter->lineTo(MRect.x+i,y2);
-        pos += step;
+      if (MBuffer && (MNumSamples > 0)) {
+        double pos = 0;
+        double step = (double)MNumSamples / MRect.w;
+        painter->beginPath();
+        painter->strokeColor(MWaveformColor);
+        painter->strokeWidth(MWaveformWidth);
+        for (uint32_t i=0; i<widget_width; i++) {
+          uint32_t p = (uint32_t)pos;
+          double v = MBuffer[p];
+          v = MIP_Clamp(v,-1,1);
+          v *= half_height;
+          double y = mid_y - v;
+          if (i==0) painter->moveTo(MRect.x,y);
+          else painter->lineTo(MRect.x+i,y);
+          pos += step;
+        }
+        painter->stroke();
       }
-      painter->stroke();
     }
 
     // zero-line
@@ -222,8 +227,8 @@ public:
 
     for (uint32_t i=0; i<NUM_AREAS; i++) {
       if (MAreaActive[i]) {
-        double x = MAreaStart[i]  * widget_width / MNumSamples;
-        double w = MAreaLength[i] * widget_width / MNumSamples;
+        double x = (double)MAreaStart[i]  * widget_width / (double)MNumSamples;
+        double w = (double)MAreaLength[i] * widget_width / (double)MNumSamples;
         painter->beginPath();
         painter->rect(MRect.x + x,MRect.y, w,MRect.h);
         painter->fillColor(MAreaColor[i]);
@@ -235,7 +240,7 @@ public:
 
     for (uint32_t i=0; i<NUM_MARKERS; i++) {
       if (MMarkerActive[i]) {
-        double x = MMarkerPos[i] * widget_width / MNumSamples;
+        double x = (double)MMarkerPos[i] * widget_width / (double)MNumSamples;
         painter->beginPath();
         painter->moveTo(MRect.x + x,MRect.y);
         painter->lineTo(MRect.x + x,MRect.y2());

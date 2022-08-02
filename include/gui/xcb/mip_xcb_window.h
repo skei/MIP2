@@ -236,12 +236,14 @@ public: // window
       bool quit = !processEvent(event);
       if (quit) break;
       event = getEvent(true);
+      MIP_PRINT;
     }
   }
 
   //----------
 
   virtual void startEventThread() {
+    //MIP_PRINT;
     MEventThreadActive = true;
     pthread_create(&MEventThread,nullptr,xcb_event_thread_proc,this);
   }
@@ -249,6 +251,7 @@ public: // window
   //----------
 
   virtual void stopEventThread() {
+    //MIP_PRINT;
     void* ret;
     MEventThreadActive = false;
     sendClientMessage(MIP_THREAD_ID_KILL,0);
@@ -1073,10 +1076,22 @@ private: // events
       while (window->MEventThreadActive) {
         xcb_generic_event_t* event = xcb_wait_for_event(connection);
         if (event) {
-          if (!window->processEvent(event)) {
-            window->xcb_event_thread_stop_callback(window);
-            return nullptr;
+          //MIP_Print("event!\n");
+
+          // double-check (in case we have closed the window before processing
+          // all events in queue
+
+          //MIP_PRINT;
+          if (window->MEventThreadActive) {
+          //MIP_Print("event!\n");
+            //MIP_PRINT;
+            if (!window->processEvent(event)) {
+              window->xcb_event_thread_stop_callback(window);
+              return nullptr;
+            }
+
           }
+
         }
       }
       window->xcb_event_thread_stop_callback(window);

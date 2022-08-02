@@ -7,6 +7,7 @@
 enum sa_botage_params_e {
   PAR_NUM_BEATS = 0,
   PAR_NUM_SLICES,
+  PAR_TEST,
   SA_BOTAGE_PARAM_COUNT
 };
 
@@ -32,6 +33,16 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     1,
     8,
     2
+  },
+
+  { PAR_TEST,
+    CLAP_PARAM_IS_AUTOMATABLE,
+    nullptr,
+    "Test",
+    "",
+    0,
+    1,
+    0
   }
 
 };
