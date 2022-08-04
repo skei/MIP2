@@ -58,6 +58,7 @@ protected:
   bool      MDrawSelectedCells    = true;
 
   MIP_Color MGridColor            = MIP_COLOR_DARK_GRAY;
+  double    MGridLineWidth        = 1.0;
 
   //bool      MFillBackground       = false;
   //MIP_Color MBackgroundColor      = MIP_COLOR_GRAY;
@@ -232,6 +233,7 @@ public:
             painter->lineTo( floorf(x), MRect.y2() );
             x += xcell;
           }
+          painter->strokeWidth(MGridLineWidth);
           painter->strokeColor(MGridColor);
           painter->stroke();
         }
@@ -245,6 +247,7 @@ public:
             painter->lineTo( MRect.x2(), floorf(y) );
             y += ycell;
           }
+          painter->strokeWidth(MGridLineWidth);
           painter->strokeColor(MGridColor);
           painter->stroke();
         }
@@ -264,6 +267,7 @@ public:
 
           painter->beginPath();
           painter->rect( x,y,ww,hh );
+          painter->strokeWidth(MGridLineWidth);
           painter->strokeColor(MIP_COLOR_WHITE);
           painter->stroke();
 

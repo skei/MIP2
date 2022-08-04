@@ -23,13 +23,17 @@ typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 //----------
 
 struct MIP_WidgetLayout {
-  uint32_t    alignment = MIP_WIDGET_ALIGN_PARENT;
-  MIP_DRect   baseRect  = MIP_DRect(0,0,0,0);
-  //double    baseScale = 1.0;
-  MIP_DRect   border    = MIP_DRect(0,0,0,0);
-  MIP_DPoint  spacing   = MIP_DPoint(0,0);
-  MIP_DPoint  minSize   = MIP_DPoint(0,0);
-  MIP_DPoint  maxSize   = MIP_DPoint(-1,-1);
+  uint32_t    alignment   = MIP_WIDGET_ALIGN_PARENT;      // alignment relative to parent
+  double      scale       = 1.0;
+  double      aspectRatio = -1;
+  uint32_t    sizeModeX   = MIP_WIDGET_SIZE_MODE_PIXELS;
+  uint32_t    sizeModeY   = MIP_WIDGET_SIZE_MODE_PIXELS;
+  //uint32_t    vertMode    = 0;
+  MIP_DRect   baseRect    = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
+  MIP_DRect   border      = MIP_DRect(0,0,0,0);           // inner border
+  MIP_DPoint  spacing     = MIP_DPoint(0,0);              // spacing between child widgets
+  MIP_DPoint  minSize     = MIP_DPoint(0,0);
+  MIP_DPoint  maxSize     = MIP_DPoint(-1,-1);
 };
 
 //----------
@@ -38,9 +42,10 @@ struct MIP_WidgetFlags {
   bool active         = true;
   bool interactive    = false;
   bool visible        = true;
-  bool vertical       = false;
-  bool proportional   = false;
+  //bool vertical       = false;
+  //bool proportional   = false;
   bool captureMouse   = true;
+  bool doubleClick    = false;
   bool autoSetCursor  = true;
   bool autoHideCursor = false;
   bool autoLockCursor = false;
@@ -72,6 +77,7 @@ protected:
   MIP_Widget*       MParent       = nullptr;
   MIP_WidgetArray   MChildren     = {};
   MIP_DRect         MRect         = {0};
+  MIP_DRect         MContentRect  = {0};
   int32_t           MIndex        = 0;
   uint32_t          MMouseCursor  = MIP_CURSOR_DEFAULT;
   //MIP_Parameter*    MParameters[MIP_MAX_PARAMETERS_PER_WIDGET] = {0};
@@ -304,75 +310,160 @@ public: // hierarchy
   //----------
 
   void alignChildWidgets(bool ARecursive=true) {
+
+    // do some initialization
+
+    MIP_DRect border = Layout.border;
+    border.scale(Layout.scale);
+
+    MIP_DPoint spacing = Layout.spacing;
+    spacing.scale(Layout.scale);
+
+    // initial rects..
+
+    MContentRect = MRect;
+    MContentRect.setSize(0,0); // should content rect contain borders?
+
     MIP_DRect parent_rect = MRect;
+    parent_rect.shrink(border);
+
     MIP_DRect client_rect = MRect;
+    client_rect.shrink(border);
+
     uint32_t num = MChildren.size();
-    for (uint32_t i=0; i<num; i++) {
-      MIP_Widget* child = MChildren[i];
 
-      MIP_DRect child_rect = child->Layout.baseRect;
+    if (num > 0) {
 
-      switch (child->Layout.alignment) {
+      double child_width  = (client_rect.w - (Layout.spacing.x * (num - 1))) / MChildren.size();
+      double child_height = (client_rect.h - (Layout.spacing.y * (num - 1))) / MChildren.size();
 
-        case MIP_WIDGET_ALIGN_NONE: {
-          break;
+      // for all children..
+
+      for (uint32_t i=0; i<MChildren.size(); i++) {
+
+        MIP_Widget* child = MChildren[i];
+        MIP_DRect child_rect = child->Layout.baseRect;
+
+        // scale
+
+        child_rect.scale(Layout.scale);
+
+        // ratio
+
+        switch (child->Layout.sizeModeX) {
+          //case MIP_WIDGET_SIZE_MODE_PIXELS:
+          //  break;
+          case MIP_WIDGET_SIZE_MODE_RATIO:
+            child_rect.x *= client_rect.w;
+            child_rect.w *= client_rect.w;
+            break;
+          case MIP_WIDGET_SIZE_MODE_SPREAD:
+            child_rect.w = child_width;
         }
 
-        case MIP_WIDGET_ALIGN_PARENT: {
-          child_rect.x += parent_rect.x;
-          child_rect.y += parent_rect.y;
-          break;
+        switch (child->Layout.sizeModeY) {
+          //case MIP_WIDGET_SIZE_MODE_PIXELS:
+          //  break;
+          case MIP_WIDGET_SIZE_MODE_RATIO:
+            child_rect.y *= client_rect.h;
+            child_rect.h *= client_rect.h;
+            break;
+          case MIP_WIDGET_SIZE_MODE_SPREAD:
+            child_rect.h = child_height;
+            break;
         }
 
-        case MIP_WIDGET_ALIGN_FILL_CLIENT: {
-          child_rect.x = client_rect.x;
-          child_rect.y = client_rect.y;
-          child_rect.w = client_rect.w;
-          child_rect.h = client_rect.h;
-          break;
+  //      if (child->Layout.sizeRatio) {
+  //        child_rect.x *= client_rect.w;
+  //        child_rect.y *= client_rect.h;
+  //        child_rect.w *= client_rect.w;
+  //        child_rect.h *= client_rect.h;
+  //      }
+
+        // alignment
+
+        switch (child->Layout.alignment) {
+
+          case MIP_WIDGET_ALIGN_NONE: {
+            break;
+          }
+
+          case MIP_WIDGET_ALIGN_PARENT: {
+            child_rect.x += parent_rect.x;
+            child_rect.y += parent_rect.y;
+            break;
+          }
+
+          case MIP_WIDGET_ALIGN_FILL_CLIENT: {
+            child_rect.x = client_rect.x;
+            child_rect.y = client_rect.y;
+            child_rect.w = client_rect.w;
+            child_rect.h = client_rect.h;
+            break;
+          }
+
+          case MIP_WIDGET_ALIGN_FILL_TOP: {
+            child_rect.x = client_rect.x;
+            child_rect.y = client_rect.y;
+            child_rect.w = client_rect.w;
+            client_rect.y += (child_rect.h + spacing.y);
+            client_rect.h -= (child_rect.h + spacing.y);
+            break;
+          }
+
+          case MIP_WIDGET_ALIGN_FILL_BOTTOM: {
+            child_rect.x = client_rect.x;
+            child_rect.y = client_rect.y2() - child_rect.h;
+            child_rect.w = client_rect.w;
+            client_rect.h -= (child_rect.h + spacing.y);
+            break;
+          }
+
+          case MIP_WIDGET_ALIGN_FILL_LEFT: {
+            child_rect.x = client_rect.x;
+            child_rect.y = client_rect.y;
+            child_rect.h = client_rect.h;
+            client_rect.x += (child_rect.w + spacing.x);
+            client_rect.w -= (child_rect.w + spacing.x);
+            break;
+          }
+
+          case MIP_WIDGET_ALIGN_FILL_RIGHT: {
+            child_rect.x = client_rect.x2() - child_rect.w;
+            child_rect.y = client_rect.y;
+            child_rect.h = client_rect.h;
+            client_rect.w -= (child_rect.w + spacing.x);
+            break;
+          }
+
+        } // switch
+
+        // aspect
+
+        if (child->Layout.aspectRatio > 0) {
+          if (child_rect.h > 0) {
+            double aspect = child_rect.w / child_rect.h;
+            if (aspect >= child->Layout.aspectRatio) {
+              child_rect.w = child_rect.h * child->Layout.aspectRatio;
+            }
+            else {
+              child_rect.h = child_rect.w / child->Layout.aspectRatio;
+            }
+          } // h > 0
+        } // aspect > 0
+
+        // update
+
+        child->MRect = child_rect;
+        MContentRect.combine(child_rect);
+
+        if (ARecursive) {
+          child->alignChildWidgets(ARecursive);
         }
 
-        case MIP_WIDGET_ALIGN_FILL_TOP: {
-          child_rect.x = client_rect.x;
-          child_rect.y = client_rect.y;
-          child_rect.w = client_rect.w;
-          client_rect.y += child_rect.h;
-          client_rect.h -= child_rect.h;
-          break;
-        }
+      } //  for
+    } // > 0
 
-        case MIP_WIDGET_ALIGN_FILL_BOTTOM: {
-          child_rect.x = client_rect.x;
-          child_rect.y = client_rect.y2() - child_rect.h;
-          child_rect.w = client_rect.w;
-          client_rect.h -= child_rect.h;
-          break;
-        }
-
-        case MIP_WIDGET_ALIGN_FILL_LEFT: {
-          child_rect.x = client_rect.x;
-          child_rect.y = client_rect.y;
-          child_rect.h = client_rect.h;
-          client_rect.x += child_rect.w;
-          client_rect.w -= child_rect.w;
-          break;
-        }
-
-        case MIP_WIDGET_ALIGN_FILL_RIGHT: {
-          child_rect.x = client_rect.x2() - child_rect.w;
-          child_rect.y = client_rect.y;
-          child_rect.h = client_rect.h;
-          client_rect.w -= child_rect.w;
-          break;
-        }
-
-
-      }
-      child->MRect = child_rect;
-      if (ARecursive) {
-        child->alignChildWidgets(ARecursive);
-      }
-    }
   }
 
 };

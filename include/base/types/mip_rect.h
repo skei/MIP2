@@ -66,6 +66,16 @@ public:
     return *this;
   }
 
+//  MIP_Rect<T>& operator += (MIP_Point<T> P) {
+//    add(P);
+//    return *this;
+//  }
+//
+//  MIP_Rect<T>& operator -= (MIP_Point<T> P) {
+//    sub(P);
+//    return *this;
+//  }
+
 //------------------------------
 public:
 //------------------------------
@@ -144,6 +154,11 @@ public:
     h += R.h;
   }
 
+  void addPos(MIP_Point<T> P) {
+    x += P.x;
+    y += P.y;
+  }
+
   void sub(T AValue) {
     x -= AValue;
     y -= AValue;
@@ -163,6 +178,11 @@ public:
     y -= R.y;
     w -= R.w;
     h -= R.h;
+  }
+
+  void subPos(MIP_Point<T> P) {
+    x += P.x;
+    y += P.y;
   }
 
   void grow(T AValue) {
@@ -186,6 +206,13 @@ public:
     h += (R.y + R.h);
   }
 
+  void grow(MIP_Point<T> P) {
+    x -= P.x;
+    y -= P.y;
+    w += (P.x * 2.0);
+    h += (P.y * 2.0);
+  }
+
   void shrink(T AValue) {
     x += AValue;
     y += AValue;
@@ -205,6 +232,13 @@ public:
     y += R.y;
     w -= (R.x + R.w);
     h -= (R.y + R.h);
+  }
+
+  void shrink(MIP_Point<T> P) {
+    x += P.x;
+    y += P.y;
+    w -= (P.x * 2.0);
+    h -= (P.y * 2.0);
   }
 
   void addLeft(T ASize)    { x -= ASize; w += ASize; }

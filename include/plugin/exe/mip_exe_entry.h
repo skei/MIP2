@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
               //gui->set_size(clap_plugin,width,height);
 
               MIP_ExeWindow* exe_window = new MIP_ExeWindow(width,height,clap_plugin,gui);
-              exe_window->open();
+              exe_window->openWindow();
 
               xcb_window_t xcb_window = exe_window->drawable_getXcbWindow();
               clap_window_t clap_window;
@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
               gui->hide(clap_plugin);
               gui->destroy(clap_plugin);
 
-              exe_window->open();
+              exe_window->openWindow();
               delete exe_window;
             }
 

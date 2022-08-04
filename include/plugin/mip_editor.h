@@ -31,7 +31,7 @@ public:
 
 class MIP_Editor
 : public MIP_Window
-, public MIP_TimerListener {
+/*, public MIP_TimerListener*/ {
 
 //------------------------------
 protected:
@@ -65,7 +65,7 @@ public:
 
   virtual ~MIP_Editor() {
     //MIP_PRINT;
-    if (MIsEditorOpen) gui_hide();
+    if (MIsEditorOpen) hide();
     //MIP_PRINT;
     //free(MParameterToWidget);
   }
@@ -74,7 +74,7 @@ public:
 public: // clap gui
 //------------------------------
 
-  virtual bool gui_set_scale(double scale) {
+  virtual bool setScale(double scale) {
     //MIP_PRINT;
     MEditorScale = scale;
     return true;
@@ -82,7 +82,7 @@ public: // clap gui
 
   //----------
 
-  virtual bool gui_get_size(uint32_t *width, uint32_t *height) {
+  virtual bool getSize(uint32_t *width, uint32_t *height) {
     //MIP_PRINT;
     *width = MEditorWidth;
     *height = MEditorHeight;
@@ -91,14 +91,14 @@ public: // clap gui
 
   //----------
 
-  virtual bool gui_can_resize() {
+  virtual bool canResize() {
     //MIP_PRINT;
     return true;
   }
 
   //----------
 
-  virtual bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) {
+  virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
     //MIP_PRINT;
     hints->can_resize_horizontally  = true;
     hints->can_resize_vertically    = true;
@@ -110,7 +110,7 @@ public: // clap gui
 
   //----------
 
-  virtual bool gui_adjust_size(uint32_t *width, uint32_t *height) {
+  virtual bool adjustSize(uint32_t *width, uint32_t *height) {
     //MIP_PRINT;
     //*width = MWidth;
     //*height = MHeight;
@@ -120,58 +120,58 @@ public: // clap gui
 
   //----------
 
-  virtual bool gui_set_size(uint32_t width, uint32_t height) {
+  virtual bool setSize(uint32_t width, uint32_t height) {
     //MIP_PRINT;
     MEditorWidth = width;
     MEditorHeight = height;
     setWidgetSize(width,height);
-    setSize(width,height);
+    setWindowSize(width,height);
     alignChildWidgets();
     return true;
   }
 
   //----------
 
-  virtual bool gui_set_parent(const clap_window_t *window) {
+  virtual bool setParent(const clap_window_t *window) {
     //MIP_PRINT;
-    reparent(window->x11);
+    reparentWindow(window->x11);
     return true;
   }
 
   //----------
 
-  virtual bool gui_set_transient(const clap_window_t *window) {
+  virtual bool setTransient(const clap_window_t *window) {
     //MIP_PRINT;
     return true;
   }
 
   //----------
 
-  virtual void gui_suggest_title(const char *title) {
+  virtual void suggestTitle(const char *title) {
     //MIP_PRINT;
-    setTitle(title);
+    setWindowTitle(title);
   }
 
   //----------
 
-  virtual bool gui_show() {
+  virtual bool show() {
     //MIP_PRINT;
     if (!MIsEditorOpen) {
-      open();
-      startEventThread();
+      openWindow();
       MIsEditorOpen = true;
+      startEventThread();
     }
     return true;
   }
 
   //----------
 
-  virtual bool gui_hide() {
+  virtual bool hide() {
     //MIP_PRINT;
     if (MIsEditorOpen) {
       MIsEditorOpen = false;
       stopEventThread();
-      close();
+      closeWindow();
     }
     return true;
   }
@@ -207,9 +207,12 @@ public: // timer
 
   //----------
 
-  void on_timerCallback() override {
-    //MIP_PRINT;
-  }
+  // AIndex 0: system
+
+//  void on_timerCallback(int AIndex) override {
+//    MIP_Print("AIndex %i\n",AIndex);
+//    MIP_Window::on_timerCallback(AIndex);
+//  }
 
 //------------------------------
 public:
@@ -228,18 +231,18 @@ public:
 
   //----------
 
-  void updateParameter(uint32_t AIndex, double AValue) {
+  void updateParameter(uint32_t AIndex, double AValue, bool ARedraw=true) {
     //MIP_Print("%i = %.3f\n",AIndex,AValue);
     MIP_Widget* widget = MParameterToWidget[AIndex];
     if (widget) {
       widget->setValue(AValue);
-      widget->redraw();
+      if (ARedraw) widget->redraw();
     }
   }
 
   //----------
 
-  void updateModulation(uint32_t AIndex, double AValue) {
+  void updateModulation(uint32_t AIndex, double AValue, bool ARedraw=true) {
     //MIP_Widget* widget = MParameterToWidget[AIndex];
     //if (widget) {
     //  //widget->setModulation(AValue);

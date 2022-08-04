@@ -18,8 +18,8 @@ class MIP_ButtonWidget
 protected:
 //------------------------------
 
-  const char* MOnText   = "On";
-  const char* MOffText  = "Off";
+  const char* MOnText   = "on";
+  const char* MOffText  = "off";
   bool        MIsToggle = true;
 
 //------------------------------
@@ -28,6 +28,8 @@ public:
 
   MIP_ButtonWidget(MIP_DRect ARect, const char* AOnText, const char* AOffText, double AValue)
   : MIP_ValueWidget(ARect,"",AValue) {
+    MOnText = AOnText;
+    MOffText = AOffText;
     MTextAlignment = MIP_TEXT_ALIGN_CENTER;
     MDrawValue = false;
     MDrawModulation = false;

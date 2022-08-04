@@ -55,6 +55,12 @@ private:
   bool                        MWindowMapped                 = false;
   bool                        MWindowExposed                = false;
 
+//  double                      MWindowInitialWidth           = 0.0;
+//  double                      MWindowInitialHeight          = 0.0;
+//  double                      MWindowWidthScale             = 1.0;
+//  double                      MWindowHeightScale            = 1.0;
+//  double                      MWindowScale                  = 1.0;
+
   bool                        MFillBackground               = false;
   uint32_t                    MBackgroundColor              = 0x808080;
 
@@ -100,6 +106,10 @@ public:
 
   MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
     //MWindowListener = this;
+
+//    MWindowInitialWidth = AWidth;
+//    MWindowInitialHeight = AHeight;
+
     initConntection(nullptr);
     initScreen();
     initScreenGC();
@@ -168,7 +178,7 @@ public: // drawable
 public: // window
 //------------------------------
 
-  virtual void setPos(uint32_t AXpos, uint32_t AYpos) {
+  virtual void setWindowPos(uint32_t AXpos, uint32_t AYpos) {
     uint32_t values[] = { AXpos, AYpos };
     xcb_configure_window(MConnection,MWindow,XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y,values);
     xcb_flush(MConnection);
@@ -176,7 +186,7 @@ public: // window
 
   //----------
 
-  virtual void setSize(uint32_t AWidth, uint32_t AHeight) {
+  virtual void setWindowSize(uint32_t AWidth, uint32_t AHeight) {
     MWindowWidth = AWidth;
     MWindowHeight = AHeight;
     uint32_t values[] = { AWidth, AHeight };
@@ -186,7 +196,7 @@ public: // window
 
   //----------
 
-  virtual void setTitle(const char* ATitle) {
+  virtual void setWindowTitle(const char* ATitle) {
     xcb_change_property(
       MConnection,
       XCB_PROP_MODE_REPLACE,
@@ -202,7 +212,7 @@ public: // window
 
   //----------
 
-  virtual void open() {
+  virtual void openWindow() {
     xcb_map_window(MConnection,MWindow);
     xcb_flush(MConnection);
     #ifdef MIP_XCB_WAIT_FOR_MAPNOTIFY
@@ -212,7 +222,7 @@ public: // window
 
   //----------
 
-  virtual void close() {
+  virtual void closeWindow() {
     xcb_unmap_window(MConnection,MWindow);
     xcb_flush(MConnection);
   }
@@ -236,7 +246,7 @@ public: // window
       bool quit = !processEvent(event);
       if (quit) break;
       event = getEvent(true);
-      MIP_PRINT;
+      //MIP_PRINT;
     }
   }
 
@@ -284,7 +294,7 @@ public: // window
 
   //----------
 
-  virtual void invalidate(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
+  virtual void invalidateRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
     memset(MExposeEventBuffer,0,sizeof(MExposeEventBuffer));
     MExposeEvent->window        = MWindow;
     MExposeEvent->response_type = XCB_EXPOSE;
@@ -302,13 +312,13 @@ public: // window
     xcb_flush(MConnection);
   }
 
-  virtual void redraw(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
-    invalidate(AXpos,AYpos,AWidth,AHeight);
+  virtual void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
+    invalidateRegion(AXpos,AYpos,AWidth,AHeight);
   }
 
   //----------
 
-  virtual void reparent(uint32_t AParent) {
+  virtual void reparentWindow(uint32_t AParent) {
     xcb_reparent_window(MConnection,MWindow,AParent,0,0);
     xcb_flush(MConnection);
   }
@@ -417,13 +427,13 @@ public: // paint
 
   //----------
 
-  virtual void fill(uint32_t AColor) {
-    fill(0,0,MWindowWidth,MWindowHeight,AColor);
+  virtual void fillColor(uint32_t AColor) {
+    fillColor(0,0,MWindowWidth,MWindowHeight,AColor);
   }
 
   //----------
 
-  virtual void fill(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) {
+  virtual void fillColor(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) {
     // set color
     uint32_t mask = XCB_GC_FOREGROUND;
     uint32_t values[1];
@@ -447,7 +457,7 @@ public: // paint
   // MIP_Bitmap->getData()
   // MIP_Bitmap->getStride()
 
-  virtual void blit(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) {
+  virtual void blitBuffer(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) {
       mip_xcb_put_image(
         MConnection,
         MWindow,
@@ -889,13 +899,13 @@ private: // events
 
       case XCB_MAP_NOTIFY: {
         MWindowMapped = true;
-        /*if (MWindowListener) MWindowListener->*/on_window_open();
+        on_window_open();
         break;
       }
 
       case XCB_UNMAP_NOTIFY: {
         MWindowMapped = false;
-        /*if (MWindowListener) MWindowListener->*/on_window_close();
+        on_window_close();
         break;
       }
 
@@ -908,12 +918,16 @@ private: // events
         if ((x != MWindowXpos) || (y != MWindowYpos)) {
           MWindowXpos = x;
           MWindowYpos = y;
-          /*if (MWindowListener) MWindowListener->*/on_window_move(x,y);
+          on_window_move(x,y);
         }
         if ((w != MWindowWidth) || (h != MWindowHeight)) {
           MWindowWidth  = w;
           MWindowHeight = h;
-          /*if (MWindowListener) MWindowListener->*/on_window_resize(w,h);
+
+//          MWindowWidthScale  = MWindowWidth  / MWindowInitialWidth;
+//          MWindowHeightScale = MWindowHeight / MWindowInitialHeight;
+
+          on_window_resize(w,h);
         }
         break;
       }
@@ -932,8 +946,8 @@ private: // events
         int16_t w = expose->width;
         int16_t h = expose->height;
         beginPaint();
-        if (MFillBackground) fill(x,y,w,h,MBackgroundColor);
-        /*if (MWindowListener) MWindowListener->*/on_window_paint(x,y,w,h);
+        if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
+        on_window_paint(x,y,w,h);
         //xcb_flush(MConnection);
         endPaint();
         break;

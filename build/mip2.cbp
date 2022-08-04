@@ -282,6 +282,7 @@
 		<Unit filename="../include/gui/widgets/mip_drag_value_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_grid_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_image_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_knob2_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_menu_item_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_menu_widget.h" />
@@ -317,7 +318,6 @@
 		<Unit filename="../include/plugin/mip_editor.h" />
 		<Unit filename="../include/plugin/mip_note_port.h" />
 		<Unit filename="../include/plugin/mip_parameter.h" />
-		<Unit filename="../include/plugin/mip_parameter_manager.h" />
 		<Unit filename="../include/plugin/mip_plugin.h" />
 		<Unit filename="../include/plugin/mip_registry.h" />
 		<Unit filename="../include/plugin/mip_wrapper.h" />
@@ -355,6 +355,7 @@
 		<Unit filename="../source/plugins/sa_botage/sa_botage_editor.h" />
 		<Unit filename="../source/plugins/sa_botage/sa_botage_params.h" />
 		<Unit filename="../source/plugins/sa_botage/sa_botage_process.h" />
+		<Unit filename="../source/plugins/sa_botage/sa_botage_widgets.h" />
 		<Unit filename="../source/plugins/sa_fibonacci.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -367,7 +368,6 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/private/voxel.h" />
 		<Unit filename="../source/test/test_editor.cpp">
 			<Option compile="0" />
 			<Option link="0" />

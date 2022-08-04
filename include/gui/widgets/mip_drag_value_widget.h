@@ -38,7 +38,7 @@ public:
   : MIP_ValueWidget(ARect,AText,AValue) {
     MName = "MIP_DragValueWidget";
     MMouseCursor = MIP_CURSOR_ARROW_UP_DOWN;
-    Flags.autoHideCursor = false;//true;
+    Flags.autoHideCursor = true;
     Flags.autoLockCursor = true;
   }
 

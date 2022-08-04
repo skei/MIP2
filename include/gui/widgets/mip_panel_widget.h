@@ -14,8 +14,12 @@ class MIP_PanelWidget
 protected:
 //------------------------------
 
-  bool      MDrawRoundedCorners   = false;
-  float     MRoundedCorners       = 4;
+  bool      MDrawRoundedCorners   = true;
+  //float     MCornerRadius         = 4.0;
+  float     MULCornerRadius       = 4.0;
+  float     MURCornerRadius       = 4.0;
+  float     MBRCornerRadius       = 4.0;
+  float     MBLCornerRadius       = 4.0;
 
   bool      MFillBackground       = true;
   bool      MFillGradient         = true;
@@ -52,11 +56,14 @@ public:
 public:
 //------------------------------
 
-  virtual void setDrawRoundedCorners(bool ADraw=true) { MDrawRoundedCorners = ADraw; }
-  //virtual void setDrawDropShadow(bool ADraw=true)     { MDrawDropShadow = ADraw; }
-  virtual void setFillBackground(bool AFill=true)     { MFillBackground = AFill; }
-  virtual void setFillGradient(bool AFill=true)       { MFillGradient = AFill; }
-  virtual void setDrawBorder(bool ADraw=true)         { MDrawBorder = ADraw; }
+  virtual void setDrawRoundedCorners(bool ADraw=true)                   { MDrawRoundedCorners = ADraw; }
+  //virtual void setDrawDropShadow(bool ADraw=true)                       { MDrawDropShadow = ADraw; }
+  virtual void setFillBackground(bool AFill=true)                       { MFillBackground = AFill; }
+  virtual void setFillGradient(bool AFill=true)                         { MFillGradient = AFill; }
+  virtual void setDrawBorder(bool ADraw=true)                           { MDrawBorder = ADraw; }
+  //virtual void setCornerRadius(float ARadius)                           { MCornerRadius = ARadius; }
+  virtual void setCornerRadius(float ul, float ur, float br, float bl)  { MULCornerRadius = ul; MURCornerRadius = ur; MBRCornerRadius = br; MBLCornerRadius = bl; }
+  virtual void setCornerRadius(float r)                                 { MULCornerRadius = r; MURCornerRadius = r; MBRCornerRadius = r; MBLCornerRadius = r; }
 
 //------------------------------
 public:
@@ -77,7 +84,7 @@ public:
     if (MFillBackground) {
       MIP_Painter* painter = AContext->painter;
       painter->beginPath();
-      if (MDrawRoundedCorners) painter->roundedRect(MRect.x,MRect.y,MRect.w,MRect.h, MRoundedCorners);
+      if (MDrawRoundedCorners) painter->roundedRectVarying(MRect.x,MRect.y,MRect.w,MRect.h, MULCornerRadius, MURCornerRadius, MBRCornerRadius, MBLCornerRadius);
       else painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
       if (MFillGradient) {
         MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y + MRect.y2(), MGradientColor1, MGradientColor2);
@@ -96,7 +103,7 @@ public:
     if (MDrawBorder) {
       MIP_Painter* painter = AContext->painter;
       painter->beginPath();
-      if (MDrawRoundedCorners) painter->roundedRect(MRect.x,MRect.y,MRect.w,MRect.h, MRoundedCorners);
+      if (MDrawRoundedCorners) painter->roundedRectVarying(MRect.x,MRect.y,MRect.w,MRect.h, MULCornerRadius, MURCornerRadius, MBRCornerRadius, MBLCornerRadius);
       else painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
       painter->strokeColor(MBorderColor);
       painter->strokeWidth(MBorderWidth);

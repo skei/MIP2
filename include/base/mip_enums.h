@@ -248,6 +248,12 @@ enum MIP_EWidgetAlignment {
 //  MIP_WIDGET_TYPE_WINDOW         = 2
 //};
 
+enum MIP_EWidgetSizeModes {
+  MIP_WIDGET_SIZE_MODE_PIXELS   = 0,
+  MIP_WIDGET_SIZE_MODE_RATIO    = 1,
+  MIP_WIDGET_SIZE_MODE_SPREAD   = 2,
+};
+
 //----------------------------------------------------------------------
 //
 // painting

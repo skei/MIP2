@@ -15,20 +15,26 @@
 
 //----------------------------------------------------------------------
 
+class MIP_Timer;
+
+//----------
+
 class MIP_TimerListener {
   public:
-    virtual void on_timerCallback(void) {}
+    virtual void on_timerCallback(MIP_Timer* ATimer) {}
 };
 
 //----------------------------------------------------------------------
 
-static
-void mip_timer_callback(sigval val) {
-  //MIP_PRINT;
-  MIP_TimerListener* listener = (MIP_TimerListener*)val.sival_ptr;
-  if (listener) listener->on_timerCallback();
-  //MIP_PRINT;
-}
+//static void mip_timer_callback(sigval val) {
+//  //MIP_TimerListener* listener = (MIP_TimerListener*)val.sival_ptr;
+//  //if (listener) listener->on_timerCallback(val.sival_int);
+//  MIP_Timer* timer = (MIP_Timer*)val.sival_ptr;
+//  if (timer) {
+//    timer->on_timer();
+//    //if (listener) listener->on_timerCallback(val.sival_int);
+//  }
+//}
 
 //----------------------------------------------------------------------
 //
@@ -40,20 +46,37 @@ class MIP_Timer {
 
 private:
 
-  sigevent    MSigEvent;
-  timer_t     MTimer;
-  itimerspec  MTimerSpec;
+  //friend
+  //static void mip_timer_callback(sigval val);
 
-  bool        MRunning = false;
+  static void mip_timer_callback(sigval val) {
+    //MIP_TimerListener* listener = (MIP_TimerListener*)val.sival_ptr;
+    //if (listener) listener->on_timerCallback(val.sival_int);
+    MIP_Timer* timer = (MIP_Timer*)val.sival_ptr;
+    if (timer) {
+      timer->on_timer();
+      //if (listener) listener->on_timerCallback(val.sival_int);
+    }
+  }
+
+private:
+
+  sigevent            MSigEvent;
+  timer_t             MTimer;
+  itimerspec          MTimerSpec;
+  bool                MRunning  = false;
+  MIP_TimerListener*  MListener = nullptr;
 
 public:
 
   MIP_Timer(MIP_TimerListener* AListener) {
+
+    MListener = AListener;
+
     MSigEvent.sigev_notify            = SIGEV_THREAD;
     MSigEvent.sigev_notify_function   = mip_timer_callback;
     MSigEvent.sigev_notify_attributes = nullptr;
-    MSigEvent.sigev_value.sival_int   = 0; // timer index?
-    MSigEvent.sigev_value.sival_ptr   = AListener;
+    MSigEvent.sigev_value.sival_ptr   = this;//AListener;
     //int res =
     timer_create(CLOCK_REALTIME, &MSigEvent, &MTimer);
     //MIP_Print("MTimer %i\n",MTimer);
@@ -131,7 +154,7 @@ public:
   // new_value->it_value specifies a zero value (i.e., both subfields are
   // zero), then the timer is disarmed.
 
-  void stop(void) {
+  void stop() {
     if (MRunning) {
       MTimerSpec.it_interval.tv_sec   = 0;
       MTimerSpec.it_interval.tv_nsec  = 0;
@@ -141,6 +164,12 @@ public:
       //if (res != 0) { MIP_Print("error stopping timer\n"); }
       MRunning = false;
     }
+  }
+
+  //----------
+
+  void on_timer() {
+    if (MListener) MListener->on_timerCallback(this);
   }
 
 };

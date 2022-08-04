@@ -7,6 +7,7 @@
 #include "gui/widgets/mip_widgets.h"
 
 #include "sa_botage_process.h"
+#include "sa_botage_widgets.h"
 
 //----------------------------------------------------------------------
 //
@@ -73,7 +74,7 @@ public:
 public:
 //------------------------------
 
-  void timer_callback(sa_botage_process* process) {
+  void timer_update(sa_botage_process* process) {
 
     //MIP_Assert(MWaveform);
 

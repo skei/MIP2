@@ -34,23 +34,32 @@ public:
   MIP_Knob2Widget(MIP_DRect ARect, const char* AText, double AValue)
   : MIP_PanelWidget(ARect) {
 
+    //setFillBackground(false);
+    setFillGradient(false);
+    //setDrawBorder(false);
+    //setDrawRoundedCorners(false);
+    //setCornerRadius(4);
+
     MLabelWidget  = new MIP_TextWidget( MIP_DRect( 5, 3,      32,16 ), AText );
     MKnobWidget   = new MIP_KnobWidget( MIP_DRect( 5, 5 + 16, 32,32 ), "", 0.0 );
     MValueWidget  = new MIP_TextWidget( MIP_DRect( 5, 7 + 48, 32,16 ), "0.00" );
+
     appendChildWidget(MLabelWidget);
     appendChildWidget(MValueWidget);
     appendChildWidget(MKnobWidget);
 
     MLabelWidget->setFillBackground(false);
     MLabelWidget->setDrawBorder(false);
-    MLabelWidget->setTextSize(12);
+    MLabelWidget->setTextSize(10);
+    MLabelWidget->setTextColor(MIP_COLOR_BLACK);
 
     MKnobWidget->setFillBackground(false);
     MKnobWidget->setDrawBorder(false);
 
     MValueWidget->setFillBackground(false);
     MValueWidget->setDrawBorder(false);
-    MValueWidget->setTextSize(12);
+    MValueWidget->setTextSize(10);
+    MValueWidget->setTextColor(MIP_COLOR_BLACK);
 
   }
 

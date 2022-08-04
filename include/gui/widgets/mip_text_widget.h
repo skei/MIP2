@@ -18,11 +18,12 @@ class MIP_TextWidget
 protected:
 //------------------------------
 
-  bool      MDrawText       = true;
-  char      MText[256]      = {0};
-  MIP_Color MTextColor      = MIP_COLOR_DARK_GRAY;
-  uint32_t  MTextAlignment  = MIP_TEXT_ALIGN_CENTER;
-  float     MTextSize       = 13.0;
+  bool        MDrawText       = true;
+  char        MText[256]      = {0};
+  MIP_Color   MTextColor      = MIP_COLOR_DARK_GRAY;
+  uint32_t    MTextAlignment  = MIP_TEXT_ALIGN_CENTER;
+  float       MTextSize       = 13.0;
+  MIP_DPoint  MTextOffset     = MIP_DPoint(0,0);
 
 //------------------------------
 public:
@@ -49,6 +50,7 @@ public:
   virtual void  setTextColor(MIP_Color AColor)    { MTextColor = AColor; }
   virtual void  setTextAlignment(uint32_t AAlign) { MTextAlignment = AAlign; }
   virtual void  setTextSize(float ASize)          { MTextSize = ASize; }
+  virtual void  setTextOffset(MIP_DPoint AOffset) { MTextOffset = AOffset; }
 
   virtual const char* getText() { return MText; }
 
@@ -71,8 +73,14 @@ public:
     if (MDrawText) {
       MIP_Painter* painter = AContext->painter;
       MIP_DRect rect = MRect;
-      rect.shrink(2);
-      painter->fontSize(MTextSize);
+      //rect.shrink(2);
+      rect.x += MTextOffset.x;
+      rect.y += MTextOffset.y;
+      double textsize = MTextSize;
+      if (MTextSize < 0) {
+        textsize = MRect.h;
+      }
+      painter->fontSize(textsize);
       painter->beginPath();
       painter->drawTextBox(rect,MText,MTextAlignment,MTextColor);
     }

@@ -49,6 +49,10 @@ class test_editor3_editor
 
 private:
 
+  MIP_PanelWidget* left_panel;
+  MIP_PanelWidget* top_panel;
+  MIP_PanelWidget* center_panel;
+
   MIP_ColorWidget*      background  = nullptr;
   MIP_ColorWidget*      color1      = nullptr;
   MIP_PanelWidget*      panel1      = nullptr;
@@ -97,6 +101,7 @@ public:
     appendChildWidget(background);
     background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
 
+    //background->Layout.scale = 0.5;
 
     menu1       = new MIP_MenuWidget(       MIP_DRect( 170, 150, 160,100), this );
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 0,160,20), "item1" ));
@@ -105,64 +110,122 @@ public:
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,60,160,20), "item4" ));
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,80,160,20), "item5" ));
 
-    color1      = new MIP_ColorWidget(      MIP_DRect(  10,  10 + ( 0 * H2), 150, H ), MIP_COLOR_RED );
-    background->appendChildWidget(color1);
+    //
 
-    panel1      = new MIP_PanelWidget(      MIP_DRect(  10,  10 + ( 1 * H2), 150, H ) );
-    background->appendChildWidget(panel1);
+    left_panel = new MIP_PanelWidget( MIP_DRect(0.25) );
+    left_panel->Layout.sizeModeX = 1;
+    left_panel->Layout.sizeModeY = 1;
+    left_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
+    left_panel->Layout.border = MIP_DRect(10,10,10,10);
+    left_panel->Layout.spacing = MIP_DPoint(5,5);
+    //left_panel->Layout.scale = 0.5;
+    background->appendChildWidget(left_panel);
 
-    text1       = new MIP_TextWidget(       MIP_DRect(  10,  10 + ( 2 * H2), 150, H ), "Text" );
-    background->appendChildWidget(text1);
+    top_panel = new MIP_PanelWidget( MIP_DRect(0.2) );
+    top_panel->Layout.sizeModeX = 1;
+    top_panel->Layout.sizeModeY = 1;
+    top_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    background->appendChildWidget(top_panel);
 
-    value1      = new MIP_ValueWidget(      MIP_DRect(  10,  10 + ( 3 * H2), 150, H ), "Value", 0.3 );
-    background->appendChildWidget(value1);
+    center_panel = new MIP_PanelWidget( MIP_DRect(0) );
+    center_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    background->appendChildWidget(center_panel);
 
-    dragvalue1  = new MIP_DragValueWidget(  MIP_DRect(  10,  10 + ( 4 * H2), 150, H ), "DragValue", 0.3 );
-    background->appendChildWidget(dragvalue1);
+    // left_panel
 
-    slider1     = new MIP_SliderWidget(     MIP_DRect(  10,  10 + ( 5 * H2), 150, H ), "Slider", 0.3 );
-    background->appendChildWidget(slider1);
-    slider1->setMinValue(-5);
-    slider1->setMaxValue(5);
-    slider1->scaleDragSensitivity(10);
+      color1 = new MIP_ColorWidget(MIP_DRect(20),MIP_COLOR_RED);
+      color1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      color1->Layout.sizeModeY = 2;
+      left_panel->appendChildWidget(color1);
 
-    button1     = new MIP_ButtonWidget(     MIP_DRect(  10,  10 + ( 6 * H2), 150, H ), "On", "Off", 0 );
-    background->appendChildWidget(button1);
-    button1->setTextColor(MIP_COLOR_BLACK);
+      panel1 = new MIP_PanelWidget(MIP_DRect(20));
+      panel1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      panel1->Layout.sizeModeY = 2;
+      left_panel->appendChildWidget(panel1);
 
-    button2     = new MIP_ButtonWidget(     MIP_DRect(  10,  10 + ( 7 * H2), 150, H ), "On", "Off", 0 );
-    background->appendChildWidget(button2);
-    button2->setTextColor(MIP_COLOR_RED);
-    button2->setIsToggle(false);
+      text1 = new MIP_TextWidget(MIP_DRect(50),"text");
+      text1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      text1->Layout.sizeModeY = 2;
+      text1->setTextSize(-1);
+      //text1->setTextOffset(MIP_DPoint(0,1));
+      left_panel->appendChildWidget(text1);
 
-    menuitem1   = new MIP_MenuItemWidget(   MIP_DRect(  10,  10 + ( 8 * H2), 150, H ), "MenuItem1" );
-    background->appendChildWidget(menuitem1);
+      value1 = new MIP_ValueWidget(MIP_DRect(20),"value",0.3);
+      value1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      value1->Layout.sizeModeY = 2;
+      left_panel->appendChildWidget(value1);
 
-    selector1   = new MIP_SelectorWidget(   MIP_DRect(  10,  10 + ( 9 * H2), 150, H ), "Selector1", menu1 );
-    background->appendChildWidget(selector1);
+      dragvalue1  = new MIP_DragValueWidget(MIP_DRect(20),"drag_value",0.3);
+      dragvalue1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      dragvalue1->Layout.sizeModeY = 2;
+      left_panel->appendChildWidget(dragvalue1);
 
-    buttonrow1  = new MIP_ButtonRowWidget(  MIP_DRect(  10,  10 + (10 * H2), 150, H ), 5, button_txt,MIP_BUTTON_ROW_MULTI);
-    background->appendChildWidget(buttonrow1);
-    buttonrow1->setButtonState(0,true);
+      slider1 = new MIP_SliderWidget(MIP_DRect(20),"slider",0.3);
+      slider1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      slider1->Layout.sizeModeY = 2;
+      slider1->setMinValue(-5);
+      slider1->setMaxValue(5);
+      slider1->scaleDragSensitivity(10);
+      left_panel->appendChildWidget(slider1);
 
-    knob1       = new MIP_KnobWidget(       MIP_DRect( 170,  10, 40,40),   "Knob", 0.3 );
-    background->appendChildWidget(knob1);
+      button1 = new MIP_ButtonWidget(MIP_DRect(20),"on","off",0);
+      button1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      button1->Layout.sizeModeY = 2;
+      button1->setTextColor(MIP_COLOR_BLACK);
+      button1->setTextSize(-1);
+      left_panel->appendChildWidget(button1);
+
+      button2 = new MIP_ButtonWidget(MIP_DRect(20),"on","off",0);
+      button2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      button2->Layout.sizeModeY = 2;
+      button2->setTextColor(MIP_COLOR_RED);
+      button2->setTextSize(-1);
+      button2->setIsToggle(false);
+      left_panel->appendChildWidget(button2);
+
+      menuitem1 = new MIP_MenuItemWidget(MIP_DRect(20),"menu_item");
+      menuitem1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      menuitem1->Layout.sizeModeY = 2;
+      left_panel->appendChildWidget(menuitem1);
+
+      selector1 = new MIP_SelectorWidget(MIP_DRect(20),"selector",menu1);
+      selector1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      selector1->Layout.sizeModeY = 2;
+      left_panel->appendChildWidget(selector1);
+
+      buttonrow1 = new MIP_ButtonRowWidget(MIP_DRect(20),5,button_txt,MIP_BUTTON_ROW_MULTI);
+      buttonrow1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      buttonrow1->Layout.sizeModeY = 2;
+      buttonrow1->setButtonState(0,true);
+      left_panel->appendChildWidget(buttonrow1);
+
+    // top
+
+    waveform1 = new MIP_WaveformWidget(MIP_DRect());
+    waveform1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    top_panel->appendChildWidget(waveform1);
+    waveform1->setBuffer(MWaveform,1024);
+
+    // center
+
+    knob1 = new MIP_KnobWidget(MIP_DRect(10,10,40,40),"Knob",0.3);
+    //waveform1->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
     knob1->setFillBackground(false);
     knob1->setDrawBorder(false);
+    center_panel->appendChildWidget(knob1);
 
     //image1      = new MIP_ImageWidget(      MIP_DRect( 170, 10, 320,240), voxelbuffer, 320,240);
     //background->appendChildWidget(image1);
 
-    waveform1   = new MIP_WaveformWidget(   MIP_DRect( 170,  60, 320,80) );
-    background->appendChildWidget(waveform1);
-    waveform1->setBuffer(MWaveform,1024);
+    grid1 = new MIP_GridWidget(MIP_DRect( 0.25, 10, 0.5, 200 ),8,8);
+    grid1->Layout.sizeModeX = 1;
+    grid1->Layout.sizeModeY = 0;
+    grid1->Layout.aspectRatio = 1.0;
+    center_panel->appendChildWidget(grid1);
 
-    grid1       = new MIP_GridWidget(       MIP_DRect( 170, 160, 320,160), 8,8 );
-    background->appendChildWidget(grid1);
+    // menu
 
     background->appendChildWidget(menu1);
-
-    //MModalWidget = menu1;
 
     #undef H
     #undef H2
@@ -171,15 +234,15 @@ public:
 
   //
 
-  bool gui_show() override {
-    bool result = MIP_Editor::gui_show();
+  bool show() override {
+    bool result = MIP_Editor::show();
     //timer.start(50);
     return result;
   }
 
-  bool gui_hide() override {
+  bool hide() override {
     //timer.stop();
-    bool result = MIP_Editor::gui_hide();
+    bool result = MIP_Editor::hide();
     return result;
   }
 

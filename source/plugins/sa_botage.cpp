@@ -3,9 +3,9 @@
 #define MIP_PAINTER_NANOVG
 
 // nc -U -l -k /tmp/mip.socket
-//#ifndef MIP_EXE
-//  #define MIP_DEBUG_PRINT_SOCKET
-//#endif
+#ifndef MIP_EXE
+  #define MIP_DEBUG_PRINT_SOCKET
+#endif
 
 //----------------------------------------------------------------------
 
@@ -71,7 +71,6 @@ private:
 private:
 //------------------------------
 
-//  MIP_Timer         MTimer    = MIP_Timer(this);
   sa_botage_process MProcess  = {};
 
 //------------------------------
@@ -169,8 +168,7 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) override {
-    //MIP_PRINT;
-    // don't call MIP_Plugin::, we create the editor ourselves..
+    MIP_Print("\n");
     MEditor = new sa_botage_editor(this,MEditorWidth,MEditorHeight,MParameters);
     return true;
   }
@@ -178,13 +176,10 @@ public: // gui
   //----------
 
   void gui_destroy() override {
-    //MIP_PRINT;
-    // same..
-    MGuiTimer.stop(); // todo: error prone if our plugins have to call this..
-    //delete MEditor;
-    delete (sa_botage_editor*)MEditor;
+    MIP_Print("\n");
+    gui_hide(); // stops timer, etc..
+    delete MEditor; // delete (sa_botage_editor*)MEditor;
     MEditor = nullptr;
-    //MIP_Print("MEditor is now: %p\n",MEditor);
   }
 
   //----------
@@ -205,20 +200,17 @@ public: // gui
 public: // timer
 //------------------------------
 
-  // we (just) read from MProcess directly...
+  // we read from MProcess directly... :-/
 
-  void on_timerCallback() override {
-    //MIP_PRINT;
-    // flush parameters..
-    MIP_Plugin::on_timerCallback(); // flush queues
-    // update
+  void on_timerCallback(MIP_Timer* ATimer) override {
+
+    // we override MIP_Plugin toimer callback, so be sure to call the
+    // original, so the gui is properly updated, etc..
+    MIP_Plugin::on_timerCallback(ATimer); // flush queues
+
     sa_botage_editor* editor = (sa_botage_editor*)MEditor;
-    //MIP_Assert(editor);
-    if (editor) {
-      //MIP_Print("pre..\n");
-      editor->timer_callback(&MProcess);
-      //MIP_Print("..post\n");
-    }
+    if (editor) editor->timer_update(&MProcess);
+
   }
 
 };

@@ -8,12 +8,15 @@
 #include "base/types/mip_queue.h"
 #include "plugin/mip_audio_port.h"
 #include "plugin/mip_note_port.h"
+#include "plugin/mip_parameter.h"
 #include "plugin/clap/mip_clap_plugin.h"
 #include "plugin/clap/mip_clap_host.h"
 
 #ifndef MIP_NO_GUI
   #include "plugin/mip_editor.h"
 #endif
+
+#include "base/system/mip_timer.h"
 
 //----------------------------------------------------------------------
 //
@@ -26,7 +29,7 @@
 #define MIP_PLUGIN_MAX_PARAM_EVENTS 4096
 //#define MIP_PLUGIN_MAX_PARAMS       4096
 
-typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
+//typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
 
 //----------
 
@@ -323,26 +326,27 @@ public: // EXT gui
   #ifndef MIP_NO_GUI
 
   bool gui_is_api_supported(const char *api, bool is_floating) override {
-    //MIP_PRINT;
     if ((strcmp(api,CLAP_WINDOW_API_X11) == 0) && (is_floating == false)) {
+      MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
       return true;
     }
+    MIP_Print("api: '%s' is_floating: %s -> false\n",api,is_floating?"true":"false");
     return false;
   }
 
   //----------
 
   bool gui_get_preferred_api(const char **api, bool *is_floating) override {
-    //MIP_PRINT;
     *api = CLAP_WINDOW_API_X11;
     *is_floating = false;
+    MIP_Print("-> true (api: '%s' is_floating: %s\n",*api,*is_floating?"true":"false");
     return true;
   }
 
   //----------
 
   bool gui_create(const char *api, bool is_floating) override {
-    //MIP_PRINT;
+    MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
     MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
     MIP_Assert(MEditor);
     return true;
@@ -351,9 +355,9 @@ public: // EXT gui
   //----------
 
   void gui_destroy() override {
-    //MIP_PRINT;
-    MGuiTimer.stop();
     MIP_Assert(MEditor);
+    MIP_Print("\n");
+    MGuiTimer.stop();
     delete MEditor;
     MEditor = nullptr;
     MIP_PRINT;
@@ -363,70 +367,91 @@ public: // EXT gui
 
   bool gui_set_scale(double scale) override {
     MIP_Assert(MEditor);
-    return MEditor->gui_set_scale(scale);
+    bool result = MEditor->setScale(scale);
+    MIP_Print("scale: %.3f -> %s\n",scale,result?"true":"false");
+    return result;
   }
 
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
     MIP_Assert(MEditor);
-    return MEditor->gui_get_size(width,height);
+    bool result = MEditor->getSize(width,height);
+    MIP_Print("-> %s (*width: %i *height %i)\n",result?"true":"false",*width,*height);
+    return result;
   }
 
   //----------
 
   bool gui_can_resize() override {
     MIP_Assert(MEditor);
-    return MEditor->gui_can_resize();
+    bool result = MEditor->canResize();
+    MIP_Print("-> %s\n",result?"true":"false");
+    return result;
   }
 
   //----------
 
   bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) override {
     MIP_Assert(MEditor);
-    return MEditor->gui_get_resize_hints(hints);
+    bool result = MEditor->getResizeHints(hints);
+    MIP_Print("-> %s\n",result?"true":"false");
+    return result;
   }
 
   //----------
 
   bool gui_adjust_size(uint32_t *width, uint32_t *height) override {
     MIP_Assert(MEditor);
-    return MEditor->gui_adjust_size(width,height);
+    uint32_t w = *width;
+    uint32_t h = *height;
+    bool result = MEditor->adjustSize(width,height);
+    MIP_Print("*width: %i *height %i -> %s (*width: %i *height %i)\n",w,h,result?"true":"false",*width,*height);
+    return result;
   }
 
   //----------
 
   bool gui_set_size(uint32_t width, uint32_t height) override {
     MIP_Assert(MEditor);
-    return MEditor->gui_set_size(width,height);
+    bool result = MEditor->setSize(width,height);
+    MIP_Print("width: %i height: %i -> %s\n",width,height,result?"true":"false");
+    return result;
   }
 
   //----------
 
   bool gui_set_parent(const clap_window_t *window) override {
     MIP_Assert(MEditor);
-    return MEditor->gui_set_parent(window);
+    MIP_Print("window: %p -> true\n",window);
+    return MEditor->setParent(window);
   }
 
   //----------
 
   bool gui_set_transient(const clap_window_t *window) override {
     MIP_Assert(MEditor);
-    return MEditor->gui_set_transient(window);
+    MIP_Print("window: %p -> true\n",window);
+    return MEditor->setTransient(window);
   }
 
   //----------
 
   void gui_suggest_title(const char *title) override {
     MIP_Assert(MEditor);
-    MEditor->gui_suggest_title(title);
+    MIP_Print("title: '%s'\n",title);
+    MEditor->suggestTitle(title);
   }
 
   //----------
 
   bool gui_show() override {
     MIP_Assert(MEditor);
-    bool result = MEditor->gui_show();
+    MIP_Print("-> true\n");
+    updateEditorParameters();
+    bool result = MEditor->show();
+    // redraw?
+    //MEditor->redrawEditor();
     MGuiTimer.start(MIP_GUI_UPDATE_RATE_MS);
     return result;
   }
@@ -435,8 +460,9 @@ public: // EXT gui
 
   bool gui_hide() override {
     MIP_Assert(MEditor);
+    MIP_Print("-> true\n");
     MGuiTimer.stop();
-    return MEditor->gui_hide();
+    return MEditor->hide();
   }
 
   #endif
@@ -777,7 +803,9 @@ public: // process events
     uint32_t index = event->param_id;
     double value = event->value;
     setParameterValue(index,value);
+    #ifndef MIP_NO_GUI
     queueGuiParam(index,value);
+    #endif
   }
 
   virtual void processParamModEvent(const clap_event_param_mod_t* event) {
@@ -785,7 +813,9 @@ public: // process events
     uint32_t index = event->param_id;
     double value = event->amount;
     setParameterModulation(index,value);
+    #ifndef MIP_NO_GUI
     queueGuiMod(index,value);
+    #endif
   }
 
   virtual void processParamGestureBeginEvent(const clap_event_param_gesture_t* event) {
@@ -921,6 +951,8 @@ public: // queues
 
   //----------
 
+  #ifndef MIP_NO_GUI
+
   /*
     host -> gui
 
@@ -975,6 +1007,8 @@ public: // queues
     }
   }
 
+  #endif // MIP_NO_GUI
+
 //------------------------------
 public: // parameters
 //------------------------------
@@ -1011,6 +1045,17 @@ public: // parameters
   void setParameterValue(uint32_t AIndex, double AValue) {
     MParameters[AIndex]->setValue(AValue);
   }
+
+  //----------
+
+  #ifndef MIP_NO_GUI
+  void updateEditorParameters() {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      double v = MParameters[i]->getValue();
+      MEditor->updateParameter(i,v,false);
+    }
+  }
+  #endif
 
 //------------------------------
 public: // modulation
@@ -1157,15 +1202,21 @@ public: // editor listener
 public: // timer listener
 //------------------------------
 
-  void on_timerCallback() override {
-    //sa_botage_editor* editor = (sa_botage_editor*)MEditor;
-    //editor->timer(&MProcess);
-    if (MEditor) {
-      //MIP_PRINT;
-      flushGuiParams();
-      flushGuiMods();
+  #ifndef MIP_NO_GUI
+
+  void on_timerCallback(MIP_Timer* ATimer) override {
+    if (ATimer == &MGuiTimer) {
+      //sa_botage_editor* editor = (sa_botage_editor*)MEditor;
+      //editor->timer(&MProcess);
+      if (MEditor) {
+        //MIP_PRINT;
+        flushGuiParams();
+        flushGuiMods();
+      }
     }
   }
+
+  #endif
 
 
 };

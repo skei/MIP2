@@ -64,7 +64,7 @@ private:
 
   mip_voxel_t*    voxel                 = nullptr;
   uint32_t        voxelbuffer[320*240]  = {0};
-  MIP_Timer       timer                 = MIP_Timer(this);
+  MIP_Timer       timer                 = MIP_Timer(this,666);
   MIP_Bitmap      bitmap                = {};
 
   int32_t px  =  160;
@@ -149,17 +149,19 @@ public:
     return result;
   }
 
-  void on_timerCallback() final {
+  void on_timerCallback(int AIndex) final {
     MIP_PRINT;
-    memset(voxelbuffer,0,sizeof(voxelbuffer));
-    voxel_render_frame(voxel,voxelbuffer,px * 65536,py * 65536,pa);
-    px += 1;
-    //py += 1;
-    pa += 0.05;
-    if (px >= 320) px = 0;
-    if (py >= 240) py = 0;
-    if (pa >= MIP_PI2)   pa -= MIP_PI2;
-    do_widget_redraw(image1);
+    if (AIndex = 666) {
+      memset(voxelbuffer,0,sizeof(voxelbuffer));
+      voxel_render_frame(voxel,voxelbuffer,px * 65536,py * 65536,pa);
+      px += 1;
+      //py += 1;
+      pa += 0.05;
+      if (px >= 320) px = 0;
+      if (py >= 240) py = 0;
+      if (pa >= MIP_PI2)   pa -= MIP_PI2;
+      do_widget_redraw(image1);
+    }
 
   }
 

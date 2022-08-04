@@ -7,6 +7,7 @@
 */
 
 #include "mip.h"
+#include "base/system/mip_timer.h"
 #include "gui/mip_widget.h"
 
 //----------------------------------------------------------------------
@@ -32,6 +33,7 @@ typedef MIP_ImplementedWindow MIP_BasicWindow;
 
 class MIP_Window
 : public MIP_ImplementedWindow
+//, public MIP_TimerListener
 , public MIP_Widget {
 
 //------------------------------
@@ -58,6 +60,8 @@ protected:
   int32_t           MMousePrevY         = 0;
   int32_t           MMouseDragX         = 0;
   int32_t           MMouseDragY         = 0;
+
+//  MIP_Timer         MMouseClickTimer    = MIP_Timer(this);
 
 //------------------------------
 public:
@@ -233,8 +237,34 @@ public: // window
 
   //----------
 
+//----------
+
+//  bool is_counting_down = false;
+//
+//  void countdown_start() {
+//    is_counting_down = true;
+//    // start timer
+//  }
+//
+//  void countdown_stop() {
+//    is_counting_down = false;
+//    // stop toper
+//  }
+//
+//  void countdown_timeout() {
+//    is_counting_down = false;
+//    //MClickedWidget->on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
+//  }
+
+//----------
+
+//  void on_timerCallback(int AIndex) override {
+//    MIP_Print("timed out: %i\n",AIndex);
+//  }
+
   void on_window_mouse_press(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
-    //MIP_PRINT;
+
+//    MMouseClickTimer.start(1000,true);
 
     MMouseClickedX  = AXpos;
     MMouseClickedY  = AYpos;
@@ -245,6 +275,24 @@ public: // window
 
     if (MHoverWidget != this) {
       MClickedWidget = MHoverWidget;
+
+      //
+
+//      if (is_counting_down) {
+//        countdown_stop();
+//        //MClickedWidget->on_widget_mouse_dblclick(AButton,AState,AXpos,AYpos,ATime); // prev_time?
+//      }
+//      else {
+//        if (MClickedWidget->Options.wantDoubleClick)) {
+//          countdown_start();
+//        }
+//        else {
+//          MClickedWidget->on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
+//        }
+//      }
+
+      //
+
       if (MClickedWidget->Flags.captureMouse) MCapturedWidget = MClickedWidget;
       MHoverWidget->on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
     }
@@ -366,7 +414,7 @@ public: // child to parent
     //MDirtyWidgets.append(ASender);
     MIP_DRect rect = ASender->getWidgetRect();
     // should this ne called something less 'low-level'? redraw() ?? markDirty..
-    invalidate(rect.x,rect.y,rect.w,rect.h);
+    invalidateRegion(rect.x,rect.y,rect.w,rect.h);
   }
 
   //----------
@@ -424,6 +472,10 @@ public:
     MPaintContext.theme       = &MIP_DefaultTheme;
     MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
     MPaintContext.painter     = MWindowPainter;
+  }
+
+  void redrawEditor() {
+    invalidateRegion(0,0,getWindowWidth(),getWindowHeight());
   }
 
 };
