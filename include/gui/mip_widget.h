@@ -33,7 +33,7 @@ struct MIP_WidgetLayout {
   MIP_DRect   border      = MIP_DRect(0,0,0,0);           // inner border
   MIP_DPoint  spacing     = MIP_DPoint(0,0);              // spacing between child widgets
   MIP_DPoint  minSize     = MIP_DPoint(0,0);
-  MIP_DPoint  maxSize     = MIP_DPoint(-1,-1);
+  MIP_DPoint  maxSize     = MIP_DPoint(999999,999999);
 };
 
 //----------
@@ -177,13 +177,15 @@ public: // parent to child
   virtual void on_widget_resize(double AWidth, double AHeight) {}
   virtual void on_widget_align(bool ARecursive=true) {}
   virtual void on_widget_paint(MIP_PaintContext* AContext) { paintChildWidgets(AContext); }
+
   virtual void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
 
-  virtual void on_widget_mouse_dblclick(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
+
+  virtual void on_widget_mouse_dblclick(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
 
   virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {
     if (Flags.autoSetCursor) do_widget_cursor(this,MMouseCursor);
@@ -192,7 +194,11 @@ public: // parent to child
   virtual void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) {
   }
 
-  //virtual void on_widget_connect(MIP_Parameter* AParameter) {}
+  //virtual void on_widget_connect(MIP_Parameter* AParameter) {
+  //}
+
+  //virtual void on_widget_unmodal() {
+  //}
 
 //------------------------------
 public: // child to parent
@@ -220,6 +226,11 @@ public: // child to parent
 
   virtual void do_widget_notify(MIP_Widget* ASender, uint32_t AMode, int32_t AValue) {
     if (MParent) MParent->do_widget_notify(ASender,AMode,AValue);
+  }
+
+  virtual MIP_Widget* do_widget_get_window(MIP_Widget* ASender) {
+    if (MParent) return MParent->do_widget_get_window(ASender);
+    else return nullptr;
   }
 
 //------------------------------
@@ -373,13 +384,6 @@ public: // hierarchy
             break;
         }
 
-  //      if (child->Layout.sizeRatio) {
-  //        child_rect.x *= client_rect.w;
-  //        child_rect.y *= client_rect.h;
-  //        child_rect.w *= client_rect.w;
-  //        child_rect.h *= client_rect.h;
-  //      }
-
         // alignment
 
         switch (child->Layout.alignment) {
@@ -451,6 +455,17 @@ public: // hierarchy
             }
           } // h > 0
         } // aspect > 0
+
+        // min/max size
+
+
+        child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
+        child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
+
+        //if (child_rect.w < child->Layout.minSize.w) child_rect.w = child->Layout.minSize.w;
+        //if (child_rect.h < child->Layout.minSize.h) child_rect.h = child->Layout.minSize.h;
+        //if (child_rect.w > child->Layout.maxSize.w) child_rect.w = child->Layout.maxSize.w;
+        //if (child_rect.h > child->Layout.maxSize.h) child_rect.h = child->Layout.maxSize.h;
 
         // update
 

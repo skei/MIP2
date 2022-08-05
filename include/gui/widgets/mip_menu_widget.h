@@ -5,6 +5,7 @@
 #include "mip.h"
 #include "gui/widgets/mip_panel_widget.h"
 #include "gui/widgets/mip_menu_item_widget.h"
+#include "gui/mip_window.h"
 
 //----------------------------------------------------------------------
 //
@@ -69,16 +70,26 @@ public: // parent to child
   //}
 
   void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
+
+    //MIP_Window* window = (MIP_Window*)do_widget_get_window(this);
+    //if (window) {
+    //}
+
     if (!MRect.contains(AXpos,AYpos)) {
       if (MListener) MListener->on_menu_selected(-1);
-      close();
-      do_widget_modal(nullptr);
+      close(true);
+      //do_widget_modal(nullptr);
     }
     else {
       MIP_PanelWidget::on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
     }
   }
 
+  //----------
+
+  //void on_widget_unmodal() override {
+  //  MIP_Print("unmodal\n");
+  //}
 
 //------------------------------
 public: // child to parent
@@ -93,31 +104,43 @@ public: // child to parent
     else {
       if (MListener) MListener->on_menu_selected(index);
     }
-    close();
-    do_widget_modal(nullptr);
+    close(true);
+    //do_widget_modal(nullptr);
   }
+
+
 
 //------------------------------
 public:
 //------------------------------
 
-  virtual void open(double AXpos, double AYpos) {
-    setWidgetPos(AXpos,AYpos);
+  virtual void open(double AXpos, double AYpos, bool AModal/*=true*/) {
+
+    double x = AXpos;
+    double y = AYpos;
+    MIP_Window* window = (MIP_Window*)do_widget_get_window(this);
+    if (window) {
+      uint32_t winw = window->getWindowWidth();
+      uint32_t winh =window->getWindowHeight();
+      if ((x + MRect.w) > winw) { x = winw - MRect.w; }
+      if ((y + MRect.h) > winh) { y = winh - MRect.h; }
+    }
+    setWidgetPos(x,y);
     alignChildWidgets();
     Flags.visible = true;
     Flags.active = true;
-    do_widget_modal(this);
     do_widget_redraw(this);
+    if (AModal) do_widget_modal(this);
   }
 
   //----------
 
-  virtual void close() {
+  virtual void close(bool AModal/*=true*/) {
     Flags.visible = false;
     Flags.active = false;
     //do_widget_update(this);
-    do_widget_modal(nullptr);
     do_widget_redraw(this);
+    if (AModal) do_widget_modal(nullptr);
   }
 
   //virtual void drawMenu(MIP_PaintContext* AContext) {

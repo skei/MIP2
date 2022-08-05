@@ -49,6 +49,9 @@ public: // parent to child
 //  void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) override {}
 //  //void on_widget_connect(MIP_Parameter* AParameter) override {}
 
+//  virtual void on_widget_modal(bool AModal) {}
+
+
 //------------------------------
 public: // child to parent
 //------------------------------

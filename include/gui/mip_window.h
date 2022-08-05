@@ -173,12 +173,13 @@ public: // window
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    //MIP_Print("%i,%i\n",AWidth,AHeight);
+    MIP_Print("%i,%i\n",AWidth,AHeight);
     delete MWindowPainter;
     MWindowPainter = new MIP_Painter(this,this);
     MPaintContext.painter = MWindowPainter;
     MRect.setSize(AWidth,AHeight);
     alignChildWidgets();
+
   }
 
   //----------
@@ -319,6 +320,10 @@ public: // parent to child
 //  void on_widget_leave(MIP_DPoint APos, uint32_t ATime) override {}
 //  //void on_widget_connect(MIP_Parameter* AParameter) override {}
 
+//  void on_widget_unmodal() override {
+//    MIP_PRINT;
+//  }
+
 //------------------------------
 public: // child to parent
 //------------------------------
@@ -343,10 +348,9 @@ public: // child to parent
   // ignore event outside of modal widget (menus, etc)
 
   void do_widget_modal(MIP_Widget* ASender, uint32_t AMode=0) override {
+    //if (MModalWidget) MModalWidget->on_widget_modal(false);
     MModalWidget = ASender;
-    if (ASender == nullptr) {
-      // close menu..
-    }
+    //if (MModalWidget) MModalWidget->on_widget_modal(true);
     updateHoverWidget(MMousePrevX,MMousePrevY,0);
   }
 
@@ -385,6 +389,13 @@ public: // child to parent
 
   void do_widget_notify(MIP_Widget* ASender, uint32_t AMode, int32_t AValue) override {
   }
+
+  //----------
+
+  MIP_Widget* do_widget_get_window(MIP_Widget* ASender) override {
+    return this;
+  }
+
 
 //------------------------------
 public:

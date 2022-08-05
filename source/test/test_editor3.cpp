@@ -47,7 +47,9 @@ class test_editor3_editor
 : public MIP_Editor
 , public MIP_MenuListener {
 
+//------------------------------
 private:
+//------------------------------
 
   MIP_PanelWidget* left_panel;
   MIP_PanelWidget* top_panel;
@@ -74,7 +76,9 @@ private:
   float MWaveform[1024] = {0};
   const char* button_txt[5] = { "1", "2", "3", "4", "5" };
 
+//------------------------------
 public:
+//------------------------------
 
   test_editor3_editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
   : MIP_Editor(AListener,AWidth,AHeight) {
@@ -82,17 +86,50 @@ public:
     setWindowFillBackground(false);
   }
 
+  //----------
+
   virtual ~test_editor3_editor() {
   }
+
+//------------------------------
+public: // menu listener
+//------------------------------
+
+  //TODO: call plugin..
+
+  //void on_menu_selected(int32_t AIndex) override {
+  //  MIP_Print("index %i\n",AIndex);
+  //}
+
+//------------------------------
+public:
+//------------------------------
+
+//  bool show() override {
+//    bool result = MIP_Editor::show();
+//    //timer.start(50);
+//    return result;
+//  }
+//
+//  //----------
+//
+//  bool hide() override {
+//    //timer.stop();
+//    bool result = MIP_Editor::hide();
+//    return result;
+//  }
+
+  //----------
+
+  //void on_timerCallback() final {
+  //  //do_widget_redraw(image1);
+  //}
 
 //------------------------------
 public:
 //------------------------------
 
   void setup_widgets(uint32_t AWidth, uint32_t AHeight) {
-
-    #define H  22
-    #define H2 25
 
     for (uint32_t i=0; i<1024; i++) MWaveform[i] = MIP_RandomRange(-1,1);
 
@@ -103,7 +140,7 @@ public:
 
     //background->Layout.scale = 0.5;
 
-    menu1       = new MIP_MenuWidget(       MIP_DRect( 170, 150, 160,100), this );
+    menu1 = new MIP_MenuWidget( MIP_DRect( 170, 150, 160,100), this );
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 0,160,20), "item1" ));
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,20,160,20), "item2" ));
     menu1->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,40,160,20), "item3" ));
@@ -221,37 +258,13 @@ public:
     grid1->Layout.sizeModeX = 1;
     grid1->Layout.sizeModeY = 0;
     grid1->Layout.aspectRatio = 1.0;
+    grid1->Layout.minSize.h = 100;
     center_panel->appendChildWidget(grid1);
 
     // menu
 
     background->appendChildWidget(menu1);
 
-    #undef H
-    #undef H2
-
-  }
-
-  //
-
-  bool show() override {
-    bool result = MIP_Editor::show();
-    //timer.start(50);
-    return result;
-  }
-
-  bool hide() override {
-    //timer.stop();
-    bool result = MIP_Editor::hide();
-    return result;
-  }
-
-  //void on_timerCallback() final {
-  //  //do_widget_redraw(image1);
-  //}
-
-  void on_menu_selected(int32_t AIndex) override {
-    MIP_Print("index %i\n",AIndex);
   }
 
 };
@@ -263,8 +276,8 @@ public:
 //----------------------------------------------------------------------
 
 class test_editor3_plugin
-: public MIP_Plugin {
-
+: public MIP_Plugin
+/*, public MIP_MenuListener*/ {
 //------------------------------
 private:
 //------------------------------
@@ -304,6 +317,7 @@ public:
 
   test_editor3_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
+    MIP_PRINT;
     MEditorWidth = 500;
     MEditorHeight = 400;
   }
@@ -387,6 +401,14 @@ public: // gui
 //  bool gui_hide() override {
 //    bool result = MIP_Plugin::gui_hide();
 //    return result;
+//  }
+
+//------------------------------
+public: // menu listener
+//------------------------------
+
+//  void on_menu_selected(int32_t AIndex) override {
+//    MIP_Print("index %i\n",AIndex);
 //  }
 
 };
