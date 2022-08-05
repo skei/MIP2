@@ -42,8 +42,6 @@ struct MIP_WidgetFlags {
   bool active         = true;
   bool interactive    = false;
   bool visible        = true;
-  //bool vertical       = false;
-  //bool proportional   = false;
   bool captureMouse   = true;
   bool doubleClick    = false;
   bool autoSetCursor  = true;
@@ -181,6 +179,8 @@ public: // parent to child
   virtual void on_widget_paint(MIP_PaintContext* AContext) { paintChildWidgets(AContext); }
   virtual void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
+
+  virtual void on_widget_mouse_dblclick(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}

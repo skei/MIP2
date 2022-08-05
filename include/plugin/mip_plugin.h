@@ -327,10 +327,10 @@ public: // EXT gui
 
   bool gui_is_api_supported(const char *api, bool is_floating) override {
     if ((strcmp(api,CLAP_WINDOW_API_X11) == 0) && (is_floating == false)) {
-      MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
+      //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
       return true;
     }
-    MIP_Print("api: '%s' is_floating: %s -> false\n",api,is_floating?"true":"false");
+    //MIP_Print("api: '%s' is_floating: %s -> false\n",api,is_floating?"true":"false");
     return false;
   }
 
@@ -339,14 +339,14 @@ public: // EXT gui
   bool gui_get_preferred_api(const char **api, bool *is_floating) override {
     *api = CLAP_WINDOW_API_X11;
     *is_floating = false;
-    MIP_Print("-> true (api: '%s' is_floating: %s\n",*api,*is_floating?"true":"false");
+    //MIP_Print("-> true (api: '%s' is_floating: %s\n",*api,*is_floating?"true":"false");
     return true;
   }
 
   //----------
 
   bool gui_create(const char *api, bool is_floating) override {
-    MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
+    //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
     MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
     MIP_Assert(MEditor);
     return true;
@@ -356,11 +356,10 @@ public: // EXT gui
 
   void gui_destroy() override {
     MIP_Assert(MEditor);
-    MIP_Print("\n");
+    //MIP_Print("\n");
     MGuiTimer.stop();
     delete MEditor;
     MEditor = nullptr;
-    MIP_PRINT;
   }
 
   //----------
@@ -368,7 +367,7 @@ public: // EXT gui
   bool gui_set_scale(double scale) override {
     MIP_Assert(MEditor);
     bool result = MEditor->setScale(scale);
-    MIP_Print("scale: %.3f -> %s\n",scale,result?"true":"false");
+    //MIP_Print("scale: %.3f -> %s\n",scale,result?"true":"false");
     return result;
   }
 
@@ -377,7 +376,7 @@ public: // EXT gui
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
     MIP_Assert(MEditor);
     bool result = MEditor->getSize(width,height);
-    MIP_Print("-> %s (*width: %i *height %i)\n",result?"true":"false",*width,*height);
+    //MIP_Print("-> %s (*width: %i *height %i)\n",result?"true":"false",*width,*height);
     return result;
   }
 
@@ -386,7 +385,7 @@ public: // EXT gui
   bool gui_can_resize() override {
     MIP_Assert(MEditor);
     bool result = MEditor->canResize();
-    MIP_Print("-> %s\n",result?"true":"false");
+    //MIP_Print("-> %s\n",result?"true":"false");
     return result;
   }
 
@@ -395,7 +394,7 @@ public: // EXT gui
   bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) override {
     MIP_Assert(MEditor);
     bool result = MEditor->getResizeHints(hints);
-    MIP_Print("-> %s\n",result?"true":"false");
+    //MIP_Print("-> %s\n",result?"true":"false");
     return result;
   }
 
@@ -403,10 +402,10 @@ public: // EXT gui
 
   bool gui_adjust_size(uint32_t *width, uint32_t *height) override {
     MIP_Assert(MEditor);
-    uint32_t w = *width;
-    uint32_t h = *height;
     bool result = MEditor->adjustSize(width,height);
-    MIP_Print("*width: %i *height %i -> %s (*width: %i *height %i)\n",w,h,result?"true":"false",*width,*height);
+    //uint32_t w = *width;
+    //uint32_t h = *height;
+    //MIP_Print("*width: %i *height %i -> %s (*width: %i *height %i)\n",w,h,result?"true":"false",*width,*height);
     return result;
   }
 
@@ -415,7 +414,7 @@ public: // EXT gui
   bool gui_set_size(uint32_t width, uint32_t height) override {
     MIP_Assert(MEditor);
     bool result = MEditor->setSize(width,height);
-    MIP_Print("width: %i height: %i -> %s\n",width,height,result?"true":"false");
+    //MIP_Print("width: %i height: %i -> %s\n",width,height,result?"true":"false");
     return result;
   }
 
@@ -423,7 +422,7 @@ public: // EXT gui
 
   bool gui_set_parent(const clap_window_t *window) override {
     MIP_Assert(MEditor);
-    MIP_Print("window: %p -> true\n",window);
+    //MIP_Print("window: %p -> true\n",window);
     return MEditor->setParent(window);
   }
 
@@ -431,7 +430,7 @@ public: // EXT gui
 
   bool gui_set_transient(const clap_window_t *window) override {
     MIP_Assert(MEditor);
-    MIP_Print("window: %p -> true\n",window);
+    //MIP_Print("window: %p -> true\n",window);
     return MEditor->setTransient(window);
   }
 
@@ -439,7 +438,7 @@ public: // EXT gui
 
   void gui_suggest_title(const char *title) override {
     MIP_Assert(MEditor);
-    MIP_Print("title: '%s'\n",title);
+    //MIP_Print("title: '%s'\n",title);
     MEditor->suggestTitle(title);
   }
 
@@ -447,7 +446,7 @@ public: // EXT gui
 
   bool gui_show() override {
     MIP_Assert(MEditor);
-    MIP_Print("-> true\n");
+    //MIP_Print("-> true\n");
     updateEditorParameters();
     bool result = MEditor->show();
     // redraw?
@@ -460,7 +459,7 @@ public: // EXT gui
 
   bool gui_hide() override {
     MIP_Assert(MEditor);
-    MIP_Print("-> true\n");
+    //MIP_Print("-> true\n");
     MGuiTimer.stop();
     return MEditor->hide();
   }

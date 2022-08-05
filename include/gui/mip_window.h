@@ -3,7 +3,8 @@
 //----------------------------------------------------------------------
 
 /*
-  resize window: un-modal (like right-clicking)
+  todo:
+    resize window: un-modal (like right-clicking)
 */
 
 #include "mip.h"
@@ -25,6 +26,8 @@
 
 typedef MIP_ImplementedWindow MIP_BasicWindow;
 
+#define MIP_WINDOW_DBLCLICK_MS 300
+
 //----------------------------------------------------------------------
 //
 //
@@ -33,7 +36,7 @@ typedef MIP_ImplementedWindow MIP_BasicWindow;
 
 class MIP_Window
 : public MIP_ImplementedWindow
-//, public MIP_TimerListener
+, public MIP_TimerListener
 , public MIP_Widget {
 
 //------------------------------
@@ -44,24 +47,25 @@ protected:
   MIP_Widget*       MHoverWidget        = nullptr;
   MIP_Widget*       MClickedWidget      = nullptr;
   MIP_Widget*       MModalWidget        = nullptr;
-  MIP_Widget*       MFocusWidget        = nullptr;
-  MIP_Widget*       MCapturedWidget     = nullptr;
   MIP_Widget*       MLockedWidget       = nullptr;
-  MIP_Widget*       MKeyInputWidget     = nullptr;
-
   MIP_Painter*      MWindowPainter      = nullptr;
   MIP_PaintContext  MPaintContext       = {};
+  uint32_t          MCurrentCursor      = MIP_CURSOR_DEFAULT;
 
-  uint32_t          MCurrentMouseCursor = MIP_CURSOR_DEFAULT;
+  // click
 
   int32_t           MMouseClickedX      = 0;
   int32_t           MMouseClickedY      = 0;
+  uint32_t          MMouseClickedB      = 0;
+  uint32_t          MMouseClickedS      = 0;
+  uint32_t          MMouseClickedT      = 0;
+
+  // drag
+
   int32_t           MMousePrevX         = 0;
   int32_t           MMousePrevY         = 0;
   int32_t           MMouseDragX         = 0;
   int32_t           MMouseDragY         = 0;
-
-//  MIP_Timer         MMouseClickTimer    = MIP_Timer(this);
 
 //------------------------------
 public:
@@ -103,13 +107,6 @@ public:
 
   //----------
 
-  // returns 'this' if not hovering over any child widget
-
-  //MIP_Widget* findHoverWidget(int32_t AXpos, int32_t AYpos) {
-  //  MIP_Widget* hover = findChildWidget(AXpos,AYpos);
-  //  return hover;
-  //}
-
   void updateHoverWidget(int32_t AXpos, int32_t AYpos, uint32_t ATime) {
     MIP_Widget* hover = nullptr;
     if (MModalWidget) {
@@ -121,11 +118,9 @@ public:
       if (!MClickedWidget) {
         if (MHoverWidget) MHoverWidget->on_widget_leave(hover,AXpos,AYpos,ATime);
         if (hover) hover->on_widget_enter(MHoverWidget,AXpos,AYpos,ATime);
-        //MHoverWidget = hover; // don't update when dragging?
       }
       MHoverWidget = hover;
     }
-    //return hover;
   }
 
   //----------
@@ -134,21 +129,17 @@ public:
   // and entering window
 
   void updateHoverWidgetFrom(MIP_Widget* AFrom, int32_t AXpos, int32_t AYpos, uint32_t ATime) {
-    //MIP_Widget* hover = findChildWidget(AXpos,AYpos);
     if (MHoverWidget != AFrom) {
       if (AFrom) AFrom->on_widget_leave(MHoverWidget,AXpos,AYpos,ATime);
       if (MHoverWidget) MHoverWidget->on_widget_enter(AFrom,AXpos,AYpos,ATime);
     }
-    //MHoverWidget = hover;
   }
 
-//  void updateHoverWidgetTo(MIP_Widget* ATo, int32_t AXpos, int32_t AYpos, uint32_t ATime) {
-//    //MIP_Widget* hover = findChildWidget(AXpos,AYpos);
-//    if (MHoverWidget != To) {
-//      if (AFrom) AFrom->on_widget_leave(MHoverWidget,AXpos,AYpos,ATime);
-//      if (MHoverWidget) MHoverWidget->on_widget_enter(AFrom,AXpos,AYpos,ATime);
-//    }
-//    //MHoverWidget = hover;
+//------------------------------
+public: // timer
+//------------------------------
+
+//  void on_timerCallback(MIP_Timer* ATimer) override {
 //  }
 
 //------------------------------
@@ -162,7 +153,6 @@ public: // window
 
   void on_window_open() override {
     //MIP_Print("aligning..\n");
-    //alignChildWidgets();
   }
 
   //----------
@@ -173,23 +163,21 @@ public: // window
 
   //----------
 
+  // alignChildWidgets assumes 0,0 is upper corner..ren
+
   void on_window_move(int32_t AXpos, int32_t AYpos) override {
     //MIP_PRINT;
-    //MRect.setPos(AXpos,AYpos);
-    MRect.setPos(0,0); // because of alignChildWidgets
+    MRect.setPos(0,0);
   }
 
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("%i,%i\n",AWidth,AHeight);
-    //int32_t new_width = MIP_NextPowerOfTwo(AWidth);
-    //int32_t new_height = MIP_NextPowerOfTwo(AWidth);
     delete MWindowPainter;
     MWindowPainter = new MIP_Painter(this,this);
     MPaintContext.painter = MWindowPainter;
     MRect.setSize(AWidth,AHeight);
-    //MIP_Print("aligning..\n");
     alignChildWidgets();
   }
 
@@ -214,13 +202,6 @@ public: // window
     paintChildWidgets(getPaintContext());
     painter->resetScissor();
     painter->endPaint();
-
-    //paintChildWidgets(&MPaintContext);
-    //MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
-    //MPaintContext.theme       = &MIP_DefaultTheme;
-    //MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
-    //MPaintContext.painter     = MWindowPainter;
-
   }
 
   //----------
@@ -237,63 +218,18 @@ public: // window
 
   //----------
 
-//----------
-
-//  bool is_counting_down = false;
-//
-//  void countdown_start() {
-//    is_counting_down = true;
-//    // start timer
-//  }
-//
-//  void countdown_stop() {
-//    is_counting_down = false;
-//    // stop toper
-//  }
-//
-//  void countdown_timeout() {
-//    is_counting_down = false;
-//    //MClickedWidget->on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
-//  }
-
-//----------
-
-//  void on_timerCallback(int AIndex) override {
-//    MIP_Print("timed out: %i\n",AIndex);
-//  }
-
   void on_window_mouse_press(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
-
-//    MMouseClickTimer.start(1000,true);
-
     MMouseClickedX  = AXpos;
     MMouseClickedY  = AYpos;
+    MMouseClickedB  = AButton;
+    MMouseClickedS  = AState;
+    MMouseClickedT  = ATime;
     MMousePrevX     = AXpos;
     MMousePrevY     = AYpos;
     MMouseDragX     = AXpos;
     MMouseDragY     = AYpos;
-
     if (MHoverWidget != this) {
       MClickedWidget = MHoverWidget;
-
-      //
-
-//      if (is_counting_down) {
-//        countdown_stop();
-//        //MClickedWidget->on_widget_mouse_dblclick(AButton,AState,AXpos,AYpos,ATime); // prev_time?
-//      }
-//      else {
-//        if (MClickedWidget->Options.wantDoubleClick)) {
-//          countdown_start();
-//        }
-//        else {
-//          MClickedWidget->on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
-//        }
-//      }
-
-      //
-
-      if (MClickedWidget->Flags.captureMouse) MCapturedWidget = MClickedWidget;
       MHoverWidget->on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
     }
   }
@@ -302,29 +238,16 @@ public: // window
 
   void on_window_mouse_release(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     //MIP_PRINT;
-    if (MCapturedWidget) {
-      MCapturedWidget->on_widget_mouse_release(AButton,AState,AXpos,AYpos,ATime);
-      updateHoverWidgetFrom(MCapturedWidget,AXpos,AYpos,ATime);
-      MCapturedWidget = nullptr;
+    if (MClickedWidget) {
+      MClickedWidget->on_widget_mouse_release(AButton,AState,AXpos,AYpos,ATime);
+      updateHoverWidgetFrom(MClickedWidget,AXpos,AYpos,ATime);
     }
     MClickedWidget = nullptr;
-    //else if (MMouseClickedWidget) {
-    //  MMouseClickedWidget->on_widget_mouse_release(AButton,AState,AXpos,AYpos,ATime);
-    //  updateHoverWidgetFrom(MMouseClickedWidget,AXpos,AYpos,ATime);
-    //  MMouseClickedWidget = nullptr;
-    //}
   }
 
   //----------
 
-  /*
-  }
-
-  */
-
   void on_window_mouse_move(uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
-    //MMouseX = AXpos;
-    //MMouseY = AYpos;
     if (MLockedWidget) {
       if ((AXpos == MMouseClickedX) && (AYpos == MMouseClickedY)) {
         MMousePrevX = AXpos;
@@ -340,9 +263,8 @@ public: // window
     }
     else {
       updateHoverWidget(AXpos,AYpos,ATime);
-      if (MCapturedWidget) {
-        MCapturedWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
-      }
+      if (MClickedWidget) MClickedWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
+
     }
     MMousePrevX = AXpos;
     MMousePrevY = AYpos;
@@ -402,7 +324,7 @@ public: // child to parent
 //------------------------------
 
   /*
-    editor can overload this, and catch the paramtere from the sender widget
+    editor can overload this, and catch the parameter from the sender widget
   */
 
   void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
@@ -413,15 +335,18 @@ public: // child to parent
   void do_widget_redraw(MIP_Widget* ASender, uint32_t AMode=0) override {
     //MDirtyWidgets.append(ASender);
     MIP_DRect rect = ASender->getWidgetRect();
-    // should this ne called something less 'low-level'? redraw() ?? markDirty..
     invalidateRegion(rect.x,rect.y,rect.w,rect.h);
   }
 
   //----------
 
+  // ignore event outside of modal widget (menus, etc)
+
   void do_widget_modal(MIP_Widget* ASender, uint32_t AMode=0) override {
-    // ignore event outside of modal widget (menus, etc)
     MModalWidget = ASender;
+    if (ASender == nullptr) {
+      // close menu..
+    }
     updateHoverWidget(MMousePrevX,MMousePrevY,0);
   }
 
@@ -430,24 +355,22 @@ public: // child to parent
   void do_widget_cursor(MIP_Widget* ASender, uint32_t ACursor) override {
     switch (ACursor) {
       case MIP_CURSOR_LOCK:
-        //grabMouseCursor();
         MLockedWidget = ASender;
         break;
       case MIP_CURSOR_UNLOCK:
-        //releaseMouseCursor();
         MLockedWidget = nullptr;
         break;
       case MIP_CURSOR_SHOW:
         showMouseCursor();
-        setMouseCursor(MCurrentMouseCursor);
+        setMouseCursor(MCurrentCursor);
         break;
       case MIP_CURSOR_HIDE:
         hideMouseCursor();
         break;
       default:
-        if (ACursor != MCurrentMouseCursor) {
+        if (ACursor != MCurrentCursor) {
           setMouseCursor(ACursor);
-          MCurrentMouseCursor = ACursor;
+          MCurrentCursor = ACursor;
         }
         break;
     }
@@ -474,9 +397,11 @@ public:
     MPaintContext.painter     = MWindowPainter;
   }
 
-  void redrawEditor() {
-    invalidateRegion(0,0,getWindowWidth(),getWindowHeight());
-  }
+//  //----------
+
+  //void redrawEditor() {
+  //  invalidateRegion(0,0,getWindowWidth(),getWindowHeight());
+  //}
 
 };
 

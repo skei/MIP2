@@ -63,6 +63,7 @@ public: // parent to child
 //------------------------------
 
   void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
+    //MIP_PRINT;
     switch (AButton) {
       case MIP_BUTTON_LEFT: {
         if (Flags.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_HIDE);
@@ -76,7 +77,10 @@ public: // parent to child
     }
   }
 
+  //----------
+
   void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
+    //MIP_PRINT;
     switch (AButton) {
       case MIP_BUTTON_LEFT: {
         if (Flags.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_SHOW);
@@ -86,6 +90,8 @@ public: // parent to child
       }
     }
   }
+
+  //----------
 
   void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     if (MIsDragging) {

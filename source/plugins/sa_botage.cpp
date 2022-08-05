@@ -203,14 +203,13 @@ public: // timer
   // we read from MProcess directly... :-/
 
   void on_timerCallback(MIP_Timer* ATimer) override {
-
     // we override MIP_Plugin toimer callback, so be sure to call the
     // original, so the gui is properly updated, etc..
-    MIP_Plugin::on_timerCallback(ATimer); // flush queues
-
-    sa_botage_editor* editor = (sa_botage_editor*)MEditor;
-    if (editor) editor->timer_update(&MProcess);
-
+    if (ATimer == &MGuiTimer) {
+      MIP_Plugin::on_timerCallback(ATimer); // flush queues
+      sa_botage_editor* editor = (sa_botage_editor*)MEditor;
+      if (editor) editor->timer_update(&MProcess);
+    }
   }
 
 };

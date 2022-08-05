@@ -2,8 +2,10 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_NANOVG
 
-#define MIP_DEBUG_PRINT_SOCKET
-// nc -U -l -k /tmp/mip.socket
+#ifndef MIP_EXE
+  #define MIP_DEBUG_PRINT_SOCKET
+  // nc -U -l -k /tmp/mip.socket
+#endif
 
 //----------------------------------------------------------------------
 
@@ -186,8 +188,9 @@ public: // gui
 
 #ifndef MIP_NO_ENTRY
 
-  #include "plugin/clap/mip_clap_entry.h"
   #include "plugin/mip_registry.h"
+  #include "plugin/clap/mip_clap_entry.h"
+  #include "plugin/exe/mip_exe_entry.h"
 
   //----------
 
