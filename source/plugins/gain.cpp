@@ -14,10 +14,6 @@
 #include "gui/widgets/mip_widgets.h"
 
 //----------------------------------------------------------------------
-//
-// descriptor
-//
-//----------------------------------------------------------------------
 
 const clap_plugin_descriptor_t gain_descriptor = {
    .clap_version  = CLAP_VERSION,
@@ -32,10 +28,6 @@ const clap_plugin_descriptor_t gain_descriptor = {
    .features      = (const char*[]){ CLAP_PLUGIN_FEATURE_AUDIO_EFFECT, nullptr }
 };
 
-//----------------------------------------------------------------------
-//
-// gui
-//
 //----------------------------------------------------------------------
 
 class gain_plugin
@@ -148,14 +140,8 @@ public: // gui
     return true;
   }
 
-  //----------
-
 };
 
-//----------------------------------------------------------------------
-//
-//
-//
 //----------------------------------------------------------------------
 
 #include "plugin/mip_registry.h"
