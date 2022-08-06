@@ -24,16 +24,15 @@ typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 
 struct MIP_WidgetLayout {
   uint32_t    alignment   = MIP_WIDGET_ALIGN_PARENT;      // alignment relative to parent
-  double      scale       = 1.0;
-  double      aspectRatio = -1;
-  uint32_t    sizeModeX   = MIP_WIDGET_SIZE_MODE_PIXELS;
-  uint32_t    sizeModeY   = MIP_WIDGET_SIZE_MODE_PIXELS;
-  //uint32_t    vertMode    = 0;
+  double      scale       = 1.0;                          // scale children (incl burder & spacing)
+  double      aspectRatio = -1;                           // if > 0, force aspect ratio (scale down)
+  uint32_t    sizeModeX   = MIP_WIDGET_SIZE_MODE_PIXELS;  // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
+  uint32_t    sizeModeY   = MIP_WIDGET_SIZE_MODE_PIXELS;  // y,h - --"--
   MIP_DRect   baseRect    = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   border      = MIP_DRect(0,0,0,0);           // inner border
   MIP_DPoint  spacing     = MIP_DPoint(0,0);              // spacing between child widgets
-  MIP_DPoint  minSize     = MIP_DPoint(0,0);
-  MIP_DPoint  maxSize     = MIP_DPoint(999999,999999);
+  MIP_DPoint  minSize     = MIP_DPoint(0,0);              // minimum size
+  MIP_DPoint  maxSize     = MIP_DPoint(999999,999999);    // maximum size
 };
 
 //----------
@@ -78,7 +77,6 @@ protected:
   MIP_DRect         MContentRect  = {0};
   int32_t           MIndex        = 0;
   uint32_t          MMouseCursor  = MIP_CURSOR_DEFAULT;
-  //MIP_Parameter*    MParameters[MIP_MAX_PARAMETERS_PER_WIDGET] = {0};
   MIP_Parameter*    MParameter    = {0};
 
 //------------------------------
@@ -130,12 +128,7 @@ public:
   virtual double          getWidgetHeight() { return MRect.h; }
   virtual int32_t         getWidgetIndex()  { return MIndex; }
 
-  // ???
-
-  //#ifndef MIP_NO_GUI
-  //virtual MIP_Parameter*  getParameter(uint32_t AIndex=0)    { return MParameters[0]; }
   virtual MIP_Parameter*  getParameter()    { return MParameter; }
-  //#endif
 
   bool isInteractive()  { return Flags.interactive; }
   bool isDirty()        { return Flags.dirty; }
@@ -154,20 +147,7 @@ public:
   virtual void setWidgetHeight(double AHeight)              { MRect.h = AHeight; }
   virtual void setWidgetindex(int32_t AIndex)               { MIndex = AIndex; }
 
-  //#ifndef MIP_NO_GUI
-  //virtual void setParameter(MIP_Parameter* AParameter, uint32_t AIndex=0) { MParameters[AIndex] = AParameter; }
   virtual void setParameter(MIP_Parameter* AParameter) { MParameter = AParameter; }
-  //#endif
-
-  //virtual void setWidgetPos(double AXpos, double AYpos) {
-  //  MRect.x = AXpos;
-  //  MRect.y = AYpos;
-  //}
-
-  //virtual void setWidgetWidth(double AWidth, double AHeight) {
-  //  MRect.w = AWidth;
-  //  MRect.h = AHeight;
-  //}
 
 //------------------------------
 public: // parent to child
@@ -359,11 +339,11 @@ public: // hierarchy
 
         child_rect.scale(Layout.scale);
 
-        // ratio
+        // size mode
 
         switch (child->Layout.sizeModeX) {
-          //case MIP_WIDGET_SIZE_MODE_PIXELS:
-          //  break;
+          case MIP_WIDGET_SIZE_MODE_PIXELS:
+            break;
           case MIP_WIDGET_SIZE_MODE_RATIO:
             child_rect.x *= client_rect.w;
             child_rect.w *= client_rect.w;
@@ -373,8 +353,8 @@ public: // hierarchy
         }
 
         switch (child->Layout.sizeModeY) {
-          //case MIP_WIDGET_SIZE_MODE_PIXELS:
-          //  break;
+          case MIP_WIDGET_SIZE_MODE_PIXELS:
+            break;
           case MIP_WIDGET_SIZE_MODE_RATIO:
             child_rect.y *= client_rect.h;
             child_rect.h *= client_rect.h;
@@ -440,6 +420,22 @@ public: // hierarchy
             break;
           }
 
+          case MIP_WIDGET_ALIGN_CENTER:
+            child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+            child_rect.y = client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+            break;
+
+          case MIP_WIDGET_ALIGN_CENTER_HORIZ:
+            child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+            break;
+
+          case MIP_WIDGET_ALIGN_CENTER_VERT:
+            child_rect.y = client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+            break;
+
+          //-----
+
+
         } // switch
 
         // aspect
@@ -448,10 +444,18 @@ public: // hierarchy
           if (child_rect.h > 0) {
             double aspect = child_rect.w / child_rect.h;
             if (aspect >= child->Layout.aspectRatio) {
-              child_rect.w = child_rect.h * child->Layout.aspectRatio;
+              double w_prev = child_rect.w;
+              double w_new = child_rect.h * child->Layout.aspectRatio;
+              //child_rect.w = child_rect.h * child->Layout.aspectRatio;
+              child_rect.x += (w_prev - w_new) * 0.5;
+              child_rect.w = w_new;
             }
             else {
-              child_rect.h = child_rect.w / child->Layout.aspectRatio;
+              double h_prev = child_rect.h;
+              double h_new = child_rect.w / child->Layout.aspectRatio;
+              //child_rect.h = child_rect.w / child->Layout.aspectRatio;
+              child_rect.y += (h_prev - h_new) * 0.5;
+              child_rect.h = h_new;
             }
           } // h > 0
         } // aspect > 0

@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1659643708 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../source/test/test_editor3.cpp"
+1659812105 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/plugins/gain.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
@@ -687,7 +687,7 @@
 1656614747 /DISKS/sda2/code/git/MIP2/include/extern/clap/ext/draft/transport-control.h
 	"../../plugin.h"
 
-1659696623 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
+1659810109 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
 	"mip.h"
 	"base/types/mip_queue.h"
 	"plugin/mip_audio_port.h"
@@ -706,7 +706,7 @@
 	"base/types/mip_array.h"
 	"plugin/clap/mip_clap.h"
 
-1659745103 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
+1659781899 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
 	"mip.h"
 	"gui/mip_window.h"
 	"base/system/mip_timer.h"
@@ -783,7 +783,7 @@
 	"gui/mip_drawable.h"
 	"gui/xcb/mip_xcb.h"
 
-1659774859 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1659813836 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"gui/mip_paint_context.h"
 	"plugin/mip_parameter.h"
@@ -1083,7 +1083,7 @@
 	"mip.h"
 	"base/utils/mip_rgba.h"
 
-1659741374 /DISKS/sda2/code/git/MIP2/source/test/test_editor3.cpp
+1659809515 /DISKS/sda2/code/git/MIP2/source/test/test_editor3.cpp
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
 	"gui/widgets/mip_widgets.h"
@@ -1150,7 +1150,7 @@
 1659400720 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage/sa_botage_params.h
 	"mip.h"
 
-1659458411 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob2_widget.h
+1659814571 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob2_widget.h
 	"mip.h"
 	"gui/widgets/mip_panel_widget.h"
 	"gui/widgets/mip_text_widget.h"
@@ -1160,6 +1160,14 @@
 1659514876 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage/sa_botage_widgets.h
 
 1659643632 /DISKS/sda2/code/git/MIP2/source/plugins/template.cpp
+	"plugin/mip_plugin.h"
+	"plugin/mip_editor.h"
+	"gui/widgets/mip_widgets.h"
+	"plugin/mip_registry.h"
+	"plugin/clap/mip_clap_entry.h"
+	"plugin/exe/mip_exe_entry.h"
+
+1659815831 /DISKS/sda2/code/git/MIP2/source/plugins/gain.cpp
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
 	"gui/widgets/mip_widgets.h"

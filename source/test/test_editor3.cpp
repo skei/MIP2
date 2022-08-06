@@ -69,6 +69,7 @@ private:
   MIP_ButtonRowWidget*  buttonrow1  = nullptr;
   MIP_MenuWidget*       menu1       = nullptr;
   MIP_KnobWidget*       knob1       = nullptr;
+  MIP_Knob2Widget*      knob2       = nullptr;
   //MIP_ImageWidget*      image1      = nullptr;
   MIP_WaveformWidget*   waveform1   = nullptr;
   MIP_GridWidget*       grid1       = nullptr;
@@ -91,40 +92,6 @@ public:
   virtual ~test_editor3_editor() {
     //MIP_PRINT;
   }
-
-//------------------------------
-public: // menu listener
-//------------------------------
-
-  //TODO: call plugin..
-
-  //void on_menu_selected(int32_t AIndex) override {
-  //  MIP_Print("index %i\n",AIndex);
-  //}
-
-//------------------------------
-public:
-//------------------------------
-
-//  bool show() override {
-//    bool result = MIP_Editor::show();
-//    //timer.start(50);
-//    return result;
-//  }
-//
-//  //----------
-//
-//  bool hide() override {
-//    //timer.stop();
-//    bool result = MIP_Editor::hide();
-//    return result;
-//  }
-
-  //----------
-
-  //void on_timerCallback() final {
-  //  //do_widget_redraw(image1);
-  //}
 
 //------------------------------
 public:
@@ -252,6 +219,13 @@ public:
     knob1->setDrawBorder(false);
     center_panel->appendChildWidget(knob1);
 
+    knob2 = new MIP_Knob2Widget(MIP_DRect(10,60,42,75),"Knob",0.3);
+    //waveform1->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+    knob2->setFillBackground(true);
+    knob2->setFillGradient(true);
+    knob2->setDrawBorder(true);
+    center_panel->appendChildWidget(knob2);
+
     //image1      = new MIP_ImageWidget(      MIP_DRect( 170, 10, 320,240), voxelbuffer, 320,240);
     //background->appendChildWidget(image1);
 
@@ -277,8 +251,8 @@ public:
 //----------------------------------------------------------------------
 
 class test_editor3_plugin
-: public MIP_Plugin
-/*, public MIP_MenuListener*/ {
+: public MIP_Plugin {
+
 //------------------------------
 private:
 //------------------------------
@@ -325,9 +299,8 @@ public:
 
   //----------
 
-  virtual ~test_editor3_plugin() {
-    //MIP_PRINT;
-  }
+  //virtual ~test_editor3_plugin() {
+  //}
 
 //------------------------------
 public: // plugin
@@ -346,38 +319,6 @@ public: // plugin
     return true;
   }
 
-  //bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) final {
-  //  return true;
-  //}
-
-  //bool start_processing() final {
-  //  return true;
-  //}
-
-  //----------
-
-  //void preProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
-  //void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
-  //void processEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
-  //void processEvent(const clap_event_header_t* header) final {}
-
-  //void processNoteOnEvent(const clap_event_note_t* event) final {}
-  //void processNoteOffEvent(const clap_event_note_t* event) final {}
-  //void processNoteChokeEvent(const clap_event_note_t* event) final {}
-  //void processNoteEndEvent(const clap_event_note_t* event) final {}
-  //void processNoteExpressionEvent(const clap_event_note_expression_t* event) final {}
-  //void processParamValueEvent(const clap_event_param_value_t* event) final {}
-  //void processParamModEvent(const clap_event_param_mod_t* event) final {}
-  //void processParamGestureBeginEvent(const clap_event_param_gesture_t* event) final {}
-  //void processParamGestureEndEvent(const clap_event_param_gesture_t* event) final {}
-  //void processTransportEvent(const clap_event_transport_t* event) final {}
-  //void processMidiEvent(const clap_event_midi_t* event) final {}
-  //void processMidiSysexEvent(const clap_event_midi_sysex_t* event) final {}
-  //void processMidi2Event(const clap_event_midi2_t* event) final {}
-
-  //void processAudioBlock(const clap_process_t* process) final { MIP_PRINT; }
-  //void processTransport(const clap_event_transport_t* transport) final {}
-
 //------------------------------
 public: // gui
 //------------------------------
@@ -386,33 +327,6 @@ public: // gui
     MEditor = new test_editor3_editor(this,MEditorWidth,MEditorHeight);
     return true;
   }
-
-  //----------
-
-  void gui_destroy() override {
-    //MIP_PRINT;
-    MGuiTimer.stop();
-    delete MEditor;
-    MEditor = nullptr;
-  }
-
-//  bool gui_show() override {
-//    bool result = MIP_Plugin::gui_show();
-//    return result;
-//  }
-//
-//  bool gui_hide() override {
-//    bool result = MIP_Plugin::gui_hide();
-//    return result;
-//  }
-
-//------------------------------
-public: // menu listener
-//------------------------------
-
-//  void on_menu_selected(int32_t AIndex) override {
-//    MIP_Print("index %i\n",AIndex);
-//  }
 
 };
 

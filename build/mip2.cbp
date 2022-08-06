@@ -348,6 +348,10 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/plugins/gain.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../source/plugins/sa_botage.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -368,19 +372,7 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/test/test_editor.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/test/test_editor2.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
 		<Unit filename="../source/test/test_editor3.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/test/test_widget.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

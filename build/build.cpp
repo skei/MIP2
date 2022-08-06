@@ -7,7 +7,7 @@
 //
 //----------------------------------------------------------------------
 
-#include "../source/test/test_editor3.cpp"
+//#include "../source/test/test_editor3.cpp"
 
 //----------------------------------------------------------------------
 //
@@ -28,4 +28,6 @@
 //#include "../source/plugins/sa_ladspa_wrapper.cpp"
 
 //#include "../source/plugins/template.cpp"
+
+#include "../source/plugins/gain.cpp"
 

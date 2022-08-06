@@ -34,32 +34,45 @@ public:
   MIP_Knob2Widget(MIP_DRect ARect, const char* AText, double AValue)
   : MIP_PanelWidget(ARect) {
 
-    //setFillBackground(false);
-    setFillGradient(false);
-    //setDrawBorder(false);
-    //setDrawRoundedCorners(false);
-    //setCornerRadius(4);
+    setFillBackground(true);
+    setFillGradient(true);
 
-    MLabelWidget  = new MIP_TextWidget( MIP_DRect( 5, 3,      32,16 ), AText );
-    MKnobWidget   = new MIP_KnobWidget( MIP_DRect( 5, 5 + 16, 32,32 ), "", 0.0 );
-    MValueWidget  = new MIP_TextWidget( MIP_DRect( 5, 7 + 48, 32,16 ), "0.00" );
+    setDrawBorder(true);
+    setDrawRoundedCorners(true);
+    setCornerRadius(4);
+
+    Layout.border = MIP_DRect(5,5,5,5);
+
+    MLabelWidget  = new MIP_TextWidget( MIP_DRect( 0.8, (1.0/6.0) ), AText );
+    MValueWidget  = new MIP_TextWidget( MIP_DRect( 0.8, (1.0/6.0) ), AText );
+    MKnobWidget   = new MIP_KnobWidget( MIP_DRect(), "", 0.0 );
 
     appendChildWidget(MLabelWidget);
     appendChildWidget(MValueWidget);
     appendChildWidget(MKnobWidget);
 
-    MLabelWidget->setFillBackground(false);
-    MLabelWidget->setDrawBorder(false);
-    MLabelWidget->setTextSize(10);
+    //MLabelWidget->setFillBackground(false);
+    //MLabelWidget->setDrawBorder(false);
+    MLabelWidget->setTextSize(-1);
     MLabelWidget->setTextColor(MIP_COLOR_BLACK);
+    MLabelWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    MLabelWidget->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
+    MLabelWidget->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
 
-    MKnobWidget->setFillBackground(false);
-    MKnobWidget->setDrawBorder(false);
-
-    MValueWidget->setFillBackground(false);
-    MValueWidget->setDrawBorder(false);
-    MValueWidget->setTextSize(10);
+    //MValueWidget->setFillBackground(false);
+    //MValueWidget->setDrawBorder(false);
+    MValueWidget->setTextSize(-1);
     MValueWidget->setTextColor(MIP_COLOR_BLACK);
+    MValueWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
+    MValueWidget->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
+    MValueWidget->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
+
+    sprintf(MKnobValueText,"%.2f",getValue());
+    MValueWidget->setText(MKnobValueText);
+
+    //MKnobWidget->setFillBackground(false);
+    //MKnobWidget->setDrawBorder(false);
+    MKnobWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
 
   }
 

@@ -1215,10 +1215,7 @@ public: // timer listener
 
   void on_timerCallback(MIP_Timer* ATimer) override {
     if (ATimer == &MGuiTimer) {
-      //sa_botage_editor* editor = (sa_botage_editor*)MEditor;
-      //editor->timer(&MProcess);
       if (MEditor) {
-        //MIP_PRINT;
         flushGuiParams();
         flushGuiMods();
       }
