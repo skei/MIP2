@@ -36,7 +36,7 @@ typedef MIP_ImplementedWindow MIP_BasicWindow;
 
 class MIP_Window
 : public MIP_ImplementedWindow
-, public MIP_TimerListener
+//, public MIP_TimerListener
 , public MIP_Widget {
 
 //------------------------------
@@ -54,11 +54,14 @@ protected:
 
   // click
 
+  MIP_Widget*       MMouseClickedW      = nullptr;
   int32_t           MMouseClickedX      = 0;
   int32_t           MMouseClickedY      = 0;
   uint32_t          MMouseClickedB      = 0;
   uint32_t          MMouseClickedS      = 0;
   uint32_t          MMouseClickedT      = 0;
+
+  uint32_t MPrevClickTime = 0;
 
   // drag
 
@@ -139,8 +142,11 @@ public:
 public: // timer
 //------------------------------
 
-//  void on_timerCallback(MIP_Timer* ATimer) override {
-//  }
+  /*
+  void on_timerCallback(MIP_Timer* ATimer) override {
+    MIP_PRINT;
+  }
+  */
 
 //------------------------------
 public: // window
@@ -220,7 +226,7 @@ public: // window
 
   //----------
 
-  void on_window_mouse_press(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
+  void on_window_mouse_click(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     MMouseClickedX  = AXpos;
     MMouseClickedY  = AYpos;
     MMouseClickedB  = AButton;
@@ -230,9 +236,18 @@ public: // window
     MMousePrevY     = AYpos;
     MMouseDragX     = AXpos;
     MMouseDragY     = AYpos;
+    int32_t elapsed = (ATime - MPrevClickTime);
+    bool dblclick = (elapsed < MIP_WINDOW_DBLCLICK_MS);
+    MPrevClickTime = ATime;
     if (MHoverWidget != this) {
-      MClickedWidget = MHoverWidget;
-      MHoverWidget->on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
+      if (dblclick && MHoverWidget->Flags.doubleClick) {
+        MClickedWidget = MHoverWidget;
+        MHoverWidget->on_widget_mouse_dblclick(AButton,AState,AXpos,AYpos,ATime);
+      }
+      else {
+        MClickedWidget = MHoverWidget;
+        MHoverWidget->on_widget_mouse_click(AButton,AState,AXpos,AYpos,ATime);
+      }
     }
   }
 
@@ -266,7 +281,6 @@ public: // window
     else {
       updateHoverWidget(AXpos,AYpos,ATime);
       if (MClickedWidget) MClickedWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
-
     }
     MMousePrevX = AXpos;
     MMousePrevY = AYpos;
@@ -314,7 +328,7 @@ public: // parent to child
 //  void on_widget_paint(MIP_PaintContext* AContext) override {}
 //  void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) override {}
 //  void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) override {}
-//  void on_widget_mouse_press(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) override {}
+//  void on_widget_mouse_click(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) override {}
 //  void on_widget_mouse_release(uint32_t AButton, uint32_t AState, MIP_DPoint APos, uint32_t ATime) override {}
 //  void on_widget_mouse_move(uint32_t AState, MIP_DPoint APos, uint32_t ATime) override {}
 //  void on_widget_enter(MIP_DPoint APos, uint32_t ATime) override {}

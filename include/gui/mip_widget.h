@@ -43,7 +43,7 @@ struct MIP_WidgetFlags {
   bool interactive    = false;
   bool visible        = true;
   bool captureMouse   = true;
-  bool doubleClick    = false;
+  bool doubleClick    = true;//false;
   bool autoSetCursor  = true;
   bool autoHideCursor = false;
   bool autoLockCursor = false;
@@ -181,11 +181,13 @@ public: // parent to child
   virtual void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
 
-  virtual void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
+  virtual void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
 
-  virtual void on_widget_mouse_dblclick(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
+  virtual void on_widget_mouse_dblclick(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {
+    MIP_PRINT;
+  }
 
   virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {
     if (Flags.autoSetCursor) do_widget_cursor(this,MMouseCursor);
@@ -194,11 +196,9 @@ public: // parent to child
   virtual void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) {
   }
 
-  //virtual void on_widget_connect(MIP_Parameter* AParameter) {
-  //}
+  //virtual void on_widget_connect(MIP_Parameter* AParameter) {}
 
-  virtual void on_widget_unmodal() {
-  }
+  virtual void on_widget_unmodal() {}
 
 //------------------------------
 public: // child to parent

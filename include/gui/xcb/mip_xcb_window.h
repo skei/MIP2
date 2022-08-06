@@ -984,7 +984,7 @@ private: // events
         uint32_t ts = button_press->time;
         b = remapButton(b,s);
         s = remapState(s);
-        /*if (MWindowListener) MWindowListener->*/on_window_mouse_press(b,s,x,y,ts);
+        /*if (MWindowListener) MWindowListener->*/on_window_mouse_click(b,s,x,y,ts);
         break;
       }
 

@@ -177,7 +177,7 @@ public: // parent to child
 //  void on_widget_paint(MIP_PaintContext* AContext) override { paintChildWidgets(AContext); }
 //  void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) override {}
 //  void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) override {}
-//  void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {}
+//  void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {}
 //  void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {}
 //  void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {}
 //  void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) override {}
@@ -289,7 +289,7 @@ public:
     - has selection -> move
   */
 
-  void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATimeStamp=0) override {
+  void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATimeStamp=0) override {
     float xcell = ( MRect.w / (float)MNumColumns );
     float ycell = ( MRect.h / (float)MNumRows );
     int32_t x = floorf( (float)(AXpos - MRect.x) / xcell );

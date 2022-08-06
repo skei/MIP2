@@ -57,8 +57,9 @@ public:
   virtual void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
   virtual void on_window_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
   virtual void on_window_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
-  virtual void on_window_mouse_press(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) {}
+  virtual void on_window_mouse_click(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) {}
   virtual void on_window_mouse_release(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) {}
+  virtual void on_window_mouse_dblclick(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) {}
   virtual void on_window_mouse_move(uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) {}
   virtual void on_window_enter(int32_t AXpos, int32_t AYpos, uint32_t ATime) {}
   virtual void on_window_leave(int32_t AXpos, int32_t AYpos, uint32_t ATime) {}

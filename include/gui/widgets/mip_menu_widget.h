@@ -69,7 +69,7 @@ public: // parent to child
   //  drawBorder(AContext);
   //}
 
-  void on_widget_mouse_press(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
+  void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
 
     //MIP_Window* window = (MIP_Window*)do_widget_get_window(this);
     //if (window) {
@@ -81,7 +81,7 @@ public: // parent to child
       //do_widget_modal(nullptr);
     }
     else {
-      MIP_PanelWidget::on_widget_mouse_press(AButton,AState,AXpos,AYpos,ATime);
+      MIP_PanelWidget::on_widget_mouse_click(AButton,AState,AXpos,AYpos,ATime);
     }
   }
 
