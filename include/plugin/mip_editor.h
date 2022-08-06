@@ -121,12 +121,26 @@ public: // clap gui
   //----------
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    //MIP_PRINT;
+    MIP_PRINT;
     MEditorWidth = width;
     MEditorHeight = height;
+
+    // hack..
+    // this should have been in the wndoow lass..
+    // but there were/are some issues getting resize events..
+
+    if (MModalWidget) {
+      MIP_Print("MModalWidget\n");
+      MModalWidget->on_widget_unmodal();
+    }
+
+    //
+
+    //MIP_Window::on_window_resize(width,height);
     setWidgetSize(width,height);
-    setWindowSize(width,height);
     alignChildWidgets();
+
+    setWindowSize(width,height);
     return true;
   }
 

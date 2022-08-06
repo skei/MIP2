@@ -87,9 +87,10 @@ public: // parent to child
 
   //----------
 
-  //void on_widget_unmodal() override {
-  //  MIP_Print("unmodal\n");
-  //}
+  void on_widget_unmodal() override {
+    MIP_Print("unmodal\n");
+    close(true);
+  }
 
 //------------------------------
 public: // child to parent

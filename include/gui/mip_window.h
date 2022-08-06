@@ -173,13 +173,14 @@ public: // window
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    MIP_Print("%i,%i\n",AWidth,AHeight);
-    delete MWindowPainter;
-    MWindowPainter = new MIP_Painter(this,this);
-    MPaintContext.painter = MWindowPainter;
+    MIP_Print("%i,%i MWindowPainter: %p\n",AWidth,AHeight,MWindowPainter);
+    if (MWindowPainter) {
+      delete MWindowPainter;
+      MWindowPainter = new MIP_Painter(this,this);
+      MPaintContext.painter = MWindowPainter;
+    }
     MRect.setSize(AWidth,AHeight);
     alignChildWidgets();
-
   }
 
   //----------

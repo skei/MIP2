@@ -197,8 +197,8 @@ public: // parent to child
   //virtual void on_widget_connect(MIP_Parameter* AParameter) {
   //}
 
-  //virtual void on_widget_unmodal() {
-  //}
+  virtual void on_widget_unmodal() {
+  }
 
 //------------------------------
 public: // child to parent
