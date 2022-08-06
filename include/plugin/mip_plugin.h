@@ -96,11 +96,13 @@ public:
 
   MIP_Plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_ClapPlugin(ADescriptor) {
+    //MIP_PRINT;
   }
 
   //----------
 
   virtual ~MIP_Plugin() {
+    //MIP_PRINT;
     #ifndef MIP_NO_AUTODELETE
       deleteParameters();
     #endif
@@ -111,17 +113,20 @@ public: // clap plugin
 //------------------------------
 
   bool init() override {
+    //MIP_PRINT;
     return true;
   }
 
   //----------
 
   void destroy() override {
+    //MIP_Print("MEditor: %p\n",MEditor);
   }
 
   //----------
 
   bool activate(double sample_rate, uint32_t min_frames_count, uint32_t max_frames_count) override {
+    //MIP_PRINT;
     MProcessContext.samplerate = sample_rate;
     return true;
   }
@@ -129,22 +134,26 @@ public: // clap plugin
   //----------
 
   void deactivate() override {
+    //MIP_PRINT;
   }
 
   //----------
 
   bool start_processing() override {
+    //MIP_PRINT;
     return true;
   }
 
   //----------
 
   void stop_processing() override {
+    //MIP_PRINT;
   }
 
   //----------
 
   void reset() override {
+    //MIP_PRINT;
   }
 
   //----------
@@ -193,6 +202,7 @@ public: // clap plugin
   //----------
 
   void on_main_thread() override {
+    //MIP_PRINT;
   }
 
 //------------------------------

@@ -65,7 +65,11 @@ public:
 
   virtual ~MIP_Editor() {
     //MIP_PRINT;
-    if (MIsEditorOpen) hide();
+
+    if (MIsEditorOpen) {
+      hide();
+    }
+
     //MIP_PRINT;
     //free(MParameterToWidget);
   }
@@ -121,7 +125,7 @@ public: // clap gui
   //----------
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    MIP_PRINT;
+    //MIP_PRINT;
     MEditorWidth = width;
     MEditorHeight = height;
 
@@ -130,7 +134,7 @@ public: // clap gui
     // but there were/are some issues getting resize events..
 
     if (MModalWidget) {
-      MIP_Print("MModalWidget\n");
+      //MIP_Print("MModalWidget\n");
       MModalWidget->on_widget_unmodal();
     }
 

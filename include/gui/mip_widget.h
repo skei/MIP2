@@ -43,7 +43,7 @@ struct MIP_WidgetFlags {
   bool interactive    = false;
   bool visible        = true;
   bool captureMouse   = true;
-  bool doubleClick    = true;//false;
+  bool doubleClick    = false;
   bool autoSetCursor  = true;
   bool autoHideCursor = false;
   bool autoLockCursor = false;
@@ -458,14 +458,8 @@ public: // hierarchy
 
         // min/max size
 
-
         child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
         child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
-
-        //if (child_rect.w < child->Layout.minSize.w) child_rect.w = child->Layout.minSize.w;
-        //if (child_rect.h < child->Layout.minSize.h) child_rect.h = child->Layout.minSize.h;
-        //if (child_rect.w > child->Layout.maxSize.w) child_rect.w = child->Layout.maxSize.w;
-        //if (child_rect.h > child->Layout.maxSize.h) child_rect.h = child->Layout.maxSize.h;
 
         // update
 

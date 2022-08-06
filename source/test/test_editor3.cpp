@@ -89,6 +89,7 @@ public:
   //----------
 
   virtual ~test_editor3_editor() {
+    //MIP_PRINT;
   }
 
 //------------------------------
@@ -317,7 +318,7 @@ public:
 
   test_editor3_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
-    MIP_PRINT;
+    //MIP_PRINT;
     MEditorWidth = 500;
     MEditorHeight = 400;
   }
@@ -325,6 +326,7 @@ public:
   //----------
 
   virtual ~test_editor3_plugin() {
+    //MIP_PRINT;
   }
 
 //------------------------------
@@ -339,10 +341,8 @@ public: // plugin
     for (uint32_t i=0; i<PARAM_COUNT; i++) {
       appendParameter( new MIP_Parameter(&myParameters[i]) );
     }
-
     MIP_Parameter* param4 = new MIP_Parameter(0,"param4","",-1,1,0,CLAP_PARAM_IS_AUTOMATABLE);
     appendParameter(param4);
-
     return true;
   }
 
@@ -390,7 +390,10 @@ public: // gui
   //----------
 
   void gui_destroy() override {
+    //MIP_PRINT;
+    MGuiTimer.stop();
     delete MEditor;
+    MEditor = nullptr;
   }
 
 //  bool gui_show() override {
