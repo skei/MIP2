@@ -37,10 +37,8 @@ public:
 
   virtual void beginPaint(int32_t AWidth, int32_t AHeight) {}
   virtual void endPaint() {}
-
+  //virtual void resize(uint32_t AWidth, uint32_t AHeight) {}
   virtual void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) {}
-
-
 
 };
 

@@ -79,7 +79,7 @@ public: // clap gui
 //------------------------------
 
   virtual bool setScale(double scale) {
-    //MIP_PRINT;
+    MIP_PRINT;
     MEditorScale = scale;
     return true;
   }
@@ -87,7 +87,7 @@ public: // clap gui
   //----------
 
   virtual bool getSize(uint32_t *width, uint32_t *height) {
-    //MIP_PRINT;
+    MIP_PRINT;
     *width = MEditorWidth;
     *height = MEditorHeight;
     return true;
@@ -96,14 +96,14 @@ public: // clap gui
   //----------
 
   virtual bool canResize() {
-    //MIP_PRINT;
+    MIP_PRINT;
     return true;
   }
 
   //----------
 
   virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
-    //MIP_PRINT;
+    MIP_PRINT;
     hints->can_resize_horizontally  = true;
     hints->can_resize_vertically    = true;
     hints->aspect_ratio_width       = 16;
@@ -115,7 +115,7 @@ public: // clap gui
   //----------
 
   virtual bool adjustSize(uint32_t *width, uint32_t *height) {
-    //MIP_PRINT;
+    MIP_PRINT;
     //*width = MWidth;
     //*height = MHeight;
     //return true;
@@ -125,7 +125,7 @@ public: // clap gui
   //----------
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    //MIP_PRINT;
+    MIP_PRINT;
     MEditorWidth = width;
     MEditorHeight = height;
 
@@ -151,7 +151,7 @@ public: // clap gui
   //----------
 
   virtual bool setParent(const clap_window_t *window) {
-    //MIP_PRINT;
+    MIP_PRINT;
     reparentWindow(window->x11);
     return true;
   }
@@ -159,21 +159,21 @@ public: // clap gui
   //----------
 
   virtual bool setTransient(const clap_window_t *window) {
-    //MIP_PRINT;
+    MIP_PRINT;
     return true;
   }
 
   //----------
 
   virtual void suggestTitle(const char *title) {
-    //MIP_PRINT;
+    MIP_PRINT;
     setWindowTitle(title);
   }
 
   //----------
 
   virtual bool show() {
-    //MIP_PRINT;
+    MIP_PRINT;
     if (!MIsEditorOpen) {
       openWindow();
       MIsEditorOpen = true;
@@ -185,7 +185,7 @@ public: // clap gui
   //----------
 
   virtual bool hide() {
-    //MIP_PRINT;
+    MIP_PRINT;
     if (MIsEditorOpen) {
       MIsEditorOpen = false;
       stopEventThread();

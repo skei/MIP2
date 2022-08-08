@@ -245,6 +245,7 @@ private:
   GLXContext createContext(GLXFBConfig fbconfig) {
     //MIP_PRINT;
     GLXContext context = glXCreateNewContext(MDisplay,fbconfig,GLX_RGBA_TYPE,nullptr,True);
+    MIP_Assert(context);
     loadOpenGL();
     return context;
   }
@@ -262,7 +263,7 @@ private:
   // should this be done per window/context, or once per program/library?
 
   bool loadOpenGL() {
-    //MIP_PRINT;
+    MIP_Print("calling sogl_loadOpenGL\n");
     if (!sogl_loadOpenGL()) {
       MIP_Print("Error: sogl_loadOpenGL:\n");
       const char** failures = sogl_getFailures();

@@ -148,8 +148,8 @@ public: // gui
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-#include "plugin/vst2/mip_vst2_entry.h"
-#include "plugin/vst3/mip_vst3_entry.h"
+//#include "plugin/vst2/mip_vst2_entry.h"
+//#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 
