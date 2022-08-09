@@ -30,6 +30,7 @@ struct MIP_WidgetLayout {
   uint32_t    sizeModeY   = MIP_WIDGET_SIZE_MODE_PIXELS;  // y,h - --"--
   MIP_DRect   baseRect    = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   border      = MIP_DRect(0,0,0,0);           // inner border
+  MIP_DRect   extraBorder = MIP_DRect(0,0,0,0);           // additional border
   MIP_DPoint  spacing     = MIP_DPoint(0,0);              // spacing between child widgets
   MIP_DPoint  minSize     = MIP_DPoint(0,0);              // minimum size
   MIP_DPoint  maxSize     = MIP_DPoint(999999,999999);    // maximum size
@@ -71,6 +72,7 @@ protected:
 //------------------------------
 
   const char*       MName         = "MIP_Widget";
+  MIP_Widget*       MOwnerWindow  = nullptr;
   MIP_Widget*       MParent       = nullptr;
   MIP_WidgetArray   MChildren     = {};
   MIP_DRect         MRect         = {0};
@@ -78,6 +80,7 @@ protected:
   int32_t           MIndex        = 0;
   uint32_t          MMouseCursor  = MIP_CURSOR_DEFAULT;
   MIP_Parameter*    MParameter    = {0};
+  //MIP_Skin*         MSkin         = nullptr;
 
 //------------------------------
 public:
@@ -132,6 +135,9 @@ public:
 
   bool isInteractive()  { return Flags.interactive; }
   bool isDirty()        { return Flags.dirty; }
+
+  MIP_DRect getRect() { return MRect; }
+  MIP_DRect getContentRect() { return MContentRect; }
 
 //------------------------------
 public:
@@ -246,7 +252,7 @@ public:
 public: // hierarchy
 //------------------------------
 
-  MIP_Widget* appendChildWidget(MIP_Widget* AChild) {
+  virtual MIP_Widget* appendChildWidget(MIP_Widget* AChild) {
     int32_t index = MChildren.size();
     AChild->MIndex = index;
     AChild->MParent = this;
@@ -257,7 +263,7 @@ public: // hierarchy
 
   //----------
 
-  void deleteChildWidgets() {
+  virtual void deleteChildWidgets() {
     uint32_t num = 0;
     num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
@@ -270,7 +276,7 @@ public: // hierarchy
 
   //----------
 
-  void scaleChildWidgets(double AScale, bool ARecursive=true) {
+  virtual void scaleChildWidgets(double AScale, bool ARecursive=true) {
     uint32_t num = 0;
     num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
@@ -282,12 +288,11 @@ public: // hierarchy
     }
   }
 
-  #if 0
   virtual void scrollChildren(float AOffsetX, float AOffsetY) {
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* child = MChildren[i];
-      if (child->state.visible) {
+      if (child->Flags.visible) {
         //child->setChildrenOffset(AOffsetX,AOffsetY);
         child->MRect.x += AOffsetX;
         child->MRect.y += AOffsetY;
@@ -309,6 +314,7 @@ public: // hierarchy
 
   //----------
 
+  /*
   virtual void setSkin(MIP_Skin* ASkin, bool ARecursive=true) {
     MSkin = ASkin;
     if (ARecursive) {
@@ -319,14 +325,13 @@ public: // hierarchy
       }
     }
   }
-
-  #endif
+  */
 
   //----------
 
   // returns 'this' if not hovering over any child widget
 
-  MIP_Widget* findChildWidget(double AXpos, double AYpos) {
+  virtual MIP_Widget* findChildWidget(double AXpos, double AYpos) {
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* widget = MChildren[i];
@@ -343,7 +348,7 @@ public: // hierarchy
 
   //----------
 
-  void paintChildWidgets(MIP_PaintContext* AContext) {
+  virtual void paintChildWidgets(MIP_PaintContext* AContext) {
     //MIP_PRINT;
     MIP_DRect updaterect = AContext->updateRect;
     uint32_t num = MChildren.size();
@@ -361,22 +366,28 @@ public: // hierarchy
 
   //----------
 
-  void alignChildWidgets(bool ARecursive=true) {
+  virtual void alignChildWidgets(bool ARecursive=true) {
 
     // do some initialization
 
     MIP_DRect border = Layout.border;
-    border.scale(Layout.scale);
+    //border.scale(Layout.scale);
 
     MIP_DPoint spacing = Layout.spacing;
-    spacing.scale(Layout.scale);
+    //spacing.scale(Layout.scale);
 
     // content
 
     MContentRect = MRect;
-//    if (!Layout.contentBorder) content.shrink(layout.innerBorder);
+    /*if (!Layout.contentBorder)*/ MContentRect.shrink(border);
     //content.setPos(0,0);
     MContentRect.setSize(0,0);
+
+    MIP_DRect parent_rect = MRect;
+    parent_rect.shrink(border);
+
+    MIP_DRect client_rect = MRect;
+    client_rect.shrink(border);
 
     // stacking
 
@@ -387,12 +398,6 @@ public: // hierarchy
     uint32_t prev_alignment = MIP_WIDGET_ALIGN_NONE;
 
     //
-
-    MIP_DRect parent_rect = MRect;
-    parent_rect.shrink(border);
-
-    MIP_DRect client_rect = MRect;
-    client_rect.shrink(border);
 
     uint32_t num = MChildren.size();
 
@@ -405,437 +410,426 @@ public: // hierarchy
 
       for (uint32_t i=0; i<MChildren.size(); i++) {
         MIP_Widget* child = MChildren[i];
-
         if (child->Flags.visible) {
 
+          MIP_DRect child_rect = child->Layout.baseRect;
+          uint32_t  alignment = child->Layout.alignment;
 
 
+          // scale
 
+          child_rect.scale(Layout.scale);
 
+          // size mode
 
-
-        MIP_DRect child_rect = child->Layout.baseRect;
-        uint32_t  alignment = child->Layout.alignment;
-
-
-        // scale
-
-        child_rect.scale(Layout.scale);
-
-        // size mode
-
-        switch (child->Layout.sizeModeX) {
-          case MIP_WIDGET_SIZE_MODE_PIXELS:
-            break;
-          case MIP_WIDGET_SIZE_MODE_RATIO:
-            child_rect.x *= client_rect.w;
-            child_rect.w *= client_rect.w;
-            break;
-          case MIP_WIDGET_SIZE_MODE_SPREAD:
-            child_rect.w = child_width;
-        }
-
-        switch (child->Layout.sizeModeY) {
-          case MIP_WIDGET_SIZE_MODE_PIXELS:
-            break;
-          case MIP_WIDGET_SIZE_MODE_RATIO:
-            child_rect.y *= client_rect.h;
-            child_rect.h *= client_rect.h;
-            break;
-          case MIP_WIDGET_SIZE_MODE_SPREAD:
-            child_rect.h = child_height;
-            break;
-        }
-
-        //  if we were stacking, but isn't now..
-        // end stacking..
-
-        if (prev_alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) {
-          if (alignment != MIP_WIDGET_ALIGN_STACK_HORIZ) {
-            float h = (stacky + stack_highest + spacing.y);
-            client_rect.y += h;//(stacky + stack_highest + spacing.y);
-            client_rect.h -= h;//
-          }
-        }
-        if (prev_alignment == MIP_WIDGET_ALIGN_STACK_VERT) {
-          if (alignment != MIP_WIDGET_ALIGN_STACK_VERT) {
-            float w = (stackx + stack_widest + spacing.x);
-            client_rect.x += w;//(stackx + stack_widest + spacing.x);
-            client_rect.w -= w;
-
-          }
-        }
-
-        // start new stacking run
-
-        if (alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) {
-          if (prev_alignment != MIP_WIDGET_ALIGN_STACK_HORIZ) {
-            stackx = 0;
-            stacky = 0;
-            stack_highest = 0;
-            stack_widest = 0;
-          }
-        }
-        if (alignment == MIP_WIDGET_ALIGN_STACK_VERT) {
-          if (prev_alignment != MIP_WIDGET_ALIGN_STACK_VERT) {
-            stackx = 0;
-            stacky = 0;
-            stack_highest = 0;
-            stack_widest = 0;
-          }
-        }
-
-        //
-
-        prev_alignment = alignment;
-
-        // alignment
-
-        switch (child->Layout.alignment) {
-
-          case MIP_WIDGET_ALIGN_NONE: {
-            break;
+          switch (child->Layout.sizeModeX) {
+            case MIP_WIDGET_SIZE_MODE_PIXELS:
+              break;
+            case MIP_WIDGET_SIZE_MODE_RATIO:
+              child_rect.x *= client_rect.w;
+              child_rect.w *= client_rect.w;
+              break;
+            case MIP_WIDGET_SIZE_MODE_SPREAD:
+              child_rect.w = child_width;
           }
 
-          case MIP_WIDGET_ALIGN_PARENT: {
-            child_rect.x += parent_rect.x;
-            child_rect.y += parent_rect.y;
-            break;
+          switch (child->Layout.sizeModeY) {
+            case MIP_WIDGET_SIZE_MODE_PIXELS:
+              break;
+            case MIP_WIDGET_SIZE_MODE_RATIO:
+              child_rect.y *= client_rect.h;
+              child_rect.h *= client_rect.h;
+              break;
+            case MIP_WIDGET_SIZE_MODE_SPREAD:
+              child_rect.h = child_height;
+              break;
           }
 
-          case MIP_WIDGET_ALIGN_CLIENT: {
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y;
-            break;
+          //  if we were stacking, but isn't now..
+          // end stacking..
+
+          if (prev_alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) {
+            if (alignment != MIP_WIDGET_ALIGN_STACK_HORIZ) {
+              float h = (stacky + stack_highest + spacing.y);
+              client_rect.y += h;//(stacky + stack_highest + spacing.y);
+              client_rect.h -= h;//
+            }
+          }
+          if (prev_alignment == MIP_WIDGET_ALIGN_STACK_VERT) {
+            if (alignment != MIP_WIDGET_ALIGN_STACK_VERT) {
+              float w = (stackx + stack_widest + spacing.x);
+              client_rect.x += w;//(stackx + stack_widest + spacing.x);
+              client_rect.w -= w;
+
+            }
           }
 
-          //-----
+          // start new stacking run
 
-          case MIP_WIDGET_ALIGN_LEFT:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y;
-            //rect.h = client.h;
-            break;
-
-          case MIP_WIDGET_ALIGN_LEFT_TOP:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y;
-            break;
-
-          case MIP_WIDGET_ALIGN_LEFT_CENTER:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
-            break;
-
-          case MIP_WIDGET_ALIGN_LEFT_BOTTOM:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y2() - child_rect.h;
-            break;
-
-          //-----
-
-          case MIP_WIDGET_ALIGN_RIGHT:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y;
-            //rect.h = client_rect.h;
-            break;
-
-          case MIP_WIDGET_ALIGN_RIGHT_TOP:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y;
-            break;
-
-          case MIP_WIDGET_ALIGN_RIGHT_CENTER:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
-            break;
-
-          case MIP_WIDGET_ALIGN_RIGHT_BOTTOM:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y2() - child_rect.h;
-            break;
-
-          //-----
-
-          case MIP_WIDGET_ALIGN_TOP:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y;
-            //child_rect.w = client_rect.w;
-            break;
-
-          case MIP_WIDGET_ALIGN_TOP_LEFT:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y;
-            break;
-
-          case MIP_WIDGET_ALIGN_TOP_CENTER:
-            child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
-            child_rect.y += client_rect.y;
-            break;
-
-          case MIP_WIDGET_ALIGN_TOP_RIGHT:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y;
-            break;
-
-          //-----
-
-          case MIP_WIDGET_ALIGN_BOTTOM:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y2() - child_rect.h;
-            //rect.w = client.w;
-            break;
-
-          case MIP_WIDGET_ALIGN_BOTTOM_LEFT:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y2() - child_rect.h;
-            break;
-
-          case MIP_WIDGET_ALIGN_BOTTOM_CENTER:
-            child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
-            child_rect.y += client_rect.y2() - child_rect.h;
-            break;
-
-          case MIP_WIDGET_ALIGN_BOTTOM_RIGHT:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y2() - child_rect.h;
-            break;
-
-          //-----
-
-          case MIP_WIDGET_ALIGN_FILL_CLIENT: {
-            child_rect.x = client_rect.x;
-            child_rect.y = client_rect.y;
-            child_rect.w = client_rect.w;
-            child_rect.h = client_rect.h;
-            break;
+          if (alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) {
+            if (prev_alignment != MIP_WIDGET_ALIGN_STACK_HORIZ) {
+              stackx = 0;
+              stacky = 0;
+              stack_highest = 0;
+              stack_widest = 0;
+            }
+          }
+          if (alignment == MIP_WIDGET_ALIGN_STACK_VERT) {
+            if (prev_alignment != MIP_WIDGET_ALIGN_STACK_VERT) {
+              stackx = 0;
+              stacky = 0;
+              stack_highest = 0;
+              stack_widest = 0;
+            }
           }
 
-          //-----
+          //
 
-          case MIP_WIDGET_ALIGN_FILL_LEFT: {
-            child_rect.x = client_rect.x;
-            child_rect.y = client_rect.y;
-            child_rect.h = client_rect.h;
-            client_rect.x += (child_rect.w + spacing.x);
-            client_rect.w -= (child_rect.w + spacing.x);
-            break;
-          }
+          prev_alignment = alignment;
 
-          case MIP_WIDGET_ALIGN_FILL_LEFT_TOP:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y;
-            client_rect.x += (child_rect.w + spacing.x);
-            client_rect.w -= (child_rect.w + spacing.x);
-            break;
+          // alignment
 
-          case MIP_WIDGET_ALIGN_FILL_LEFT_CENTER:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
-            client_rect.x += (child_rect.w + spacing.x);
-            client_rect.w -= (child_rect.w + spacing.x);
-            break;
+          switch (child->Layout.alignment) {
 
-          case MIP_WIDGET_ALIGN_FILL_LEFT_BOTTOM:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y2() - child_rect.h;
-            client_rect.x += (child_rect.w + spacing.x);
-            client_rect.w -= (child_rect.w + spacing.x);
-            break;
+            case MIP_WIDGET_ALIGN_NONE: {
+              break;
+            }
 
-          //-----
+            case MIP_WIDGET_ALIGN_PARENT: {
+              child_rect.x += parent_rect.x;
+              child_rect.y += parent_rect.y;
+              break;
+            }
 
-          case MIP_WIDGET_ALIGN_FILL_RIGHT: {
-            child_rect.x = client_rect.x2() - child_rect.w;
-            child_rect.y = client_rect.y;
-            child_rect.h = client_rect.h;
-            client_rect.w -= (child_rect.w + spacing.x);
-            break;
-          }
+            case MIP_WIDGET_ALIGN_CLIENT: {
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
+              break;
+            }
 
-          case MIP_WIDGET_ALIGN_FILL_RIGHT_TOP:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y;
-            client_rect.w -= (child_rect.w + spacing.x);
-            break;
+            //-----
 
-          case MIP_WIDGET_ALIGN_FILL_RIGHT_CENTER:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
-            client_rect.w -= (child_rect.w + spacing.x);
-            break;
+            case MIP_WIDGET_ALIGN_LEFT:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
+              //rect.h = client.h;
+              break;
 
-          case MIP_WIDGET_ALIGN_FILL_RIGHT_BOTTOM:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y2() - child_rect.h;
-            client_rect.w -= (child_rect.w + spacing.x);
-            break;
+            case MIP_WIDGET_ALIGN_LEFT_TOP:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
+              break;
 
-          //-----
+            case MIP_WIDGET_ALIGN_LEFT_CENTER:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+              break;
 
-          case MIP_WIDGET_ALIGN_FILL_TOP: {
-            child_rect.x = client_rect.x;
-            child_rect.y = client_rect.y;
-            child_rect.w = client_rect.w;
-            client_rect.y += (child_rect.h + spacing.y);
-            client_rect.h -= (child_rect.h + spacing.y);
-            break;
-          }
+            case MIP_WIDGET_ALIGN_LEFT_BOTTOM:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y2() - child_rect.h;
+              break;
 
-          case MIP_WIDGET_ALIGN_FILL_TOP_LEFT:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y;
-            client_rect.y += (child_rect.h + spacing.y);
-            client_rect.h -= (child_rect.h + spacing.y);
-            break;
+            //-----
 
-          case MIP_WIDGET_ALIGN_FILL_TOP_CENTER:
-            child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
-            child_rect.y += client_rect.y;
-            client_rect.y += (child_rect.h + spacing.y);
-            client_rect.h -= (child_rect.h + spacing.y);
-            break;
+            case MIP_WIDGET_ALIGN_RIGHT:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y;
+              //rect.h = client_rect.h;
+              break;
 
-          case MIP_WIDGET_ALIGN_FILL_TOP_RIGHT:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y;
-            client_rect.y += (child_rect.h + spacing.y);
-            client_rect.h -= (child_rect.h + spacing.y);
-            break;
+            case MIP_WIDGET_ALIGN_RIGHT_TOP:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y;
+              break;
 
-          //-----
+            case MIP_WIDGET_ALIGN_RIGHT_CENTER:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+              break;
 
-          case MIP_WIDGET_ALIGN_FILL_BOTTOM: {
-            child_rect.x = client_rect.x;
-            child_rect.y = client_rect.y2() - child_rect.h;
-            child_rect.w = client_rect.w;
-            client_rect.h -= (child_rect.h + spacing.y);
-            break;
-          }
+            case MIP_WIDGET_ALIGN_RIGHT_BOTTOM:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y2() - child_rect.h;
+              break;
 
-          case MIP_WIDGET_ALIGN_FILL_BOTTOM_LEFT:
-            child_rect.x += client_rect.x;
-            child_rect.y += client_rect.y2() - child_rect.h;
-            //client_rect.y += (child_rect.h + spacing.y);
-            client_rect.h -= (child_rect.h + spacing.y);
-            break;
+            //-----
 
-          case MIP_WIDGET_ALIGN_FILL_BOTTOM_CENTER:
-            child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
-            child_rect.y += client_rect.y2() - child_rect.h;
-            //client_rect.y += (child_rect.h + spacing.y);
-            client_rect.h -= (child_rect.h + spacing.y);
-            break;
+            case MIP_WIDGET_ALIGN_TOP:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
+              //child_rect.w = client_rect.w;
+              break;
 
-          case MIP_WIDGET_ALIGN_FILL_BOTTOM_RIGHT:
-            child_rect.x += client_rect.x2() - child_rect.w;
-            child_rect.y += client_rect.y2() - child_rect.h;
-            //client_rect.y += (child_rect.h + spacing.y);
-            client_rect.h -= (child_rect.h + spacing.y);
-            break;
+            case MIP_WIDGET_ALIGN_TOP_LEFT:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
+              break;
 
-          //-----
+            case MIP_WIDGET_ALIGN_TOP_CENTER:
+              child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+              child_rect.y += client_rect.y;
+              break;
 
-          case MIP_WIDGET_ALIGN_CENTER:
-            child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
-            child_rect.y = client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
-            break;
+            case MIP_WIDGET_ALIGN_TOP_RIGHT:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y;
+              break;
 
-          case MIP_WIDGET_ALIGN_CENTER_HORIZ:
-            child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
-            break;
+            //-----
 
-          case MIP_WIDGET_ALIGN_CENTER_VERT:
-            child_rect.y = client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
-            break;
+            case MIP_WIDGET_ALIGN_BOTTOM:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y2() - child_rect.h;
+              //rect.w = client.w;
+              break;
 
-          //-----
+            case MIP_WIDGET_ALIGN_BOTTOM_LEFT:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y2() - child_rect.h;
+              break;
 
-          case MIP_WIDGET_ALIGN_STACK_HORIZ:
-            if ((stackx + child_rect.w /*+ border.w - spacing.x*/) >= client_rect.w) {
-              if (stackx != 0) {  // first widget..
-                stackx = 0;
-                stacky += stack_highest + spacing.y;
-                stack_highest = 0;
+            case MIP_WIDGET_ALIGN_BOTTOM_CENTER:
+              child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+              child_rect.y += client_rect.y2() - child_rect.h;
+              break;
+
+            case MIP_WIDGET_ALIGN_BOTTOM_RIGHT:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y2() - child_rect.h;
+              break;
+
+            //-----
+
+            case MIP_WIDGET_ALIGN_FILL_CLIENT: {
+              child_rect.x = client_rect.x;
+              child_rect.y = client_rect.y;
+              child_rect.w = client_rect.w;
+              child_rect.h = client_rect.h;
+              break;
+            }
+
+            //-----
+
+            case MIP_WIDGET_ALIGN_FILL_LEFT: {
+              child_rect.x = client_rect.x;
+              child_rect.y = client_rect.y;
+              child_rect.h = client_rect.h;
+              client_rect.x += (child_rect.w + spacing.x);
+              client_rect.w -= (child_rect.w + spacing.x);
+              break;
+            }
+
+            case MIP_WIDGET_ALIGN_FILL_LEFT_TOP:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
+              client_rect.x += (child_rect.w + spacing.x);
+              client_rect.w -= (child_rect.w + spacing.x);
+              break;
+
+            case MIP_WIDGET_ALIGN_FILL_LEFT_CENTER:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+              client_rect.x += (child_rect.w + spacing.x);
+              client_rect.w -= (child_rect.w + spacing.x);
+              break;
+
+            case MIP_WIDGET_ALIGN_FILL_LEFT_BOTTOM:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y2() - child_rect.h;
+              client_rect.x += (child_rect.w + spacing.x);
+              client_rect.w -= (child_rect.w + spacing.x);
+              break;
+
+            //-----
+
+            case MIP_WIDGET_ALIGN_FILL_RIGHT: {
+              child_rect.x = client_rect.x2() - child_rect.w;
+              child_rect.y = client_rect.y;
+              child_rect.h = client_rect.h;
+              client_rect.w -= (child_rect.w + spacing.x);
+              break;
+            }
+
+            case MIP_WIDGET_ALIGN_FILL_RIGHT_TOP:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y;
+              client_rect.w -= (child_rect.w + spacing.x);
+              break;
+
+            case MIP_WIDGET_ALIGN_FILL_RIGHT_CENTER:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+              client_rect.w -= (child_rect.w + spacing.x);
+              break;
+
+            case MIP_WIDGET_ALIGN_FILL_RIGHT_BOTTOM:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y2() - child_rect.h;
+              client_rect.w -= (child_rect.w + spacing.x);
+              break;
+
+            //-----
+
+            case MIP_WIDGET_ALIGN_FILL_TOP: {
+              child_rect.x = client_rect.x;
+              child_rect.y = client_rect.y;
+              child_rect.w = client_rect.w;
+              client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
+              break;
+            }
+
+            case MIP_WIDGET_ALIGN_FILL_TOP_LEFT:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
+              client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
+              break;
+
+            case MIP_WIDGET_ALIGN_FILL_TOP_CENTER:
+              child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+              child_rect.y += client_rect.y;
+              client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
+              break;
+
+            case MIP_WIDGET_ALIGN_FILL_TOP_RIGHT:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y;
+              client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
+              break;
+
+            //-----
+
+            case MIP_WIDGET_ALIGN_FILL_BOTTOM: {
+              child_rect.x = client_rect.x;
+              child_rect.y = client_rect.y2() - child_rect.h;
+              child_rect.w = client_rect.w;
+              client_rect.h -= (child_rect.h + spacing.y);
+              break;
+            }
+
+            case MIP_WIDGET_ALIGN_FILL_BOTTOM_LEFT:
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y2() - child_rect.h;
+              //client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
+              break;
+
+            case MIP_WIDGET_ALIGN_FILL_BOTTOM_CENTER:
+              child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+              child_rect.y += client_rect.y2() - child_rect.h;
+              //client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
+              break;
+
+            case MIP_WIDGET_ALIGN_FILL_BOTTOM_RIGHT:
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y2() - child_rect.h;
+              //client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
+              break;
+
+            //-----
+
+            case MIP_WIDGET_ALIGN_CENTER:
+              child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+              child_rect.y = client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+              break;
+
+            case MIP_WIDGET_ALIGN_CENTER_HORIZ:
+              child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+              break;
+
+            case MIP_WIDGET_ALIGN_CENTER_VERT:
+              child_rect.y = client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+              break;
+
+            //-----
+
+            case MIP_WIDGET_ALIGN_STACK_HORIZ:
+              if ((stackx + child_rect.w /*+ border.w - spacing.x*/) >= client_rect.w) {
+                if (stackx != 0) {  // first widget..
+                  stackx = 0;
+                  stacky += stack_highest + spacing.y;
+                  stack_highest = 0;
+                }
               }
-            }
-            child_rect.x = (client_rect.x + stackx);
-            child_rect.y = (client_rect.y + stacky);
-            stackx += child_rect.w + spacing.x;
-            if (child_rect.h > stack_highest) stack_highest = child_rect.h;
-            break;
+              child_rect.x = (client_rect.x + stackx);
+              child_rect.y = (client_rect.y + stacky);
+              stackx += child_rect.w + spacing.x;
+              if (child_rect.h > stack_highest) stack_highest = child_rect.h;
+              break;
 
-          case MIP_WIDGET_ALIGN_STACK_VERT:
-          //if ((stacky + child_rect.h) >= client_rect.h) {
-            if ((stacky + child_rect.h /*+ border.h - spacing.y*/) >= client_rect.h) {
-              if (stacky != 0) {  // first widget..
-                stacky = 0;
-                stackx += stack_widest + spacing.x;
-                stack_widest = 0;
+            case MIP_WIDGET_ALIGN_STACK_VERT:
+            //if ((stacky + child_rect.h) >= client_rect.h) {
+              if ((stacky + child_rect.h /*+ border.h - spacing.y*/) >= client_rect.h) {
+                if (stacky != 0) {  // first widget..
+                  stacky = 0;
+                  stackx += stack_widest + spacing.x;
+                  stack_widest = 0;
+                }
               }
-            }
-            child_rect.x += client_rect.x + stackx;
-            child_rect.y += client_rect.y + stacky;
-            stacky  += child_rect.h + spacing.y;
-            if (child_rect.w > stack_widest) stack_widest = child_rect.w;
-            break;
+              child_rect.x += client_rect.x + stackx;
+              child_rect.y += client_rect.y + stacky;
+              stacky  += child_rect.h + spacing.y;
+              if (child_rect.w > stack_widest) stack_widest = child_rect.w;
+              break;
 
-        } // switch
+          } // switch
 
-        // aspect
+          // aspect
 
-        if (child->Layout.aspectRatio > 0) {
-          if (child_rect.h > 0) {
-            double aspect = child_rect.w / child_rect.h;
-            if (aspect >= child->Layout.aspectRatio) {
-              double w_prev = child_rect.w;
-              double w_new = child_rect.h * child->Layout.aspectRatio;
-              //child_rect.w = child_rect.h * child->Layout.aspectRatio;
-              child_rect.x += (w_prev - w_new) * 0.5;
-              child_rect.w = w_new;
-            }
-            else {
-              double h_prev = child_rect.h;
-              double h_new = child_rect.w / child->Layout.aspectRatio;
-              //child_rect.h = child_rect.w / child->Layout.aspectRatio;
-              child_rect.y += (h_prev - h_new) * 0.5;
-              child_rect.h = h_new;
-            }
-          } // h > 0
-        } // aspect > 0
+          if (child->Layout.aspectRatio > 0) {
+            if (child_rect.h > 0) {
+              double aspect = child_rect.w / child_rect.h;
+              if (aspect >= child->Layout.aspectRatio) {
+                double w_prev = child_rect.w;
+                double w_new = child_rect.h * child->Layout.aspectRatio;
+                //child_rect.w = child_rect.h * child->Layout.aspectRatio;
+                child_rect.x += (w_prev - w_new) * 0.5;
+                child_rect.w = w_new;
+              }
+              else {
+                double h_prev = child_rect.h;
+                double h_new = child_rect.w / child->Layout.aspectRatio;
+                //child_rect.h = child_rect.w / child->Layout.aspectRatio;
+                child_rect.y += (h_prev - h_new) * 0.5;
+                child_rect.h = h_new;
+              }
+            } // h > 0
+          } // aspect > 0
 
-        // min/max size
+          // min/max size
 
-        child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
-        child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
+          child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
+          child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
 
-        // update
 
-        child->MRect = child_rect;
+          MIP_DRect extra_border = child->Layout.extraBorder;
+          extra_border.scale(Layout.scale);
+          child_rect.shrink(extra_border);
 
-//        child->MRect.x += MChildrenXOffset;
-//        child->MRect.y += MChildrenYOffset;
+          // update
 
-        MContentRect.combine(child_rect);
+          child->MRect = child_rect;
+//          child->MRect.x += MChildrenXOffset;
+//          child->MRect.y += MChildrenYOffset;
+          MContentRect.combine(child_rect);
+          if (ARecursive) {
+            child->alignChildWidgets(ARecursive);
+          }
 
-        if (ARecursive) {
-          child->alignChildWidgets(ARecursive);
-        }
-
-      } //  for
-
-//      if (layout.contentBorder) {
-//        MContentRect.w += layout.innerBorder.w;
-//        MContentRect.h += layout.innerBorder.h;
-//        //MContentRect.w += (layout.innerBorder.w * layout.scale);
-//        //MContentRect.h += (layout.innerBorder.h * layout.scale);
-//      }
-
-      } // visible
-
-    } // for all children
-
-  } // num > 0
+        } //  visible
+      } // for
+    } // num > 0
+    MContentRect.w += border.w;
+    MContentRect.h += border.h;
+    //MContentRect.w += (layout.innerBorder.w * layout.scale);
+    //MContentRect.h += (layout.innerBorder.h * layout.scale);
+  }
 
 };
 

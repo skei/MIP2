@@ -31,7 +31,6 @@ private:
   MIP_Array<const clap_plugin_factory_t*>     MFactories    = {};
   MIP_Array<const clap_plugin_descriptor_t*>  MDescriptors  = {};
 
-
 //------------------------------
 public:
 //------------------------------
@@ -57,6 +56,7 @@ public:
 
  void setPath(const char* path) {
    strcpy(MPath,path);
+   //MIniFile.load(path);
  }
 
  const char* getPath() {

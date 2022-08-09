@@ -2,219 +2,9 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="plugin release" />
-	<File name="../include/base/types/mip_queue.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="597" topLine="15" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/clap/mip_clap_host_implementation.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="397" topLine="9" />
-		</Cursor>
-	</File>
-	<File name="../include/base/types/mip_point.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="462" topLine="11" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/gain.cpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="311" topLine="5" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_drag_value_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1811" topLine="37" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/fixedpoint.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="146" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/ladspa/mip_ladspa.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="160" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/xcb/mip_xcb_surface.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1709" topLine="42" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/clap/mip_clap_plugin.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1681" topLine="42" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/nanovg/nanovg.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="19584" topLine="811" />
-		</Cursor>
-	</File>
-	<File name="build.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="491" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/base/mip_defines.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1834" topLine="81" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_selector_widget.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1089" topLine="21" />
-		</Cursor>
-	</File>
-	<File name="../source/test/test_editor3.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6105" topLine="160" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/opengl/mip_opengl_utils.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1641" topLine="49" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/opengl/mip_opengl.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/base/debug/mip_debug_watch.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1563" topLine="47" />
-		</Cursor>
-	</File>
-	<File name="../doc/todo.txt" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2704" topLine="89" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_botage/sa_botage_editor.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1715" topLine="24" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_opengl_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1333" topLine="32" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_button_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1465" topLine="30" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_ladspa_wrapper.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1178" topLine="4" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/exe/mip_exe_entry.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1372" topLine="39" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/clap/mip_clap_host.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="22" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_botage/sa_botage_widgets.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="144" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/base/system/linux/mip_linux_time.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2673" topLine="73" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/mip_drawable.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="332" topLine="0" />
-		</Cursor>
-	</File>
 	<File name="../include/gui/nanovg/mip_nanovg_utils.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="432" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/base/debug/mip_debug_print.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="611" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_slider_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1940" topLine="46" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_value_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3837" topLine="85" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/mip_window.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="10139" topLine="346" />
-		</Cursor>
-	</File>
-	<File name="../include/base/types/mip_types.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="130" topLine="1" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/nanovg/nanovg.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="24988" topLine="601" />
-		</Cursor>
-	</File>
-	<File name="../include/base/utils/mip_tcc2.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3059" topLine="99" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/mip_surface.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="796" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_widgets.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="338" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_menu_widget.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2083" topLine="69" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_panel_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="511" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/base/types/mip_array.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="296" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/ext/gui.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5922" topLine="129" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_fibonacci.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2631" topLine="82" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/main.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="879" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="../include/plugin/clap/mip_clap_factory.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -222,9 +12,24 @@
 			<Cursor1 position="1055" topLine="1" />
 		</Cursor>
 	</File>
-	<File name="../include/extern/clap/ext/draft/tuning.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/mip_painter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="926" topLine="0" />
+			<Cursor1 position="1547" topLine="42" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/mip_window.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="10139" topLine="346" />
+		</Cursor>
+	</File>
+	<File name="build.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="718" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/test/test_editor3.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="8856" topLine="217" />
 		</Cursor>
 	</File>
 	<File name="../source/plugins/sa_botage/sa_botage_process.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -232,289 +37,19 @@
 			<Cursor1 position="4346" topLine="132" />
 		</Cursor>
 	</File>
-	<File name="../include/base/system/mip_thread.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/opengl/mip_opengl_utils.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="222" topLine="0" />
+			<Cursor1 position="1641" topLine="49" />
 		</Cursor>
 	</File>
-	<File name="../include/extern/nanovg/nanovg_gl.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/base/debug/mip_debug_watch.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="44909" topLine="1554" />
+			<Cursor1 position="1563" topLine="47" />
 		</Cursor>
 	</File>
-	<File name="../include/plugin/exe/mip_exe_host.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/opengl/mip_opengl.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="287" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/midi_player.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="257" topLine="12" />
-		</Cursor>
-	</File>
-	<File name="../include/base/system/linux/mip_linux_thread.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="489" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/base/utils/mip_vm_compiler.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="267" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/vst3/mip_vst3_plugin.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1365" topLine="27" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_text_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2116" topLine="48" />
-		</Cursor>
-	</File>
-	<File name="../include/base/types/mip_rect.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2114" topLine="123" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/ext/thread-check.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="92" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/stb/stb_image.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="17780" topLine="413" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_button_row_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2355" topLine="75" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/xcb/mip_xcb_window.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="29542" topLine="951" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/vst3/mip_vst3_entry.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7733" topLine="228" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/mip_bitmap.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="147" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/xcb/mip_xcb.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="332" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/base/mip_base_painter.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="910" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/base/utils/mip_tcc.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="996" topLine="27" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/vst2/mip_vst2_plugin.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="19221" topLine="614" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_waveform_widget.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4012" topLine="138" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/xcb/mip_xcb_painter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="565" topLine="5" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_grid_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="9108" topLine="264" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_knob_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1969" topLine="67" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/events.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="8502" topLine="210" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/mip_paint_context.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="215" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/nanovg/fontstash.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5409" topLine="133" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/process.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="20689" topLine="497" />
-		</Cursor>
-	</File>
-	<File name="../include/base/system/linux/mip_linux_timer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="502" topLine="84" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/nanovg/mip_nanovg.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="243" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/template.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5885" topLine="169" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_editor.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6378" topLine="7" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/audio-buffer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="892" topLine="3" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_plugin.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="10962" topLine="1192" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/preset.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2254" topLine="56" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_botage/sa_botage_params.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="326" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_audio_port.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="270" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/mip.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="566" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/host.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="772" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/base/debug/mip_debug.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1035" topLine="9" />
-		</Cursor>
-	</File>
-	<File name="../source/plugins/sa_botage.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6140" topLine="57" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/blendish/blendish.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="19596" topLine="797" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/xcb/mip_xcb_utils.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="219" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/vst2/mip_vst2_host_implementation.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="209" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/ext/thread-pool.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="27" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_knob2_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1116" topLine="60" />
-		</Cursor>
-	</File>
-	<File name="../include/base/mip_enums.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7908" topLine="233" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/ladspa/mip_ladspa_plugin.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="16122" topLine="439" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/clap/mip_clap_entry.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="181" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/process.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1620" topLine="31" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/opengl/mip_opengl_painter.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="5258" topLine="177" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/base/mip_base_window.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1846" topLine="34" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/template.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1300" topLine="28" />
-		</Cursor>
-	</File>
-	<File name="../include/base/debug/mip_debug_memory.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="239" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/blendish/blendish.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="46597" topLine="1063" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/clap/mip_clap.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="262" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_menu_item_widget.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1523" topLine="33" />
-		</Cursor>
-	</File>
-	<File name="../include/base/system/mip_time.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="217" topLine="0" />
+			<Cursor1 position="0" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="../source/apps/clap-host/plugin.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -522,9 +57,14 @@
 			<Cursor1 position="1001" topLine="32" />
 		</Cursor>
 	</File>
-	<File name="../include/plugin/exe/mip_exe.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/widgets/mip_image_widget.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="140" topLine="0" />
+			<Cursor1 position="51" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_menu_widget.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2083" topLine="69" />
 		</Cursor>
 	</File>
 	<File name="../include/plugin/vst2/mip_vst2_entry.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -532,79 +72,24 @@
 			<Cursor1 position="595" topLine="10" />
 		</Cursor>
 	</File>
-	<File name="../include/gui/mip_theme.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/plugin/exe/mip_exe_host.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="347" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/xlib/mip_xlib.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="166" topLine="0" />
+			<Cursor1 position="287" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="../include/base/utils/mip_strutils.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="8185" topLine="331" />
+			<Cursor1 position="8973" topLine="364" />
 		</Cursor>
 	</File>
-	<File name="../include/base/system/linux/mip_linux_paths.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/gui/widgets/mip_slider_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1580" topLine="42" />
+			<Cursor1 position="1940" topLine="46" />
 		</Cursor>
 	</File>
-	<File name="../include/extern/clap/plugin.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/plugin/clap/mip_clap_host.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="925" topLine="33" />
-		</Cursor>
-	</File>
-	<File name="../include/base/types/mip_string.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="627" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/widgets/mip_color_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="650" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/ext/audio-ports.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="635" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/base/types/mip_color.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="410" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/plugin/mip_registry.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3527" topLine="138" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/nanovg/mip_nanovg_painter.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="12748" topLine="493" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/clap/ext/draft/check-for-update.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="628" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../include/gui/mip_widget.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="14639" topLine="446" />
-		</Cursor>
-	</File>
-	<File name="../include/extern/stb/stb_truetype.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="105767" topLine="2632" />
-		</Cursor>
-	</File>
-	<File name="../source/apps/clap-host/host.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6537" topLine="201" />
+			<Cursor1 position="22" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="../include/extern/clap/clap.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -612,19 +97,564 @@
 			<Cursor1 position="1818" topLine="23" />
 		</Cursor>
 	</File>
-	<File name="../include/gui/mip_painter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/extern/clap/ext/draft/check-for-update.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="132" topLine="0" />
+			<Cursor1 position="628" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="../include/gui/widgets/mip_image_widget.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../include/plugin/mip_registry.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="51" topLine="0" />
+			<Cursor1 position="1593" topLine="24" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/host.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="165" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/base/utils/mip_parser.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1095" topLine="30" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/simple-opengl-loader.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1876" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/host.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6537" topLine="201" />
+		</Cursor>
+	</File>
+	<File name="../include/base/types/mip_rect.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3358" topLine="187" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/ext/draft/tuning.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="926" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="../include/plugin/mip_parameter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="303" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/base/mip_base_painter.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="361" topLine="7" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/blendish/blendish.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="19596" topLine="797" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_ladspa_wrapper.cpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="805" topLine="33" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_opengl_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1333" topLine="32" />
+		</Cursor>
+	</File>
+	<File name="../include/mip.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="566" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/base/debug/mip_debug_memory.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="239" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_botage/sa_botage_params.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="326" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/nanovg/mip_nanovg.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="243" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/base/debug/mip_debug.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1035" topLine="12" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/xcb/mip_xcb.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="332" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/mip_surface.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="796" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_button_row_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2355" topLine="75" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/template.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5885" topLine="169" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/ext/audio-ports.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="635" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_botage.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6140" topLine="57" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/nanovg/nanovg.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="24988" topLine="601" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/xcb/mip_xcb_utils.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="219" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/base/mip_base_window.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1846" topLine="34" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/mip_drawable.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="332" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/events.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="8502" topLine="210" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_selector_widget.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1089" topLine="21" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/audio-buffer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="892" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/ladspa/mip_ladspa_plugin.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2480" topLine="70" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_scroll_box_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3734" topLine="88" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/stb/stb_truetype.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="105767" topLine="2632" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/xcb/mip_xcb_surface.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1709" topLine="42" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/xcb/mip_xcb_painter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="565" topLine="5" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_knob2_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1116" topLine="60" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/xlib/mip_xlib.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="166" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/xcb/mip_xcb_window.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="29542" topLine="951" />
+		</Cursor>
+	</File>
+	<File name="../include/base/debug/mip_debug_print.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="699" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="../include/base/types/mip_array.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="296" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/base/system/mip_thread.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="222" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/base/types/mip_point.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="462" topLine="11" />
+		</Cursor>
+	</File>
+	<File name="../include/base/system/linux/mip_linux_timer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="502" topLine="84" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/template.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="28" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_botage/sa_botage_widgets.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="144" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/main.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="879" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/fixedpoint.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="146" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_menu_item_widget.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1523" topLine="33" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_panel_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2990" topLine="69" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_value_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3837" topLine="85" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/exe/mip_exe.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="140" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/midi_player.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="257" topLine="12" />
+		</Cursor>
+	</File>
+	<File name="../include/base/mip_defines.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1497" topLine="60" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/vst3/mip_vst3_plugin.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1365" topLine="27" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_grid_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9108" topLine="264" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/blendish/blendish.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="46597" topLine="1063" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_waveform_widget.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4012" topLine="138" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/nanovg/fontstash.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5409" topLine="133" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_fibonacci.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2631" topLine="82" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_drag_value_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1811" topLine="37" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/vst3/mip_vst3_entry.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7733" topLine="228" />
+		</Cursor>
+	</File>
+	<File name="../include/base/types/mip_string.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="627" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/base/types/mip_color.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="410" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/base/system/linux/mip_linux_thread.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="489" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/mip_widget.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="13937" topLine="414" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/mip_theme.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="347" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/opengl/mip_opengl_painter.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6583" topLine="235" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/ext/thread-pool.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="27" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/vst2/mip_vst2_plugin.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="19221" topLine="614" />
+		</Cursor>
+	</File>
+	<File name="../include/base/utils/mip_tcc2.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3059" topLine="99" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/clap/mip_clap.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="262" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/nanovg/mip_nanovg_painter.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="12748" topLine="493" />
+		</Cursor>
+	</File>
+	<File name="../include/base/mip_enums.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7908" topLine="233" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/clap/mip_clap_host_implementation.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="397" topLine="9" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_button_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1465" topLine="30" />
+		</Cursor>
+	</File>
+	<File name="../include/base/system/linux/mip_linux_paths.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1580" topLine="42" />
+		</Cursor>
+	</File>
+	<File name="../include/base/utils/mip_vm.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5142" topLine="180" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/process.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="20689" topLine="497" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/stb/stb_image.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="17780" topLine="413" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_widgets.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="858" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/ladspa/mip_ladspa.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="161" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/clap/mip_clap_plugin.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="694" topLine="9" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_editor.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4076" topLine="173" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_text_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2008" topLine="48" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/mip_bitmap.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="147" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/base/utils/mip_tcc.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="996" topLine="27" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_plugin.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2989" topLine="80" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/sa_botage/sa_botage_editor.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1715" topLine="24" />
+		</Cursor>
+	</File>
+	<File name="../include/base/types/mip_queue.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="597" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="../include/base/system/linux/mip_linux_time.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2673" topLine="73" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/nanovg/nanovg.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="19584" topLine="811" />
+		</Cursor>
+	</File>
+	<File name="../include/base/utils/mip_inifile.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1877" topLine="63" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/ext/gui.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5922" topLine="129" />
+		</Cursor>
+	</File>
+	<File name="../include/base/system/mip_time.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="217" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/apps/clap-host/preset.hpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2254" topLine="56" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/mip_audio_port.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="270" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/base/utils/mip_vm_compiler.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="267" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../doc/todo.txt" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3746" topLine="123" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/mip_paint_context.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="215" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../source/plugins/gain.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4430" topLine="98" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_knob_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1969" topLine="67" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/plugin.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="925" topLine="33" />
+		</Cursor>
+	</File>
+	<File name="../include/base/system/mip_file.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3024" topLine="130" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/process.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1620" topLine="31" />
+		</Cursor>
+	</File>
+	<File name="../include/base/types/mip_types.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="130" topLine="1" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/vst2/mip_vst2_host_implementation.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="209" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/exe/mip_exe_entry.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1372" topLine="39" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/nanovg/nanovg_gl.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="44909" topLine="1554" />
+		</Cursor>
+	</File>
+	<File name="../include/plugin/clap/mip_clap_entry.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="181" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../include/gui/widgets/mip_color_widget.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="650" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="../include/extern/clap/ext/thread-check.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="92" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

@@ -5,6 +5,9 @@
 */
 
 
+#define MIP_NO_GUI
+#define MIP_NO_PAINTER
+
 #define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket
 
@@ -62,7 +65,7 @@ void MIP_RegisterLadspa(MIP_Registry* ARegistry, const LADSPA_Descriptor* ladspa
   clap_descriptor->url          = "";
   clap_descriptor->manual_url   = "";
   clap_descriptor->support_url  = "";
-  clap_descriptor->version      = "0.0.0";
+  clap_descriptor->version      = "0.0.1";
   clap_descriptor->description  = "";
   clap_descriptor->features   = MIP_LadspaPluginFeatures;
   ARegistry->appendDescriptor(clap_descriptor);

@@ -4,7 +4,7 @@
 
 // TODO: tokenizer..
 
-#include "base/mip_array.h"
+#include "base/types/mip_array.h"
 
 //----------
 
@@ -25,7 +25,7 @@ class MIP_Parser {
     //----------
 
     ~MIP_Parser() {
-      if (MBuffer) MIP_Free(MBuffer);
+      if (MBuffer) free(MBuffer);
     }
 
   //----------------------------------------
@@ -54,13 +54,13 @@ class MIP_Parser {
 
     void tokenize(const char* ASource, uint32_t ALength) {
       bool quotes = false;
-      if (MBuffer) MIP_Free(MBuffer);
+      if (MBuffer) free(MBuffer);
       //MBufLen = 0;
       MTokens.clear(/*true*/);
 
       MBufLen = ALength;
-      MBuffer = (char*)MIP_Malloc(MBufLen+1);
-      MIP_Memcpy(MBuffer,(char*)ASource,MBufLen);
+      MBuffer = (char*)malloc(MBufLen+1);
+      memcpy(MBuffer,(char*)ASource,MBufLen);
       MBuffer[MBufLen] = 0;
 
 
@@ -102,7 +102,7 @@ class MIP_Parser {
     void dumpTokens(void) {
       int32_t num = MTokens.size();
       for (int32_t i=0; i<num; i++) {
-        MIP_DTrace("%i '%s'\n",i,MTokens[i]);
+        MIP_DPrint("%i '%s'\n",i,MTokens[i]);
       }
     }
 

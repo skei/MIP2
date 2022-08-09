@@ -5,6 +5,7 @@
 // ladspa-as-clap
 
 #include "mip.h"
+#include "base/utils/mip_inifile.h"
 #include "plugin/ladspa/mip_ladspa.h"
 
 //----------------------------------------------------------------------
@@ -13,7 +14,12 @@
 #define MIP_LADSPA_MAX_AUDIO_OUTPUTS      32
 #define MIP_LADSPA_MAX_CONTROL_INPUTS     1024
 #define MIP_LADSPA_MAX_CONTROL_OUTPUTS    1024
-#define MIP_LADSPA_MAX_PORTS              1024
+
+//#define MIP_LADSPA_MAX_PORTS              1024
+#define MIP_LADSPA_MAX_PORTS              ( MIP_LADSPA_MAX_AUDIO_INPUTS \
+                                          + MIP_LADSPA_MAX_AUDIO_OUTPUTS \
+                                          + MIP_LADSPA_MAX_CONTROL_INPUTS \
+                                          + MIP_LADSPA_MAX_CONTROL_OUTPUTS )
 
 #define MIP_LADSPA_FLAGS_NONE             0
 #define MIP_LADSPA_FLAGS_REALTIME         1
@@ -78,6 +84,8 @@ private:
   float                     MParamValues[MIP_LADSPA_MAX_CONTROL_INPUTS] = {0};
   float                     MParamOutputs[MIP_LADSPA_MAX_CONTROL_OUTPUTS] = {0};
 
+  MIP_IniFile               MIniFile = {};
+  MIP_IniSection*           MIniSection = nullptr;
 
 //------------------------------
 public:
@@ -85,7 +93,14 @@ public:
 
   MIP_LadspaPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
+    loadIni(MIP_REGISTRY.getPath());
     strncpy(MPath,ADescriptor->id,1024);
+
+    MIP_IniSection* plugin_ini = MIniFile.findSection(MPath);
+    if (plugin_ini) {
+      MIP_PRINT;
+    }
+
     MHost = new MIP_ClapHost(AHost);
     const char* ptr = strstr(MPath,"#");  // find #
     if (ptr) {
@@ -172,9 +187,7 @@ public: // plugin
     for (uint32_t i=0; i<num_inputs; i++) {
       uint32_t port = MAudioInputIndex[i];
       if (port >= 0) {
-
         MIP_Assert( i <= process->audio_inputs->channel_count);
-
         ladspa_connect_port(port,process->audio_inputs->data32[i]);
       }
     }
@@ -242,6 +255,29 @@ public: // plugin
   }
 
 //------------------------------
+private: // ini file
+//------------------------------
+
+  bool loadIni(const char* APath) {
+    char temp[1024] = {0};
+    strcpy(temp,APath);
+    MIP_StripFileExt(temp);
+    strcat(temp,".ini");
+    //MIP_Print("loading ini file: '%s'\n",temp);
+    MIniFile.load(temp);
+    const clap_plugin_descriptor_t* descriptor = getDescriptor();
+    //MIP_Print("id: '%s'\n",descriptor->id);
+    MIniSection = MIniFile.findSection(descriptor->id);
+    if (MIniSection) {
+      //MIP_Print("found\n");
+    }
+    else {
+      //MIP_Print("not found\n");
+    }
+    return true;
+  }
+
+//------------------------------
 private: // clap audio ports
 //------------------------------
 
@@ -261,10 +297,12 @@ private: // clap audio ports
       strncpy(info->name,name,CLAP_NAME_SIZE-1);
       info->id = index;
       info->flags = CLAP_AUDIO_PORT_IS_MAIN;
+//TODO: always stereo.. remap via ini file, (double_mono)
       info->channel_count = MNumAudioInputs;
       if (MNumAudioInputs == 1) info->port_type = CLAP_PORT_MONO;
       else if (MNumAudioInputs == 2) info->port_type = CLAP_PORT_STEREO;
       else info->port_type = 0;
+//
       info->in_place_pair = CLAP_INVALID_ID;
     }
     else {
@@ -273,10 +311,12 @@ private: // clap audio ports
       strncpy(info->name,name,CLAP_NAME_SIZE-1);
       info->id = index;
       info->flags = CLAP_AUDIO_PORT_IS_MAIN;
+//TODO: same as inputs
       info->channel_count = MNumAudioOutputs;
       if (MNumAudioOutputs == 1) info->port_type = CLAP_PORT_MONO;
       else if (MNumAudioOutputs == 2) info->port_type = CLAP_PORT_STEREO;
       else info->port_type = 0;
+//
       info->in_place_pair = CLAP_INVALID_ID;
     }
     return true;
@@ -379,9 +419,7 @@ private: // events
             MIP_Assert(index <= MNumControlInputs);
             int32_t port = MControlInputIndex[index];
             if (port >= 0) {
-
               MParamValues[port] = value;
-
             }
             break;
           }
@@ -468,6 +506,9 @@ private: // ladspa
         //MIP_Print("  flags: %04x\n",MLadspaPorts[i].flags);
       }
     }
+
+    MIP_DPrint("\n");
+
     MIP_Print("control inputs:  %i\n",MNumControlInputs);
     for (uint32_t i=0; i<MNumControlInputs; i++) {
       int32_t p = MControlInputIndex[i];
@@ -488,6 +529,9 @@ private: // ladspa
       int32_t p = MAudioOutputIndex[i];
       MIP_DPrint("    %i. %s\n",i,MLadspaPorts[p].name);
     }
+
+    MIP_DPrint("\n");
+
   }
 
   //----------
@@ -524,6 +568,7 @@ private: // ladspa
     if (MIsInstantiated) {
       if (MLadspaDescriptor) {
         if (MLadspaDescriptor->connect_port) {
+//TODO: remap
           MLadspaDescriptor->connect_port(MLadspaHandle,APort,APtr);
         }
       }

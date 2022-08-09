@@ -2,9 +2,9 @@
 #define mip_inifile_included
 //----------------------------------------------------------------------
 
-#include "base/mip_file.h"
-#include "base/mip_parser.h"
-#include "base/mip_paths.h"
+#include "base/system/mip_file.h"
+#include "base/utils/mip_parser.h"
+#include "base/system/mip_paths.h"
 
 //----------------------------------------------------------------------
 
@@ -26,8 +26,8 @@ typedef MIP_Array<MIP_IniKey*> MIP_IniKeys;
 //----------
 
 struct MIP_IniSection {
-  char          name[MIP_INI_SECTION_NAME_LENGTH+1] = {0};
-  MIP_IniKeys  keys;
+  char name[MIP_INI_SECTION_NAME_LENGTH+1] = {0};
+  MIP_IniKeys keys;
 };
 
 typedef MIP_Array<MIP_IniSection*> MIP_IniSections;
@@ -64,8 +64,8 @@ public:
 //------------------------------
 
   void appendSection(const char* ASection) {
-    MIP_IniSection* section = MIP_New MIP_IniSection();
-    MIP_Strncpy(section->name,ASection,MIP_INI_SECTION_NAME_LENGTH);
+    MIP_IniSection* section = new MIP_IniSection();
+    strncpy(section->name,ASection,MIP_INI_SECTION_NAME_LENGTH);
     MSections.append(section);
   }
 
@@ -74,8 +74,10 @@ public:
   void deleteSections() {
     for (uint32_t i=0; i<MSections.size(); i++) {
       MIP_IniSection* section = MSections[i];
-      for (uint32_t j=0; j<section->keys.size(); j++) {
-        MIP_Delete section->keys[j];
+      if (section) {
+        for (uint32_t j=0; j<section->keys.size(); j++) {
+          if (section->keys[j]) delete section->keys[j];
+        }
       }
       delete MSections[i];
     }
@@ -86,7 +88,7 @@ public:
   MIP_IniSection* findSection(const char* ASection) {
     for (uint32_t i=0; i<MSections.size(); i++) {
       MIP_IniSection* section = MSections[i];
-      if (MIP_Strcmp(section->name, ASection) == 0) {
+      if (strcmp(section->name, ASection) == 0) {
         return section;
       }
     }
@@ -97,9 +99,9 @@ public:
 
   void appendKey(const char* ASection, const char* AName, const char* AValue) {
     MIP_IniSection* section = findSection(ASection);
-    MIP_IniKey* key = MIP_New MIP_IniKey();
-    MIP_Strncpy(key->name,AName,MIP_INI_KEY_NAME_LENGTH);
-    MIP_Strncpy(key->value,AValue,MIP_INI_KEY_VALUE_LENGTH);
+    MIP_IniKey* key = new MIP_IniKey();
+    strncpy(key->name,AName,MIP_INI_KEY_NAME_LENGTH);
+    strncpy(key->value,AValue,MIP_INI_KEY_VALUE_LENGTH);
     section->keys.append(key);
   }
 
@@ -110,7 +112,7 @@ public:
     if (section) {
       for (uint32_t i=0; i<section->keys.size(); i++) {
         MIP_IniKey* key =section->keys[i];
-        if (MIP_Strcmp(key->name, AKey) == 0) return key;
+        if (strcmp(key->name, AKey) == 0) return key;
       }
     }
     return nullptr;
@@ -174,9 +176,9 @@ public:
 
   bool load(void) {
     char filename[256];
-    MIP_GetBaseFile(filename);
+    MIP_GetBaseFilename(filename);
     MIP_StripFileExt(filename);
-    MIP_Strcat(filename,".ini");
+    strcat(filename,".ini");
     return load(filename);
   }
 
@@ -189,12 +191,12 @@ public:
       void* buffer = nullptr;
       uint32_t buffersize = file.length();
       if (buffersize>0) {
-        buffer = MIP_Malloc(buffersize);
+        buffer = malloc(buffersize);
         file.read(buffer,buffersize);
       }
       file.close();
       parse(buffer,buffersize);
-      MIP_Free(buffer);
+      free(buffer);
       return true;
     }
     return false;
@@ -204,9 +206,9 @@ public:
 
   bool save(void) {
     char filename[256];
-    MIP_GetBaseFile(filename);
+    MIP_GetBaseFilename(filename);
     MIP_StripFileExt(filename);
-    MIP_Strcat(filename,".ini");
+    strcat(filename,".ini");
     return save(filename);
   }
 
@@ -215,7 +217,7 @@ public:
   bool save(const char* filename) {
     MIP_File file;
     if (file.exists(filename)) {
-      MIP_DTrace("%s already exists. overwriting\n",filename);
+      MIP_DPrint("%s already exists. overwriting\n",filename);
     }
     file.open(filename,MIP_FILE_WRITE_TEXT);
     for (uint32_t i=0; i<MSections.size(); i++) {
@@ -224,7 +226,7 @@ public:
       file.write((void*)"[",1);
       // section name
       const char* txt = section->name;
-      uint32_t len = MIP_Strlen(txt);
+      uint32_t len = strlen(txt);
       file.write((void*)txt,len);
       // ]
       file.write((void*)"]\n",2);
@@ -232,7 +234,7 @@ public:
         MIP_IniKey* key =section->keys[j];
         // key.name
         const char* txt = key->name;
-        uint32_t len = MIP_Strlen(txt);
+        uint32_t len = strlen(txt);
         bool has_spaces = false;
         for (uint32_t s=0; s<len; s++) {
           if (txt[s] == ' ') {
@@ -253,7 +255,7 @@ public:
         // =
         file.write((void*)" = ",3);
         txt = key->value;
-        len = MIP_Strlen(txt);
+        len = strlen(txt);
         has_spaces = false;
         for (uint32_t s=0; s<len; s++) {
           if (txt[s] == ' ') {
@@ -291,14 +293,14 @@ public:
   // parser->getNameValuePair(..)
 
   void parse(void* ABuffer, uint32_t ABufferSize) {
-    MIP_Parser* parser = MIP_New MIP_Parser();
+    MIP_Parser* parser = new MIP_Parser();
     parser->tokenize((const char*)ABuffer,ABufferSize);
 
     const char* section = "";
     uint32_t t = 0;
     while (t < parser->getNumTokens()) {
       char* token = parser->getToken(t++);
-      uint32_t tlen = MIP_Strlen(token);
+      uint32_t tlen = strlen(token);
       if ((token[0] == '[') && (token[tlen-1] == ']')) {
         token[tlen-1] = 0;
         section = token + 1;

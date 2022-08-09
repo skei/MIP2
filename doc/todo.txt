@@ -13,8 +13,8 @@
   mingw.64 ?
   base: thread, timer, attributes,
   debug: print_socket, crash_handler, call_stack
-  plugin: dll-entry
   gui: window, painter, surface classes, opengl..
+  plugin: dll-entry
 
 * doubles
 
@@ -29,7 +29,8 @@
 * MIP_Registry
 
   make it more generic?
-  MIP_Object, MIP_Refcount, ..
+  MIP_Object, MIP_RefCount, ..
+  garbage collection?
 
 //----------------------------------------------------------------------
 //
@@ -45,10 +46,11 @@
     setValue()
     getValue()
     getSmoothValue() ?
+    setSmoothingFactor()
 
 * vst2/3 adapters
 
-  clap-as-vst2 (in progress, partially works)
+  clap-as-vst2 (in progress)
   clap-as-vst3 (in progress)
 
   hosting:
@@ -63,15 +65,15 @@
 //
 //----------------------------------------------------------------------
 
-[starting over, because of opengl/nanovg]
-
 * reduce resizing frequency
 
-  - we have to tear down, and revuild the opengl context when we resize the
+  - we have to tear down, and rebuild the opengl context when we resize the
     window, and mouse events can generate a lot of them, so the repainting
-    lags..
+    can lag..
     we can start a (countdown) timer, and only draw the last one received
     or something similar..
+    also, check if we can use only the latest resize event in the
+    event queue..
 
 * backbuffer
 
@@ -88,31 +90,15 @@
   nvgIntersectScissor
   nvgResetScissor
 
-
-
---- [previous]
-
-* widgets
-
-  - combine Slider, DualRange, ScrollBar
-  - path-based drawing (cairo)
-
-  - MIP_TreeWidget
-    - branch, leaf
-    - folder, file
-    - text-based group-box
+  in progress: push/pop clipping rectangles
 
 * find hovering widget doesn't take innerBoder into account
   (you can hover/click over a part of a knob that is hidden behind a
   (blank) innerBorder area)
 
-* stop modal when resizing window
-
-* widget flags:
-  - proportional (knobs, circular widget, etc)
-
 * double clicking
 
+  current implementation is pretty limited
   start timer when clicking
   new click before timeout = double click
   if timeout = normal single click
@@ -134,7 +120,22 @@
   - else: start timer w/timeout (100ms?)
   - when timeout: stop timer, send resize event (latest wanted size)
 
+//------------------------------
+// widgets
+//------------------------------
 
+* combine Slider, DualRange, ScrollBar
+
+* MIP_TreeWidget
+    - branch, leaf
+    - folder, file
+    - text-based group-box
+
+* grid
+
+  combine cells, each cell can have firstCellInCombo, numCellsInCombo
+  for both x and y..
+  useful when grid is used for widget layout, etc..
 
 //----------------------------------------------------------------------
 //

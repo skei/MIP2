@@ -63,6 +63,7 @@
 
 #ifdef MIP_NO_GUI
   #define MIP_GUI_DEFINED
+  #define MIP_NO_PAINTER
   #undef MIP_GUI_XCB
   #undef MIP_USE_XCB
   #undef MIP_USE_CAIRO
@@ -74,6 +75,13 @@
   #define MIP_USE_XCB
   #define MIP_GUI_DEFINED
 #endif
+
+//
+
+#ifdef MIP_NO_PAINTER
+  #define MIP_PAINTER_DEFINED
+#endif
+
 
 #ifdef MIP_PAINTER_XCB
   #define MIP_USE_XCB

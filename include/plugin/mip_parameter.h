@@ -6,19 +6,6 @@
 //   setSmoothingFactor()
 //   getSmoothedValue()
 
-#include "mip.h"
-#include "base/types/mip_array.h"
-#include "plugin/clap/mip_clap.h"
-
-class MIP_Parameter;
-typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
 /*
   param flags:
     CLAP_PARAM_IS_STEPPED
@@ -38,6 +25,19 @@ typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
     CLAP_PARAM_IS_MODULATABLE_PER_PORT
     CLAP_PARAM_REQUIRES_PROCESS
 */
+
+#include "mip.h"
+#include "base/types/mip_array.h"
+#include "plugin/clap/mip_clap.h"
+
+class MIP_Parameter;
+typedef MIP_Array<MIP_Parameter*> MIP_ParameterArray;
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
 class MIP_Parameter {
 
@@ -179,6 +179,74 @@ public:
   }
 
   //----------
+
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+class MIP_IntParameter
+: public MIP_Parameter {
+
+public:
+
+  MIP_IntParameter()
+  : MIP_Parameter() {
+  }
+
+  //----------
+
+  MIP_IntParameter(const clap_param_info_t* AInfo)
+  : MIP_Parameter(AInfo) {
+  }
+
+  //----------
+
+  MIP_IntParameter(clap_id AId, const char* AName, const char* AModule="", double AMinValue=0.0, double AMaxValue=1.0, double ADefValue=0.0, clap_param_info_flags AFlags=0)
+  : MIP_Parameter(AId,AName,AModule,AMinValue,AMaxValue,ADefValue,AFlags) {
+  }
+
+  //----------
+
+  virtual ~MIP_IntParameter() {
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+class MIP_TextParameter
+: public MIP_IntParameter {
+
+public:
+
+  MIP_TextParameter()
+  : MIP_IntParameter() {
+  }
+
+  //----------
+
+  MIP_TextParameter(const clap_param_info_t* AInfo)
+  : MIP_IntParameter(AInfo) {
+  }
+
+  //----------
+
+  MIP_TextParameter(clap_id AId, const char* AName, const char* AModule="", double AMinValue=0.0, double AMaxValue=1.0, double ADefValue=0.0, clap_param_info_flags AFlags=0, const char** AText=nullptr)
+  : MIP_IntParameter(AId,AName,AModule,AMinValue,AMaxValue,ADefValue,AFlags) {
+  }
+
+  //----------
+
+  virtual ~MIP_TextParameter() {
+  }
 
 };
 

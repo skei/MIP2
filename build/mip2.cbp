@@ -102,7 +102,6 @@
 			<Add library="GLU" />
 			<Add library="glut" />
 		</Linker>
-		<Unit filename="../doc/compile.txt" />
 		<Unit filename="../doc/todo.txt" />
 		<Unit filename="../include/base/debug/mip_debug.h" />
 		<Unit filename="../include/base/debug/mip_debug_assert.h" />
@@ -288,6 +287,8 @@
 		<Unit filename="../include/gui/widgets/mip_menu_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_opengl_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_panel_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_scroll_bar_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_scroll_box_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_selector_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_slider_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_text_widget.h" />

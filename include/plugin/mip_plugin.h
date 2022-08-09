@@ -1057,6 +1057,15 @@ public: // parameters
 
   //----------
 
+  void setDefaultParameterValues() {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      double value = MParameters[i]->getDefaultValue();
+      MParameters[i]->setValue(value);
+    }
+  }
+
+  //----------
+
   #ifndef MIP_NO_GUI
   void updateEditorParameters() {
     for (uint32_t i=0; i<MParameters.size(); i++) {
