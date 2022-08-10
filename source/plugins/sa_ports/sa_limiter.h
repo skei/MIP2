@@ -81,6 +81,19 @@ private:
   float out2 = 0.0f;
   float out3 = 0.0f;
 
+  const clap_audio_port_info_t myAudioInputPorts[1] = {
+    { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  const clap_audio_port_info_t myAudioOutputPorts[1] = {
+    { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  //appendAudioInputPort(  &myAudioInputPorts[0]  );
+  //appendAudioOutputPort( &myAudioOutputPorts[0] );
+
+
+
 //------------------------------
 public:
 //------------------------------
@@ -164,6 +177,10 @@ public: // plugin
 //------------------------------
 
   bool init() final {
+
+    appendAudioInputPort(  &myAudioInputPorts[0]  );
+    appendAudioOutputPort( &myAudioOutputPorts[0] );
+
     appendParameter(new MIP_Parameter( 0, "Threshold", "",  -30, 0, 0, CLAP_PARAM_IS_AUTOMATABLE ));
     appendParameter(new MIP_Parameter( 1, "Ceiling",   "",  -30, 0, 0, CLAP_PARAM_IS_AUTOMATABLE ));
     bool result = MIP_Plugin::init();

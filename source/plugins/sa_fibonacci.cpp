@@ -1,6 +1,11 @@
 
-#define MIP_DEBUG_PRINT_SOCKET
-// nc -U -l -k /tmp/mip.socket
+
+#define MIP_NO_GUI
+
+#ifndef MIP_EXE
+  #define MIP_DEBUG_PRINT_SOCKET
+  // nc -U -l -k /tmp/mip.socket
+#endif
 
 //----------------------------------------------------------------------
 

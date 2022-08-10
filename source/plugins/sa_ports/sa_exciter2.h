@@ -74,6 +74,17 @@ private:
   float xl23, xl13, yl23, yl13;
   float xr23, xr13, yr23, yr13;
 
+  const clap_audio_port_info_t myAudioInputPorts[1] = {
+    { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  const clap_audio_port_info_t myAudioOutputPorts[1] = {
+    { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  //appendAudioInputPort(  &myAudioInputPorts[0]  );
+  //appendAudioOutputPort( &myAudioOutputPorts[0] );
+
 
 //------------------------------
 public:
@@ -231,6 +242,9 @@ public: // plugin
 //------------------------------
 
   bool init() final {
+
+    appendAudioInputPort(  &myAudioInputPorts[0]  );
+    appendAudioOutputPort( &myAudioOutputPorts[0] );
 
     appendParameter(new MIP_Parameter( 0, "Mix",   "", 0,    100,   0,    CLAP_PARAM_IS_AUTOMATABLE ));
     appendParameter(new MIP_Parameter( 1, "Drive", "", 0,    100,   0,    CLAP_PARAM_IS_AUTOMATABLE ));

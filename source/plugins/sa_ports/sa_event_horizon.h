@@ -108,6 +108,16 @@ private:
   float scratio = 0.0;
   float scmult = 0.0;
 
+  const clap_audio_port_info_t myAudioInputPorts[1] = {
+    { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  const clap_audio_port_info_t myAudioOutputPorts[1] = {
+    { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  //appendAudioInputPort(  &myAudioInputPorts[0]  );
+  //appendAudioOutputPort( &myAudioOutputPorts[0] );
 
 //------------------------------
 public:
@@ -157,7 +167,7 @@ private:
     sccomp    = expf(-sc * _db2log);
     peakdb    = ceildb + 25.0f;
     peaklvl   = expf(peakdb * _db2log);
-    scratio   = MParameters[3]->getValue();
+    scratio   = MParameters[2]->getValue();   // 3??
     scmult    = fabs((ceildb - sc) / (peakdb - sc));
   }
 
@@ -245,6 +255,10 @@ public: // plugin
 //------------------------------
 
   bool init() final {
+
+    appendAudioInputPort(  &myAudioInputPorts[0]  );
+    appendAudioOutputPort( &myAudioOutputPorts[0] );
+
     //appendParameter( new KODE_FloatParameter("threshold",   0,   -30, 0 ));
     //appendParameter( new KODE_FloatParameter("ceiling",    -0.1, -20, 0 ) );
     //appendParameter( new KODE_FloatParameter("soft clip",   2,    0,  6 ) );

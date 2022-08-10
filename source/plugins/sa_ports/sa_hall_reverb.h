@@ -92,6 +92,19 @@ private:
   uint32_t Rp0,  Rp1,  Rp2,  Rp3,  Rp4,  Rp5,  Rp6,  Rp7,  Rp8,  Rp9,  Rp10,  Rp11,  Rp12;
   float  Rt1,Rt2;
 
+  const clap_audio_port_info_t myAudioInputPorts[1] = {
+    { 0, "input1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  const clap_audio_port_info_t myAudioOutputPorts[1] = {
+    { 0, "output1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
+  };
+
+  //appendAudioInputPort(  &myAudioInputPorts[0]  );
+  //appendAudioOutputPort( &myAudioOutputPorts[0] );
+
+
+
 //------------------------------
 public:
 //------------------------------
@@ -267,6 +280,9 @@ public: // plugin
 //------------------------------
 
   bool init() final {
+
+    appendAudioInputPort(  &myAudioInputPorts[0]  );
+    appendAudioOutputPort( &myAudioOutputPorts[0] );
 
     appendParameter(new MIP_Parameter( 0, "Dry",      "", -48,   0,    0,  CLAP_PARAM_IS_AUTOMATABLE ));
     appendParameter(new MIP_Parameter( 1, "Wet",      "", -48,   0,   -12, CLAP_PARAM_IS_AUTOMATABLE ));

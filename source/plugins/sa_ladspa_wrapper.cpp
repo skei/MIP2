@@ -16,8 +16,8 @@
 #include "mip.h"
 #include "base/utils/mip_strutils.h"
 #include "plugin/mip_plugin.h"
-#include "plugin/mip_registry.h"
 
+#include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_entry.h"
 
 #include "plugin/ladspa//mip_ladspa.h"
