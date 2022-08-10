@@ -69,6 +69,7 @@ private:
   MIP_SelectorWidget*   selector1   = nullptr;
   MIP_ButtonRowWidget*  buttonrow1  = nullptr;
   MIP_ScrollBarWidget*  scrollbar1  = nullptr;
+  MIP_GroupBoxWidget*   groupbox1   = nullptr;
 
   MIP_MenuWidget*       menu1       = nullptr;
   MIP_KnobWidget*       knob1       = nullptr;
@@ -213,6 +214,16 @@ public:
       scrollbar1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
       scrollbar1->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_SPREAD;
       left_panel->appendChildWidget(scrollbar1);
+
+      groupbox1 = new MIP_GroupBoxWidget(MIP_DRect(100),false);
+      groupbox1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      groupbox1->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_SPREAD;
+      left_panel->appendChildWidget(groupbox1);
+
+        MIP_ColorWidget* color2 = new MIP_ColorWidget(MIP_DRect(100),MIP_COLOR_RED);
+        color2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+        groupbox1->appendChildWidget(color2);
+
 
     // top
 

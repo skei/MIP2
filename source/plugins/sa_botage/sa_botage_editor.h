@@ -75,25 +75,48 @@ public:
 //------------------------------
 
   void timer_update(sa_botage_process* process) {
-
     //MIP_Assert(MWaveform);
-
     if (MIsEditorOpen) {
       MWaveform->setBuffer(process->MLeftBuffer,process->MBufferLength);
       MWaveform->setNumGrid(process->par_num_beats);
       MWaveform->setNumSubGrid(process->par_num_slices);
+      // marker 0 write pos
       MWaveform->setMarkerActive(0,true);
       MWaveform->setMarkerPos(0,process->MWritePos);
       MWaveform->setMarkerColor(0, MIP_Color(1,0,0,1) );
       MWaveform->setMarkerWidth(0,1);
+      // marker 1 read pos
       MWaveform->setMarkerActive(1,true);
       MWaveform->setMarkerPos(1,process->MReadPos);
       MWaveform->setMarkerColor(1, MIP_Color(0,1,0,1) );
       MWaveform->setMarkerWidth(1,1);
-      MWaveform->setAreaActive(0,true);
-      MWaveform->setAreaStart(0,process->MSliceStart);
-      MWaveform->setAreaLength(0,process->MSliceLength);
-      MWaveform->setAreaColor(0, MIP_Color(0,0,0,0.3) );
+      if (process->MRange) {
+        // area 1 range
+        MWaveform->setAreaActive(0,false);
+        MWaveform->setAreaActive(1,true);
+        MWaveform->setAreaStart(1,process->MRangeStart);
+        MWaveform->setAreaLength(1,process->MRangeLength);
+        MWaveform->setAreaColor(1, MIP_Color(0,0.5,0,0.3) );
+        if (process->MLoop) {
+          // area 2 loop
+          MWaveform->setAreaActive(2,true);
+          MWaveform->setAreaStart(2,process->MLoopStart);
+          MWaveform->setAreaLength(2,process->MLoopLength);
+          MWaveform->setAreaColor(2, MIP_Color(0,1,0,0.3) );
+        }
+        else {
+          MWaveform->setAreaActive(2,false);
+        }
+      }
+      else {
+        MWaveform->setAreaActive(1,false);
+        MWaveform->setAreaActive(2,false);
+        // area 0 current slice
+        MWaveform->setAreaActive(0,true);
+        MWaveform->setAreaStart(0,process->MSliceStart);
+        MWaveform->setAreaLength(0,process->MSliceLength);
+        MWaveform->setAreaColor(0, MIP_Color(0,0,0,0.4) );
+      }
       MWaveform->redraw();//do_widget_redraw(MWaveform);
     }
   }

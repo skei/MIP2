@@ -53,6 +53,7 @@ public:
     //Layout.spacing = 5;
     if (showVerticalScrollBar) {
       MVerticalScrollBar = new MIP_ScrollBarWidget( MIP_DRect(10,10) );
+      MVerticalScrollBar->setWidgetName("scrollbox/vert.scr");
       MVerticalScrollBar->Layout.alignment = MIP_WIDGET_ALIGN_FILL_RIGHT;
       MVerticalScrollBar->setDirection(MIP_VERTICAL);
       if (showHorizontalScrollBar) {
@@ -62,17 +63,19 @@ public:
     }
     if (showHorizontalScrollBar) {
       MHorizontalScrollBar = new MIP_ScrollBarWidget( MIP_DRect(10,10) );
+      MHorizontalScrollBar->setWidgetName("scrollbox/hor.scr");
       MHorizontalScrollBar->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
       MHorizontalScrollBar->setDirection(MIP_HORIZONTAL);
       //MHorizontalScrollBar->layout.extraBorder.w = 10;
       MIP_PanelWidget::appendChildWidget(MHorizontalScrollBar);
     }
     MContent = new MIP_PanelWidget(MIP_DRect());
+    MContent->setWidgetName("scrollbox/content");
     MContent->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     //MContent->layout.spacing = 5;
     //MContent->layout.innerBorder = 0;
     MContent->setDrawBorder(false);
-    MContent->setFillBackground(false);
+    MContent->setFillBackground(true);
     //MContent->setFillBackground(true);
     //MContent->setBackgroundColor(MIP_COLOR_DARK_GREEN);
     MIP_PanelWidget::appendChildWidget(MContent);
@@ -80,7 +83,7 @@ public:
 
   //----------
 
-  virtual MIP_Widget* getContentWidget() {
+  virtual MIP_PanelWidget* getContentWidget() {
     return MContent;
   }
 
@@ -121,10 +124,16 @@ public:
   //----------
 
   void alignChildWidgets(bool ARecursive=true) override {
-    MIP_Widget::alignChildWidgets(ARecursive);
+    MIP_PanelWidget::alignChildWidgets(ARecursive);
     MIP_DRect content = MContent->getContentRect();
     float rect_w = MContent->getRect().w;
+
     float rect_h = MContent->getRect().h;
+
+//MIP_Print("\n");
+//MIP_DPrint("MContent->getContentRect: %.0f,%.0f, %.0f,%.0f\n",content.x,content.y,content.w,content.h);
+//MIP_DPrint("MContent->getRect: %.0f,%.0f\n",rect_w,rect_h);
+
     if (showVerticalScrollBar) {
       if (rect_h > 0) {
         float thumb_ratio = rect_h / content.h;         // size of thumb (0..1)

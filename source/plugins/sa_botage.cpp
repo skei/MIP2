@@ -168,7 +168,7 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) override {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     MEditor = new sa_botage_editor(this,MEditorWidth,MEditorHeight,MParameters);
     return true;
   }
@@ -176,7 +176,7 @@ public: // gui
   //----------
 
   void gui_destroy() override {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     gui_hide(); // stops timer, etc..
     delete MEditor; // delete (sa_botage_editor*)MEditor;
     MEditor = nullptr;

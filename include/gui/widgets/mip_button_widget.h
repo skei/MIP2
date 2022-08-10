@@ -47,7 +47,7 @@ public:
 public:
 //------------------------------
 
-  virtual void setIsToggle(bool AToggle) { MIsToggle = AToggle; }
+  virtual void setIsToggle(bool AToggle=true) { MIsToggle = AToggle; }
 
 //------------------------------
 public: // parent to child

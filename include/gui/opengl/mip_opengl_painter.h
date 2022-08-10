@@ -263,7 +263,7 @@ private:
   // should this be done per window/context, or once per program/library?
 
   bool loadOpenGL() {
-    MIP_Print("calling sogl_loadOpenGL\n");
+    //MIP_Print("calling sogl_loadOpenGL\n");
     if (!sogl_loadOpenGL()) {
       MIP_Print("Error: sogl_loadOpenGL:\n");
       const char** failures = sogl_getFailures();

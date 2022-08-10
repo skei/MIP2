@@ -14,7 +14,7 @@ class MIP_PanelWidget
 protected:
 //------------------------------
 
-  bool      MDrawRoundedCorners   = true;
+  bool      MDrawRoundedCorners   = false;//true;
   //float     MCornerRadius         = 4.0;
   float     MULCornerRadius       = 4.0;
   float     MURCornerRadius       = 4.0;
@@ -22,7 +22,7 @@ protected:
   float     MBLCornerRadius       = 4.0;
 
   bool      MFillBackground       = true;
-  bool      MFillGradient         = true;
+  bool      MFillGradient         = false;//true;
 
   MIP_Color MBackgroundColor      = MIP_COLOR_GRAY;
   MIP_Color MGradientColor1       = MIP_Color(0.6, 0.6, 0.6);
@@ -61,9 +61,16 @@ public:
   virtual void setFillBackground(bool AFill=true)                       { MFillBackground = AFill; }
   virtual void setFillGradient(bool AFill=true)                         { MFillGradient = AFill; }
   virtual void setDrawBorder(bool ADraw=true)                           { MDrawBorder = ADraw; }
-  //virtual void setCornerRadius(float ARadius)                           { MCornerRadius = ARadius; }
+
   virtual void setCornerRadius(float ul, float ur, float br, float bl)  { MULCornerRadius = ul; MURCornerRadius = ur; MBRCornerRadius = br; MBLCornerRadius = bl; }
   virtual void setCornerRadius(float r)                                 { MULCornerRadius = r; MURCornerRadius = r; MBRCornerRadius = r; MBLCornerRadius = r; }
+
+  virtual void setBackgroundColor(MIP_Color AColor) { MBackgroundColor = AColor; }
+  virtual void setGradientColor1(MIP_Color AColor) { MGradientColor1 = AColor; }
+  virtual void setGradientColor2(MIP_Color AColor) { MGradientColor2 = AColor; }
+  virtual void setBorderColor(MIP_Color AColor) { MBorderColor = AColor; }
+  virtual void setBorderWidth(double AWidth) { MBorderWidth = AWidth; }
+
 
 //------------------------------
 public:
@@ -87,7 +94,7 @@ public:
       if (MDrawRoundedCorners) painter->roundedRectVarying(MRect.x,MRect.y,MRect.w,MRect.h, MULCornerRadius, MURCornerRadius, MBRCornerRadius, MBLCornerRadius);
       else painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
       if (MFillGradient) {
-        MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y + MRect.y2(), MGradientColor1, MGradientColor2);
+        MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y2(), MGradientColor1, MGradientColor2);
         painter->fillPaint(paint);
       }
       else {

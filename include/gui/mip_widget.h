@@ -122,6 +122,7 @@ public:
 //------------------------------
 
   const char*             getWidgetName() { return MName; }
+  void                    setWidgetName(const char* AName) { MName = AName; }
 
   virtual MIP_Widget*     getParentWidget() { return MParent; }
   virtual MIP_DRect       getWidgetRect()   { return MRect; }
@@ -225,20 +226,20 @@ public: // child to parent
     also set initial-rect, since alignment is starting from that
   */
 
-  #if 0
-  virtual void do_widget_resized(MIP_Widget* AWidget, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) {
+  virtual void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) {
     //if (MParent) MParent->do_widget_resized(ASender,ADeltaX,ADeltaY);
     MRect.w += ADeltaX;
     MRect.h += ADeltaY;
-    MInitialRect.w += ADeltaX;
-    MInitialRect.h += ADeltaY;
+//    MInitialRect.w += ADeltaX;
+//    MInitialRect.h += ADeltaY;
+    Layout.baseRect.w += ADeltaX;
+    Layout.baseRect.h += ADeltaY;
     //resize(ADeltaX,ADeltaY);
     if (MParent) {
-      MParent->alignWidgets();
+      MParent->alignChildWidgets();
       MParent->redraw();
     }
   }
-  #endif
 
 //------------------------------
 public:
@@ -368,27 +369,6 @@ public: // hierarchy
 
   virtual void alignChildWidgets(bool ARecursive=true) {
 
-    // do some initialization
-
-    MIP_DRect border = Layout.border;
-    //border.scale(Layout.scale);
-
-    MIP_DPoint spacing = Layout.spacing;
-    //spacing.scale(Layout.scale);
-
-    // content
-
-    MContentRect = MRect;
-    /*if (!Layout.contentBorder)*/ MContentRect.shrink(border);
-    //content.setPos(0,0);
-    MContentRect.setSize(0,0);
-
-    MIP_DRect parent_rect = MRect;
-    parent_rect.shrink(border);
-
-    MIP_DRect client_rect = MRect;
-    client_rect.shrink(border);
-
     // stacking
 
     float stackx = 0;
@@ -397,10 +377,28 @@ public: // hierarchy
     float stack_widest = 0;
     uint32_t prev_alignment = MIP_WIDGET_ALIGN_NONE;
 
+    MIP_DRect border = Layout.border;
+    //border.scale(Layout.scale);
+
+    MIP_DPoint spacing = Layout.spacing;
+    //spacing.scale(Layout.scale);
+
+    MIP_DRect parent_rect = MRect;
+    parent_rect.shrink(border);
+
+    MIP_DRect client_rect = MRect;
+    client_rect.shrink(border);
+
+    MContentRect = MRect;
+    /*if (!Layout.contentBorder)*/ MContentRect.shrink(border);
+    //content.setPos(0,0);
+    MContentRect.setSize(0,0);
+
     //
 
-    uint32_t num = MChildren.size();
+    //MIP_Print("%s : %.0f,%.0f, %.0f,%.0f\n",getWidgetName(),MContentRect.x,MContentRect.y,MContentRect.w,MContentRect.h);
 
+    uint32_t num = MChildren.size();
     if (num > 0) {
 
       double child_width  = (client_rect.w - (Layout.spacing.x * (num - 1))) / MChildren.size();
@@ -414,7 +412,6 @@ public: // hierarchy
 
           MIP_DRect child_rect = child->Layout.baseRect;
           uint32_t  alignment = child->Layout.alignment;
-
 
           // scale
 
@@ -582,6 +579,7 @@ public: // hierarchy
               child_rect.x += client_rect.x;
               child_rect.y += client_rect.y2() - child_rect.h;
               //rect.w = client.w;
+
               break;
 
             case MIP_WIDGET_ALIGN_BOTTOM_LEFT:
@@ -818,15 +816,23 @@ public: // hierarchy
 //          child->MRect.x += MChildrenXOffset;
 //          child->MRect.y += MChildrenYOffset;
           MContentRect.combine(child_rect);
+
+          //MIP_Print("post MContentRect: %.0f,%.0f, %.0f,%.0f\n",MContentRect.x,MContentRect.y,MContentRect.w,MContentRect.h);
+
           if (ARecursive) {
             child->alignChildWidgets(ARecursive);
           }
 
         } //  visible
       } // for
+
+      //MIP_Print("%s: %.0f,%.0f, %.0f,%.0f\n",getWidgetName(),MContentRect.x,MContentRect.y,MContentRect.w,MContentRect.h);
+
     } // num > 0
-    MContentRect.w += border.w;
-    MContentRect.h += border.h;
+
+    MContentRect.w += (border.x + border.w);
+    MContentRect.h += (border.y + border.h);
+
     //MContentRect.w += (layout.innerBorder.w * layout.scale);
     //MContentRect.h += (layout.innerBorder.h * layout.scale);
   }

@@ -36,27 +36,32 @@ private:
   double    MReadSpeed                = 1.0;
 
   uint32_t  MSlice                    = 0;
+  double    MSliceFract               = 0.0;
   uint32_t  MSliceStart               = 0;
   uint32_t  MSliceLength              = 0;
 
   bool      MRange                    = false;
+  double    MRangeFract               = 0.0;
   uint32_t  MRangeStart               = 0;
   uint32_t  MRangeLength              = 0;
+  uint32_t  MRangeCount               = 0;
 
   bool      MLoop                     = false;
+  double    MLoopFract                = 0.0;
   uint32_t  MLoopStart                = 0;
   uint32_t  MLoopLength               = 0;
+  uint32_t  MLoopCount                = 0;
 
 //------------------------------
 private:
 //------------------------------
 
-  uint32_t  par_num_beats         = 4;
-  uint32_t  par_num_slices        = 2;
+  uint32_t  par_num_beats     = 4;
+  uint32_t  par_num_slices    = 2;
 
-  double    par_range_prob        = 0.0;
-  uint32_t  par_range_slices      = 0;
-  uint32_t  par_range_loops       = 0;
+  double    par_range_prob    = 0.0;
+  uint32_t  par_range_slices  = 0;
+  uint32_t  par_range_loops   = 0;
 
 //------------------------------
 public:
@@ -117,7 +122,6 @@ public:
     MBufferLengthF = (double)par_num_beats * samples_per_beat;
     MBufferLength = ceil(MBufferLengthF);
     uint32_t len = process->frames_count;
-
     if (MIsPlaying) {
       double slice_length = MBufferLengthF / (double)(par_num_beats * par_num_slices);
       for (uint32_t i=0; i<len; i++) {
@@ -126,32 +130,26 @@ public:
 
         double slice_pos = (double)MWritePos / slice_length;
         MSlice = MIP_Trunc(slice_pos);
-        //double slice_fract = slice_pos - MSlice; // 0..1
+        MSliceFract = slice_pos - MSlice; // 0..1
         MSliceStart = MSlice * slice_length;
         MSliceLength = slice_length;
 
+        handleSample();
         if (MSlice != MPrevSlice) {
-          MIP_Print("New slice: %i\n",MSlice);
-          // new slice
+          handleSlice();
         }
         MPrevSlice = MSlice;
-
         uint32_t pos = MIP_Fract(MReadPos);
         float buf0 = MLeftBuffer[pos];
         float buf1 = MRightBuffer[pos];
-
         MLeftBuffer[MWritePos]  = in0;
         MRightBuffer[MWritePos] = in1;
-
         MReadPos += MReadSpeed;
         MReadPos = fmod(MReadPos,MBufferLength);
-
         MWritePos += 1;
         MWritePos %= MBufferLength;
-
         float out0 = in0 + buf0;
         float out1 = in1 + buf1;
-
         *audioout0++ = out0;
         *audioout1++ = out1;
       }
@@ -168,6 +166,50 @@ public:
 
   }
 
+//------------------------------
+private:
+//------------------------------
+
+  void handleSample() {
+    MRangeCount += 1;
+    if (MRangeCount >= MRangeLength) { // range finished?
+      MRange = false;
+      MLoop = false;
+    }
+  }
+
+  //----------
+
+  void handleSlice() {
+    //MIP_Print("New slice: %i\n",MSlice);
+    if (MRange) { // have range?
+    }
+    else { // not range
+      MRange = false;
+      MLoop = false;
+      if (MIP_RandomRange(0,1) >= 0.5) { // start range?
+
+        uint32_t remain = (par_num_beats * par_num_slices) - MSlice;
+        uint32_t num_slices = MIP_RandomRangeInt(1,4);
+        num_slices = MIP_MinI(num_slices,remain);
+
+        MRange = true;
+        MRangeCount = 0;
+        MRangeStart = MSliceStart;
+        MRangeLength = MSliceLength * num_slices;
+
+        uint32_t num_loops = MIP_RandomRangeInt(1,4);
+
+        MLoop = true;
+        MLoopCount = 0;
+        MLoopStart = MSliceStart;
+        MLoopLength = MRangeLength / num_loops;
+
+        //MIP_Print("num %i : remain %i = num_slices %i - MSlice %i\n",num,remain,par_num_beats*par_num_slices,MSlice);
+
+      }
+    }
+  }
 
 };
 
