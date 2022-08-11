@@ -660,18 +660,65 @@ public: // EXT state
 //------------------------------
 
   bool state_save(const clap_ostream_t *stream) override {
+    uint32_t written = 0;
     uint32_t version = 0;
-    uint32_t written = stream->write(stream,&version,sizeof(uint32_t));
-    MIP_Assert(written == sizeof(uint32_t));
+    uint32_t num_params = MParameters.size();
+    // version
+    written = stream->write(stream,&version,sizeof(uint32_t));
+    if (written != sizeof(uint32_t)) {
+      MIP_Print("state_save: error writing version\n");
+      return false;
+    }
+    // num params
+    written = stream->write(stream,&num_params,sizeof(uint32_t));
+    if (written != sizeof(uint32_t)) {
+      MIP_Print("state_save: error writing parameter count\n");
+      return false;
+    }
+    // param values
+    for (uint32_t i=0; i<num_params; i++) {
+      double value = MParameters[i]->getValue();
+      written = stream->write(stream,&value,sizeof(double));
+      if (written != sizeof(double)) {
+        MIP_Print("state_load: error writing parameter %i\n",i);
+        return false;
+      }
+    }
     return true;
   }
 
   //----------
 
   bool state_load(const clap_istream_t *stream) override {
+    uint32_t read = 0;
     uint32_t version = 0;
-    uint32_t written = stream->read(stream,&version,sizeof(uint32_t));
-    MIP_Assert(written == sizeof(uint32_t));
+    uint32_t num_params = 0;
+    // version
+    read = stream->read(stream,&version,sizeof(uint32_t));
+    if (read != sizeof(uint32_t)) {
+      MIP_Print("state_load: error reading version\n");
+      return false;
+    }
+    // num params
+    read = stream->read(stream,&num_params,sizeof(uint32_t));
+    if (read != sizeof(uint32_t)) {
+      MIP_Print("state_load: error reading parameter count\n");
+      return false;
+    }
+    if (num_params != MParameters.size()) {
+      MIP_Print("state_load: wrong parameter count\n");
+      return false;
+    }
+    // param values
+    for (uint32_t i=0; i<num_params; i++) {
+      double value = 0.0;
+      read = stream->read(stream,&value,sizeof(double));
+      if (read != sizeof(double)) {
+        MIP_Print("state_load: error reading parameter %i\n",i);
+        return false;
+      }
+      MParameters[i]->setValue(value);
+    }
     return true;
   }
 
