@@ -78,7 +78,7 @@ public:
       rect.y += MTextOffset.y;
       double textsize = MTextSize;
       if (MTextSize < 0) {
-        textsize = MRect.h;
+        textsize = MRect.h * (- MTextSize);
       }
       painter->fontSize(textsize);
       painter->beginPath();
