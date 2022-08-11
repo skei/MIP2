@@ -37,7 +37,7 @@ public:
     MTitleBar = new MIP_ButtonWidget( MIP_DRect(0,HEADER_HEIGHT),"Open","Closed",1.0 );
     MTitleBar->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     MTitleBar->setIsToggle();
-//    MTitleBar->setText("Closed","Open");
+    MTitleBar->setTexts("Open","Closed");
     MTitleBar->setDrawBorder(false);
 //    MTitleBar->setRoundedCorners(MIP_CORNER_NONE);
     MTitleBar->setFillGradient(false);
@@ -125,8 +125,8 @@ public:
     //setResized( MIP_Point(0,rs) );
 //    setHeight(MClosedSize);
 //    setInitialHeight(MClosedSize);
-    MRect.h = MOpenSize;
-    Layout.baseRect = MOpenSize;
+    MRect.h = MClosedSize;
+    Layout.baseRect = MClosedSize;
     if (MParent) MParent->do_widget_resized(this/*,MRect.w,MClosedSize*/);
   }
 
