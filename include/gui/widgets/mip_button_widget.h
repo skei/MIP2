@@ -49,6 +49,11 @@ public:
 
   virtual void setIsToggle(bool AToggle=true) { MIsToggle = AToggle; }
 
+  virtual void setTexts(const char* AOnText, const char* AOffText) {
+    MOnText = AOnText;
+    MOffText = AOffText;
+  }
+
 //------------------------------
 public: // parent to child
 //------------------------------
