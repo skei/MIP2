@@ -28,6 +28,7 @@ struct MIP_WidgetLayout {
   double      aspectRatio = -1;                           // if > 0, force aspect ratio (scale down)
   uint32_t    sizeModeX   = MIP_WIDGET_SIZE_MODE_PIXELS;  // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
   uint32_t    sizeModeY   = MIP_WIDGET_SIZE_MODE_PIXELS;  // y,h - --"--
+  MIP_DRect   initialRect = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   baseRect    = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   border      = MIP_DRect(0,0,0,0);           // inner border
   MIP_DRect   extraBorder = MIP_DRect(0,0,0,0);           // additional border
@@ -94,6 +95,7 @@ public:
 //------------------------------
 
   MIP_Widget(MIP_DRect ARect) {
+    Layout.initialRect = ARect;
     Layout.baseRect = ARect;
     MRect = ARect;
   }
@@ -792,17 +794,15 @@ public: // hierarchy
             if (child_rect.h > 0) {
               double aspect = child_rect.w / child_rect.h;
               if (aspect >= child->Layout.aspectRatio) {
-                double w_prev = child_rect.w;
                 double w_new = child_rect.h * child->Layout.aspectRatio;
-                //child_rect.w = child_rect.h * child->Layout.aspectRatio;
-                child_rect.x += (w_prev - w_new) * 0.5;
+                //double w_prev = child_rect.w;
+                //child_rect.x += (w_prev - w_new) * 0.5;
                 child_rect.w = w_new;
               }
               else {
-                double h_prev = child_rect.h;
                 double h_new = child_rect.w / child->Layout.aspectRatio;
-                //child_rect.h = child_rect.w / child->Layout.aspectRatio;
-                child_rect.y += (h_prev - h_new) * 0.5;
+                //double h_prev = child_rect.h;
+                //child_rect.y += (h_prev - h_new) * 0.5;
                 child_rect.h = h_new;
               }
             } // h > 0

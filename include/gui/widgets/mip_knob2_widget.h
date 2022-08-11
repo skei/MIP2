@@ -42,40 +42,35 @@ public:
     setCornerRadius(0);
     //Layout.border = MIP_DRect(5,5,5,5);
 
-    MLabelWidget  = new MIP_TextWidget( MIP_DRect( 1, 0.20 ), AText );
-    MValueWidget  = new MIP_TextWidget( MIP_DRect( 1, 0.20 ), AText );
-    MKnobWidget   = new MIP_KnobWidget( MIP_DRect(), "", 0.0 );
+    sprintf(MKnobValueText,"%.2f",AValue);
 
-    appendChildWidget(MLabelWidget);
-    appendChildWidget(MValueWidget);
-    appendChildWidget(MKnobWidget);
-
-    MLabelWidget->setFillBackground(false);
+    MLabelWidget = new MIP_TextWidget( MIP_DRect( 1, 0.20 ), AText );
+    MLabelWidget->setFillBackground(true);
     MLabelWidget->setDrawBorder(false);
     MLabelWidget->setTextSize(-1);
     MLabelWidget->setTextColor(MIP_COLOR_BLACK);
     MLabelWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     MLabelWidget->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
     MLabelWidget->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
+    appendChildWidget(MLabelWidget);
 
-    MValueWidget->setFillBackground(false);
-    MValueWidget->setDrawBorder(false);
-    MValueWidget->setTextSize(-1);
-    MValueWidget->setTextColor(MIP_COLOR_BLACK);
+    MValueWidget = new MIP_TextWidget( MIP_DRect( 1, 0.20 ), AText );
     MValueWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
     MValueWidget->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
     MValueWidget->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
+    MValueWidget->setFillBackground(true);
+    MValueWidget->setDrawBorder(false);
+    MValueWidget->setText(MKnobValueText);
+    MValueWidget->setTextSize(-1);
+    MValueWidget->setTextColor(MIP_COLOR_BLACK);
+    appendChildWidget(MValueWidget);
 
+    MKnobWidget = new MIP_KnobWidget( MIP_DRect(), "", 0.0 );
+    MKnobWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     MKnobWidget->setFillBackground(false);
     MKnobWidget->setDrawBorder(false);
-
-
-    sprintf(MKnobValueText,"%.2f",getValue());
-    MValueWidget->setText(MKnobValueText);
-
-    //MKnobWidget->setFillBackground(false);
-    //MKnobWidget->setDrawBorder(false);
-    MKnobWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    MKnobWidget->setDrawBorder(false);
+    appendChildWidget(MKnobWidget);
 
   }
 

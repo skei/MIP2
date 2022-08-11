@@ -21,7 +21,7 @@ protected:
   bool      MDrawArc      = true;
   MIP_Color MArcColor     = MIP_COLOR_LIGHT_GRAY;
   MIP_Color MArcBackColor = MIP_COLOR_DARK_GRAY;
-  double    MArcWidth     = 8.0;
+  double    MArcWidth     = 25.0;
 
 //------------------------------
 public:
@@ -79,17 +79,20 @@ public:
         }
       }
 
-      painter->strokeWidth(MArcWidth);
 
       double range = maxval - minval;
       if (range > 0) {
         double v = value / range; // 0..1
 
+        double arcwidth = MRect.w * MArcWidth / 100.0;
+
         double cx = MRect.x + (MRect.w * 0.5);
-        double cy = MRect.y + (MRect.h * 0.5);
-        double r  = (MRect.w * 0.5) - (MArcWidth * 0.5);
+        double cy = MRect.y + (MRect.h * 0.5) + (arcwidth * 0.25);
+        double r  = (MRect.w * 0.5) - (arcwidth * 0.5);
         double a1 = (0.0 + 0.25 + 0.1) * MIP_PI2;
         double a2 = a1 + (v * 0.8 * MIP_PI2);
+
+        painter->strokeWidth( arcwidth );
 
         painter->beginPath();
         painter->strokeColor(MArcBackColor);
