@@ -351,17 +351,25 @@ public: // hierarchy
 
   virtual void paintChildWidgets(MIP_PaintContext* AContext) {
     //MIP_PRINT;
-    MIP_DRect updaterect = AContext->updateRect;
     uint32_t num = MChildren.size();
-    for (uint32_t i=0; i<num; i++) {
-      MIP_Widget* widget = MChildren[i];
-      if (widget->Flags.visible) {
-        MIP_DRect widgetrect = widget->MRect;
-        if (widgetrect.intersects(updaterect)) {
-          // check if  AContext->updateRect
-          widget->on_widget_paint(AContext);
+    if (num > 0) {
+      MIP_DRect updaterect = AContext->updateRect;
+      //MIP_Print("updaterect %.0f,%.0f , %.0f,%.0f\n",updaterect.x,updaterect.y,updaterect.w,updaterect.h);
+      //AContext->painter->pushClip(updaterect);
+      //AContext->painter->pushClip(MRect);
+      for (uint32_t i=0; i<num; i++) {
+        MIP_Widget* widget = MChildren[i];
+        if (widget->Flags.visible) {
+          MIP_DRect widgetrect = widget->MRect;
+          if (widgetrect.intersects(updaterect)) {
+            //TODO: check if  AContext->updateRect
+            //AContext->painter->pushClip(widget->getRect());
+            widget->on_widget_paint(AContext);
+            //AContext->painter->popClip();
+          }
         }
       }
+      //AContext->painter->popClip();
     }
   }
 

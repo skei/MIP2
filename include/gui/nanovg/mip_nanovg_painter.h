@@ -103,6 +103,16 @@ public:
     MIP_OpenGLPainter::endPaint();
   }
 
+  //----------
+
+  void setClip(MIP_DRect ARect) {
+    scissor(ARect.x,ARect.y,ARect.w,ARect.h);
+  }
+
+  void resetClip() {
+    resetScissor();
+  }
+
 //------------------------------
 public:
 //------------------------------

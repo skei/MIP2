@@ -27,10 +27,10 @@
 
 //----------
 
-#if 0
+// clip stack
+
 #define MIP_RECT_STACK_SIZE 1024
 typedef MIP_Stack<MIP_DRect,MIP_RECT_STACK_SIZE> MIP_DRectStack;
-#endif // 0
 
 //----------------------------------------------------------------------
 //
@@ -45,10 +45,8 @@ class MIP_Painter
 private:
 //------------------------------
 
-  #if 0
-  MIP_DRect      MClipRect;
+  MIP_DRect       MClipRect;
   MIP_DRectStack  MClipStack;
-  #endif
 
 //------------------------------
 public:
@@ -57,9 +55,7 @@ public:
   MIP_Painter(MIP_Drawable* ATarget, MIP_Drawable* ASource)
   : MIP_ImplementedPainter(ATarget,ASource) {
 
-    #if 0
-    MClipRect = MIP_FRect( ATarget->getWidth()-1, ATarget->getHeight()-1 );
-    #endif
+    MClipRect = MIP_DRect( ATarget->drawable_getWidth()-1, ATarget->drawable_getHeight()-1 );
 
   }
 
@@ -72,14 +68,12 @@ public:
 public: // clipping
 //------------------------------
 
-  #if 0
-
   /*
     - push current clip rect
     - set new clip rect
   */
 
-  void pushClip(MIP_FRect ARect) {
+  void pushClip(MIP_DRect ARect) {
     //MIP_Print("ARect = %.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     //MIP_Print("depth: %i\n",MClipStack.getNumItems());
     MClipStack.push(MClipRect);
@@ -95,7 +89,7 @@ public: // clipping
     - set clip rect to popped rect
   */
 
-  MIP_FRect popClip() {
+  MIP_DRect popClip() {
     MClipRect = MClipStack.pop();
     //MIP_Print("MClipRect = %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
     //resetClip();
@@ -111,18 +105,16 @@ public: // clipping
 
   //----------
 
-  void setClipRect(MIP_FRect ARect) {
+  void setClipRect(MIP_DRect ARect) {
     MClipRect = ARect;
     //MIP_Print("ARect = %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
   }
 
   //----------
 
-  MIP_FRect getClipRect() {
+  MIP_DRect getClipRect() {
     return MClipRect;
   }
-
-  #endif // 0
 
 //------------------------------
 public:
