@@ -51,7 +51,7 @@ public:
 
   MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
   : MIP_Window(AWidth,AHeight,true) {
-    MIP_Print("width %i height %i\n",AWidth,AHeight);
+    //MIP_Print("width %i height %i\n",AWidth,AHeight);
     MEditorListener = AListener;
     MEditorWidth = AWidth;
     MEditorHeight = AHeight;
@@ -66,12 +66,9 @@ public:
 
   virtual ~MIP_Editor() {
     //MIP_PRINT;
-
     if (MIsEditorOpen) {
       hide();
     }
-
-    //MIP_PRINT;
     //free(MParameterToWidget);
   }
 
@@ -92,7 +89,7 @@ public: // clap gui
   */
 
   virtual bool setScale(double scale) {
-    MIP_Print("scale %f -> true\n",scale);
+    //MIP_Print("scale %f -> true\n",scale);
     MEditorScale = scale;
     return true;
   }
@@ -106,8 +103,7 @@ public: // clap gui
   */
 
   virtual bool getSize(uint32_t *width, uint32_t *height) {
-    MIP_Print("-> true (%i, %i)\n",MEditorWidth,MEditorHeight);
-    //MIP_PRINT;
+    //MIP_Print("-> true (%i, %i)\n",MEditorWidth,MEditorHeight);
     *width = MEditorWidth;
     *height = MEditorHeight;
     return true;
@@ -122,7 +118,7 @@ public: // clap gui
   */
 
   virtual bool canResize() {
-    MIP_Print("-> true\n");
+    //MIP_Print("-> true\n");
     return true;
   }
 
@@ -136,14 +132,14 @@ public: // clap gui
   // ratios could be calculated from initial size..
 
   virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
-    MIP_Print("-> true (aspect:%i:%i)\n",420,620);
+    //MIP_Print("-> true (aspect:%i:%i)\n",420,620);
     hints->can_resize_horizontally  = true;
     hints->can_resize_vertically    = true;
     hints->aspect_ratio_width       = 420;
     hints->aspect_ratio_height      = 620;
     hints->preserve_aspect_ratio    = false;//true;
-    return true;
-    //return false;
+    //return true;
+    return false;
   }
 
   //----------

@@ -38,6 +38,8 @@ const clap_plugin_descriptor_t myDescriptor = {
 //
 //----------------------------------------------------------------------
 
+/*
+
 class myEditor
 : public MIP_Editor {
 
@@ -48,11 +50,9 @@ public:
   myEditor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
   : MIP_Editor(AListener,AWidth,AHeight) {
     setWindowFillBackground(false);
-
     MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect( 0,0,500,400), MIP_COLOR_GRAY );
     appendChildWidget(background);
     background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-
   }
 
   //----------
@@ -61,6 +61,8 @@ public:
   }
 
 };
+
+*/
 
 //----------------------------------------------------------------------
 //
@@ -142,34 +144,49 @@ public: // plugin
   //void preProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
   //void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
   //void processEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {}
-  //void processEvent(const clap_event_header_t* header) final {}
 
-  //void processNoteOnEvent(const clap_event_note_t* event) final {}
-  //void processNoteOffEvent(const clap_event_note_t* event) final {}
-  //void processNoteChokeEvent(const clap_event_note_t* event) final {}
-  //void processNoteEndEvent(const clap_event_note_t* event) final {}
-  //void processNoteExpressionEvent(const clap_event_note_expression_t* event) final {}
-  //void processParamValueEvent(const clap_event_param_value_t* event) final {}
-  //void processParamModEvent(const clap_event_param_mod_t* event) final {}
-  //void processParamGestureBeginEvent(const clap_event_param_gesture_t* event) final {}
-  //void processParamGestureEndEvent(const clap_event_param_gesture_t* event) final {}
-  //void processTransportEvent(const clap_event_transport_t* event) final {}
-  //void processMidiEvent(const clap_event_midi_t* event) final {}
-  //void processMidiSysexEvent(const clap_event_midi_sysex_t* event) final {}
-  //void processMidi2Event(const clap_event_midi2_t* event) final {}
+  //void processNoteOn(const clap_event_note_t* event) final {}
+  //void processNoteOff(const clap_event_note_t* event) final {}
+  //void processNoteChoke(const clap_event_note_t* event) final {}
+  //void processNoteEnd(const clap_event_note_t* event) final {}
+  //void processNoteExpression(const clap_event_note_expression_t* event) final {}
+  //void processParamValue(const clap_event_param_value_t* event) final {}
+  //void processParamMod(const clap_event_param_mod_t* event) final {}
+  //void processParamGestureBegin(const clap_event_param_gesture_t* event) final {}
+  //void processParamGestureEnd(const clap_event_param_gesture_t* event) final {}
+  //void processTransport(const clap_event_transport_t* event) final {}
+  //void processMidi(const clap_event_midi_t* event) final {}
+  //void processMidiSysex(const clap_event_midi_sysex_t* event) final {}
+  //void processMidi2(const clap_event_midi2_t* event) final {}
 
   //----------
 
-  //void processAudioBlock(const clap_process_t* process) final {}
-  //void processTransport(const clap_event_transport_t* transport) final {}
+  void processAudioBlock(const clap_process_t* process) final {
+    uint32_t len = process->frames_count;
+    float* in0 = process->audio_inputs[0].data32[0];
+    float* in1 = process->audio_inputs[0].data32[1];
+    float* out0 = process->audio_outputs[0].data32[0];
+    float* out1 = process->audio_outputs[0].data32[1];
+    for (uint32_t i=0; i<len; i++) {
+      *out0++ = *in0++;
+      *out1++ = *in1++;
+    }
+  }
 
 //------------------------------
 public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) override {
-    MEditor = new myEditor(this,MEditorWidth,MEditorHeight);
-    return true;
+    //MEditor = new myEditor(this,MEditorWidth,MEditorHeight);
+    bool result = MIP_Plugin::gui_create(api,is_floating);
+    if (result) {
+      MEditor->setWindowFillBackground(false);
+      MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect( 0,0,500,400), MIP_COLOR_GRAY );
+      background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+      MEditor->appendChildWidget(background);
+    }
+    return result;
   }
 
   //----------
