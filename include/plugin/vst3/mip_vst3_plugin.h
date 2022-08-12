@@ -54,7 +54,7 @@ class MIP_Vst3Plugin
 private:
 //------------------------------
 
-  MIP_ParameterArray*             MParameters         = nullptr;
+//  MIP_ParameterArray*             MParameters         = nullptr;
   MIP_ClapPlugin*                 MPlugin             = nullptr;
   const clap_plugin_descriptor_t* MDescriptor         = nullptr;
   MIP_Vst3HostImplementation*     MHost               = nullptr;
@@ -110,9 +110,9 @@ public:
 
   // called from vst3Entry
 
-  void setParameters(MIP_ParameterArray* AParameters) {
-    MParameters = AParameters;
-  }
+//  void setParameters(MIP_ParameterArray* AParameters) {
+//    MParameters = AParameters;
+//  }
 
 //------------------------------
 private: // in_events
@@ -2060,7 +2060,8 @@ public:
   ParamValue PLUGIN_API getParamNormalized(ParamID id) override {
     if (id < MPlugin->params_count()) {
       //float v = MPlugin->getParamValue(id);
-      MIP_Parameter* param = MParameters->item(id);
+      MIP_Plugin* plugin = (MIP_Plugin*)MPlugin;
+      MIP_Parameter* param = plugin->getParameter(id);
       double v = param->getValue();
       //float v = 0;
       return v;
@@ -2230,6 +2231,9 @@ public:
         clap_window_t clap_window = {};
         clap_window.api = CLAP_WINDOW_API_X11;
         clap_window.x11 = (clap_xwnd)parent;//MWindow->getXcbWindow();
+
+        gui->set_size(plugin,width,height);
+
         gui->set_parent(plugin,&clap_window);
         gui->show(plugin);
       }

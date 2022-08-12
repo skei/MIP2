@@ -178,7 +178,7 @@ public: // clap gui
   */
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    MIP_Print("%i,%i -> true\n",width,height);
+    //MIP_Print("%i,%i -> true\n",width,height);
     MEditorWidth = width;
     MEditorHeight = height;
     // hack.. the modual stuff should have been in the wndoow class..
@@ -199,7 +199,7 @@ public: // clap gui
   */
 
   virtual bool setParent(const clap_window_t *window) {
-    MIP_Print("%p -> true\n",window);
+    //MIP_Print("%p -> true\n",window);
     reparentWindow(window->x11);
     return true;
   }
@@ -212,7 +212,7 @@ public: // clap gui
   */
 
   virtual bool setTransient(const clap_window_t *window) {
-    MIP_Print("%p -> true\n",window);
+    //MIP_Print("%p -> true\n",window);
     return true;
   }
 
@@ -224,7 +224,7 @@ public: // clap gui
   */
 
   virtual void suggestTitle(const char *title) {
-    MIP_Print("%s\n",title);
+    //MIP_Print("%s\n",title);
     setWindowTitle(title);
   }
 
@@ -236,7 +236,7 @@ public: // clap gui
   */
 
   virtual bool show() {
-    MIP_Print("-> true\n");
+    //MIP_Print("-> true\n");
     if (!MIsEditorOpen) {
       openWindow();
       MIsEditorOpen = true;
@@ -254,7 +254,7 @@ public: // clap gui
   */
 
   virtual bool hide() {
-    MIP_Print("-> true\n");
+    //MIP_Print("-> true\n");
     if (MIsEditorOpen) {
       MIsEditorOpen = false;
       stopEventThread();

@@ -386,8 +386,15 @@ public: // EXT gui
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
-    MIP_Assert(MEditor);
-    bool result = MEditor->getSize(width,height);
+    //MIP_Assert(MEditor);
+    bool result = true;
+    if (MEditor) {
+      result = MEditor->getSize(width,height);
+    }
+    else {
+      *width = MEditorWidth;
+      *height = MEditorHeight;
+    }
     //MIP_Print("-> %s (*width: %i *height %i)\n",result?"true":"false",*width,*height);
     return result;
   }
@@ -790,7 +797,18 @@ public: // DRAFT voice info
 //
 //------------------------------------------------------------
 
-public:
+//------------------------------
+public: // process audio
+//------------------------------
+
+  // shouldn't we use MIP_ProcessBlock?
+
+  virtual void processAudioBlock(const clap_process_t* process) {
+  }
+
+//------------------------------
+public: // process events
+//------------------------------
 
   virtual void processNoteOn(const clap_event_note_t* event) {}
   virtual void processNoteOff(const clap_event_note_t* event) {}
@@ -832,7 +850,6 @@ public: // process events
 
   //----------
 
-  //virtual
   void processEvent(const clap_event_header_t* header) {
     switch (header->type) {
       case CLAP_EVENT_NOTE_ON:              processNoteOnEvent(             (const clap_event_note_t*)            header  );  break;
@@ -853,53 +870,43 @@ public: // process events
 
   //----------
 
-  //virtual
   void processNoteOnEvent(const clap_event_note_t* event) {
     MIP_Print("NOTE ON key %i note_id %i\n",event->key,event->note_id);
     processNoteOn(event);
   }
 
-  //virtual
   void processNoteOffEvent(const clap_event_note_t* event) {
     MIP_Print("NOTE OFF key %i note_id %i\n",event->key,event->note_id);
     processNoteOff(event);
   }
 
-  //virtual
   void processNoteChokeEvent(const clap_event_note_t* event) {
     MIP_Print("NOTE CHOKE key %i note_id %i\n",event->key,event->note_id);
     processNoteChoke(event);
   }
 
   // not called.. (plugin -> host)
-  //virtual
   void processNoteEndEvent(const clap_event_note_t* event) {
     MIP_Print("NOTE END !\n");
     processNoteEnd(event);
   }
 
-  //virtual
   void processNoteExpressionEvent(const clap_event_note_expression_t* event) {
     MIP_Print("NOTE EXPRESSION expr %i key %i note_id %i value %.3f\n",event->expression_id,event->key,event->note_id,event->value);
     processNoteExpression(event);
   }
 
-  //virtual
   void processParamValueEvent(const clap_event_param_value_t* event) {
     MIP_Print("PARAM VALUE index %i value %.3f\n",event->param_id,event->value);
     uint32_t index = event->param_id;
     double value = event->value;
     setParameterValue(index,value);
     #ifndef MIP_NO_GUI
-    //TODO/CHECK:
-    // only if from host?
-    // (not from gui, since widgets redraw themselves)
     queueGuiParam(index,value);
     #endif
     processParamValue(event);
   }
 
-  //virtual
   void processParamModEvent(const clap_event_param_mod_t* event) {
     MIP_Print("PARAM MOD index %i value %.3f\n",event->param_id,event->amount);
     uint32_t index = event->param_id;
@@ -912,26 +919,22 @@ public: // process events
   }
 
   // not called.. (plugin -> host)
-  //virtual
   void processParamGestureBeginEvent(const clap_event_param_gesture_t* event) {
     MIP_Print("PARAM GESTURE BEGIN\n");
     processParamGestureBegin(event);
   }
 
   // not called.. (plugin -> host)
-  //virtual
   void processParamGestureEndEvent(const clap_event_param_gesture_t* event) {
     MIP_Print("PARAM GESTURE END\n");
     processParamGestureEnd(event);
   }
 
-  //virtual
   void processTransportEvent(const clap_event_transport_t* event) {
     MIP_Print("TRANSPORT\n");
     processTransport(event);
   }
 
-  //virtual
   void processMidiEvent(const clap_event_midi_t* event) {
     MIP_Print("MIDI\n");
     processMidi(event);
@@ -969,33 +972,15 @@ public: // process events
     */
   }
 
-  //virtual
   void processMidiSysexEvent(const clap_event_midi_sysex_t* event) {
     MIP_Print("MIDI SYSEX\n");
     processMidiSysex(event);
   }
 
-  //virtual
   void processMidi2Event(const clap_event_midi2_t* event) {
     MIP_Print("MIDI2\n");
     processMidi2(event);
   }
-
-//------------------------------
-public: // process audio
-//------------------------------
-
-  // shouldn't we use MIP_ProcessBlock?
-
-  virtual void processAudioBlock(const clap_process_t* process) {
-  }
-
-//------------------------------
-public: // process transport
-//------------------------------
-
-//  virtual void processTransport(const clap_event_transport_t* transport) {
-//  }
 
 //------------------------------------------------------------
 //
