@@ -9,10 +9,15 @@
 
 //----------------------------------------------------------------------
 
+#include "mip.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/widgets/mip_widgets.h"
 
+//----------------------------------------------------------------------
+//
+// descriptor
+//
 //----------------------------------------------------------------------
 
 const clap_plugin_descriptor_t gain_descriptor = {
@@ -28,6 +33,10 @@ const clap_plugin_descriptor_t gain_descriptor = {
    .features      = (const char*[]){ CLAP_PLUGIN_FEATURE_AUDIO_EFFECT, nullptr }
 };
 
+//----------------------------------------------------------------------
+//
+// plugin
+//
 //----------------------------------------------------------------------
 
 class gain_plugin
@@ -86,6 +95,7 @@ public: // plugin
 //------------------------------
 
   bool init() final {
+    bool result = MIP_Plugin::init();
     appendAudioInputPort( &gain_audioInputPorts[0] );
     appendAudioOutputPort(&gain_audioOutputPorts[0]);
     appendNoteInputPort(  &gain_noteInputPorts[0]  );
@@ -93,15 +103,44 @@ public: // plugin
     for (uint32_t i=0; i<PARAM_COUNT; i++) {
       appendParameter( new MIP_Parameter(&gain_parameters[i]) );
     }
+    return result;
+  }
+
+//------------------------------
+public: // gui
+//------------------------------
+
+  bool gui_create(const char *api, bool is_floating) override {
+
+    MIP_Plugin::gui_create(api,is_floating);
+
+    MEditor->setWindowFillBackground(false);
+
+    MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(), MIP_COLOR_GRAY );
+    background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    background->Layout.border = MIP_DRect(10,10,10,10);
+    MEditor->appendChildWidget(background);
+
+    MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(1,1), "Gain", 0.0 );
+    gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+    gain_knob->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
+    gain_knob->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
+    gain_knob->Layout.aspectRatio = (4.0 / 6.0);
+    background->appendChildWidget(gain_knob);
+
+    MEditor->connectWidget(MParameters[PAR_GAIN],gain_knob);
+
     return true;
   }
 
-  //----------
+//------------------------------
+public: // process
+//------------------------------
 
   void processParamValueEvent(const clap_event_param_value_t* event) final {
     MIP_Plugin::processParamValueEvent(event);
-    if (event->param_id == 0) {
-      par_gain = event->value;
+    switch (event->param_id) {
+      case PAR_GAIN : par_gain = event->value; break;
     }
   }
 
@@ -119,29 +158,20 @@ public: // plugin
     }
   }
 
-//------------------------------
-public: // gui
-//------------------------------
+  //----------
 
-  bool gui_create(const char *api, bool is_floating) override {
-    MIP_Plugin::gui_create(api,is_floating);
-    MEditor->setWindowFillBackground(false);
-    MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect( 0,0,420,620), MIP_COLOR_GRAY );
-    background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    background->Layout.border = MIP_DRect(10,10,10,10);
-    MEditor->appendChildWidget(background);
-    MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect( 1,1 ), "Gain", 0.0 );
-    gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_CENTER;
-    gain_knob->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
-    gain_knob->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
-    gain_knob->Layout.aspectRatio = (4.0 / 6.0);
-    background->appendChildWidget(gain_knob);
-    MEditor->connectWidget(MParameters[0],gain_knob);
-    return true;
-  }
+  //void processAudioSegment(const clap_process_t* process, uint32_t offset, uint32_t length) final {
+  //}
+
+  //void processAudioTick(const clap_process_t* process) final {
+  //}
 
 };
 
+//----------------------------------------------------------------------
+//
+// entry
+//
 //----------------------------------------------------------------------
 
 #include "plugin/mip_registry.h"

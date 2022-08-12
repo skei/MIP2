@@ -112,28 +112,22 @@ enum MIP_EMouseCursors {
   MIP_CURSOR_UNLOCK              = -3,
   MIP_CURSOR_SHOW                = -2,
   MIP_CURSOR_HIDE                = -1,
-
   MIP_CURSOR_DEFAULT             = 0,
   MIP_CURSOR_ARROW               = 1,
-
   MIP_CURSOR_ARROW_UP            = 2,
   MIP_CURSOR_ARROW_DOWN          = 3,
   MIP_CURSOR_ARROW_LEFT          = 4,
   MIP_CURSOR_ARROW_RIGHT         = 5,
-
   MIP_CURSOR_ARROW_UP_DOWN       = 6,
   MIP_CURSOR_ARROW_LEFT_RIGHT    = 7,
-
   MIP_CURSOR_ARROW_TOP_LEFT      = 8,
   MIP_CURSOR_ARROW_TOP_RIGHT     = 9,
   MIP_CURSOR_ARROW_BOTTOM_LEFT   = 10,
   MIP_CURSOR_ARROW_BOTTOM_RIGHT  = 11,
-
   MIP_CURSOR_ARROW_LEFT_SIDE     = 12,
   MIP_CURSOR_ARROW_RIGHT_SIDE    = 13,
   MIP_CURSOR_ARROW_TOP_SIDE      = 14,
   MIP_CURSOR_ARROW_BOTTOM_SIDE   = 15,
-
   MIP_CURSOR_MOVE                = 16,
   MIP_CURSOR_WAIT                = 17,
   MIP_CURSOR_ARROW_WAIT          = 18, // !!!
@@ -231,7 +225,6 @@ enum MIP_EWidgetAlignment {
   MIP_WIDGET_ALIGN_CENTER_VERT         = 38,
   MIP_WIDGET_ALIGN_STACK_HORIZ         = 39,
   MIP_WIDGET_ALIGN_STACK_VERT          = 40
-
 };
 
 //enum MIP_EWidgetAnchors {
@@ -249,9 +242,10 @@ enum MIP_EWidgetAlignment {
 //};
 
 enum MIP_EWidgetSizeModes {
-  MIP_WIDGET_SIZE_MODE_PIXELS   = 0,
-  MIP_WIDGET_SIZE_MODE_RATIO    = 1,
-  MIP_WIDGET_SIZE_MODE_SPREAD   = 2,
+  MIP_WIDGET_SIZE_PIXELS        = 0,  // pixels
+  MIP_WIDGET_SIZE_PARENT_RATIO  = 1,  // parent-ratio
+  MIP_WIDGET_SIZE_CHILD_COUNT   = 2,  // parent_height / num_children
+  // TODO: screen-ratio
 };
 
 //----------------------------------------------------------------------

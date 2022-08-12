@@ -78,11 +78,11 @@ protected:
 
   MIP_ParameterArray  MParameters               = {};
 
-  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessParamQueue  = {};
-  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessModQueue    = {};
-  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MGuiParamQueue      = {};
-  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MGuiModQueue        = {};
-  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS>   MHostParamQueue     = {};
+  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessParamQueue  = {}; // gui -> audio
+  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessModQueue    = {}; //
+  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MGuiParamQueue      = {}; // host -> gui
+  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MGuiModQueue        = {}; //
+  MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS>   MHostParamQueue     = {}; // gui -> host
 
   double  MQueuedProcessParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]  = {0};
   double  MQueuedProcessModValues[MIP_PLUGIN_MAX_PARAM_EVENTS]    = {0};
@@ -334,6 +334,8 @@ public: // EXT gui
 //------------------------------
 
   #ifndef MIP_NO_GUI
+
+  // currently we only support x11, non-floating
 
   bool gui_is_api_supported(const char *api, bool is_floating) override {
     if ((strcmp(api,CLAP_WINDOW_API_X11) == 0) && (is_floating == false)) {
@@ -855,7 +857,7 @@ public: // process events
   }
 
   virtual void processParamValueEvent(const clap_event_param_value_t* event) {
-    //MIP_Print("PARAM VALUE index %i value %.3f\n",event->param_id,event->value);
+    MIP_Print("PARAM VALUE index %i value %.3f\n",event->param_id,event->value);
     uint32_t index = event->param_id;
     double value = event->value;
     setParameterValue(index,value);
@@ -865,7 +867,7 @@ public: // process events
   }
 
   virtual void processParamModEvent(const clap_event_param_mod_t* event) {
-    //MIP_Print("PARAM MOD index %i value %.3f\n",event->param_id,event->amount);
+    MIP_Print("PARAM MOD index %i value %.3f\n",event->param_id,event->amount);
     uint32_t index = event->param_id;
     double value = event->amount;
     setParameterModulation(index,value);
@@ -884,10 +886,41 @@ public: // process events
 
   virtual void processTransportEvent(const clap_event_transport_t* event) {
     MIP_Print("TRANSPORT\n");
+    processTransport(event);
   }
 
   virtual void processMidiEvent(const clap_event_midi_t* event) {
     MIP_Print("MIDI\n");
+    uint8_t msg   = event->data[0] & 0xf0;
+    uint8_t chan  = event->data[0] & 0x0f;
+    uint8_t index = event->data[1]; // & 0x7f;
+    uint8_t val   = event->data[2]; // & 0x7f;
+    switch (msg) {
+      case MIP_MIDI_NOTE_OFF:
+        MIP_Print("MIDI NOTE OFF chan %i index %i val %i\n",chan,index,val);
+        break;
+      case MIP_MIDI_NOTE_ON:
+        MIP_Print("MIDI NOTE ON chan %i index %i val %i\n",chan,index,val);
+        break;
+      case MIP_MIDI_POLY_AFTERTOUCH:
+        MIP_Print("MIDI POLY AFTERTOUCH chan %i index %i val %i\n",chan,index,val);
+        break;
+      case MIP_MIDI_CONTROL_CHANGE:
+        MIP_Print("MIDI CONTROL CHANGE chan %i index %i val %i\n",chan,index,val);
+        break;
+      case MIP_MIDI_PROGRAM_CHANGE:
+        MIP_Print("MIDI PROGRAM CHANGE chan %i index %i val %i\n",chan,index,val);
+        break;
+      case MIP_MIDI_CHANNEL_AFTERTOUCH:
+        MIP_Print("MIDI CHANNEL AFTERTOUCH chan %i index %i val %i\n",chan,index,val);
+        break;
+      case MIP_MIDI_PITCHBEND:
+        MIP_Print("MIDI PITCHBEND chan %i index %i val %i\n",chan,index,val);
+        break;
+      case MIP_MIDI_SYS:
+        MIP_Print("MIDI SYS chan %i index %i val %i\n",chan,index,val);
+        break;
+    }
   }
 
   virtual void processMidiSysexEvent(const clap_event_midi_sysex_t* event) {
@@ -901,6 +934,8 @@ public: // process events
 //------------------------------
 public: // process audio
 //------------------------------
+
+  // shouldn't we use MIP_ProcessBlock?
 
   virtual void processAudioBlock(const clap_process_t* process) {
   }

@@ -823,7 +823,6 @@ protected:
 private: // draft: voice info
 //------------------------------
 
-
   static
   bool clap_plugin_voice_info_get_callback(const clap_plugin_t *plugin, clap_voice_info_t *info) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;

@@ -7,7 +7,7 @@
   http://linux-audio.4202.n7.nabble.com/Realtime-inter-thread-communication-td99157.html
 
   thread-safe, lock/wait-free queue
-  single producer, single consumer, probably..
+  single producer, single consumer..
 
   todo: MReadPos/MWritePos volatile?
 
@@ -156,9 +156,9 @@ class MIP_BufferQueue {
   private:
 //------------------------------
 
-  _T              MData[SIZE];
-  /*volatile*/ int    MWritePos;  // volatile?
-  /*volatile*/ int    MReadPos;
+  _T                MData[SIZE];
+  /*volatile*/ int  MWritePos;  // volatile?
+  /*volatile*/ int  MReadPos;
 
 //------------------------------
   public:

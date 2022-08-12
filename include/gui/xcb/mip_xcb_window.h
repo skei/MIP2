@@ -1091,26 +1091,21 @@ private: // events
         xcb_generic_event_t* event = xcb_wait_for_event(connection);
         if (event) {
           //MIP_Print("event!\n");
-
           // double-check (in case we have closed the window before processing
           // all events in queue
-
           //MIP_PRINT;
           if (window->MEventThreadActive) {
-          //MIP_Print("event!\n");
             //MIP_PRINT;
             if (!window->processEvent(event)) {
               window->xcb_event_thread_stop_callback(window);
               return nullptr;
             }
-
-          }
-
-        }
-      }
+          } // active
+        } // event
+      } // while
       window->xcb_event_thread_stop_callback(window);
       return nullptr;
-    }
+    } // window
     return nullptr;
   }
 

@@ -26,8 +26,8 @@ struct MIP_WidgetLayout {
   uint32_t    alignment   = MIP_WIDGET_ALIGN_PARENT;      // alignment relative to parent
   double      scale       = 1.0;                          // scale children (incl burder & spacing)
   double      aspectRatio = -1;                           // if > 0, force aspect ratio (scale down)
-  uint32_t    sizeModeX   = MIP_WIDGET_SIZE_MODE_PIXELS;  // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
-  uint32_t    sizeModeY   = MIP_WIDGET_SIZE_MODE_PIXELS;  // y,h - --"--
+  uint32_t    sizeModeX   = MIP_WIDGET_SIZE_PIXELS;       // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
+  uint32_t    sizeModeY   = MIP_WIDGET_SIZE_PIXELS;       // y,h - --"--
   MIP_DRect   initialRect = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   baseRect    = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   border      = MIP_DRect(0,0,0,0);           // inner border
@@ -86,6 +86,8 @@ protected:
 //------------------------------
 public:
 //------------------------------
+
+  // public..  :-/
 
   MIP_WidgetLayout  Layout     = {};
   MIP_WidgetFlags   Flags      = {};
@@ -411,9 +413,6 @@ public: // hierarchy
     uint32_t num = MChildren.size();
     if (num > 0) {
 
-      double child_width  = (client_rect.w - (Layout.spacing.x * (num - 1))) / MChildren.size();
-      double child_height = (client_rect.h - (Layout.spacing.y * (num - 1))) / MChildren.size();
-
       // for all children..
 
       for (uint32_t i=0; i<MChildren.size(); i++) {
@@ -429,26 +428,29 @@ public: // hierarchy
 
           // size mode
 
+          double child_count_width  = (client_rect.w - (Layout.spacing.x * (num - 1))) / MChildren.size();
+          double child_count_height = (client_rect.h - (Layout.spacing.y * (num - 1))) / MChildren.size();
+
           switch (child->Layout.sizeModeX) {
-            case MIP_WIDGET_SIZE_MODE_PIXELS:
+            case MIP_WIDGET_SIZE_PIXELS:
               break;
-            case MIP_WIDGET_SIZE_MODE_RATIO:
+            case MIP_WIDGET_SIZE_PARENT_RATIO:
               child_rect.x *= client_rect.w;
               child_rect.w *= client_rect.w;
               break;
-            case MIP_WIDGET_SIZE_MODE_SPREAD:
-              child_rect.w = child_width;
+            case MIP_WIDGET_SIZE_CHILD_COUNT:
+              child_rect.w = child_count_width;
           }
 
           switch (child->Layout.sizeModeY) {
-            case MIP_WIDGET_SIZE_MODE_PIXELS:
+            case MIP_WIDGET_SIZE_PIXELS:
               break;
-            case MIP_WIDGET_SIZE_MODE_RATIO:
+            case MIP_WIDGET_SIZE_PARENT_RATIO:
               child_rect.y *= client_rect.h;
               child_rect.h *= client_rect.h;
               break;
-            case MIP_WIDGET_SIZE_MODE_SPREAD:
-              child_rect.h = child_height;
+            case MIP_WIDGET_SIZE_CHILD_COUNT:
+              child_rect.h = child_count_height;
               break;
           }
 

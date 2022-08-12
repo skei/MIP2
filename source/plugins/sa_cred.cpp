@@ -1,4 +1,5 @@
 
+// sacred geometry, golden spiral, fibonacci
 
 #define MIP_NO_GUI
 
@@ -20,14 +21,14 @@
 
 const clap_plugin_descriptor_t myDescriptor = {
    .clap_version  = CLAP_VERSION,
-   .id            = "skei.audio/sa_fibonacci/0.0.1",
-   .name          = "sa_fibonacci",
+   .id            = "skei.audio/sa_cred/0.0.1",
+   .name          = "sa_cred",
    .vendor        = "skei.audio",
    .url           = "",
    .manual_url    = "",
    .support_url   = "",
    .version       = "0.0.1",
-   .description   = "Fibonacci Series Note Modifier",
+   .description   = "Fibonacci/Pisano Note Modifier",
    .features      =  (const char *[]){ CLAP_PLUGIN_FEATURE_NOTE_EFFECT, "Hello world!", nullptr }
 };
 

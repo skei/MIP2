@@ -27,6 +27,8 @@ const char* MIP_GetExeFilename(char* ABuffer) {
   return ABuffer;
 }
 
+//----------
+
 const char* MIP_GetExePath(char* ABuffer) {
   char filepath[MIP_MAX_PATH_LENGTH] = "";
   long rd_res = readlink("/proc/self/exe", filepath, MIP_MAX_PATH_LENGTH);

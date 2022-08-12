@@ -280,6 +280,7 @@
 		<Unit filename="../include/gui/widgets/mip_color_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_drag_value_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_grid_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_group_box_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_image_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob2_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_knob_widget.h" />
@@ -290,6 +291,7 @@
 		<Unit filename="../include/gui/widgets/mip_scroll_bar_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_scroll_box_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_selector_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_sizer_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_slider_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_text_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_value_widget.h" />
@@ -391,6 +393,10 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/test/test_editor3.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_editor4.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

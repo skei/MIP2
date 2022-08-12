@@ -17,6 +17,8 @@
 
 //----------
 
+// be careful, ordering might be important..
+
 #include "base/mip_config.h"
 #include "base/mip_defines.h"
 #include "base/mip_const.h"
@@ -32,7 +34,7 @@
 //#include "base/types/mip_point.h"
 //#include "base/types/mip_rect.h"
 
-#include <vector>
+//#include <vector>
 
 //----------------------------------------------------------------------
 #endif

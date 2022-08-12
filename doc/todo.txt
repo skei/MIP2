@@ -65,6 +65,8 @@
 //
 //----------------------------------------------------------------------
 
+* rename: OpenGL -> glx
+
 * reduce resizing frequency
 
   - we have to tear down, and rebuild the opengl context when we resize the

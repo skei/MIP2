@@ -32,18 +32,15 @@ const char    MIP_NULL_STRING[]  = "";
 //
 //----------------------------------------------------------------------
 
-#define MIP_ALIGNMENT_SIMD           16
-#define MIP_ALIGNMENT_CACHE          64
-
-#define MIP_AUDIO_MAX_EVENTS         256
-#define MIP_AUDIO_MAX_MIDI_EVENTS    256
-#define MIP_AUDIO_MAX_NODES          256
-#define MIP_AUDIO_TICKSIZE           16
-#define MIP_AUDIO_NUM_TICK_BUFFERS   16
-
-#define MIP_BITMAP_RASTER_MAX_HEIGHT 2048
-
-#define MIP_GUI_DBLCLICK_MS          200
+//#define MIP_ALIGNMENT_SIMD           16
+//#define MIP_ALIGNMENT_CACHE          64
+//#define MIP_AUDIO_MAX_EVENTS         256
+//#define MIP_AUDIO_MAX_MIDI_EVENTS    256
+//#define MIP_AUDIO_MAX_NODES          256
+//#define MIP_AUDIO_TICKSIZE           16
+//#define MIP_AUDIO_NUM_TICK_BUFFERS   16
+//#define MIP_BITMAP_RASTER_MAX_HEIGHT 2048
+//#define MIP_GUI_DBLCLICK_MS          200
 
 #define MIP_MAX_PATH_LENGTH          512
 #define MIP_MAX_STRING_LENGTH        256

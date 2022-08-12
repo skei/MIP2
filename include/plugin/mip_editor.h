@@ -102,6 +102,8 @@ public: // clap gui
 
   //----------
 
+  // ratios could be calculated from initial size..
+
   virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
     //MIP_PRINT;
     hints->can_resize_horizontally  = true;
@@ -128,22 +130,12 @@ public: // clap gui
     //MIP_PRINT;
     MEditorWidth = width;
     MEditorHeight = height;
-
-    // hack..
-    // this should have been in the wndoow lass..
+    // hack.. the modual stuff should have been in the wndoow class..
     // but there were/are some issues getting resize events..
-
-    if (MModalWidget) {
-      //MIP_Print("MModalWidget\n");
-      MModalWidget->on_widget_unmodal();
-    }
-
-    //
-
+    if (MModalWidget) MModalWidget->on_widget_unmodal();
     //MIP_Window::on_window_resize(width,height);
     setWidgetSize(width,height);
     alignChildWidgets();
-
     setWindowSize(width,height);
     return true;
   }

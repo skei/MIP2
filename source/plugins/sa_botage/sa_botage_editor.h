@@ -45,16 +45,16 @@ public:
 
     MWaveform = new MIP_WaveformWidget(MIP_DRect( (10.0/500.0), (10.0/300.0), (480.0/500.0), (100.0/300.0) ));//(480/500), (100/300) ));
     MWaveform->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-    MWaveform->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
-    MWaveform->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
+    MWaveform->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
+    MWaveform->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
     background->appendChildWidget(MWaveform);
 
     // beats/slices
 
     MIP_SliderWidget* w_beats = new MIP_SliderWidget(MIP_DRect( (10.0/500.0), (120.0/300.0), (235.0/500.0), (20.0/300.0) ), "Beats", 4);
     w_beats->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-    w_beats->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
-    w_beats->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
+    w_beats->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
+    w_beats->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
     w_beats->setTextSize( -0.9 );
     w_beats->setValueSize( -0.9 );
     background->appendChildWidget(w_beats);
@@ -62,8 +62,8 @@ public:
 
     MIP_SliderWidget* w_slices = new MIP_SliderWidget(MIP_DRect( (255.0/500.0), (120.0/300.0), (235.0/500.0), (20.0/300.0) ), "Slices", 2);
     w_slices->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-    w_slices->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
-    w_slices->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
+    w_slices->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
+    w_slices->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
     w_slices->setTextSize( -0.9 );
     w_slices->setValueSize( -0.9 );
     background->appendChildWidget(w_slices);
@@ -74,8 +74,9 @@ public:
     MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(MIP_DRect( (10.0/500.0), (150.0/300.0), (42.0/500.0), (74.0/300.0) ), "Knob", 0.5);
     knob1->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
     //knob1->Layout.aspectRatio = 0.57;
-    knob1->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
-    knob1->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
+    knob1->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
+    knob1->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
+    knob1->Layout.aspectRatio = (42.0 / 74.0);
     background->appendChildWidget(knob1);
     connectWidget( AParameters[PAR_TEST], knob1);
   }

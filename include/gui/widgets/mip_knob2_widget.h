@@ -31,7 +31,7 @@ protected:
 public:
 //------------------------------
 
-  MIP_Knob2Widget(MIP_DRect ARect, const char* AText, double AValue)
+  MIP_Knob2Widget(MIP_DRect ARect, const char* AText, double AValue=0.0)
   : MIP_PanelWidget(ARect) {
 
     setFillBackground(true);
@@ -50,14 +50,14 @@ public:
     MLabelWidget->setTextSize(-1);
     MLabelWidget->setTextColor(MIP_COLOR_BLACK);
     MLabelWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    MLabelWidget->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
-    MLabelWidget->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
+    MLabelWidget->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
+    MLabelWidget->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
     appendChildWidget(MLabelWidget);
 
     MValueWidget = new MIP_TextWidget( MIP_DRect( 1, 0.20 ), AText );
     MValueWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
-    MValueWidget->Layout.sizeModeX = MIP_WIDGET_SIZE_MODE_RATIO;
-    MValueWidget->Layout.sizeModeY = MIP_WIDGET_SIZE_MODE_RATIO;
+    MValueWidget->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
+    MValueWidget->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
     MValueWidget->setFillBackground(true);
     MValueWidget->setDrawBorder(false);
     MValueWidget->setText(MKnobValueText);

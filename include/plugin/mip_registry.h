@@ -26,10 +26,10 @@ class MIP_Registry {
 private:
 //------------------------------
 
-  char                                        MPath[1024]   = {0};
-  MIP_Array<const char*>                      MFactoryIds   = {};
-  MIP_Array<const clap_plugin_factory_t*>     MFactories    = {};
-  MIP_Array<const clap_plugin_descriptor_t*>  MDescriptors  = {};
+  char                                        MPath[1024]   = {0};  // plugin path
+  MIP_Array<const char*>                      MFactoryIds   = {};   // factory id's
+  MIP_Array<const clap_plugin_factory_t*>     MFactories    = {};   // factories
+  MIP_Array<const clap_plugin_descriptor_t*>  MDescriptors  = {};   // plugin descriptors
 
 //------------------------------
 public:
@@ -47,6 +47,8 @@ public:
     if (MIP_Unregister) MIP_Unregister(this);
     #ifndef MIP_NO_AUTODELETE
       deleteFactories();
+      //deleteDescriptors();  // must be done manually, since we have many ways
+      //freeDescriptors();    // to define and register descriptors
     #endif
   }
 

@@ -1,15 +1,4 @@
 
-
-
-//----------------------------------------------------------------------
-//
-// test
-//
-//----------------------------------------------------------------------
-
-//#include "../source/test/test_editor3.cpp"
-//#include "../source/test/test_editor4.cpp"
-
 //----------------------------------------------------------------------
 //
 // apps
@@ -24,14 +13,22 @@
 //
 //----------------------------------------------------------------------
 
-#include "../source/plugins/sa_botage.cpp"
-//#include "../source/plugins/sa_fibonacci.cpp"
-//#include "../source/plugins/sa_mini.cpp"
-//#include "../source/plugins/sa_ports.cpp"
-//#include "../source/plugins/sa_ladspa_wrapper.cpp"
+//#include "../source/plugins/gain.cpp"
 //#include "../source/plugins/template.cpp"
 
-//----------
+#include "../source/plugins/sa_bulo.cpp"      // gravel, ports
+//#include "../source/plugins/sa_botage.cpp"    // destroy
+//#include "../source/plugins/sa_cred.cpp"      // sacred geometry, fibonacci
+//#include "../source/plugins/sa_lad.cpp"       // mixture, ladspa wrapper
 
-//#include "../source/plugins/gain.cpp"
+//#include "../source/plugins/sa_mini.cpp"
+
+//----------------------------------------------------------------------
+//
+// test
+//
+//----------------------------------------------------------------------
+
+//#include "../build/test/test_editor3.cpp"
+//#include "../build/test/test_editor4.cpp"
 

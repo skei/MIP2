@@ -49,12 +49,13 @@
 //
 //----------------------------------------------------------------------
 
+// see /base/mip_debug.h
+
 //----------------------------------------------------------------------
 //
 // gui
 //
 //----------------------------------------------------------------------
-
 
 #undef MIP_GUI_DEFINED
 #undef MIP_PAINTER_DEFINED
@@ -62,19 +63,22 @@
 //----------
 
 #ifdef MIP_NO_GUI
-  #define MIP_GUI_DEFINED
-  #define MIP_NO_PAINTER
   #undef MIP_GUI_XCB
   #undef MIP_USE_XCB
   #undef MIP_USE_CAIRO
   #undef MIP_USE_OPENGL
   #undef MIP_USE_NANOVG
+  #define MIP_GUI_DEFINED
+  #define MIP_NO_PAINTER
 #endif
 
 #ifdef MIP_GUI_XCB
   #define MIP_USE_XCB
   #define MIP_GUI_DEFINED
 #endif
+
+//#ifdef MIP_GUI_WIN32
+//#endif
 
 //
 
@@ -89,6 +93,7 @@
 #endif
 
 #ifdef MIP_PAINTER_CAIRO
+  //#define MIP_USE_XCB
   #define MIP_USE_CAIRO
   #define MIP_PAINTER_DEFINED
 #endif
@@ -103,6 +108,9 @@
   #define MIP_USE_NANOVG
   #define MIP_PAINTER_DEFINED
 #endif
+
+//#ifdef MIP_PAINTER_WIN32
+//#endif
 
 //----------
 

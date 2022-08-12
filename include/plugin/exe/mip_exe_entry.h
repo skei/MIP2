@@ -91,13 +91,12 @@ int main(int argc, char** argv) {
           clap_plugin_gui_t* gui = (clap_plugin_gui_t*)plugin->get_extension(CLAP_EXT_GUI);
           if (gui) {
 
-            uint32_t width, height;
-
             if (gui->is_api_supported(clap_plugin,CLAP_WINDOW_API_X11,false)) {
               gui->create(clap_plugin,CLAP_WINDOW_API_X11,false);
               gui->set_scale(clap_plugin,1.0);
               //bool can_resize = gui->can_resize(clap_plugin);
               //if (can_resize) {
+              uint32_t width, height;
               gui->get_size(clap_plugin,&width,&height);
               //}
               //else {
@@ -119,16 +118,15 @@ int main(int argc, char** argv) {
               gui->hide(clap_plugin);
               gui->destroy(clap_plugin);
 
-              exe_window->openWindow();
+              exe_window->closeWindow();
               delete exe_window;
             }
-
           }
           plugin->stop_processing();
           plugin->deactivate();
           plugin->destroy();
+          delete plugin;
         }
-        delete plugin;
       }
       delete exe_host;
     }
