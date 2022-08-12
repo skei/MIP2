@@ -151,8 +151,8 @@ private:
 private:
 //------------------------------
 
-  void processParamValueEvent(const clap_event_param_value_t* param_value) final {
-    MIP_Plugin::processParamValueEvent(param_value);
+  void processParamValue/*Event*/(const clap_event_param_value_t* param_value) final {
+    //MIP_Plugin::processParamValueEvent(param_value);
     //recalc();
     need_recalc = true;
     //uint32_t index = param_value->param_id;

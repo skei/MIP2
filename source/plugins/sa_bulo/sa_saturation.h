@@ -141,8 +141,8 @@ private:
 //    recalc();
 //  }
 
-  void processParamValueEvent(const clap_event_param_value_t* param_value) final {
-    MIP_Plugin::processParamValueEvent(param_value);
+  void processParamValue/*Event*/(const clap_event_param_value_t* param_value) final {
+    //MIP_Plugin::processParamValueEvent(param_value);
     need_recalc = true;
   }
 

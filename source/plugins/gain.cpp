@@ -1,4 +1,6 @@
 
+// the 'hello world!' of plugin development..
+
 #define MIP_GUI_XCB
 #define MIP_PAINTER_NANOVG
 
@@ -137,8 +139,8 @@ public: // gui
 public: // process
 //------------------------------
 
-  void processParamValueEvent(const clap_event_param_value_t* event) final {
-    MIP_Plugin::processParamValueEvent(event);
+  void processParamValue/*Event*/(const clap_event_param_value_t* event) final {
+    //MIP_Plugin::processParamValueEvent(event);
     switch (event->param_id) {
       case PAR_GAIN : par_gain = event->value; break;
     }

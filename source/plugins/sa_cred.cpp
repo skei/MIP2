@@ -129,7 +129,7 @@ public: // plugin
 
   //----------
 
-  void processNoteOnEvent(const clap_event_note_t* event) final {
+  void processNoteOn/*Event*/(const clap_event_note_t* event) final {
     MIP_Assert( MProcessContext.process );
     const clap_output_events_t *out_events = MProcessContext.process->out_events;
     int32_t channel = event->channel;
@@ -145,7 +145,7 @@ public: // plugin
 
   //----------
 
-  void processNoteOffEvent(const clap_event_note_t* event) final {
+  void processNoteOff/*Event*/(const clap_event_note_t* event) final {
     MIP_Assert( MProcessContext.process );
     const clap_output_events_t *out_events = MProcessContext.process->out_events;
     int32_t channel = event->channel;
@@ -161,7 +161,7 @@ public: // plugin
 
   //----------
 
-  void processNoteChokeEvent(const clap_event_note_t* event) final {
+  void processNoteChoke/*Event*/(const clap_event_note_t* event) final {
     MIP_Assert( MProcessContext.process );
     const clap_output_events_t *out_events = MProcessContext.process->out_events;
     int32_t channel = event->channel;
@@ -177,7 +177,7 @@ public: // plugin
 
   //----------
 
-  void processNoteExpressionEvent(const clap_event_note_expression_t* event) final {
+  void processNoteExpression/*Event*/(const clap_event_note_expression_t* event) final {
     MIP_Assert( MProcessContext.process );
     const clap_output_events_t *out_events = MProcessContext.process->out_events;
     int32_t channel = event->channel;
@@ -193,8 +193,8 @@ public: // plugin
 
   //----------
 
-  void processParamValueEvent(const clap_event_param_value_t* event) final {
-    MIP_Plugin::processParamValueEvent(event);
+  void processParamValue/*Event*/(const clap_event_param_value_t* event) final {
+    //MIP_Plugin::processParamValueEvent(event);
     uint32_t index = event->param_id;
     double value = event->value;
     switch (index) {

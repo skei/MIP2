@@ -790,6 +790,22 @@ public: // DRAFT voice info
 //
 //------------------------------------------------------------
 
+public:
+
+  virtual void processNoteOn(const clap_event_note_t* event) {}
+  virtual void processNoteOff(const clap_event_note_t* event) {}
+  virtual void processNoteChoke(const clap_event_note_t* event) {}
+  virtual void processNoteEnd(const clap_event_note_t* event) {}
+  virtual void processNoteExpression(const clap_event_note_expression_t* event) {}
+  virtual void processParamValue(const clap_event_param_value_t* event) {}
+  virtual void processParamMod(const clap_event_param_mod_t* event) {}
+  virtual void processParamGestureBegin(const clap_event_param_gesture_t* event) {}
+  virtual void processParamGestureEnd(const clap_event_param_gesture_t* event) {}
+  virtual void processTransport(const clap_event_transport_t* event) {}
+  virtual void processMidi(const clap_event_midi_t* event) {}
+  virtual void processMidiSysex(const clap_event_midi_sysex_t* event) {}
+  virtual void processMidi2(const clap_event_midi2_t* event) {}
+
 //------------------------------
 public: // process events
 //------------------------------
@@ -816,7 +832,8 @@ public: // process events
 
   //----------
 
-  virtual void processEvent(const clap_event_header_t* header) {
+  //virtual
+  void processEvent(const clap_event_header_t* header) {
     switch (header->type) {
       case CLAP_EVENT_NOTE_ON:              processNoteOnEvent(             (const clap_event_note_t*)            header  );  break;
       case CLAP_EVENT_NOTE_OFF:             processNoteOffEvent(            (const clap_event_note_t*)            header  );  break;
@@ -836,37 +853,54 @@ public: // process events
 
   //----------
 
-  virtual void processNoteOnEvent(const clap_event_note_t* event) {
+  //virtual
+  void processNoteOnEvent(const clap_event_note_t* event) {
     MIP_Print("NOTE ON key %i note_id %i\n",event->key,event->note_id);
+    processNoteOn(event);
   }
 
-  virtual void processNoteOffEvent(const clap_event_note_t* event) {
+  //virtual
+  void processNoteOffEvent(const clap_event_note_t* event) {
     MIP_Print("NOTE OFF key %i note_id %i\n",event->key,event->note_id);
+    processNoteOff(event);
   }
 
-  virtual void processNoteChokeEvent(const clap_event_note_t* event) {
+  //virtual
+  void processNoteChokeEvent(const clap_event_note_t* event) {
     MIP_Print("NOTE CHOKE key %i note_id %i\n",event->key,event->note_id);
+    processNoteChoke(event);
   }
 
-  virtual void processNoteEndEvent(const clap_event_note_t* event) {
+  // not called.. (plugin -> host)
+  //virtual
+  void processNoteEndEvent(const clap_event_note_t* event) {
     MIP_Print("NOTE END !\n");
+    processNoteEnd(event);
   }
 
-  virtual void processNoteExpressionEvent(const clap_event_note_expression_t* event) {
+  //virtual
+  void processNoteExpressionEvent(const clap_event_note_expression_t* event) {
     MIP_Print("NOTE EXPRESSION expr %i key %i note_id %i value %.3f\n",event->expression_id,event->key,event->note_id,event->value);
+    processNoteExpression(event);
   }
 
-  virtual void processParamValueEvent(const clap_event_param_value_t* event) {
+  //virtual
+  void processParamValueEvent(const clap_event_param_value_t* event) {
     MIP_Print("PARAM VALUE index %i value %.3f\n",event->param_id,event->value);
     uint32_t index = event->param_id;
     double value = event->value;
     setParameterValue(index,value);
     #ifndef MIP_NO_GUI
+    //TODO/CHECK:
+    // only if from host?
+    // (not from gui, since widgets redraw themselves)
     queueGuiParam(index,value);
     #endif
+    processParamValue(event);
   }
 
-  virtual void processParamModEvent(const clap_event_param_mod_t* event) {
+  //virtual
+  void processParamModEvent(const clap_event_param_mod_t* event) {
     MIP_Print("PARAM MOD index %i value %.3f\n",event->param_id,event->amount);
     uint32_t index = event->param_id;
     double value = event->amount;
@@ -874,23 +908,34 @@ public: // process events
     #ifndef MIP_NO_GUI
     queueGuiMod(index,value);
     #endif
+    processParamMod(event);
   }
 
-  virtual void processParamGestureBeginEvent(const clap_event_param_gesture_t* event) {
+  // not called.. (plugin -> host)
+  //virtual
+  void processParamGestureBeginEvent(const clap_event_param_gesture_t* event) {
     MIP_Print("PARAM GESTURE BEGIN\n");
+    processParamGestureBegin(event);
   }
 
-  virtual void processParamGestureEndEvent(const clap_event_param_gesture_t* event) {
+  // not called.. (plugin -> host)
+  //virtual
+  void processParamGestureEndEvent(const clap_event_param_gesture_t* event) {
     MIP_Print("PARAM GESTURE END\n");
+    processParamGestureEnd(event);
   }
 
-  virtual void processTransportEvent(const clap_event_transport_t* event) {
+  //virtual
+  void processTransportEvent(const clap_event_transport_t* event) {
     MIP_Print("TRANSPORT\n");
     processTransport(event);
   }
 
-  virtual void processMidiEvent(const clap_event_midi_t* event) {
+  //virtual
+  void processMidiEvent(const clap_event_midi_t* event) {
     MIP_Print("MIDI\n");
+    processMidi(event);
+    /*
     uint8_t msg   = event->data[0] & 0xf0;
     uint8_t chan  = event->data[0] & 0x0f;
     uint8_t index = event->data[1]; // & 0x7f;
@@ -921,14 +966,19 @@ public: // process events
         MIP_Print("MIDI SYS chan %i index %i val %i\n",chan,index,val);
         break;
     }
+    */
   }
 
-  virtual void processMidiSysexEvent(const clap_event_midi_sysex_t* event) {
+  //virtual
+  void processMidiSysexEvent(const clap_event_midi_sysex_t* event) {
     MIP_Print("MIDI SYSEX\n");
+    processMidiSysex(event);
   }
 
-  virtual void processMidi2Event(const clap_event_midi2_t* event) {
+  //virtual
+  void processMidi2Event(const clap_event_midi2_t* event) {
     MIP_Print("MIDI2\n");
+    processMidi2(event);
   }
 
 //------------------------------
@@ -944,8 +994,8 @@ public: // process audio
 public: // process transport
 //------------------------------
 
-  virtual void processTransport(const clap_event_transport_t* transport) {
-  }
+//  virtual void processTransport(const clap_event_transport_t* transport) {
+//  }
 
 //------------------------------------------------------------
 //
@@ -975,6 +1025,11 @@ public: // queues
     send 'fake' param value events to our plugin
     so we can handle them via the usual methods.. make sure you call
     processParamValueEvent yourself if you override processEvent/s
+
+    hmmm... processParamValueEvent will queueGuiParam..
+    but widget already redraws itself..
+    call on_plugin_parameter() directly here,
+     and in processParamValueEvent
   */
 
   void flushProcessParams() {
@@ -994,7 +1049,7 @@ public: // queues
       event.channel         = -1;
       event.key             = -1;
       event.value           = value;
-      processParamValueEvent(&event);
+      processParamValue/*Event*/(&event);
       //MAudioprocessor->updateParameter(index,value);
     }
   }
@@ -1020,9 +1075,7 @@ public: // queues
     while (MHostParamQueue.read(&index)) {
       double value = MQueuedHostParamValues[index];
       //double value = MParameters[index]->getValue();
-
       //MIP_Print("%i = %.3f\n",index,value);
-
       clap_event_param_value_t event;
       event.header.size     = sizeof(clap_event_param_value_t);
       event.header.time     = 0;

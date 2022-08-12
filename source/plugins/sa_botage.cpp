@@ -134,8 +134,8 @@ public: // plugin
 
   //----------
 
-  void processParamValueEvent(const clap_event_param_value_t* event) final {
-    MIP_Plugin::processParamValueEvent(event);
+  void processParamValue/*Event*/(const clap_event_param_value_t* event) final {
+    //MIP_Plugin::processParamValueEvent(event);
     MProcess.setParamValue(event->param_id,event->value);
   }
 
