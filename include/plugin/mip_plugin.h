@@ -64,8 +64,8 @@ protected:
 
   uint32_t            MSelectedAudioPortsConfig = 0;
   int32_t             MRenderMode               = CLAP_RENDER_REALTIME;
-  uint32_t            MEditorWidth              = 300;
-  uint32_t            MEditorHeight             = 300;
+  uint32_t            MEditorWidth              = 100;
+  uint32_t            MEditorHeight             = 100;
 
   #ifndef MIP_NO_GUI
   MIP_Editor*         MEditor                   = {};

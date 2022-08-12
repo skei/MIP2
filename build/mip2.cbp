@@ -102,6 +102,7 @@
 			<Add library="GLU" />
 			<Add library="glut" />
 		</Linker>
+		<Unit filename="../doc/readme.txt" />
 		<Unit filename="../doc/todo.txt" />
 		<Unit filename="../include/base/debug/mip_debug.h" />
 		<Unit filename="../include/base/debug/mip_debug_assert.h" />
@@ -363,44 +364,31 @@
 		<Unit filename="../source/plugins/sa_botage/sa_botage_params.h" />
 		<Unit filename="../source/plugins/sa_botage/sa_botage_process.h" />
 		<Unit filename="../source/plugins/sa_botage/sa_botage_widgets.h" />
-		<Unit filename="../source/plugins/sa_fibonacci.cpp">
+		<Unit filename="../source/plugins/sa_bulo.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/sa_ladspa_wrapper.cpp">
+		<Unit filename="../source/plugins/sa_cred.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/sa_ports.cpp">
+		<Unit filename="../source/plugins/sa_lad.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/sa_ports/sa_compciter.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_event_horizon.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_exciter.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_exciter2.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_hall_reverb.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_hrtf.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_large_room_reverb.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_limiter.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_saturation.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_small_room_reverb.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_sonic_maximizer.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_tilteq.h" />
-		<Unit filename="../source/plugins/sa_ports/sa_transient_killer.h" />
 		<Unit filename="../source/plugins/template.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/test/test_editor3.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/test/test_editor4.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
 		<Unit filename="build.cpp" />
+		<Unit filename="test/test_editor3.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="test/test_editor4.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

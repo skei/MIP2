@@ -38,7 +38,7 @@ protected:
 //------------------------------
 
   MIP_EditorListener* MEditorListener = nullptr;
-  uint32_t            MEditorWidth    = 100;
+  uint32_t            MEditorWidth    = 200;
   uint32_t            MEditorHeight   = 100;
   double              MEditorScale    = 1.0;
   bool                MIsEditorOpen   = false;
@@ -51,6 +51,7 @@ public:
 
   MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
   : MIP_Window(AWidth,AHeight,true) {
+    MIP_Print("width %i height %i\n",AWidth,AHeight);
     MEditorListener = AListener;
     MEditorWidth = AWidth;
     MEditorHeight = AHeight;
@@ -78,15 +79,34 @@ public:
 public: // clap gui
 //------------------------------
 
+  /*
+    Set the absolute GUI scaling factor, and override any OS info.
+    Should not be used if the windowing api relies upon logical pixels.
+
+    If the plugin prefers to work out the scaling factor itself by querying the OS directly,
+    then ignore the call.
+
+    Returns true if the scaling could be applied
+    Returns false if the call was ignored, or the scaling could not be applied.
+    [main-thread]
+  */
+
   virtual bool setScale(double scale) {
-    //MIP_PRINT;
+    MIP_Print("scale %f -> true\n",scale);
     MEditorScale = scale;
     return true;
   }
 
   //----------
 
+  /*
+    Get the current size of the plugin UI.
+    clap_plugin_gui->create() must have been called prior to asking the size.
+    [main-thread]
+  */
+
   virtual bool getSize(uint32_t *width, uint32_t *height) {
+    MIP_Print("-> true (%i, %i)\n",MEditorWidth,MEditorHeight);
     //MIP_PRINT;
     *width = MEditorWidth;
     *height = MEditorHeight;
@@ -95,39 +115,74 @@ public: // clap gui
 
   //----------
 
+  /*
+    Returns true if the window is resizeable (mouse drag).
+    Only for embedded windows.
+    [main-thread]
+  */
+
   virtual bool canResize() {
-    //MIP_PRINT;
+    MIP_Print("-> true\n");
     return true;
   }
 
   //----------
+
+  /*
+    Returns true if the plugin can provide hints on how to resize the window.
+    [main-thread]
+  */
 
   // ratios could be calculated from initial size..
 
   virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
-    //MIP_PRINT;
+    MIP_Print("-> true (aspect:%i:%i)\n",420,620);
     hints->can_resize_horizontally  = true;
     hints->can_resize_vertically    = true;
-    hints->aspect_ratio_width       = 16;
-    hints->aspect_ratio_height      = 9;
-    hints->preserve_aspect_ratio    = false;
+    hints->aspect_ratio_width       = 420;
+    hints->aspect_ratio_height      = 620;
+    hints->preserve_aspect_ratio    = false;//true;
+    return true;
+    //return false;
+  }
+
+  //----------
+
+  /*
+    If the plugin gui is resizable, then the plugin will calculate the closest
+    usable size which fits in the given size.
+    This method does not change the size.
+    Only for embedded windows.
+    [main-thread]
+  */
+
+  // 'the given size' indicates the cointent of width/height is valid?
+
+  virtual bool adjustSize(uint32_t *width, uint32_t *height) {
+//    double aspect = 420.0 / 620.0; //(double)MEditorWidth / (double)MEditorHeight;
+//    double w = *width;
+//    double h = *height;
+//    double a = w / h;
+//    MIP_Print("aspect %f w %f h %f a %f\n",aspect,w,h,a);
+//    //if (h > 0) {
+//      if (a >= aspect) w = h * aspect;
+//      else h = w / aspect;
+//    //}
+//    MIP_Print("%i,%i -> true (%f, %f)\n",*width,*height,w,h);
+//    *width = w;
+//    *height = h;
     return true;
   }
 
   //----------
 
-  virtual bool adjustSize(uint32_t *width, uint32_t *height) {
-    //MIP_PRINT;
-    //*width = MWidth;
-    //*height = MHeight;
-    //return true;
-    return false;
-  }
-
-  //----------
+  /*
+    Sets the window size. Only for embedded windows.
+    [main-thread]
+  */
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    //MIP_PRINT;
+    MIP_Print("%i,%i -> true\n",width,height);
     MEditorWidth = width;
     MEditorHeight = height;
     // hack.. the modual stuff should have been in the wndoow class..
@@ -142,30 +197,50 @@ public: // clap gui
 
   //----------
 
+  /*
+    Embbeds the plugin window into the given window.
+    [main-thread & !floating]
+  */
+
   virtual bool setParent(const clap_window_t *window) {
-    //MIP_PRINT;
+    MIP_Print("%p -> true\n",window);
     reparentWindow(window->x11);
     return true;
   }
 
   //----------
 
+  /*
+    Set the plugin floating window to stay above the given window.
+    [main-thread & floating]
+  */
+
   virtual bool setTransient(const clap_window_t *window) {
-    //MIP_PRINT;
+    MIP_Print("%p -> true\n",window);
     return true;
   }
 
   //----------
 
+  /*
+    Suggests a window title. Only for floating windows.
+    [main-thread & floating]
+  */
+
   virtual void suggestTitle(const char *title) {
-    //MIP_PRINT;
+    MIP_Print("%s\n",title);
     setWindowTitle(title);
   }
 
   //----------
 
+  /*
+    Show the window.
+    [main-thread]
+  */
+
   virtual bool show() {
-    //MIP_PRINT;
+    MIP_Print("-> true\n");
     if (!MIsEditorOpen) {
       openWindow();
       MIsEditorOpen = true;
@@ -176,8 +251,14 @@ public: // clap gui
 
   //----------
 
+  /*
+    Hide the window, this method do not free the resources, it just hides
+    the window content. Yet it maybe a good idea to stop painting timers.
+    [main-thread]
+  */
+
   virtual bool hide() {
-    //MIP_PRINT;
+    MIP_Print("-> true\n");
     if (MIsEditorOpen) {
       MIsEditorOpen = false;
       stopEventThread();

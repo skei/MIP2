@@ -100,6 +100,7 @@ public:
     Layout.initialRect = ARect;
     Layout.baseRect = ARect;
     MRect = ARect;
+    //Layout.aspectRatio = ARect.w / ARect.h;
   }
 
   //----------
