@@ -41,7 +41,7 @@ public:
   void on_widget_paint(MIP_PaintContext* AContext) override {
     MIP_Painter* painter = AContext->painter;
     MIP_DRect rect = MRect;
-    rect.overlap(AContext->updateRect);
+    //rect.overlap(AContext->updateRect);
     painter->beginPath();
     //painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
     painter->rect(rect.x,rect.y,rect.w,rect.h);

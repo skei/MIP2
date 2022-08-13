@@ -67,6 +67,9 @@ public:
       MHorizontalScrollBar->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
       MHorizontalScrollBar->setDirection(MIP_HORIZONTAL);
       //MHorizontalScrollBar->layout.extraBorder.w = 10;
+      //if (showVerticalScrollBar) {
+      //  MHorizontalScrollBar->Layout.extraBorder.w = 10;
+      //}
       MIP_PanelWidget::appendChildWidget(MHorizontalScrollBar);
     }
     MContent = new MIP_PanelWidget(MIP_DRect());
@@ -78,6 +81,7 @@ public:
     MContent->setFillBackground(true);
     //MContent->setFillBackground(true);
     //MContent->setBackgroundColor(MIP_COLOR_DARK_GREEN);
+    MContent->Flags.clipChildren = true;
     MIP_PanelWidget::appendChildWidget(MContent);
   }
 

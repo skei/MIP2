@@ -146,34 +146,34 @@ public:
 
       color1 = new MIP_ColorWidget(MIP_DRect(20),MIP_COLOR_RED);
       color1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      color1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //color1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       left_panel->appendChildWidget(color1);
 
       panel1 = new MIP_PanelWidget(MIP_DRect(20));
       panel1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      panel1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //panel1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       left_panel->appendChildWidget(panel1);
 
       text1 = new MIP_TextWidget(MIP_DRect(50),"text");
       text1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      text1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //text1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       text1->setTextSize(-1);
       //text1->setTextOffset(MIP_DPoint(0,1));
       left_panel->appendChildWidget(text1);
 
       value1 = new MIP_ValueWidget(MIP_DRect(20),"value",0.3);
       value1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      value1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //value1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       left_panel->appendChildWidget(value1);
 
       dragvalue1  = new MIP_DragValueWidget(MIP_DRect(20),"drag_value",0.3);
       dragvalue1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      dragvalue1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //dragvalue1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       left_panel->appendChildWidget(dragvalue1);
 
       slider1 = new MIP_SliderWidget(MIP_DRect(20),"slider",0.3);
       slider1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      slider1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //slider1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       slider1->setMinValue(-5);
       slider1->setMaxValue(5);
       slider1->scaleDragSensitivity(10);
@@ -181,14 +181,14 @@ public:
 
       button1 = new MIP_ButtonWidget(MIP_DRect(20),"on","off",0);
       button1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      button1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //button1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       button1->setTextColor(MIP_COLOR_BLACK);
       button1->setTextSize(-1);
       left_panel->appendChildWidget(button1);
 
       button2 = new MIP_ButtonWidget(MIP_DRect(20),"on","off",0);
       button2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      button2->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //button2->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       button2->setTextColor(MIP_COLOR_RED);
       button2->setTextSize(-1);
       button2->setIsToggle(false);
@@ -196,28 +196,28 @@ public:
 
       menuitem1 = new MIP_MenuItemWidget(MIP_DRect(20),"menu_item");
       menuitem1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      menuitem1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //menuitem1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       left_panel->appendChildWidget(menuitem1);
 
       selector1 = new MIP_SelectorWidget(MIP_DRect(20),"selector",menu1);
       selector1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      selector1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //selector1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       left_panel->appendChildWidget(selector1);
 
       buttonrow1 = new MIP_ButtonRowWidget(MIP_DRect(20),5,button_txt,MIP_BUTTON_ROW_MULTI);
       buttonrow1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      buttonrow1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //buttonrow1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       buttonrow1->setButtonState(0,true);
       left_panel->appendChildWidget(buttonrow1);
 
       scrollbar1 = new MIP_ScrollBarWidget(MIP_DRect(20));
       scrollbar1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      scrollbar1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //scrollbar1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       left_panel->appendChildWidget(scrollbar1);
 
       groupbox1 = new MIP_GroupBoxWidget(MIP_DRect(100),false);
       groupbox1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      groupbox1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
+      //groupbox1->Layout.sizeModeY = MIP_WIDGET_SIZE_CHILD_COUNT;
       left_panel->appendChildWidget(groupbox1);
 
         MIP_ColorWidget* color2 = new MIP_ColorWidget(MIP_DRect(100),MIP_COLOR_RED);

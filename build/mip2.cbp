@@ -368,6 +368,19 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/plugins/sa_bulo/sa_compciter.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_event_horizon.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_exciter.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_exciter2.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_hall_reverb.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_hrtf.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_large_room_reverb.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_limiter.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_saturation.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_small_room_reverb.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_sonic_maximizer.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_tilteq.h" />
+		<Unit filename="../source/plugins/sa_bulo/sa_transient_killer.h" />
 		<Unit filename="../source/plugins/sa_cred.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -376,10 +389,25 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/plugins/sa_mini/sa_fibonacci.h" />
+		<Unit filename="../source/plugins/sa_mini/sa_grains.h" />
+		<Unit filename="../source/plugins/sa_mini/sa_pitch.h" />
+		<Unit filename="../source/plugins/sa_mini/sa_transpose.h" />
 		<Unit filename="../source/plugins/template.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../tools/bin2h.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../tools/dump_ttl.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../tools/dump_ttl.sh" />
 		<Unit filename="build.cpp" />
 		<Unit filename="test/test_editor3.cpp">
 			<Option compile="0" />

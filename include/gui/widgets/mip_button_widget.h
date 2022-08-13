@@ -54,6 +54,16 @@ public:
     MOffText = AOffText;
   }
 
+  virtual void setOn() {
+    setValue(1.0);
+    setText(MOnText);
+  }
+
+  virtual void setOff() {
+    setValue(0.0);
+    setText(MOffText);
+  }
+
 //------------------------------
 public: // parent to child
 //------------------------------

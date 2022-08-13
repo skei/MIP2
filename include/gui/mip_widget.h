@@ -49,6 +49,7 @@ struct MIP_WidgetFlags {
   bool autoHideCursor = false;
   bool autoLockCursor = false;
   bool dirty          = false;
+  bool clipChildren   = false;
 };
 
 //----------------------------------------------------------------------
@@ -361,20 +362,36 @@ public: // hierarchy
       MIP_DRect updaterect = AContext->updateRect;
       //MIP_Print("updaterect %.0f,%.0f , %.0f,%.0f\n",updaterect.x,updaterect.y,updaterect.w,updaterect.h);
       //AContext->painter->pushClip(updaterect);
-      //AContext->painter->pushClip(MRect);
+
+      MIP_DRect cliprect = MRect;
+      cliprect.shrink(Layout.border);
+
+      if (Flags.clipChildren) {
+        //AContext->painter->pushClip(updaterect);
+        AContext->painter->pushClip(cliprect);
+      }
+
       for (uint32_t i=0; i<num; i++) {
         MIP_Widget* widget = MChildren[i];
         if (widget->Flags.visible) {
           MIP_DRect widgetrect = widget->MRect;
-          if (widgetrect.intersects(updaterect)) {
+          //if (widgetrect.intersects(updaterect)) {
+          if (widgetrect.intersects(cliprect)) {
             //TODO: check if  AContext->updateRect
-            //AContext->painter->pushClip(widget->getRect());
+
+            //AContext->painter->pushClip(widgetrect);
+
             widget->on_widget_paint(AContext);
+
             //AContext->painter->popClip();
           }
         }
       }
-      //AContext->painter->popClip();
+
+      if (Flags.clipChildren) {
+        AContext->painter->popClip();
+      }
+
     }
   }
 
@@ -403,7 +420,7 @@ public: // hierarchy
     client_rect.shrink(border);
 
     MContentRect = MRect;
-    /*if (!Layout.contentBorder)*/ MContentRect.shrink(border);
+    MContentRect.shrink(border);
     //content.setPos(0,0);
     MContentRect.setSize(0,0);
 
@@ -429,30 +446,48 @@ public: // hierarchy
 
           // size mode
 
-          double child_count_width  = (client_rect.w - (Layout.spacing.x * (num - 1))) / MChildren.size();
-          double child_count_height = (client_rect.h - (Layout.spacing.y * (num - 1))) / MChildren.size();
+          //double child_count_width  = (client_rect.w - (Layout.spacing.x * (num - 1))) / MChildren.size();
+          //double child_count_height = (client_rect.h - (Layout.spacing.y * (num - 1))) / MChildren.size();
 
           switch (child->Layout.sizeModeX) {
             case MIP_WIDGET_SIZE_PIXELS:
               break;
             case MIP_WIDGET_SIZE_PARENT_RATIO:
+              child_rect.x *= parent_rect.w;
+              child_rect.w *= parent_rect.w;
+              break;
+            case MIP_WIDGET_SIZE_CLIENT_RATIO:
               child_rect.x *= client_rect.w;
               child_rect.w *= client_rect.w;
               break;
-            case MIP_WIDGET_SIZE_CHILD_COUNT:
-              child_rect.w = child_count_width;
+            //case MIP_WIDGET_SIZE_CHILD_COUNT:
+            //  //child_rect.w = child_count_width;
+            //  break;
+            //case MIP_WIDGET_SIZE_CONTENT:
+            //  break;
+            //case MIP_WIDGET_SIZE_SCALED:
+            //  break;
+
           }
 
           switch (child->Layout.sizeModeY) {
             case MIP_WIDGET_SIZE_PIXELS:
               break;
             case MIP_WIDGET_SIZE_PARENT_RATIO:
+              child_rect.y *= parent_rect.h;
+              child_rect.h *= parent_rect.h;
+              break;
+            case MIP_WIDGET_SIZE_CLIENT_RATIO:
               child_rect.y *= client_rect.h;
               child_rect.h *= client_rect.h;
               break;
-            case MIP_WIDGET_SIZE_CHILD_COUNT:
-              child_rect.h = child_count_height;
-              break;
+            //case MIP_WIDGET_SIZE_CHILD_COUNT:
+            //  //child_rect.h = child_count_height;
+            //  break;
+            //case MIP_WIDGET_SIZE_CONTENT:
+            //  break;
+            //case MIP_WIDGET_SIZE_SCALED:
+            //  break;
           }
 
           //  if we were stacking, but isn't now..

@@ -13,7 +13,7 @@
 //
 //----------------------------------------------------------------------
 
-#include "../source/plugins/gain.cpp"
+//#include "../source/plugins/gain.cpp"
 //#include "../source/plugins/template.cpp"
 
 //#include "../source/plugins/sa_bulo.cpp"      // gravel, ports
@@ -31,4 +31,6 @@
 
 //#include "../build/test/test_editor3.cpp"
 //#include "../build/test/test_editor4.cpp"
+
+#include "../build/test/test_layout.cpp"
 

@@ -83,6 +83,10 @@ public:
     MTarget = ATarget;
   }
 
+  virtual void setFillColor(MIP_Color AColor) {
+    MFillColor = AColor;
+  }
+
 //------------------------------
 public:
 //------------------------------

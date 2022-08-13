@@ -243,9 +243,11 @@ enum MIP_EWidgetAlignment {
 
 enum MIP_EWidgetSizeModes {
   MIP_WIDGET_SIZE_PIXELS        = 0,  // pixels
-  MIP_WIDGET_SIZE_PARENT_RATIO  = 1,  // parent-ratio
-  MIP_WIDGET_SIZE_CHILD_COUNT   = 2,  // parent_height / num_children
-  MIP_WIDGET_SIZE_CONTENT       = 3   //
+  MIP_WIDGET_SIZE_PARENT_RATIO  = 1,  // parent
+  MIP_WIDGET_SIZE_CLIENT_RATIO  = 2   // client (current rect)
+//  MIP_WIDGET_SIZE_CHILD_COUNT
+//  MIP_WIDGET_SIZE_CONTENT
+//  MIP_WIDGET_SIZE_SCALED
   // TODO: screen-ratio
 };
 

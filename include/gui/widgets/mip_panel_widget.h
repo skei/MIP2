@@ -45,6 +45,7 @@ public:
   MIP_PanelWidget(MIP_DRect ARect)
   : MIP_Widget(ARect) {
     MName = "MIP_PanelWidget";
+    //Flags.clipChildren = true;
   }
 
   //----------

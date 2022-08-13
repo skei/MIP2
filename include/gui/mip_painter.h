@@ -73,12 +73,12 @@ public: // clipping
     - set new clip rect
   */
 
-  void pushClip(MIP_DRect ARect) {
+  virtual void pushClip(MIP_DRect ARect) {
     //MIP_Print("ARect = %.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
     //MIP_Print("depth: %i\n",MClipStack.getNumItems());
     MClipStack.push(MClipRect);
     MClipRect = ARect;
-    //resetClip();
+    resetClip();
     setClip(MClipRect);
   }
 
@@ -89,30 +89,30 @@ public: // clipping
     - set clip rect to popped rect
   */
 
-  MIP_DRect popClip() {
+  virtual MIP_DRect popClip() {
     MClipRect = MClipStack.pop();
     //MIP_Print("MClipRect = %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
-    //resetClip();
+    resetClip();
     setClip(MClipRect);
     return MClipRect;
   }
 
   //----------
 
-  void resetClipStack() {
+  virtual void resetClipStack() {
     MClipStack.reset();
   }
 
   //----------
 
-  void setClipRect(MIP_DRect ARect) {
+  virtual void setClipRect(MIP_DRect ARect) {
     MClipRect = ARect;
     //MIP_Print("ARect = %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
   }
 
   //----------
 
-  MIP_DRect getClipRect() {
+  virtual MIP_DRect getClipRect() {
     return MClipRect;
   }
 

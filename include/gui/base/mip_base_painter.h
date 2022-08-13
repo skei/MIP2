@@ -57,6 +57,12 @@ public:
 
   //----------
 
+  virtual void      pushClip(MIP_DRect ARect) {}
+  virtual MIP_DRect popClip() { return MIP_DRect(); }
+  virtual void      resetClipStack() {}
+  virtual void      setClipRect(MIP_DRect ARect) {}
+  virtual MIP_DRect getClipRect() { return MIP_DRect(); }
+
   //virtual void resize(uint32_t AWidth, uint32_t AHeight) {}
   virtual void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) {}
 

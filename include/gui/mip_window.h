@@ -183,6 +183,7 @@ public: // window
     if (MWindowPainter) {
       delete MWindowPainter;
       MWindowPainter = new MIP_Painter(this,this);
+      MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
       MPaintContext.painter = MWindowPainter;
     }
     MRect.setSize(AWidth,AHeight);
@@ -206,9 +207,9 @@ public: // window
     setupContext(AXpos,AYpos,AWidth,AHeight);
     MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
     painter->beginPaint(MRect.w,MRect.h);
-    painter->scissor(AXpos,AYpos,AWidth,AHeight);
+    //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
     paintChildWidgets(getPaintContext());
-    painter->resetScissor();
+    //painter->popClip();
     painter->endPaint();
   }
 

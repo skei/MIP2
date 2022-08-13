@@ -38,37 +38,66 @@ public:
     MTitleBar->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     MTitleBar->setIsToggle();
     MTitleBar->setTexts("Open","Closed");
-    MTitleBar->setDrawBorder(false);
-//    MTitleBar->setRoundedCorners(MIP_CORNER_NONE);
-    MTitleBar->setFillGradient(false);
 
-//    MTitleBar->setBackgroundColors(MIP_Color(0.4),MIP_Color(0.4));
-//    MTitleBar->setTextColors(MIP_Color(0.8),MIP_Color(0.8));
+//    MTitleBar->setDrawBorder(true);
+//    //MTitleBar->setRoundedCorners(MIP_CORNER_NONE);
+//    MTitleBar->setFillGradient(false);
+//    //MTitleBar->setBackgroundColors(MIP_Color(0.4),MIP_Color(0.4));
+//    //MTitleBar->setTextColors(MIP_Color(0.8),MIP_Color(0.8));
+
+    MTitleBar->setFillBackground(true);
+    MTitleBar->setFillGradient(true);
+    MTitleBar->setDrawBorder(true);
+    MTitleBar->setDrawRoundedCorners(true);
+    MTitleBar->setCornerRadius(5,5,0,0);
 
     MContainer = new MIP_PanelWidget( MIP_DRect());
     MContainer->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+
     MContainer->setFillBackground(false);
     MContainer->setDrawBorder(false);
     //MContainer->setCursor(MIP_CURSOR_CROSS);
 
+//    MContainer->setFillBackground(true);
+//    MContainer->setFillGradient(true);
+//    MContainer->setDrawBorder(true);
+//    MContainer->setDrawRoundedCorners(true);
+//    MContainer->setCornerRadius(5,5,0,0);
+
     MIP_Widget::appendChildWidget( MTitleBar );
     MIP_Widget::appendChildWidget( MContainer );
 
-    MOpenSize   = ARect.h;
+    MOpenSize = ARect.h;
     MClosedSize = MTitleBar->getRect().h;
-
-    MClosable = true;
     MClosed = AClosed;
+
     if (MClosed) {
-    //  close();
-      MTitleBar->setValue(0);
+      //close();
+      MTitleBar->setOff();
+      MContainer->Flags.active = false;
+      MContainer->Flags.visible = false;
+      //float rs = MClosedSize - getInitialRect().h;
+      //setResized( MIP_Point(0,rs) );
+      //setHeight(MClosedSize);
+      //setInitialHeight(MClosedSize);
+      MRect.h = MClosedSize;
+      Layout.baseRect = MClosedSize;
     }
     else {
-    //  open();
-      MTitleBar->setValue(1);
+      //open();
+      MTitleBar->setOn();
+      MContainer->Flags.active = true;
+      MContainer->Flags.visible = true;
+      //setResized( MIP_Point(0,0) );
+      //setHeight(MOpenSize);
+      //setInitialHeight(MOpenSize);
+      MRect.h = MOpenSize;
+      Layout.baseRect = MOpenSize;
     }
 
   }
+
+  //----------
 
   virtual ~MIP_GroupBoxWidget() {
   }

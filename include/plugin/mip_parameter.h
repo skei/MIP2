@@ -63,6 +63,8 @@ private:
   bool    MModulated      = false;
   bool    MPolyModulated  = false;
 
+  const char** MStrings = nullptr;
+
 //------------------------------
 public:
 //------------------------------
@@ -197,13 +199,9 @@ public:
   : MIP_Parameter() {
   }
 
-  //----------
-
   MIP_IntParameter(const clap_param_info_t* AInfo)
   : MIP_Parameter(AInfo) {
   }
-
-  //----------
 
   MIP_IntParameter(clap_id AId, const char* AName, const char* AModule="", double AMinValue=0.0, double AMaxValue=1.0, double ADefValue=0.0, clap_param_info_flags AFlags=0)
   : MIP_Parameter(AId,AName,AModule,AMinValue,AMaxValue,ADefValue,AFlags) {
@@ -212,6 +210,25 @@ public:
   //----------
 
   virtual ~MIP_IntParameter() {
+  }
+
+public:
+
+  const char* valueToText(double AValue, char* AText, uint32_t ASize) {
+    if (hasFlag(CLAP_PARAM_IS_STEPPED)) {
+      sprintf(AText,"%i",(int)AValue);
+    }
+    else {
+      sprintf(AText,"%.2f",AValue);
+    }
+    return AText;
+  }
+
+  //----------
+
+  double textToValue(const char* AText) {
+    double f = atof(AText);
+    return f;
   }
 
 };
