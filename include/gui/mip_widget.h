@@ -816,7 +816,6 @@ public: // hierarchy
           child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
           child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
 
-
           MIP_DRect extra_border = child->Layout.extraBorder;
           extra_border.scale(Layout.scale);
           child_rect.shrink(extra_border);
@@ -824,17 +823,18 @@ public: // hierarchy
           // update
 
           child->MRect = child_rect;
+
 //          child->MRect.x += MChildrenXOffset;
 //          child->MRect.y += MChildrenYOffset;
-          MContentRect.combine(child_rect);
 
-          //MIP_Print("post MContentRect: %.0f,%.0f, %.0f,%.0f\n",MContentRect.x,MContentRect.y,MContentRect.w,MContentRect.h);
+          MContentRect.combine(child_rect);
 
           if (ARecursive) {
             child->alignChildWidgets(ARecursive);
           }
 
         } //  visible
+
       } // for
 
       //MIP_Print("%s: %.0f,%.0f, %.0f,%.0f\n",getWidgetName(),MContentRect.x,MContentRect.y,MContentRect.w,MContentRect.h);
@@ -846,6 +846,18 @@ public: // hierarchy
 
     //MContentRect.w += (layout.innerBorder.w * layout.scale);
     //MContentRect.h += (layout.innerBorder.h * layout.scale);
+
+    // autosize
+
+//    if (Layout.sizeModeX == MIP_WIDGET_SIZE_CONTENT) {
+//      MRect.x = MContentRect.x;
+//      MRect.w = MContentRect.w;
+//    }
+//    if (Layout.sizeModeY == MIP_WIDGET_SIZE_CONTENT) {
+//      MRect.y = MContentRect.y;
+//      MRect.h = MContentRect.h;
+//    }
+
   }
 
 };

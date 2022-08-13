@@ -245,6 +245,7 @@ enum MIP_EWidgetSizeModes {
   MIP_WIDGET_SIZE_PIXELS        = 0,  // pixels
   MIP_WIDGET_SIZE_PARENT_RATIO  = 1,  // parent-ratio
   MIP_WIDGET_SIZE_CHILD_COUNT   = 2,  // parent_height / num_children
+  MIP_WIDGET_SIZE_CONTENT       = 3   //
   // TODO: screen-ratio
 };
 
