@@ -130,7 +130,7 @@ public:
   const char*             getWidgetName() { return MName; }
   void                    setWidgetName(const char* AName) { MName = AName; }
 
-  virtual MIP_Widget*     getParentWidget() { return MParent; }
+  virtual MIP_Widget*     getParentWidget()     { return MParent; }
   virtual MIP_DRect       getWidgetRect()   { return MRect; }
   virtual double          getWidgetXPos()   { return MRect.x; }
   virtual double          getWidgetYPos()   { return MRect.y; }
@@ -145,6 +145,10 @@ public:
 
   MIP_DRect getRect() { return MRect; }
   MIP_DRect getContentRect() { return MContentRect; }
+
+  virtual uint32_t          getNumChildWidgets()        { return MChildren.size(); }
+  virtual MIP_Widget*       getChildWidget(uint32_t i)  { return MChildren[i]; }
+  virtual MIP_WidgetArray*  getChildWidgets()           { return &MChildren; }
 
 //------------------------------
 public:
