@@ -165,6 +165,7 @@ public:
   virtual void setWidgetindex(int32_t AIndex)               { MIndex = AIndex; }
 
   virtual void setParameter(MIP_Parameter* AParameter) { MParameter = AParameter; }
+  virtual void setWidgetCursor(uint32_t ACursor) { MMouseCursor = ACursor; }
 
 //------------------------------
 public: // parent to child

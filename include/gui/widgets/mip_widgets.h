@@ -14,6 +14,7 @@
 #include "gui/widgets/mip_grid_widget.h"
 #include "gui/widgets/mip_group_box_widget.h"
 #include "gui/widgets/mip_image_widget.h"
+#include "gui/widgets/mip_keyboard_widget.h"
 #include "gui/widgets/mip_knob_widget.h"
 #include "gui/widgets/mip_knob2_widget.h"
 #include "gui/widgets/mip_menu_item_widget.h"

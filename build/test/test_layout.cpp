@@ -177,6 +177,30 @@ public: // gui
         panel1->setCornerRadius(5);
         left_scrollbox->appendChildWidget(panel1);
 
+        // toggle button
+
+        MIP_ButtonWidget* button1 = new MIP_ButtonWidget(20,"On","Off",0);
+        button1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        button1->setFillBackground(true);
+        button1->setFillGradient(false);
+        button1->setDrawBorder(true);
+        button1->setDrawRoundedCorners(true);
+        button1->setCornerRadius(5);
+        button1->setIsToggle(true);
+        left_scrollbox->appendChildWidget(button1);
+
+        // switch button
+
+        MIP_ButtonWidget* button2 = new MIP_ButtonWidget(20,"On","Off",0);
+        button2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        button2->setFillBackground(true);
+        button2->setFillGradient(false);
+        button2->setDrawBorder(true);
+        button2->setDrawRoundedCorners(false);
+        button2->setCornerRadius(5);
+        button2->setIsToggle(false);
+        left_scrollbox->appendChildWidget(button2);
+
         // text
 
         MIP_TextWidget* text1 = new MIP_TextWidget(20,"text");
@@ -245,6 +269,12 @@ public: // gui
         MIP_SelectorWidget* selector1 = new MIP_SelectorWidget(20,"selector",menu1);
         selector1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         left_scrollbox->appendChildWidget(selector1);
+
+        // keyboard
+
+        MIP_KeyboardWidget* keyboard1 = new MIP_KeyboardWidget(40);
+        keyboard1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        left_scrollbox->appendChildWidget(keyboard1);
 
       }
 
