@@ -49,7 +49,7 @@ struct MIP_WidgetFlags {
   bool autoHideCursor = false;
   bool autoLockCursor = false;
   bool dirty          = false;
-  bool clipChildren   = false;
+  bool clipChildren   = true;//false;
 };
 
 //----------------------------------------------------------------------

@@ -38,6 +38,8 @@ public:
     MHeader = new MIP_ButtonRowWidget(MIP_DRect(20),ANum);
     MHeader->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     MHeader->setDrawRoundedBottom(false);
+
+
     MPages = new MIP_PagesWidget(MIP_DRect());
     MPages->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     MNumPages = 0;
@@ -45,6 +47,7 @@ public:
     appendChildWidget(MHeader);
     appendChildWidget(MPages);
 
+    // Flags.clipChildren = true;
 
   }
 

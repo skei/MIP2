@@ -28,6 +28,9 @@ public:
   MIP_PagesWidget(MIP_DRect ARect)
   : MIP_Widget(ARect) {
     MName = "MIP_PagesWidget";
+
+    //Flags.clipChildren = true;
+
   }
 
   //----------

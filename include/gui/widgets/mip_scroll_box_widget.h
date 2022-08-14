@@ -81,7 +81,7 @@ public:
     MContent->setFillBackground(true);
     //MContent->setFillBackground(true);
     //MContent->setBackgroundColor(MIP_COLOR_DARK_GREEN);
-    MContent->Flags.clipChildren = true;
+//    MContent->Flags.clipChildren = true;
     MIP_PanelWidget::appendChildWidget(MContent);
   }
 
