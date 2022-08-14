@@ -207,9 +207,9 @@ public: // window
     setupContext(AXpos,AYpos,AWidth,AHeight);
     MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
     painter->beginPaint(MRect.w,MRect.h);
-    //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
+    painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
     paintChildWidgets(getPaintContext());
-    //painter->popClip();
+    painter->popClip();
     painter->endPaint();
   }
 
