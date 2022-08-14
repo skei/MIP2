@@ -143,6 +143,26 @@ public:
     text(x,y,AText,nullptr);
   }
 
+  void triangle(double x1, double y1, double x2, double y2, double x3, double y3) override {
+    moveTo(x1,y1);
+    lineTo(x2,y2);
+    lineTo(x3,y3);
+    lineTo(x1,y1);
+  }
+
+  void rectangle(MIP_DRect r) override {
+    rect(r.x,r.y,r.w,r.h);
+  }
+
+  void ellipse(MIP_DRect r) override {
+    float cx = r.x + (r.w * 0.5);
+    float cy = r.y + (r.h * 0.5);
+    float rx = (r.w * 0.5);
+    float ry = (r.h * 0.5);
+    MIP_ImplementedPainter::ellipse(cx,cy,rx,ry);
+  }
+
+
 };
 
 //----------------------------------------------------------------------

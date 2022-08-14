@@ -167,6 +167,16 @@ public: // gui
 
       {
 
+        // symbols
+
+        for (uint32_t i=0; i<20; i++) {
+          MIP_SymbolWidget* sym = new MIP_SymbolWidget(10,i);
+          sym->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+          sym->setColor(MIP_COLOR_DARK_GRAY);
+          sym->setLineWidth(2);
+          left_scrollbox->appendChildWidget(sym);
+        }
+
         //--- group box
 
         MIP_GroupBoxWidget* groupbox1 = new MIP_GroupBoxWidget(100,true);
@@ -383,13 +393,28 @@ public: // gui
 
         MIP_TextWidget* right_bottom_panel = new MIP_TextWidget(0,"right_bottom_panel");
         right_bottom_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-        right_bottom_panel->setFillBackground(false);
+        right_bottom_panel->Layout.border = MIP_DRect(10,10,10,10);
+        right_bottom_panel->Layout.spacing = MIP_DPoint(5,5);
+        right_bottom_panel->setFillBackground(true);
         right_bottom_panel->setDrawBorder(false);
-        right_bottom_panel->setDrawText(true);
+        right_bottom_panel->setDrawText(false);
         right_bottom_panel->setBackgroundColor(0.45);
         right_panel->appendChildWidget(right_bottom_panel);
 
         {
+
+          // curve 1
+
+          MIP_CurveWidget* curve1 = new MIP_CurveWidget(32,false);
+          curve1->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+          right_bottom_panel->appendChildWidget(curve1);
+
+          // curve 2
+
+          MIP_CurveWidget* curve2 = new MIP_CurveWidget(32,true);
+          curve2->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+          right_bottom_panel->appendChildWidget(curve2);
+
         }
 
       }
@@ -531,8 +556,8 @@ public: // gui
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-//#include "plugin/vst2/mip_vst2_entry.h"
-//#include "plugin/vst3/mip_vst3_entry.h"
+#include "plugin/vst2/mip_vst2_entry.h"
+#include "plugin/vst3/mip_vst3_entry.h"
 
 #include "plugin/mip_registry.h"
 

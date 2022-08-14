@@ -190,6 +190,12 @@ public:
   virtual void textMetrics(float* ascender, float* descender, float* lineh) {}
   virtual int textBreakLines(const char* string, const char* end, float breakRowWidth, NVGtextRow* rows, int maxRows) { return 0; }
 
+//----------
+
+  virtual void triangle( double x1, double y1, double x2, double y2, double x3, double y3) {}
+  virtual void rectangle(MIP_DRect r) {}
+  virtual void ellipse(MIP_DRect r) {}
+
 };
 
 //----------------------------------------------------------------------
