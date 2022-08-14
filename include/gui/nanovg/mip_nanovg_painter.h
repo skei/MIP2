@@ -12,6 +12,8 @@
 #include "gui/nanovg/mip_nanovg.h"
 #include "gui/nanovg/mip_nanovg_utils.h"
 
+#include "../data/fonts/liberation_ttf.h"
+
 //#include "extern/blendish/blendish.h"
 //#include "extern/blendish/blendish.c"
 
@@ -45,7 +47,8 @@ public:
     MIP_OpenGLPainter::makeCurrent();
 
     MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES); // NVG_DEBUG
-    MFont = nvgCreateFont(MContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+    //MFont = nvgCreateFont(MContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
+    MFont = nvgCreateFontMem(MContext,"font1",(unsigned char*)liberation_ttf,liberation_ttf_size,0);
 
     nvgFontFaceId(MContext,MFont);
     //nvgFontSize(MContext,10);

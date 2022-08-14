@@ -22,6 +22,7 @@
 #include "gui/widgets/mip_opengl_widget.h"
 #include "gui/widgets/mip_pages_widget.h"
 #include "gui/widgets/mip_panel_widget.h"
+#include "gui/widgets/mip_sa_header_widget.h"
 #include "gui/widgets/mip_scroll_bar_widget.h"
 #include "gui/widgets/mip_scroll_box_widget.h"
 #include "gui/widgets/mip_selector_widget.h"

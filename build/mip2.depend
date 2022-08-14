@@ -130,7 +130,7 @@
 	"plugin/mip_editor.h"
 	"gui/opengl/mip_opengl.h"
 
-1657152231 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.c
+1660488070 /DISKS/sda2/code/git/MIP2/include/extern/nanovg/nanovg.c
 	<stdlib.h>
 	<stdio.h>
 	<math.h>
@@ -777,7 +777,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb_surface.h"
 
-1657755312 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_surface.h
+1660490207 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_surface.h
 	"mip.h"
 	"gui/mip_drawable.h"
 	"gui/xcb/mip_xcb.h"
@@ -855,11 +855,12 @@
 1658514761 /DISKS/sda2/code/git/MIP2/include/gui/mip_theme.h
 	"mip.h"
 
-1660400850 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg_painter.h
+1660491632 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg_painter.h
 	"mip.h"
 	"gui/opengl/mip_opengl_painter.h"
 	"gui/nanovg/mip_nanovg.h"
 	"gui/nanovg/mip_nanovg_utils.h"
+	"../data/fonts/liberation_ttf.h"
 
 1657991952 /DISKS/sda2/code/git/MIP2/include/base/types/mip_color.h
 	"mip.h"
@@ -934,7 +935,7 @@
 	"mip.h"
 	"gui/mip_widget.h"
 
-1660471420 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_widgets.h
+1660487622 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_widgets.h
 	"mip.h"
 	"gui/widgets/template.h"
 	"gui/widgets/mip_button_widget.h"
@@ -952,6 +953,7 @@
 	"gui/widgets/mip_opengl_widget.h"
 	"gui/widgets/mip_pages_widget.h"
 	"gui/widgets/mip_panel_widget.h"
+	"gui/widgets/mip_sa_header_widget.h"
 	"gui/widgets/mip_scroll_bar_widget.h"
 	"gui/widgets/mip_scroll_box_widget.h"
 	"gui/widgets/mip_selector_widget.h"
@@ -1083,9 +1085,11 @@
 	"base/utils/mip_math.h"
 	"base/types/mip_color.h"
 
-1659036542 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_image_widget.h
+1660490708 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_image_widget.h
 	"mip.h"
+	"gfx/mip_bitmap.h"
 	"gui/widgets/mip_panel_widget.h"
+	"gui/mip_surface.h"
 
 1658610527 /DISKS/sda2/code/git/MIP2/source/test/voxel.h
 	"mip.h"
@@ -1516,7 +1520,7 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1660472073 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
+1660491082 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
 	"gui/widgets/mip_widgets.h"
@@ -1541,4 +1545,50 @@
 
 1660471761 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_keyboard_widget.h
 	"gui/mip_widget.h"
+
+1660491046 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_sa_header_widget.h
+	"gfx/mip_bitmap.h"
+	"gui/mip_window.h"
+	"gui/mip_surface.h"
+	"gui/widgets/mip_image_widget.h"
+	"gui/widgets/mip_panel_widget.h"
+	"gui/widgets/mip_text_widget.h"
+	"../data/img/sa_logo_40_trans_black.h"
+	"../data/img/mip2_trans_129x34.h"
+
+1660488042 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap.h
+	"mip.h"
+	"base/utils/mip_rgba.h"
+	"base/utils/mip_integer_math.h"
+	"base/utils/mip_random.h"
+	"base/types/mip_color.h"
+	"gui/mip_drawable.h"
+	"gui/cairo/mip_cairo.h"
+	"extern/stb/stb_image.h"
+	"gfx/mip_bitmap_draw.h"
+	"gfx/mip_bitmap_font.h"
+	"gfx/mip_bitmap_proc.h"
+	"gfx/mip_bitmap_gen.h"
+
+1639520157 /DISKS/sda2/code/git/MIP2/include/gui/cairo/mip_cairo.h
+	"mip.h"
+	<cairo/cairo.h>
+	<cairo/cairo-xcb.h>
+
+1652225064 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap_draw.h
+	"gfx/mip_bitmap_bresenham.h"
+
+1652224123 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap_bresenham.h
+
+1652221796 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap_font.h
+
+1644090586 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap_proc.h
+
+1644090587 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap_gen.h
+
+1585572916 /DISKS/sda2/code/git/MIP2/data/img/sa_logo_40_trans_black.h
+
+1649448948 /DISKS/sda2/code/git/MIP2/data/img/mip2_trans_129x34.h
+
+1660491465 /DISKS/sda2/code/git/MIP2/data/fonts/liberation_ttf.h
 

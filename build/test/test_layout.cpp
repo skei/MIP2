@@ -136,6 +136,14 @@ public: // gui
       background->setBackgroundColor(0.55);
       MEditor->appendChildWidget(background);
 
+      //----- sa header -----
+
+      MIP_SAHeaderWidget* saheader = new MIP_SAHeaderWidget(60,MEditor);
+      saheader->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+      saheader->setPluginName("test_layout");
+      saheader->setPluginVersion("v0.0.0");
+      background->appendChildWidget(saheader);
+
       //----- left panel -----
 
       MIP_ScrollBoxWidget* left_scrollbox = new MIP_ScrollBoxWidget(150,true,true);

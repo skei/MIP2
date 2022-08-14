@@ -47,6 +47,7 @@ public:
   MIP_XcbSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
   //: MIP_BaseSurface() {
     // pixmap
+    MTarget         = ATarget;
     MConnection     = ATarget->drawable_getXcbConnection();
     MTargetDrawable = ATarget->drawable_getXcbDrawable();
     MTargetVisual   = ATarget->drawable_getXcbVisual();

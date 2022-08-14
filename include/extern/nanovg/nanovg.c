@@ -26,8 +26,10 @@
 #include "fontstash.h"
 
 #ifndef NVG_NO_STB
-#define STB_IMAGE_IMPLEMENTATION
-#include "extern/stb/stb_image.h"
+  #ifndef STBI_INCLUDE_STB_IMAGE_H
+    #define STB_IMAGE_IMPLEMENTATION
+    #include "extern/stb/stb_image.h"
+  #endif
 #endif
 
 #ifdef _MSC_VER
