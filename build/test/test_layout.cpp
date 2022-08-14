@@ -144,9 +144,22 @@ public: // gui
       saheader->setPluginVersion("v0.0.0");
       background->appendChildWidget(saheader);
 
+      //----- footer -----
+
+      MIP_TextWidget* footer_panel = new MIP_TextWidget(25,"footer");
+      footer_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
+      footer_panel->setFillBackground(true);
+      footer_panel->setDrawBorder(false);
+      footer_panel->setDrawText(true);
+      footer_panel->setTextColor(MIP_COLOR_LIGHT_GRAY);
+      footer_panel->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
+      footer_panel->setTextOffset(MIP_DPoint(5,0));
+      footer_panel->setBackgroundColor(0.4);
+      background->appendChildWidget(footer_panel);
+
       //----- left panel -----
 
-      MIP_ScrollBoxWidget* left_scrollbox = new MIP_ScrollBoxWidget(150,true,true);
+      MIP_ScrollBoxWidget* left_scrollbox = new MIP_ScrollBoxWidget(150,true,false);
       left_scrollbox->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
       left_scrollbox->getContentWidget()->Layout.border = MIP_DRect(10,10,10,10);
       left_scrollbox->getContentWidget()->Layout.spacing = MIP_DPoint(5,5);
@@ -452,7 +465,17 @@ public: // gui
           tabs1_page1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
           tabs1_page1->setFillBackground(false);
           tabs1_page1->setDrawBorder(true);
+          tabs1_page1->Layout.border = MIP_DRect(10,10,10,10);
           tabs1->appendPage("page1",tabs1_page1);
+
+          {
+
+            //MIP_GridWidget* grid1 = new MIP_GridWidget(0,10,10);
+            //grid1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+            MIP_GridWidget* grid1 = new MIP_GridWidget(MIP_DRect(200,150),10,8);
+            tabs1_page1->appendChildWidget(grid1);
+
+          }
 
           MIP_PanelWidget* tabs1_page2 = new MIP_PanelWidget(0);
           tabs1_page2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
@@ -460,6 +483,26 @@ public: // gui
           tabs1_page2->setDrawBorder(true);
           tabs1->appendPage("page2",tabs1_page2);
 
+          {
+
+            MIP_GraphWidget* graph1 = new MIP_GraphWidget(0);
+            graph1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+            tabs1_page2->appendChildWidget(graph1);
+
+            for (uint32_t i=0; i<8; i++) {
+              MIP_GraphModule* module = new MIP_GraphModule();
+            module->numInputs = 3;
+            module->inputs[0] = MIP_PIN_SIGNAL;
+            module->inputs[1] = MIP_PIN_DATA;
+            module->inputs[2] = MIP_PIN_DATA;
+            module->numOutputs = 3;
+            module->outputs[0] = MIP_PIN_SIGNAL;
+            module->outputs[1] = MIP_PIN_DATA;
+            module->outputs[2] = MIP_PIN_DATA;
+              graph1->addModule(module, i * 10, i * 30, "module");
+            }
+
+          }
           MIP_PanelWidget* tabs1_page3 = new MIP_PanelWidget(0);
           tabs1_page3->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
           tabs1_page3->setFillBackground(false);
