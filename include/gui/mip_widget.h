@@ -359,7 +359,7 @@ public: // hierarchy
     //MIP_PRINT;
     uint32_t num = MChildren.size();
     if (num > 0) {
-      MIP_DRect updaterect = AContext->updateRect;
+      //MIP_DRect updaterect = AContext->updateRect;
       //MIP_Print("updaterect %.0f,%.0f , %.0f,%.0f\n",updaterect.x,updaterect.y,updaterect.w,updaterect.h);
       //AContext->painter->pushClip(updaterect);
 

@@ -396,13 +396,41 @@ public: // gui
 
       MIP_TextWidget* center_panel = new MIP_TextWidget(0,"center_panel");
       center_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+      center_panel->Layout.border = MIP_DRect(10,10,10,10);
       center_panel->setFillBackground(false);
       center_panel->setDrawBorder(false);
-      center_panel->setDrawText(true);
+      center_panel->setDrawText(false);
       center_panel->setBackgroundColor(0.45);
       background->appendChildWidget(center_panel);
 
       {
+
+        MIP_TabsWidget* tabs1 = new MIP_TabsWidget(0,5);
+        tabs1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+        center_panel->appendChildWidget(tabs1);
+
+        {
+          MIP_PanelWidget* tabs1_page1 = new MIP_PanelWidget(0);
+          tabs1_page1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+          tabs1_page1->setFillBackground(false);
+          tabs1_page1->setDrawBorder(true);
+          tabs1->appendPage("page1",tabs1_page1);
+
+          MIP_PanelWidget* tabs1_page2 = new MIP_PanelWidget(0);
+          tabs1_page2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+          tabs1_page2->setFillBackground(false);
+          tabs1_page2->setDrawBorder(true);
+          tabs1->appendPage("page2",tabs1_page2);
+
+          MIP_PanelWidget* tabs1_page3 = new MIP_PanelWidget(0);
+          tabs1_page3->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+          tabs1_page3->setFillBackground(false);
+          tabs1_page3->setDrawBorder(true);
+          tabs1->appendPage("page1",tabs1_page3);
+
+        }
+        tabs1->selectPage(0);
+
       }
 
       //-----
