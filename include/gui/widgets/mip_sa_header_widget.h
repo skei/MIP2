@@ -123,7 +123,7 @@ public:
     MClapTextWidget->setFillBackground(false);
     appendChildWidget(MClapTextWidget);
 
-    MPluginName = new MIP_TextWidget( MIP_DRect(10,0,100,24), "Plugin" );
+    MPluginName = new MIP_TextWidget( MIP_DRect(10,0,150,24), "Plugin" );
     MPluginName->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP_LEFT;
     //MPluginName->setText("PluginName");
     MPluginName->setTextSize(24);
