@@ -16,6 +16,7 @@ protected:
 //------------------------------
 
   float     MTextHeight = 15.0;
+  float     MTextSize   = 13.0;
   uint32_t  MNumLines   = 0;
   uint32_t  MMaxLines   = 100;
 
@@ -24,7 +25,7 @@ public:
 //------------------------------
 
   MIP_TextBoxWidget(MIP_DRect ARect)
-  : MIP_ScrollBoxWidget(ARect,true,false) {
+  : MIP_ScrollBoxWidget(ARect,true,true) {
     MName = "MIP_TextBoxWidget";
     //MContent->layout.innerBorder = 0;
     MContent->setDrawBorder(true);
@@ -50,9 +51,20 @@ public:
     if (MNumLines >= MMaxLines) { removeOldestLine(); }
     //while (MNumLines >= MMaxLines) { removeOldestLine(); }
     MIP_TextWidget* textwidget = new MIP_TextWidget( MIP_DRect(MTextHeight),AText);
+
+    /*
+      this means we can't scroll..
+      todo: some kind of autosize..
+      keep track of the widest line (appendLine
+    */
+
     textwidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    //textwidget->flags.autoSize = true;
+    textwidget->setFillBackground(false);
+    textwidget->setDrawBorder(false);
     textwidget->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
+    textwidget->setTextColor(MIP_COLOR_BLACK);
+    textwidget->setTextSize(MTextSize);
+    //textwidget->flags.autoSize = true;
     MContent->appendChildWidget(textwidget);
     MNumLines += 1;
     MContent->alignChildWidgets();

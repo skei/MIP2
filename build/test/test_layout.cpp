@@ -13,6 +13,8 @@
 #include "plugin/mip_plugin.h"
 #include "gui/widgets/mip_widgets.h"
 
+#define TEXTBOX1_BUFFER_SIZE  (256*256)
+
 //----------------------------------------------------------------------
 //
 // descriptor
@@ -78,6 +80,9 @@ private:
   const char* button_txt[5] = {
     "1", "2", "3", "4", "v"
   };
+
+  // max 100 lines * 255 chars..
+  char textbox1_buffer[TEXTBOX1_BUFFER_SIZE] = {0};
 
 //------------------------------
 public:
@@ -481,12 +486,10 @@ public: // gui
           tabs1->appendPage("page1",tabs1_page1);
 
           {
-
             //MIP_GridWidget* grid1 = new MIP_GridWidget(0,10,10);
             //grid1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
             MIP_GridWidget* grid1 = new MIP_GridWidget(MIP_DRect(200,150),10,8);
             tabs1_page1->appendChildWidget(grid1);
-
           }
 
           MIP_PanelWidget* tabs1_page2 = new MIP_PanelWidget(0);
@@ -496,7 +499,6 @@ public: // gui
           tabs1->appendPage("page2",tabs1_page2);
 
           {
-
             MIP_GraphWidget* graph1 = new MIP_GraphWidget(0);
             graph1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
             tabs1_page2->appendChildWidget(graph1);
@@ -515,11 +517,28 @@ public: // gui
             }
 
           }
+
           MIP_PanelWidget* tabs1_page3 = new MIP_PanelWidget(0);
           tabs1_page3->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
           tabs1_page3->setFillBackground(false);
           tabs1_page3->setDrawBorder(true);
           tabs1->appendPage("page1",tabs1_page3);
+
+          {
+
+
+            MIP_TextBoxWidget* textbox1 = new MIP_TextBoxWidget(0);
+            textbox1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+            textbox1->getContentWidget()->Layout.border = MIP_DRect(10,10,10,10);
+            memset(textbox1_buffer,0,TEXTBOX1_BUFFER_SIZE);
+            for (uint32_t i=0; i<50; i++) {
+              char* ptr = textbox1_buffer + (i*64);
+              sprintf(ptr,"Hello world.. line %i",i);
+              textbox1->appendLine(ptr,false);
+            }
+            tabs1_page3->appendChildWidget(textbox1);
+
+          }
 
         }
         tabs1->selectPage(0);
@@ -543,10 +562,8 @@ public: // gui
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-#include "plugin/vst2/mip_vst2_entry.h"
-#include "plugin/vst3/mip_vst3_entry.h"
-
-#include "plugin/mip_registry.h"
+//#include "plugin/vst2/mip_vst2_entry.h"
+//#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 
