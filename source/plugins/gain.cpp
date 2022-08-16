@@ -57,6 +57,8 @@ private:
     { PAR_GAIN, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Gain", "", 0, 1, 0 }
   };
 
+  //----------
+
   const clap_audio_port_info_t gain_audioInputPorts[1] = {
     { 0, "audio in 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
@@ -114,6 +116,7 @@ public: // gui
 
   bool gui_create(const char *api, bool is_floating) override {
 
+    //MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
     MIP_Plugin::gui_create(api,is_floating);
 
     MEditor->setWindowFillBackground(false);
@@ -155,6 +158,7 @@ public: // process
     float* out0 = process->audio_outputs[0].data32[0];
     float* out1 = process->audio_outputs[0].data32[1];
     for (uint32_t i=0; i<len; i++) {
+      //double par_gain = MParameters[PAR_GAIN]->getValue();
       *out0++ = *in0++ * par_gain;
       *out1++ = *in1++ * par_gain;
     }
@@ -177,9 +181,9 @@ public: // process
 //----------------------------------------------------------------------
 
 #include "plugin/mip_registry.h"
-
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
+
 //#include "plugin/vst2/mip_vst2_entry.h"
 //#include "plugin/vst3/mip_vst3_entry.h"
 

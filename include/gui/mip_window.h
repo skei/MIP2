@@ -80,6 +80,7 @@ public:
 
     MName = "MIP_Window";
     MWindowPainter = new MIP_Painter(this,this);
+    MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
     MPaintContext.painter = MWindowPainter;
     MParent = nullptr;
     MRect.setPos(0.0);
@@ -207,9 +208,11 @@ public: // window
     setupContext(AXpos,AYpos,AWidth,AHeight);
     MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
     painter->beginPaint(MRect.w,MRect.h);
-    painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
+    //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
+    //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
+    painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
     paintChildWidgets(getPaintContext());
-    painter->popClip();
+    //painter->popClip();
     painter->endPaint();
   }
 

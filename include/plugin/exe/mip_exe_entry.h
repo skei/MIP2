@@ -2,23 +2,22 @@
 #define mip_exe_included
 //----------------------------------------------------------------------
 
+/*
+  todo: jack for audio/midi io
+  implement: state, presets, ..
+*/
+
 #include "mip.h"
 #include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_host_implementation.h"
 #include "plugin/exe/mip_exe_host.h"
-
 #include "gui/mip_window.h"
 
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
+#ifdef MIP_EXE
 
 //----------------------------------------------------------------------
 //
-//
+// exe window
 //
 //----------------------------------------------------------------------
 
@@ -66,15 +65,28 @@ public:
 
 
 };
+
 //----------------------------------------------------------------------
 //
-//
+// plugin
 //
 //----------------------------------------------------------------------
 
+/*
+  TODO: get clap_descriptor through the clap_entry
+  same as a 'proper' wrapper.. so we could re-use code :-)
+
+  idea: std argument parser for EXE...
+  * cmd line to select plugin by index, or yb id, or search by name, etc..
+  * override stuff..
+
+  btw, why do we call the clap_plugin variants?
+  we already have a wrapper MIP_Plugin
+*/
+
 int main(int argc, char** argv) {
   //MIP_REGISTRY.getNumDescriptors();
-  uint32_t index = 0;
+  uint32_t index = 0; //TODO: arg[1] select index
   const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
   if (descriptor) {
     MIP_ExeHostImplementation* exe_host = new MIP_ExeHostImplementation();
@@ -88,6 +100,10 @@ int main(int argc, char** argv) {
           plugin->activate(44100,0,1024);
           plugin->start_processing();
 
+          // gui
+
+          //plugin->MGui?
+
           clap_plugin_gui_t* gui = (clap_plugin_gui_t*)plugin->get_extension(CLAP_EXT_GUI);
           if (gui) {
 
@@ -96,6 +112,8 @@ int main(int argc, char** argv) {
               gui->set_scale(clap_plugin,1.0);
               //bool can_resize = gui->can_resize(clap_plugin);
               //if (can_resize) {
+
+              // plugin->MEditorWidth/Height
               uint32_t width, height;
               gui->get_size(clap_plugin,&width,&height);
               //}
@@ -112,9 +130,7 @@ int main(int argc, char** argv) {
               clap_window.x11 = xcb_window;
               gui->set_parent(clap_plugin,&clap_window);
               gui->show(clap_plugin);
-
               exe_window->eventLoop();
-
               gui->hide(clap_plugin);
               gui->destroy(clap_plugin);
 
@@ -122,6 +138,9 @@ int main(int argc, char** argv) {
               delete exe_window;
             }
           }
+
+          //
+
           plugin->stop_processing();
           plugin->deactivate();
           plugin->destroy();
@@ -133,6 +152,8 @@ int main(int argc, char** argv) {
   }
   return 0;
 }
+
+#endif // EXE
 
 //----------------------------------------------------------------------
 #endif

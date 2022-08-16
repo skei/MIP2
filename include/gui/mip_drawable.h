@@ -8,8 +8,8 @@
   #include "gui/xcb/mip_xcb.h"
 #endif
 
-#ifdef MIP_USE_OPENGL
-  #include "gui/opengl/mip_opengl.h"
+#ifdef MIP_USE_GLX
+  #include "gui/glx/mip_glx.h"
 #endif
 
 #ifdef MIP_USE_NANOVG
@@ -42,7 +42,7 @@ public:
   //#ifdef MIP_USE_CAIRO
   //#endif
 
-  #ifdef MIP_USE_OPENGL
+  #ifdef MIP_USE_GLX
     virtual Display* drawable_getXlibDisplay() { return nullptr; }
   #endif
 

@@ -46,9 +46,6 @@ public:
     MHeader->setWidgetWidth(0);
     appendChildWidget(MHeader);
     appendChildWidget(MPages);
-
-    // Flags.clipChildren = true;
-
   }
 
   //----------

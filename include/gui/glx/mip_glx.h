@@ -1,5 +1,5 @@
-#ifndef mip_opengl_included
-#define mip_opengl_included
+#ifndef mip_glx_included
+#define mip_glx_included
 //----------------------------------------------------------------------
 
 /*

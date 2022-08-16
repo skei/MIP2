@@ -10,7 +10,7 @@
 
 * windows version
 
-  mingw.64 ?
+  mingw64 ?
   base: thread, timer, attributes,
   debug: print_socket, crash_handler, call_stack
   gui: window, painter, surface classes, opengl..
@@ -77,6 +77,16 @@
     also, check if we can use only the latest resize event in the
     event queue..
 
+* window resizing
+
+  restrict number of resize events,
+  they can choke the event queue
+  resize event:
+  - save wanted size
+  - if there is a timer running: nothing
+  - else: start timer w/timeout (100ms?)
+  - when timeout: stop timer, send resize event (latest wanted size)
+
 * backbuffer
 
   same thing if we have a pixmap (or whatever else) backbuffer,
@@ -92,15 +102,17 @@
   nvgIntersectScissor
   nvgResetScissor
 
-  in progress: push/pop clipping rectangles
+  in progress: push/pop clipping rectangles.. make sure to keep clipping
+  rectangle and scissoring in sync.. investigate how drivers handle scissor
+  rectangle when calling swapBuffer()
 
-* find hovering widget doesn't take innerBoder into account
+* [still an issue?] find hovering widget doesn't take innerBoder into account
   (you can hover/click over a part of a knob that is hidden behind a
   (blank) innerBorder area)
 
 * double clicking
 
-  current implementation is pretty limited
+  fir initial test-implementation was pretty limited
   start timer when clicking
   new click before timeout = double click
   if timeout = normal single click
@@ -108,19 +120,7 @@
 * MIP_Skin, MIP_Theme, MIP_Styling
 
   a set of basic drawing functions you combine and use to drawing widgets?
-  on_widget_paint..
-  rounded rect, gradient, header, border, ..
-  settings?
-
-* window resizing
-
-  restrict number of resize events,
-  they can choke the event queue
-  resize event:
-  - save wanted size
-  - if there is a timer running: nothing
-  - else: start timer w/timeout (100ms?)
-  - when timeout: stop timer, send resize event (latest wanted size)
+  on_widget_paint.. rounded rect, gradient, header, border, .. settings?
 
 //------------------------------
 // widgets
@@ -130,7 +130,7 @@
 
 * MIP_TreeWidget
     - branch, leaf
-    - folder, file
+    - folder, file, indent
     - text-based group-box
 
 * grid

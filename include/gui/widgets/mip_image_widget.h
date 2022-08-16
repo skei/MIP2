@@ -21,16 +21,17 @@ protected:
 //------------------------------
 
   bool          MDrawImage    = true;
+  MIP_Bitmap*   MBitmap       = nullptr;
   uint32_t*     MImageBuffer  = nullptr;
   uint32_t      MImageWidth   = 0;
   uint32_t      MImageHeight  = 0;
-
-  MIP_Bitmap*   MBitmap       = nullptr;
-
-  //MIP_Bitmap*   MBitmap     = nullptr;
-  //MIP_Surface*  MSurface    = nullptr;
-
-  int image = -1;
+  int           MImageHandle = -1;
+  MIP_DRect     MImageRect    = {};
+  uint32_t      MTileXCount   = 1;
+  uint32_t      MTileYCount   = 1;
+  float         MTileWidth    = 0.0;
+  float         MTileHeight   = 0.0;
+  uint32_t      MTile         = 0;
 
 //------------------------------
 public:
@@ -45,14 +46,6 @@ public:
     MImageWidth  = width;
     MImageHeight = height;
   }
-
-  //----------
-
-//  MIP_ImageWidget(MIP_DRect ARect, MIP_Surface* ASurface)
-//  : MIP_PanelWidget(ARect) {
-//    MSurface = ASurface;
-//    MIP_Print("TODO\n");
-//  }
 
   //----------
 
@@ -74,7 +67,26 @@ public:
 public:
 //------------------------------
 
-  virtual void  setDrawImage(bool ADraw=true)      { MDrawImage = ADraw; }
+  virtual void  setDrawImage(bool ADraw=true) {
+    MDrawImage = ADraw;
+  }
+
+  //----------
+
+  virtual void setTiles(uint32_t AXcount, uint32_t AYcount) {
+    MTileXCount   = AXcount;
+    MTileYCount   = AYcount;
+    MTileWidth    = MImageWidth / AXcount;
+    MTileHeight   = MImageHeight / AYcount;
+  }
+
+  virtual MIP_DRect getTileRect(uint32_t AIndex) {
+    float x = /*MImageRect.x*/ 0  + (floorf(AIndex % MTileXCount) * MTileWidth);
+    float y = /*MImageRect.y*/ 0  + (floorf(AIndex / MTileXCount) * MTileHeight);
+    float w = MTileWidth;
+    float h = MTileHeight;
+    return MIP_DRect(x,y,w,h);
+  }
 
 //------------------------------
 public: // parent to child
@@ -96,17 +108,21 @@ public:
       MIP_Painter* painter = AContext->painter;
       MIP_DRect rect = MRect;
 
-      if (image != -1) {
-        painter->updateImage(image,(uint8_t*)MImageBuffer);
+      if (MImageHandle != -1) {
+        painter->updateImage(MImageHandle,(uint8_t*)MImageBuffer);
         //painter->deleteImage(image);
       }
       else {
         //int image = painter->createImageRGBA(MImageWidth,MImageHeight,0,(uint8_t*)MImageBuffer);
-        image = painter->createImageRGBA(MImageWidth,MImageHeight,0,(uint8_t*)MImageBuffer);
+        MImageHandle = painter->createImageRGBA(MImageWidth,MImageHeight,0,(uint8_t*)MImageBuffer);
       }
 
-      //MIP_PaintSource paint = painter->imagePattern(160,0,320,240,0,image,1.0);
-      MIP_PaintSource paint = painter->imagePattern(rect.x,rect.y,MImageWidth,MImageHeight,0,image,1.0);
+      float ox = rect.x;        // 160
+      float oy = rect.y;        // 0
+      float ex = MImageWidth;   // 320
+      float ey = MImageHeight;  // 240
+      MIP_PaintSource paint = painter->imagePattern(ox,oy,ex,ey,0,MImageHandle,1.0);
+
       painter->beginPath();
       painter->rect(rect.x,rect.y,rect.w,rect.h);
       painter->fillPaint(paint);

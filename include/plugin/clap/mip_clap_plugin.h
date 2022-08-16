@@ -107,7 +107,7 @@ public: // draft
 //------------------------------
 
   virtual bool      ambisonic_get_info(bool is_input,  uint32_t port_index, clap_ambisonic_info_t *info) { return false; }
-  virtual void      check_fur_updates_check(bool include_preview) {}
+  virtual void      check_for_updates_check(bool include_preview) {}
   virtual bool      cv_get_channel_type(bool is_input, uint32_t port_index, uint32_t channel_index, uint32_t *channel_type) { return false; }
   virtual uint32_t  file_reference_count() { return 0; }
   virtual bool      file_reference_get(uint32_t index, clap_file_reference_t *file_reference) { return false; }
@@ -626,7 +626,7 @@ private: // draft: check for update
   static
   void clap_plugin_check_for_update_check(const clap_plugin_t *plugin, bool include_preview) {
     MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    plug->check_fur_updates_check(include_preview);
+    plug->check_for_updates_check(include_preview);
   }
 
 protected:

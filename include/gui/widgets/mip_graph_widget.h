@@ -194,6 +194,7 @@ public:
 //    setFlag(MIP_WIDGET_HOVER);
 //    //setFlag(MIP_WIDGET_CLIP);
     setBackgroundColor( MIP_Color(0.55f) );
+
   }
 
   //----------

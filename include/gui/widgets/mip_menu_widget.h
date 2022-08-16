@@ -43,7 +43,6 @@ public:
     MListener = AListener;
     Flags.active = false;
     Flags.visible = false;
-    //Flags.clipChildren = false;
   }
 
   //----------

@@ -4,6 +4,8 @@
 
 #include "mip.h"
 #include "extern/clap/clap.h"
+
+// not included by clap.h
 #include "extern/clap/ext/draft/check-for-update.h"
 #include "extern/clap/ext/draft/transport-control.h"
 

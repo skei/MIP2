@@ -15,9 +15,9 @@
 //
 //----------------------------------------------------------------------
 
-#ifdef MIP_PAINTER_OPENGL
+#ifdef MIP_PAINTER_GLX
   #include "gui/opengl/mip_opengl_painter.h"
-  typedef MIP_OpenGLPainter MIP_ImplementedPainter;
+  typedef MIP_GlxPainter MIP_ImplementedPainter;
 #endif
 
 #ifdef MIP_PAINTER_NANOVG
@@ -74,12 +74,16 @@ public: // clipping
   */
 
   virtual void pushClip(MIP_DRect ARect) {
-    //MIP_Print("ARect = %.2f,%.2f,%.2f,%.2f\n",ARect.x,ARect.y,ARect.w,ARect.h);
-    //MIP_Print("depth: %i\n",MClipStack.getNumItems());
     MClipStack.push(MClipRect);
     MClipRect = ARect;
     resetClip();
     setClip(MClipRect);
+  }
+
+  virtual void pushOverlapClip(MIP_DRect ARect) {
+    MIP_DRect r = ARect;
+    r.overlap(MClipRect);
+    pushClip(r);
   }
 
   //----------
@@ -91,7 +95,6 @@ public: // clipping
 
   virtual MIP_DRect popClip() {
     MClipRect = MClipStack.pop();
-    //MIP_Print("MClipRect = %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
     resetClip();
     setClip(MClipRect);
     return MClipRect;
@@ -107,7 +110,6 @@ public: // clipping
 
   virtual void setClipRect(MIP_DRect ARect) {
     MClipRect = ARect;
-    //MIP_Print("ARect = %.2f,%.2f,%.2f,%.2f\n",MClipRect.x,MClipRect.y,MClipRect.w,MClipRect.h);
   }
 
   //----------
@@ -143,6 +145,8 @@ public:
     text(x,y,AText,nullptr);
   }
 
+  //----------
+
   void triangle(double x1, double y1, double x2, double y2, double x3, double y3) override {
     moveTo(x1,y1);
     lineTo(x2,y2);
@@ -150,9 +154,13 @@ public:
     lineTo(x1,y1);
   }
 
+  //----------
+
   void rectangle(MIP_DRect r) override {
     rect(r.x,r.y,r.w,r.h);
   }
+
+  //----------
 
   void ellipse(MIP_DRect r) override {
     float cx = r.x + (r.w * 0.5);
@@ -161,6 +169,8 @@ public:
     float ry = (r.h * 0.5);
     MIP_ImplementedPainter::ellipse(cx,cy,rx,ry);
   }
+
+  //----------
 
 
 };

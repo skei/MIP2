@@ -49,7 +49,7 @@ struct MIP_WidgetFlags {
   bool autoHideCursor = false;
   bool autoLockCursor = false;
   bool dirty          = false;
-  bool clipChildren   = true;//false;
+  //bool clipChildren   = false;
 };
 
 //----------------------------------------------------------------------
@@ -127,10 +127,9 @@ public:
 public:
 //------------------------------
 
-  const char*             getWidgetName() { return MName; }
-  void                    setWidgetName(const char* AName) { MName = AName; }
+  virtual const char*     getWidgetName()                   { return MName; }
 
-  virtual MIP_Widget*     getParentWidget()     { return MParent; }
+  virtual MIP_Widget*     getParentWidget() { return MParent; }
   virtual MIP_DRect       getWidgetRect()   { return MRect; }
   virtual double          getWidgetXPos()   { return MRect.x; }
   virtual double          getWidgetYPos()   { return MRect.y; }
@@ -140,11 +139,11 @@ public:
 
   virtual MIP_Parameter*  getParameter()    { return MParameter; }
 
-  bool isInteractive()  { return Flags.interactive; }
-  bool isDirty()        { return Flags.dirty; }
+  virtual bool              isInteractive()  { return Flags.interactive; }
+  virtual bool              isDirty()        { return Flags.dirty; }
 
-  MIP_DRect getRect() { return MRect; }
-  MIP_DRect getContentRect() { return MContentRect; }
+  virtual MIP_DRect         getRect()         { return MRect; }
+  virtual MIP_DRect         getContentRect()  { return MContentRect; }
 
   virtual uint32_t          getNumChildWidgets()        { return MChildren.size(); }
   virtual MIP_Widget*       getChildWidget(uint32_t i)  { return MChildren[i]; }
@@ -153,6 +152,8 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  virtual void setWidgetName(const char* AName)             { MName = AName; }
 
   virtual void setParentWidget(MIP_Widget* AParent)         { MParent = AParent; }
   virtual void setWidgetRect(MIP_DRect ARect)               { MRect   = ARect; }
@@ -164,8 +165,8 @@ public:
   virtual void setWidgetHeight(double AHeight)              { MRect.h = AHeight; }
   virtual void setWidgetindex(int32_t AIndex)               { MIndex = AIndex; }
 
-  virtual void setParameter(MIP_Parameter* AParameter) { MParameter = AParameter; }
-  virtual void setWidgetCursor(uint32_t ACursor) { MMouseCursor = ACursor; }
+  virtual void setParameter(MIP_Parameter* AParameter)  { MParameter = AParameter; }
+  virtual void setWidgetCursor(uint32_t ACursor)        { MMouseCursor = ACursor; }
 
 //------------------------------
 public: // parent to child
@@ -180,22 +181,16 @@ public: // parent to child
   virtual void on_widget_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
 
   virtual void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
-  virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
+  virtual void on_widget_mouse_dblclick(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
+virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
-
-  virtual void on_widget_mouse_dblclick(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {
-    MIP_PRINT;
-  }
 
   virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {
     if (Flags.autoSetCursor) do_widget_cursor(this,MMouseCursor);
   }
 
-  virtual void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) {
-  }
-
+  virtual void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) {}
   //virtual void on_widget_connect(MIP_Parameter* AParameter) {}
-
   virtual void on_widget_unmodal() {}
 
 //------------------------------
@@ -241,8 +236,8 @@ public: // child to parent
     //if (MParent) MParent->do_widget_resized(ASender,ADeltaX,ADeltaY);
     MRect.w += ADeltaX;
     MRect.h += ADeltaY;
-//    MInitialRect.w += ADeltaX;
-//    MInitialRect.h += ADeltaY;
+    //MInitialRect.w += ADeltaX;
+    //MInitialRect.h += ADeltaY;
     Layout.baseRect.w += ADeltaX;
     Layout.baseRect.h += ADeltaY;
     //resize(ADeltaX,ADeltaY);
@@ -295,10 +290,13 @@ public: // hierarchy
       MIP_Widget* child = MChildren[i];
       if (child) {
         child->MRect.scale(AScale);
+        //child->Layout.baseRect.scale(AScale);
         if (ARecursive) child->scaleChildWidgets(AScale,ARecursive);
       }
     }
   }
+
+  //----------
 
   virtual void scrollChildren(float AOffsetX, float AOffsetY) {
     uint32_t num = MChildren.size();
@@ -312,6 +310,8 @@ public: // hierarchy
       }
     }
   }
+
+  //----------
 
   virtual void setOwnerWindow(MIP_Widget* AWindow, bool ARecursive=true) {
     MOwnerWindow = AWindow;
@@ -364,40 +364,31 @@ public: // hierarchy
     //MIP_PRINT;
     uint32_t num = MChildren.size();
     if (num > 0) {
-      //MIP_DRect updaterect = AContext->updateRect;
-      //MIP_Print("updaterect %.0f,%.0f , %.0f,%.0f\n",updaterect.x,updaterect.y,updaterect.w,updaterect.h);
-      //AContext->painter->pushClip(updaterect);
-
       MIP_DRect cliprect = MRect;
       cliprect.shrink(Layout.border);
 
-      if (Flags.clipChildren) {
-        //AContext->painter->pushClip(updaterect);
-        AContext->painter->pushClip(cliprect);
-      }
+      //if (Flags.clipChildren) {
+      //  AContext->painter->pushOverlapClip(cliprect);
+      //}
 
       for (uint32_t i=0; i<num; i++) {
         MIP_Widget* widget = MChildren[i];
         if (widget->Flags.visible) {
           MIP_DRect widgetrect = widget->MRect;
-          //if (widgetrect.intersects(updaterect)) {
-          if (widgetrect.intersects(cliprect)) {
-            //TODO: check if  AContext->updateRect
-
-            //AContext->painter->pushClip(widgetrect);
-
+          widgetrect.overlap(cliprect);
+          if (widgetrect.isNotEmpty()) {
+            AContext->painter->pushOverlapClip(widgetrect);
             widget->on_widget_paint(AContext);
+            AContext->painter->popClip();
+          } // intersect
+        } // visible
+      } // for
 
-            //AContext->painter->popClip();
-          }
-        }
-      }
+      //if (Flags.clipChildren) {
+      //  AContext->painter->popClip();
+      //}
 
-      if (Flags.clipChildren) {
-        AContext->painter->popClip();
-      }
-
-    }
+    } // num
   }
 
   //----------
@@ -414,24 +405,16 @@ public: // hierarchy
 
     MIP_DRect border = Layout.border;
     //border.scale(Layout.scale);
-
     MIP_DPoint spacing = Layout.spacing;
     //spacing.scale(Layout.scale);
-
     MIP_DRect parent_rect = MRect;
     parent_rect.shrink(border);
-
     MIP_DRect client_rect = MRect;
     client_rect.shrink(border);
-
     MContentRect = MRect;
     MContentRect.shrink(border);
     //content.setPos(0,0);
     MContentRect.setSize(0,0);
-
-    //
-
-    //MIP_Print("%s : %.0f,%.0f, %.0f,%.0f\n",getWidgetName(),MContentRect.x,MContentRect.y,MContentRect.w,MContentRect.h);
 
     uint32_t num = MChildren.size();
     if (num > 0) {
@@ -447,7 +430,7 @@ public: // hierarchy
 
           // scale
 
-          child_rect.scale(Layout.scale);
+          //child_rect.scale(Layout.scale);
 
           // size mode
 
@@ -657,6 +640,7 @@ public: // hierarchy
               child_rect.y = client_rect.y;
               child_rect.w = client_rect.w;
               child_rect.h = client_rect.h;
+              // clear client rect
               break;
             }
 
@@ -831,6 +815,12 @@ public: // hierarchy
 
           } // switch
 
+          // min/max size
+
+          child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
+          child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
+          // scale
+
           // aspect
 
           if (child->Layout.aspectRatio > 0) {
@@ -851,13 +841,10 @@ public: // hierarchy
             } // h > 0
           } // aspect > 0
 
-          // min/max size
-
-          child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
-          child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
 
           MIP_DRect extra_border = child->Layout.extraBorder;
-          extra_border.scale(Layout.scale);
+          //extra_border.scale(Layout.scale);
+
           child_rect.shrink(extra_border);
 
           // update
@@ -889,14 +876,14 @@ public: // hierarchy
 
     // autosize
 
-//    if (Layout.sizeModeX == MIP_WIDGET_SIZE_CONTENT) {
-//      MRect.x = MContentRect.x;
-//      MRect.w = MContentRect.w;
-//    }
-//    if (Layout.sizeModeY == MIP_WIDGET_SIZE_CONTENT) {
-//      MRect.y = MContentRect.y;
-//      MRect.h = MContentRect.h;
-//    }
+    //if (Layout.sizeModeX == MIP_WIDGET_SIZE_CONTENT) {
+    //  MRect.x = MContentRect.x;
+    //  MRect.w = MContentRect.w;
+    //}
+    //if (Layout.sizeModeY == MIP_WIDGET_SIZE_CONTENT) {
+    //  MRect.y = MContentRect.y;
+    //  MRect.h = MContentRect.h;
+    //}
 
   }
 

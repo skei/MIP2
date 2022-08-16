@@ -29,8 +29,5 @@
 //
 //----------------------------------------------------------------------
 
-//#include "../build/test/test_editor3.cpp"
-//#include "../build/test/test_editor4.cpp"
-
 #include "../build/test/test_layout.cpp"
 

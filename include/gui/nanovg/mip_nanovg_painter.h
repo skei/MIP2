@@ -8,7 +8,7 @@
 
 
 #include "mip.h"
-#include "gui/opengl/mip_opengl_painter.h"
+#include "gui/glx/mip_glx_painter.h"
 #include "gui/nanovg/mip_nanovg.h"
 #include "gui/nanovg/mip_nanovg_utils.h"
 
@@ -27,7 +27,7 @@
 //----------------------------------------------------------------------
 
 class MIP_NanoVGPainter
-: public MIP_OpenGLPainter {
+: public MIP_GlxPainter {
 
 //------------------------------
 private:
@@ -42,9 +42,9 @@ public:
 //------------------------------
 
   MIP_NanoVGPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
-  : MIP_OpenGLPainter(ASurface,ATarget) {
+  : MIP_GlxPainter(ASurface,ATarget) {
     //MIP_PRINT;
-    MIP_OpenGLPainter::makeCurrent();
+    MIP_GlxPainter::makeCurrent();
 
     MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES); // NVG_DEBUG
     //MFont = nvgCreateFont(MContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
@@ -63,7 +63,7 @@ public:
     //bndSetIconImage(MIconImage);
 
 
-    MIP_OpenGLPainter::resetCurrent();
+    MIP_GlxPainter::resetCurrent();
   }
 
   //----------
@@ -95,7 +95,7 @@ public:
 //------------------------------
 
   void beginPaint(int32_t AWidth, int32_t AHeight) override {
-    MIP_OpenGLPainter::beginPaint(AWidth,AHeight);
+    MIP_GlxPainter::beginPaint(AWidth,AHeight);
     nvgBeginFrame(MContext,AWidth,AHeight,1.0);
   }
 
@@ -103,7 +103,7 @@ public:
 
   void endPaint() override {
     nvgEndFrame(MContext);
-    MIP_OpenGLPainter::endPaint();
+    MIP_GlxPainter::endPaint();
   }
 
   //----------

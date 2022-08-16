@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "gui/opengl/mip_opengl.h"
+#include "gui/glx/mip_glx.h"
 
 #define NANOVG_GL3_IMPLEMENTATION
 #include "extern/nanovg/nanovg.h"

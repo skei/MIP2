@@ -3,7 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "gui/opengl/mip_opengl.h"
+#include "gui/glx/mip_glx.h"
 #include "gui/mip_widget.h"
 #include "gui/mip_paint_context.h"
 

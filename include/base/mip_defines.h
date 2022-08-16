@@ -66,7 +66,7 @@
   #undef MIP_GUI_XCB
   #undef MIP_USE_XCB
   #undef MIP_USE_CAIRO
-  #undef MIP_USE_OPENGL
+  #undef MIP_USE_GLX
   #undef MIP_USE_NANOVG
   #define MIP_GUI_DEFINED
   #define MIP_NO_PAINTER
@@ -98,13 +98,13 @@
   #define MIP_PAINTER_DEFINED
 #endif
 
-#ifdef MIP_PAINTER_OPENGL
-  #define MIP_USE_OPENGL
+#ifdef MIP_PAINTER_GLX
+  #define MIP_USE_GLX
   #define MIP_PAINTER_DEFINED
 #endif
 
 #ifdef MIP_PAINTER_NANOVG
-  #define MIP_USE_OPENGL
+  #define MIP_USE_GLX
   #define MIP_USE_NANOVG
   #define MIP_PAINTER_DEFINED
 #endif

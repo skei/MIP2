@@ -1,5 +1,5 @@
-#ifndef mip_opengl_painter_included
-#define mip_opengl_painter_included
+#ifndef mip_glx_painter_included
+#define mip_glx_painter_included
 //----------------------------------------------------------------------
 
 // aka: opengl context wrapper (for pixmap/window)
@@ -9,8 +9,8 @@
 #include "mip.h"
 #include "gui/mip_drawable.h"
 #include "gui/base/mip_base_painter.h"
-#include "gui/opengl/mip_opengl.h"
-#include "gui/opengl/mip_opengl_utils.h"
+#include "gui/glx/mip_glx.h"
+#include "gui/glx/mip_glx_utils.h"
 
 //----------------------------------------------------------------------
 //
@@ -79,7 +79,7 @@ GLint MIP_GlxWindowAttribs[] = {
 //
 //----------------------------------------------------------------------
 
-class MIP_OpenGLPainter
+class MIP_GlxPainter
 : public MIP_BasePainter {
 
 //------------------------------
@@ -105,7 +105,7 @@ public:
   // ASurface = pixmap
   // ATarget  = window
 
-  MIP_OpenGLPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
+  MIP_GlxPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
   : MIP_BasePainter(ASurface,ATarget) {
     //MIP_PRINT;
     old_x_error_handler = XSetErrorHandler(x_error_handler);
@@ -133,7 +133,7 @@ public:
 
   //----------
 
-  virtual ~MIP_OpenGLPainter() {
+  virtual ~MIP_GlxPainter() {
     //MIP_PRINT;
     if (MDrawableIsWindow) {
       glXDestroyWindow(MDisplay,MDrawable);

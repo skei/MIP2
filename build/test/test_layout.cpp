@@ -9,9 +9,8 @@
 
 //----------------------------------------------------------------------
 
-#include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
-
+#include "plugin/mip_plugin.h"
 #include "gui/widgets/mip_widgets.h"
 
 //----------------------------------------------------------------------
@@ -338,16 +337,6 @@ public: // gui
       right_top_scrollbox->getContentWidget()->Layout.spacing = MIP_DPoint(5,5);
       right_panel->appendChildWidget(right_top_scrollbox);
 
-//      MIP_TextWidget* right_top_panel = new MIP_TextWidget(100,"right_top_panel");
-//      right_top_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-//      right_top_panel->Layout.border = MIP_DRect(10,10,10,10);
-//      right_top_panel->Layout.spacing = MIP_DPoint(5,5);
-//      right_top_panel->setFillBackground(false);
-//      right_top_panel->setDrawBorder(false);
-//      right_top_panel->setDrawText(true);
-//      right_top_panel->setBackgroundColor(0.45);
-//      right_panel->appendChildWidget(right_top_panel);
-
         {
 
           for (uint32_t i=0; i<32; i++) {
@@ -377,8 +366,6 @@ public: // gui
             button->setBackgroundColor(MIP_Color(r,g,b));
             right_top_scrollbox->appendChildWidget(button);
           }
-
-
 
         }
 

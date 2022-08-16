@@ -45,11 +45,11 @@ struct MIP_ProcessContext {
 //----------------------------------------------------------------------
 
 class MIP_Plugin
-: public MIP_TimerListener
+: public MIP_ClapPlugin
 #ifndef MIP_NO_GUI
 , public MIP_EditorListener
 #endif
-, public MIP_ClapPlugin {
+, public MIP_TimerListener {
 
 //------------------------------
 protected:
@@ -59,24 +59,20 @@ protected:
   MIP_AudioPortArray  MAudioOutputPorts         = {};
   MIP_NotePortArray   MNoteInputPorts           = {};
   MIP_NotePortArray   MNoteOutputPorts          = {};
-
   MIP_ProcessContext  MProcessContext           = {};
-
   uint32_t            MSelectedAudioPortsConfig = 0;
   int32_t             MRenderMode               = CLAP_RENDER_REALTIME;
   uint32_t            MEditorWidth              = 100;
   uint32_t            MEditorHeight             = 100;
-
-  #ifndef MIP_NO_GUI
-  MIP_Editor*         MEditor                   = {};
-  #endif
-
   MIP_Timer           MGuiTimer                 = MIP_Timer(this);
+  MIP_ParameterArray  MParameters               = {};
 
   //MIP_AudioProcess
   //MIP_VoiceManager
 
-  MIP_ParameterArray  MParameters               = {};
+  #ifndef MIP_NO_GUI
+  MIP_Editor*         MEditor                   = {};
+  #endif
 
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessParamQueue  = {}; // gui -> audio
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessModQueue    = {}; //
@@ -84,11 +80,11 @@ protected:
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MGuiModQueue        = {}; //
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS>   MHostParamQueue     = {}; // gui -> host
 
-  double  MQueuedProcessParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]  = {0};
-  double  MQueuedProcessModValues[MIP_PLUGIN_MAX_PARAM_EVENTS]    = {0};
-  double  MQueuedGuiParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]      = {0};
-  double  MQueuedGuiModValues[MIP_PLUGIN_MAX_PARAM_EVENTS]        = {0};
-  double  MQueuedHostParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]     = {0};
+  double  MQueuedProcessParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]      = {0};
+  double  MQueuedProcessModValues[MIP_PLUGIN_MAX_PARAM_EVENTS]        = {0};
+  double  MQueuedGuiParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]          = {0};
+  double  MQueuedGuiModValues[MIP_PLUGIN_MAX_PARAM_EVENTS]            = {0};
+  double  MQueuedHostParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]         = {0};
 
 //------------------------------
 public:
@@ -273,7 +269,7 @@ public: // EXT audio ports
 public: // DRAFT check for updated
 //------------------------------
 
-  void check_fur_updates_check(bool include_preview) override {
+  void check_for_updates_check(bool include_preview) override {
   }
 
 //------------------------------
@@ -357,6 +353,8 @@ public: // EXT gui
 
   //----------
 
+  // timer is started in open()
+
   bool gui_create(const char *api, bool is_floating) override {
     //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
     MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
@@ -366,10 +364,13 @@ public: // EXT gui
 
   //----------
 
+  // stop timer in case close() haven't been called
+
   void gui_destroy() override {
     MIP_Assert(MEditor);
     //MIP_Print("\n");
     MGuiTimer.stop();
+    // we could possibly receive timer events inbetween here..
     delete MEditor;
     MEditor = nullptr;
   }
@@ -470,7 +471,9 @@ public: // EXT gui
     bool result = MEditor->show();
     // redraw?
     //MEditor->redrawEditor();
-    MGuiTimer.start(MIP_GUI_UPDATE_RATE_MS);
+    if (result) {
+      MGuiTimer.start(MIP_GUI_UPDATE_RATE_MS);
+    }
     return result;
   }
 
@@ -568,7 +571,7 @@ public: // EXT params
   bool params_get_info(uint32_t param_index, clap_param_info_t *param_info) override {
     MIP_Parameter* parameter  = MParameters[param_index];
     param_info->id            = param_index;
-    param_info->flags         = CLAP_PARAM_IS_AUTOMATABLE;;
+    param_info->flags         = CLAP_PARAM_IS_AUTOMATABLE;
     param_info->cookie        = parameter;
     param_info->min_value     = parameter->getMinValue();
     param_info->max_value     = parameter->getMaxValue();
@@ -708,12 +711,14 @@ public: // EXT state
       MIP_Print("state_load: error reading version\n");
       return false;
     }
+    //TODO: check version
     // num params
     read = stream->read(stream,&num_params,sizeof(uint32_t));
     if (read != sizeof(uint32_t)) {
       MIP_Print("state_load: error reading parameter count\n");
       return false;
     }
+    //TODO: check num params = marameters.size
     if (num_params != MParameters.size()) {
       MIP_Print("state_load: wrong parameter count\n");
       return false;
@@ -1213,6 +1218,9 @@ public: // modulation
 public: // audio inputs
 //------------------------------
 
+  // assumes 'info' is a ptr to a static struct..
+  // (which shouldn't be deleted/free'd)
+
   //void appendAudioInputPort(MIP_AudioPort* APort) {
   void appendAudioInputPort(const clap_audio_port_info_t* info) {
     MAudioInputPorts.append(info);
@@ -1237,6 +1245,9 @@ public: // audio inputs
 //------------------------------
 public: // audio outputs
 //------------------------------
+
+  // assumes 'info' is a ptr to a static struct..
+  // (which shouldn't be deleted/free'd)
 
   //void appendAudioOutputPort(MIP_AudioPort* APort) {
   void appendAudioOutputPort(const clap_audio_port_info_t* info) {
@@ -1263,6 +1274,9 @@ public: // audio outputs
 public: // note inputs
 //------------------------------
 
+  // assumes 'info' is a ptr to a static struct..
+  // (which shouldn't be deleted/free'd)
+
   //void appendNoteInputPort(MIP_NotePort* APort) {
   void appendNoteInputPort(const clap_note_port_info_t* info) {
     MNoteInputPorts.append(info);
@@ -1287,6 +1301,9 @@ public: // note inputs
 //------------------------------
 public: // note outputs
 //------------------------------
+
+  // assumes 'info' is a ptr to a static struct..
+  // (which shouldn't be deleted/free'd)
 
   //void appendNoteOutputPort(MIP_NotePort* APort) {
   void appendNoteOutputPort(const clap_note_port_info_t* info) {
@@ -1313,13 +1330,21 @@ public: // note outputs
 public: // 'wrapper' listener
 //------------------------------
 
-
+  /*
+    planning to let the format specific wrappers 'call back' to the regular
+    plugin layer, but having a MIP_WrapperListener.. so the wrapper could
+    tell you about plugin format, etc.. maybe you want to print a
+    'clap-as-vst3' on the gui, for example..
+  */
 
 //------------------------------
 public: // editor listener
 //------------------------------
 
   #ifndef MIP_NO_GUI
+
+  // note-to-self: is MParameter->setValue called in flush?
+  // or, where do we set the parameter value?
 
   void on_editor_listener_update_parameter(uint32_t AIndex, double AValue) final {
     //MIP_Print("%i = %.3f\n",AIndex,AValue);
@@ -1331,6 +1356,15 @@ public: // editor listener
 
   //----------
 
+  /*
+    idea:
+    if you resize the editor the normal way, via window edges, you scale the
+      editor (preserve aspect ratio).. but if you resize via an 'internal'
+      resize handle (programmatically), you do the realigning and positioning,
+      using the current scale..
+      best of two worlds, or just confusing and useless?
+  */
+
   void on_editor_listener_resize_window(uint32_t AWidth, uint32_t AHeight) final {
   }
 
@@ -1340,6 +1374,10 @@ public: // editor listener
 public: // timer listener
 //------------------------------
 
+  /*
+    called from our (separate) timer thread..
+  */
+
   #ifndef MIP_NO_GUI
 
   void on_timerCallback(MIP_Timer* ATimer) override {
@@ -1347,6 +1385,7 @@ public: // timer listener
       if (MEditor) {
         flushGuiParams();
         flushGuiMods();
+        // redraw?
       }
     }
   }

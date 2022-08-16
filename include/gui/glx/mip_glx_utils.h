@@ -1,9 +1,9 @@
-#ifndef mip_opengl_utils_included
-#define mip_opengl_utils_included
+#ifndef mip_glx_utils_included
+#define mip_glx_utils_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "gui/opengl/mip_opengl.h"
+#include "gui/glx/mip_glx.h"
 
 //----------------------------------------------------------------------
 //
