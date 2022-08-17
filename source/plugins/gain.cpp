@@ -67,13 +67,13 @@ private:
     { 0, "audio out 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
   };
 
-  const clap_note_port_info_t gain_noteInputPorts[1] = {
-    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note in 1" }
-  };
-
-  const clap_note_port_info_t gain_noteOutputPorts[1] = {
-    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note out 1" }
-  };
+//  const clap_note_port_info_t gain_noteInputPorts[1] = {
+//    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note in 1" }
+//  };
+//
+//  const clap_note_port_info_t gain_noteOutputPorts[1] = {
+//    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note out 1" }
+//  };
 
   //----------
 
@@ -102,8 +102,8 @@ public: // plugin
     bool result = MIP_Plugin::init();
     appendAudioInputPort( &gain_audioInputPorts[0] );
     appendAudioOutputPort(&gain_audioOutputPorts[0]);
-    appendNoteInputPort(  &gain_noteInputPorts[0]  );
-    appendNoteOutputPort( &gain_noteOutputPorts[0] );
+//    appendNoteInputPort(  &gain_noteInputPorts[0]  );
+//    appendNoteOutputPort( &gain_noteOutputPorts[0] );
     for (uint32_t i=0; i<PARAM_COUNT; i++) {
       appendParameter( new MIP_Parameter(&gain_parameters[i]) );
     }
@@ -151,7 +151,9 @@ public: // process
 
   //----------
 
-  void processAudioBlock(const clap_process_t* process) final {
+
+  void processAudioBlock(MIP_ProcessContext* AContext) final {
+    const clap_process_t* process = AContext->process;
     uint32_t len = process->frames_count;
     float* in0 = process->audio_inputs[0].data32[0];
     float* in1 = process->audio_inputs[0].data32[1];
@@ -163,14 +165,6 @@ public: // process
       *out1++ = *in1++ * par_gain;
     }
   }
-
-  //----------
-
-  //void processAudioSegment(const clap_process_t* process, uint32_t offset, uint32_t length) final {
-  //}
-
-  //void processAudioTick(const clap_process_t* process) final {
-  //}
 
 };
 

@@ -214,7 +214,7 @@ private:
 public:
 //------------------------------
 
-  #ifndef MIP_DMC_NO_COMPRESS
+  #ifndef MIP_NO_DMC_COMPRESS
 
   int compress(unsigned char* outbuf, unsigned char* inbuf, int insize) {
     rbuf     = inbuf;

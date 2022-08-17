@@ -49,6 +49,8 @@ struct MIP_WidgetFlags {
   bool autoHideCursor = false;
   bool autoLockCursor = false;
   bool dirty          = false;
+  bool highlighted    = false;
+  bool focused        = false;
   //bool clipChildren   = false;
 };
 
@@ -263,7 +265,9 @@ public: // hierarchy
     int32_t index = MChildren.size();
     AChild->MIndex = index;
     AChild->MParent = this;
+
     //AChild->on_widget_append(this);
+
     MChildren.append(AChild);
     return AChild;
   }

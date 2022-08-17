@@ -20,6 +20,8 @@
 
   doubles for anything related to audio or parameter values
 
+* MIP_Print : logfine, debug output window (with watches)
+
 //----------------------------------------------------------------------
 //
 // BASE
@@ -136,8 +138,27 @@
 * grid
 
   combine cells, each cell can have firstCellInCombo, numCellsInCombo
-  for both x and y..
-  useful when grid is used for widget layout, etc..
+  for both x and y.. useful when grid is used for widget layout, etc..
+
+* widget.sizemode : split parent/client amog children, x & y
+
+* widget.highlight : click on a text line in a textbox to highlight it
+
+* widget.selected, widget.focused
+
+* autosize widgets.. to be able to autosize text, we need the painter,
+  and current font.. which is not available in alignChildWidgets (we might
+  call it before the editor is opened)..
+
+* movable widgets
+
+* resizable widgets
+
+//----------------------------------------------------------------------
+//
+// GFX
+//
+//----------------------------------------------------------------------
 
 //----------------------------------------------------------------------
 //
@@ -152,11 +173,6 @@
 * generalize building blocks
   filters, dsp, fft, ..
 
-//----------------------------------------------------------------------
-//
-// GFX
-//
-//----------------------------------------------------------------------
-
+* oversampling
 
 

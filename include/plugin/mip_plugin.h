@@ -160,7 +160,7 @@ public: // clap plugin
     preProcessEvents(process->in_events,process->out_events);
     processEvents(process->in_events,process->out_events);
     flushProcessParams();
-    processAudioBlock(process);
+    processAudioBlock(&MProcessContext);
     postProcessEvents(process->in_events,process->out_events);
     flushHostParams(process->out_events);
     MProcessContext.process = nullptr;
@@ -357,7 +357,13 @@ public: // EXT gui
 
   bool gui_create(const char *api, bool is_floating) override {
     //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
+
     MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
+
+    #ifdef MIP_PLUGIN_DEFAULT_EDITOR
+      // setup widgets
+    #endif
+
     MIP_Assert(MEditor);
     return true;
   }
@@ -806,9 +812,10 @@ public: // DRAFT voice info
 public: // process audio
 //------------------------------
 
-  // shouldn't we use MIP_ProcessBlock?
+  // shouldn't we use MIP_ProcessContext?
 
-  virtual void processAudioBlock(const clap_process_t* process) {
+  virtual void processAudioBlock(MIP_ProcessContext* AContext) {
+  //virtual void processAudioBlock(const clap_process_t* process) {
   }
 
 //------------------------------

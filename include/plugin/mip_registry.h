@@ -8,6 +8,8 @@
 #include "plugin/clap/mip_clap.h"
 //#include "plugin/clap/mip_clap_factory.h"
 
+//----------------------------------------------------------------------
+
 class MIP_Registry;
 
 extern void         MIP_Register(MIP_Registry* ARegistry) __MIP_WEAK;

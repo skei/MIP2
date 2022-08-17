@@ -159,8 +159,8 @@ public: // plugin
 
   //----------
 
-  void processAudioBlock(const clap_process_t* process) final {
-    MProcess.processAudioBlock(process);
+  void processAudioBlock(MIP_ProcessContext* AContext) final {
+    MProcess.processAudioBlock(AContext);
   }
 
 //------------------------------

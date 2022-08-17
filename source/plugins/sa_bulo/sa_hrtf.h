@@ -135,7 +135,8 @@ private:
 
   //----------
 
-  void processAudioBlock(const clap_process_t *process) final {
+  void processAudioBlock(MIP_ProcessContext* AContext) final {
+    const clap_process_t *process = AContext->process;
     if (need_recalc) recalc(MSampleRate);
     uint32_t len = process->frames_count;
     float* in0  = process->audio_inputs[0].data32[0];

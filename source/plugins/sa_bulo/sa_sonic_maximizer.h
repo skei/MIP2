@@ -191,7 +191,8 @@ private:
 
   //----------
 
-  void processAudioBlock(const clap_process_t *process) final {
+  void processAudioBlock(MIP_ProcessContext* AContext) final {
+    const clap_process_t *process = AContext->process;
     if (need_recalc) {
       recalc(MSampleRate);
       need_recalc = false;

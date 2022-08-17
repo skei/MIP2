@@ -237,7 +237,7 @@ class SCPU {
       // ^ check if problems occur with 64bit return
     }
     #endif
-    #ifdef MIP_32BIT_
+    #ifdef MIP_32BIT
     inline unsigned long rdtsc(void) {
       unsigned long long val;
       __asmv (

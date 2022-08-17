@@ -109,7 +109,7 @@
   #define MIP_PAINTER_DEFINED
 #endif
 
-//#ifdef MIP_PAINTER_WIN32
+//#ifdef MIP_PAINTER_GDI
 //#endif
 
 //----------

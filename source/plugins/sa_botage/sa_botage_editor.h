@@ -55,8 +55,8 @@ public:
     w_beats->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
     w_beats->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
     w_beats->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
-    w_beats->setTextSize( -0.9 );
-    w_beats->setValueSize( -0.9 );
+    w_beats->setTextSize( -0.5 );
+    w_beats->setValueSize( -0.5 );
     background->appendChildWidget(w_beats);
     connectWidget( AParameters[PAR_NUM_BEATS], w_beats);
 
@@ -64,8 +64,8 @@ public:
     w_slices->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
     w_slices->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
     w_slices->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
-    w_slices->setTextSize( -0.9 );
-    w_slices->setValueSize( -0.9 );
+    w_slices->setTextSize( -0.8 );
+    w_slices->setValueSize( -0.8 );
     background->appendChildWidget(w_slices);
     connectWidget( AParameters[PAR_NUM_SLICES], w_slices);
 

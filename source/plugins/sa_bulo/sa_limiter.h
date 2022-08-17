@@ -125,9 +125,9 @@ private:
     bufr  = len;
     pos   = 0;
 
-    thresh    = powf(10,(MParameters[0]->getValue()/20));
-    make_gain = powf(10,((-MParameters[0]->getValue()+MParameters[1]->getValue())/20));
-    ceiling   = powf(10,(MParameters[1]->getValue()/20));
+    thresh    = powf(10,(  MParameters[0]->getValue() / 20));
+    make_gain = powf(10,((-MParameters[0]->getValue() + MParameters[1]->getValue()) / 20));
+    ceiling   = powf(10,(  MParameters[1]->getValue() / 20));
 
     need_recalc = false;
   }
@@ -143,7 +143,8 @@ private:
 
   //----------
 
-  void processAudioBlock(const clap_process_t *process) final {
+  void processAudioBlock(MIP_ProcessContext* AContext) final {
+    const clap_process_t *process = AContext->process;
     if (need_recalc) recalc(MSampleRate);
     uint32_t len = process->frames_count;
     float* input0  = process->audio_inputs[0].data32[0];

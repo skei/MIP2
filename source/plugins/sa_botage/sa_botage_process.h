@@ -112,7 +112,8 @@ public:
 
   //----------
 
-  void processAudioBlock(const clap_process_t* process) {
+  void processAudioBlock(MIP_ProcessContext* AContext) {
+    const clap_process_t* process = AContext->process;
     float* audioin0  = process->audio_inputs[0].data32[0];
     float* audioin1  = process->audio_inputs[0].data32[1];
     float* audioout0 = process->audio_outputs[0].data32[0];

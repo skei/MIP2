@@ -5,8 +5,10 @@
 // ladspa-as-clap
 
 #include "mip.h"
-#include "base/utils/mip_inifile.h"
 #include "plugin/ladspa/mip_ladspa.h"
+//#include "gui/widgets/mip_widgets.h"
+
+//#include "base/utils/mip_inifile.h"
 
 //----------------------------------------------------------------------
 
@@ -84,8 +86,8 @@ private:
   float                     MParamValues[MIP_LADSPA_MAX_CONTROL_INPUTS] = {0};
   float                     MParamOutputs[MIP_LADSPA_MAX_CONTROL_OUTPUTS] = {0};
 
-  MIP_IniFile               MIniFile = {};
-  MIP_IniSection*           MIniSection = nullptr;
+//  MIP_IniFile               MIniFile = {};
+//  MIP_IniSection*           MIniSection = nullptr;
 
 //------------------------------
 public:
@@ -93,13 +95,15 @@ public:
 
   MIP_LadspaPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
-    loadIni(MIP_REGISTRY.getPath());
+
+//    loadIni(MIP_REGISTRY.getPath());
+
     strncpy(MPath,ADescriptor->id,1024);
 
-    MIP_IniSection* plugin_ini = MIniFile.findSection(MPath);
-    if (plugin_ini) {
-      MIP_PRINT;
-    }
+//    MIP_IniSection* plugin_ini = MIniFile.findSection(MPath);
+//    if (plugin_ini) {
+//      MIP_PRINT;
+//    }
 
     MHost = new MIP_ClapHost(AHost);
     const char* ptr = strstr(MPath,"#");  // find #
@@ -109,6 +113,10 @@ public:
       uint32_t index = (uint32_t)strtol(ptr,nullptr,16);
       loadLadspaPlugin(MPath,index);
     }
+
+    MEditorWidth = 250;
+    MEditorHeight = 500;
+
   }
 
   //----------
@@ -242,6 +250,7 @@ public: // plugin
   const void* get_extension(const char* id) final {
     //MIP_Print("'%s'",id);
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { /*MIP_DPrint("-> yes\n");*/ return &MAudioPorts; }
+    //if (strcmp(id,CLAP_EXT_GUI) == 0)                 { /*MIP_DPrint("-> yes\n");*/ return &MGui; }
     if (strcmp(id,CLAP_EXT_PARAMS) == 0)              { /*MIP_DPrint("-> yes\n");*/ return &MParams; }
     if (strcmp(id,CLAP_EXT_STATE) == 0)               { /*MIP_DPrint("-> yes\n");*/ return &MState; }
     //MIP_DPrint("-> no\n");
@@ -258,24 +267,24 @@ public: // plugin
 private: // ini file
 //------------------------------
 
-  bool loadIni(const char* APath) {
-    char temp[1024] = {0};
-    strcpy(temp,APath);
-    MIP_StripFileExt(temp);
-    strcat(temp,".ini");
-    //MIP_Print("loading ini file: '%s'\n",temp);
-    MIniFile.load(temp);
-    const clap_plugin_descriptor_t* descriptor = getDescriptor();
-    //MIP_Print("id: '%s'\n",descriptor->id);
-    MIniSection = MIniFile.findSection(descriptor->id);
-    if (MIniSection) {
-      //MIP_Print("found\n");
-    }
-    else {
-      //MIP_Print("not found\n");
-    }
-    return true;
-  }
+//  bool loadIni(const char* APath) {
+//    char temp[1024] = {0};
+//    strcpy(temp,APath);
+//    MIP_StripFileExt(temp);
+//    strcat(temp,".ini");
+//    //MIP_Print("loading ini file: '%s'\n",temp);
+//    MIniFile.load(temp);
+//    const clap_plugin_descriptor_t* descriptor = getDescriptor();
+//    //MIP_Print("id: '%s'\n",descriptor->id);
+//    MIniSection = MIniFile.findSection(descriptor->id);
+//    if (MIniSection) {
+//      //MIP_Print("found\n");
+//    }
+//    else {
+//      //MIP_Print("not found\n");
+//    }
+//    return true;
+//  }
 
 //------------------------------
 private: // clap audio ports
@@ -402,6 +411,25 @@ private: // state
   }
 
 //------------------------------
+private: // gui
+//------------------------------
+
+//  bool gui_create(const char *api, bool is_floating) override {
+//    bool result = MIP_Plugin::gui_create(api,is_floating);
+//    MEditor->setWindowFillBackground(true);
+//    MEditor->Layout.border = MIP_DRect(10,10,10,10);
+//    if (result) {
+//      for (uint32_t i=0; i<MParameters.size(); i++) {
+//        MIP_SliderWidget* slider = new MIP_SliderWidget( 20, MParameters[i]->getName(), MParameters[i]->getValue() );
+//        slider->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+//        MEditor->appendChildWidget(slider);
+//        MEditor->connectWidget(MParameters[i],slider);
+//      }
+//    }
+//    return result;
+//  }
+
+//------------------------------
 private: // events
 //------------------------------
 
@@ -428,6 +456,18 @@ private: // events
     }
   }
 
+//  void processParamValue(const clap_event_param_value_t* event) final {
+//    uint32_t index = event->param_id;
+//    double value = event->value;
+//    MIP_Assert(index <= MNumControlInputs);
+//    int32_t port = MControlInputIndex[index];
+//    if (port >= 0) {
+//      MParamValues[port] = value;
+//    }
+//  }
+
+//  void processAudioBlock(const clap_process_t* process) {
+//  }
 
 //------------------------------
 private: // ladspa

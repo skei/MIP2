@@ -7,13 +7,13 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_NANOVG
 
+#define TEXTBOX1_BUFFER_SIZE  (256*256)
+
 //----------------------------------------------------------------------
 
-#include "plugin/mip_editor.h"
 #include "plugin/mip_plugin.h"
+#include "plugin/mip_editor.h"
 #include "gui/widgets/mip_widgets.h"
-
-#define TEXTBOX1_BUFFER_SIZE  (256*256)
 
 //----------------------------------------------------------------------
 //

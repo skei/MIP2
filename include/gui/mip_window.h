@@ -113,11 +113,13 @@ public:
 
   void updateHoverWidget(int32_t AXpos, int32_t AYpos, uint32_t ATime) {
     MIP_Widget* hover = nullptr;
+    // find hover
     if (MModalWidget) {
       hover = MModalWidget->findChildWidget(AXpos,AYpos);
     } else {
       hover = findChildWidget(AXpos,AYpos);
     }
+    // enter/leave
     if (hover != MHoverWidget) {
       if (!MClickedWidget) {
         if (MHoverWidget) MHoverWidget->on_widget_leave(hover,AXpos,AYpos,ATime);
@@ -125,6 +127,26 @@ public:
       }
       MHoverWidget = hover;
     }
+//    // edges/resizable
+//    if (MHoverWidget) {
+//      MIP_DRect r = MHoverWidget->getRect();
+//      if (AXpos >= (r.x2() - 5)) {
+//        setMouseCursor(MIP_CURSOR_ARROW_RIGHT);
+//      }
+//      else if (AXpos <= (r.x + 5)) {
+//        setMouseCursor(MIP_CURSOR_ARROW_LEFT);
+//      }
+//      else if (AYpos >= (r.y2() - 5)) {
+//        setMouseCursor(MIP_CURSOR_ARROW_DOWN);
+//      }
+//      else if (AYpos <= (r.y + 5)) {
+//        setMouseCursor(MIP_CURSOR_ARROW_UP);
+//      }
+//      else {
+//        setMouseCursor(MIP_CURSOR_DEFAULT);
+//      }
+//    }
+
   }
 
   //----------
@@ -188,6 +210,7 @@ public: // window
       MPaintContext.painter = MWindowPainter;
     }
     MRect.setSize(AWidth,AHeight);
+//    on_widget_set_painter(MwindowPainter);
     alignChildWidgets();
   }
 
@@ -205,7 +228,7 @@ public: // window
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
-    setupContext(AXpos,AYpos,AWidth,AHeight);
+    setupPaintContext(AXpos,AYpos,AWidth,AHeight);
     MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
     painter->beginPaint(MRect.w,MRect.h);
     //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
@@ -420,7 +443,7 @@ public: // child to parent
 public:
 //------------------------------
 
-  void setupContext(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
+  void setupPaintContext(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
     MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
     MPaintContext.theme       = &MIP_DefaultTheme;
     MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);

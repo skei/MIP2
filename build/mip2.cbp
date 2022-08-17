@@ -20,7 +20,6 @@
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
-					<Add option="-s" />
 					<Add option="-no-pie" />
 				</Linker>
 			</Target>
@@ -31,7 +30,6 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-O2" />
 					<Add option="-fno-pie" />
 					<Add option="-DMIP_EXE" />
 				</Compiler>
@@ -64,7 +62,6 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O3" />
-					<Add option="-O2" />
 					<Add option="-fPIC" />
 					<Add option="-DMIP_PLUGIN" />
 				</Compiler>
@@ -271,6 +268,9 @@
 		<Unit filename="../include/gui/base/mip_base_surface.h" />
 		<Unit filename="../include/gui/base/mip_base_window.h" />
 		<Unit filename="../include/gui/cairo/mip_cairo.h" />
+		<Unit filename="../include/gui/glx/mip_glx.h" />
+		<Unit filename="../include/gui/glx/mip_glx_painter.h" />
+		<Unit filename="../include/gui/glx/mip_glx_utils.h" />
 		<Unit filename="../include/gui/mip_drawable.h" />
 		<Unit filename="../include/gui/mip_paint_context.h" />
 		<Unit filename="../include/gui/mip_painter.h" />
@@ -281,9 +281,6 @@
 		<Unit filename="../include/gui/nanovg/mip_nanovg.h" />
 		<Unit filename="../include/gui/nanovg/mip_nanovg_painter.h" />
 		<Unit filename="../include/gui/nanovg/mip_nanovg_utils.h" />
-		<Unit filename="../include/gui/opengl/mip_opengl.h" />
-		<Unit filename="../include/gui/opengl/mip_opengl_painter.h" />
-		<Unit filename="../include/gui/opengl/mip_opengl_utils.h" />
 		<Unit filename="../include/gui/widgets/mip_button_row_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_button_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_color_widget.h" />
@@ -425,14 +422,6 @@
 		</Unit>
 		<Unit filename="../tools/dump_ttl.sh" />
 		<Unit filename="build.cpp" />
-		<Unit filename="test/test_editor3.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="test/test_editor4.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
 		<Unit filename="test/test_layout.cpp">
 			<Option compile="0" />
 			<Option link="0" />
