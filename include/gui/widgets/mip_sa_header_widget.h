@@ -145,8 +145,10 @@ public:
 
   }
 
-//  virtual ~MIP_SAHeaderWidget() {
-//  }
+  virtual ~MIP_SAHeaderWidget() {
+    if (MMip2Bitmap) delete MMip2Bitmap;
+    if (MLogoBitmap) delete MLogoBitmap;
+  }
 
 //------------------------------
 public:

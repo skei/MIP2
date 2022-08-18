@@ -4,6 +4,12 @@
 
 // aka: opengl context wrapper (for pixmap/window)
 
+/*
+  https://stackoverflow.com/questions/68620893/glfw-causes-memory-leak
+  https://github.com/godotengine/godot/issues/27265
+  how can i suppress asan warnings?
+*/
+
 //----------------------------------------------------------------------
 
 #include "mip.h"
@@ -107,9 +113,9 @@ public:
 
   MIP_GlxPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
   : MIP_BasePainter(ASurface,ATarget) {
-    //MIP_PRINT;
+
     old_x_error_handler = XSetErrorHandler(x_error_handler);
-    //MIP_PRINT;
+
     MWidth = ASurface->drawable_getWidth();
     MHeight = ASurface->drawable_getHeight();
     MDisplay = ATarget->drawable_getXlibDisplay();
@@ -175,9 +181,30 @@ protected:
 
   //TOSO: save prev context?
 
+  /*
+    glXMakeContextCurrent binds ctx to the current rendering thread and to the
+    draw and read GLX drawables. draw and read may be the same.
+    draw is used for all OpenGL operations except:
+    Any pixel data that are read based on the value of GLX_READ_BUFFER.
+    Note that accumulation operations use the value of GLX_READ_BUFFER,
+    but are not allowed unless draw is identical to read.
+    Any depth values that are retrieved by glReadPixels or glCopyPixels.
+    Any stencil values that are retrieved by glReadPixels or glCopyPixels.
+    Frame buffer values are taken from draw.
+    If the current rendering thread has a current rendering context,
+    that context is flushed and replaced by ctx.
+    The first time that ctx is made current, the viewport and scissor
+    dimensions are set to the size of the draw drawable. The viewport and
+    scissor are not modified when ctx is subsequently made current.
+    To release the current context without assigning a new one, call
+    glXMakeContextCurrent with draw and read set to None and ctx set to NULL.
+    glXMakeContextCurrent returns True if it is successful, False otherwise.
+    If False is returned, the previously current rendering context and drawable
+    (if any) remain unchanged.
+  */
+
   bool makeCurrent() {
     //MIP_PRINT;
-
     //MPrevContext = glXGetCurrentContext();
     bool res = glXMakeContextCurrent(MDisplay,MDrawable,MDrawable,MContext);
     if (!res) {
@@ -198,10 +225,8 @@ protected:
 
   bool resetCurrent() {
     //MIP_PRINT;
-
     bool res = glXMakeContextCurrent(MDisplay,0,0,0);
     //bool res = glXMakeContextCurrent(MDisplay,MDrawable,MDrawable,MPrevContext); // error
-
     if (!res) {
       MIP_Print("Error: makeCurrent returned false\n");
       return false;
@@ -216,13 +241,13 @@ protected:
     glXSwapBuffers(MDisplay,MDrawable);
   }
 
-
 //------------------------------
 private:
 //------------------------------
 
   // ADisplay : X11 Display*
   // AAttribs : MIP_GlxPixmapAttribs or MIP_GlxWindowAttribs
+  // Use XFree to free the memory returned by glXChooseFBConfig.
 
   GLXFBConfig findFBConfig(const int* AAttribs) {
     //MIP_PRINT;
@@ -255,6 +280,7 @@ private:
   void destroyContext() {
     //MIP_PRINT;
     glXDestroyContext(MDisplay,MContext);
+    unloadOpenGL();
   }
 
   //----------
@@ -274,6 +300,12 @@ private:
       return false;
     }
     return true;
+  }
+
+  //----------
+
+  void unloadOpenGL() {
+    sogl_cleanup();
   }
 
   //----------

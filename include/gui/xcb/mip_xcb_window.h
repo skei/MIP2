@@ -110,7 +110,7 @@ public:
 //    MWindowInitialWidth = AWidth;
 //    MWindowInitialHeight = AHeight;
 
-    initConntection(nullptr);
+    initConnection(nullptr);
     initScreen();
     initScreenGC();
     initWindow(AWidth,AHeight);
@@ -510,9 +510,10 @@ public: // paint
 private: // connection
 //------------------------------
 
-  bool initConntection(const char* ADisplayName=nullptr) {
+  bool initConnection(const char* ADisplayName=nullptr) {
     //MConnection = xcb_connect(ADisplayName,&MDefaultScreen);
 
+    // ???
     XInitThreads();
 
     MDisplay = XOpenDisplay(ADisplayName);

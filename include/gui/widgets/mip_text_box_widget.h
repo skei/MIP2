@@ -34,6 +34,9 @@ public:
   //----------
 
   //virtual ~MIP_TextBoxWidget() {
+  //  #ifndef MIP_NO_AUTODELETE
+  //  deleteLines();
+  //  #endif
   //}
 
 //------------------------------

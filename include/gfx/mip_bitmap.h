@@ -163,7 +163,7 @@ public:
   //----------
 
   virtual ~MIP_Bitmap() {
-    if (MAllocated && MBuffer) free(MBuffer);
+    if (MAllocated) free(MBuffer);
   }
 
 //------------------------------

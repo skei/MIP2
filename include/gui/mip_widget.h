@@ -109,6 +109,9 @@ public:
   //----------
 
   virtual ~MIP_Widget() {
+    #ifndef MIP_NO_AUTODELETE
+    deleteChildWidgets();
+    #endif
   }
 
 //------------------------------
@@ -223,10 +226,10 @@ public: // child to parent
     if (MParent) MParent->do_widget_notify(ASender,AMode,AValue);
   }
 
-  virtual MIP_Widget* do_widget_get_window(MIP_Widget* ASender) {
-    if (MParent) return MParent->do_widget_get_window(ASender);
-    else return nullptr;
-  }
+  //virtual MIP_Widget* do_widget_get_window(MIP_Widget* ASender) {
+  //  if (MParent) return MParent->do_widget_get_window(ASender);
+  //  else return nullptr;
+  //}
 
   /*
     called by MIP_WidgetSizer (etc?)
@@ -265,9 +268,7 @@ public: // hierarchy
     int32_t index = MChildren.size();
     AChild->MIndex = index;
     AChild->MParent = this;
-
     //AChild->on_widget_append(this);
-
     MChildren.append(AChild);
     return AChild;
   }
