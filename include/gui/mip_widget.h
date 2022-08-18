@@ -52,6 +52,7 @@ struct MIP_WidgetFlags {
   bool highlighted    = false;
   bool focused        = false;
   //bool clipChildren   = false;
+  bool autoSize       = false;
 };
 
 //----------------------------------------------------------------------
@@ -76,7 +77,7 @@ protected:
 //------------------------------
 
   const char*       MName         = "MIP_Widget";
-  MIP_Widget*       MOwnerWindow  = nullptr;
+  //MIP_Widget*       MOwnerWindow  = nullptr;
   MIP_Widget*       MParent       = nullptr;
   MIP_WidgetArray   MChildren     = {};
   MIP_DRect         MRect         = {0};
@@ -226,10 +227,10 @@ public: // child to parent
     if (MParent) MParent->do_widget_notify(ASender,AMode,AValue);
   }
 
-  //virtual MIP_Widget* do_widget_get_window(MIP_Widget* ASender) {
-  //  if (MParent) return MParent->do_widget_get_window(ASender);
-  //  else return nullptr;
-  //}
+  virtual MIP_Widget* do_widget_get_owner_window(MIP_Widget* ASender) {
+    if (MParent) return MParent->do_widget_get_owner_window(ASender);
+    else return nullptr;
+  }
 
   /*
     called by MIP_WidgetSizer (etc?)
@@ -318,16 +319,16 @@ public: // hierarchy
 
   //----------
 
-  virtual void setOwnerWindow(MIP_Widget* AWindow, bool ARecursive=true) {
-    MOwnerWindow = AWindow;
-    if (ARecursive) {
-      uint32_t num = MChildren.size();
-      for (uint32_t i=0; i<num; i++) {
-        MIP_Widget* child = MChildren[i];
-        child->setOwnerWindow(AWindow,ARecursive);
-      }
-    }
-  }
+  //virtual void setOwnerWindow(MIP_Widget* AWindow, bool ARecursive=true) {
+  //  MOwnerWindow = AWindow;
+  //  if (ARecursive) {
+  //    uint32_t num = MChildren.size();
+  //    for (uint32_t i=0; i<num; i++) {
+  //      MIP_Widget* child = MChildren[i];
+  //      child->setOwnerWindow(AWindow,ARecursive);
+  //    }
+  //  }
+  //}
 
   //----------
 
@@ -872,6 +873,11 @@ public: // hierarchy
       //MIP_Print("%s: %.0f,%.0f, %.0f,%.0f\n",getWidgetName(),MContentRect.x,MContentRect.y,MContentRect.w,MContentRect.h);
 
     } // num > 0
+
+    if (Flags.autoSize) {
+      MRect.w = MContentRect.w;
+      MRect.h = MContentRect.h;
+    }
 
     MContentRect.w += (border.x + border.w);
     MContentRect.h += (border.y + border.h);

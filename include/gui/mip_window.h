@@ -434,7 +434,7 @@ public: // child to parent
 
   //----------
 
-  MIP_Widget* do_widget_get_window(MIP_Widget* ASender) override {
+  MIP_Widget* do_widget_get_owner_window(MIP_Widget* ASender) override {
     return this;
   }
 

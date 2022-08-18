@@ -345,7 +345,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 
-1660258873 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1660832582 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_window.h"
 	"gui/xcb/mip_xcb.h"
@@ -750,7 +750,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
 
-1660762445 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1660840543 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_widget.h"
@@ -782,7 +782,7 @@
 	"gui/mip_drawable.h"
 	"gui/xcb/mip_xcb.h"
 
-1660640269 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1660840924 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"gui/mip_paint_context.h"
 	"plugin/mip_parameter.h"
@@ -1112,7 +1112,7 @@
 	"mip.h"
 	"gui/widgets/mip_text_widget.h"
 
-1660609019 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_menu_widget.h
+1660840524 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_menu_widget.h
 	"mip.h"
 	"gui/widgets/mip_panel_widget.h"
 	"gui/widgets/mip_menu_item_widget.h"
@@ -1523,7 +1523,7 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1660675581 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
+1660840904 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
 	"gui/widgets/mip_widgets.h"
@@ -1542,13 +1542,13 @@
 	"gui/widgets/mip_pages_widget.h"
 	"gui/mip_paint_context.h"
 
-1660614668 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_box_widget.h
+1660830053 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_box_widget.h
 	"gui/widgets/mip_widgets.h"
 
 1660471761 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_keyboard_widget.h
 	"gui/mip_widget.h"
 
-1660614520 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_sa_header_widget.h
+1660830195 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_sa_header_widget.h
 	"gfx/mip_bitmap.h"
 	"gui/mip_window.h"
 	"gui/mip_surface.h"
@@ -1558,7 +1558,7 @@
 	"../data/img/sa_logo_40_trans_black.h"
 	"../data/img/mip2_trans_129x34.h"
 
-1660488042 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap.h
+1660830302 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap.h
 	"mip.h"
 	"base/utils/mip_rgba.h"
 	"base/utils/mip_integer_math.h"
@@ -1613,7 +1613,7 @@
 	<GL/gl.h>
 	<GL/glx.h>
 
-1660582664 /DISKS/sda2/code/git/MIP2/include/gui/glx/mip_glx_painter.h
+1660832007 /DISKS/sda2/code/git/MIP2/include/gui/glx/mip_glx_painter.h
 	"mip.h"
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_painter.h"

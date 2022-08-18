@@ -119,7 +119,7 @@ public:
 
     double x = AXpos;
     double y = AYpos;
-    MIP_Window* window = (MIP_Window*)do_widget_get_window(this);
+    MIP_Window* window = (MIP_Window*)do_widget_get_owner_window(this);
     if (window) {
       uint32_t winw = window->getWindowWidth();
       uint32_t winh =window->getWindowHeight();

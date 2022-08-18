@@ -483,6 +483,9 @@ public: // gui
           tabs1_page1->setFillBackground(false);
           tabs1_page1->setDrawBorder(true);
           tabs1_page1->Layout.border = MIP_DRect(10,10,10,10);
+
+          //tabs1_page1->Flags.autoSize = true;
+
           tabs1->appendPage("page1",tabs1_page1);
 
           {
