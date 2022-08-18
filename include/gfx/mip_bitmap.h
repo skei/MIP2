@@ -344,6 +344,8 @@ public:
     *ptr++ = _alpha(cr,AAlpha) + _alpha(br,(255-AAlpha));
   }
 
+  // blendPixel_NoClip ?
+
   #undef _alpha
 
   void blendPixelF(uint32_t x, uint32_t y, uint32_t c, float AAlpha) {
@@ -549,6 +551,10 @@ public:
 private:
 //------------------------------
 
+  /*
+    calculates new clipped xpos and length
+  */
+
   bool _clipLine(int32_t AXpos, int32_t ALength, int32_t* AXout, int32_t* ALout) {
     int32_t x = AXpos;
     int32_t l = ALength;
@@ -572,6 +578,11 @@ private:
   }
 
   //----------
+
+  /*
+    'textured' line clipping..
+    (for example, single line during bitmap copy)
+  */
 
   bool _clipLine2(int32_t AXpos, int32_t ALength, int32_t AXsrc, int32_t* AXout, int32_t* ALout, int32_t* AX2out) {
     int32_t x  = AXpos;
@@ -775,7 +786,7 @@ public: // blend
   /*
     blends another bitmap on top of this bitmap
     alpha taken from ABitmap
-      clipping is done for every line)
+      clipping is done for every line
       todo: clip src/dst rectangles first, then call these
   */
 

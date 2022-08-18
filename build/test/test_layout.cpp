@@ -505,20 +505,18 @@ public: // gui
             MIP_GraphWidget* graph1 = new MIP_GraphWidget(0);
             graph1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
             tabs1_page2->appendChildWidget(graph1);
-
             for (uint32_t i=0; i<8; i++) {
               MIP_GraphModule* module = new MIP_GraphModule();
-            module->numInputs = 3;
-            module->inputs[0] = MIP_PIN_SIGNAL;
-            module->inputs[1] = MIP_PIN_DATA;
-            module->inputs[2] = MIP_PIN_DATA;
-            module->numOutputs = 3;
-            module->outputs[0] = MIP_PIN_SIGNAL;
-            module->outputs[1] = MIP_PIN_DATA;
-            module->outputs[2] = MIP_PIN_DATA;
+              module->numInputs = 3;
+              module->inputs[0] = MIP_PIN_SIGNAL;
+              module->inputs[1] = MIP_PIN_DATA;
+              module->inputs[2] = MIP_PIN_DATA;
+              module->numOutputs = 3;
+              module->outputs[0] = MIP_PIN_SIGNAL;
+              module->outputs[1] = MIP_PIN_DATA;
+              module->outputs[2] = MIP_PIN_DATA;
               graph1->addModule(module, i * 10, i * 30, "module");
             }
-
           }
 
           MIP_PanelWidget* tabs1_page3 = new MIP_PanelWidget(0);
@@ -528,7 +526,6 @@ public: // gui
           tabs1->appendPage("page1",tabs1_page3);
 
           {
-
 
             MIP_TextBoxWidget* textbox1 = new MIP_TextBoxWidget(0);
             textbox1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;

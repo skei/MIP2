@@ -20,7 +20,11 @@
 
   doubles for anything related to audio or parameter values
 
-* MIP_Print : logfine, debug output window (with watches)
+* MIP_Print
+
+  logfile
+  debug output window (with watches)
+  MIP_Write() always write, also in release builds..
 
 //----------------------------------------------------------------------
 //
@@ -31,7 +35,8 @@
 * MIP_Registry
 
   make it more generic?
-  MIP_Object, MIP_RefCount, ..
+  MIP_Object
+  MIP_RefCount
   garbage collection?
 
 //----------------------------------------------------------------------
@@ -43,7 +48,6 @@
 * parameter smoothing
 
   MIP_Parameter:
-  (MIP_ParameterManager?)
 
     setValue()
     getValue()
@@ -57,7 +61,7 @@
 
   hosting:
 
-  ladspa-as-clap (works, more or less)
+  ladspa-as-clap (works, more or less, but maybe rewrite using clap_factory)
   vst2-as-clap
   vst3-as-clap
 
@@ -66,8 +70,6 @@
 // GUI
 //
 //----------------------------------------------------------------------
-
-* rename: OpenGL -> glx
 
 * reduce resizing frequency
 
@@ -78,8 +80,6 @@
     or something similar..
     also, check if we can use only the latest resize event in the
     event queue..
-
-* window resizing
 
   restrict number of resize events,
   they can choke the event queue
@@ -100,21 +100,12 @@
 
 * clipping
 
-  nvgScissor
-  nvgIntersectScissor
-  nvgResetScissor
-
-  in progress: push/pop clipping rectangles.. make sure to keep clipping
-  rectangle and scissoring in sync.. investigate how drivers handle scissor
-  rectangle when calling swapBuffer()
-
-* [still an issue?] find hovering widget doesn't take innerBoder into account
-  (you can hover/click over a part of a knob that is hidden behind a
-  (blank) innerBorder area)
+  investigate how drivers handle opengl scissor rectangle
+  when calling swapBuffer()
 
 * double clicking
 
-  fir initial test-implementation was pretty limited
+  first initial test-implementation was pretty limited
   start timer when clicking
   new click before timeout = double click
   if timeout = normal single click
@@ -135,20 +126,14 @@
     - folder, file, indent
     - text-based group-box
 
-* grid
+* MIP_Grid
 
   combine cells, each cell can have firstCellInCombo, numCellsInCombo
   for both x and y.. useful when grid is used for widget layout, etc..
 
-* widget.sizemode : split parent/client amog children, x & y
-
 * widget.highlight : click on a text line in a textbox to highlight it
 
 * widget.selected, widget.focused
-
-* autosize widgets.. to be able to autosize text, we need the painter,
-  and current font.. which is not available in alignChildWidgets (we might
-  call it before the editor is opened)..
 
 * movable widgets
 
@@ -174,5 +159,3 @@
   filters, dsp, fft, ..
 
 * oversampling
-
-

@@ -1016,7 +1016,7 @@
 	"gui/widgets/nvg/mip_value_widget.h"
 	"plugin/mip_parameter.h"
 
-1660219017 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_widget.h
+1660850026 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_widget.h
 	"mip.h"
 	"gui/widgets/mip_panel_widget.h"
 
@@ -1523,7 +1523,7 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1660840904 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
+1660850930 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
 	"gui/widgets/mip_widgets.h"
@@ -1558,7 +1558,7 @@
 	"../data/img/sa_logo_40_trans_black.h"
 	"../data/img/mip2_trans_129x34.h"
 
-1660830302 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap.h
+1660850481 /DISKS/sda2/code/git/MIP2/include/gfx/mip_bitmap.h
 	"mip.h"
 	"base/utils/mip_rgba.h"
 	"base/utils/mip_integer_math.h"
@@ -1594,7 +1594,7 @@
 
 1660491465 /DISKS/sda2/code/git/MIP2/data/fonts/liberation_ttf.h
 
-1660608489 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_graph_widget.h
+1660850991 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_graph_widget.h
 	"base/types/mip_list.h"
 	"gui/widgets/mip_panel_widget.h"
 	"gui/mip_widget.h"
