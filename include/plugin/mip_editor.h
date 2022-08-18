@@ -20,6 +20,8 @@ class MIP_EditorListener {
 public:
   virtual void on_editor_listener_update_parameter(uint32_t AIndex, double AValue) { MIP_PRINT; };
   virtual void on_editor_listener_resize_window(uint32_t AWidth, uint32_t AHeight) { MIP_PRINT; };
+  //beginGEsture
+  //endGEsture
 };
 
 

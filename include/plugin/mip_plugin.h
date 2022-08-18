@@ -958,27 +958,36 @@ public: // process events
     switch (msg) {
       case MIP_MIDI_NOTE_OFF:
         MIP_Print("MIDI NOTE OFF chan %i index %i val %i\n",chan,index,val);
+        //processNoteOff
         break;
       case MIP_MIDI_NOTE_ON:
         MIP_Print("MIDI NOTE ON chan %i index %i val %i\n",chan,index,val);
+        //processNoteOn
         break;
       case MIP_MIDI_POLY_AFTERTOUCH:
         MIP_Print("MIDI POLY AFTERTOUCH chan %i index %i val %i\n",chan,index,val);
+        //processNoteExpression
         break;
       case MIP_MIDI_CONTROL_CHANGE:
         MIP_Print("MIDI CONTROL CHANGE chan %i index %i val %i\n",chan,index,val);
+        // 74 : processNoteExpression
+        // midi mapping
         break;
       case MIP_MIDI_PROGRAM_CHANGE:
         MIP_Print("MIDI PROGRAM CHANGE chan %i index %i val %i\n",chan,index,val);
+        // ?
         break;
       case MIP_MIDI_CHANNEL_AFTERTOUCH:
         MIP_Print("MIDI CHANNEL AFTERTOUCH chan %i index %i val %i\n",chan,index,val);
+        //processNoteExpression
         break;
       case MIP_MIDI_PITCHBEND:
         MIP_Print("MIDI PITCHBEND chan %i index %i val %i\n",chan,index,val);
+        //processNoteExpression
         break;
       case MIP_MIDI_SYS:
         MIP_Print("MIDI SYS chan %i index %i val %i\n",chan,index,val);
+        //processMidiSysex
         break;
     }
     */
@@ -1089,6 +1098,12 @@ public: // queues
       out_events->try_push(out_events,(clap_event_header_t*)&event);
     }
   }
+
+  //----------
+
+  //queueHostNoteEnd
+  //queueHostBeginGesture
+  //queueHostEndGesture
 
   //----------
 
