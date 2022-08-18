@@ -723,7 +723,7 @@ public:
     MPaintRect = AContext->updateRect;
     //ACanvas.setDrawColor(KLightGrey);
     //ACanvas.drawRectangle(FRect.x,FRect.y,FRect.x2,FRect.y2);
-    painter->pushClip(getRect());
+//    painter->pushClip(getRect());
     drawModules();
     drawWires();
     if (MDraggingWire) {
@@ -750,7 +750,7 @@ public:
 
     }
     drawBorder(AContext);
-    painter->popClip();
+//    painter->popClip();
   }
 
   //----------
