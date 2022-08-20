@@ -96,8 +96,8 @@ int main(int argc, char** argv, char** env) {
   //MIP_REGISTRY.getNumDescriptors();
   uint32_t index = 0; //TODO: arg[1] select index
   uint32_t num_descriptors = MIP_REGISTRY.getNumDescriptors();
+  MIP_Print("> num_descriptors: %i\n",num_descriptors);
   if (num_descriptors > 0) {
-    MIP_Print("%i descriptors\n",num_descriptors);
 
     const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
     if (descriptor) {
@@ -175,19 +175,32 @@ int main(int argc, char** argv, char** env) {
 
 
 
-
+// test
 
 
 
 
 extern "C" {
 
+  int test_func() {
+    printf("* test_func()\n");
+    return 42;
+  }
+
   int main_result;
   int my_test_global = 123;
+  int test_func_result = test_func();
+
+  __attribute__((constructor))
+  void ctor_test_func() {
+    printf("* ctor_test_func()\n");
+    test_func_result = 41;
+  }
 
   int* main_trampoline(int argc, char** argv, char** env) {
     printf("* main_trampoline()\n");
     printf("  (my_test_global = %i)\n",my_test_global);
+    printf("  (test_func_result = %i)\n",test_func_result);
     printf("  calling real main()\n");
     main_result = main(argc,argv,env); // crashes
     printf("  and we're back..\n");

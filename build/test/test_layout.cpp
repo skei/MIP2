@@ -1,6 +1,6 @@
 
 #ifndef MIP_EXE
-  #define MIP_DEBUG_PRINT_SOCKET
+  //#define MIP_DEBUG_PRINT_SOCKET
   // nc -U -l -k /tmp/mip.socket
 #endif // MIP_EXE
 
@@ -594,7 +594,36 @@ MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* AD
 
 const char interp_section[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
 
+
 extern "C" {
+
+  // based on this:
+  // https://github.com/gcc-mirror/gcc/blob/master/libgcc/config/arc/initfini.c
+
+  //extern void __do_global_ctors(void);
+  //extern void __do_global_dtors(void);
+
+  typedef void (*func_ptr)(void);
+
+  func_ptr __CTOR_LIST__[1] __attribute__ ((section(".ctors"))) = { (func_ptr)(-1) };
+  func_ptr __DTOR_LIST__[1] __attribute__ ((section(".dtors"))) = { (func_ptr)(-1) };
+  func_ptr __CTOR_END__ [1] __attribute__ ((section(".ctors"))) = { (func_ptr)0 };
+  func_ptr __DTOR_END__ [1] __attribute__ ((section(".dtors"))) = { (func_ptr)0 };
+
+  void __do_global_ctors() {
+    printf("* do_global_ctors()\n");
+    func_ptr *p;
+    for (p = __CTOR_END__ - 1; *p != (func_ptr) -1; p--) {
+      printf("ctor\n");
+      (*p)();
+    }
+  }
+
+  void __do_global_dtors() {
+    printf("* do_global_dtors()\n");
+    func_ptr *p;
+    for (p = __DTOR_LIST__ + 1; *p; p++) (*p)();
+  }
 
   extern int __libc_start_main(
     int  *(main)(int, char**, char**),
@@ -607,16 +636,33 @@ extern "C" {
   );
 
   uint8_t my_stack[1000000];
-  void my_init() { printf("* my_init()\n"); }
-  void my_fini() { printf("* my_fini()\n"); }
-  void my_rtld_fini() { printf("* my_rtld_init()\n"); }
+
+  void my_init() {
+    printf("* my_init()\n");
+    //__do_global_ctors_aux();
+    __do_global_ctors();
+  }
+
+  void my_fini() {
+    printf("* my_fini()\n");
+    //__do_global_dtors_aux();
+    __do_global_dtors();
+  }
+
+  void my_rtld_fini() {
+    printf("* my_rtld_fini()\n");
+  }
 
   __attribute__((force_align_arg_pointer))
   void entry_point() {
+    int argc = 1;
+    const char* argv[] = {
+      "/DISKS/sda2/code/git/MIP2/bin/build_debug.clap"
+    };
     printf("* entry_point()\n");
     printf("  calling __libc_start_main\n");
-    //__libc_start_main(my_main,0,nullptr,my_init,my_fini,my_rtld_fini,&my_stack[900000]);
-    __libc_start_main(main_trampoline,0,nullptr,nullptr,nullptr,nullptr,&my_stack[500000]);
+    __libc_start_main(main_trampoline,argc,(char**)argv,my_init,my_fini,my_rtld_fini,&my_stack[900000]);
+    //__libc_start_main(main_trampoline,0,nullptr,nullptr,nullptr,nullptr,&my_stack[500000]);
     printf("  did it work?\n");
     printf("  calling _exit\n");
     _exit(EXIT_SUCCESS);
