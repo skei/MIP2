@@ -616,7 +616,7 @@ extern "C" {
     printf("* entry_point()\n");
     printf("  calling __libc_start_main\n");
     //__libc_start_main(my_main,0,nullptr,my_init,my_fini,my_rtld_fini,&my_stack[900000]);
-    __libc_start_main(my_main,0,nullptr,nullptr,nullptr,nullptr,&my_stack[500000]);
+    __libc_start_main(main_trampoline,0,nullptr,nullptr,nullptr,nullptr,&my_stack[500000]);
     printf("  did it work?\n");
     printf("  calling _exit\n");
     _exit(EXIT_SUCCESS);
