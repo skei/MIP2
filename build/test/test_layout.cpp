@@ -441,13 +441,13 @@ public: // gui
 
         MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(0.5,"knob",0.5);
         knob1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-        knob1->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
+        knob1->Layout.horizScale = MIP_WIDGET_SIZE_PARENT_RATIO;
         knob1->Layout.aspectRatio = 2.0 / 3.0;
         aspect_rect1->appendChildWidget(knob1);
 
         MIP_Knob2Widget* knob2 = new MIP_Knob2Widget(0.5,"knob",0.5);
         knob2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-        knob2->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
+        knob2->Layout.horizScale = MIP_WIDGET_SIZE_PARENT_RATIO;
         knob2->Layout.aspectRatio = 2.0 / 3.0;
         aspect_rect1->appendChildWidget(knob2);
 
@@ -580,4 +580,25 @@ MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* AD
   return nullptr;
 }
 
+//----------------------------------------------------------------------
+//
+// shade entry point
+//
+//----------------------------------------------------------------------
 
+// -Wl,-e,entry_point
+
+#ifdef MIP_PLUGIN
+
+const char interp_section[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
+
+extern "C" {
+
+  void entry_point() {
+    printf("Hah! CLAP as standalone executable!\n");
+    _exit(EXIT_SUCCESS);
+  }
+
+}
+
+#endif

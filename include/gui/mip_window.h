@@ -209,9 +209,16 @@ public: // window
       MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
       MPaintContext.painter = MWindowPainter;
     }
+
     MRect.setSize(AWidth,AHeight);
-//    on_widget_set_painter(MwindowPainter);
-    alignChildWidgets();
+    MIP_Print("align???\n");
+    //alignChildWidgets();
+
+//    double xscale = AWidth / Layout.baseRect.w;
+//    double yscale = AHeight / Layout.baseRect.h;
+//    MIP_Print("xscale %f yscale %f\n",xscale,yscale);
+
+
   }
 
   //----------
@@ -434,10 +441,9 @@ public: // child to parent
 
   //----------
 
-  MIP_Widget* do_widget_get_owner_window(MIP_Widget* ASender) override {
-    return this;
-  }
-
+  //MIP_Widget* do_widget_get_owner_window(MIP_Widget* ASender) override {
+  //  return this;
+  //}
 
 //------------------------------
 public:
@@ -451,6 +457,11 @@ public:
   }
 
 //  //----------
+
+  MIP_Widget* getOwnerWindow() override {
+    return this;
+  }
+
 
   //void redrawEditor() {
   //  invalidateRegion(0,0,getWindowWidth(),getWindowHeight());

@@ -100,6 +100,11 @@ private:
   void (*MEventThreadStartCallback)(void* AUser) = nullptr;
   void (*MEventThreadStopCallback)(void* AUser) = nullptr;
 
+  int32_t MWindowInitialWidth = 0.0;
+  int32_t MWindowInitialHeight = 0.0;
+  double MWindowWidthScale = 1.0;
+  double MWindowHeightScale = 1.0;
+
 //------------------------------
 public:
 //------------------------------
@@ -107,8 +112,8 @@ public:
   MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
     //MWindowListener = this;
 
-//    MWindowInitialWidth = AWidth;
-//    MWindowInitialHeight = AHeight;
+    MWindowInitialWidth = AWidth;
+    MWindowInitialHeight = AHeight;
 
     initConnection(nullptr);
     initScreen();
@@ -143,6 +148,9 @@ public:
   bool    isWindowMapped()  { return MWindowMapped; }
   int32_t getWindowWidth()  { return MWindowWidth; }
   int32_t getWindowHeight() { return MWindowHeight; }
+
+  double  getWindowWidthScale()  { return MWindowWidthScale; }
+  double  getWindowHeightScale() { return MWindowHeightScale; }
 
   void    setWindowFillBackground(bool AFill=true)          { MFillBackground = AFill; }
   void    setWindowBackgroundColor(uint32_t AColor)         { MBackgroundColor = AColor; }
@@ -916,18 +924,21 @@ private: // events
         int16_t y = configure_notify->y;
         int16_t w = configure_notify->width;
         int16_t h = configure_notify->height;
+        MIP_Print("w,h: %i,%i MWindowWidth/Height: %i,%i  \n",w,h,MWindowWidth,MWindowHeight);
         if ((x != MWindowXpos) || (y != MWindowYpos)) {
           MWindowXpos = x;
           MWindowYpos = y;
           on_window_move(x,y);
         }
         if ((w != MWindowWidth) || (h != MWindowHeight)) {
+//          MIP_PRINT;
+//          if ((w > 0) && (h > 0)) {
+//            MWindowWidthScale = (double)w / (double)MWindowInitialWidth;
+//            MWindowHeightScale = (double)h / (double)MWindowInitialHeight;
+//            MIP_Print("scale: %.3f,%.3f\n",MWindowWidthScale,MWindowHeightScale);
+//          }
           MWindowWidth  = w;
           MWindowHeight = h;
-
-//          MWindowWidthScale  = MWindowWidth  / MWindowInitialWidth;
-//          MWindowHeightScale = MWindowHeight / MWindowInitialHeight;
-
           on_window_resize(w,h);
         }
         break;

@@ -24,10 +24,9 @@ typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 
 struct MIP_WidgetLayout {
   uint32_t    alignment   = MIP_WIDGET_ALIGN_PARENT;      // alignment relative to parent
-  double      scale       = 1.0;                          // scale children (incl burder & spacing)
   double      aspectRatio = -1;                           // if > 0, force aspect ratio (scale down)
-  uint32_t    sizeModeX   = MIP_WIDGET_SIZE_PIXELS;       // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
-  uint32_t    sizeModeY   = MIP_WIDGET_SIZE_PIXELS;       // y,h - --"--
+  uint32_t    horizScale  = MIP_WIDGET_SIZE_PIXELS;       // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
+  uint32_t    vertScale   = MIP_WIDGET_SIZE_PIXELS;       // y,h - --"--
   MIP_DRect   initialRect = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   baseRect    = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   border      = MIP_DRect(0,0,0,0);           // inner border
@@ -227,10 +226,10 @@ public: // child to parent
     if (MParent) MParent->do_widget_notify(ASender,AMode,AValue);
   }
 
-  virtual MIP_Widget* do_widget_get_owner_window(MIP_Widget* ASender) {
-    if (MParent) return MParent->do_widget_get_owner_window(ASender);
-    else return nullptr;
-  }
+//  virtual MIP_Widget* do_widget_get_owner_window(MIP_Widget* ASender) {
+//    if (MParent) return MParent->do_widget_get_owner_window(ASender);
+//    else return nullptr;
+//  }
 
   /*
     called by MIP_WidgetSizer (etc?)
@@ -300,6 +299,13 @@ public: // hierarchy
         if (ARecursive) child->scaleChildWidgets(AScale,ARecursive);
       }
     }
+  }
+
+  //----------
+
+  virtual MIP_Widget* getOwnerWindow() {
+    if (MParent) return MParent->getOwnerWindow();
+    else return nullptr;
   }
 
   //----------
@@ -401,6 +407,10 @@ public: // hierarchy
 
   virtual void alignChildWidgets(bool ARecursive=true) {
 
+    // todo: take sizemode into account.. (ratios)
+//    double parent_xscale = MRect.w / Layout.baseRect.w;
+//    double parent_yscale = MRect.h / Layout.baseRect.h;
+
     // stacking
 
     float stackx = 0;
@@ -410,15 +420,23 @@ public: // hierarchy
     uint32_t prev_alignment = MIP_WIDGET_ALIGN_NONE;
 
     MIP_DRect border = Layout.border;
-    //border.scale(Layout.scale);
     MIP_DPoint spacing = Layout.spacing;
-    //spacing.scale(Layout.scale);
+
+    //if (Layout.scaleChildren) {
+    //  border.scale(n);
+    //  spacing.scale(n);
+    //}
+
+    //
+
     MIP_DRect parent_rect = MRect;
-    parent_rect.shrink(border);
     MIP_DRect client_rect = MRect;
-    client_rect.shrink(border);
     MContentRect = MRect;
+
+    parent_rect.shrink(border);
+    client_rect.shrink(border);
     MContentRect.shrink(border);
+
     //content.setPos(0,0);
     MContentRect.setSize(0,0);
 
@@ -426,7 +444,6 @@ public: // hierarchy
     if (num > 0) {
 
       // for all children..
-
       for (uint32_t i=0; i<MChildren.size(); i++) {
         MIP_Widget* child = MChildren[i];
         if (child->Flags.visible) {
@@ -434,16 +451,8 @@ public: // hierarchy
           MIP_DRect child_rect = child->Layout.baseRect;
           uint32_t  alignment = child->Layout.alignment;
 
-          // scale
-
-          //child_rect.scale(Layout.scale);
-
-          // size mode
-
-          //double child_count_width  = (client_rect.w - (Layout.spacing.x * (num - 1))) / MChildren.size();
-          //double child_count_height = (client_rect.h - (Layout.spacing.y * (num - 1))) / MChildren.size();
-
-          switch (child->Layout.sizeModeX) {
+          // sizemode
+          switch (child->Layout.horizScale) {
             case MIP_WIDGET_SIZE_PIXELS:
               break;
             case MIP_WIDGET_SIZE_PARENT_RATIO:
@@ -454,17 +463,8 @@ public: // hierarchy
               child_rect.x *= client_rect.w;
               child_rect.w *= client_rect.w;
               break;
-            //case MIP_WIDGET_SIZE_CHILD_COUNT:
-            //  //child_rect.w = child_count_width;
-            //  break;
-            //case MIP_WIDGET_SIZE_CONTENT:
-            //  break;
-            //case MIP_WIDGET_SIZE_SCALED:
-            //  break;
-
           }
-
-          switch (child->Layout.sizeModeY) {
+          switch (child->Layout.vertScale) {
             case MIP_WIDGET_SIZE_PIXELS:
               break;
             case MIP_WIDGET_SIZE_PARENT_RATIO:
@@ -475,18 +475,9 @@ public: // hierarchy
               child_rect.y *= client_rect.h;
               child_rect.h *= client_rect.h;
               break;
-            //case MIP_WIDGET_SIZE_CHILD_COUNT:
-            //  //child_rect.h = child_count_height;
-            //  break;
-            //case MIP_WIDGET_SIZE_CONTENT:
-            //  break;
-            //case MIP_WIDGET_SIZE_SCALED:
-            //  break;
           }
 
-          //  if we were stacking, but isn't now..
-          // end stacking..
-
+          //  if we were stacking, but isn't now (end stacking)
           if (prev_alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) {
             if (alignment != MIP_WIDGET_ALIGN_STACK_HORIZ) {
               float h = (stacky + stack_highest + spacing.y);
@@ -504,7 +495,6 @@ public: // hierarchy
           }
 
           // start new stacking run
-
           if (alignment == MIP_WIDGET_ALIGN_STACK_HORIZ) {
             if (prev_alignment != MIP_WIDGET_ALIGN_STACK_HORIZ) {
               stackx = 0;
@@ -522,12 +512,9 @@ public: // hierarchy
             }
           }
 
-          //
-
           prev_alignment = alignment;
 
           // alignment
-
           switch (child->Layout.alignment) {
 
             case MIP_WIDGET_ALIGN_NONE: {
@@ -640,6 +627,15 @@ public: // hierarchy
               break;
 
             //-----
+
+            case MIP_WIDGET_ALIGN_FILL_PARENT: {
+              child_rect.x = parent_rect.x;
+              child_rect.y = parent_rect.y;
+              child_rect.w = parent_rect.w;
+              child_rect.h = parent_rect.h;
+              // clear client rect
+              break;
+            }
 
             case MIP_WIDGET_ALIGN_FILL_CLIENT: {
               child_rect.x = client_rect.x;
@@ -822,79 +818,41 @@ public: // hierarchy
           } // switch
 
           // min/max size
-
           child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
           child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
           // scale
 
           // aspect
-
           if (child->Layout.aspectRatio > 0) {
             if (child_rect.h > 0) {
               double aspect = child_rect.w / child_rect.h;
               if (aspect >= child->Layout.aspectRatio) {
                 double w_new = child_rect.h * child->Layout.aspectRatio;
-                //double w_prev = child_rect.w;
-                //child_rect.x += (w_prev - w_new) * 0.5;
                 child_rect.w = w_new;
               }
               else {
                 double h_new = child_rect.w / child->Layout.aspectRatio;
-                //double h_prev = child_rect.h;
-                //child_rect.y += (h_prev - h_new) * 0.5;
                 child_rect.h = h_new;
               }
             } // h > 0
           } // aspect > 0
 
-
           MIP_DRect extra_border = child->Layout.extraBorder;
-          //extra_border.scale(Layout.scale);
-
           child_rect.shrink(extra_border);
-
-          // update
-
           child->MRect = child_rect;
-
-//          child->MRect.x += MChildrenXOffset;
-//          child->MRect.y += MChildrenYOffset;
-
           MContentRect.combine(child_rect);
-
           if (ARecursive) {
             child->alignChildWidgets(ARecursive);
           }
-
         } //  visible
-
       } // for
-
-      //MIP_Print("%s: %.0f,%.0f, %.0f,%.0f\n",getWidgetName(),MContentRect.x,MContentRect.y,MContentRect.w,MContentRect.h);
-
     } // num > 0
-
     if (Flags.autoSize) {
       MRect.w = MContentRect.w;
       MRect.h = MContentRect.h;
     }
-
     MContentRect.w += (border.x + border.w);
     MContentRect.h += (border.y + border.h);
-
-    //MContentRect.w += (layout.innerBorder.w * layout.scale);
-    //MContentRect.h += (layout.innerBorder.h * layout.scale);
-
-    // autosize
-
-    //if (Layout.sizeModeX == MIP_WIDGET_SIZE_CONTENT) {
-    //  MRect.x = MContentRect.x;
-    //  MRect.w = MContentRect.w;
-    //}
-    //if (Layout.sizeModeY == MIP_WIDGET_SIZE_CONTENT) {
-    //  MRect.y = MContentRect.y;
-    //  MRect.h = MContentRect.h;
-    //}
 
   }
 

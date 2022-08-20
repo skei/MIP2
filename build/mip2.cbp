@@ -70,6 +70,25 @@
 					<Add option="-fPIE" />
 				</Linker>
 			</Target>
+			<Target title="exe sanitize">
+				<Option output="../bin/build_sanitize" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fno-pie" />
+					<Add option="-rdynamic" />
+					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-fsanitize=address" />
+					<Add option="-DMIP_EXE" />
+					<Add option="-DMIP_DEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-no-pie" />
+					<Add option="-fsanitize=address" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
@@ -369,47 +388,52 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/plugins/sa_botage.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/plugins/sa_botage/sa_botage_editor.h" />
-		<Unit filename="../source/plugins/sa_botage/sa_botage_params.h" />
-		<Unit filename="../source/plugins/sa_botage/sa_botage_process.h" />
-		<Unit filename="../source/plugins/sa_botage/sa_botage_widgets.h" />
-		<Unit filename="../source/plugins/sa_bulo.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/plugins/sa_bulo/sa_compciter.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_event_horizon.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_exciter.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_exciter2.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_hall_reverb.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_hrtf.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_large_room_reverb.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_limiter.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_saturation.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_small_room_reverb.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_sonic_maximizer.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_tilteq.h" />
-		<Unit filename="../source/plugins/sa_bulo/sa_transient_killer.h" />
-		<Unit filename="../source/plugins/sa_cred.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/plugins/sa_lad.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/plugins/sa_mini/sa_fibonacci.h" />
-		<Unit filename="../source/plugins/sa_mini/sa_grains.h" />
-		<Unit filename="../source/plugins/sa_mini/sa_pitch.h" />
-		<Unit filename="../source/plugins/sa_mini/sa_transpose.h" />
 		<Unit filename="../source/plugins/template.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/private/sa_botage.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/private/sa_botage/sa_botage_editor.h" />
+		<Unit filename="../source/private/sa_botage/sa_botage_params.h" />
+		<Unit filename="../source/private/sa_botage/sa_botage_process.h" />
+		<Unit filename="../source/private/sa_botage/sa_botage_widgets.h" />
+		<Unit filename="../source/private/sa_bulo.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/private/sa_bulo/sa_compciter.h" />
+		<Unit filename="../source/private/sa_bulo/sa_event_horizon.h" />
+		<Unit filename="../source/private/sa_bulo/sa_exciter.h" />
+		<Unit filename="../source/private/sa_bulo/sa_exciter2.h" />
+		<Unit filename="../source/private/sa_bulo/sa_hall_reverb.h" />
+		<Unit filename="../source/private/sa_bulo/sa_hrtf.h" />
+		<Unit filename="../source/private/sa_bulo/sa_large_room_reverb.h" />
+		<Unit filename="../source/private/sa_bulo/sa_limiter.h" />
+		<Unit filename="../source/private/sa_bulo/sa_saturation.h" />
+		<Unit filename="../source/private/sa_bulo/sa_small_room_reverb.h" />
+		<Unit filename="../source/private/sa_bulo/sa_sonic_maximizer.h" />
+		<Unit filename="../source/private/sa_bulo/sa_tilteq.h" />
+		<Unit filename="../source/private/sa_bulo/sa_transient_killer.h" />
+		<Unit filename="../source/private/sa_cred.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/private/sa_lad.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/private/sa_mini/sa_fibonacci.h" />
+		<Unit filename="../source/private/sa_mini/sa_grains.h" />
+		<Unit filename="../source/private/sa_mini/sa_pitch.h" />
+		<Unit filename="../source/private/sa_mini/sa_transpose.h" />
+		<Unit filename="../source/private/sa_nity.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/private/sa_nity/sa_nity_editor.h" />
 		<Unit filename="../tools/bin2h.c">
 			<Option compilerVar="CC" />
 			<Option compile="0" />

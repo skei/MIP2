@@ -128,8 +128,8 @@ public: // gui
 
     MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(1,1), "Gain", 0.0 );
     gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-    gain_knob->Layout.sizeModeX = MIP_WIDGET_SIZE_PARENT_RATIO;
-    gain_knob->Layout.sizeModeY = MIP_WIDGET_SIZE_PARENT_RATIO;
+    gain_knob->Layout.horizScale = MIP_WIDGET_SIZE_PARENT_RATIO;
+    gain_knob->Layout.vertScale = MIP_WIDGET_SIZE_PARENT_RATIO;
     gain_knob->Layout.aspectRatio = (4.0 / 6.0);
     background->appendChildWidget(gain_knob);
 

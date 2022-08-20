@@ -47,6 +47,9 @@ protected:
   //MIP_Widget**        MParameterToWidget  = nullptr;
   MIP_Widget*         MParameterToWidget[MIP_EDITOR_MAX_PARAMS] = {0};
 
+  double MInitialWidth = 0;
+  double MInitialHeight = 0;
+
 //------------------------------
 public:
 //------------------------------
@@ -62,6 +65,10 @@ public:
     //MParameterToWidget = (MIP_Widget**)malloc(size);
     //memset(MParameterToWidget,0,size);
     //MIP_PRINT;
+
+    MInitialWidth = AWidth;
+    MInitialHeight = AHeight;
+
   }
 
   //----------
@@ -183,12 +190,21 @@ public: // clap gui
     //MIP_Print("%i,%i -> true\n",width,height);
     MEditorWidth = width;
     MEditorHeight = height;
+
+    //double xscale = (double)width / MInitialWidth;
+    //double yscale = (double)height / MInitialHeight;
+    //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
+
     // hack.. the modual stuff should have been in the wndoow class..
     // but there were/are some issues getting resize events..
     if (MModalWidget) MModalWidget->on_widget_unmodal();
     //MIP_Window::on_window_resize(width,height);
     setWidgetSize(width,height);
+
     alignChildWidgets();
+
+    //scaleChildWidgets(xscale,true);
+
     setWindowSize(width,height);
     return true;
   }

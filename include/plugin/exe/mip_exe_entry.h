@@ -54,8 +54,15 @@ public:
 //------------------------------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    gui->set_size(plugin,AWidth,AHeight);
+
+    //double xscale = (double)AWidth / MInitialWidth;
+    //double yscale = (double)AHeight / MInitialHeight;
+    //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
+
     //MIP_ImplementedWindow::on_window_resize(AWidth,AHeight);
+
+    gui->set_size(plugin,AWidth,AHeight);
+
     //MIP_Window::on_window_resize(AWidth,AHeight);
   }
 
@@ -130,6 +137,10 @@ int main(int argc, char** argv) {
               clap_window.x11 = xcb_window;
               gui->set_parent(clap_plugin,&clap_window);
               gui->show(clap_plugin);
+
+              //redraw..
+              gui->set_size(clap_plugin,width,height);
+
               exe_window->eventLoop();
               gui->hide(clap_plugin);
               gui->destroy(clap_plugin);
