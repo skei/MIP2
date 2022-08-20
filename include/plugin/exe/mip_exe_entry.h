@@ -13,7 +13,7 @@
 #include "plugin/exe/mip_exe_host.h"
 #include "gui/mip_window.h"
 
-#ifdef MIP_EXE
+//#ifdef MIP_EXE
 
 //----------------------------------------------------------------------
 //
@@ -91,80 +91,112 @@ public:
   we already have a wrapper MIP_Plugin
 */
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv, char** env) {
+  MIP_PRINT;
   //MIP_REGISTRY.getNumDescriptors();
   uint32_t index = 0; //TODO: arg[1] select index
-  const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
-  if (descriptor) {
-    MIP_ExeHostImplementation* exe_host = new MIP_ExeHostImplementation();
-    if (exe_host) {
-      const clap_host_t* host = exe_host->getHost();
-      if (host) {
-        MIP_Plugin* plugin = MIP_CreatePlugin(index,descriptor,host);
-        const clap_plugin_t* clap_plugin = plugin->getPlugin();
-        if (plugin) {
-          plugin->init();
-          plugin->activate(44100,0,1024);
-          plugin->start_processing();
+  uint32_t num_descriptors = MIP_REGISTRY.getNumDescriptors();
+  if (num_descriptors > 0) {
+    MIP_Print("%i descriptors\n",num_descriptors);
 
-          // gui
+    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
+    if (descriptor) {
+      MIP_ExeHostImplementation* exe_host = new MIP_ExeHostImplementation();
+      if (exe_host) {
+        const clap_host_t* host = exe_host->getHost();
+        if (host) {
+          MIP_Plugin* plugin = MIP_CreatePlugin(index,descriptor,host);
+          const clap_plugin_t* clap_plugin = plugin->getPlugin();
+          if (plugin) {
+            plugin->init();
+            plugin->activate(44100,0,1024);
+            plugin->start_processing();
 
-          //plugin->MGui?
+            // gui
 
-          clap_plugin_gui_t* gui = (clap_plugin_gui_t*)plugin->get_extension(CLAP_EXT_GUI);
-          if (gui) {
+            //plugin->MGui?
 
-            if (gui->is_api_supported(clap_plugin,CLAP_WINDOW_API_X11,false)) {
-              gui->create(clap_plugin,CLAP_WINDOW_API_X11,false);
-              gui->set_scale(clap_plugin,1.0);
-              //bool can_resize = gui->can_resize(clap_plugin);
-              //if (can_resize) {
+            clap_plugin_gui_t* gui = (clap_plugin_gui_t*)plugin->get_extension(CLAP_EXT_GUI);
+            if (gui) {
 
-              // plugin->MEditorWidth/Height
-              uint32_t width, height;
-              gui->get_size(clap_plugin,&width,&height);
-              //}
-              //else {
-              //}
-              //gui->set_size(clap_plugin,width,height);
+              if (gui->is_api_supported(clap_plugin,CLAP_WINDOW_API_X11,false)) {
+                gui->create(clap_plugin,CLAP_WINDOW_API_X11,false);
+                gui->set_scale(clap_plugin,1.0);
+                //bool can_resize = gui->can_resize(clap_plugin);
+                //if (can_resize) {
 
-              MIP_ExeWindow* exe_window = new MIP_ExeWindow(width,height,clap_plugin,gui);
-              exe_window->openWindow();
+                // plugin->MEditorWidth/Height
+                uint32_t width, height;
+                gui->get_size(clap_plugin,&width,&height);
+                //}
+                //else {
+                //}
+                //gui->set_size(clap_plugin,width,height);
 
-              xcb_window_t xcb_window = exe_window->drawable_getXcbWindow();
-              clap_window_t clap_window;
-              clap_window.api = CLAP_WINDOW_API_X11;
-              clap_window.x11 = xcb_window;
-              gui->set_parent(clap_plugin,&clap_window);
-              gui->show(clap_plugin);
+                MIP_ExeWindow* exe_window = new MIP_ExeWindow(width,height,clap_plugin,gui);
+                exe_window->openWindow();
 
-              //redraw..
-              gui->set_size(clap_plugin,width,height);
+                xcb_window_t xcb_window = exe_window->drawable_getXcbWindow();
+                clap_window_t clap_window;
+                clap_window.api = CLAP_WINDOW_API_X11;
+                clap_window.x11 = xcb_window;
+                gui->set_parent(clap_plugin,&clap_window);
+                gui->show(clap_plugin);
 
-              exe_window->eventLoop();
-              gui->hide(clap_plugin);
-              gui->destroy(clap_plugin);
+                //redraw..
+                gui->set_size(clap_plugin,width,height);
 
-              exe_window->closeWindow();
-              delete exe_window;
+                exe_window->eventLoop();
+                gui->hide(clap_plugin);
+                gui->destroy(clap_plugin);
+
+                exe_window->closeWindow();
+                delete exe_window;
+              }
             }
+
+            //
+
+            plugin->stop_processing();
+            plugin->deactivate();
+            plugin->destroy();
+            delete plugin;
           }
-
-          //
-
-          plugin->stop_processing();
-          plugin->deactivate();
-          plugin->destroy();
-          delete plugin;
         }
+        delete exe_host;
       }
-      delete exe_host;
     }
-  }
+  } // num desc > 0
   return 0;
 }
 
-#endif // EXE
+
+
+
+
+
+
+
+
+
+
+extern "C" {
+
+  int main_result;
+  int my_test_global = 123;
+
+  int* main_trampoline(int argc, char** argv, char** env) {
+    printf("* main_trampoline()\n");
+    printf("  (my_test_global = %i)\n",my_test_global);
+    printf("  calling real main()\n");
+    main_result = main(argc,argv,env); // crashes
+    printf("  and we're back..\n");
+    return &main_result;
+  }
+
+}
+
+//#endif // EXE
 
 //----------------------------------------------------------------------
 #endif

@@ -38,14 +38,14 @@ public:
 //------------------------------
 
   MIP_Registry() {
-    //MIP_Print("\n");
+    MIP_Print("\n");
     if (MIP_Register) MIP_Register(this);
   }
 
   //----------
 
   ~MIP_Registry() {
-    //MIP_Print("\n");
+    MIP_Print("\n");
     if (MIP_Unregister) MIP_Unregister(this);
     #ifndef MIP_NO_AUTODELETE
       deleteFactories();
@@ -152,7 +152,7 @@ public: // descriptors
   //----------
 
   const clap_plugin_descriptor_t* getDescriptor(int32_t index) {
-    //MIP_Print("%i\n",index);
+    MIP_Print("%i\n",index);
     return MDescriptors[index];
   }
 

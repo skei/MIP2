@@ -582,11 +582,13 @@ MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* AD
 
 //----------------------------------------------------------------------
 //
-// shade entry point
+// .so entry point
 //
 //----------------------------------------------------------------------
 
 // -Wl,-e,entry_point
+
+//https://refspecs.linuxbase.org/LSB_3.1.0/LSB-generic/LSB-generic/baselib---libc-start-main-.html
 
 #ifdef MIP_PLUGIN
 
@@ -594,8 +596,29 @@ const char interp_section[] __attribute__((section(".interp"))) = "/lib64/ld-lin
 
 extern "C" {
 
+  extern int __libc_start_main(
+    int  *(main)(int, char**, char**),
+    int    argc,
+    char** ubp_av,
+    void (*init)(void),
+    void (*fini)(void),
+    void (*rtld_fini)(void),
+    void (*stack_end)
+  );
+
+  uint8_t my_stack[1000000];
+  void my_init() { printf("* my_init()\n"); }
+  void my_fini() { printf("* my_fini()\n"); }
+  void my_rtld_fini() { printf("* my_rtld_init()\n"); }
+
+  __attribute__((force_align_arg_pointer))
   void entry_point() {
-    printf("Hah! CLAP as standalone executable!\n");
+    printf("* entry_point()\n");
+    printf("  calling __libc_start_main\n");
+    //__libc_start_main(my_main,0,nullptr,my_init,my_fini,my_rtld_fini,&my_stack[900000]);
+    __libc_start_main(my_main,0,nullptr,nullptr,nullptr,nullptr,&my_stack[500000]);
+    printf("  did it work?\n");
+    printf("  calling _exit\n");
     _exit(EXIT_SUCCESS);
   }
 
