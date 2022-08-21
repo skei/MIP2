@@ -237,7 +237,9 @@ public: // window
     //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
     setupPaintContext(AXpos,AYpos,AWidth,AHeight);
     MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
-    painter->beginPaint(MRect.w,MRect.h);
+
+    painter->beginPaint(0,0,MRect.w,MRect.h);
+
     //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
     //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
     painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));

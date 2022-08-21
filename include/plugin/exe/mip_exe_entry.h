@@ -182,8 +182,7 @@ int main(int argc, char** argv, char** env) {
 
 
 
-
-// test
+#ifdef MIP_EXECUTABLE_SHARED_LIBRARY
 
 
 
@@ -216,6 +215,9 @@ extern "C" {
   }
 
 }
+
+#endif // TEST_EXECUTABLE_SHARED_LIBRARY
+
 
 //#endif // EXE
 

@@ -94,8 +94,8 @@ public:
 public:
 //------------------------------
 
-  void beginPaint(int32_t AWidth, int32_t AHeight) override {
-    MIP_GlxPainter::beginPaint(AWidth,AHeight);
+  void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    MIP_GlxPainter::beginPaint(AXpos,AYpos,AWidth,AHeight);
     nvgBeginFrame(MContext,AWidth,AHeight,1.0);
   }
 

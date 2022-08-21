@@ -49,7 +49,7 @@ public:
 public:
 //------------------------------
 
-  virtual void beginPaint(int32_t AWidth, int32_t AHeight) {}
+  virtual void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
   virtual void endPaint() {}
 
   virtual void setClip(MIP_DRect ARect) {}

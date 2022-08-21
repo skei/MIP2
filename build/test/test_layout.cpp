@@ -7,7 +7,10 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_NANOVG
 
+//#define MIP_EXECUTABLE_SHARED_LIBRARY
+
 #define TEXTBOX1_BUFFER_SIZE  (256*256)
+
 
 //----------------------------------------------------------------------
 
@@ -586,13 +589,17 @@ MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* AD
 //
 //----------------------------------------------------------------------
 
-// -Wl,-e,entry_point
-
-// --enable-initfini-array ??
-
-//https://refspecs.linuxbase.org/LSB_3.1.0/LSB-generic/LSB-generic/baselib---libc-start-main-.html
 
 #ifdef MIP_PLUGIN
+#ifdef MIP_EXECUTABLE_SHARED_LIBRARY
+
+  #warning add this to both compiler & linker settings: -Wl,-e,entry_point
+
+/*
+  see also:
+  https://refspecs.linuxbase.org/LSB_3.1.0/LSB-generic/LSB-generic/baselib---libc-start-main-.html
+  --enable-initfini-array ??
+*/
 
 const char interp_section[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
 
@@ -724,5 +731,6 @@ extern "C" {
 
 }
 
+#endif // MIP_EXECUTABLE_SHARED_LIBRARY
 #endif // MIP_PLUGIN
 
