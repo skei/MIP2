@@ -95,13 +95,21 @@ int main(int argc, char** argv, char** env) {
   MIP_PRINT;
   //MIP_REGISTRY.getNumDescriptors();
   uint32_t index = 0; //TODO: arg[1] select index
-  uint32_t num_descriptors = MIP_REGISTRY.getNumDescriptors();
-  MIP_Print("> num_descriptors: %i\n",num_descriptors);
+
+  //uint32_t num_descriptors = MIP_REGISTRY.getNumDescriptors();
+  //MIP_Print("> num_descriptors: %i\n",num_descriptors);
+  uint32_t num_descriptors = 1;
+
   if (num_descriptors > 0) {
 
-    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
+    //const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
+
+    const clap_plugin_descriptor_t* descriptor = &template_descriptor;
+    MIP_Print("descriptor: %p\n",descriptor);
+
     if (descriptor) {
       MIP_ExeHostImplementation* exe_host = new MIP_ExeHostImplementation();
+      MIP_Print("exe_host: %p\n",exe_host);
       if (exe_host) {
         const clap_host_t* host = exe_host->getHost();
         if (host) {

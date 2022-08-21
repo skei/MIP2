@@ -588,14 +588,21 @@ MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* AD
 
 // -Wl,-e,entry_point
 
+// --enable-initfini-array ??
+
 //https://refspecs.linuxbase.org/LSB_3.1.0/LSB-generic/LSB-generic/baselib---libc-start-main-.html
 
 #ifdef MIP_PLUGIN
 
 const char interp_section[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
 
+#include <sys/types.h>
 
 extern "C" {
+
+  //------------------------------
+  // __do_global_ctors
+  //------------------------------
 
   // based on this:
   // https://github.com/gcc-mirror/gcc/blob/master/libgcc/config/arc/initfini.c
@@ -610,11 +617,14 @@ extern "C" {
   func_ptr __CTOR_END__ [1] __attribute__ ((section(".ctors"))) = { (func_ptr)0 };
   func_ptr __DTOR_END__ [1] __attribute__ ((section(".dtors"))) = { (func_ptr)0 };
 
+  //----------
+
   void __do_global_ctors() {
     printf("* do_global_ctors()\n");
+    int i=0;
     func_ptr *p;
     for (p = __CTOR_END__ - 1; *p != (func_ptr) -1; p--) {
-      printf("ctor\n");
+      printf("ctor #%i\n",i++);
       (*p)();
     }
   }
@@ -624,6 +634,40 @@ extern "C" {
     func_ptr *p;
     for (p = __DTOR_LIST__ + 1; *p; p++) (*p)();
   }
+
+  //------------------------------
+  // __libc_init_array
+  //------------------------------
+
+  // https://stackoverflow.com/questions/13734745/why-do-i-have-an-undefined-reference-to-init-in-libc-init-array
+
+  // undefined symbol: __libc_init_array
+  //extern void __libc_init_array(void);
+
+  // These magic symbols are provided by the linker.
+  extern void (*__preinit_array_start[]) (void) __attribute__((weak));
+  extern void (*__preinit_array_end[])   (void) __attribute__((weak));
+  extern void (*__init_array_start[])    (void) __attribute__((weak));
+  extern void (*__init_array_end[])      (void) __attribute__((weak));
+  extern void _init (void);
+
+  //----------
+
+  void __libc_init_array(void) {
+    printf("* __libc_init_array()\n");
+    size_t count;
+    size_t i;
+    count = __preinit_array_end - __preinit_array_start;
+    printf("   count: %i\n",(int)count);
+    for (i = 0; i < count; i++) __preinit_array_start[i]();
+    _init();
+    count = __init_array_end - __init_array_start;
+    for (i = 0; i < count; i++) __init_array_start[i]();
+  }
+
+  //------------------------------
+  // __libc_start_main
+  //------------------------------
 
   extern int __libc_start_main(
     int  *(main)(int, char**, char**),
@@ -635,17 +679,19 @@ extern "C" {
     void (*stack_end)
   );
 
+  //------------------------------
+  //
+  //------------------------------
+
   uint8_t my_stack[1000000];
 
   void my_init() {
     printf("* my_init()\n");
-    //__do_global_ctors_aux();
     __do_global_ctors();
   }
 
   void my_fini() {
     printf("* my_fini()\n");
-    //__do_global_dtors_aux();
     __do_global_dtors();
   }
 
@@ -653,21 +699,30 @@ extern "C" {
     printf("* my_rtld_fini()\n");
   }
 
+  //------------------------------
+  // entry_point
+  //------------------------------
+
   __attribute__((force_align_arg_pointer))
   void entry_point() {
+
+    //int bssSize = (int)&__bss_end__ - (int)&__bss_start__;
+    //memset(&__bss_start__, 0, bssSize);
+
     int argc = 1;
-    const char* argv[] = {
-      "/DISKS/sda2/code/git/MIP2/bin/build_debug.clap"
-    };
+    const char* argv[] = { "/DISKS/sda2/code/git/MIP2/bin/build_debug.clap" };
     printf("* entry_point()\n");
-    printf("  calling __libc_start_main\n");
+    printf("> calling __libc_init_array\n");
+    __libc_init_array();
+    printf("> calling __libc_start_main\n");
     __libc_start_main(main_trampoline,argc,(char**)argv,my_init,my_fini,my_rtld_fini,&my_stack[900000]);
     //__libc_start_main(main_trampoline,0,nullptr,nullptr,nullptr,nullptr,&my_stack[500000]);
-    printf("  did it work?\n");
-    printf("  calling _exit\n");
+    printf("< back from __libc_start_main\n");
+    printf("> calling _exit\n");
     _exit(EXIT_SUCCESS);
   }
 
 }
 
-#endif
+#endif // MIP_PLUGIN
+
