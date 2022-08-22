@@ -189,28 +189,30 @@ int main(int argc, char** argv, char** env) {
 
 extern "C" {
 
+  int my_test_global = 123;
+
   int test_func() {
     printf("* test_func()\n");
     return 42;
   }
 
-  int main_result;
-  int my_test_global = 123;
   int test_func_result = test_func();
 
   __attribute__((constructor))
   void ctor_test_func() {
-    printf("* ctor_test_func()\n");
+    MIP_Print("* ctor_test_func()\n");
     test_func_result = 41;
   }
 
+  int main_result;
+
   int* main_trampoline(int argc, char** argv, char** env) {
-    printf("* main_trampoline()\n");
-    printf("  (my_test_global = %i)\n",my_test_global);
-    printf("  (test_func_result = %i)\n",test_func_result);
-    printf("  calling real main()\n");
+    MIP_Print("* main_trampoline()\n");
+    MIP_Print("  (my_test_global = %i)\n",my_test_global);
+    MIP_Print("  (test_func_result = %i)\n",test_func_result);
+    MIP_Print("  calling real main()\n");
     main_result = main(argc,argv,env); // crashes
-    printf("  and we're back..\n");
+    MIP_Print("  and we're back..\n");
     return &main_result;
   }
 

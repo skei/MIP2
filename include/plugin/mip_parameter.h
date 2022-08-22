@@ -165,10 +165,10 @@ public:
 
   const char* valueToText(double AValue, char* AText, uint32_t ASize) {
     if (hasFlag(CLAP_PARAM_IS_STEPPED)) {
-      sprintf(AText,"%i",(int)AValue);
+      snprintf(AText,ASize,"%i",(int)AValue);
     }
     else {
-      sprintf(AText,"%.2f",AValue);
+      snprintf(AText,ASize,"%.2f",AValue);
     }
     return AText;
   }
@@ -216,10 +216,10 @@ public:
 
   const char* valueToText(double AValue, char* AText, uint32_t ASize) {
     if (hasFlag(CLAP_PARAM_IS_STEPPED)) {
-      sprintf(AText,"%i",(int)AValue);
+      snprintf(AText,ASize,"%i",(int)AValue);
     }
     else {
-      sprintf(AText,"%.2f",AValue);
+      snprintf(AText,ASize,"%.2f",AValue);
     }
     return AText;
   }

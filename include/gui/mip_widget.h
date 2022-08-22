@@ -405,6 +405,9 @@ public: // hierarchy
 
   //----------
 
+  virtual void prepareForAlignment() {
+  }
+
   virtual void alignChildWidgets(bool ARecursive=true) {
 
     // todo: take sizemode into account.. (ratios)
@@ -447,7 +450,9 @@ public: // hierarchy
       for (uint32_t i=0; i<MChildren.size(); i++) {
         MIP_Widget* child = MChildren[i];
         if (child->Flags.visible) {
-
+// !!!
+          child->prepareForAlignment();
+// !!!
           MIP_DRect child_rect = child->Layout.baseRect;
           uint32_t  alignment = child->Layout.alignment;
 

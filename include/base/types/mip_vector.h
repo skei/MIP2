@@ -47,15 +47,17 @@ struct MIP_Vector2 {
   }
 
   MIP_Vector2 cross(MIP_Vector2 v1) {
+    //TODO
     return MIP_Vector2(
-      0,
-      0
+      v1.x,
+      v1.y
     );
   }
 
   void cross(MIP_Vector2 v0, MIP_Vector2 v1) {
-    x = 0;
-    y = 0;
+    //TODO
+    x = v0.x + v1.x;
+    y = v0.y + v1.y;
   }
 
   float length(void) {
@@ -99,9 +101,10 @@ float MIP_Vector2_dot(MIP_Vector2 v0, MIP_Vector2 v1) {
 }
 
 MIP_Vector2 MIP_Vector2_cross(MIP_Vector2 v0, MIP_Vector2 v1) {
+  //TODO
   return MIP_Vector2(
-    0,
-    0
+    v0.x + v1.x,
+    v0.y + v1.y
   );
 } // USUALLY FAIL
 

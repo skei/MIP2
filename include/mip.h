@@ -2,6 +2,8 @@
 #define mip_included
 //----------------------------------------------------------------------
 
+//------------------------------
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,7 +17,25 @@
 #include <dirent.h>
 #include <dlfcn.h>
 
-//----------
+//------------------------------
+
+/*
+  we still have LOTS of unimplemented stub functions, so -Wextra prints
+  gazillions of 'unused parameter' warnings..
+  TODO: remove this when we have implemented everything
+  OR: add __MIP_UNUSED everywhere...
+*/
+
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic error "-Wuninitialized"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+//#pragma GCC diagnostic push
+
+// stb_image
+#pragma GCC diagnostic ignored "-Wshift-negative-value"
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+
+//------------------------------
 
 // be careful, ordering might be important..
 

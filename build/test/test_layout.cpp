@@ -1,6 +1,6 @@
 
 #ifndef MIP_EXE
-  //#define MIP_DEBUG_PRINT_SOCKET
+  #define MIP_DEBUG_PRINT_SOCKET
   // nc -U -l -k /tmp/mip.socket
 #endif // MIP_EXE
 
@@ -9,8 +9,7 @@
 
 #define TEXTBOX1_BUFFER_SIZE  (256*256)
 
-#define MIP_EXECUTABLE_SHARED_LIBRARY
-
+//#define MIP_EXECUTABLE_SHARED_LIBRARY
 
 //----------------------------------------------------------------------
 
@@ -657,30 +656,30 @@ extern "C" {
   //extern void __do_global_ctors(void);
   //extern void __do_global_dtors(void);
 
-  typedef void (*func_ptr)(void);
-
-  func_ptr __CTOR_LIST__[1] __attribute__ ((section(".ctors"))) = { (func_ptr)(-1) };
-  func_ptr __DTOR_LIST__[1] __attribute__ ((section(".dtors"))) = { (func_ptr)(-1) };
-  func_ptr __CTOR_END__ [1] __attribute__ ((section(".ctors"))) = { (func_ptr)0 };
-  func_ptr __DTOR_END__ [1] __attribute__ ((section(".dtors"))) = { (func_ptr)0 };
-
-  //----------
-
-  void __do_global_ctors() {
-    printf("* do_global_ctors()\n");
-    int i=0;
-    func_ptr *p;
-    for (p = __CTOR_END__ - 1; *p != (func_ptr) -1; p--) {
-      printf("ctor #%i\n",i++);
-      (*p)();
-    }
-  }
-
-  void __do_global_dtors() {
-    printf("* do_global_dtors()\n");
-    func_ptr *p;
-    for (p = __DTOR_LIST__ + 1; *p; p++) (*p)();
-  }
+//  typedef void (*func_ptr)(void);
+//
+//  //----------
+//
+//  func_ptr __CTOR_LIST__[1] __attribute__ ((section(".ctors"))) = { (func_ptr)(-1) };
+//  func_ptr __DTOR_LIST__[1] __attribute__ ((section(".dtors"))) = { (func_ptr)(-1) };
+//  func_ptr __CTOR_END__ [1] __attribute__ ((section(".ctors"))) = { (func_ptr)0 };
+//  func_ptr __DTOR_END__ [1] __attribute__ ((section(".dtors"))) = { (func_ptr)0 };
+//
+//  void __do_global_ctors() {
+//    MIP_Print("* do_global_ctors()\n");
+//    int i=0;
+//    func_ptr *p;
+//    for (p = __CTOR_END__ - 1; *p != (func_ptr) -1; p--) {
+//      MIP_Print("ctor #%i\n",i++);
+//      (*p)();
+//    }
+//  }
+//
+//  void __do_global_dtors() {
+//    MIP_Print("* do_global_dtors()\n");
+//    func_ptr *p;
+//    for (p = __DTOR_LIST__ + 1; *p; p++) (*p)();
+//  }
 
   //------------------------------
   // __libc_init_array
@@ -695,33 +694,55 @@ extern "C" {
 
   // https://stackoverflow.com/questions/13734745/why-do-i-have-an-undefined-reference-to-init-in-libc-init-array
 
-  // undefined symbol: __libc_init_array
-  //extern void __libc_init_array(void);
-
-  // These magic symbols are provided by the linker.
+  extern void _init (void);
   extern void (*__preinit_array_start[]) (void) __attribute__((weak));
   extern void (*__preinit_array_end[])   (void) __attribute__((weak));
   extern void (*__init_array_start[])    (void) __attribute__((weak));
   extern void (*__init_array_end[])      (void) __attribute__((weak));
-  extern void _init (void);
-
-  //----------
 
   void __libc_init_array(void) {
-    printf("* __libc_init_array()\n");
-    printf("  (__preinit_array_start: %p)\n",__preinit_array_start);
-    printf("  (__preinit_array_end: %p)\n",__preinit_array_end);
-    printf("  (__init_array_start: %p)\n",__init_array_start);
-    printf("  (__init_array_end: %p)\n",__init_array_end);
+    MIP_Print("* __libc_init_array()\n");
+    MIP_Print("  (__preinit_array_start: %p)\n",__preinit_array_start);
+    MIP_Print("  (__preinit_array_end: %p)\n",__preinit_array_end);
+    MIP_Print("  (__init_array_start: %p)\n",__init_array_start);
+    MIP_Print("  (__init_array_end: %p)\n",__init_array_end);
     size_t count;
     size_t i;
     count = __preinit_array_end - __preinit_array_start;
-    printf("   count: %i\n",(int)count);
+    MIP_Print("   count: %i\n",(int)count);
     for (i = 0; i < count; i++) __preinit_array_start[i]();
     _init();
     count = __init_array_end - __init_array_start;
     for (i = 0; i < count; i++) __init_array_start[i]();
   }
+
+  //------------------------------
+  // __libc_csu_init
+  //------------------------------
+
+//  extern void _init (void);
+//  extern void (*__preinit_array_start[]) (int argc, char **argv, char **envp) __attribute__((weak));
+//  extern void (*__preinit_array_end[])   (int argc, char **argv, char **envp) __attribute__((weak));
+//  extern void (*__init_array_start[])    (int argc, char **argv, char **envp) __attribute__((weak));
+//  extern void (*__init_array_end[])      (int argc, char **argv, char **envp) __attribute__((weak));
+//
+//  void __libc_csu_init(int argc, char **argv, char **envp) {
+//    MIP_Print("* __libc_init_array()\n");
+//    MIP_Print("  (__preinit_array_start: %p)\n",__preinit_array_start);
+//    MIP_Print("  (__preinit_array_end: %p)\n",__preinit_array_end);
+//    MIP_Print("  (__init_array_start: %p)\n",__init_array_start);
+//    MIP_Print("  (__init_array_end: %p)\n",__init_array_end);
+//    size_t count;
+//    size_t i;
+//    count = __preinit_array_end - __preinit_array_start;
+//    MIP_Print("   preinit count: %i\n",(int)count);
+//    for (i=0; i<count; i++) (*__preinit_array_start[i])(argc, argv, envp);
+//    MIP_Print("  calling _init\n");
+//    _init ();
+//    count = __init_array_end - __init_array_start;
+//    MIP_Print("   init count: %i\n",(int)count);
+//    for (i=0; i<count; i++) (*__init_array_start [i]) (argc, argv, envp);
+//  }
 
   //------------------------------
   // __libc_start_main
@@ -744,17 +765,18 @@ extern "C" {
   uint8_t my_stack[1000000];
 
   void my_init() {
-    printf("* my_init()\n");
-    __do_global_ctors();
+    MIP_Print("* my_init()\n");
+    //__do_global_ctors();
+    __libc_init_array();
   }
 
   void my_fini() {
-    printf("* my_fini()\n");
-    __do_global_dtors();
+    MIP_Print("* my_fini()\n");
+    //__do_global_dtors();
   }
 
   void my_rtld_fini() {
-    printf("* my_rtld_fini()\n");
+    MIP_Print("* my_rtld_fini()\n");
   }
 
   //------------------------------
@@ -763,6 +785,7 @@ extern "C" {
 
   __attribute__((force_align_arg_pointer))
   void entry_point() {
+    MIP_Print("* entry_point()\n");
 
     //int bssSize = (int)&__bss_end__ - (int)&__bss_start__;
     //memset(&__bss_start__, 0, bssSize);
@@ -772,18 +795,50 @@ extern "C" {
 
     int argc;
     char **argv;
+
     asm("mov 8(%%rbp), %0" : "=&r" (argc));
     asm("mov %%rbp, %0\n"
         "add $16, %0"      : "=&r" (argv));
 
-    printf("* entry_point()\n");
-    printf("> calling __libc_init_array\n");
-    __libc_init_array();
-    printf("> calling __libc_start_main\n");
-    __libc_start_main(main_trampoline,argc,(char**)argv,my_init,my_fini,my_rtld_fini,&my_stack[500000]);
+//    #define START "_start"
+//
+//    int main();
+//    weak void _init();
+//    weak void _fini();
+//    int __libc_start_main(int (*)(), int, char **, void (*)(), void(*)(), void(*)());
+//
+//    void _start_c(long *p) {
+//      int argc = p[0];
+//      char **argv = (void *)(p+1);
+//      __libc_start_main(main, argc, argv, _init, _fini, 0);
+//    }
+//
+//    __asm__(
+//      ".text \n"
+//      ".global " START " \n"
+//      START ": \n"
+//      "	xor %rbp,%rbp \n"
+//      "	mov %rsp,%rdi \n"
+//      ".weak _DYNAMIC \n"
+//      ".hidden _DYNAMIC \n"
+//      "	lea _DYNAMIC(%rip),%rsi \n"
+//      "	andq $-16,%rsp \n"
+//      "	call " START "_c \n"
+//    );
+
+    MIP_Print("argc %i argv %p\n",argc,*argv);
+
+    //MIP_Print("> calling __libc_init_array\n");
+    //__libc_init_array();
+    //__libc_csu_init(argc,(char**)argv,nullptr);
+    //__do_global_ctors();
+    //_init();
+
+    MIP_Print("> calling __libc_start_main\n");
+    __libc_start_main(main_trampoline,argc,(char**)argv,my_init,my_fini,my_rtld_fini,0);//&my_stack[500000]);
     //__libc_start_main(main_trampoline,0,nullptr,nullptr,nullptr,nullptr,&my_stack[500000]);
-    printf("< back from __libc_start_main\n");
-    printf("> calling _exit\n");
+    MIP_Print("< back from __libc_start_main\n");
+    MIP_Print("> calling _exit\n");
     _exit(EXIT_SUCCESS);
   }
 

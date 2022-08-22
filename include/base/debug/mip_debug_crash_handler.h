@@ -71,7 +71,8 @@
   //----------
 
   void MIP_InitCrashHandler(int sig) {
-    signal(SIGSEGV,mip_crash_handler_callback);
+    //signal(SIGSEGV,mip_crash_handler_callback);
+    signal(sig,mip_crash_handler_callback);
   }
 
   bool MIP_initCrashHandlers() {

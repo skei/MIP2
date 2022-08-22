@@ -81,9 +81,9 @@ public:
     return *this;
   }
 
-  MIP_Color& operator += (uint32_t color) {
-    return *this;
-  }
+  //MIP_Color& operator += (uint32_t color) {
+  //  return *this;
+  //}
 
   //bool operator == (const char* str) {
   //  return (strcmp(MBuffer,str) == 0) ? true : false;
