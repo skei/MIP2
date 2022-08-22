@@ -7,9 +7,9 @@
 #define MIP_GUI_XCB
 #define MIP_PAINTER_NANOVG
 
-//#define MIP_EXECUTABLE_SHARED_LIBRARY
-
 #define TEXTBOX1_BUFFER_SIZE  (256*256)
+
+#define MIP_EXECUTABLE_SHARED_LIBRARY
 
 
 //----------------------------------------------------------------------
@@ -589,16 +589,56 @@ MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* AD
 //
 //----------------------------------------------------------------------
 
+/*
+  https://stackoverflow.com/questions/15265295/understanding-the-libc-init-array
+
+  These symbols are related to the C / C++ constructor and destructor startup
+  and tear down code that is called before / after main(). Sections named
+  .init, .ctors, .preinit_array, and .init_array are to do with initialization
+  of C/C++ objects, and sections .fini, .fini_array, and .dtors are for tear
+  down. The start and end symbols define the beginning and end of code sections
+  related to such operations and might be referenced from other parts of the
+  runtime support code.
+
+  The .preinit_array and .init_array sections contain arrays of pointers to
+  functions that will be called on initialization. The .fini_array is an array
+  of functions that will be called on destruction. Presumably the start and end
+  labels are used to walk these lists.
+
+  A good example of code that uses these symbols is to be found here
+  http://static.grumpycoder.net/pixel/uC-sdk-doc/initfini_8c_source.html
+  for initfini.c. You can see that on startup, __libc_init_array() is called
+  and this first calls all the function pointers in section .preinit_array by
+  referring to the start and end labels. Then it calls the _init() function in
+  the .init section. Lastly it calls all the function pointers in section
+  .init_array. After main() is complete the teardown call to
+  __libc_fini_array() causes all the functions in .fini_array to be called,
+  before finally calling _fini().
+
+  Note that there seems to be a cut-and-paste bug in this code when it
+  calculates the count of functions to call at teardown. Presumably they were
+  dealing with a real time micro controller OS and never encountered this
+  section.
+*/
+
 
 #ifdef MIP_PLUGIN
 #ifdef MIP_EXECUTABLE_SHARED_LIBRARY
 
-  #warning add this to both compiler & linker settings: -Wl,-e,entry_point
+  //#warning add this to both compiler & linker settings: -Wl,-e,entry_point
 
 /*
   see also:
   https://refspecs.linuxbase.org/LSB_3.1.0/LSB-generic/LSB-generic/baselib---libc-start-main-.html
   --enable-initfini-array ??
+*/
+
+/*
+  #ifdef SIXTY_FOUR_BIT
+    const char my_interp[] __attribute__((section(".interp"))) = "/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2";
+  #else
+    const char my_interp[] __attribute__((section(".interp"))) = "/lib/ld-linux.so.2";
+  #endif
 */
 
 const char interp_section[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
@@ -646,6 +686,13 @@ extern "C" {
   // __libc_init_array
   //------------------------------
 
+  /*
+    According to this comment from Nominal Animal here:
+    stackoverflow.com/questions/32700494/executing-init-and-fini,
+    using the attribute constructor would add the function in the .init_array,
+    and it depends of the ABI; if you're on x86, it should work.
+  */
+
   // https://stackoverflow.com/questions/13734745/why-do-i-have-an-undefined-reference-to-init-in-libc-init-array
 
   // undefined symbol: __libc_init_array
@@ -662,6 +709,10 @@ extern "C" {
 
   void __libc_init_array(void) {
     printf("* __libc_init_array()\n");
+    printf("  (__preinit_array_start: %p)\n",__preinit_array_start);
+    printf("  (__preinit_array_end: %p)\n",__preinit_array_end);
+    printf("  (__init_array_start: %p)\n",__init_array_start);
+    printf("  (__init_array_end: %p)\n",__init_array_end);
     size_t count;
     size_t i;
     count = __preinit_array_end - __preinit_array_start;
@@ -716,13 +767,20 @@ extern "C" {
     //int bssSize = (int)&__bss_end__ - (int)&__bss_start__;
     //memset(&__bss_start__, 0, bssSize);
 
-    int argc = 1;
-    const char* argv[] = { "/DISKS/sda2/code/git/MIP2/bin/build_debug.clap" };
+    //int argc = 1;
+    //const char* argv[] = { "/DISKS/sda2/code/git/MIP2/bin/build_debug.clap" };
+
+    int argc;
+    char **argv;
+    asm("mov 8(%%rbp), %0" : "=&r" (argc));
+    asm("mov %%rbp, %0\n"
+        "add $16, %0"      : "=&r" (argv));
+
     printf("* entry_point()\n");
     printf("> calling __libc_init_array\n");
     __libc_init_array();
     printf("> calling __libc_start_main\n");
-    __libc_start_main(main_trampoline,argc,(char**)argv,my_init,my_fini,my_rtld_fini,&my_stack[900000]);
+    __libc_start_main(main_trampoline,argc,(char**)argv,my_init,my_fini,my_rtld_fini,&my_stack[500000]);
     //__libc_start_main(main_trampoline,0,nullptr,nullptr,nullptr,nullptr,&my_stack[500000]);
     printf("< back from __libc_start_main\n");
     printf("> calling _exit\n");
