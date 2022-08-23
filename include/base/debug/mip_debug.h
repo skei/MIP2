@@ -78,6 +78,7 @@ public:
 //------------------------------
 
   MIP_GlobalDebug() {
+    //printf("MIP_GlobalDebug() (printf)\n");
     MIP_PRINT;
     #ifdef MIP_DEBUG_PRINT_TIME
       _mip_debug_time_start();

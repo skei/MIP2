@@ -9,7 +9,8 @@
 
 #define TEXTBOX1_BUFFER_SIZE  (256*256)
 
-//#define MIP_EXECUTABLE_SHARED_LIBRARY
+#define MIP_EXECUTABLE_SHARED_LIBRARY
+//-Wl,-e,entry_point
 
 //----------------------------------------------------------------------
 
@@ -845,5 +846,6 @@ extern "C" {
 }
 
 #endif // MIP_EXECUTABLE_SHARED_LIBRARY
+
 #endif // MIP_PLUGIN
 
