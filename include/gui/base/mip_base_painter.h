@@ -19,6 +19,9 @@
 
 struct MIP_PaintSource {
   union {
+    #ifdef MIP_PAINTER_CAIRO
+    #endif
+    // etc
     #ifdef MIP_PAINTER_NANOVG
     NVGpaint nvg;
     #endif
@@ -186,9 +189,10 @@ public:
   virtual void textBox(float x, float y, float breakRowWidth, const char* string, const char* end) {}
   virtual float textBounds(float x, float y, const char* string, const char* end, float* bounds) { return 0.0; }
   virtual void textBoxBounds(float x, float y, float breakRowWidth, const char* string, const char* end, float* bounds) {}
-  virtual int textGlyphPositions(float x, float y, const char* string, const char* end, NVGglyphPosition* positions, int maxPositions) { return 0; }
+  //virtual int textGlyphPositions(float x, float y, const char* string, const char* end, NVGglyphPosition* positions, int maxPositions) { return 0; }
+  virtual int textGlyphPositions(float x, float y, const char* string, const char* end, /*NVGglyphPosition*/void* positions, int maxPositions) { return 0; }
   virtual void textMetrics(float* ascender, float* descender, float* lineh) {}
-  virtual int textBreakLines(const char* string, const char* end, float breakRowWidth, NVGtextRow* rows, int maxRows) { return 0; }
+  virtual int textBreakLines(const char* string, const char* end, float breakRowWidth, /*NVGtextRow*/void* rows, int maxRows) { return 0; }
 
 //----------
 

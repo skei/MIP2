@@ -4,13 +4,15 @@
   // nc -U -l -k /tmp/mip.socket
 #endif // MIP_EXE
 
-#define MIP_GUI_XCB
-#define MIP_PAINTER_NANOVG
+//  #define MIP_GUI_XCB
+//  #define MIP_PAINTER_NANOVG
 
-#define TEXTBOX1_BUFFER_SIZE  (256*256)
+  #define MIP_GUI_WIN32
+  #define MIP_PAINTER_GDI
 
 //----------------------------------------------------------------------
 
+#include "mip.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/widgets/mip_widgets.h"
@@ -19,6 +21,8 @@
 //-Wl,-e,entry_point
 
 //#include "plugin/exe/mip_exe.h"
+
+#define TEXTBOX1_BUFFER_SIZE  (256*256)
 
 //----------------------------------------------------------------------
 //
@@ -576,12 +580,11 @@ public: // gui
 //
 //----------------------------------------------------------------------
 
-
 #include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-#include "plugin/vst2/mip_vst2_entry.h"
-#include "plugin/vst3/mip_vst3_entry.h"
+//#include "plugin/vst2/mip_vst2_entry.h"
+//#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 

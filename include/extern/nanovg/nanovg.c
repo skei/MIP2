@@ -27,8 +27,15 @@
 
 #ifndef NVG_NO_STB
   #ifndef STBI_INCLUDE_STB_IMAGE_H
+
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wmisleading-indentation"
+
     #define STB_IMAGE_IMPLEMENTATION
     #include "extern/stb/stb_image.h"
+
+    #pragma GCC diagnostic pop
+
   #endif
 #endif
 

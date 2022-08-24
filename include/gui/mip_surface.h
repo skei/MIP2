@@ -10,6 +10,11 @@
 //
 //----------------------------------------------------------------------
 
+#ifdef MIP_GUI_WIN32
+  #include "gui/gdi/mip_gdi_surface.h"
+  typedef MIP_GdiSurface MIP_BaseSurface;
+#endif
+
 #ifdef MIP_GUI_XCB
   #include "gui/xcb/mip_xcb_surface.h"
   typedef MIP_XcbSurface MIP_BaseSurface;

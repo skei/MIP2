@@ -8,7 +8,13 @@
 
 
 #include "mip.h"
-#include "gui/glx/mip_glx_painter.h"
+
+#ifdef MIP_LINUX
+  #include "gui/glx/mip_glx_painter.h"
+#else
+  #include "gui/wgl/mip_wgl_painter.h"
+#endif
+
 #include "gui/nanovg/mip_nanovg.h"
 #include "gui/nanovg/mip_nanovg_utils.h"
 
@@ -27,7 +33,10 @@
 //----------------------------------------------------------------------
 
 class MIP_NanoVGPainter
+#ifdef MIP_LINUX
 : public MIP_GlxPainter {
+#else
+: public MIP_WglPainter {
 
 //------------------------------
 private:
@@ -541,16 +550,16 @@ public:
     nvgTextBoxBounds(MContext,x,y,breakRowWidth,string,end,bounds);
   }
 
-  int textGlyphPositions(float x, float y, const char* string, const char* end, NVGglyphPosition* positions, int maxPositions) override {
-    return nvgTextGlyphPositions(MContext,x,y,string,end,positions,maxPositions);
+  int textGlyphPositions(float x, float y, const char* string, const char* end, /*NVGglyphPosition*/void* positions, int maxPositions) override {
+    return nvgTextGlyphPositions(MContext,x,y,string,end,(NVGglyphPosition*)positions,maxPositions);
   }
 
   void textMetrics(float* ascender, float* descender, float* lineh) override {
     nvgTextMetrics(MContext,ascender,descender,lineh);
   }
 
-  int textBreakLines(const char* string, const char* end, float breakRowWidth, NVGtextRow* rows, int maxRows) override {
-    return nvgTextBreakLines(MContext,string,end,breakRowWidth,rows,maxRows);
+  int textBreakLines(const char* string, const char* end, float breakRowWidth, /*NVGtextRow*/void* rows, int maxRows) override {
+    return nvgTextBreakLines(MContext,string,end,breakRowWidth,(NVGtextRow*)rows,maxRows);
   }
 
 };

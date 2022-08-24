@@ -4,7 +4,7 @@
 
 #include "mip.h"
 #include "gui/mip_widget.h"
-#include "gui/nanovg/mip_nanovg_utils.h"
+//#include "gui/nanovg/mip_nanovg_utils.h"
 
 //----------------------------------------------------------------------
 

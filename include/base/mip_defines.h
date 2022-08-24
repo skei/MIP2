@@ -13,8 +13,8 @@
   #define MIP_LINUX
 #endif
 
-//#if defined _WIN32 || defined __CYGWIN__
-#ifdef _WIN32
+#if defined _WIN32 || defined __CYGWIN__
+//#ifdef _WIN32
   #define  MIP_WIN32
 #endif
 
@@ -64,11 +64,13 @@
 //----------
 
 #ifdef MIP_NO_GUI
-  #undef MIP_GUI_XCB
-  #undef MIP_USE_XCB
   #undef MIP_USE_CAIRO
+  #undef MIP_USE_GDI
   #undef MIP_USE_GLX
   #undef MIP_USE_NANOVG
+  #undef MIP_USE_WIN32
+  #undef MIP_USE_WGL
+  #undef MIP_USE_XCB
   #define MIP_GUI_DEFINED
   #define MIP_NO_PAINTER
 #endif
@@ -78,24 +80,26 @@
   #define MIP_GUI_DEFINED
 #endif
 
-//#ifdef MIP_GUI_WIN32
-//#endif
+#ifdef MIP_GUI_WIN32
+  #define MIP_USE_WIN32
+  #define MIP_GUI_DEFINED
+#endif
 
-//
+//-----
 
 #ifdef MIP_NO_PAINTER
   #define MIP_PAINTER_DEFINED
 #endif
 
 
-#ifdef MIP_PAINTER_XCB
-  #define MIP_USE_XCB
-  #define MIP_PAINTER_DEFINED
-#endif
-
 #ifdef MIP_PAINTER_CAIRO
   //#define MIP_USE_XCB
   #define MIP_USE_CAIRO
+  #define MIP_PAINTER_DEFINED
+#endif
+
+#ifdef MIP_PAINTER_GDI
+  #define MIP_USE_GDI
   #define MIP_PAINTER_DEFINED
 #endif
 
@@ -110,8 +114,11 @@
   #define MIP_PAINTER_DEFINED
 #endif
 
-//#ifdef MIP_PAINTER_GDI
-//#endif
+#ifdef MIP_PAINTER_XCB
+  #define MIP_USE_XCB
+  #define MIP_PAINTER_DEFINED
+#endif
+
 
 //----------
 

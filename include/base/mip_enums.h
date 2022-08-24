@@ -34,8 +34,14 @@ enum MIP_ECorners {
   MIP_CORNER_LEFT_TOP            = 0x01,
   MIP_CORNER_LEFT_BOTTOM         = 0x02,
   MIP_CORNER_RIGHT_TOP           = 0x04,
-  MIP_CORNER_RIGHT_BOTTOM        = 0x08,
+  MIP_CORNER_RIGHT_BOTTOM       = 0x08,
   MIP_CORNER_ALL                 = 0xFF
+};
+
+enum MIP_EWinding {
+	MIP_WINDING_NONE                = 0,
+	MIP_WINDING_COUNTER_CLOCKWISE   = 1, // NVG_CCW = 1, // Winding for solid shapes
+	MIP_WINDING_CLOCKWISE           = 2  // NVG_CW = 2,  // Winding for holes
 };
 
 //----------------------------------------------------------------------

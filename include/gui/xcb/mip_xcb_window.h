@@ -145,18 +145,18 @@ public:
 public:
 //------------------------------
 
-  bool    isWindowExposed() { return MWindowExposed; }
-  bool    isWindowMapped()  { return MWindowMapped; }
-  int32_t getWindowWidth()  { return MWindowWidth; }
-  int32_t getWindowHeight() { return MWindowHeight; }
+  virtual bool    isWindowExposed() { return MWindowExposed; }
+  virtual bool    isWindowMapped()  { return MWindowMapped; }
+  virtual int32_t getWindowWidth()  { return MWindowWidth; }
+  virtual int32_t getWindowHeight() { return MWindowHeight; }
 
-  double  getWindowWidthScale()  { return MWindowWidthScale; }
-  double  getWindowHeightScale() { return MWindowHeightScale; }
+  virtual double  getWindowWidthScale()  { return MWindowWidthScale; }
+  virtual double  getWindowHeightScale() { return MWindowHeightScale; }
 
-  void    setWindowFillBackground(bool AFill=true)          { MFillBackground = AFill; }
-  void    setWindowBackgroundColor(uint32_t AColor)         { MBackgroundColor = AColor; }
+  virtual void    setWindowFillBackground(bool AFill=true)          { MFillBackground = AFill; }
+  virtual void    setWindowBackgroundColor(uint32_t AColor)         { MBackgroundColor = AColor; }
 
-  //void paint() {
+  //virtual void paint() {
   //  if (MWindowListener) MWindowListener->on_window_paint(0,0,MWindowWidth,MWindowHeight);
   //}
 
@@ -187,7 +187,7 @@ public: // drawable
 public: // window
 //------------------------------
 
-  virtual void setWindowPos(uint32_t AXpos, uint32_t AYpos) {
+  void setWindowPos(uint32_t AXpos, uint32_t AYpos) override {
     uint32_t values[] = { AXpos, AYpos };
     xcb_configure_window(MConnection,MWindow,XCB_CONFIG_WINDOW_X | XCB_CONFIG_WINDOW_Y,values);
     xcb_flush(MConnection);
@@ -195,7 +195,7 @@ public: // window
 
   //----------
 
-  virtual void setWindowSize(uint32_t AWidth, uint32_t AHeight) {
+  void setWindowSize(uint32_t AWidth, uint32_t AHeight) override {
     MWindowWidth = AWidth;
     MWindowHeight = AHeight;
     uint32_t values[] = { AWidth, AHeight };
@@ -205,7 +205,7 @@ public: // window
 
   //----------
 
-  virtual void setWindowTitle(const char* ATitle) {
+  void setWindowTitle(const char* ATitle) override {
     xcb_change_property(
       MConnection,
       XCB_PROP_MODE_REPLACE,
@@ -221,7 +221,7 @@ public: // window
 
   //----------
 
-  virtual void openWindow() {
+  void openWindow() override {
     xcb_map_window(MConnection,MWindow);
     xcb_flush(MConnection);
     #ifdef MIP_XCB_WAIT_FOR_MAPNOTIFY
@@ -231,25 +231,25 @@ public: // window
 
   //----------
 
-  virtual void closeWindow() {
+  void closeWindow() override {
     xcb_unmap_window(MConnection,MWindow);
     xcb_flush(MConnection);
   }
 
   //----------
 
-  virtual void flush(void) {
+  void flush(void) override {
     xcb_flush(MConnection);
   }
 
   //----------
 
-  virtual void sync(void) {
+  void sync(void) override {
     xcb_aux_sync(MConnection);
   }
   //----------
 
-  virtual void eventLoop() {
+  void eventLoop() override {
     xcb_generic_event_t* event = getEvent(true);
     while (event) {
       bool quit = !processEvent(event);
@@ -261,7 +261,7 @@ public: // window
 
   //----------
 
-  virtual void startEventThread() {
+  void startEventThread() override {
     //MIP_PRINT;
     MEventThreadActive = true;
     pthread_create(&MEventThread,nullptr,xcb_event_thread_proc,this);
@@ -269,7 +269,7 @@ public: // window
 
   //----------
 
-  virtual void stopEventThread() {
+  void stopEventThread() override {
     //MIP_PRINT;
     void* ret;
     MEventThreadActive = false;
@@ -284,7 +284,7 @@ public: // window
     https://stackoverflow.com/questions/40533318/xcb-custom-message-to-event-loop
   */
 
-  virtual void sendClientMessage(uint32_t AData, uint32_t AType) {
+  void sendClientMessage(uint32_t AData, uint32_t AType) override {
     memset(MClientMessageEventBuffer,0,sizeof(MClientMessageEventBuffer));
     MClientMessageEvent->window         = MWindow;
     MClientMessageEvent->response_type  = XCB_CLIENT_MESSAGE;
@@ -303,7 +303,7 @@ public: // window
 
   //----------
 
-  virtual void invalidateRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
+  void invalidateRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     memset(MExposeEventBuffer,0,sizeof(MExposeEventBuffer));
     MExposeEvent->window        = MWindow;
     MExposeEvent->response_type = XCB_EXPOSE;
@@ -321,31 +321,31 @@ public: // window
     xcb_flush(MConnection);
   }
 
-  virtual void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
+  void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     invalidateRegion(AXpos,AYpos,AWidth,AHeight);
   }
 
   //----------
 
-  virtual void reparentWindow(uint32_t AParent) {
+  void reparentWindow(uint32_t AParent) override {
     xcb_reparent_window(MConnection,MWindow,AParent,0,0);
     xcb_flush(MConnection);
   }
 
   //----------
 
-  virtual void beginPaint()  {
+  void beginPaint() override {
   }
 
   //----------
 
-  virtual void endPaint()  {
+  void endPaint() override {
     xcb_flush(MConnection);
   }
 
   //----------
 
-  virtual void setEventThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {
+  void setEventThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) override {
     MEventThreadStartCallback = AStart;
     MEventThreadStopCallback = AStop;
   }
@@ -354,20 +354,20 @@ public: // window
 public: // mouse
 //------------------------------
 
-  virtual void setMouseCursor(uint32_t ACursor) {
+  void setMouseCursor(uint32_t ACursor) override {
     setWMCursor(ACursor);
   }
 
   //----------
 
-  virtual void setMouseCursorPos(int32_t AXpos, int32_t AYpos) {
+  void setMouseCursorPos(int32_t AXpos, int32_t AYpos) override {
     xcb_warp_pointer(MConnection,XCB_NONE,MWindow,0,0,0,0,AXpos,AYpos);
     xcb_flush(MConnection);
   }
 
   //----------
 
-  virtual void hideMouseCursor(void) {
+  void hideMouseCursor(void) override {
     if (!MCursorHidden) {
       setXcbCursor(MHiddenCursor);
       MCursorHidden = true;
@@ -376,7 +376,7 @@ public: // mouse
 
   //----------
 
-  virtual void showMouseCursor(void) {
+  void showMouseCursor(void) override {
     if (MCursorHidden) {
       setXcbCursor(MWindowCursor);
       MCursorHidden = false;
@@ -392,7 +392,7 @@ public: // mouse
     client.
   */
 
-  virtual void grabMouseCursor(void) {
+  void grabMouseCursor(void) override {
     int32_t event_mask =
       XCB_EVENT_MASK_BUTTON_PRESS   |
       XCB_EVENT_MASK_BUTTON_RELEASE |
@@ -416,7 +416,7 @@ public: // mouse
 
   //----------
 
-  virtual void releaseMouseCursor(void) {
+  void releaseMouseCursor(void) override {
     xcb_ungrab_pointer(MConnection,XCB_CURRENT_TIME);
     xcb_flush(MConnection);
   }
@@ -436,13 +436,13 @@ public: // paint
 
   //----------
 
-  virtual void fillColor(uint32_t AColor) {
+  void fillColor(uint32_t AColor) override {
     fillColor(0,0,MWindowWidth,MWindowHeight,AColor);
   }
 
   //----------
 
-  virtual void fillColor(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) {
+  void fillColor(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) override {
     // set color
     uint32_t mask = XCB_GC_FOREGROUND;
     uint32_t values[1];
@@ -466,7 +466,7 @@ public: // paint
   // MIP_Bitmap->getData()
   // MIP_Bitmap->getStride()
 
-  virtual void blitBuffer(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) {
+  void blitBuffer(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) override {
       mip_xcb_put_image(
         MConnection,
         MWindow,
@@ -484,12 +484,12 @@ public: // paint
 
   //----------
 
-  virtual void blitImage(int32_t ADstX, int32_t ADstY, xcb_image_t* AImage) {
+  void blitImage(int32_t ADstX, int32_t ADstY, /*xcb_image_t*/void* AImage) override {
     xcb_image_put(
       MConnection,  // xcb_connection_t *  conn,
       MWindow,      // xcb_drawable_t      draw,
       MScreenGC,    // xcb_gcontext_t      gc,
-      AImage,       // xcb_image_t *       image,
+      (xcb_image_t*)AImage,       // xcb_image_t *       image,
       ADstX,        // int16_t             x,
       ADstY,        // int16_t             y,
       0             // uint8_t             left_pad
@@ -499,10 +499,10 @@ public: // paint
 
   //----------
 
-  virtual void blitDrawable(int32_t ADstX, int32_t ADstY, xcb_drawable_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {
+  void blitDrawable(int32_t ADstX, int32_t ADstY, /*xcb_drawable_t*/intptr_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) override {
     xcb_copy_area(
       MConnection,  // Pointer to the xcb_connection_t structure
-      ADrawable,    // The Drawable we want to paste
+      (xcb_drawable_t)ADrawable,    // The Drawable we want to paste
       MWindow,      // The Drawable on which we copy the previous Drawable
       MScreenGC,    // A Graphic Context
       ASrcX,        // Top left x coordinate of the region we want to copy

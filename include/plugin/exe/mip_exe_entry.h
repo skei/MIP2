@@ -163,25 +163,24 @@ int main(int argc, char** argv, char** env) {
                 if (exe_window) {
                   exe_window->openWindow();
 
+                  #ifdef MIP_LINUX
                   xcb_window_t xcb_window = exe_window->drawable_getXcbWindow();
                   //MIP_Print("xcb_window: %p\n",xcb_window);
-
                   clap_window_t clap_window;
                   clap_window.api = CLAP_WINDOW_API_X11;
                   clap_window.x11 = xcb_window;
                   gui->set_parent(clap_plugin,&clap_window);
-
                   gui->show(clap_plugin);
-
                   //redraw..
                   gui->set_size(clap_plugin,width,height);
-
                   exe_window->eventLoop();
                   gui->hide(clap_plugin);
                   gui->destroy(clap_plugin);
-
                   exe_window->closeWindow();
                   delete exe_window;
+                  #endif
+                  #ifdef MIP_WIN32
+                  #endif
                 }
               }
             }

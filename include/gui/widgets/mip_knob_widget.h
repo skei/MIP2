@@ -96,12 +96,12 @@ public:
 
         painter->beginPath();
         painter->strokeColor(MArcBackColor);
-        painter->arc(cx,cy,r,a1,a1 + (0.8 * MIP_PI2),NVG_CW);
+        painter->arc(cx,cy,r,a1,a1 + (0.8 * MIP_PI2),MIP_WINDING_CLOCKWISE);
         painter->stroke();
 
         painter->beginPath();
         painter->strokeColor(MArcColor);
-        painter->arc(cx,cy,r,a1,a2,NVG_CW);
+        painter->arc(cx,cy,r,a1,a2,MIP_WINDING_CLOCKWISE);
         painter->stroke();
 
         //painter->drawTextBox(rect,temp,MValueAlignment,MValueColor);

@@ -3,7 +3,12 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "gui/glx/mip_glx.h"
+
+#ifdef MIP_LINUX
+  #include "gui/glx/mip_glx.h"
+#else
+  #include "gui/wgl/mip_wgl.h"
+#endif
 
 #define NANOVG_GL3_IMPLEMENTATION
 

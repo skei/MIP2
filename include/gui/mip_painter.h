@@ -15,6 +15,16 @@
 //
 //----------------------------------------------------------------------
 
+#ifdef MIP_PAINTER_CAIRO
+  #include "gui/cairo/mip_cairo_painter.h"
+  typedef MIP_CairoPainter MIP_ImplementedPainter;
+#endif
+
+#ifdef MIP_PAINTER_GDI
+  #include "gui/gdi/mip_gdi_painter.h"
+  typedef MIP_GdiPainter MIP_ImplementedPainter;
+#endif
+
 #ifdef MIP_PAINTER_GLX
   #include "gui/opengl/mip_opengl_painter.h"
   typedef MIP_GlxPainter MIP_ImplementedPainter;
@@ -24,6 +34,17 @@
   #include "gui/nanovg/mip_nanovg_painter.h"
   typedef MIP_NanoVGPainter MIP_ImplementedPainter;
 #endif
+
+#ifdef MIP_PAINTER_WGL
+  #include "gui/wgl/mip_wgl_painter.h"
+  typedef MIP_WglPainter MIP_ImplementedPainter;
+#endif
+
+#ifdef MIP_PAINTER_XCB
+  #include "gui/xcb/mip_xcb_painter.h"
+  typedef MIP_XcbPainter MIP_ImplementedPainter;
+#endif
+
 
 //----------
 

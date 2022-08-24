@@ -17,6 +17,11 @@
 //
 //----------------------------------------------------------------------
 
+#ifdef MIP_GUI_WIN32
+  #include "gui/win32/mip_win32_window.h"
+  typedef MIP_Win32Window MIP_ImplementedWindow;
+#endif
+
 #ifdef MIP_GUI_XCB
   #include "gui/xcb/mip_xcb_window.h"
   typedef MIP_XcbWindow MIP_ImplementedWindow;
@@ -239,7 +244,9 @@ public: // window
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
     setupPaintContext(AXpos,AYpos,AWidth,AHeight);
-    MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
+
+    //MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
+    MIP_Painter* painter = getPainter();
 
     painter->beginPaint(0,0,MRect.w,MRect.h);
 

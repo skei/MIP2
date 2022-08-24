@@ -67,6 +67,49 @@ public:
   //virtual void on_window_start_event_thread(uint32_t AMode=0) { MIP_PRINT; }
   //virtual void on_window_stop_event_thread(uint32_t AMode=0) { MIP_PRINT; }
 
+//------------------------------
+public:
+//------------------------------
+
+  virtual void setWindowPos(uint32_t AXpos, uint32_t AYpos) {}
+  virtual void setWindowSize(uint32_t AWidth, uint32_t AHeight) {}
+  virtual void setWindowTitle(const char* ATitle) {}
+  virtual void openWindow() {}
+  virtual void closeWindow() {}
+  virtual void flush(void) {}
+  virtual void sync(void) {}
+  virtual void eventLoop() {}
+  virtual void startEventThread() {}
+  virtual void stopEventThread() {}
+  virtual void sendClientMessage(uint32_t AData, uint32_t AType) {}
+  virtual void invalidateRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
+  virtual void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
+  virtual void reparentWindow(uint32_t AParent) {}
+  virtual void beginPaint()  {}
+  virtual void endPaint()  {}
+  virtual void setEventThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {}
+
+//------------------------------
+public: // mouse
+//------------------------------
+
+  virtual void setMouseCursor(uint32_t ACursor) {}
+  virtual void setMouseCursorPos(int32_t AXpos, int32_t AYpos) {}
+  virtual void hideMouseCursor(void) {}
+  virtual void showMouseCursor(void) {}
+  virtual void grabMouseCursor(void) {}
+  virtual void releaseMouseCursor(void) {}
+
+//------------------------------
+public: // paint
+//------------------------------
+
+  virtual void fillColor(uint32_t AColor) {}
+  virtual void fillColor(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) {}
+  virtual void blitBuffer(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) {}
+  virtual void blitImage(int32_t ADstX, int32_t ADstY, /*xcb_image_t*/void* AImage) {}
+  virtual void blitDrawable(int32_t ADstX, int32_t ADstY, /*xcb_drawable_t*/intptr_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {}
+
 };
 
 //----------------------------------------------------------------------
