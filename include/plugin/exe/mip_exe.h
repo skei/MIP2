@@ -4,7 +4,7 @@
 
 #include "mip.h"
 
-#define MIP_EXECUTABLE_SHARED_LIBRARY
+//#define MIP_EXECUTABLE_SHARED_LIBRARY
 //-Wl,-e,entry_point
 
 
@@ -209,7 +209,9 @@ extern "C" {
     MIP_Print("> argc %i argv %s\n",argc,argv[0]);
     MIP_Print("calling __libc_start_main..\n");
     //__libc_start_main(main_trampoline,argc,(char**)argv,my_init,my_fini,my_rtld_fini,0);//&my_stack[500000]);
+
     MIP_REGISTRY.initialize();
+
     __libc_start_main(main_trampoline,argc,(char**)argv,nullptr,nullptr,nullptr,0);//&my_stack[500000]);
     MIP_Print("..back from __libc_start_main\n");
     MIP_Print("calling _exit..\n");

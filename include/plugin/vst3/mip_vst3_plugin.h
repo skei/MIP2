@@ -64,7 +64,11 @@ private:
   IPlugFrame*                     MPlugFrame          = nullptr;
   IHostApplication*               MHostApp            = nullptr;
   ParameterInfo*                  MParamInfos         = nullptr;
+
+  #ifdef MIP_LINUX
   IRunLoop*                       MRunLoop            = nullptr;
+  #endif
+
   uint32_t                        MIoMode             = 0;
   char                            MHostName[129]      = {0};
   bool                            MIsProcessing       = false;
@@ -77,8 +81,8 @@ private:
   clap_process_t                  MClapProcess        = {};
   clap_event_transport_t          MTransport          = {};
 
-  clap_audio_buffer_t             MAudioInputs  = {0};
-  clap_audio_buffer_t             MAudioOutputs = {0};
+  clap_audio_buffer_t             MAudioInputs;//  = {0};
+  clap_audio_buffer_t             MAudioOutputs;// = {0};
 
   uint32_t                        MNumEvents                                                        = 0;
   char                            MEvents[MIP_VST3_MAX_EVENTS_PER_BLOCK * MIP_VST3_MAX_EVENT_SIZE]  = {0};
@@ -523,7 +527,8 @@ private:
       uint32_t num = MPlugin->params_count();
       MParamInfos = (ParameterInfo*)malloc( num * sizeof(ParameterInfo) );
       for (uint32_t i=0; i<num; i++) {
-        clap_param_info_t info = {0};
+        clap_param_info_t info;// = {0};
+        //memset(info,0,sizeof(clap_param_info_t));
         MPlugin->params_get_info(i,&info);
         MParamInfos[i].id = i;
         VST3_CharToUtf16(info.name,MParamInfos[i].title);
@@ -2229,8 +2234,10 @@ public:
           MPlugFrame->resizeView(this,&r);
         }
         clap_window_t clap_window = {};
+        #ifdef MIP_LINUX
         clap_window.api = CLAP_WINDOW_API_X11;
         clap_window.x11 = (clap_xwnd)parent;//MWindow->getXcbWindow();
+        #endif
 
         gui->set_size(plugin,width,height);
 
@@ -2332,7 +2339,9 @@ public:
   tresult PLUGIN_API setFrame(IPlugFrame* frame) override {
     MPlugFrame = frame;
     //tresult res =
+    #ifdef MIP_LINUX
     MPlugFrame->queryInterface(IRunLoop_iid, (void**)&MRunLoop);
+    #endif
     return kResultOk;
   }
 
@@ -2369,10 +2378,12 @@ public:
     (in IEditView.attached)
   */
 
+  #ifdef MIP_LINUX
   void onTimer() override {
     //MPlugin->on_updateEditor(MEditor);
     //MPlugin->flushParamsToHost();
   }
+  #endif
 
 //
 

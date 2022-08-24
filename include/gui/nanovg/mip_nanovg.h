@@ -6,6 +6,7 @@
 #include "gui/glx/mip_glx.h"
 
 #define NANOVG_GL3_IMPLEMENTATION
+
 #include "extern/nanovg/nanovg.h"
 #include "extern/nanovg/nanovg_gl.h"
 #include "extern/nanovg/nanovg_gl_utils.h"

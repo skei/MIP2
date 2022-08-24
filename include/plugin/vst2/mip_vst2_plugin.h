@@ -39,7 +39,7 @@ class MIP_Vst2Plugin {
 private:
 //------------------------------
 
-  AEffect                         MAEffect              = {0};
+  AEffect                         MAEffect;//              = {0};
   audioMasterCallback             MAudioMaster          = nullptr;
   MIP_Vst2Host*                   MHost                 = nullptr;
   const clap_plugin_t*            MPlugin               = nullptr;
@@ -49,8 +49,8 @@ private:
   float*                          MParameterValues      = nullptr;
   MIP_IntQueue                    MProcessMessageQueue  = {};
   MIP_IntQueue                    MGuiMessageQueue      = {};
-  MIP_VstEvents                   MVstEvents            = {0};
-  VstMidiEvent                    MVstMidiSendEvents[MIP_VST2_MAX_MIDI_SEND]  = {0};
+  MIP_VstEvents                   MVstEvents;//            = {0};
+  VstMidiEvent                    MVstMidiSendEvents[MIP_VST2_MAX_MIDI_SEND];//  = {0};
 
   bool                            MIsOpen               = false;
   bool                            MIsProcessing         = false;
@@ -61,7 +61,7 @@ private:
   uint32_t                        MKnobMode             = 0;
   float                           MSampleRate           = 0.0f;
   uint32_t                        MMaxBlockSize         = 0;
-  ERect                           MVstRect              = {0};
+  ERect                           MVstRect;//              = {0};
 
   //#ifndef MIP_NO_GUI
   //  MIP_Editor*         MEditor             = nullptr;

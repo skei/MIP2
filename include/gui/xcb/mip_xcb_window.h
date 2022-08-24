@@ -110,6 +110,7 @@ public:
 //------------------------------
 
   MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
+
     //MWindowListener = this;
 
     MWindowInitialWidth = AWidth;

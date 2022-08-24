@@ -43,26 +43,18 @@ public:
 
   MIP_NanoVGPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
   : MIP_GlxPainter(ASurface,ATarget) {
-    //MIP_PRINT;
     MIP_GlxPainter::makeCurrent();
-
     MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES); // NVG_DEBUG
     //MFont = nvgCreateFont(MContext,"font1","/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf");
     MFont = nvgCreateFontMem(MContext,"font1",(unsigned char*)liberation_ttf,liberation_ttf_size,0);
-
     nvgFontFaceId(MContext,MFont);
     //nvgFontSize(MContext,10);
-
     #ifdef BLENDISH_H
     bndSetFont(MFont);
     #endif
-
     //MIconImage  = nvgCreateImage(MContext,"/DISKS/sda2/code/git/MIP2/include/extern/oui-blendish/blender_icons16.png",0); // NVG_IMAGE_PREMULTIPLIED
-
     //bndSetFont(MFont);
     //bndSetIconImage(MIconImage);
-
-
     MIP_GlxPainter::resetCurrent();
   }
 

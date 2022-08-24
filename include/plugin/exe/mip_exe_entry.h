@@ -104,9 +104,10 @@ int main(int argc, char** argv, char** env) {
   //MIP_REGISTRY.getNumDescriptors();
   uint32_t index = 0; //TODO: arg[1] select index
 
-  //uint32_t num_descriptors = MIP_REGISTRY.getNumDescriptors();
-  //MIP_Print("> num_descriptors: %i\n",num_descriptors);
-  uint32_t num_descriptors = 1;
+  uint32_t num_descriptors = MIP_REGISTRY.getNumDescriptors();
+  MIP_Print("> num_descriptors: %i\n",num_descriptors);
+
+  //uint32_t num_descriptors = 1;
 
   if (num_descriptors > 0) {
 
@@ -120,9 +121,10 @@ int main(int argc, char** argv, char** env) {
       MIP_Print("exe_host: %p\n",exe_host);
       if (exe_host) {
         const clap_host_t* host = exe_host->getHost();
+        MIP_Print("host: %p\n",host);
         if (host) {
           MIP_Plugin* plugin = MIP_CreatePlugin(index,descriptor,host);
-          const clap_plugin_t* clap_plugin = plugin->getPlugin();
+          MIP_Print("plugin: %p\n",plugin);
           if (plugin) {
             plugin->init();
             plugin->activate(44100,0,1024);
@@ -130,44 +132,57 @@ int main(int argc, char** argv, char** env) {
 
             #ifndef MIP_NO_GUI
 
+            const clap_plugin_t* clap_plugin = plugin->getPlugin();
+
             //plugin->MGui?
 
             clap_plugin_gui_t* gui = (clap_plugin_gui_t*)plugin->get_extension(CLAP_EXT_GUI);
+            MIP_Print("gui: %p\n",gui);
             if (gui) {
 
               if (gui->is_api_supported(clap_plugin,CLAP_WINDOW_API_X11,false)) {
+                MIP_Print("X11, not floating - supported\n");
                 gui->create(clap_plugin,CLAP_WINDOW_API_X11,false);
+                MIP_PRINT;
                 gui->set_scale(clap_plugin,1.0);
+                MIP_PRINT;
                 //bool can_resize = gui->can_resize(clap_plugin);
                 //if (can_resize) {
 
                 // plugin->MEditorWidth/Height
                 uint32_t width, height;
                 gui->get_size(clap_plugin,&width,&height);
+                MIP_PRINT;
                 //}
                 //else {
                 //}
                 //gui->set_size(clap_plugin,width,height);
 
                 MIP_ExeWindow* exe_window = new MIP_ExeWindow(width,height,clap_plugin,gui);
-                exe_window->openWindow();
+                MIP_Print("exe_window: %p\n",exe_window);
+                if (exe_window) {
+                  exe_window->openWindow();
 
-                xcb_window_t xcb_window = exe_window->drawable_getXcbWindow();
-                clap_window_t clap_window;
-                clap_window.api = CLAP_WINDOW_API_X11;
-                clap_window.x11 = xcb_window;
-                gui->set_parent(clap_plugin,&clap_window);
-                gui->show(clap_plugin);
+                  xcb_window_t xcb_window = exe_window->drawable_getXcbWindow();
+                  MIP_Print("xcb_window: %p\n",xcb_window);
 
-                //redraw..
-                gui->set_size(clap_plugin,width,height);
+                  clap_window_t clap_window;
+                  clap_window.api = CLAP_WINDOW_API_X11;
+                  clap_window.x11 = xcb_window;
+                  gui->set_parent(clap_plugin,&clap_window);
 
-                exe_window->eventLoop();
-                gui->hide(clap_plugin);
-                gui->destroy(clap_plugin);
+                  gui->show(clap_plugin);
 
-                exe_window->closeWindow();
-                delete exe_window;
+                  //redraw..
+                  gui->set_size(clap_plugin,width,height);
+
+                  exe_window->eventLoop();
+                  gui->hide(clap_plugin);
+                  gui->destroy(clap_plugin);
+
+                  exe_window->closeWindow();
+                  delete exe_window;
+                }
               }
             }
 

@@ -31,13 +31,13 @@ public:
 //------------------------------
 
   MIP_Vst2Entry() {
-    MIP_Print("\n");
+    //MIP_Print("\n");
   }
 
   //----------
 
   ~MIP_Vst2Entry() {
-    MIP_Print("\n");
+    //MIP_Print("\n");
   }
 
 //------------------------------
@@ -45,7 +45,7 @@ public:
 //------------------------------
 
   AEffect* entry(audioMasterCallback audioMaster) {
-    MIP_Print("\n");
+    //MIP_Print("\n");
 
     char path[1024] = {};
     //const char* plugin_path = MIP_GetLibPath(path);
@@ -185,7 +185,7 @@ MIP_Vst2Entry GLOBAL_VST2_PLUGIN_ENTRY;
 //__MIP_EXPORT
 __attribute__ ((visibility ("default")))
 AEffect* mip_vst2_entry(audioMasterCallback audioMaster) {
-  MIP_Print("\n");
+  //MIP_Print("\n");
   if (!audioMaster(0,audioMasterVersion,0,0,0,0)) return 0;
   return GLOBAL_VST2_PLUGIN_ENTRY.entry(audioMaster);
 }

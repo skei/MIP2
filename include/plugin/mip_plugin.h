@@ -71,7 +71,7 @@ protected:
   //MIP_VoiceManager
 
   #ifndef MIP_NO_GUI
-  MIP_Editor*         MEditor                   = {};
+  MIP_Editor*         MEditor                   = nullptr;
   #endif
 
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessParamQueue  = {}; // gui -> audio
@@ -357,13 +357,10 @@ public: // EXT gui
 
   bool gui_create(const char *api, bool is_floating) override {
     //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
-
-    MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
-
+    MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight); // crash???
     #ifdef MIP_PLUGIN_DEFAULT_EDITOR
       // setup widgets
     #endif
-
     MIP_Assert(MEditor);
     return true;
   }

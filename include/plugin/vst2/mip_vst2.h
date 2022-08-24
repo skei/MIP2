@@ -11,7 +11,10 @@
 //  #include "extern/vst2/vestige.h"
 //#else
 
+  #ifdef MIP_LINUX
   #define __cdecl
+  #endif
+
   #include "extern/vst2/aeffect.h"
   #include "extern/vst2/aeffectx.h"
 

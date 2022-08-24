@@ -51,8 +51,10 @@
 //------------------------------------------------------------
 
 using namespace Steinberg;
-using namespace Steinberg::Linux;
 using namespace Vst;
+#ifdef MIP_LINUX
+using namespace Steinberg::Linux;
+#endif
 
 //----------------------------------------------------------------------
 #endif

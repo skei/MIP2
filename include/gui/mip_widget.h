@@ -100,6 +100,7 @@ public:
 //------------------------------
 
   MIP_Widget(MIP_DRect ARect) {
+
     Layout.initialRect = ARect;
     Layout.baseRect = ARect;
     MRect = ARect;

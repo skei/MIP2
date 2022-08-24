@@ -12,9 +12,6 @@
 //----------------------------------------------------------------------
 
 typedef void (*glXSwapIntervalEXT_t)(Display *dpy, GLXDrawable drawable, int interval);
-
-//----------
-
 glXSwapIntervalEXT_t glXSwapIntervalEXT = nullptr;
 
 //----------------------------------------------------------------------
