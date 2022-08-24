@@ -41,6 +41,6 @@ priorities:
 
 ---
 
-![mip2_screenshot2](doc/screenshots/mip2_screenshot2.png)
+![mip2_screenshot3](doc/screenshots/mip2_screenshot3.png)
 ![mip2_screenshot1](doc/screenshots/mip2_screenshot1.png)
 
