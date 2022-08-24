@@ -12,7 +12,10 @@
 #include "plugin/clap/mip_clap_host_implementation.h"
 #include "plugin/exe/mip_exe.h"
 #include "plugin/exe/mip_exe_host.h"
-#include "gui/mip_window.h"
+
+#ifndef MIP_NO_GUI
+  #include "gui/mip_window.h"
+#endif // MIP_NO_GUI
 
 //#ifdef MIP_EXE
 
@@ -21,6 +24,8 @@
 // exe window
 //
 //----------------------------------------------------------------------
+
+#ifndef MIP_NO_GUI
 
 class MIP_ExeWindow
 : public MIP_ImplementedWindow {
@@ -74,6 +79,8 @@ public:
 
 };
 
+#endif // MIP_NO_GUI
+
 //----------------------------------------------------------------------
 //
 // plugin
@@ -121,7 +128,7 @@ int main(int argc, char** argv, char** env) {
             plugin->activate(44100,0,1024);
             plugin->start_processing();
 
-            // gui
+            #ifndef MIP_NO_GUI
 
             //plugin->MGui?
 
@@ -164,7 +171,7 @@ int main(int argc, char** argv, char** env) {
               }
             }
 
-            //
+            #endif // MIP_NO_GUI
 
             plugin->stop_processing();
             plugin->deactivate();
