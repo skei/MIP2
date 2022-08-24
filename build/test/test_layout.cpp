@@ -4,11 +4,14 @@
   // nc -U -l -k /tmp/mip.socket
 #endif // MIP_EXE
 
-//  #define MIP_GUI_XCB
-//  #define MIP_PAINTER_NANOVG
+  #define MIP_GUI_XCB
+  #define MIP_PAINTER_NANOVG
 
-  #define MIP_GUI_WIN32
-  #define MIP_PAINTER_GDI
+//  #define MIP_GUI_WIN32
+//  #define MIP_PAINTER_GDI
+
+#define MIP_EXECUTABLE_SHARED_LIBRARY
+//-Wl,-e,entry_point
 
 //----------------------------------------------------------------------
 
@@ -16,9 +19,6 @@
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/widgets/mip_widgets.h"
-
-//#define MIP_EXECUTABLE_SHARED_LIBRARY
-//-Wl,-e,entry_point
 
 //#include "plugin/exe/mip_exe.h"
 

@@ -11,10 +11,10 @@ things will hopefully calm down soon.. then we can start behaving a bit more 'no
 
 ---
 
-- os: linux (windows might come later)
+- os: linux, windows (in progress)
 - plugin: clap (with wrappers for exe, vst2, vst3)
 - host: clap, ladspa (coming: vst2/vst3)
-- gui: xcb, cairo, opengl, nanovg (all optional)
+- gui: xcb, cairo, opengl, nanovg, win32, gdi, wgl, nogui
 - io: jack audio/midi (standalone executable)
 - other: too much to list..
 
@@ -41,4 +41,6 @@ priorities:
 
 ---
 
-![sa_clap](doc/screenshots/sa_clap.png)
+![mip2_screenshot2](doc/screenshots/mip2_screenshot2.png)
+![mip2_screenshot1](doc/screenshots/mip2_screenshot1.png)
+

@@ -18,7 +18,9 @@
 
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wmisleading-indentation"
+
     #include "extern/nanovg/nanovg.c"
+
   #pragma GCC diagnostic pop
 
 //----------------------------------------------------------------------

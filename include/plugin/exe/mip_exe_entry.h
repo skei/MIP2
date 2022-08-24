@@ -17,7 +17,9 @@
   #include "gui/mip_window.h"
 #endif // MIP_NO_GUI
 
-//#ifdef MIP_EXE
+#ifdef MIP_USE_XCB
+#include "gui/xcb/mip_xcb.h"
+#endif
 
 //----------------------------------------------------------------------
 //

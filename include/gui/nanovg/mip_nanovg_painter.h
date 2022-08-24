@@ -37,6 +37,7 @@ class MIP_NanoVGPainter
 : public MIP_GlxPainter {
 #else
 : public MIP_WglPainter {
+#endif
 
 //------------------------------
 private:
