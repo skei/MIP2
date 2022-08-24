@@ -11,30 +11,35 @@
   nc -U -l -k /tmp/mip.socket
 */
 
-#include <stdarg.h>   // va_
-#include <sys/syscall.h>
-#include <sys/unistd.h>
-
-
-//----------------------------------------------------------------------
-
 #include "mip.h"
 //#include "base/system/mip_thread.h"
 
+//#include <stdarg.h>   // va_
+//#include <sys/syscall.h>
+//#include <sys/unistd.h>
+//
+//void MIP_NoPrint(const char*,...) {}
+//
+//#define gettid() syscall(SYS_gettid)
+//
+//pid_t MIP_GetThreadId() {
+//  return gettid();
+//}
 //----------------------------------------------------------------------
 
-void MIP_NoPrint(const char*,...) {}
-
-//----------
-
-#define gettid() syscall(SYS_gettid)
-
-pid_t MIP_GetThreadId() {
-  return gettid();
-}
-//----------------------------------------------------------------------
+  void MIP_NoPrint(const char*,...) {}
 
 #ifdef MIP_DEBUG
+
+  #include <stdarg.h>   // va_
+  #include <sys/syscall.h>
+  #include <sys/unistd.h>
+
+  #define gettid() syscall(SYS_gettid)
+
+  pid_t MIP_GetThreadId() {
+    return gettid();
+  }
 
   #ifdef MIP_DEBUG_PRINT_TIME
     //#include <time.h>     // timer

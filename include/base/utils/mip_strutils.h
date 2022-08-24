@@ -7,7 +7,9 @@
 #include "mip.h"
 #include "base/utils/mip_random.h"
 
-#include <iconv.h>
+#ifdef MIP_LINUX
+  #include <iconv.h>
+#endif
 
 //----------------------------------------------------------------------
 //
@@ -86,6 +88,7 @@ void MIP_AppendString(char* buffer, const char* str) {
 // public:
 //----------------------------------------------------------------------
 
+#ifdef MIP_LINUX
 char* MIP_AsciiToUTF16(char* AUTF16, char* AAscii) {
   iconv_t cd = iconv_open("UTF-16","ASCII");
   if (cd == (iconv_t)-1) return nullptr; // iconv_open failed
@@ -97,6 +100,11 @@ char* MIP_AsciiToUTF16(char* AUTF16, char* AAscii) {
   if (nconv != 0) return nullptr; // unable to perform conversion
   return AUTF16;
 }
+#else
+char* MIP_AsciiToUTF16(char* AUTF16, char* AAscii) {
+  return AUTF16;
+}
+#endif
 
 
 // ptr to (reversed) hex
@@ -429,6 +437,7 @@ void MIP_UpperCase(char* buffer) {
 
 //----------
 
+#ifdef MIP_LINUX
 char* MIP_UTF16ToAscii(char* AAscii, char* AUTF16) {
   iconv_t cd = iconv_open("ASCII","UTF-16");
   if (cd == (iconv_t)-1) return nullptr; // iconv_open failed
@@ -440,6 +449,11 @@ char* MIP_UTF16ToAscii(char* AAscii, char* AUTF16) {
   if (nconv != 0) return nullptr; // unable to perform conversion
   return AAscii;
 }
+#else
+char* MIP_UTF16ToAscii(char* AAscii, char* AUTF16) {
+  return AUTF16;
+}
+#endif
 
 //----------------------------------------------------------------------
 //

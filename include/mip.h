@@ -15,7 +15,10 @@
 //#include <sys/types.h>
 //#include <sys/stat.h>
 #include <dirent.h>
-#include <dlfcn.h>
+
+#ifdef MIP_LINUX
+  #include <dlfcn.h>
+#endif
 
 //------------------------------
 
