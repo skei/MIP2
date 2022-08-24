@@ -32,6 +32,7 @@ protected:
 //------------------------------
 
   MIP_MenuListener* MListener = nullptr;
+  MIP_Window*       MOwnerWindow = nullptr;
 
 //------------------------------
 public:
@@ -61,6 +62,12 @@ public: // parent to child
 //------------------------------
 public: // parent to child
 //------------------------------
+
+  void on_widget_open(MIP_Widget* AOwnerWindow) override {
+    //MIP_PRINT;
+    MOwnerWindow = (MIP_Window*)AOwnerWindow;
+    MIP_PanelWidget::on_widget_open(AOwnerWindow);
+  }
 
   //void on_widget_paint(MIP_PaintContext* AContext) override {
   //  fillBackground(AContext);
@@ -120,10 +127,12 @@ public:
     double x = AXpos;
     double y = AYpos;
     //MIP_Window* window = (MIP_Window*)do_widget_get_owner_window(this);
-    MIP_Window* window = (MIP_Window*)getOwnerWindow();
-    if (window) {
-      uint32_t winw = window->getWindowWidth();
-      uint32_t winh =window->getWindowHeight();
+
+    //MIP_Window* window = (MIP_Window*)getOwnerWindow();
+
+    if (MOwnerWindow) {
+      uint32_t winw = MOwnerWindow->getWindowWidth();
+      uint32_t winh = MOwnerWindow->getWindowHeight();
       if ((x + MRect.w) > winw) { x = winw - MRect.w; }
       if ((y + MRect.h) > winh) { y = winh - MRect.h; }
     }

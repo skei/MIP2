@@ -181,7 +181,10 @@ public: // window
   */
 
   void on_window_open() override {
-    //MIP_Print("aligning..\n");
+    //MIP_Print("on_window_open\n");
+    for (uint32_t i=0; i<MChildren.size(); i++) {
+      MChildren[i]->on_widget_open(this);
+    }
   }
 
   //----------
@@ -460,9 +463,9 @@ public:
 
 //  //----------
 
-  MIP_Widget* getOwnerWindow() override {
-    return this;
-  }
+//  MIP_Widget* getOwnerWindow() override {
+//    return this;
+//  }
 
 
   //void redrawEditor() {

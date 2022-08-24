@@ -925,7 +925,7 @@ private: // events
         int16_t y = configure_notify->y;
         int16_t w = configure_notify->width;
         int16_t h = configure_notify->height;
-        MIP_Print("w,h: %i,%i MWindowWidth/Height: %i,%i  \n",w,h,MWindowWidth,MWindowHeight);
+        //MIP_Print("w,h: %i,%i MWindowWidth/Height: %i,%i  \n",w,h,MWindowWidth,MWindowHeight);
         if ((x != MWindowXpos) || (y != MWindowYpos)) {
           MWindowXpos = x;
           MWindowYpos = y;

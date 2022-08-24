@@ -39,6 +39,7 @@ public:
 //------------------------------
 
   MIP_Registry() {
+    MIP_PRINT;
     //if (MIP_Register) MIP_Register(this);
     initialize();
   }
@@ -46,6 +47,7 @@ public:
   //----------
 
   ~MIP_Registry() {
+    MIP_PRINT;
     if (MIP_Unregister) MIP_Unregister(this);
     #ifndef MIP_NO_AUTODELETE
       deleteFactories();

@@ -39,19 +39,20 @@ struct MIP_WidgetLayout {
 //----------
 
 struct MIP_WidgetFlags {
-  bool active         = true;
-  bool interactive    = false;
-  bool visible        = true;
-  bool captureMouse   = true;
-  bool doubleClick    = false;
-  bool autoSetCursor  = true;
-  bool autoHideCursor = false;
-  bool autoLockCursor = false;
-  bool dirty          = false;
-  bool highlighted    = false;
-  bool focused        = false;
-  //bool clipChildren   = false;
-  bool autoSize       = false;
+  bool active           = true;
+  bool interactive      = false;
+  bool visible          = true;
+  bool captureMouse     = true;
+  bool doubleClick      = false;
+  bool autoSetCursor    = true;
+  bool autoHideCursor   = false;
+  bool autoLockCursor   = false;
+  bool dirty            = false;
+  bool highlighted      = false;
+  bool focused          = false;
+  //bool clipChildren     = false;
+  bool autoSize         = false;
+  bool autoSizeContent  = false;
 };
 
 //----------------------------------------------------------------------
@@ -135,7 +136,7 @@ public:
 
   virtual const char*     getWidgetName()                   { return MName; }
 
-  virtual MIP_Widget*     getParentWidget() { return MParent; }
+  //virtual MIP_Widget*     getParentWidget() { return MParent; }
   virtual MIP_DRect       getWidgetRect()   { return MRect; }
   virtual double          getWidgetXPos()   { return MRect.x; }
   virtual double          getWidgetYPos()   { return MRect.y; }
@@ -177,6 +178,12 @@ public:
 //------------------------------
 public: // parent to child
 //------------------------------
+
+  virtual void on_widget_open(MIP_Widget* AOwnerWindow)  {
+    for (uint32_t i=0; i<MChildren.size(); i++) {
+      MChildren[i]->on_widget_open(AOwnerWindow);
+    }
+  }
 
   virtual void on_widget_move(double AXpos, double AYpos)  {}
   virtual void on_widget_resize(double AWidth, double AHeight) {}
@@ -304,10 +311,10 @@ public: // hierarchy
 
   //----------
 
-  virtual MIP_Widget* getOwnerWindow() {
-    if (MParent) return MParent->getOwnerWindow();
-    else return nullptr;
-  }
+//  virtual MIP_Widget* getOwnerWindow() {
+//    if (MParent) return MParent->getOwnerWindow();
+//    else return nullptr;
+//  }
 
   //----------
 
@@ -597,25 +604,29 @@ public: // hierarchy
               child_rect.x += client_rect.x;
               child_rect.y += client_rect.y;
               //child_rect.w = client_rect.w;
-              //client_rect.y += (child_rect.h + spacing.y);
-              //client_rect.h -= (child_rect.h + spacing.y);
+              client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
               break;
 
             case MIP_WIDGET_ALIGN_TOP_LEFT:
               child_rect.x += client_rect.x;
               child_rect.y += client_rect.y;
-              //client_rect.y += (child_rect.h + spacing.y);
-              //client_rect.h -= (child_rect.h + spacing.y);
+              client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
               break;
 
             case MIP_WIDGET_ALIGN_TOP_CENTER:
               child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
               child_rect.y += client_rect.y;
+              client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
               break;
 
             case MIP_WIDGET_ALIGN_TOP_RIGHT:
               child_rect.x += client_rect.x2() - child_rect.w;
               child_rect.y += client_rect.y;
+              client_rect.y += (child_rect.h + spacing.y);
+              client_rect.h -= (child_rect.h + spacing.y);
               break;
 
             //-----
@@ -645,8 +656,8 @@ public: // hierarchy
             //-----
 
             case MIP_WIDGET_ALIGN_FILL_PARENT: {
-              child_rect.x = parent_rect.x;
-              child_rect.y = parent_rect.y;
+              child_rect.x += parent_rect.x;
+              child_rect.y += parent_rect.y;
               child_rect.w = parent_rect.w;
               child_rect.h = parent_rect.h;
               // clear client rect
@@ -654,8 +665,8 @@ public: // hierarchy
             }
 
             case MIP_WIDGET_ALIGN_FILL_CLIENT: {
-              child_rect.x = client_rect.x;
-              child_rect.y = client_rect.y;
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
               child_rect.w = client_rect.w;
               child_rect.h = client_rect.h;
               // clear client rect
@@ -665,8 +676,8 @@ public: // hierarchy
             //-----
 
             case MIP_WIDGET_ALIGN_FILL_LEFT: {
-              child_rect.x = client_rect.x;
-              child_rect.y = client_rect.y;
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
               child_rect.h = client_rect.h;
               client_rect.x += (child_rect.w + spacing.x);
               client_rect.w -= (child_rect.w + spacing.x);
@@ -697,8 +708,8 @@ public: // hierarchy
             //-----
 
             case MIP_WIDGET_ALIGN_FILL_RIGHT: {
-              child_rect.x = client_rect.x2() - child_rect.w;
-              child_rect.y = client_rect.y;
+              child_rect.x += client_rect.x2() - child_rect.w;
+              child_rect.y += client_rect.y;
               child_rect.h = client_rect.h;
               client_rect.w -= (child_rect.w + spacing.x);
               break;
@@ -725,8 +736,8 @@ public: // hierarchy
             //-----
 
             case MIP_WIDGET_ALIGN_FILL_TOP: {
-              child_rect.x = client_rect.x;
-              child_rect.y = client_rect.y;
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y;
               child_rect.w = client_rect.w;
               client_rect.y += (child_rect.h + spacing.y);
               client_rect.h -= (child_rect.h + spacing.y);
@@ -741,7 +752,7 @@ public: // hierarchy
               break;
 
             case MIP_WIDGET_ALIGN_FILL_TOP_CENTER:
-              child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+              child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
               child_rect.y += client_rect.y;
               client_rect.y += (child_rect.h + spacing.y);
               client_rect.h -= (child_rect.h + spacing.y);
@@ -757,8 +768,8 @@ public: // hierarchy
             //-----
 
             case MIP_WIDGET_ALIGN_FILL_BOTTOM: {
-              child_rect.x = client_rect.x;
-              child_rect.y = client_rect.y2() - child_rect.h;
+              child_rect.x += client_rect.x;
+              child_rect.y += client_rect.y2() - child_rect.h;
               child_rect.w = client_rect.w;
               client_rect.h -= (child_rect.h + spacing.y);
               break;
@@ -788,16 +799,16 @@ public: // hierarchy
             //-----
 
             case MIP_WIDGET_ALIGN_CENTER:
-              child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
-              child_rect.y = client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+              child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+              child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
               break;
 
             case MIP_WIDGET_ALIGN_CENTER_HORIZ:
-              child_rect.x = client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
+              child_rect.x += client_rect.x + (client_rect.w * 0.5f) - (child_rect.w * 0.5f);
               break;
 
             case MIP_WIDGET_ALIGN_CENTER_VERT:
-              child_rect.y = client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
+              child_rect.y += client_rect.y + (client_rect.h * 0.5f) - (child_rect.h * 0.5f);
               break;
 
             //-----
@@ -863,7 +874,7 @@ public: // hierarchy
         } //  visible
       } // for
     } // num > 0
-    if (Flags.autoSize) {
+    if (Flags.autoSizeContent) {
       MRect.w = MContentRect.w;
       MRect.h = MContentRect.h;
     }

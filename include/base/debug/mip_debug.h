@@ -106,6 +106,7 @@ public:
   //----------
 
   ~MIP_GlobalDebug() {
+    MIP_PRINT;
     //#ifdef MIP_DEBUG_PRINT_TIME
     //#endif
     #ifdef MIP_DEBUG_PRINT_SOCKET

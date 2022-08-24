@@ -25,6 +25,8 @@ protected:
   float       MTextSize       = 13.0;
   MIP_DPoint  MTextOffset     = MIP_DPoint(0,0);
 
+  MIP_Window* MOwnerWindow    = nullptr;
+
 //------------------------------
 public:
 //------------------------------
@@ -82,6 +84,13 @@ public: // parent to child
 public: // parent to child
 //------------------------------
 
+  void on_widget_open(MIP_Widget* AOwnerWindow) override {
+    MOwnerWindow = (MIP_Window*)AOwnerWindow;
+    MIP_PanelWidget::on_widget_open(AOwnerWindow);
+  }
+
+  //----------
+
   void on_widget_paint(MIP_PaintContext* AContext) override {
     fillBackground(AContext);
     paintChildWidgets(AContext);
@@ -92,6 +101,30 @@ public: // parent to child
 //------------------------------
 public:
 //------------------------------
+
+  virtual void updateTextSize() {
+    //MIP_PRINT;
+    if (Flags.autoSize) {
+      MIP_Painter* painter = MOwnerWindow->getPainter();
+      if (painter) {
+        float bounds[4];;
+
+        double textsize = MTextSize;
+        if (MTextSize < 0) textsize = MRect.h * (- MTextSize);
+        painter->fontSize(textsize);
+
+        painter->textBounds(MRect.x,MRect.y,MText,nullptr,bounds);
+        float xmin = bounds[0];
+        float ymin = bounds[1];
+        float xmax = bounds[2];
+        float ymax = bounds[3];
+        float width = xmax - xmin;
+        float height = ymax - ymin;
+        Layout.baseRect.w = width;
+        Layout.baseRect.h = height;
+      }
+    }
+  }
 
   virtual void drawText(MIP_PaintContext* AContext) {
     if (MDrawText) {

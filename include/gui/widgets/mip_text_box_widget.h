@@ -15,8 +15,8 @@ class MIP_TextBoxWidget
 protected:
 //------------------------------
 
-  float     MTextHeight = 15.0;
-  float     MTextSize   = 13.0;
+  //float     MTextHeight = 20.0;
+  float     MTextSize   = 15.0;
   uint32_t  MNumLines   = 0;
   uint32_t  MMaxLines   = 100;
 
@@ -44,30 +44,44 @@ public:
 //------------------------------
 
   virtual void setMaxLines(uint32_t ANum) { MMaxLines = ANum; }
-  virtual void setTextHeight(float ASize) { MTextHeight = ASize; }
+  //virtual void setTextHeight(float ASize) { MTextHeight = ASize; }
 
 //------------------------------
 public:
 //------------------------------
 
+  void alignChildWidgets(bool ARecursive=true) override {
+    //MIP_PRINT;
+    for (uint32_t i=0; i<MContent->getNumChildWidgets(); i++) {
+      MIP_TextWidget* textwidget = (MIP_TextWidget*)MContent->getChildWidget(i);
+
+      textwidget->updateTextSize();
+    }
+    MIP_ScrollBoxWidget::alignChildWidgets(ARecursive);
+  }
+
+
   virtual void appendLine(const char* AText, bool ARedraw=true) {
     if (MNumLines >= MMaxLines) { removeOldestLine(); }
     //while (MNumLines >= MMaxLines) { removeOldestLine(); }
-    MIP_TextWidget* textwidget = new MIP_TextWidget( MIP_DRect(MTextHeight),AText);
+    MIP_TextWidget* textwidget = new MIP_TextWidget( MIP_DRect(MTextSize),AText);
 
     /*
       this means we can't scroll..
       todo: some kind of autosize..
       keep track of the widest line (appendLine
     */
+    //textwidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    textwidget->Layout.alignment = MIP_WIDGET_ALIGN_TOP_LEFT;
 
-    textwidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     textwidget->setFillBackground(false);
     textwidget->setDrawBorder(false);
     textwidget->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     textwidget->setTextColor(MIP_COLOR_BLACK);
     textwidget->setTextSize(MTextSize);
-    //textwidget->flags.autoSize = true;
+
+    textwidget->Flags.autoSize = true;
+
     MContent->appendChildWidget(textwidget);
     MNumLines += 1;
     MContent->alignChildWidgets();

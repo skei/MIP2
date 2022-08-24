@@ -436,25 +436,31 @@ public: // gui
       {
         MIP_PanelWidget* aspect_rect1 = new MIP_PanelWidget(0);
         aspect_rect1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-        aspect_rect1->Layout.border = MIP_DRect(10,10,10,10);
-        aspect_rect1->Layout.spacing = MIP_DPoint(5,5);
+        //aspect_rect1->Layout.border = MIP_DRect(10,10,10,10);
+        //aspect_rect1->Layout.spacing = MIP_DPoint(5,5);
         aspect_rect1->Layout.aspectRatio = 4.0 / 3.0;
         aspect_rect1->setDrawBorder(false);
         aspect_rect1->setFillBackground(false);
         //aspect_rect1->setBackgroundColor(MIP_COLOR_BLUE2);
         center_bottom_panel->appendChildWidget(aspect_rect1);
 
-        MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(0.5,"knob",0.5);
+        MIP_PanelWidget* aspect_inner_rect1 = new MIP_PanelWidget( MIP_DRect(0.02,0.02,0.96,0.96) );
+        aspect_inner_rect1->Layout.alignment = MIP_WIDGET_ALIGN_CLIENT;
+        aspect_inner_rect1->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
+        aspect_inner_rect1->Layout.vertScale = MIP_WIDGET_SCALE_PARENT_RATIO;
+        aspect_rect1->appendChildWidget(aspect_inner_rect1);
+
+        MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(MIP_DRect(0,0,0.45,0.45),"knob1",0.5);
         knob1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
         knob1->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
         knob1->Layout.aspectRatio = 2.0 / 3.0;
-        aspect_rect1->appendChildWidget(knob1);
+        aspect_inner_rect1->appendChildWidget(knob1);
 
-        MIP_Knob2Widget* knob2 = new MIP_Knob2Widget(0.5,"knob",0.5);
+        MIP_Knob2Widget* knob2 = new MIP_Knob2Widget(MIP_DRect(0.02,0,0.45,0.45),"knob2",0.5);
         knob2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
         knob2->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
         knob2->Layout.aspectRatio = 2.0 / 3.0;
-        aspect_rect1->appendChildWidget(knob2);
+        aspect_inner_rect1->appendChildWidget(knob2);
 
       }
 
@@ -489,7 +495,7 @@ public: // gui
           tabs1_page1->setDrawBorder(true);
           tabs1_page1->Layout.border = MIP_DRect(10,10,10,10);
 
-          //tabs1_page1->Flags.autoSize = true;
+          //tabs1_page1->Flags.autoSizeContent = true;
 
           tabs1->appendPage("page1",tabs1_page1);
 
@@ -536,8 +542,13 @@ public: // gui
             textbox1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
             textbox1->getContentWidget()->Layout.border = MIP_DRect(10,10,10,10);
             memset(textbox1_buffer,0,TEXTBOX1_BUFFER_SIZE);
-            for (uint32_t i=0; i<50; i++) {
-              char* ptr = textbox1_buffer + (i*64);
+
+            char* ptr = textbox1_buffer + (0*64);
+            sprintf(ptr,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+            textbox1->appendLine(ptr,false);
+
+            for (uint32_t i=1; i<50; i++) {
+              ptr = textbox1_buffer + (i*64);
               sprintf(ptr,"Hello world.. line %i",i);
               textbox1->appendLine(ptr,false);
             }
