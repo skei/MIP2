@@ -58,6 +58,30 @@ public:
 public: // parent to child
 //------------------------------
 
+  /*
+  void prepareForAlignment() override {
+    MIP_PRINT;
+    MIP_Window* window = (MIP_Window*)getOwnerWindow();
+    if (window) {
+      MIP_Painter* painter = window->getPainter();
+      if (painter) {
+        float bounds[4];;
+        painter->textBounds(MRect.x,MRect.y,MText,nullptr,bounds);
+        float xmin = bounds[0];
+        //float ymin = bounds[1];
+        float xmax = bounds[2];
+        //float ymax = bounds[3];
+        float width = xmax - xmin;
+        MRect.w = width;
+      }
+    }
+  }
+  */
+
+//------------------------------
+public: // parent to child
+//------------------------------
+
   void on_widget_paint(MIP_PaintContext* AContext) override {
     fillBackground(AContext);
     paintChildWidgets(AContext);

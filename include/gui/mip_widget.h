@@ -25,8 +25,8 @@ typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 struct MIP_WidgetLayout {
   uint32_t    alignment   = MIP_WIDGET_ALIGN_PARENT;      // alignment relative to parent
   double      aspectRatio = -1;                           // if > 0, force aspect ratio (scale down)
-  uint32_t    horizScale  = MIP_WIDGET_SIZE_PIXELS;       // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
-  uint32_t    vertScale   = MIP_WIDGET_SIZE_PIXELS;       // y,h - --"--
+  uint32_t    horizScale  = MIP_WIDGET_SCALE_PIXELS;      // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
+  uint32_t    vertScale   = MIP_WIDGET_SCALE_PIXELS;      // y,h - --"--
   MIP_DRect   initialRect = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   baseRect    = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
   MIP_DRect   border      = MIP_DRect(0,0,0,0);           // inner border
@@ -405,8 +405,10 @@ public: // hierarchy
 
   //----------
 
-  virtual void prepareForAlignment() {
-  }
+  //virtual void prepareForAlignment() {
+  //}
+
+  //----------
 
   virtual void alignChildWidgets(bool ARecursive=true) {
 
@@ -451,32 +453,36 @@ public: // hierarchy
         MIP_Widget* child = MChildren[i];
         if (child->Flags.visible) {
 // !!!
-          child->prepareForAlignment();
+          //child->prepareForAlignment();
 // !!!
           MIP_DRect child_rect = child->Layout.baseRect;
+
+
+
           uint32_t  alignment = child->Layout.alignment;
 
           // sizemode
+
           switch (child->Layout.horizScale) {
-            case MIP_WIDGET_SIZE_PIXELS:
+            case MIP_WIDGET_SCALE_PIXELS:
               break;
-            case MIP_WIDGET_SIZE_PARENT_RATIO:
+            case MIP_WIDGET_SCALE_PARENT_RATIO:
               child_rect.x *= parent_rect.w;
               child_rect.w *= parent_rect.w;
               break;
-            case MIP_WIDGET_SIZE_CLIENT_RATIO:
+            case MIP_WIDGET_SCALE_CLIENT_RATIO:
               child_rect.x *= client_rect.w;
               child_rect.w *= client_rect.w;
               break;
           }
           switch (child->Layout.vertScale) {
-            case MIP_WIDGET_SIZE_PIXELS:
+            case MIP_WIDGET_SCALE_PIXELS:
               break;
-            case MIP_WIDGET_SIZE_PARENT_RATIO:
+            case MIP_WIDGET_SCALE_PARENT_RATIO:
               child_rect.y *= parent_rect.h;
               child_rect.h *= parent_rect.h;
               break;
-            case MIP_WIDGET_SIZE_CLIENT_RATIO:
+            case MIP_WIDGET_SCALE_CLIENT_RATIO:
               child_rect.y *= client_rect.h;
               child_rect.h *= client_rect.h;
               break;
@@ -590,11 +596,15 @@ public: // hierarchy
               child_rect.x += client_rect.x;
               child_rect.y += client_rect.y;
               //child_rect.w = client_rect.w;
+              //client_rect.y += (child_rect.h + spacing.y);
+              //client_rect.h -= (child_rect.h + spacing.y);
               break;
 
             case MIP_WIDGET_ALIGN_TOP_LEFT:
               child_rect.x += client_rect.x;
               child_rect.y += client_rect.y;
+              //client_rect.y += (child_rect.h + spacing.y);
+              //client_rect.h -= (child_rect.h + spacing.y);
               break;
 
             case MIP_WIDGET_ALIGN_TOP_CENTER:
