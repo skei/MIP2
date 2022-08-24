@@ -9,14 +9,16 @@
 
 #define TEXTBOX1_BUFFER_SIZE  (256*256)
 
-#define MIP_EXECUTABLE_SHARED_LIBRARY
-//-Wl,-e,entry_point
-
 //----------------------------------------------------------------------
 
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/widgets/mip_widgets.h"
+
+//#define MIP_EXECUTABLE_SHARED_LIBRARY
+//-Wl,-e,entry_point
+
+//#include "plugin/exe/mip_exe.h"
 
 //----------------------------------------------------------------------
 //
@@ -444,13 +446,13 @@ public: // gui
 
         MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(0.5,"knob",0.5);
         knob1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-        knob1->Layout.horizScale = MIP_WIDGET_SIZE_PARENT_RATIO;
+        knob1->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
         knob1->Layout.aspectRatio = 2.0 / 3.0;
         aspect_rect1->appendChildWidget(knob1);
 
         MIP_Knob2Widget* knob2 = new MIP_Knob2Widget(0.5,"knob",0.5);
         knob2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-        knob2->Layout.horizScale = MIP_WIDGET_SIZE_PARENT_RATIO;
+        knob2->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
         knob2->Layout.aspectRatio = 2.0 / 3.0;
         aspect_rect1->appendChildWidget(knob2);
 
@@ -583,269 +585,4 @@ MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* AD
   return nullptr;
 }
 
-//----------------------------------------------------------------------
-//
-// .so entry point
-//
-//----------------------------------------------------------------------
-
-/*
-  https://stackoverflow.com/questions/15265295/understanding-the-libc-init-array
-
-  These symbols are related to the C / C++ constructor and destructor startup
-  and tear down code that is called before / after main(). Sections named
-  .init, .ctors, .preinit_array, and .init_array are to do with initialization
-  of C/C++ objects, and sections .fini, .fini_array, and .dtors are for tear
-  down. The start and end symbols define the beginning and end of code sections
-  related to such operations and might be referenced from other parts of the
-  runtime support code.
-
-  The .preinit_array and .init_array sections contain arrays of pointers to
-  functions that will be called on initialization. The .fini_array is an array
-  of functions that will be called on destruction. Presumably the start and end
-  labels are used to walk these lists.
-
-  A good example of code that uses these symbols is to be found here
-  http://static.grumpycoder.net/pixel/uC-sdk-doc/initfini_8c_source.html
-  for initfini.c. You can see that on startup, __libc_init_array() is called
-  and this first calls all the function pointers in section .preinit_array by
-  referring to the start and end labels. Then it calls the _init() function in
-  the .init section. Lastly it calls all the function pointers in section
-  .init_array. After main() is complete the teardown call to
-  __libc_fini_array() causes all the functions in .fini_array to be called,
-  before finally calling _fini().
-
-  Note that there seems to be a cut-and-paste bug in this code when it
-  calculates the count of functions to call at teardown. Presumably they were
-  dealing with a real time micro controller OS and never encountered this
-  section.
-*/
-
-
-#ifdef MIP_PLUGIN
-#ifdef MIP_EXECUTABLE_SHARED_LIBRARY
-
-  //#warning add this to both compiler & linker settings: -Wl,-e,entry_point
-
-/*
-  see also:
-  https://refspecs.linuxbase.org/LSB_3.1.0/LSB-generic/LSB-generic/baselib---libc-start-main-.html
-  --enable-initfini-array ??
-*/
-
-/*
-  #ifdef SIXTY_FOUR_BIT
-    const char my_interp[] __attribute__((section(".interp"))) = "/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2";
-  #else
-    const char my_interp[] __attribute__((section(".interp"))) = "/lib/ld-linux.so.2";
-  #endif
-*/
-
-const char interp_section[] __attribute__((section(".interp"))) = "/lib64/ld-linux-x86-64.so.2";
-
-#include <sys/types.h>
-
-extern "C" {
-
-  //------------------------------
-  // __do_global_ctors
-  //------------------------------
-
-  // based on this:
-  // https://github.com/gcc-mirror/gcc/blob/master/libgcc/config/arc/initfini.c
-
-  //extern void __do_global_ctors(void);
-  //extern void __do_global_dtors(void);
-
-//  typedef void (*func_ptr)(void);
-//
-//  //----------
-//
-//  func_ptr __CTOR_LIST__[1] __attribute__ ((section(".ctors"))) = { (func_ptr)(-1) };
-//  func_ptr __DTOR_LIST__[1] __attribute__ ((section(".dtors"))) = { (func_ptr)(-1) };
-//  func_ptr __CTOR_END__ [1] __attribute__ ((section(".ctors"))) = { (func_ptr)0 };
-//  func_ptr __DTOR_END__ [1] __attribute__ ((section(".dtors"))) = { (func_ptr)0 };
-//
-//  void __do_global_ctors() {
-//    MIP_Print("* do_global_ctors()\n");
-//    int i=0;
-//    func_ptr *p;
-//    for (p = __CTOR_END__ - 1; *p != (func_ptr) -1; p--) {
-//      MIP_Print("ctor #%i\n",i++);
-//      (*p)();
-//    }
-//  }
-//
-//  void __do_global_dtors() {
-//    MIP_Print("* do_global_dtors()\n");
-//    func_ptr *p;
-//    for (p = __DTOR_LIST__ + 1; *p; p++) (*p)();
-//  }
-
-  //------------------------------
-  // __libc_init_array
-  //------------------------------
-
-  /*
-    According to this comment from Nominal Animal here:
-    stackoverflow.com/questions/32700494/executing-init-and-fini,
-    using the attribute constructor would add the function in the .init_array,
-    and it depends of the ABI; if you're on x86, it should work.
-  */
-
-  // https://stackoverflow.com/questions/13734745/why-do-i-have-an-undefined-reference-to-init-in-libc-init-array
-
-  extern void _init (void);
-  extern void (*__preinit_array_start[]) (void) __attribute__((weak));
-  extern void (*__preinit_array_end[])   (void) __attribute__((weak));
-  extern void (*__init_array_start[])    (void) __attribute__((weak));
-  extern void (*__init_array_end[])      (void) __attribute__((weak));
-
-  void __libc_init_array(void) {
-    MIP_Print("* __libc_init_array()\n");
-    MIP_Print("  (__preinit_array_start: %p)\n",__preinit_array_start);
-    MIP_Print("  (__preinit_array_end: %p)\n",__preinit_array_end);
-    MIP_Print("  (__init_array_start: %p)\n",__init_array_start);
-    MIP_Print("  (__init_array_end: %p)\n",__init_array_end);
-    size_t count;
-    size_t i;
-    count = __preinit_array_end - __preinit_array_start;
-    MIP_Print("   count: %i\n",(int)count);
-    for (i = 0; i < count; i++) __preinit_array_start[i]();
-    _init();
-    count = __init_array_end - __init_array_start;
-    for (i = 0; i < count; i++) __init_array_start[i]();
-  }
-
-  //------------------------------
-  // __libc_csu_init
-  //------------------------------
-
-//  extern void _init (void);
-//  extern void (*__preinit_array_start[]) (int argc, char **argv, char **envp) __attribute__((weak));
-//  extern void (*__preinit_array_end[])   (int argc, char **argv, char **envp) __attribute__((weak));
-//  extern void (*__init_array_start[])    (int argc, char **argv, char **envp) __attribute__((weak));
-//  extern void (*__init_array_end[])      (int argc, char **argv, char **envp) __attribute__((weak));
-//
-//  void __libc_csu_init(int argc, char **argv, char **envp) {
-//    MIP_Print("* __libc_init_array()\n");
-//    MIP_Print("  (__preinit_array_start: %p)\n",__preinit_array_start);
-//    MIP_Print("  (__preinit_array_end: %p)\n",__preinit_array_end);
-//    MIP_Print("  (__init_array_start: %p)\n",__init_array_start);
-//    MIP_Print("  (__init_array_end: %p)\n",__init_array_end);
-//    size_t count;
-//    size_t i;
-//    count = __preinit_array_end - __preinit_array_start;
-//    MIP_Print("   preinit count: %i\n",(int)count);
-//    for (i=0; i<count; i++) (*__preinit_array_start[i])(argc, argv, envp);
-//    MIP_Print("  calling _init\n");
-//    _init ();
-//    count = __init_array_end - __init_array_start;
-//    MIP_Print("   init count: %i\n",(int)count);
-//    for (i=0; i<count; i++) (*__init_array_start [i]) (argc, argv, envp);
-//  }
-
-  //------------------------------
-  // __libc_start_main
-  //------------------------------
-
-  extern int __libc_start_main(
-    int  *(main)(int, char**, char**),
-    int    argc,
-    char** ubp_av,
-    void (*init)(void),
-    void (*fini)(void),
-    void (*rtld_fini)(void),
-    void (*stack_end)
-  );
-
-  //------------------------------
-  //
-  //------------------------------
-
-  uint8_t my_stack[1000000];
-
-  void my_init() {
-    MIP_Print("* my_init()\n");
-    //__do_global_ctors();
-    __libc_init_array();
-  }
-
-  void my_fini() {
-    MIP_Print("* my_fini()\n");
-    //__do_global_dtors();
-  }
-
-  void my_rtld_fini() {
-    MIP_Print("* my_rtld_fini()\n");
-  }
-
-  //------------------------------
-  // entry_point
-  //------------------------------
-
-  __attribute__((force_align_arg_pointer))
-  void entry_point() {
-    MIP_Print("* entry_point()\n");
-
-    //int bssSize = (int)&__bss_end__ - (int)&__bss_start__;
-    //memset(&__bss_start__, 0, bssSize);
-
-    //int argc = 1;
-    //const char* argv[] = { "/DISKS/sda2/code/git/MIP2/bin/build_debug.clap" };
-
-    int argc;
-    char **argv;
-
-    asm("mov 8(%%rbp), %0" : "=&r" (argc));
-    asm("mov %%rbp, %0\n"
-        "add $16, %0"      : "=&r" (argv));
-
-//    #define START "_start"
-//
-//    int main();
-//    weak void _init();
-//    weak void _fini();
-//    int __libc_start_main(int (*)(), int, char **, void (*)(), void(*)(), void(*)());
-//
-//    void _start_c(long *p) {
-//      int argc = p[0];
-//      char **argv = (void *)(p+1);
-//      __libc_start_main(main, argc, argv, _init, _fini, 0);
-//    }
-//
-//    __asm__(
-//      ".text \n"
-//      ".global " START " \n"
-//      START ": \n"
-//      "	xor %rbp,%rbp \n"
-//      "	mov %rsp,%rdi \n"
-//      ".weak _DYNAMIC \n"
-//      ".hidden _DYNAMIC \n"
-//      "	lea _DYNAMIC(%rip),%rsi \n"
-//      "	andq $-16,%rsp \n"
-//      "	call " START "_c \n"
-//    );
-
-    MIP_Print("argc %i argv %p\n",argc,*argv);
-
-    //MIP_Print("> calling __libc_init_array\n");
-    //__libc_init_array();
-    //__libc_csu_init(argc,(char**)argv,nullptr);
-    //__do_global_ctors();
-    //_init();
-
-    MIP_Print("> calling __libc_start_main\n");
-    __libc_start_main(main_trampoline,argc,(char**)argv,my_init,my_fini,my_rtld_fini,0);//&my_stack[500000]);
-    //__libc_start_main(main_trampoline,0,nullptr,nullptr,nullptr,nullptr,&my_stack[500000]);
-    MIP_Print("< back from __libc_start_main\n");
-    MIP_Print("> calling _exit\n");
-    _exit(EXIT_SUCCESS);
-  }
-
-}
-
-#endif // MIP_EXECUTABLE_SHARED_LIBRARY
-
-#endif // MIP_PLUGIN
 

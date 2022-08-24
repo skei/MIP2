@@ -1,5 +1,5 @@
-#ifndef mip_exe_included
-#define mip_exe_included
+#ifndef mip_exe_entry_included
+#define mip_exe_entry_included
 //----------------------------------------------------------------------
 
 /*
@@ -10,6 +10,7 @@
 #include "mip.h"
 #include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_host_implementation.h"
+#include "plugin/exe/mip_exe.h"
 #include "plugin/exe/mip_exe_host.h"
 #include "gui/mip_window.h"
 
@@ -102,10 +103,10 @@ int main(int argc, char** argv, char** env) {
 
   if (num_descriptors > 0) {
 
-    //const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
+    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
 
-    const clap_plugin_descriptor_t* descriptor = &template_descriptor;
-    MIP_Print("descriptor: %p\n",descriptor);
+    //const clap_plugin_descriptor_t* descriptor = &template_descriptor;
+    //MIP_Print("descriptor: %p\n",descriptor);
 
     if (descriptor) {
       MIP_ExeHostImplementation* exe_host = new MIP_ExeHostImplementation();
@@ -177,51 +178,6 @@ int main(int argc, char** argv, char** env) {
   } // num desc > 0
   return 0;
 }
-
-
-
-
-
-#ifdef MIP_EXECUTABLE_SHARED_LIBRARY
-
-
-
-
-extern "C" {
-
-  int my_test_global = 123;
-
-  int test_func() {
-    printf("* test_func()\n");
-    return 42;
-  }
-
-  int test_func_result = test_func();
-
-  __attribute__((constructor))
-  void ctor_test_func() {
-    MIP_Print("* ctor_test_func()\n");
-    test_func_result = 41;
-  }
-
-  int main_result;
-
-  int* main_trampoline(int argc, char** argv, char** env) {
-    MIP_Print("* main_trampoline()\n");
-    MIP_Print("  (my_test_global = %i)\n",my_test_global);
-    MIP_Print("  (test_func_result = %i)\n",test_func_result);
-    MIP_Print("  calling real main()\n");
-    main_result = main(argc,argv,env); // crashes
-    MIP_Print("  and we're back..\n");
-    return &main_result;
-  }
-
-}
-
-#endif // TEST_EXECUTABLE_SHARED_LIBRARY
-
-
-//#endif // EXE
 
 //----------------------------------------------------------------------
 #endif

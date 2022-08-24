@@ -28,6 +28,7 @@ class MIP_Registry {
 private:
 //------------------------------
 
+  bool                                        MInitialized  = false;
   char                                        MPath[1024]   = {0};  // plugin path
   MIP_Array<const char*>                      MFactoryIds   = {};   // factory id's
   MIP_Array<const clap_plugin_factory_t*>     MFactories    = {};   // factories
@@ -39,7 +40,8 @@ public:
 
   MIP_Registry() {
     MIP_Print("\n");
-    if (MIP_Register) MIP_Register(this);
+    //if (MIP_Register) MIP_Register(this);
+    initialize();
   }
 
   //----------
@@ -66,6 +68,15 @@ public:
  const char* getPath() {
    return MPath;
  }
+
+  void initialize() {
+    MIP_Print("\n");
+    if (!MInitialized) {
+      if (MIP_Register) MIP_Register(this);
+    }
+    MInitialized = true;
+  }
+
 
 //------------------------------
 public: // factories
