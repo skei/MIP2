@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1660893287 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../build/test/test_layout.cpp"
+1661297081 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/plugins/gain.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
@@ -29,11 +29,11 @@
 
 1660269806 /DISKS/sda2/code/git/MIP2/include/base/mip_const.h
 
-1660862491 /DISKS/sda2/code/git/MIP2/include/base/mip_enums.h
+1661296872 /DISKS/sda2/code/git/MIP2/include/base/mip_enums.h
 
 1641519085 /DISKS/sda2/code/git/MIP2/include/base/mip_attributes.h
 
-1661172249 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug.h
+1661275371 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug.h
 	"base/debug/mip_debug_print.h"
 	"base/debug/mip_debug_assert.h"
 	"base/debug/mip_debug_watch.h"
@@ -739,7 +739,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/clap/mip_clap_factory.h"
 
-1661029924 /DISKS/sda2/code/git/MIP2/include/plugin/mip_registry.h
+1661294287 /DISKS/sda2/code/git/MIP2/include/plugin/mip_registry.h
 	"mip.h"
 	"base/types/mip_array.h"
 	"plugin/mip_plugin.h"
@@ -782,7 +782,7 @@
 	"gui/mip_drawable.h"
 	"gui/xcb/mip_xcb.h"
 
-1661183230 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1661296912 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"gui/mip_paint_context.h"
 	"plugin/mip_parameter.h"
@@ -1016,7 +1016,7 @@
 	"gui/widgets/nvg/mip_value_widget.h"
 	"plugin/mip_parameter.h"
 
-1660850026 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_widget.h
+1661296388 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_widget.h
 	"mip.h"
 	"gui/widgets/mip_panel_widget.h"
 
@@ -1055,10 +1055,11 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1661172208 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe_entry.h
+1661294436 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe_entry.h
 	"mip.h"
 	"plugin/mip_registry.h"
 	"plugin/clap/mip_clap_host_implementation.h"
+	"plugin/exe/mip_exe.h"
 	"plugin/exe/mip_exe_host.h"
 	"gui/mip_window.h"
 
@@ -1165,7 +1166,7 @@
 1659400720 /DISKS/sda2/code/git/MIP2/source/plugins/sa_botage/sa_botage_params.h
 	"mip.h"
 
-1660892719 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob2_widget.h
+1661296922 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_knob2_widget.h
 	"mip.h"
 	"gui/widgets/mip_panel_widget.h"
 	"gui/widgets/mip_text_widget.h"
@@ -1182,7 +1183,7 @@
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
 
-1660595855 /DISKS/sda2/code/git/MIP2/source/plugins/gain.cpp
+1661297028 /DISKS/sda2/code/git/MIP2/source/plugins/gain.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
@@ -1523,13 +1524,12 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1661236213 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
+1661294351 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
 	"gui/widgets/mip_widgets.h"
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
-	<sys/types.h>
 
 1660609022 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_pages_widget.h
 	"mip.h"
@@ -1543,7 +1543,7 @@
 	"gui/widgets/mip_pages_widget.h"
 	"gui/mip_paint_context.h"
 
-1660830053 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_box_widget.h
+1661296332 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_box_widget.h
 	"gui/widgets/mip_widgets.h"
 
 1660471761 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_keyboard_widget.h
@@ -1645,4 +1645,33 @@
 1660891554 /DISKS/sda2/code/git/MIP2/source/private/sa_nity/sa_nity_editor.h
 	"mip.h"
 	"plugin/mip_editor.h"
+
+1661293750 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe.h
+	"mip.h"
+	<sys/types.h>
+
+1660769477 /DISKS/sda2/code/git/MIP2/source/private/sa_botage.cpp
+	"plugin/mip_plugin.h"
+	"sa_botage/sa_botage_editor.h"
+	"sa_botage/sa_botage_params.h"
+	"sa_botage/sa_botage_process.h"
+	"plugin/mip_registry.h"
+	"plugin/clap/mip_clap_entry.h"
+	"plugin/exe/mip_exe_entry.h"
+
+1661296983 /DISKS/sda2/code/git/MIP2/source/private/sa_botage/sa_botage_editor.h
+	"mip.h"
+	"plugin/mip_editor.h"
+	"gui/widgets/mip_widgets.h"
+	"sa_botage_process.h"
+	"sa_botage_widgets.h"
+
+1660769514 /DISKS/sda2/code/git/MIP2/source/private/sa_botage/sa_botage_process.h
+	"mip.h"
+	"sa_botage_params.h"
+
+1659400720 /DISKS/sda2/code/git/MIP2/source/private/sa_botage/sa_botage_params.h
+	"mip.h"
+
+1659514876 /DISKS/sda2/code/git/MIP2/source/private/sa_botage/sa_botage_widgets.h
 
