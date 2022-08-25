@@ -79,7 +79,6 @@ public:
         }
       }
 
-
       double range = maxval - minval;
       if (range > 0) {
         double v = value / range; // 0..1
@@ -96,13 +95,13 @@ public:
 
         painter->beginPath();
         painter->strokeColor(MArcBackColor);
-        painter->arc(cx,cy,r,a1,a1 + (0.8 * MIP_PI2),MIP_WINDING_CLOCKWISE);
-        painter->stroke();
-
-        painter->beginPath();
-        painter->strokeColor(MArcColor);
         painter->arc(cx,cy,r,a1,a2,MIP_WINDING_CLOCKWISE);
         painter->stroke();
+
+//        painter->beginPath();
+//        painter->strokeColor(MArcColor);
+//        painter->arc(cx,cy,r,a1,a2,MIP_WINDING_CLOCKWISE);
+//        painter->stroke();
 
         //painter->drawTextBox(rect,temp,MValueAlignment,MValueColor);
       }

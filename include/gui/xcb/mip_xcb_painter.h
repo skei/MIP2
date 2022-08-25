@@ -136,8 +136,12 @@ public:
   void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
   }
 
+  //----------
+
   void endPaint() override {
   }
+
+  //----------
 
   /*
     The XSetClipRectangles() function changes the clip-mask in the specified GC
@@ -173,6 +177,8 @@ public:
     xcb_flush(MConnection);
   }
 
+  //----------
+
   void resetClip() override {
     uint32_t mask = XCB_GC_CLIP_MASK;
     uint32_t values[1];
@@ -189,8 +195,12 @@ public:
   void beginFrame(float windowWidth, float windowHeight, float devicePixelRatio) override {
   }
 
+  //----------
+
   void cancelFrame() override {
   }
+
+  //----------
 
   void endFrame() override {
     //xcb_flush(MConnection);
@@ -203,8 +213,12 @@ public:
   void globalCompositeOperation(int op) override {
   }
 
+  //----------
+
   void globalCompositeBlendFunc(int sfactor, int dfactor) override {
   }
+
+  //----------
 
   void globalCompositeBlendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) override {
   }
@@ -216,8 +230,12 @@ public:
   void save() override {
   }
 
+  //----------
+
   void restore() override {
   }
+
+  //----------
 
   void reset() override {
   }
@@ -229,37 +247,55 @@ public:
   void shapeAntiAlias(int enabled) override {
   }
 
+  //----------
+
   void strokeColor(MIP_Color color) override {
     MStrokeColor = color;
     _set_color(MStrokeColor);
   }
 
+  //----------
+
   void strokePaint(MIP_PaintSource paint) override {
   }
+
+  //----------
 
   void fillColor(MIP_Color color) override {
     MFillColor = color;
     _set_color(MFillColor);
-    _set_background_color(MFillColor);
+    //_set_background_color(MFillColor);
   }
+
+  //----------
 
   void fillPaint(MIP_PaintSource paint) override {
     MFillPaint = paint;
   }
 
+  //----------
+
   void miterLimit(float limit) override {
   }
+
+  //----------
 
   void strokeWidth(float size) override {
     MStrokeWidth = size;
     _set_line_width(MStrokeWidth);
   }
 
+  //----------
+
   void lineCap(int cap) override {
   }
 
+  //----------
+
   void lineJoin(int join) override {
   }
+
+  //----------
 
   void globalAlpha(float alpha) override {
   }
@@ -297,19 +333,29 @@ public:
     return 0;
   }
 
+  //----------
+
   int createImageMem(int imageFlags, unsigned char* data, int ndata) override {
     return 0;
   }
+
+  //----------
 
   int createImageRGBA(int w, int h, int imageFlags, const unsigned char* data) override {
     return 0;
   }
 
+  //----------
+
   void updateImage(int image, const unsigned char* data) override {
   }
 
+  //----------
+
   void imageSize(int image, int* w, int* h) override {
   }
+
+  //----------
 
   void deleteImage(int image) override {
   }
@@ -322,13 +368,19 @@ public:
     return MIP_PaintSource();
   }
 
+  //----------
+
   MIP_PaintSource boxGradient(float x, float y, float w, float h, float r, float f, MIP_Color icol, MIP_Color ocol) override {
     return MIP_PaintSource();
   }
 
+  //----------
+
   MIP_PaintSource radialGradient(float cx, float cy, float inr, float outr, MIP_Color icol, MIP_Color ocol) override {
     return MIP_PaintSource();
   }
+
+  //----------
 
   MIP_PaintSource imagePattern(float ox, float oy, float ex, float ey, float angle, int image, float alpha) override {
     return MIP_PaintSource();
@@ -341,8 +393,12 @@ public:
   void scissor(float x, float y, float w, float h) override {
   }
 
+  //----------
+
   void intersectScissor(float x, float y, float w, float h) override {
   }
+
+  //----------
 
   void resetScissor() override {
   }
@@ -355,6 +411,8 @@ public:
     MPathLength = 0;
   }
 
+  //----------
+
   void moveTo(float x, float y) override {
     MPath[MPathLength].type     = MIP_PATH_MOVE_TO;
     MPath[MPathLength].data[0]  = x;
@@ -362,12 +420,16 @@ public:
     MPathLength += 1;
   }
 
+  //----------
+
   void lineTo(float x, float y) override {
     MPath[MPathLength].type     = MIP_PATH_LINE_TO;
     MPath[MPathLength].data[0]  = x;
     MPath[MPathLength].data[1]  = y;
     MPathLength += 1;
   }
+
+  //----------
 
   void bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) override {
     MPath[MPathLength].type     = MIP_PATH_BEZIER_TO;
@@ -380,6 +442,8 @@ public:
     MPathLength += 1;
   }
 
+  //----------
+
   void quadTo(float cx, float cy, float x, float y) override {
     MPath[MPathLength].type     = MIP_PATH_QUAD_TO;
     MPath[MPathLength].data[0]  = cx;
@@ -388,6 +452,8 @@ public:
     MPath[MPathLength].data[3]  = y;
     MPathLength += 1;
   }
+
+  //----------
 
   void arcTo(float x1, float y1, float x2, float y2, float radius) override {
     MPath[MPathLength].type     = MIP_PATH_ARC_TO;
@@ -399,11 +465,17 @@ public:
     MPathLength += 1;
   }
 
+  //----------
+
   void closePath() override {
   }
 
+  //----------
+
   void pathWinding(int dir) override {
   }
+
+  //----------
 
   void arc(float cx, float cy, float r, float a0, float a1, int dir) override {
     MPath[MPathLength].type     = MIP_PATH_ARC;
@@ -416,6 +488,8 @@ public:
     MPathLength += 1;
   }
 
+  //----------
+
   void rect(float x, float y, float w, float h) override {
     MPath[MPathLength].type     = MIP_PATH_RECT;
     MPath[MPathLength].data[0]  = x;
@@ -424,6 +498,8 @@ public:
     MPath[MPathLength].data[3]  = h;
     MPathLength += 1;
   }
+
+  //----------
 
   void roundedRect(float x, float y, float w, float h, float r) override {
     MPath[MPathLength].type     = MIP_PATH_ROUNDED_RECT;
@@ -434,6 +510,8 @@ public:
     MPath[MPathLength].data[4]  = r;
     MPathLength += 1;
   }
+
+  //----------
 
   void roundedRectVarying(float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft) override {
     MPath[MPathLength].type     = MIP_PATH_ROUNDED_RECT_VARYING;
@@ -448,6 +526,8 @@ public:
     MPathLength += 1;
   }
 
+  //----------
+
   void ellipse(float cx, float cy, float rx, float ry) override {
     MPath[MPathLength].type     = MIP_PATH_ELLIPSE;
     MPath[MPathLength].data[0]  = cx;
@@ -456,6 +536,8 @@ public:
     MPath[MPathLength].data[3]  = ry;
   }
 
+  //----------
+
   void circle(float cx, float cy, float r) override {
     MPath[MPathLength].type     = MIP_PATH_CIRCLE;
     MPath[MPathLength].data[0]  = cx;
@@ -463,14 +545,18 @@ public:
     MPath[MPathLength].data[2]  = r;
   }
 
+  //----------
+
   void fill() override {
     for (uint32_t i=0; i<MPathLength; i++) {
       switch (MPath[i].type) {
+
         case MIP_PATH_MOVE_TO: {
           MPathXpos = MPath[i].data[0];
           MPathYpos = MPath[i].data[1];
           break;
         }
+
         case MIP_PATH_LINE_TO: {
           xcb_point_t polyline[] =  {
             (int16_t)MPathXpos, (int16_t)MPathYpos,
@@ -481,33 +567,23 @@ public:
           MPathYpos = MPath[i].data[1];
           break;
         }
+
         case MIP_PATH_BEZIER_TO: {
           break;
         }
+
         case MIP_PATH_QUAD_TO: {
           break;
         }
+
         case MIP_PATH_ARC_TO: {
           break;
         }
+
         case MIP_PATH_ARC: {
-          //    // angle 1 = start angle, relative to 3 o'clock
-          //    // angle 2 = 'distance' 0..1, counter-clockwise
-          //    float a1 = -AAngle1 + 0.25;
-          //    float a2 = -AAngle2;
-          float cx = MPath[i].data[0] + MPath[i].data[2];
-          float cy = MPath[i].data[1] + MPath[i].data[2];
-          xcb_arc_t arcs[] = {
-            (int16_t)cx,
-            (int16_t)cy,
-            (uint16_t)(MPath[i].data[2] * 2.0),
-            (uint16_t)(MPath[i].data[2] * 2.0),
-            (int16_t)(MPath[i].data[3] * 360.0f * 64.0f),
-            (int16_t)(MPath[i].data[4] * 360.0f * 64.0f)
-          };
-          xcb_poly_fill_arc(MConnection, MDrawable, MGC, 1, arcs );
           break;
         }
+
         case MIP_PATH_RECT: {
           //if ((ARect.w <= 0) || (ARect.h <= 0)) return;
           xcb_rectangle_t rectangles[] = {{
@@ -519,27 +595,49 @@ public:
           xcb_poly_fill_rectangle(MConnection,MDrawable,MGC,1,rectangles);
           break;
         }
+
+//    MPath[MPathLength].data[0]  = x;
+//    MPath[MPathLength].data[1]  = y;
+//    MPath[MPathLength].data[2]  = w;
+//    MPath[MPathLength].data[3]  = h;
+//    MPath[MPathLength].data[4]  = r;
+
         case MIP_PATH_ROUNDED_RECT: {
-          /*
-          float r  = ARadius;// - 1;
-          float r2 = r*2;
-          float AX1 = ARect.x;
-          float AY1 = ARect.y;
-          float AX2 = ARect.x2();
-          float AY2 = ARect.y2();
-          fillArc(       MIP_FRect(AX1-1,  AY1-1,   AX1+r2,   AY1+r2),   0.75, 0.25, AColor ); // upper left
-          fillArc(       MIP_FRect(AX2-r2, AY1-1,   AX2,      AY1+r2-1), 0.00, 0.25, AColor ); // upper right
-          fillArc(       MIP_FRect(AX1-1,  AY2-r2,  AX1+r2-1, AY2),      0.50, 0.25, AColor ); // lower left
-          fillArc(       MIP_FRect(AX2-r2, AY2-r2,  AX2,      AY2),      0.25, 0.25, AColor ); // lower right
-          fillRectangle( MIP_FRect(AX1+r,  AY1,     AX2-r,    AY1+r-1), AColor );  // top
-          fillRectangle( MIP_FRect(AX1,    AY1+r,   AX2,      AY2-r),   AColor );  // mid
-          fillRectangle( MIP_FRect(AX1+r,  AY2-r+1, AX2-r,    AY2),     AColor );  // bot
-          */
+          //TODO:
+          xcb_rectangle_t rectangles[] = {{
+            (int16_t)MPath[i].data[0],
+            (int16_t)MPath[i].data[1],
+            (uint16_t)MPath[i].data[2],
+            (uint16_t)MPath[i].data[3],
+          }};
+          xcb_poly_fill_rectangle(MConnection,MDrawable,MGC,1,rectangles);
+          //float r   = MPath[i].data[4];// - 1;
+          //float r2  = r * 2;
+          //float AX1 = MPath[MPathLength].data[0];
+          //float AY1 = MPath[MPathLength].data[0];
+          //float AX2 = MPath[MPathLength].data[0] + MPath[MPathLength].data[2];
+          //float AY2 = MPath[MPathLength].data[0] + MPath[MPathLength].data[2];
+          //fillArc(       MIP_FRect(AX1-1,  AY1-1,   AX1+r2,   AY1+r2),   0.75, 0.25, AColor ); // upper left
+          //fillArc(       MIP_FRect(AX2-r2, AY1-1,   AX2,      AY1+r2-1), 0.00, 0.25, AColor ); // upper right
+          //fillArc(       MIP_FRect(AX1-1,  AY2-r2,  AX1+r2-1, AY2),      0.50, 0.25, AColor ); // lower left
+          //fillArc(       MIP_FRect(AX2-r2, AY2-r2,  AX2,      AY2),      0.25, 0.25, AColor ); // lower right
+          //fillRectangle( MIP_FRect(AX1+r,  AY1,     AX2-r,    AY1+r-1), AColor );  // top
+          //fillRectangle( MIP_FRect(AX1,    AY1+r,   AX2,      AY2-r),   AColor );  // mid
+          //fillRectangle( MIP_FRect(AX1+r,  AY2-r+1, AX2-r,    AY2),     AColor );  // bot
           break;
         }
+
         case MIP_PATH_ROUNDED_RECT_VARYING: {
+          xcb_rectangle_t rectangles[] = {{
+            (int16_t)MPath[i].data[0],
+            (int16_t)MPath[i].data[1],
+            (uint16_t)MPath[i].data[2],
+            (uint16_t)MPath[i].data[3],
+          }};
+          xcb_poly_fill_rectangle(MConnection,MDrawable,MGC,1,rectangles);
           break;
         }
+
         case MIP_PATH_ELLIPSE: {
           //    set_color(AColor);
           //    xcb_arc_t arcs[] = {
@@ -553,22 +651,29 @@ public:
           //    xcb_poly_fill_arc(MConnection, MDrawable, MGC, 1, arcs );
           break;
         }
+
         case MIP_PATH_CIRCLE: {
           break;
         }
+
       }
     }
+    MPathLength = 0;
   }
+
+  //----------
 
   void stroke() override {
     //MIP_Print("MPathLength: %i\n",MPathLength);
     for (uint32_t i=0; i<MPathLength; i++) {
       switch (MPath[i].type) {
+
         case MIP_PATH_MOVE_TO: {
           MPathXpos = MPath[i].data[0];
           MPathYpos = MPath[i].data[1];
           break;
         }
+
         case MIP_PATH_LINE_TO: {
           xcb_point_t polyline[] =  {
             (int16_t)MPathXpos, (int16_t)MPathYpos,
@@ -579,56 +684,64 @@ public:
           MPathYpos = MPath[i].data[1];
           break;
         }
+
         case MIP_PATH_BEZIER_TO: {
           break;
         }
+
         case MIP_PATH_QUAD_TO: {
           break;
         }
+
         case MIP_PATH_ARC_TO: {
           break;
         }
-        case MIP_PATH_ARC: {
-          /*
-            angle 1 = start angle, relative to 3 o'clock
-            angle 2 = 'distance' 0..1, counter-clockwise
-          */
-          //    xcb_arc_t arcs[] = {
-          //      (int16_t)ARect.x,
-          //      (int16_t)ARect.y,
-          //      (uint16_t)ARect.w,  // +1
-          //      (uint16_t)ARect.h,  // +1
-          //      (int16_t)(a1 * 360.0f * 64.0f),
-          //      (int16_t)(a2 * 360.0f * 64.0f)
-          //    };
-          //    xcb_poly_arc(MConnection, MDrawable, MGC, 1, arcs );
 
-          float cx = MPath[i].data[0] - MPath[i].data[2]; // cx - r
-          float cy = MPath[i].data[1] - MPath[i].data[2]; // cy - r
+        case MIP_PATH_ARC: {
+          float cx = MPath[i].data[0];
+          float cy = MPath[i].data[1];
+          float r  = MPath[i].data[2];
+          float a1 = MPath[i].data[3];
+          float a2 = MPath[i].data[4];
+
+          //switch MIP_WINDING_CLOCKWISE
+
+          float x  = cx - r;
+          float y  = cy - r;
+          float w  = r * 2.0;
+          float h  = r * 2.0;
           xcb_arc_t arcs[] = {
-            (int16_t)cx,
-            (int16_t)cy,
-            (uint16_t)(MPath[i].data[2] * 2.0),             // r * 2
-            (uint16_t)(MPath[i].data[2] * 2.0),             // r * 2
-            (int16_t)(MPath[i].data[4] * 360.0f * 64.0f / MIP_PI2),   // a0
-            (int16_t)(MPath[i].data[3] * 360.0f * 64.0f / MIP_PI2)    // a1
+            (int16_t)x,   // x
+            (int16_t)y,   // y
+            (uint16_t)w,  // w
+            (uint16_t)h,  // h
+            (int16_t)(a1 * 360.0f * 64.0f * MIP_INVPI2),  // a1
+            (int16_t)(a2 * 360.0f * 64.0f * MIP_INVPI2)   // a2
           };
           xcb_poly_arc(MConnection, MDrawable, MGC, 1, arcs );
           break;
         }
+
         case MIP_PATH_RECT: {
-          //    set_color(AColor);
-          //    set_line_width(AWidth);
-          //    xcb_rectangle_t rectangles[] = {{
-          //      (int16_t)ARect.x,
-          //      (int16_t)ARect.y,
-          //      (uint16_t)ARect.w,
-          //      (uint16_t)ARect.h
-          //    }};
-          //    xcb_poly_rectangle(MConnection,MDrawable,MGC,1,rectangles);
+          xcb_rectangle_t rectangles[] = {{
+            (int16_t)MPath[i].data[0],
+            (int16_t)MPath[i].data[1],
+            (uint16_t)MPath[i].data[2],
+            (uint16_t)MPath[i].data[3],
+          }};
+          xcb_poly_rectangle(MConnection,MDrawable,MGC,1,rectangles);
           break;
         }
+
         case MIP_PATH_ROUNDED_RECT: {
+          //TODO
+          xcb_rectangle_t rectangles[] = {{
+            (int16_t)MPath[i].data[0],
+            (int16_t)MPath[i].data[1],
+            (uint16_t)MPath[i].data[2],
+            (uint16_t)MPath[i].data[3],
+          }};
+          xcb_poly_rectangle(MConnection,MDrawable,MGC,1,rectangles);
           //    float r  = ARadius;// - 1;
           //    float r2 = r*2;
           //    float AX1 = ARect.x;
@@ -645,9 +758,19 @@ public:
           //    drawLine( AX2,      AY1+r,    AX2,      AY2-r, AColor, AWidth );  // right
           break;
         }
+
         case MIP_PATH_ROUNDED_RECT_VARYING: {
+          //TODO
+          xcb_rectangle_t rectangles[] = {{
+            (int16_t)MPath[i].data[0],
+            (int16_t)MPath[i].data[1],
+            (uint16_t)MPath[i].data[2],
+            (uint16_t)MPath[i].data[3],
+          }};
+          xcb_poly_rectangle(MConnection,MDrawable,MGC,1,rectangles);
           break;
         }
+
         case MIP_PATH_ELLIPSE: {
           //    set_color(AColor);
           //    set_line_width(AWidth);
@@ -662,11 +785,14 @@ public:
           //    xcb_poly_arc(MConnection, MDrawable, MGC, 1, arcs );
           break;
         }
+
         case MIP_PATH_CIRCLE: {
           break;
         }
+
       }
     }
+    MPathLength = 0;
   }
 
   //--------------------
@@ -677,84 +803,135 @@ public:
     return 0;
     }
 
+  //----------
+
   int createFontAtIndex(const char* name, const char* filename, const int fontIndex) override {
     return 0;
   }
+
+  //----------
 
   int createFontMem(const char* name, unsigned char* data, int ndata, int freeData) override {
     return 0;
   }
 
+  //----------
+
   int createFontMemAtIndex(const char* name, unsigned char* data, int ndata, int freeData, const int fontIndex) override {
     return 0;
   }
+
+  //----------
 
   int findFont(const char* name) override {
     return 0;
   }
 
+  //----------
+
   int addFallbackFontId(int baseFont, int fallbackFont) override {
     return 0;
   }
+
+  //----------
 
   int addFallbackFont(const char* baseFont, const char* fallbackFont) override {
     return 0;
   }
 
+  //----------
+
   void resetFallbackFontsId(int baseFont) override {
   }
 
+  //----------
+
   void resetFallbackFonts(const char* baseFont) override {
   }
+
+  //----------
 
   void fontSize(float size) override {
     MFontSize = size;
   }
 
+  //----------
+
   void fontBlur(float blur) override {
   }
+
+  //----------
 
   void textLetterSpacing(float spacing) override {
   }
 
+  //----------
+
   void textLineHeight(float lineHeight) override {
   }
+
+  //----------
 
   void textAlign(int align) override {
   }
 
+  //----------
+
   void fontFaceId(int font) override {
   }
+
+  //----------
 
   void fontFace(const char* font) override {
   }
 
+  //----------
+
   float text(float x, float y, const char* string, const char* end) override {
+    _measure_string(string);
     uint8_t buffer[512];
     MIP_XcbPolyText8 pt;
     pt.data = buffer;
     pt.used = 0;
     mip_xcb_add_string_text8(&pt,string);
-    xcb_poly_text_8(MConnection,MDrawable,MGC,x,y,pt.used,pt.data);
+    xcb_poly_text_8(MConnection,MDrawable,MGC,x,y+ MFontAscent,pt.used,pt.data);
     return 0.0;
   }
+
+  //----------
 
   void textBox(float _x, float _y, float breakRowWidth, const char* string, const char* end) override {
   }
 
+  //----------
+
   float textBounds(float x, float y, const char* string, const char* end, float* bounds) override {
-    return 0.0;
+    _measure_string(string);
+    //MIP_Print("MFontHeight: %i\n",MFontHeight);
+    bounds[0] = x;
+    bounds[1] = y;
+    bounds[2] = x + (float)MFontWidth;
+    bounds[3] = y + (float)MFontHeight;//MFontHeight + MFontSize + MFontDescent;//Height;
+    return 1.0;
   }
+
+  //----------
 
   void textBoxBounds(float x, float y, float breakRowWidth, const char* string, const char* end, float* bounds) override {
   }
+
+  //----------
 
   int textGlyphPositions(float x, float y, const char* string, const char* end, /*NVGglyphPosition*/void* positions, int maxPositions) override {
     return 0;
   }
 
+  //----------
+
   void textMetrics(float* ascender, float* descender, float* lineh) override {
   }
+
+  //----------
 
   int textBreakLines(const char* string, const char* end, float breakRowWidth, /*NVGtextRow*/void* rows, int maxRows) override {
     return 0;
@@ -783,6 +960,8 @@ private:
     return MFontHeight;
   }
 
+  //----------
+
 //  #ifdef MIP_USE_CAIRO
 //
 //  cairo_surface_t* createCairoSurface() {
@@ -797,6 +976,8 @@ private:
 //  }
 //
 //  #endif
+
+  //----------
 
   void _set_color(MIP_Color AColor) {
     uint8_t r = AColor.r * 255.0f;
@@ -823,6 +1004,8 @@ private:
     values[0] = color;
     xcb_change_gc(MConnection, MGC, mask, values);
   }
+
+  //----------
 
   void _set_line_width(uint32_t AWidth) {
     uint32_t mask = XCB_GC_LINE_WIDTH;

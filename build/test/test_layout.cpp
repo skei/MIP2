@@ -5,8 +5,8 @@
 #endif // MIP_EXE
 
   #define MIP_GUI_XCB
-  #define MIP_PAINTER_NANOVG
-  //#define MIP_PAINTER_XCB
+  //#define MIP_PAINTER_NANOVG
+  #define MIP_PAINTER_XCB
 
 //  #define MIP_GUI_WIN32
 //  #define MIP_PAINTER_GDI
