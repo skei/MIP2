@@ -52,15 +52,17 @@ public:
 public:
 //------------------------------
 
-  virtual void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
-  virtual void endPaint() {}
+  virtual void      beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
+  virtual void      endPaint() {}
 
-  virtual void setClip(MIP_DRect ARect) {}
-  virtual void resetClip() {}
+  virtual void      setClip(MIP_DRect ARect) {}
+  virtual void      resetClip() {}
 
   //----------
 
   virtual void      pushClip(MIP_DRect ARect) {}
+  virtual void      pushOverlapClip(MIP_DRect ARect) {}
+
   virtual MIP_DRect popClip() { return MIP_DRect(); }
   virtual void      resetClipStack() {}
   virtual void      setClipRect(MIP_DRect ARect) {}
@@ -68,7 +70,9 @@ public:
 
   //virtual void resize(uint32_t AWidth, uint32_t AHeight) {}
   virtual void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) {}
-
+  virtual void triangle( double x1, double y1, double x2, double y2, double x3, double y3) {}
+  virtual void rectangle(MIP_DRect r) {}
+  virtual void ellipse(MIP_DRect r) {}
 
 //------------------------------
 public:
@@ -196,9 +200,6 @@ public:
 
 //----------
 
-  virtual void triangle( double x1, double y1, double x2, double y2, double x3, double y3) {}
-  virtual void rectangle(MIP_DRect r) {}
-  virtual void ellipse(MIP_DRect r) {}
 
 };
 

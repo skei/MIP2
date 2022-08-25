@@ -7,6 +7,7 @@
 #include "gui/base/mip_base_window.h"
 #include "gui/xcb/mip_xcb.h"
 #include "gui/xcb/mip_xcb_utils.h"
+
 #include "gui/xlib/mip_xlib.h"
 
 //----------------------------------------------------------------------

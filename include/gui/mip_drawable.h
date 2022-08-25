@@ -14,6 +14,7 @@
 
 #ifdef MIP_USE_XCB
   #include "gui/xcb/mip_xcb.h"
+  #include "gui/xlib/mip_xlib.h"
 #endif
 
 
@@ -38,22 +39,21 @@ public:
   #ifdef MIP_USE_GDI
   #endif
 
-  #ifdef MIP_USE_GLX
-    virtual Display* drawable_getXlibDisplay() { return nullptr; }
-  #endif
+  //#ifdef MIP_USE_GLX
+  //  virtual Display* drawable_getXlibDisplay() { return nullptr; }
+  //#endif
 
   #ifdef MIP_USE_NANOVG
   #endif
 
   #ifdef MIP_USE_XCB
-    virtual xcb_connection_t* drawable_getXcbConnection()  { return nullptr; }
-    virtual xcb_visualid_t    drawable_getXcbVisual()      { return XCB_NONE; }
-    virtual xcb_drawable_t    drawable_getXcbDrawable()    { return XCB_NONE; }
-    virtual xcb_window_t      drawable_getXcbWindow()      { return XCB_NONE; }
-    virtual xcb_pixmap_t      drawable_getXcbPixmap()      { return XCB_NONE; }
+    virtual xcb_connection_t* drawable_getXcbConnection() { return nullptr; }
+    virtual xcb_visualid_t    drawable_getXcbVisual()     { return XCB_NONE; }
+    virtual xcb_drawable_t    drawable_getXcbDrawable()   { return XCB_NONE; }
+    virtual xcb_window_t      drawable_getXcbWindow()     { return XCB_NONE; }
+    virtual xcb_pixmap_t      drawable_getXcbPixmap()     { return XCB_NONE; }
+    virtual Display*          drawable_getXlibDisplay()   { return nullptr; }
   #endif
-
-
 
 };
 

@@ -94,14 +94,16 @@ public: // clipping
     - set new clip rect
   */
 
-  virtual void pushClip(MIP_DRect ARect) {
+  //virtual void pushClip(MIP_DRect ARect) {
+  void pushClip(MIP_DRect ARect) override {
     MClipStack.push(MClipRect);
     MClipRect = ARect;
     resetClip();
     setClip(MClipRect);
   }
 
-  virtual void pushOverlapClip(MIP_DRect ARect) {
+  //virtual void pushOverlapClip(MIP_DRect ARect) {
+  void pushOverlapClip(MIP_DRect ARect) override {
     MIP_DRect r = ARect;
     r.overlap(MClipRect);
     pushClip(r);
@@ -114,7 +116,8 @@ public: // clipping
     - set clip rect to popped rect
   */
 
-  virtual MIP_DRect popClip() {
+  //virtual MIP_DRect popClip() {
+  MIP_DRect popClip() override {
     MClipRect = MClipStack.pop();
     resetClip();
     setClip(MClipRect);
@@ -123,19 +126,22 @@ public: // clipping
 
   //----------
 
-  virtual void resetClipStack() {
+  //virtual void resetClipStack() {
+  void resetClipStack() override {
     MClipStack.reset();
   }
 
   //----------
 
-  virtual void setClipRect(MIP_DRect ARect) {
+  //virtual void setClipRect(MIP_DRect ARect) {
+  void setClipRect(MIP_DRect ARect) override {
     MClipRect = ARect;
   }
 
   //----------
 
-  virtual MIP_DRect getClipRect() {
+  //virtual MIP_DRect getClipRect() {
+  MIP_DRect getClipRect() override {
     return MClipRect;
   }
 
@@ -143,7 +149,7 @@ public: // clipping
 public:
 //------------------------------
 
-  virtual void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {
+  void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {
     float bounds[4];;
     textBounds(ARect.x,ARect.y,AText,nullptr,bounds);
     float xmin = bounds[0];
