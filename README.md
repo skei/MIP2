@@ -42,5 +42,8 @@ priorities:
 ---
 
 ![mip2_screenshot3](doc/screenshots/mip2_screenshot3.png)
+
 ![mip2_screenshot1](doc/screenshots/mip2_screenshot1.png)
+
+![mip2_peek1](doc/screenshots/mip2_peek1.mp4)
 
