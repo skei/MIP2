@@ -276,12 +276,11 @@
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
-					<Add option="-static-libstdc++" />
-					<Add option="-static-libgcc" />
 					<Add option="-fPIE" />
 					<Add option="-Wl,--export-all-symbols" />
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
 					<Add library="pthread" />
-					<Add library="rt" />
 					<Add library="m" />
 				</Linker>
 			</Target>
@@ -289,19 +288,23 @@
 				<Option output="../bin/build_debug_win32.exe" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/debug/" />
 				<Option type="1" />
-				<Option compiler="gcc" />
+				<Option compiler="mingw" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-fno-pie" />
-					<Add option="-rdynamic" />
+					<Add option="-Wl,--export-all-symbols" />
 					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
 					<Add option="-DMIP_EXE" />
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-no-pie" />
+					<Add option="-Wl,--export-all-symbols" />
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
 					<Add library="pthread" />
-					<Add library="rt" />
 					<Add library="m" />
 				</Linker>
 			</Target>
@@ -487,6 +490,18 @@
 		<Unit filename="../include/gui/base/mip_base_surface.h" />
 		<Unit filename="../include/gui/base/mip_base_window.h" />
 		<Unit filename="../include/gui/cairo/mip_cairo.h" />
+		<Unit filename="../include/gui/cairo/mip_cairo_painter.h" />
+		<Unit filename="../include/gui/cairo/mip_cairo_utils.h" />
+		<Unit filename="../include/gui/gdi/backup/s3_brush_gdi.h" />
+		<Unit filename="../include/gui/gdi/backup/s3_font_gdi.h" />
+		<Unit filename="../include/gui/gdi/backup/s3_image_gdi.h" />
+		<Unit filename="../include/gui/gdi/backup/s3_painter_gdi.h" />
+		<Unit filename="../include/gui/gdi/backup/s3_pen_gdi.h" />
+		<Unit filename="../include/gui/gdi/backup/s3_surface_gdi.h" />
+		<Unit filename="../include/gui/gdi/mip_gdi.h" />
+		<Unit filename="../include/gui/gdi/mip_gdi_painter.h" />
+		<Unit filename="../include/gui/gdi/mip_gdi_surface.h" />
+		<Unit filename="../include/gui/gdi/mip_gdi_utils.h" />
 		<Unit filename="../include/gui/glx/mip_glx.h" />
 		<Unit filename="../include/gui/glx/mip_glx_painter.h" />
 		<Unit filename="../include/gui/glx/mip_glx_utils.h" />
@@ -500,6 +515,9 @@
 		<Unit filename="../include/gui/nanovg/mip_nanovg.h" />
 		<Unit filename="../include/gui/nanovg/mip_nanovg_painter.h" />
 		<Unit filename="../include/gui/nanovg/mip_nanovg_utils.h" />
+		<Unit filename="../include/gui/wgl/mip_wgl.h" />
+		<Unit filename="../include/gui/wgl/mip_wgl_painter.h" />
+		<Unit filename="../include/gui/wgl/mip_wgl_utils.h" />
 		<Unit filename="../include/gui/widgets/mip_button_row_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_button_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_color_widget.h" />
@@ -531,6 +549,11 @@
 		<Unit filename="../include/gui/widgets/mip_waveform_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_widgets.h" />
 		<Unit filename="../include/gui/widgets/template.h" />
+		<Unit filename="../include/gui/win32/backup/s3_win32.h" />
+		<Unit filename="../include/gui/win32/backup/s3_window_win32.h" />
+		<Unit filename="../include/gui/win32/mip_win32.h" />
+		<Unit filename="../include/gui/win32/mip_win32_utils.h" />
+		<Unit filename="../include/gui/win32/mip_win32_window.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_painter.h" />
 		<Unit filename="../include/gui/xcb/mip_xcb_surface.h" />

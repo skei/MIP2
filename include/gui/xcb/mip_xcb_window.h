@@ -485,25 +485,25 @@ public: // paint
 
   //----------
 
-  void blitImage(int32_t ADstX, int32_t ADstY, /*xcb_image_t*/void* AImage) override {
-    xcb_image_put(
-      MConnection,  // xcb_connection_t *  conn,
-      MWindow,      // xcb_drawable_t      draw,
-      MScreenGC,    // xcb_gcontext_t      gc,
-      (xcb_image_t*)AImage,       // xcb_image_t *       image,
-      ADstX,        // int16_t             x,
-      ADstY,        // int16_t             y,
-      0             // uint8_t             left_pad
-    );
-    xcb_flush(MConnection);
-  }
+//  void blitImage(int32_t ADstX, int32_t ADstY, /*xcb_image_t*/void* AImage) override {
+//    xcb_image_put(
+//      MConnection,  // xcb_connection_t *  conn,
+//      MWindow,      // xcb_drawable_t      draw,
+//      MScreenGC,    // xcb_gcontext_t      gc,
+//      (xcb_image_t*)AImage,       // xcb_image_t *       image,
+//      ADstX,        // int16_t             x,
+//      ADstY,        // int16_t             y,
+//      0             // uint8_t             left_pad
+//    );
+//    xcb_flush(MConnection);
+//  }
 
   //----------
 
-  void blitDrawable(int32_t ADstX, int32_t ADstY, /*xcb_drawable_t*/intptr_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) override {
+  void blitDrawable(int32_t ADstX, int32_t ADstY, MIP_Drawable* ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) override {
     xcb_copy_area(
       MConnection,  // Pointer to the xcb_connection_t structure
-      (xcb_drawable_t)ADrawable,    // The Drawable we want to paste
+      ADrawable->drawable_getXcbDrawable(),    // The Drawable we want to paste
       MWindow,      // The Drawable on which we copy the previous Drawable
       MScreenGC,    // A Graphic Context
       ASrcX,        // Top left x coordinate of the region we want to copy

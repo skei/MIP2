@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "gui/mip_drawable.h"
 //#include "gui/mip_window_listener.h"
 
 //----------------------------------------------------------------------
@@ -107,8 +108,9 @@ public: // paint
   virtual void fillColor(uint32_t AColor) {}
   virtual void fillColor(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) {}
   virtual void blitBuffer(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) {}
-  virtual void blitImage(int32_t ADstX, int32_t ADstY, /*xcb_image_t*/void* AImage) {}
-  virtual void blitDrawable(int32_t ADstX, int32_t ADstY, /*xcb_drawable_t*/intptr_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {}
+  //virtual void blitImage(int32_t ADstX, int32_t ADstY, /*xcb_image_t*/void* AImage) {}
+  //virtual void blitDrawable(int32_t ADstX, int32_t ADstY, /*xcb_drawable_t*/intptr_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {}
+  virtual void blitDrawable(int32_t ADstX, int32_t ADstY, MIP_Drawable* ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {}
 
 };
 

@@ -4,12 +4,21 @@
   // nc -U -l -k /tmp/mip.socket
 #endif // MIP_EXE
 
-  #define MIP_GUI_XCB
-  //#define MIP_PAINTER_NANOVG
-  #define MIP_PAINTER_XCB
+// linx
+
+#define MIP_GUI_XCB
+#define MIP_PAINTER_XCB
+//#define MIP_PAINTER_NANOVG
+
+// win32
 
 //  #define MIP_GUI_WIN32
 //  #define MIP_PAINTER_GDI
+
+//
+
+#define MIP_WINDOW_BUFFERED
+
 
 //#define MIP_EXECUTABLE_SHARED_LIBRARY
 //-Wl,-e,entry_point

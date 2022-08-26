@@ -1,4 +1,4 @@
-#ifndef mip_xcb_painter_included
+ #ifndef mip_xcb_painter_included
 #define mip_xcb_painter_included
 //----------------------------------------------------------------------
 
@@ -281,6 +281,7 @@ public:
   //----------
 
   void strokeWidth(float size) override {
+    if (size < 1.0) size = 1.0;
     MStrokeWidth = size;
     _set_line_width(MStrokeWidth);
   }
@@ -698,25 +699,17 @@ public:
         }
 
         case MIP_PATH_ARC: {
-          float cx = MPath[i].data[0];
-          float cy = MPath[i].data[1];
-          float r  = MPath[i].data[2];
           float a1 = MIP_PI2 - MPath[i].data[3];
           float a2 = - MPath[i].data[4];
-
-          // 0..PI2, 0 = 3 o'clock,, counter-clockwise
-
-          //switch MIP_WINDING_CLOCKWISE
-
-          float x  = cx - r;
-          float y  = cy - r;
-          float w  = r * 2.0;
-          float h  = r * 2.0;
+          float x  = MPath[i].data[0] - MPath[i].data[2];
+          float y  = MPath[i].data[1] - MPath[i].data[2];
+          float w  = MPath[i].data[2] * 2.0;
+          float h  = MPath[i].data[2] * 2.0;
           xcb_arc_t arcs[] = {
-            (int16_t)x,   // x
-            (int16_t)y,   // y
-            (uint16_t)w,  // w
-            (uint16_t)h,  // h
+            (int16_t)x,
+            (int16_t)y,
+            (uint16_t)w,
+            (uint16_t)h,
             (int16_t)(a1 * 360.0f * 64.0f * MIP_INVPI2),
             (int16_t)(a2 * 360.0f * 64.0f * MIP_INVPI2)
           };

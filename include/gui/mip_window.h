@@ -2,6 +2,8 @@
 #define mip_window_included
 //----------------------------------------------------------------------
 
+//#define MIP_WINDOW_BUFFERED
+
 /*
   todo:
     resize window: un-modal (like right-clicking)
@@ -10,6 +12,7 @@
 #include "mip.h"
 #include "base/system/mip_timer.h"
 #include "gui/mip_widget.h"
+#include "gui/mip_surface.h"
 
 //----------------------------------------------------------------------
 //
@@ -33,6 +36,7 @@ typedef MIP_ImplementedWindow MIP_BasicWindow;
 
 #define MIP_WINDOW_DBLCLICK_MS 300
 
+
 //----------------------------------------------------------------------
 //
 //
@@ -53,9 +57,11 @@ protected:
   MIP_Widget*       MClickedWidget      = nullptr;
   MIP_Widget*       MModalWidget        = nullptr;
   MIP_Widget*       MLockedWidget       = nullptr;
-  MIP_Painter*      MWindowPainter      = nullptr;
-  MIP_PaintContext  MPaintContext       = {};
   uint32_t          MCurrentCursor      = MIP_CURSOR_DEFAULT;
+  MIP_PaintContext  MPaintContext       = {};
+  MIP_Painter*      MWindowPainter      = nullptr;
+  MIP_Painter*      MBufferPainter      = nullptr;
+  MIP_Surface*      MBufferSurface      = nullptr;
 
   // click
 
@@ -86,7 +92,15 @@ public:
     MName = "MIP_Window";
     MWindowPainter = new MIP_Painter(this,this);
     MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
-    MPaintContext.painter = MWindowPainter;
+
+    #ifdef MIP_WINDOW_BUFFERED
+      MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+      MBufferPainter = new MIP_Painter(this,MBufferSurface);
+      MPaintContext.painter = MBufferPainter;
+    #else
+      MPaintContext.painter = MWindowPainter;
+    #endif
+
     MParent = nullptr;
     MRect.setPos(0.0);
     Layout.baseRect = MRect;
@@ -98,14 +112,30 @@ public:
 
   virtual ~MIP_Window() {
     delete MWindowPainter;
+    #ifdef MIP_WINDOW_BUFFERED
+      delete MBufferPainter;
+      delete MBufferSurface;
+    #endif
   }
 
 //------------------------------
 public:
 //------------------------------
 
+  MIP_Painter* getWindowPainter() {
+      return MWindowPainter;
+  }
+
+  MIP_Painter* getBufferPainter() {
+      return MBufferPainter;
+  }
+
   MIP_Painter* getPainter() {
-    return MWindowPainter;
+    #ifdef MIP_WINDOW_BUFFERED
+      return MBufferPainter;
+    #else
+      return MWindowPainter;
+    #endif
   }
 
   //----------
@@ -210,14 +240,19 @@ public: // window
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    MIP_Print("%i,%i MWindowPainter: %p\n",AWidth,AHeight,MWindowPainter);
-    if (MWindowPainter) {
-      delete MWindowPainter;
-      MWindowPainter = new MIP_Painter(this,this);
-      MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
+    //MIP_Print("%i,%i MWindowPainter: %p\n",AWidth,AHeight,MWindowPainter);
+    if (MWindowPainter) delete MWindowPainter;
+    MWindowPainter = new MIP_Painter(this,this);
+    MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
+    #ifdef MIP_WINDOW_BUFFERED
+      if (MBufferSurface) delete MBufferSurface;
+      MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+      if (MBufferPainter) delete MBufferPainter;
+      MBufferPainter = new MIP_Painter(this,MBufferSurface);
+      MPaintContext.painter = MBufferPainter;
+    #else
       MPaintContext.painter = MWindowPainter;
-    }
-
+    #endif
     MRect.setSize(AWidth,AHeight);
     MIP_Print("align???\n");
     //alignChildWidgets();
@@ -243,19 +278,39 @@ public: // window
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
-    setupPaintContext(AXpos,AYpos,AWidth,AHeight);
 
-    //MIP_NanoVGPainter* painter = (MIP_NanoVGPainter*)getPainter();
-    MIP_Painter* painter = getPainter();
+    //#ifdef MIP_WINDOW_BUFFERED
+    //#else
+    //#endif
 
-    painter->beginPaint(0,0,MRect.w,MRect.h);
+    //setupPaintContext(AXpos,AYpos,AWidth,AHeight);
+    MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
+    MPaintContext.theme       = &MIP_DefaultTheme;
+    MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
 
-    //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
-    //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
-    painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
-    paintChildWidgets(getPaintContext());
-    //painter->popClip();
-    painter->endPaint();
+    MIP_Painter* painter;
+    #ifdef MIP_WINDOW_BUFFERED
+      painter = MBufferPainter;
+    #else
+      painter = MBufferPainter;
+    #endif
+    MPaintContext.painter = painter;
+
+    if (painter) {
+      painter->beginPaint(0,0,MRect.w,MRect.h);
+      //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
+      //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
+      painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
+      paintChildWidgets(getPaintContext());
+      //painter->popClip();
+      painter->endPaint();
+    }
+
+    //intptr_t drawable = MBufferSurface->drawable_getDrawable();
+    #ifdef MIP_WINDOW_BUFFERED
+      blitDrawable(AXpos,AYpos,MBufferSurface,AXpos,AYpos,AWidth,AHeight);
+    #endif
+
   }
 
   //----------
@@ -461,12 +516,16 @@ public: // child to parent
 public:
 //------------------------------
 
-  void setupPaintContext(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
-    MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
-    MPaintContext.theme       = &MIP_DefaultTheme;
-    MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
-    MPaintContext.painter     = MWindowPainter;
-  }
+//  void setupPaintContext(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {
+//    MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
+//    MPaintContext.theme       = &MIP_DefaultTheme;
+//    MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
+//    #ifdef MIP_WINDOW_BUFFERED
+//      MPaintContext.painter = MBufferPainter;
+//    #else
+//      MPaintContext.painter = MWindowPainter;
+//    #endif
+//  }
 
 //  //----------
 
