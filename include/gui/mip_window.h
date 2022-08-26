@@ -2,8 +2,6 @@
 #define mip_window_included
 //----------------------------------------------------------------------
 
-//#define MIP_WINDOW_BUFFERED
-
 /*
   todo:
     resize window: un-modal (like right-clicking)
@@ -91,7 +89,6 @@ public:
 
     MName = "MIP_Window";
     MWindowPainter = new MIP_Painter(this,this);
-    MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
 
     #ifdef MIP_WINDOW_BUFFERED
       MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
@@ -254,7 +251,6 @@ public: // window
       MPaintContext.painter = MWindowPainter;
     #endif
     MRect.setSize(AWidth,AHeight);
-    MIP_Print("align???\n");
     //alignChildWidgets();
 
 //    double xscale = AWidth / Layout.baseRect.w;
@@ -292,12 +288,15 @@ public: // window
     #ifdef MIP_WINDOW_BUFFERED
       painter = MBufferPainter;
     #else
-      painter = MBufferPainter;
+      painter = MWindowPainter;
     #endif
     MPaintContext.painter = painter;
 
     if (painter) {
-      painter->beginPaint(0,0,MRect.w,MRect.h);
+
+      //painter->beginPaint(0,0,MRect.w,MRect.h);
+      painter->beginPaint(AXpos,AYpos,AWidth,AHeight);
+
       //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));

@@ -4,11 +4,15 @@
   // nc -U -l -k /tmp/mip.socket
 #endif // MIP_EXE
 
+/*
+  buffered + nanovg : crash.. glx_painter created for window, not pixmap?
+*/
+
 // linx
 
 #define MIP_GUI_XCB
-#define MIP_PAINTER_XCB
-//#define MIP_PAINTER_NANOVG
+//#define MIP_PAINTER_XCB
+#define MIP_PAINTER_NANOVG
 
 // win32
 
@@ -17,7 +21,7 @@
 
 //
 
-#define MIP_WINDOW_BUFFERED
+//#define MIP_WINDOW_BUFFERED
 
 
 //#define MIP_EXECUTABLE_SHARED_LIBRARY
