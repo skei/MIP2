@@ -927,12 +927,12 @@ private: // events
         int16_t w = configure_notify->width;
         int16_t h = configure_notify->height;
         //MIP_Print("w,h: %i,%i MWindowWidth/Height: %i,%i  \n",w,h,MWindowWidth,MWindowHeight);
-        if ((x != MWindowXpos) || (y != MWindowYpos)) {
+        //if ((x != MWindowXpos) || (y != MWindowYpos)) {
           MWindowXpos = x;
           MWindowYpos = y;
           on_window_move(x,y);
-        }
-        if ((w != MWindowWidth) || (h != MWindowHeight)) {
+        //}
+        //if ((w != MWindowWidth) || (h != MWindowHeight)) {
 //          MIP_PRINT;
 //          if ((w > 0) && (h > 0)) {
 //            MWindowWidthScale = (double)w / (double)MWindowInitialWidth;
@@ -942,7 +942,7 @@ private: // events
           MWindowWidth  = w;
           MWindowHeight = h;
           on_window_resize(w,h);
-        }
+        //}
         break;
       }
 
