@@ -438,7 +438,8 @@ public:
   }
 
   void arc(float cx, float cy, float r, float a0, float a1, int dir) override {
-    nvgArc(MContext,cx,cy,r,a0,a1,dir);
+    a1 += a0;
+    nvgArc(MContext,cx,cy,r,a1,a0,dir);
   }
 
   void rect(float x, float y, float w, float h) override {

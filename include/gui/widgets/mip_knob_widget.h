@@ -88,20 +88,22 @@ public:
         double cx = MRect.x + (MRect.w * 0.5);
         double cy = MRect.y + (MRect.h * 0.5) + (arcwidth * 0.25);
         double r  = (MRect.w * 0.5) - (arcwidth * 0.5);
-        double a1 = (0.0 + 0.25 + 0.1) * MIP_PI2;
-        double a2 = a1 + (v * 0.8 * MIP_PI2);
+        //double a1 = (0.0 - 0.25 - 0.1) * MIP_PI2;
+        //double a2 = a1 - (v * 0.8 * MIP_PI2);
+        double a1 = (0.35    * MIP_PI2);
+        double a2 = (v * 0.8 * MIP_PI2);
 
         painter->strokeWidth( arcwidth );
 
         painter->beginPath();
         painter->strokeColor(MArcBackColor);
-        painter->arc(cx,cy,r,a1,a2,MIP_WINDING_CLOCKWISE);
+        painter->arc(cx,cy,r,a1,(0.8*MIP_PI2),MIP_WINDING_COUNTER_CLOCKWISE);
         painter->stroke();
 
-//        painter->beginPath();
-//        painter->strokeColor(MArcColor);
-//        painter->arc(cx,cy,r,a1,a2,MIP_WINDING_CLOCKWISE);
-//        painter->stroke();
+        painter->beginPath();
+        painter->strokeColor(MArcColor);
+        painter->arc(cx,cy,r,a1,a2,MIP_WINDING_COUNTER_CLOCKWISE);
+        painter->stroke();
 
         //painter->drawTextBox(rect,temp,MValueAlignment,MValueColor);
       }

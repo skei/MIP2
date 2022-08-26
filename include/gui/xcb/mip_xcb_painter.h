@@ -46,22 +46,22 @@ protected:
   MIP_Drawable*   MSurface                    = nullptr;
   MIP_Drawable*   MTarget                     = nullptr;
 
-  xcb_connection_t* MConnection   = nullptr;
-  xcb_visualid_t    MVisual       = XCB_NONE;
-  xcb_drawable_t    MDrawable     = XCB_NONE;
-  xcb_gcontext_t    MGC           = XCB_NONE;
-  xcb_font_t        MFont         = XCB_NONE;
+  xcb_connection_t* MConnection               = nullptr;
+  xcb_visualid_t    MVisual                   = XCB_NONE;
+  xcb_drawable_t    MDrawable                 = XCB_NONE;
+  xcb_gcontext_t    MGC                       = XCB_NONE;
+  xcb_font_t        MFont                     = XCB_NONE;
 
-  uint32_t          MWidth        = 0;
-  uint32_t          MHeight       = 0;
+  uint32_t          MWidth                    = 0;
+  uint32_t          MHeight                   = 0;
 
-  int32_t           MFontAscent   = 0;
-  int32_t           MFontDescent  = 0;
-  int32_t           MFontWidth    = 0;
-  int32_t           MFontHeight   = 0;
-  int32_t           MFontOrigin   = 0;
-  int32_t           MFontLeft     = 0;
-  int32_t           MFontRight    = 0;
+  int32_t           MFontAscent               = 0;
+  int32_t           MFontDescent              = 0;
+  int32_t           MFontWidth                = 0;
+  int32_t           MFontHeight               = 0;
+  int32_t           MFontOrigin               = 0;
+  int32_t           MFontLeft                 = 0;
+  int32_t           MFontRight                = 0;
 
   MIP_Color       MStrokeColor                = MIP_COLOR_BLACK;
   float           MStrokeWidth                = 1.0;
@@ -701,8 +701,10 @@ public:
           float cx = MPath[i].data[0];
           float cy = MPath[i].data[1];
           float r  = MPath[i].data[2];
-          float a1 = MPath[i].data[3];
-          float a2 = MPath[i].data[4];
+          float a1 = MIP_PI2 - MPath[i].data[3];
+          float a2 = - MPath[i].data[4];
+
+          // 0..PI2, 0 = 3 o'clock,, counter-clockwise
 
           //switch MIP_WINDING_CLOCKWISE
 
@@ -715,8 +717,8 @@ public:
             (int16_t)y,   // y
             (uint16_t)w,  // w
             (uint16_t)h,  // h
-            (int16_t)(a1 * 360.0f * 64.0f * MIP_INVPI2),  // a1
-            (int16_t)(a2 * 360.0f * 64.0f * MIP_INVPI2)   // a2
+            (int16_t)(a1 * 360.0f * 64.0f * MIP_INVPI2),
+            (int16_t)(a2 * 360.0f * 64.0f * MIP_INVPI2)
           };
           xcb_poly_arc(MConnection, MDrawable, MGC, 1, arcs );
           break;
