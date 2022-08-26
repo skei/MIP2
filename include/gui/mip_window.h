@@ -91,8 +91,9 @@ public:
     MWindowPainter = new MIP_Painter(this,this);
 
     #ifdef MIP_WINDOW_BUFFERED
-      MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
-      MBufferPainter = new MIP_Painter(this,MBufferSurface);
+      //MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+      //MBufferPainter = new MIP_Painter(this,MBufferSurface);
+      createBuffer(AWidth,AHeight);
       MPaintContext.painter = MBufferPainter;
     #else
       MPaintContext.painter = MWindowPainter;
@@ -110,8 +111,9 @@ public:
   virtual ~MIP_Window() {
     delete MWindowPainter;
     #ifdef MIP_WINDOW_BUFFERED
-      delete MBufferPainter;
-      delete MBufferSurface;
+      //delete MBufferPainter;
+      //delete MBufferSurface;
+      deleteBuffer();
     #endif
   }
 
@@ -120,11 +122,11 @@ public:
 //------------------------------
 
   MIP_Painter* getWindowPainter() {
-      return MWindowPainter;
+    return MWindowPainter;
   }
 
   MIP_Painter* getBufferPainter() {
-      return MBufferPainter;
+    return MBufferPainter;
   }
 
   MIP_Painter* getPainter() {
@@ -140,6 +142,26 @@ public:
   MIP_PaintContext* getPaintContext() {
     return &MPaintContext;
   }
+
+  //----------
+
+  void createBuffer(uint32_t AWidth, uint32_t AHeight) {    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+    MBufferPainter = new MIP_Painter(this,MBufferSurface);
+  }
+
+  void deleteBuffer() {    delete MBufferPainter;
+    delete MBufferSurface;
+  }
+
+  void resizeBuffer(uint32_t AWidth, uint32_t AHeight) {    if (MBufferSurface) delete MBufferSurface;
+    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+    if (MBufferPainter) delete MBufferPainter;
+    MBufferPainter = new MIP_Painter(this,MBufferSurface);
+  }
+
+  //void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
+  //  on_resize_window()
+  //}
 
   //----------
 
@@ -221,12 +243,6 @@ public: // window
 
   //----------
 
-  void on_window_close() override {
-    //MIP_PRINT;
-  }
-
-  //----------
-
   // alignChildWidgets assumes 0,0 is upper corner..ren
 
   void on_window_move(int32_t AXpos, int32_t AYpos) override {
@@ -242,10 +258,11 @@ public: // window
     MWindowPainter = new MIP_Painter(this,this);
     MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
     #ifdef MIP_WINDOW_BUFFERED
-      if (MBufferSurface) delete MBufferSurface;
-      MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
-      if (MBufferPainter) delete MBufferPainter;
-      MBufferPainter = new MIP_Painter(this,MBufferSurface);
+      //if (MBufferSurface) delete MBufferSurface;
+      //MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+      //if (MBufferPainter) delete MBufferPainter;
+      //MBufferPainter = new MIP_Painter(this,MBufferSurface);
+      resizeBuffer(AWidth,AHeight);
       MPaintContext.painter = MBufferPainter;
     #else
       MPaintContext.painter = MWindowPainter;
@@ -275,38 +292,32 @@ public: // window
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
 
-    //#ifdef MIP_WINDOW_BUFFERED
-    //#else
-    //#endif
-
-    //setupPaintContext(AXpos,AYpos,AWidth,AHeight);
-    MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
-    MPaintContext.theme       = &MIP_DefaultTheme;
-    MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
-
     MIP_Painter* painter;
     #ifdef MIP_WINDOW_BUFFERED
       painter = MBufferPainter;
     #else
       painter = MWindowPainter;
     #endif
-    MPaintContext.painter = painter;
+
+    MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
+    MPaintContext.theme       = &MIP_DefaultTheme;
+    MPaintContext.updateRect  = MIP_DRect(AXpos,AYpos,AWidth,AHeight);
+    MPaintContext.painter     = painter;
 
     if (painter) {
-
-      //painter->beginPaint(0,0,MRect.w,MRect.h);
-      painter->beginPaint(AXpos,AYpos,AWidth,AHeight);
-
+      painter->beginPaint(0,0,MRect.w,MRect.h);
+      //painter->beginPaint(AXpos,AYpos,AWidth,AHeight);
       //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
-      paintChildWidgets(getPaintContext());
+      paintChildWidgets(&MPaintContext);
       //painter->popClip();
       painter->endPaint();
     }
 
     //intptr_t drawable = MBufferSurface->drawable_getDrawable();
     #ifdef MIP_WINDOW_BUFFERED
+      //MIP_Print("%i,%i,%i,%i\n",AXpos,AYpos,AWidth,AHeight);
       blitDrawable(AXpos,AYpos,MBufferSurface,AXpos,AYpos,AWidth,AHeight);
     #endif
 

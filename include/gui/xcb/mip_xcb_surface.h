@@ -46,25 +46,28 @@ public:
 
   MIP_XcbSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
   //: MIP_BaseSurface() {
-    // pixmap
+
     MTarget         = ATarget;
-    MConnection     = ATarget->drawable_getXcbConnection();
-    MTargetDrawable = ATarget->drawable_getXcbDrawable();
-    MTargetVisual   = ATarget->drawable_getXcbVisual();
     MWidth          = AWidth;
     MHeight         = AHeight;
     if (ADepth == 0) MDepth = ATarget->drawable_getDepth();
     else MDepth = ADepth;
+
+    MConnection     = ATarget->drawable_getXcbConnection();
+    MTargetDrawable = ATarget->drawable_getXcbDrawable();
+    MTargetVisual   = ATarget->drawable_getXcbVisual();
+
     MPixmap = xcb_generate_id(MConnection);
     xcb_create_pixmap(
       MConnection,
       MDepth,
       MPixmap,
       MTargetDrawable,
-      AWidth,
-      AHeight
+      MWidth,
+      MHeight
     );
     xcb_flush(MConnection);
+
     #ifdef MIP_USE_CAIRO
     MCairoSurface = cairo_xcb_surface_create(
       MConnection,

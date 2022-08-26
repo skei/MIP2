@@ -11,8 +11,10 @@
 // linx
 
 #define MIP_GUI_XCB
-//#define MIP_PAINTER_XCB
-#define MIP_PAINTER_NANOVG
+#define MIP_PAINTER_XCB
+//#define MIP_PAINTER_NANOVG
+
+#define MIP_WINDOW_BUFFERED
 
 // win32
 
@@ -21,7 +23,6 @@
 
 //
 
-//#define MIP_WINDOW_BUFFERED
 
 
 //#define MIP_EXECUTABLE_SHARED_LIBRARY

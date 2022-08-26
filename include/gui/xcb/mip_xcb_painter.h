@@ -134,6 +134,7 @@ public:
 //------------------------------
 
   void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    //MIP_Print("beginPaint: %i,%i,%i,%i\n",AXpos,AYpos,AWidth,AHeight);
   }
 
   //----------
@@ -193,6 +194,7 @@ public:
   //--------------------
 
   void beginFrame(float windowWidth, float windowHeight, float devicePixelRatio) override {
+    //MIP_Print("%.f,%.f\n",windowWidth,windowHeight);
   }
 
   //----------
