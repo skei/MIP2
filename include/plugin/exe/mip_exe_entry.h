@@ -62,7 +62,7 @@ public:
 //------------------------------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    //MIP_Print("%i,%i\n",AWidth,AHeight);
+    MIP_Print("%i,%i\n",AWidth,AHeight);
     //double xscale = (double)AWidth / MInitialWidth;
     //double yscale = (double)AHeight / MInitialHeight;
     //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
@@ -70,30 +70,29 @@ public:
 
     // resize child windows
 
-    xcb_connection_t* connection = drawable_getXcbConnection();
-    xcb_window_t window = drawable_getXcbWindow();
-
-    xcb_query_tree_cookie_t cookie;
-    xcb_query_tree_reply_t *reply;
-    cookie = xcb_query_tree(connection,window);
-    if ((reply = xcb_query_tree_reply(connection, cookie, NULL))) {
-      //printf("root = 0x%08x\n", reply->root);
-      //printf("parent = 0x%08x\n", reply->parent);
-      xcb_window_t *children = xcb_query_tree_children(reply);
-      for (int i = 0; i < xcb_query_tree_children_length(reply); i++) {
-        //printf("child window = 0x%08x\n", children[i]);
-
-        int32_t values[] = { AWidth, AHeight };
-        xcb_configure_window(connection,children[i],XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT,values);
-
-      }
-      //xcb_aux_sync(connection);
-      xcb_flush(connection);
-      free(reply);
-    }
+//    xcb_connection_t* connection = drawable_getXcbConnection();
+//    xcb_window_t window = drawable_getXcbWindow();
+//
+//    xcb_query_tree_cookie_t cookie;
+//    xcb_query_tree_reply_t *reply;
+//    cookie = xcb_query_tree(connection,window);
+//    if ((reply = xcb_query_tree_reply(connection, cookie, NULL))) {
+//      //printf("root = 0x%08x\n", reply->root);
+//      //printf("parent = 0x%08x\n", reply->parent);
+//      xcb_window_t *children = xcb_query_tree_children(reply);
+//      for (int i = 0; i < xcb_query_tree_children_length(reply); i++) {
+//        //printf("child window = 0x%08x\n", children[i]);
+//        xcb_window_t child = children[i];
+//        int32_t values[] = { AWidth, AHeight };
+//        xcb_configure_window(connection,child,XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT,values);
+//
+//      }
+//      //xcb_aux_sync(connection);
+//      xcb_flush(connection);
+//      free(reply);
+//    }
 
     // let our plugin know..
-
     gui->set_size(plugin,AWidth,AHeight);
   }
 
