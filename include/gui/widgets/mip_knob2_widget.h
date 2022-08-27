@@ -83,6 +83,10 @@ public:
 public:
 //------------------------------
 
+  MIP_TextWidget* getLabelWidget()  { return MLabelWidget; }
+  MIP_TextWidget* getValueWidget()  { return MValueWidget; }
+  MIP_KnobWidget* getKnobWidget()   { return MKnobWidget; }
+
   double getValue() override {
     //MIP_PRINT;
     return MKnobWidget->getValue();

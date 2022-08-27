@@ -12,6 +12,7 @@
 #include "gui/widgets/mip_color_widget.h"
 #include "gui/widgets/mip_curve_widget.h"
 #include "gui/widgets/mip_drag_value_widget.h"
+#include "gui/widgets/mip_dual_slider_widget.h"
 #include "gui/widgets/mip_graph_widget.h"
 #include "gui/widgets/mip_grid_widget.h"
 #include "gui/widgets/mip_group_box_widget.h"
@@ -24,6 +25,7 @@
 #include "gui/widgets/mip_opengl_widget.h"
 #include "gui/widgets/mip_pages_widget.h"
 #include "gui/widgets/mip_panel_widget.h"
+#include "gui/widgets/mip_plot_widget.h"
 #include "gui/widgets/mip_sa_header_widget.h"
 #include "gui/widgets/mip_scroll_bar_widget.h"
 #include "gui/widgets/mip_scroll_box_widget.h"
@@ -37,6 +39,16 @@
 #include "gui/widgets/mip_value_widget.h"
 #include "gui/widgets/mip_waveform_widget.h"
 
+//#include "gui/widgets/mip_bitmap_widget.h"
+//#include "gui/widgets/mip_circular_waveform_widget.h"
+//#include "gui/widgets/mip_imape_strip_widget.h"
+//#include "gui/widgets/mip_main_menu_widget.h"
+//#include "gui/widgets/mip_modmatrix_widget.h"
+//#include "gui/widgets/mip_slider_bank_widget.h"
+//#include "gui/widgets/mip_text_edit_widget.h"
+//#include "gui/widgets/mip_timeline_widget.h"
+//#include "gui/widgets/mip_value_graph_widget.h"
+//#include "gui/widgets/mip_xy_pad_widget.h"
 
 //----------------------------------------------------------------------
 #endif

@@ -38,21 +38,25 @@ struct MIP_WidgetLayout {
 
 //----------
 
-struct MIP_WidgetFlags {
-  bool active           = true;
-  bool interactive      = false;
-  bool visible          = true;
+struct MIP_WidgetOptions {
   bool captureMouse     = true;
   bool doubleClick      = false;
   bool autoSetCursor    = true;
   bool autoHideCursor   = false;
   bool autoLockCursor   = false;
+  bool autoSize         = false;
+  bool autoSizeContent  = false;
+  bool wantHoverEvents  = false;
+  //bool clipChildren     = false;
+};
+
+struct MIP_WidgetState {
+  bool active           = true;
+  bool interactive      = false;
+  bool visible          = true;
   bool dirty            = false;
   bool highlighted      = false;
   bool focused          = false;
-  //bool clipChildren     = false;
-  bool autoSize         = false;
-  bool autoSizeContent  = false;
 };
 
 //----------------------------------------------------------------------
@@ -94,7 +98,10 @@ public:
   // public..  :-/
 
   MIP_WidgetLayout  Layout     = {};
-  MIP_WidgetFlags   Flags      = {};
+
+  //MIP_WidgetFlags   Flags      = {};
+  MIP_WidgetOptions Options    = {};
+  MIP_WidgetState   State      = {};
 
 //------------------------------
 public:
@@ -146,8 +153,8 @@ public:
 
   virtual MIP_Parameter*  getParameter()    { return MParameter; }
 
-  virtual bool              isInteractive()  { return Flags.interactive; }
-  virtual bool              isDirty()        { return Flags.dirty; }
+  virtual bool              isInteractive()  { return State.interactive; }
+  virtual bool              isDirty()        { return State.dirty; }
 
   virtual MIP_DRect         getRect()         { return MRect; }
   virtual MIP_DRect         getContentRect()  { return MContentRect; }
@@ -199,7 +206,7 @@ virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double A
   virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
 
   virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {
-    if (Flags.autoSetCursor) do_widget_cursor(this,MMouseCursor);
+    if (Options.autoSetCursor) do_widget_cursor(this,MMouseCursor);
   }
 
   virtual void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime) {}
@@ -322,7 +329,7 @@ public: // hierarchy
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* child = MChildren[i];
-      if (child->Flags.visible) {
+      if (child->State.visible) {
         //child->setChildrenOffset(AOffsetX,AOffsetY);
         child->MRect.x += AOffsetX;
         child->MRect.y += AOffsetY;
@@ -367,7 +374,7 @@ public: // hierarchy
     uint32_t num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* widget = MChildren[i];
-      if (widget->Flags.active) {
+      if (widget->State.active) {
         MIP_DRect rect = widget->MRect;
         if (rect.contains(AXpos,AYpos)) {
           MIP_Widget* child = widget->findChildWidget(AXpos,AYpos);
@@ -390,13 +397,13 @@ public: // hierarchy
       cliprect.shrink(Layout.border);
       cliprect.overlap(AContext->updateRect);
 
-      //if (Flags.clipChildren) {
+      //if (State.clipChildren) {
       //  AContext->painter->pushOverlapClip(cliprect);
       //}
 
       for (uint32_t i=0; i<num; i++) {
         MIP_Widget* widget = MChildren[i];
-        if (widget->Flags.visible) {
+        if (widget->State.visible) {
           MIP_DRect widgetrect = widget->MRect;
           widgetrect.overlap(cliprect);
           if (widgetrect.isNotEmpty()) {
@@ -407,7 +414,7 @@ public: // hierarchy
         } // visible
       } // for
 
-      //if (Flags.clipChildren) {
+      //if (State.clipChildren) {
       //  AContext->painter->popClip();
       //}
 
@@ -462,7 +469,7 @@ public: // hierarchy
       // for all children..
       for (uint32_t i=0; i<MChildren.size(); i++) {
         MIP_Widget* child = MChildren[i];
-        if (child->Flags.visible) {
+        if (child->State.visible) {
 // !!!
           //child->prepareForAlignment();
 // !!!
@@ -877,7 +884,7 @@ public: // hierarchy
         } //  visible
       } // for
     } // num > 0
-    if (Flags.autoSizeContent) {
+    if (Options.autoSizeContent) {
       MRect.w = MContentRect.w;
       MRect.h = MContentRect.h;
     }

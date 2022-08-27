@@ -352,7 +352,7 @@ public: // window
     bool dblclick = (elapsed < MIP_WINDOW_DBLCLICK_MS);
     MPrevClickTime = ATime;
     if (MHoverWidget != this) {
-      if (dblclick && MHoverWidget->Flags.doubleClick) {
+      if (dblclick && MHoverWidget->Options.doubleClick) {
         MClickedWidget = MHoverWidget;
         MHoverWidget->on_widget_mouse_dblclick(AButton,AState,AXpos,AYpos,ATime);
       }
@@ -392,7 +392,14 @@ public: // window
     }
     else {
       updateHoverWidget(AXpos,AYpos,ATime);
-      if (MClickedWidget) MClickedWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
+      if (MClickedWidget) {
+        MClickedWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
+      }
+      else if (MHoverWidget) {
+        if (MHoverWidget->Options.wantHoverEvents) {
+          MHoverWidget->on_widget_mouse_move(AState,AXpos,AYpos,ATime);
+        }
+      }
     }
     MMousePrevX = AXpos;
     MMousePrevY = AYpos;

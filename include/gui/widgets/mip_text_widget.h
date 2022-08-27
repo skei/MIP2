@@ -104,7 +104,7 @@ public:
 
   virtual void updateTextSize() {
     //MIP_PRINT;
-    if (Flags.autoSize) {
+    if (Options.autoSize) {
       MIP_Painter* painter = MOwnerWindow->getPainter();
       if (painter) {
         float bounds[4];;
@@ -130,6 +130,7 @@ public:
     if (MDrawText) {
       MIP_Painter* painter = AContext->painter;
       MIP_DRect rect = MRect;
+      if (MRect.isEmpty()) return;
       //rect.shrink(2);
       rect.x += MTextOffset.x;
       rect.y += MTextOffset.y;

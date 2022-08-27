@@ -28,7 +28,9 @@ private:
   xcb_connection_t* MConnection       = nullptr;
   xcb_visualid_t    MTargetVisual     = XCB_NONE;
   xcb_drawable_t    MTargetDrawable   = XCB_NONE;
+
   xcb_pixmap_t      MPixmap           = XCB_NONE;
+
   int32_t           MWidth            = 0;
   int32_t           MHeight           = 0;
   int32_t           MDepth            = 0;
@@ -46,6 +48,8 @@ public:
 
   MIP_XcbSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
   //: MIP_BaseSurface() {
+
+    //void* test_mem_leak = malloc(666000);
 
     MTarget         = ATarget;
     MWidth          = AWidth;

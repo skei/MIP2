@@ -74,8 +74,8 @@ public:
     if (MClosed) {
       //close();
       MTitleBar->setOff();
-      MContainer->Flags.active = false;
-      MContainer->Flags.visible = false;
+      MContainer->State.active = false;
+      MContainer->State.visible = false;
       //float rs = MClosedSize - getInitialRect().h;
       //setResized( MIP_Point(0,rs) );
       //setHeight(MClosedSize);
@@ -86,8 +86,8 @@ public:
     else {
       //open();
       MTitleBar->setOn();
-      MContainer->Flags.active = true;
-      MContainer->Flags.visible = true;
+      MContainer->State.active = true;
+      MContainer->State.visible = true;
       //setResized( MIP_Point(0,0) );
       //setHeight(MOpenSize);
       //setInitialHeight(MOpenSize);
@@ -134,8 +134,8 @@ public:
 
   void open(void) {
     MClosed = false;
-    MContainer->Flags.active = true;
-    MContainer->Flags.visible = true;
+    MContainer->State.active = true;
+    MContainer->State.visible = true;
     //setResized( MIP_Point(0,0) );
 //    setHeight(MOpenSize);
 //    setInitialHeight(MOpenSize);
@@ -148,8 +148,8 @@ public:
 
   void close(void) {
     MClosed = true;
-    MContainer->Flags.active = false;
-    MContainer->Flags.visible = false;
+    MContainer->State.active = false;
+    MContainer->State.visible = false;
     //float rs = MClosedSize - getInitialRect().h;
     //setResized( MIP_Point(0,rs) );
 //    setHeight(MClosedSize);

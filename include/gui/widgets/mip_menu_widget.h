@@ -42,8 +42,8 @@ public:
   : MIP_PanelWidget(ARect) {
     MName = "MIP_MenuWidget";
     MListener = AListener;
-    Flags.active = false;
-    Flags.visible = false;
+    State.active = false;
+    State.visible = false;
   }
 
   //----------
@@ -82,7 +82,7 @@ public: // parent to child
   //----------
 
   void on_widget_unmodal() override {
-    MIP_Print("unmodal\n");
+    //MIP_Print("unmodal\n");
     close(true);
   }
 
@@ -120,8 +120,8 @@ public:
     }
     setWidgetPos(x,y);
     alignChildWidgets();
-    Flags.visible = true;
-    Flags.active = true;
+    State.visible = true;
+    State.active = true;
     do_widget_redraw(this);
     if (AModal) do_widget_modal(this);
   }
@@ -129,8 +129,8 @@ public:
   //----------
 
   virtual void close(bool AModal/*=true*/) {
-    Flags.visible = false;
-    Flags.active = false;
+    State.visible = false;
+    State.active = false;
     do_widget_redraw(this);
     if (AModal) do_widget_modal(nullptr);
   }

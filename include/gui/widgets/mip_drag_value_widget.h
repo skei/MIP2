@@ -38,8 +38,8 @@ public:
   : MIP_ValueWidget(ARect,AText,AValue) {
     MName = "MIP_DragValueWidget";
     MMouseCursor = MIP_CURSOR_ARROW_UP_DOWN;
-    Flags.autoHideCursor = true;
-    Flags.autoLockCursor = true;
+    Options.autoHideCursor = true;
+    Options.autoLockCursor = true;
   }
 
   //----------
@@ -66,8 +66,8 @@ public: // parent to child
     //MIP_PRINT;
     switch (AButton) {
       case MIP_BUTTON_LEFT: {
-        if (Flags.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_HIDE);
-        if (Flags.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_LOCK);
+        if (Options.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_HIDE);
+        if (Options.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_LOCK);
         MMousePrevX = AXpos;
         MMousePrevY = AYpos;
         MDragValue  = getValue();
@@ -83,8 +83,8 @@ public: // parent to child
     //MIP_PRINT;
     switch (AButton) {
       case MIP_BUTTON_LEFT: {
-        if (Flags.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_SHOW);
-        if (Flags.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_UNLOCK);
+        if (Options.autoHideCursor) do_widget_cursor(this,MIP_CURSOR_SHOW);
+        if (Options.autoLockCursor) do_widget_cursor(this,MIP_CURSOR_UNLOCK);
         MIsDragging = false;
         break;
       }

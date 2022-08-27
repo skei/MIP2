@@ -523,6 +523,7 @@
 		<Unit filename="../include/gui/widgets/mip_color_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_curve_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_drag_value_widget.h" />
+		<Unit filename="../include/gui/widgets/mip_dual_slider_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_graph_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_grid_widget.h" />
 		<Unit filename="../include/gui/widgets/mip_group_box_widget.h" />

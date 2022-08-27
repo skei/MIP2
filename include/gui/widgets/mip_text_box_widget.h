@@ -80,7 +80,7 @@ public:
     textwidget->setTextColor(MIP_COLOR_BLACK);
     textwidget->setTextSize(MTextSize);
 
-    textwidget->Flags.autoSize = true;
+    textwidget->Options.autoSize = true;
 
     MContent->appendChildWidget(textwidget);
     MNumLines += 1;

@@ -636,6 +636,7 @@ public:
       //MPainter->setColor(color);
       //MPainter->drawText(module_body_rect,AModule->name,MIP_TEXT_ALIGN_CENTER);
 
+      MPainter->fontSize(12);
       MPainter->drawTextBox(module_body_rect, AModule->name, MIP_TEXT_ALIGN_CENTER,color);
 
 

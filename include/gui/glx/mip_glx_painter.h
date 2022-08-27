@@ -120,7 +120,7 @@ public:
     MHeight = ATarget->drawable_getHeight();
     MDisplay = ASurface->drawable_getXlibDisplay();
     if (ATarget->drawable_isWindow()) {
-      MIP_Print("window\n");
+      //MIP_Print("window\n");
       MFBConfig = findFBConfig(MIP_GlxWindowAttribs);
       MContext = createContext(MFBConfig);
       xcb_window_t window = ATarget->drawable_getXcbWindow();
@@ -128,17 +128,12 @@ public:
       MDrawableIsWindow = true;
     }
     else { // todo
-      MIP_Print("pixmap\n");
+      //MIP_Print("pixmap\n");
       MFBConfig = findFBConfig(MIP_GlxPixmapAttribs); // crash..
-      MIP_Print("1\n");
       MContext = createContext(MFBConfig);
-      MIP_Print("2\n");
       xcb_pixmap_t pixmap = ATarget->drawable_getXcbPixmap();
-      MIP_Print("3\n");
       MDrawable = glXCreatePixmap(MDisplay,MFBConfig,pixmap,nullptr);
-      MIP_Print("4\n");
       MDrawableIsWindow = false;
-      MIP_Print("5\n");
     }
     MIP_GLXDisableVSync(MDisplay,MDrawable);
     //resetCurrent();
@@ -260,11 +255,11 @@ private:
     //MIP_PRINT;
     //MDisplay = ADisplay;
     int num_fbc = 0;
-    MIP_Print("Display: %p\n",MDisplay);
-    MIP_Print("Screen: %i\n",DefaultScreen(MDisplay));
-    MIP_Print("AAttribs: %p\n",AAttribs);
+    //MIP_Print("Display: %p\n",MDisplay);
+    //MIP_Print("Screen: %i\n",DefaultScreen(MDisplay));
+    //MIP_Print("AAttribs: %p\n",AAttribs);
     GLXFBConfig* fbconfigs = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),AAttribs,&num_fbc);
-    MIP_Print("num_fbc: %i\n",num_fbc);
+    //MIP_Print("num_fbc: %i\n",num_fbc);
     GLXFBConfig fbconfig = fbconfigs[0];
     XFree(fbconfigs);
     return fbconfig;

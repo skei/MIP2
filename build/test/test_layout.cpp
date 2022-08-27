@@ -4,28 +4,18 @@
   // nc -U -l -k /tmp/mip.socket
 #endif // MIP_EXE
 
-/*
-  buffered + nanovg : crash.. glx_painter created for window, not pixmap?
-*/
-
-// linx
-
-#define MIP_GUI_XCB
-//#define MIP_PAINTER_NANOVG
-#define MIP_PAINTER_XCB
-#define MIP_WINDOW_BUFFERED
-
-// win32
-
-//  #define MIP_GUI_WIN32
-//  #define MIP_PAINTER_GDI
+//#define MIP_EXECUTABLE_SHARED_LIBRARY
+//-Wl,-e,entry_point
 
 //
 
+#define MIP_GUI_XCB
+#define MIP_PAINTER_NANOVG
+//#define MIP_PAINTER_XCB
+//#define MIP_WINDOW_BUFFERED
 
-
-//#define MIP_EXECUTABLE_SHARED_LIBRARY
-//-Wl,-e,entry_point
+//  #define MIP_GUI_WIN32
+//  #define MIP_PAINTER_GDI
 
 //----------------------------------------------------------------------
 
@@ -36,7 +26,9 @@
 
 //#include "plugin/exe/mip_exe.h"
 
-#define TEXTBOX1_BUFFER_SIZE  (256*256)
+#define TEXTBOX1_LINE_SIZE    256
+#define TEXTBOX1_LINE_COUNT   256
+#define TEXTBOX1_BUFFER_SIZE  (TEXTBOX1_LINE_COUNT * TEXTBOX1_LINE_SIZE)
 
 //----------------------------------------------------------------------
 //
@@ -208,7 +200,7 @@ public: // gui
 
       MIP_SAHeaderWidget* saheader = new MIP_SAHeaderWidget(60/*,MEditor*/);
       saheader->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-      saheader->setPluginName("test_layout");
+      saheader->setPluginName("TestLayout");
       saheader->setPluginVersion("v0.0.0");
       background->appendChildWidget(saheader);
 
@@ -336,6 +328,17 @@ public: // gui
         slider1->setBackgroundColor(0.55);
         left_scrollbox->appendChildWidget(slider1);
 
+        // dual slider
+
+        MIP_DualSliderWidget* dualslider1 = new MIP_DualSliderWidget(20);
+        dualslider1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        dualslider1->setFillBackground(true);
+        dualslider1->setDrawBorder(false);
+        dualslider1->setBackgroundColor(0.55);
+        dualslider1->setValue(0.2);
+        dualslider1->setValue2(0.8);
+        left_scrollbox->appendChildWidget(dualslider1);
+
         // scroll bar
 
         MIP_ScrollBarWidget* scrollbar1 = new MIP_ScrollBarWidget(20);
@@ -375,6 +378,14 @@ public: // gui
         keyboard1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         left_scrollbox->appendChildWidget(keyboard1);
 
+        // plot
+
+        MIP_PlotWidget* plot1 = new MIP_PlotWidget(40);
+        plot1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        plot1->setFillBackground(true);
+        plot1->setBackgroundColor(0.4);
+        plot1->setNumValues(32);
+        left_scrollbox->appendChildWidget(plot1);
       }
 
       //----- left sizer -----
@@ -519,6 +530,7 @@ public: // gui
         knob2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
         knob2->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
         knob2->Layout.aspectRatio = 2.0 / 3.0;
+        knob2->getKnobWidget()->Options.autoHideCursor = false;
         aspect_inner_rect1->appendChildWidget(knob2);
 
       }
@@ -554,7 +566,7 @@ public: // gui
           tabs1_page1->setDrawBorder(true);
           tabs1_page1->Layout.border = MIP_DRect(10,10,10,10);
 
-          //tabs1_page1->Flags.autoSizeContent = true;
+          //tabs1_page1->State.autoSizeContent = true;
 
           tabs1->appendPage("page1",tabs1_page1);
 
@@ -602,12 +614,12 @@ public: // gui
             textbox1->getContentWidget()->Layout.border = MIP_DRect(10,10,10,10);
             memset(textbox1_buffer,0,TEXTBOX1_BUFFER_SIZE);
 
-            char* ptr = textbox1_buffer + (0*64);
+            char* ptr = textbox1_buffer + (0*TEXTBOX1_LINE_SIZE);
             sprintf(ptr,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
             textbox1->appendLine(ptr,false);
 
             for (uint32_t i=1; i<50; i++) {
-              ptr = textbox1_buffer + (i*64);
+              ptr = textbox1_buffer + (i*TEXTBOX1_LINE_SIZE);
               sprintf(ptr,"Hello world.. line %i",i);
               textbox1->appendLine(ptr,false);
             }

@@ -1,4 +1,4 @@
- #ifndef mip_xcb_painter_included
+#ifndef mip_xcb_painter_included
 #define mip_xcb_painter_included
 //----------------------------------------------------------------------
 
@@ -8,9 +8,18 @@
 #include "gui/xcb/mip_xcb_utils.h"
 #include "gui/mip_drawable.h"
 
+#ifdef MIP_XCB_USE_STB_TRUETYPE
+  #define STB_TRUETYPE_IMPLEMENTATION
+  #include "extern/stb/stb_truetype.h"
+  #include "../data/fonts/liberation_ttf.h"
+#endif
+
+
+
 //----------------------------------------------------------------------
 
-#define MIP_PATH_MAX_LENGTH           256
+// 10k * 68 = 680k
+#define MIP_PATH_MAX_LENGTH           1000
 
 #define MIP_PATH_MOVE_TO              1
 #define MIP_PATH_LINE_TO              2
@@ -25,14 +34,20 @@
 #define MIP_PATH_ELLIPSE              10
 #define MIP_PATH_CIRCLE               11
 
+// 4 + 8*8 = 68
+// 1000 = 68k
+
 struct MIP_PathItem {
   uint32_t  type    = 0;
   float     data[8] = {0};
 };
 
+typedef MIP_Array<MIP_PathItem> MIP_PathItemArray;
+
 //----------
 
-#define MIP_XCB_PAINTER_MAX_IMAGES 16
+#define MIP_XCB_PAINTER_MAX_IMAGES  64
+#define MIP_XCB_PAINTER_MAX_FONTS   16
 
 //----------------------------------------------------------------------
 //
@@ -54,7 +69,7 @@ protected:
   xcb_visualid_t    MVisual                   = XCB_NONE;
   xcb_drawable_t    MDrawable                 = XCB_NONE;
   xcb_gcontext_t    MGC                       = XCB_NONE;
-  xcb_font_t        MFont                     = XCB_NONE;
+//  xcb_font_t        MFont                     = XCB_NONE;
 
   uint32_t          MWidth                    = 0;
   uint32_t          MHeight                   = 0;
@@ -67,23 +82,34 @@ protected:
   int32_t           MFontLeft                 = 0;
   int32_t           MFontRight                = 0;
 
-  MIP_Color         MStrokeColor                = MIP_COLOR_BLACK;
-  float             MStrokeWidth                = 1.0;
+  int               MShapeAntiAlias;
+  float             MMiterLimit;
+  int               MLineCap;
+  int               MLineJoin;
+  float             MGlobalAlpha;
 
+  MIP_Color         MStrokeColor                = MIP_COLOR_BLACK;
+  MIP_PaintSource   MStrokePaint                = {};
+  float             MStrokeWidth                = 1.0;
   MIP_Color         MFillColor                  = MIP_COLOR_WHITE;
   MIP_PaintSource   MFillPaint                  = {};
-  //int               MFillPaint                  = -1;
-
+  int               MFont                       = -1;
   MIP_Color         MFontColor                  = MIP_COLOR_BLACK;
   float             MFontSize                   = 13.0;
 
-  MIP_PathItem      MPath[MIP_PATH_MAX_LENGTH]  = {};
+  //MIP_PathItem      MPath[MIP_PATH_MAX_LENGTH]  = {};
+  MIP_PathItemArray  MPath;
+
   uint32_t          MPathLength                 = 0;
   float             MPathXpos                   = 0.0f;
   float             MPathYpos                   = 0.0f;
 
   //MIP_PaintSource   MImages[MIP_XCB_PAINTER_MAX_IMAGES] = {0};
-  MIP_Bitmap*       MImages[MIP_XCB_PAINTER_MAX_IMAGES] = {0};
+  MIP_Bitmap*         MImages[MIP_XCB_PAINTER_MAX_IMAGES] = {0};
+
+  #ifdef MIP_XCB_USE_STB_TRUETYPE
+  stbtt_fontinfo*     MFonts[MIP_XCB_PAINTER_MAX_FONTS]   = {0};
+  #endif
 
 //------------------------------
 public:
@@ -129,6 +155,12 @@ public:
       xcb_create_gc(MConnection,MGC,MDrawable,mask,values);
       xcb_flush(MConnection);
     }
+
+    #ifdef MIP_XCB_USE_STB_TRUETYPE
+      int font = createFontMem("font1",(unsigned char*)liberation_ttf,liberation_ttf_size,0);
+      fontFaceId(font);
+    #endif
+
   }
 
   //----------
@@ -138,6 +170,11 @@ public:
     for (uint32_t i=0; i<MIP_XCB_PAINTER_MAX_IMAGES; i++) {
       if (MImages[i]) delete MImages[i];
     }
+    #ifdef MIP_XCB_USE_STB_TRUETYPE
+      for (uint32_t i=0; i<MIP_XCB_PAINTER_MAX_FONTS; i++) {
+        if (MFonts[i]) free(MFonts[i]);
+      }
+    #endif
   }
 
 //------------------------------
@@ -258,6 +295,7 @@ public:
   //--------------------
 
   void shapeAntiAlias(int enabled) override {
+    MShapeAntiAlias = enabled;
   }
 
   //----------
@@ -271,6 +309,7 @@ public:
 
   void strokePaint(MIP_PaintSource paint) override {
   //void strokePaint(int paint) override {
+    MStrokePaint = paint;
   }
 
   //----------
@@ -284,13 +323,13 @@ public:
   //----------
 
   void fillPaint(MIP_PaintSource paint) override {
-  //void fillPaint(int paint) override {
     MFillPaint = paint;
   }
 
   //----------
 
   void miterLimit(float limit) override {
+    MMiterLimit = limit;
   }
 
   //----------
@@ -304,16 +343,19 @@ public:
   //----------
 
   void lineCap(int cap) override {
+    MLineCap = cap;
   }
 
   //----------
 
   void lineJoin(int join) override {
+    MLineJoin = join;
   }
 
   //----------
 
   void globalAlpha(float alpha) override {
+    MGlobalAlpha = alpha;
   }
 
   //--------------------
@@ -409,7 +451,7 @@ public:
   //----------
 
   MIP_PaintSource imagePattern(float ox, float oy, float ex, float ey, float angle, int image, float alpha) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     MIP_PaintSource ps;
     ps.image = image;
     return ps;
@@ -444,55 +486,89 @@ public:
   //----------
 
   void moveTo(float x, float y) override {
-    MPath[MPathLength].type     = MIP_PATH_MOVE_TO;
-    MPath[MPathLength].data[0]  = x;
-    MPath[MPathLength].data[1]  = y;
-    MPathLength += 1;
+    MIP_PathItem item;
+    item.type = MIP_PATH_MOVE_TO;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    MPath.append(item);
+    //MPath[MPathLength].type     = MIP_PATH_MOVE_TO;
+    //MPath[MPathLength].data[0]  = x;
+    //MPath[MPathLength].data[1]  = y;
+    //MPathLength += 1;
   }
 
   //----------
 
   void lineTo(float x, float y) override {
-    MPath[MPathLength].type     = MIP_PATH_LINE_TO;
-    MPath[MPathLength].data[0]  = x;
-    MPath[MPathLength].data[1]  = y;
-    MPathLength += 1;
+    //MPath[MPathLength].type     = MIP_PATH_LINE_TO;
+    //MPath[MPathLength].data[0]  = x;
+    //MPath[MPathLength].data[1]  = y;
+    //MPathLength += 1;
+    MIP_PathItem item;
+    item.type = MIP_PATH_LINE_TO;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    MPath.append(item);
   }
 
   //----------
 
   void bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) override {
-    MPath[MPathLength].type     = MIP_PATH_BEZIER_TO;
-    MPath[MPathLength].data[0]  = c1x;
-    MPath[MPathLength].data[1]  = c1y;
-    MPath[MPathLength].data[2]  = c2x;
-    MPath[MPathLength].data[3]  = c2y;
-    MPath[MPathLength].data[4]  = x;
-    MPath[MPathLength].data[5]  = y;
-    MPathLength += 1;
+    //MPath[MPathLength].type     = MIP_PATH_BEZIER_TO;
+    //MPath[MPathLength].data[0]  = c1x;
+    //MPath[MPathLength].data[1]  = c1y;
+    //MPath[MPathLength].data[2]  = c2x;
+    //MPath[MPathLength].data[3]  = c2y;
+    //MPath[MPathLength].data[4]  = x;
+    //MPath[MPathLength].data[5]  = y;
+    //MPathLength += 1;
+    MIP_PathItem item;
+    item.type = MIP_PATH_BEZIER_TO;
+    item.data[0]  = c1x;
+    item.data[1]  = c1y;
+    item.data[2]  = c2y;
+    item.data[3]  = c2y;
+    item.data[4]  = x;
+    item.data[5]  = y;
+    MPath.append(item);
   }
 
   //----------
 
   void quadTo(float cx, float cy, float x, float y) override {
-    MPath[MPathLength].type     = MIP_PATH_QUAD_TO;
-    MPath[MPathLength].data[0]  = cx;
-    MPath[MPathLength].data[1]  = cy;
-    MPath[MPathLength].data[2]  = x;
-    MPath[MPathLength].data[3]  = y;
-    MPathLength += 1;
+    //MPath[MPathLength].type     = MIP_PATH_QUAD_TO;
+    //MPath[MPathLength].data[0]  = cx;
+    //MPath[MPathLength].data[1]  = cy;
+    //MPath[MPathLength].data[2]  = x;
+    //MPath[MPathLength].data[3]  = y;
+    //MPathLength += 1;
+    MIP_PathItem item;
+    item.type = MIP_PATH_QUAD_TO;
+    item.data[0]  = cx;
+    item.data[1]  = cy;
+    item.data[2]  = x;
+    item.data[3]  = y;
+    MPath.append(item);
   }
 
   //----------
 
   void arcTo(float x1, float y1, float x2, float y2, float radius) override {
-    MPath[MPathLength].type     = MIP_PATH_ARC_TO;
-    MPath[MPathLength].data[0]  = x1;
-    MPath[MPathLength].data[1]  = y1;
-    MPath[MPathLength].data[2]  = x2;
-    MPath[MPathLength].data[3]  = y2;
-    MPath[MPathLength].data[4]  = radius;
-    MPathLength += 1;
+    //MPath[MPathLength].type     = MIP_PATH_ARC_TO;
+    //MPath[MPathLength].data[0]  = x1;
+    //MPath[MPathLength].data[1]  = y1;
+    //MPath[MPathLength].data[2]  = x2;
+    //MPath[MPathLength].data[3]  = y2;
+    //MPath[MPathLength].data[4]  = radius;
+    //MPathLength += 1;
+    MIP_PathItem item;
+    item.type = MIP_PATH_ARC_TO;
+    item.data[0]  = x1;
+    item.data[1]  = y1;
+    item.data[2]  = x2;
+    item.data[3]  = y2;
+    item.data[4]  = radius;
+    MPath.append(item);
   }
 
   //----------
@@ -508,77 +584,127 @@ public:
   //----------
 
   void arc(float cx, float cy, float r, float a0, float a1, int dir) override {
-    MPath[MPathLength].type     = MIP_PATH_ARC;
-    MPath[MPathLength].data[0]  = cx;
-    MPath[MPathLength].data[1]  = cy;
-    MPath[MPathLength].data[2]  = r;
-    MPath[MPathLength].data[3]  = a0;
-    MPath[MPathLength].data[4]  = a1;
-    MPath[MPathLength].data[5]  = dir;
-    MPathLength += 1;
+    //MPath[MPathLength].type     = MIP_PATH_ARC;
+    //MPath[MPathLength].data[0]  = cx;
+    //MPath[MPathLength].data[1]  = cy;
+    //MPath[MPathLength].data[2]  = r;
+    //MPath[MPathLength].data[3]  = a0;
+    //MPath[MPathLength].data[4]  = a1;
+    //MPath[MPathLength].data[5]  = dir;
+    //MPathLength += 1;
+    MIP_PathItem item;
+    item.type = MIP_PATH_ARC;
+    item.data[0]  = cx;
+    item.data[1]  = cy;
+    item.data[2]  = r;
+    item.data[3]  = a0;
+    item.data[4]  = a1;
+    item.data[5]  = dir;
+    MPath.append(item);
   }
 
   //----------
 
   void rect(float x, float y, float w, float h) override {
-    MPath[MPathLength].type     = MIP_PATH_RECT;
-    MPath[MPathLength].data[0]  = x;
-    MPath[MPathLength].data[1]  = y;
-    MPath[MPathLength].data[2]  = w;
-    MPath[MPathLength].data[3]  = h;
-    MPathLength += 1;
+    //MPath[MPathLength].type     = MIP_PATH_RECT;
+    //MPath[MPathLength].data[0]  = x;
+    //MPath[MPathLength].data[1]  = y;
+    //MPath[MPathLength].data[2]  = w;
+    //MPath[MPathLength].data[3]  = h;
+    //MPathLength += 1;
+    MIP_PathItem item;
+    item.type = MIP_PATH_RECT;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    item.data[2]  = w;
+    item.data[3]  = h;
+    MPath.append(item);
   }
 
   //----------
 
   void roundedRect(float x, float y, float w, float h, float r) override {
-    MPath[MPathLength].type     = MIP_PATH_ROUNDED_RECT;
-    MPath[MPathLength].data[0]  = x;
-    MPath[MPathLength].data[1]  = y;
-    MPath[MPathLength].data[2]  = w;
-    MPath[MPathLength].data[3]  = h;
-    MPath[MPathLength].data[4]  = r;
-    MPathLength += 1;
+    //MPath[MPathLength].type     = MIP_PATH_ROUNDED_RECT;
+    //MPath[MPathLength].data[0]  = x;
+    //MPath[MPathLength].data[1]  = y;
+    //MPath[MPathLength].data[2]  = w;
+    //MPath[MPathLength].data[3]  = h;
+    //MPath[MPathLength].data[4]  = r;
+    //MPathLength += 1;
+    MIP_PathItem item;
+    item.type = MIP_PATH_ROUNDED_RECT;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    item.data[2]  = w;
+    item.data[3]  = h;
+    item.data[4]  = r;
+    MPath.append(item);
+
   }
 
   //----------
 
   void roundedRectVarying(float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft) override {
-    MPath[MPathLength].type     = MIP_PATH_ROUNDED_RECT_VARYING;
-    MPath[MPathLength].data[0]  = x;
-    MPath[MPathLength].data[1]  = y;
-    MPath[MPathLength].data[2]  = w;
-    MPath[MPathLength].data[3]  = h;
-    MPath[MPathLength].data[4]  = radTopLeft;
-    MPath[MPathLength].data[5]  = radTopRight;
-    MPath[MPathLength].data[6]  = radBottomRight;
-    MPath[MPathLength].data[7]  = radBottomLeft;
-    MPathLength += 1;
+    //MPath[MPathLength].type     = MIP_PATH_ROUNDED_RECT_VARYING;
+    //MPath[MPathLength].data[0]  = x;
+    //MPath[MPathLength].data[1]  = y;
+    //MPath[MPathLength].data[2]  = w;
+    //MPath[MPathLength].data[3]  = h;
+    //MPath[MPathLength].data[4]  = radTopLeft;
+    //MPath[MPathLength].data[5]  = radTopRight;
+    //MPath[MPathLength].data[6]  = radBottomRight;
+    //MPath[MPathLength].data[7]  = radBottomLeft;
+    //MPathLength += 1;
+    MIP_PathItem item;
+    item.type = MIP_PATH_ROUNDED_RECT_VARYING;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    item.data[2]  = w;
+    item.data[3]  = h;
+    item.data[4]  = radTopLeft;
+    item.data[5]  = radTopRight;
+    item.data[6]  = radBottomRight;
+    item.data[7]  = radBottomLeft;
+    MPath.append(item);
   }
 
   //----------
 
   void ellipse(float cx, float cy, float rx, float ry) override {
-    MPath[MPathLength].type     = MIP_PATH_ELLIPSE;
-    MPath[MPathLength].data[0]  = cx;
-    MPath[MPathLength].data[1]  = cy;
-    MPath[MPathLength].data[2]  = rx;
-    MPath[MPathLength].data[3]  = ry;
+    //MPath[MPathLength].type     = MIP_PATH_ELLIPSE;
+    //MPath[MPathLength].data[0]  = cx;
+    //MPath[MPathLength].data[1]  = cy;
+    //MPath[MPathLength].data[2]  = rx;
+    //MPath[MPathLength].data[3]  = ry;
+    MIP_PathItem item;
+    item.type = MIP_PATH_ELLIPSE;
+    item.data[0]  = cx;
+    item.data[1]  = cy;
+    item.data[2]  = rx;
+    item.data[3]  = ry;
+    MPath.append(item);
   }
 
   //----------
 
   void circle(float cx, float cy, float r) override {
-    MPath[MPathLength].type     = MIP_PATH_CIRCLE;
-    MPath[MPathLength].data[0]  = cx;
-    MPath[MPathLength].data[1]  = cy;
-    MPath[MPathLength].data[2]  = r;
+    //MPath[MPathLength].type     = MIP_PATH_CIRCLE;
+    //MPath[MPathLength].data[0]  = cx;
+    //MPath[MPathLength].data[1]  = cy;
+    //MPath[MPathLength].data[2]  = r;
+    MIP_PathItem item;
+    item.type = MIP_PATH_CIRCLE;
+    item.data[0]  = cx;
+    item.data[1]  = cy;
+    item.data[2]  = r;
+    MPath.append(item);
   }
 
   //----------
 
   void fill() override {
-    for (uint32_t i=0; i<MPathLength; i++) {
+    //for (uint32_t i=0; i<MPathLength; i++) {
+    for (uint32_t i=0; i<MPath.size(); i++) {
       switch (MPath[i].type) {
 
         case MIP_PATH_MOVE_TO: {
@@ -621,12 +747,17 @@ public:
           float h = MPath[i].data[3];
 
           if (MFillPaint.image >= 0) {
-            MIP_PRINT;
-            MIP_Bitmap* bitmap = MImages[MFillPaint.image];
+            //MIP_PRINT;
+            MIP_Bitmap* bitmap  = MImages[MFillPaint.image];
+            _draw_buffer(bitmap->getBuffer(),x,y,w,h);
+
+//----------
+
             uint32_t width      = bitmap->getWidth();
             uint32_t height     = bitmap->getHeight();
             uint32_t buffersize = bitmap->getBufferSize();
             uint32_t* buffer    = bitmap->getBuffer();
+
             xcb_image_t* image = xcb_image_create(
               width,                          // width      width in pixels.
               height,                         // height     height in pixels.
@@ -653,6 +784,9 @@ public:
               y,                      // int16_t            y,
               0                       // uint8_t            left_pad
             );
+
+//----------
+
             image->base = nullptr;
             xcb_image_destroy(image);
             xcb_flush(MConnection);
@@ -732,14 +866,17 @@ public:
 
       }
     }
-    MPathLength = 0;
+    //MPathLength = 0;
+    MPath.clear(false);
   }
 
   //----------
 
   void stroke() override {
     //MIP_Print("MPathLength: %i\n",MPathLength);
-    for (uint32_t i=0; i<MPathLength; i++) {
+    //for (uint32_t i=0; i<MPathLength; i++) {
+
+    for (uint32_t i=0; i<MPath.size(); i++) {
       switch (MPath[i].type) {
 
         case MIP_PATH_MOVE_TO: {
@@ -860,7 +997,8 @@ public:
 
       }
     }
-    MPathLength = 0;
+    //MPathLength = 0;
+    MPath.clear(false);
   }
 
   //--------------------
@@ -868,19 +1006,44 @@ public:
   //--------------------
 
   int createFont(const char* name, const char* filename) override {
-    return 0;
-    }
+    MIP_PRINT;
+    // load font
+    long size;
+    unsigned char* fontBuffer;
+    FILE* fontFile = fopen(filename, "rb");
+    fseek(fontFile, 0, SEEK_END);
+    size = ftell(fontFile); /* how long is the file ? */
+    fseek(fontFile, 0, SEEK_SET); /* reset */
+    fontBuffer = (unsigned char*)malloc(size);
+    fread(fontBuffer, size, 1, fontFile);
+    fclose(fontFile);
+    int font = createFontMem("font1",fontBuffer,size,0);
+//    free(fontBuffer);
+    return font;
+  }
 
   //----------
 
   int createFontAtIndex(const char* name, const char* filename, const int fontIndex) override {
-    return 0;
+    return -1;
   }
 
   //----------
 
   int createFontMem(const char* name, unsigned char* data, int ndata, int freeData) override {
-    return 0;
+    MIP_PRINT;
+    #ifdef MIP_XCB_USE_STB_TRUETYPE
+    for (int i=0; i<MIP_XCB_PAINTER_MAX_FONTS; i++) {
+      if (MFonts[i] == nullptr) {
+        MFonts[i] = (stbtt_fontinfo*)malloc(sizeof(stbtt_fontinfo));
+        if (!stbtt_InitFont(MFonts[i],data,0)) {
+          printf("Error loading font\n");
+        }
+        return i;
+      }
+    }
+    #endif
+    return -1;
   }
 
   //----------
@@ -892,6 +1055,7 @@ public:
   //----------
 
   int findFont(const char* name) override {
+    MIP_PRINT;
     return 0;
   }
 
@@ -946,23 +1110,36 @@ public:
   //----------
 
   void fontFaceId(int font) override {
+    MFont = font;
   }
 
   //----------
 
   void fontFace(const char* font) override {
+    //todo
+    MFont = 0;
   }
 
   //----------
 
   float text(float x, float y, const char* string, const char* end) override {
+    //MIP_PRINT;
     _measure_string(string);
-    uint8_t buffer[512];
-    MIP_XcbPolyText8 pt;
-    pt.data = buffer;
-    pt.used = 0;
-    mip_xcb_add_string_text8(&pt,string);
-    xcb_poly_text_8(MConnection,MDrawable,MGC,x,y+ MFontAscent,pt.used,pt.data);
+    //
+    #ifdef MIP_XCB_USE_STB_TRUETYPE
+      //unsigned char* textbuffer = _render_string(string);
+      //if (textbuffer) {
+      //  _draw_buffer((uint32_t*)textbuffer,x,y,MFontWidth,MFontHeight);
+      //  free (textbuffer);
+      //}
+    #else
+      uint8_t buffer[512];
+      MIP_XcbPolyText8 pt;
+      pt.data = buffer;
+      pt.used = 0;
+      mip_xcb_add_string_text8(&pt,string);
+      xcb_poly_text_8(MConnection,MDrawable,MGC,x,y + MFontAscent,pt.used,pt.data);
+    #endif
     return 0.0;
   }
 
@@ -974,6 +1151,7 @@ public:
   //----------
 
   float textBounds(float x, float y, const char* string, const char* end, float* bounds) override {
+    //MIP_PRINT;
     _measure_string(string);
     //MIP_Print("MFontHeight: %i\n",MFontHeight);
     bounds[0] = x;
@@ -1084,38 +1262,79 @@ private:
 
   //----------
 
-  void _open_font(const char* AName) {
-    _close_font();
-    MFont = xcb_generate_id(MConnection);
-    xcb_open_font(
-      MConnection,
-      MFont, //font,
-      strlen(AName),
-      AName
-    );
-  }
+//  void _open_font(const char* AName) {
+//    _close_font();
+//    MFont = xcb_generate_id(MConnection);
+//    xcb_open_font(
+//      MConnection,
+//      MFont, //font,
+//      strlen(AName),
+//      AName
+//    );
+//  }
+//
+//  //----------
+//
+//  void _close_font(void) {
+//    if (MFont) {
+//      xcb_close_font(MConnection,MFont);
+//    }
+//  }
+//
+//  //----------
+//
+//  void _select_font(const char* AName) {
+//    _open_font(AName);
+//    uint32_t mask = XCB_GC_FONT;
+//    uint32_t values[1];
+//    values[0] = MFont;
+//    xcb_change_gc(MConnection, MGC, mask, values);
+//  }
 
   //----------
 
-  void _close_font(void) {
-    if (MFont) {
-      xcb_close_font(MConnection,MFont);
+  //cscale is from stbtt_ScaleForPixelHeight.
+
+  #ifdef MIP_XCB_USE_STB_TRUETYPE
+
+  float _calc_text_width(const char* text) {
+    stbtt_fontinfo* font = MFonts[MFont];
+    float length = 0;
+    for (uint32_t i=0; i<strlen(text); i++) {
+      int advancewidth;
+      int leftsidebearing;
+      stbtt_GetCodepointHMetrics(font,text[i], &advancewidth, &leftsidebearing);
+      length += advancewidth;
     }
+    return length * MFontSize;//cscale;
   }
 
-  //----------
-
-  void _select_font(const char* AName) {
-    _open_font(AName);
-    uint32_t mask = XCB_GC_FONT;
-    uint32_t values[1];
-    values[0] = MFont;
-    xcb_change_gc(MConnection, MGC, mask, values);
-  }
+  #endif
 
   //----------
 
   void _measure_string(const char *string) {
+
+  #ifdef MIP_XCB_USE_STB_TRUETYPE
+
+    stbtt_fontinfo* font = MFonts[MFont];
+    float scale = stbtt_ScaleForPixelHeight(font,MFontSize);
+    int ascent, descent, lineGap;
+    stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
+    //ascent = roundf(ascent * scale);
+    //descent = roundf(descent * scale);
+    MFontAscent   = ascent * scale;
+    MFontDescent  = descent * scale;
+    MFontWidth    = _calc_text_width(string) * scale;
+    MFontHeight   = MFontSize;//(y1 - y0 + 1);
+    MFontOrigin   = 0;
+    MFontLeft     = 0;
+    MFontRight    = 0;
+    MIP_Print("ascent %i descent %i\n",MFontAscent,MFontDescent);
+    MIP_Print("width %i height %i\n",MFontWidth,MFontHeight);
+
+  #else
+
     xcb_char2b_t xcb_str[256];
     for (uint32_t i = 0; i < strlen(string); i++) {
       xcb_str[i].byte1 = 0;
@@ -1134,6 +1353,85 @@ private:
     //MFontOverallDescent = reply->overall_descent;
     //free(xcb_str); // ???
     free(reply);
+
+  #endif
+
+  }
+
+  // called must free returned memory block
+
+  #ifdef MIP_XCB_USE_STB_TRUETYPE
+
+  unsigned char* _render_string(const char* string, unsigned char* bitmap=nullptr) {
+    uint32_t string_length = strlen(string);
+    if (string_length = 0) return nullptr;
+    _measure_string(string);
+    stbtt_fontinfo* font = MFonts[MFont];
+    if (!bitmap) bitmap = (unsigned char*)calloc(MFontWidth * MFontHeight, sizeof(unsigned char));
+    float scale = stbtt_ScaleForPixelHeight(font,MFontSize);
+    int x = 0;
+    for (uint32_t i = 0; i < string_length; ++i) {
+      // how wide is this character
+      int ax, lsb;
+      stbtt_GetCodepointHMetrics(font, string[i], &ax, &lsb);
+      // (Note that each Codepoint call has an alternative Glyph version which caches the work required to lookup the character word[i].)
+      // get bounding box for character (may be offset to account for chars that dip above or below the line)
+      int c_x1, c_y1, c_x2, c_y2;
+      stbtt_GetCodepointBitmapBox(font, string[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+      //* compute y (different characters have different heights)
+      int y = MFontAscent + c_y1;
+      //* render character (stride and offset is important here)
+      int byteOffset = x + roundf(lsb * scale) + (y * MFontWidth);
+      stbtt_MakeCodepointBitmap(font, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, MFontWidth, scale, scale, string[i]);
+      //* advance x
+      x += roundf(ax * scale);
+      //* add kerning
+      int kern;
+      kern = stbtt_GetCodepointKernAdvance(font, string[i], string[i + 1]);
+      x += roundf(kern * scale);
+    }
+    //* save out a 1 channel image
+    //stbi_write_png("out.png", b_w, b_h, 1, bitmap, b_w);
+    //free(fontBuffer);
+    //free(bitmap);
+    return bitmap;
+  }
+
+  #endif
+
+  //----------
+
+  void _draw_buffer(uint32_t* buffer, uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+    uint32_t buffersize = width * height * sizeof(uint32_t);
+    xcb_image_t* image = xcb_image_create(
+      width,                          // width      width in pixels.
+      height,                         // height     height in pixels.
+      XCB_IMAGE_FORMAT_Z_PIXMAP,      // format
+      32,                             // xpad       scanline pad (8,16,32)
+      24,                             // depth      (1,4,8,16,24 zpixmap),    (1 xybitmap), (anything xypixmap)
+      32,                             // bpp        (1,4,8,16,24,32 zpixmap,  (1 xybitmap), (anything xypixmap)
+      32,                             // unit       unit of image representation, in bits (8,16,32)
+      XCB_IMAGE_ORDER_LSB_FIRST,      // byte_order
+      XCB_IMAGE_ORDER_LSB_FIRST,      // bit_order
+      buffer,                         // base       The base address of malloced image data
+      buffersize,                     // bytes      The size in bytes of the storage pointed to by base.
+                                      //            If base == 0 and bytes == ~0 and data == 0, no storage will be auto-allocated.
+      (uint8_t*)buffer                // data       The image data. If data is null and bytes != ~0, then an attempt will be made
+                                      //            to fill in data; from base if it is non-null (and bytes is large enough), else
+                                      //            by mallocing sufficient storage and filling in base.
+    );
+    xcb_image_put(
+      MConnection,            // xcb_connection_t*  conn,
+      MDrawable,              // xcb_drawable_t     draw,
+      MGC,                    // xcb_gcontext_t     gc,
+      image,                  // xcb_image_t*       image,
+      x,                      // int16_t            x,
+      y,                      // int16_t            y,
+      0                       // uint8_t            left_pad
+    );
+    image->base = nullptr;
+    xcb_image_destroy(image);
+    xcb_flush(MConnection);
   }
 
 };

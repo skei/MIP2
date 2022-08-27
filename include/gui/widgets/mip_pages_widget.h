@@ -40,8 +40,8 @@ public:
 //------------------------------
 
   int32_t appendPage(MIP_Widget* APage) {
-    APage->Flags.active = false;
-    APage->Flags.visible = false;
+    APage->State.active = false;
+    APage->State.visible = false;
     return appendChildWidget(APage)->getWidgetIndex();
   }
 
@@ -53,12 +53,12 @@ public:
     for (int32_t i=0; i<num; i++) {
       MIP_Widget* wdg = MChildren[i];
       if (i == APage) {
-        wdg->Flags.active = true;
-        wdg->Flags.visible = true;
+        wdg->State.active = true;
+        wdg->State.visible = true;
       }
       else {
-        wdg->Flags.active = false;
-        wdg->Flags.visible = false;
+        wdg->State.active = false;
+        wdg->State.visible = false;
       }
     }
     MActivePage = APage;
