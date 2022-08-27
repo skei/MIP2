@@ -384,8 +384,11 @@ public: // hierarchy
     //MIP_PRINT;
     uint32_t num = MChildren.size();
     if (num > 0) {
+
+
       MIP_DRect cliprect = MRect;
       cliprect.shrink(Layout.border);
+      cliprect.overlap(AContext->updateRect);
 
       //if (Flags.clipChildren) {
       //  AContext->painter->pushOverlapClip(cliprect);
