@@ -70,6 +70,10 @@ public:
 
   //----------
 
+  /*
+    will nvgDelete... also delete images and fonts?
+  */
+
   virtual ~MIP_NanoVGPainter() {
     nvgDeleteGL3(MContext);
     //nvgDeleteImage(MIconImage);
@@ -215,6 +219,7 @@ public:
 
   //void strokePaint(NVGpaint paint) {
   void strokePaint(MIP_PaintSource paint) override {
+    //nvgStrokePaint(MContext,paint.nvg);
     nvgStrokePaint(MContext,paint.nvg);
   }
 
@@ -224,6 +229,7 @@ public:
   }
 
   void fillPaint(MIP_PaintSource paint) override {
+    //nvgFillPaint(MContext,paint.nvg);
     nvgFillPaint(MContext,paint.nvg);
   }
 
@@ -361,6 +367,7 @@ public:
     NVGcolor ic = nvg_color(icol);
     NVGcolor oc = nvg_color(ocol);
     MIP_PaintSource paint;
+    //paint.nvg = nvgLinearGradient(MContext,sx,sy,ex,ey,ic,oc);
     paint.nvg = nvgLinearGradient(MContext,sx,sy,ex,ey,ic,oc);
     return paint;
   }
@@ -370,6 +377,7 @@ public:
     NVGcolor ic = nvg_color(icol);
     NVGcolor oc = nvg_color(ocol);
     MIP_PaintSource paint;
+    //paint.nvg = nvgBoxGradient(MContext,x,y,w,h,r,f,ic,oc);
     paint.nvg = nvgBoxGradient(MContext,x,y,w,h,r,f,ic,oc);
     return paint;
   }
@@ -379,12 +387,14 @@ public:
     NVGcolor ic = nvg_color(icol);
     NVGcolor oc = nvg_color(ocol);
     MIP_PaintSource paint;
+    //paint.nvg = nvgRadialGradient(MContext,cx,cy,inr,outr,ic,oc);
     paint.nvg = nvgRadialGradient(MContext,cx,cy,inr,outr,ic,oc);
     return paint;
   }
 
   MIP_PaintSource imagePattern(float ox, float oy, float ex, float ey, float angle, int image, float alpha) override {
     MIP_PaintSource paint;
+    //paint.nvg = nvgImagePattern(MContext,ox,oy,ex,ey,angle,image,alpha);
     paint.nvg = nvgImagePattern(MContext,ox,oy,ex,ey,angle,image,alpha);
     return paint;
   }

@@ -179,9 +179,9 @@ public:
 public: // parent to child
 //------------------------------
 
-  virtual void on_widget_open(MIP_Widget* AOwnerWindow)  {
+  virtual void on_widget_config(MIP_Widget* AOwnerWindow)  {
     for (uint32_t i=0; i<MChildren.size(); i++) {
-      MChildren[i]->on_widget_open(AOwnerWindow);
+      MChildren[i]->on_widget_config(AOwnerWindow);
     }
   }
 

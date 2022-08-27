@@ -63,29 +63,16 @@ public: // parent to child
 public: // parent to child
 //------------------------------
 
-  void on_widget_open(MIP_Widget* AOwnerWindow) override {
+  void on_widget_config(MIP_Widget* AOwnerWindow) override {
     //MIP_PRINT;
     MOwnerWindow = (MIP_Window*)AOwnerWindow;
-    MIP_PanelWidget::on_widget_open(AOwnerWindow);
+    MIP_PanelWidget::on_widget_config(AOwnerWindow);
   }
 
-  //void on_widget_paint(MIP_PaintContext* AContext) override {
-  //  fillBackground(AContext);
-  //  paintChildWidgets(AContext);
-  //  drawMenu(AContext);
-  //  drawBorder(AContext);
-  //}
-
   void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-
-    //MIP_Window* window = (MIP_Window*)do_widget_get_window(this);
-    //if (window) {
-    //}
-
     if (!MRect.contains(AXpos,AYpos)) {
       if (MListener) MListener->on_menu_selected(-1);
       close(true);
-      //do_widget_modal(nullptr);
     }
     else {
       MIP_PanelWidget::on_widget_mouse_click(AButton,AState,AXpos,AYpos,ATime);
@@ -123,13 +110,8 @@ public:
 //------------------------------
 
   virtual void open(double AXpos, double AYpos, bool AModal/*=true*/) {
-
     double x = AXpos;
     double y = AYpos;
-    //MIP_Window* window = (MIP_Window*)do_widget_get_owner_window(this);
-
-    //MIP_Window* window = (MIP_Window*)getOwnerWindow();
-
     if (MOwnerWindow) {
       uint32_t winw = MOwnerWindow->getWindowWidth();
       uint32_t winh = MOwnerWindow->getWindowHeight();
@@ -149,19 +131,9 @@ public:
   virtual void close(bool AModal/*=true*/) {
     Flags.visible = false;
     Flags.active = false;
-    //do_widget_update(this);
     do_widget_redraw(this);
     if (AModal) do_widget_modal(nullptr);
   }
-
-  //virtual void drawMenu(MIP_PaintContext* AContext) {
-  //  MIP_Painter* painter = AContext->painter;
-  //  MIP_DRect rect = MRect;
-  //  rect.shrink(2);
-  //  painter->fontSize(MTextSize);
-  //  painter->beginPath();
-  //  painter->drawTextBox(rect,MText,MTextAlignment,MTextColor);
-  //}
 
 };
 

@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 #include "mip.h"
+#include "gfx/mip_bitmap.h"
 #include "gui/mip_drawable.h"
 
 //----------------------------------------------------------------------
@@ -12,7 +13,13 @@
 //typedef NVGpaint MIP_PaintSource;
 
 #ifdef MIP_PAINTER_NANOVG
-#include "gui/nanovg/mip_nanovg.h"
+  #include "gui/nanovg/mip_nanovg.h"
+  //typedef NVGpaint MIP_PaintSource;
+#endif
+
+#ifdef MIP_PAINTER_XCB
+  #include "gui/xcb/mip_xcb.h"
+  //typedef MIP_Bitmap* MIP_PaintSource;
 #endif
 
 //----------
@@ -21,9 +28,15 @@ struct MIP_PaintSource {
   union {
     #ifdef MIP_PAINTER_CAIRO
     #endif
-    // etc
+    #ifdef MIP_PAINTER_GDI
+    #endif
+    #ifdef MIP_PAINTER_GLX
+    #endif
     #ifdef MIP_PAINTER_NANOVG
-    NVGpaint nvg;
+      NVGpaint nvg;
+    #endif
+    #ifdef MIP_PAINTER_XCB
+      int image = -1;
     #endif
   };
 };
@@ -99,8 +112,10 @@ public:
   virtual void shapeAntiAlias(int enabled) {}
   virtual void strokeColor(MIP_Color color) {}
   virtual void strokePaint(MIP_PaintSource paint) {}
+  //virtual void strokePaint(int paint) {}
   virtual void fillColor(MIP_Color color) {}
   virtual void fillPaint(MIP_PaintSource paint) {}
+  //virtual void fillPaint(int paint) {}
   virtual void miterLimit(float limit) {}
   virtual void strokeWidth(float size) {}
   virtual void lineCap(int cap) {}

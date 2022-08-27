@@ -11,9 +11,8 @@
 // linx
 
 #define MIP_GUI_XCB
-#define MIP_PAINTER_XCB
 //#define MIP_PAINTER_NANOVG
-
+#define MIP_PAINTER_XCB
 #define MIP_WINDOW_BUFFERED
 
 // win32
@@ -57,6 +56,42 @@ const clap_plugin_descriptor_t template_descriptor = {
   .description   = "",
   .features      =  (const char *[]){ CLAP_PLUGIN_FEATURE_AUDIO_EFFECT, nullptr }
 };
+
+//----------------------------------------------------------------------
+//
+// editor
+//
+//----------------------------------------------------------------------
+
+/*
+
+class myEditor
+: public MIP_Editor {
+
+public:
+
+  myEditor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
+  : MIP_Editor(AListener,AWidth,AHeight) {
+  }
+
+  virtual ~myEditor() {
+  }
+
+public:
+
+  void on_widget_config(MIP_Widget* AOwnerWindow) override {
+    MIP_PRINT;
+    MIP_Editor::on_widget_config(AOwnerWindow);
+  }
+
+public:
+
+  void config() {
+  }
+
+};
+
+*/
 
 //----------------------------------------------------------------------
 //
@@ -140,7 +175,12 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) override {
+
+    //MEditor = new myEditor(this,MEditorWidth,MEditorHeight); // crash???
+    //bool result = (MEditor != nullptr);
+
     bool result = MIP_Plugin::gui_create(api,is_floating);
+
     if (result) {
       MEditor->setWidgetName("MEditor");
       MEditor->setWindowFillBackground(false);
@@ -166,7 +206,7 @@ public: // gui
 
       //----- sa header -----
 
-      MIP_SAHeaderWidget* saheader = new MIP_SAHeaderWidget(60,MEditor);
+      MIP_SAHeaderWidget* saheader = new MIP_SAHeaderWidget(60/*,MEditor*/);
       saheader->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
       saheader->setPluginName("test_layout");
       saheader->setPluginVersion("v0.0.0");

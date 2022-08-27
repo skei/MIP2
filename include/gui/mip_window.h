@@ -91,8 +91,6 @@ public:
     MWindowPainter = new MIP_Painter(this,this);
 
     #ifdef MIP_WINDOW_BUFFERED
-      //MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
-      //MBufferPainter = new MIP_Painter(this,MBufferSurface);
       createBuffer(AWidth,AHeight);
       MPaintContext.painter = MBufferPainter;
     #else
@@ -236,9 +234,10 @@ public: // window
 
   void on_window_open() override {
     //MIP_Print("on_window_open\n");
-    for (uint32_t i=0; i<MChildren.size(); i++) {
-      MChildren[i]->on_widget_open(this);
-    }
+//    for (uint32_t i=0; i<MChildren.size(); i++) {
+//      MChildren[i]->on_widget_open(this);
+//    }
+    on_widget_config(this);
   }
 
   //----------
@@ -258,21 +257,23 @@ public: // window
     MWindowPainter = new MIP_Painter(this,this);
     MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
     #ifdef MIP_WINDOW_BUFFERED
-      //if (MBufferSurface) delete MBufferSurface;
-      //MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
-      //if (MBufferPainter) delete MBufferPainter;
-      //MBufferPainter = new MIP_Painter(this,MBufferSurface);
       resizeBuffer(AWidth,AHeight);
       MPaintContext.painter = MBufferPainter;
     #else
       MPaintContext.painter = MWindowPainter;
     #endif
     MRect.setSize(AWidth,AHeight);
+
+// in case widgets need to update painter..
+// images, fonts..
+
+    on_widget_config(this);
+
     //alignChildWidgets();
 
-//    double xscale = AWidth / Layout.baseRect.w;
-//    double yscale = AHeight / Layout.baseRect.h;
-//    MIP_Print("xscale %f yscale %f\n",xscale,yscale);
+    //    double xscale = AWidth / Layout.baseRect.w;
+    //    double yscale = AHeight / Layout.baseRect.h;
+    //    MIP_Print("xscale %f yscale %f\n",xscale,yscale);
 
 
   }

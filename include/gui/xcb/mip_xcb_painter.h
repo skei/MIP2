@@ -30,6 +30,10 @@ struct MIP_PathItem {
   float     data[8] = {0};
 };
 
+//----------
+
+#define MIP_XCB_PAINTER_MAX_IMAGES 16
+
 //----------------------------------------------------------------------
 //
 //
@@ -43,8 +47,8 @@ class MIP_XcbPainter
 protected:
 //------------------------------
 
-  MIP_Drawable*   MSurface                    = nullptr;
-  MIP_Drawable*   MTarget                     = nullptr;
+  MIP_Drawable*     MSurface                  = nullptr;
+  MIP_Drawable*     MTarget                   = nullptr;
 
   xcb_connection_t* MConnection               = nullptr;
   xcb_visualid_t    MVisual                   = XCB_NONE;
@@ -63,19 +67,23 @@ protected:
   int32_t           MFontLeft                 = 0;
   int32_t           MFontRight                = 0;
 
-  MIP_Color       MStrokeColor                = MIP_COLOR_BLACK;
-  float           MStrokeWidth                = 1.0;
+  MIP_Color         MStrokeColor                = MIP_COLOR_BLACK;
+  float             MStrokeWidth                = 1.0;
 
-  MIP_Color       MFillColor                  = MIP_COLOR_WHITE;
-  MIP_PaintSource MFillPaint                  = {};
+  MIP_Color         MFillColor                  = MIP_COLOR_WHITE;
+  MIP_PaintSource   MFillPaint                  = {};
+  //int               MFillPaint                  = -1;
 
-  MIP_Color       MFontColor                  = MIP_COLOR_BLACK;
-  float           MFontSize                   = 13.0;
+  MIP_Color         MFontColor                  = MIP_COLOR_BLACK;
+  float             MFontSize                   = 13.0;
 
-  MIP_PathItem    MPath[MIP_PATH_MAX_LENGTH]  = {};
-  uint32_t        MPathLength                 = 0;
-  float           MPathXpos                   = 0.0f;
-  float           MPathYpos                   = 0.0f;
+  MIP_PathItem      MPath[MIP_PATH_MAX_LENGTH]  = {};
+  uint32_t          MPathLength                 = 0;
+  float             MPathXpos                   = 0.0f;
+  float             MPathYpos                   = 0.0f;
+
+  //MIP_PaintSource   MImages[MIP_XCB_PAINTER_MAX_IMAGES] = {0};
+  MIP_Bitmap*       MImages[MIP_XCB_PAINTER_MAX_IMAGES] = {0};
 
 //------------------------------
 public:
@@ -127,6 +135,9 @@ public:
 
   virtual ~MIP_XcbPainter() {
     xcb_free_gc(MConnection,MGC);
+    for (uint32_t i=0; i<MIP_XCB_PAINTER_MAX_IMAGES; i++) {
+      if (MImages[i]) delete MImages[i];
+    }
   }
 
 //------------------------------
@@ -259,6 +270,7 @@ public:
   //----------
 
   void strokePaint(MIP_PaintSource paint) override {
+  //void strokePaint(int paint) override {
   }
 
   //----------
@@ -272,6 +284,7 @@ public:
   //----------
 
   void fillPaint(MIP_PaintSource paint) override {
+  //void fillPaint(int paint) override {
     MFillPaint = paint;
   }
 
@@ -345,7 +358,14 @@ public:
   //----------
 
   int createImageRGBA(int w, int h, int imageFlags, const unsigned char* data) override {
-    return 0;
+    for (int i=0; i<MIP_XCB_PAINTER_MAX_IMAGES; i++) {
+      if (MImages[i] == nullptr) {
+        //MIP_Print("setup image %i\n",i);
+        MImages[i] = new MIP_Bitmap((uint32_t)w,(uint32_t)h,(uint32_t*)data);
+        return i;
+      }
+    }
+    return -1;
   }
 
   //----------
@@ -356,11 +376,14 @@ public:
   //----------
 
   void imageSize(int image, int* w, int* h) override {
+    *w = MImages[image]->getWidth();
+    *h = MImages[image]->getHeight();
   }
 
   //----------
 
   void deleteImage(int image) override {
+    delete MImages[image];
   }
 
   //--------------------
@@ -386,7 +409,10 @@ public:
   //----------
 
   MIP_PaintSource imagePattern(float ox, float oy, float ex, float ey, float angle, int image, float alpha) override {
-    return MIP_PaintSource();
+    MIP_PRINT;
+    MIP_PaintSource ps;
+    ps.image = image;
+    return ps;
   }
 
   //--------------------
@@ -412,6 +438,7 @@ public:
 
   void beginPath() override {
     MPathLength = 0;
+    MFillPaint = {};//
   }
 
   //----------
@@ -588,22 +615,66 @@ public:
         }
 
         case MIP_PATH_RECT: {
-          //if ((ARect.w <= 0) || (ARect.h <= 0)) return;
-          xcb_rectangle_t rectangles[] = {{
-            (int16_t)MPath[i].data[0],
-            (int16_t)MPath[i].data[1],
-            (uint16_t)MPath[i].data[2],
-            (uint16_t)MPath[i].data[3],
-          }};
-          xcb_poly_fill_rectangle(MConnection,MDrawable,MGC,1,rectangles);
+          float x = MPath[i].data[0];
+          float y = MPath[i].data[1];
+          float w = MPath[i].data[2];
+          float h = MPath[i].data[3];
+
+          if (MFillPaint.image >= 0) {
+            MIP_PRINT;
+            MIP_Bitmap* bitmap = MImages[MFillPaint.image];
+            uint32_t width      = bitmap->getWidth();
+            uint32_t height     = bitmap->getHeight();
+            uint32_t buffersize = bitmap->getBufferSize();
+            uint32_t* buffer    = bitmap->getBuffer();
+            xcb_image_t* image = xcb_image_create(
+              width,                          // width      width in pixels.
+              height,                         // height     height in pixels.
+              XCB_IMAGE_FORMAT_Z_PIXMAP,      // format
+              32,                             // xpad       scanline pad (8,16,32)
+              24,                             // depth      (1,4,8,16,24 zpixmap),    (1 xybitmap), (anything xypixmap)
+              32,                             // bpp        (1,4,8,16,24,32 zpixmap,  (1 xybitmap), (anything xypixmap)
+              32,                             // unit       unit of image representation, in bits (8,16,32)
+              XCB_IMAGE_ORDER_LSB_FIRST,      // byte_order
+              XCB_IMAGE_ORDER_LSB_FIRST,      // bit_order
+              buffer,                         // base       The base address of malloced image data
+              buffersize,                     // bytes      The size in bytes of the storage pointed to by base.
+                                              //            If base == 0 and bytes == ~0 and data == 0, no storage will be auto-allocated.
+              (uint8_t*)buffer                // data       The image data. If data is null and bytes != ~0, then an attempt will be made
+                                              //            to fill in data; from base if it is non-null (and bytes is large enough), else
+                                              //            by mallocing sufficient storage and filling in base.
+            );
+            xcb_image_put(
+              MConnection,            // xcb_connection_t*  conn,
+              MDrawable,              // xcb_drawable_t     draw,
+              MGC,                    // xcb_gcontext_t     gc,
+              image,                  // xcb_image_t*       image,
+              x,                      // int16_t            x,
+              y,                      // int16_t            y,
+              0                       // uint8_t            left_pad
+            );
+            image->base = nullptr;
+            xcb_image_destroy(image);
+            xcb_flush(MConnection);
+          }
+          else {
+            //if ((ARect.w <= 0) || (ARect.h <= 0)) return;
+            xcb_rectangle_t rectangles[] = {{
+              (int16_t)x,//MPath[i].data[0],
+              (int16_t)y,//MPath[i].data[1],
+              (uint16_t)w,//MPath[i].data[2],
+              (uint16_t)h,//MPath[i].data[3],
+            }};
+            xcb_poly_fill_rectangle(MConnection,MDrawable,MGC,1,rectangles);
+          }
           break;
         }
 
-//    MPath[MPathLength].data[0]  = x;
-//    MPath[MPathLength].data[1]  = y;
-//    MPath[MPathLength].data[2]  = w;
-//    MPath[MPathLength].data[3]  = h;
-//    MPath[MPathLength].data[4]  = r;
+        //    MPath[MPathLength].data[0]  = x;
+        //    MPath[MPathLength].data[1]  = y;
+        //    MPath[MPathLength].data[2]  = w;
+        //    MPath[MPathLength].data[3]  = h;
+        //    MPath[MPathLength].data[4]  = r;
 
         case MIP_PATH_ROUNDED_RECT: {
           //TODO:

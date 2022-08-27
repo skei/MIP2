@@ -39,7 +39,7 @@ GLint MIP_GlxPixmapAttribs[] = {
   GLX_RED_SIZE,       8,
   GLX_GREEN_SIZE,     8,
   GLX_BLUE_SIZE,      8,
-  GLX_ALPHA_SIZE,     0,  // window can't have alpha
+  GLX_ALPHA_SIZE,     8,  // window can't have alpha
   GLX_STENCIL_SIZE,   8,  // nanovg needs stencil?
   //GLX_DEPTH_SIZE,     24,
   //GLX_SAMPLE_BUFFERS, True,
@@ -116,22 +116,29 @@ public:
 
     old_x_error_handler = XSetErrorHandler(x_error_handler);
 
-    MWidth = ASurface->drawable_getWidth();
-    MHeight = ASurface->drawable_getHeight();
-    MDisplay = ATarget->drawable_getXlibDisplay();
-    if (ASurface->drawable_isWindow()) {
+    MWidth = ATarget->drawable_getWidth();
+    MHeight = ATarget->drawable_getHeight();
+    MDisplay = ASurface->drawable_getXlibDisplay();
+    if (ATarget->drawable_isWindow()) {
+      MIP_Print("window\n");
       MFBConfig = findFBConfig(MIP_GlxWindowAttribs);
       MContext = createContext(MFBConfig);
-      xcb_window_t window = ASurface->drawable_getXcbWindow();
+      xcb_window_t window = ATarget->drawable_getXcbWindow();
       MDrawable = glXCreateWindow(MDisplay,MFBConfig,window,nullptr);
       MDrawableIsWindow = true;
     }
-    else {
-      MFBConfig = findFBConfig(MIP_GlxPixmapAttribs);
+    else { // todo
+      MIP_Print("pixmap\n");
+      MFBConfig = findFBConfig(MIP_GlxPixmapAttribs); // crash..
+      MIP_Print("1\n");
       MContext = createContext(MFBConfig);
-      xcb_pixmap_t pixmap = ASurface->drawable_getXcbPixmap();
+      MIP_Print("2\n");
+      xcb_pixmap_t pixmap = ATarget->drawable_getXcbPixmap();
+      MIP_Print("3\n");
       MDrawable = glXCreatePixmap(MDisplay,MFBConfig,pixmap,nullptr);
+      MIP_Print("4\n");
       MDrawableIsWindow = false;
+      MIP_Print("5\n");
     }
     MIP_GLXDisableVSync(MDisplay,MDrawable);
     //resetCurrent();
@@ -253,7 +260,11 @@ private:
     //MIP_PRINT;
     //MDisplay = ADisplay;
     int num_fbc = 0;
+    MIP_Print("Display: %p\n",MDisplay);
+    MIP_Print("Screen: %i\n",DefaultScreen(MDisplay));
+    MIP_Print("AAttribs: %p\n",AAttribs);
     GLXFBConfig* fbconfigs = glXChooseFBConfig(MDisplay,DefaultScreen(MDisplay),AAttribs,&num_fbc);
+    MIP_Print("num_fbc: %i\n",num_fbc);
     GLXFBConfig fbconfig = fbconfigs[0];
     XFree(fbconfigs);
     return fbconfig;

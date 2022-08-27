@@ -84,9 +84,9 @@ public: // parent to child
 public: // parent to child
 //------------------------------
 
-  void on_widget_open(MIP_Widget* AOwnerWindow) override {
+  void on_widget_config(MIP_Widget* AOwnerWindow) override {
     MOwnerWindow = (MIP_Window*)AOwnerWindow;
-    MIP_PanelWidget::on_widget_open(AOwnerWindow);
+    MIP_PanelWidget::on_widget_config(AOwnerWindow);
   }
 
   //----------

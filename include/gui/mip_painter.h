@@ -73,11 +73,11 @@ private:
 public:
 //------------------------------
 
-  MIP_Painter(MIP_Drawable* ATarget, MIP_Drawable* ASource)
-  : MIP_ImplementedPainter(ATarget,ASource) {
+  MIP_Painter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
+  : MIP_ImplementedPainter(ASurface,ATarget) {
 
-    //MClipRect = MIP_DRect( ATarget->drawable_getWidth()-1, ATarget->drawable_getHeight()-1 );
-    MClipRect = MIP_DRect( ASource->drawable_getWidth()-1, ASource->drawable_getHeight()-1 );
+    MClipRect = MIP_DRect( ATarget->drawable_getWidth()-1, ATarget->drawable_getHeight()-1 );
+    //MClipRect = MIP_DRect( ASource->drawable_getWidth()-1, ASource->drawable_getHeight()-1 );
 
   }
 

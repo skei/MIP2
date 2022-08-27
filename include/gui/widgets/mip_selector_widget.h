@@ -43,13 +43,6 @@ public:
 public: // parent to child
 //------------------------------
 
-  //void on_widget_open(MIP_Widget* AOwnerWindow) override {
-  //  MOwnerWindow = (MIP_Window*)AOwnerWindow;
-  //  MIP_TextWidget::on_widget_open(AOwnerWindow);
-  //}
-
-  //----------
-
   void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     if (AButton == MIP_BUTTON_LEFT) {
       MMenu->open(AXpos,AYpos,true);
