@@ -41,11 +41,11 @@
 #define MIP_LADSPA_PARAM_INTEGER          8
 
 struct MIP_LadspaPort {
-  const char* name;
-  uint32_t    flags;
-  float       minval;
-  float       maxval;
-  float       defval;
+  const char* name    = nullptr;
+  uint32_t    flags   = 0;
+  float       minval  = 0.0;
+  float       maxval  = 1.0;
+  float       defval  = 0.0;
 };
 
 //----------------------------------------------------------------------
@@ -71,7 +71,7 @@ private:
   LADSPA_Handle             MLadspaHandle         = nullptr;
   const LADSPA_Descriptor*  MLadspaDescriptor     = nullptr;
   uint32_t                  MLadspaFlags          = MIP_LADSPA_FLAGS_NONE;
-  MIP_LadspaPort            MLadspaPorts[MIP_LADSPA_MAX_PORTS] = {0};
+  MIP_LadspaPort            MLadspaPorts[MIP_LADSPA_MAX_PORTS] = {};
 
   uint32_t                  MNumAudioInputs       = 0;
   uint32_t                  MNumAudioOutputs      = 0;
@@ -193,7 +193,7 @@ public: // plugin
 
     uint32_t num_inputs = MNumAudioInputs;
     for (uint32_t i=0; i<num_inputs; i++) {
-      uint32_t port = MAudioInputIndex[i];
+      int32_t port = MAudioInputIndex[i];
       if (port >= 0) {
         MIP_Assert( i <= process->audio_inputs->channel_count);
         ladspa_connect_port(port,process->audio_inputs->data32[i]);
@@ -204,7 +204,7 @@ public: // plugin
 
     uint32_t num_outputs = MNumAudioOutputs;
     for (uint32_t i=0; i<num_outputs; i++) {
-      uint32_t port = MAudioOutputIndex[i];
+      int32_t port = MAudioOutputIndex[i];
       if (port >= 0) {
 
         MIP_Assert( i <= process->audio_outputs->channel_count);
@@ -217,7 +217,7 @@ public: // plugin
 
     uint32_t num_params = MNumControlInputs;//MParams.count(&MPlugin);
     for (uint32_t i=0; i<num_params; i++) {
-      uint32_t port = MControlInputIndex[i];
+      int32_t port = MControlInputIndex[i];
       if (port >= 0) {
         //MIP_Print("param %i port %i\n",i,port);
 
@@ -230,7 +230,7 @@ public: // plugin
 
     uint32_t num_param_outs = MNumControlOutputs;//MParams.count(&MPlugin);
     for (uint32_t i=0; i<num_param_outs; i++) {
-      uint32_t port = MControlOutputIndex[i];
+      int32_t port = MControlOutputIndex[i];
       if (port >= 0) {
         //MIP_Print("param %i port %i\n",i,port);
         ladspa_connect_port(port,&MParamOutputs[port]);
