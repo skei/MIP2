@@ -16,7 +16,7 @@
 //#include <sys/stat.h>
 #include <dirent.h>
 
-#ifdef MIP_LINUX
+#ifdef __gnu_linux__
   #include <dlfcn.h>
 #endif
 
