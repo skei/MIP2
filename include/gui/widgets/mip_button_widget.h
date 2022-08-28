@@ -71,38 +71,42 @@ public: // parent to child
 //  void on_widget_paint(MIP_PaintContext* AContext) override { paintChildWidgets(AContext); }
 
   void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-    State.interactive = true;
-    if (MIsToggle) {
-      if (getValue() >= 0.5) {
-        setValue(0.0);
-        setText(MOffText);
+    if (AButton == MIP_BUTTON_LEFT) {
+      State.interactive = true;
+      if (MIsToggle) {
+        if (getValue() >= 0.5) {
+          setValue(0.0);
+          setText(MOffText);
+        }
+        else {
+          setValue(1.0);
+          setText(MOnText);
+        }
+        do_widget_update(this);
+        do_widget_redraw(this);
       }
       else {
         setValue(1.0);
         setText(MOnText);
+        do_widget_update(this);
+        do_widget_redraw(this);
       }
-      do_widget_update(this);
-      do_widget_redraw(this);
-    }
-    else {
-      setValue(1.0);
-      setText(MOnText);
-      do_widget_update(this);
-      do_widget_redraw(this);
     }
   }
 
   //----------
 
   void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
-    State.interactive = false;
-    if (MIsToggle) {
-    }
-    else {
-      setValue(0.0);
-      setText(MOffText);
-      do_widget_update(this);
-      do_widget_redraw(this);
+    if (AButton == MIP_BUTTON_LEFT) {
+      State.interactive = false;
+      if (MIsToggle) {
+      }
+      else {
+        setValue(0.0);
+        setText(MOffText);
+        do_widget_update(this);
+        do_widget_redraw(this);
+      }
     }
   }
 
