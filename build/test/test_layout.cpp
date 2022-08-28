@@ -128,11 +128,12 @@ private:
     { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note out 1" }
   };
 
+  //----------
+
   const char* button_txt[5] = {
     "1", "2", "3", "4", "v"
   };
 
-  // max 100 lines * 255 chars..
   char textbox1_buffer[TEXTBOX1_BUFFER_SIZE] = {0};
 
 //------------------------------
@@ -150,15 +151,22 @@ public: // plugin
 //------------------------------
 
   bool init() final {
+
     appendAudioInputPort( &myAudioInputPorts[0] );
     appendAudioOutputPort(&myAudioOutputPorts[0]);
+
     appendNoteInputPort(  &myNoteInputPorts[0]  );
     appendNoteOutputPort( &myNoteOutputPorts[0] );
+
     for (uint32_t i=0; i<PARAM_COUNT; i++) {
       appendParameter( new MIP_Parameter(&myParameters[i]) );
     }
+
     MIP_Parameter* param4 = new MIP_Parameter(0,"param4","",-1,1,0,CLAP_PARAM_IS_AUTOMATABLE);
     appendParameter(param4);
+
+    appendParameter( new MIP_Parameter(0,"param5","",-10,10,0,CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED) );
+
     return true;
   }
 
@@ -167,6 +175,7 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) override {
+    //MIP_PRINT;
 
     //MEditor = new myEditor(this,MEditorWidth,MEditorHeight); // crash???
     //bool result = (MEditor != nullptr);

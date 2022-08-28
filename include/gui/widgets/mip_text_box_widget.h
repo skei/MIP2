@@ -50,11 +50,14 @@ public:
 public:
 //------------------------------
 
+  /*
+    this could be called if the window, context, etc, is not valid yet?
+  */
+
   void alignChildWidgets(bool ARecursive=true) override {
     //MIP_PRINT;
     for (uint32_t i=0; i<MContent->getNumChildWidgets(); i++) {
       MIP_TextWidget* textwidget = (MIP_TextWidget*)MContent->getChildWidget(i);
-
       textwidget->updateTextSize();
     }
     MIP_ScrollBoxWidget::alignChildWidgets(ARecursive);
@@ -64,7 +67,7 @@ public:
   virtual void appendLine(const char* AText, bool ARedraw=true) {
     if (MNumLines >= MMaxLines) { removeOldestLine(); }
     //while (MNumLines >= MMaxLines) { removeOldestLine(); }
-    MIP_TextWidget* textwidget = new MIP_TextWidget( MIP_DRect(MTextSize),AText);
+    MIP_TextWidget* textwidget = new MIP_TextWidget( MIP_DRect(600,MTextSize),AText);
 
     /*
       this means we can't scroll..
@@ -80,6 +83,7 @@ public:
     textwidget->setTextColor(MIP_COLOR_BLACK);
     textwidget->setTextSize(MTextSize);
 
+    // textwidget.updateTextSize() commented out..
     textwidget->Options.autoSize = true;
 
     MContent->appendChildWidget(textwidget);

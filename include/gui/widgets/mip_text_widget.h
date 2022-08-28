@@ -102,29 +102,33 @@ public: // parent to child
 public:
 //------------------------------
 
+  // opening/resizing window, realignment,
+  // widget with autoSize flag calls painter
+
   virtual void updateTextSize() {
-    //MIP_PRINT;
     if (Options.autoSize) {
+      /*
       MIP_Painter* painter = MOwnerWindow->getPainter();
       if (painter) {
         float bounds[4];;
-
         double textsize = MTextSize;
-        if (MTextSize < 0) textsize = MRect.h * (- MTextSize);
+        if (textsize < 0) textsize = MRect.h * (- textsize);
         painter->fontSize(textsize);
-
-        painter->textBounds(MRect.x,MRect.y,MText,nullptr,bounds);
-        float xmin = bounds[0];
-        float ymin = bounds[1];
-        float xmax = bounds[2];
-        float ymax = bounds[3];
-        float width = xmax - xmin;
-        float height = ymax - ymin;
+        float width = 0;
+        float height = 0;
+        if (MText) {
+          painter->textBounds(MRect.x,MRect.y,MText,nullptr,bounds);
+          width  = bounds[2] - bounds[0];
+          height = bounds[3] - bounds[1];
+        }
         Layout.baseRect.w = width;
         Layout.baseRect.h = height;
       }
+      */
     }
   }
+
+  //----------
 
   virtual void drawText(MIP_PaintContext* AContext) {
     if (MDrawText) {

@@ -205,6 +205,10 @@ public: // clap gui
     //MIP_Window::on_window_resize(width,height);
     setWidgetSize(width,height);
 
+    /*
+      if there are visible widgets with autoSize, calling painter methods..
+    */
+
     alignChildWidgets();
 
     //scaleChildWidgets(xscale,true);
