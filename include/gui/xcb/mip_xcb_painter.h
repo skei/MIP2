@@ -1015,7 +1015,10 @@ public:
     size = ftell(fontFile); /* how long is the file ? */
     fseek(fontFile, 0, SEEK_SET); /* reset */
     fontBuffer = (unsigned char*)malloc(size);
-    fread(fontBuffer, size, 1, fontFile);
+    long num_read = fread(fontBuffer, size, 1, fontFile);
+    if (num_read != size) {
+      MIP_Print("error reading font\n");
+    }
     fclose(fontFile);
     int font = createFontMem("font1",fontBuffer,size,0);
 //    free(fontBuffer);
