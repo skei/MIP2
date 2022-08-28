@@ -165,17 +165,17 @@ public: // clap gui
 
   virtual bool adjustSize(uint32_t *width, uint32_t *height) {
 //    double aspect = 420.0 / 620.0; //(double)MEditorWidth / (double)MEditorHeight;
-//    double w = *width;
-//    double h = *height;
+    double w = *width;
+    double h = *height;
 //    double a = w / h;
 //    MIP_Print("aspect %f w %f h %f a %f\n",aspect,w,h,a);
 //    //if (h > 0) {
 //      if (a >= aspect) w = h * aspect;
 //      else h = w / aspect;
 //    //}
-//    MIP_Print("%i,%i -> true (%f, %f)\n",*width,*height,w,h);
-//    *width = w;
-//    *height = h;
+    //MIP_Print("%i,%i -> true (%f, %f)\n",*width,*height,w,h);
+    *width = w;
+    *height = h;
     return true;
   }
 
@@ -188,6 +188,9 @@ public: // clap gui
 
   virtual bool setSize(uint32_t width, uint32_t height) {
     //MIP_Print("%i,%i -> true\n",width,height);
+
+    setWindowSize(width,height);
+
     MEditorWidth = width;
     MEditorHeight = height;
 
@@ -198,6 +201,7 @@ public: // clap gui
     // hack.. the modual stuff should have been in the wndoow class..
     // but there were/are some issues getting resize events..
     if (MModalWidget) MModalWidget->on_widget_unmodal();
+
     //MIP_Window::on_window_resize(width,height);
     setWidgetSize(width,height);
 
@@ -205,7 +209,7 @@ public: // clap gui
 
     //scaleChildWidgets(xscale,true);
 
-    setWindowSize(width,height);
+//    setWindowSize(width,height);
     return true;
   }
 

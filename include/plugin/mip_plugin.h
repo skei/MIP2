@@ -361,7 +361,7 @@ public: // EXT gui
     #ifdef MIP_PLUGIN_DEFAULT_EDITOR
       // setup widgets
     #endif
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     return true;
   }
 
@@ -370,7 +370,7 @@ public: // EXT gui
   // stop timer in case close() haven't been called
 
   void gui_destroy() override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     //MIP_Print("\n");
     MGuiTimer.stop();
     // we could possibly receive timer events inbetween here..
@@ -381,7 +381,7 @@ public: // EXT gui
   //----------
 
   bool gui_set_scale(double scale) override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     bool result = MEditor->setScale(scale);
     //MIP_Print("scale: %.3f -> %s\n",scale,result?"true":"false");
     return result;
@@ -406,7 +406,7 @@ public: // EXT gui
   //----------
 
   bool gui_can_resize() override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     bool result = MEditor->canResize();
     //MIP_Print("-> %s\n",result?"true":"false");
     return result;
@@ -415,7 +415,7 @@ public: // EXT gui
   //----------
 
   bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     bool result = MEditor->getResizeHints(hints);
     //MIP_Print("-> %s\n",result?"true":"false");
     return result;
@@ -424,18 +424,29 @@ public: // EXT gui
   //----------
 
   bool gui_adjust_size(uint32_t *width, uint32_t *height) override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     bool result = MEditor->adjustSize(width,height);
     //uint32_t w = *width;
     //uint32_t h = *height;
     //MIP_Print("*width: %i *height %i -> %s (*width: %i *height %i)\n",w,h,result?"true":"false",*width,*height);
+
+    //MEditorWidth = width;
+    //MEditorHeight = height;
+
     return result;
   }
 
   //----------
 
+  /*
+    this can be called before the window is created?
+  */
+
   bool gui_set_size(uint32_t width, uint32_t height) override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
+    MEditorWidth = width;
+    MEditorHeight = height;
+
     bool result = MEditor->setSize(width,height);
     //MIP_Print("width: %i height: %i -> %s\n",width,height,result?"true":"false");
     return result;
@@ -444,7 +455,7 @@ public: // EXT gui
   //----------
 
   bool gui_set_parent(const clap_window_t *window) override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     //MIP_Print("window: %p -> true\n",window);
     return MEditor->setParent(window);
   }
@@ -452,7 +463,7 @@ public: // EXT gui
   //----------
 
   bool gui_set_transient(const clap_window_t *window) override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     //MIP_Print("window: %p -> true\n",window);
     return MEditor->setTransient(window);
   }
@@ -460,7 +471,7 @@ public: // EXT gui
   //----------
 
   void gui_suggest_title(const char *title) override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     //MIP_Print("title: '%s'\n",title);
     MEditor->suggestTitle(title);
   }
@@ -468,7 +479,7 @@ public: // EXT gui
   //----------
 
   bool gui_show() override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     //MIP_Print("-> true\n");
     updateEditorParameters();
     bool result = MEditor->show();
@@ -483,7 +494,7 @@ public: // EXT gui
   //----------
 
   bool gui_hide() override {
-    MIP_Assert(MEditor);
+    //MIP_Assert(MEditor);
     //MIP_Print("-> true\n");
     MGuiTimer.stop();
     return MEditor->hide();
