@@ -236,30 +236,6 @@ public: // gui
 
       {
 
-        // symbols
-
-        for (uint32_t i=0; i<20; i++) {
-          MIP_SymbolWidget* sym = new MIP_SymbolWidget(10,i);
-          sym->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-          sym->setColor(MIP_COLOR_DARK_GRAY);
-          sym->setLineWidth(2);
-          left_scrollbox->appendChildWidget(sym);
-        }
-
-        //--- group box
-
-        MIP_GroupBoxWidget* groupbox1 = new MIP_GroupBoxWidget(100,true);
-        groupbox1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-        left_scrollbox->appendChildWidget(groupbox1);
-        {
-          MIP_PanelWidget* groupbox1_panel = new MIP_PanelWidget(100);
-          groupbox1_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-          groupbox1_panel->setFillBackground(true);
-          groupbox1_panel->setDrawBorder(false);
-          groupbox1_panel->setBackgroundColor(MIP_COLOR_RED);
-          groupbox1->appendChildWidget(groupbox1_panel);
-        }
-
         // color
 
         MIP_ColorWidget* color1 = new MIP_ColorWidget(20,MIP_COLOR_GREEN);
@@ -277,6 +253,15 @@ public: // gui
         panel1->setCornerRadius(5);
         left_scrollbox->appendChildWidget(panel1);
 
+        // text
+
+        MIP_TextWidget* text1 = new MIP_TextWidget(20,"text");
+        text1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        text1->setFillBackground(true);
+        text1->setDrawBorder(false);
+        text1->setBackgroundColor(0.55);
+        left_scrollbox->appendChildWidget(text1);
+
         // toggle button
 
         MIP_ButtonWidget* button1 = new MIP_ButtonWidget(20,"On","Off",0);
@@ -285,7 +270,9 @@ public: // gui
         button1->setFillGradient(false);
         button1->setDrawBorder(true);
         button1->setDrawRoundedCorners(true);
-        button1->setCornerRadius(5);
+        //button1->setCornerRadius(8);
+        button1->setCornerRadius(0,8,0,10);
+
         button1->setIsToggle(true);
         left_scrollbox->appendChildWidget(button1);
 
@@ -300,15 +287,6 @@ public: // gui
         button2->setCornerRadius(5);
         button2->setIsToggle(false);
         left_scrollbox->appendChildWidget(button2);
-
-        // text
-
-        MIP_TextWidget* text1 = new MIP_TextWidget(20,"text");
-        text1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-        text1->setFillBackground(true);
-        text1->setDrawBorder(false);
-        text1->setBackgroundColor(0.55);
-        left_scrollbox->appendChildWidget(text1);
 
         // value
 
@@ -337,6 +315,41 @@ public: // gui
         slider1->setBackgroundColor(0.55);
         left_scrollbox->appendChildWidget(slider1);
 
+
+        //--- group box
+
+        MIP_GroupBoxWidget* groupbox1 = new MIP_GroupBoxWidget(100,true);
+        groupbox1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        left_scrollbox->appendChildWidget(groupbox1);
+        {
+          MIP_PanelWidget* groupbox1_panel = new MIP_PanelWidget(100);
+          groupbox1_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+          groupbox1_panel->setFillBackground(true);
+          groupbox1_panel->setDrawBorder(false);
+          groupbox1_panel->setBackgroundColor(MIP_COLOR_RED);
+          groupbox1->appendChildWidget(groupbox1_panel);
+        }
+
+        // symbols
+
+        for (uint32_t i=0; i<20; i++) {
+          MIP_SymbolWidget* sym = new MIP_SymbolWidget(10,i);
+          sym->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+          sym->setColor(MIP_COLOR_DARK_GRAY);
+          sym->setLineWidth(2);
+          left_scrollbox->appendChildWidget(sym);
+        }
+
+
+        // scroll bar
+
+        MIP_ScrollBarWidget* scrollbar1 = new MIP_ScrollBarWidget(20);
+        scrollbar1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        scrollbar1->setFillBackground(true);
+        scrollbar1->setDrawBorder(false);
+        scrollbar1->setBackgroundColor(0.55);
+        left_scrollbox->appendChildWidget(scrollbar1);
+
         // dual slider
 
         MIP_DualSliderWidget* dualslider1 = new MIP_DualSliderWidget(20);
@@ -348,15 +361,6 @@ public: // gui
         dualslider1->setValue2(0.8);
         left_scrollbox->appendChildWidget(dualslider1);
 
-        // scroll bar
-
-        MIP_ScrollBarWidget* scrollbar1 = new MIP_ScrollBarWidget(20);
-        scrollbar1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-        scrollbar1->setFillBackground(true);
-        scrollbar1->setDrawBorder(false);
-        scrollbar1->setBackgroundColor(0.55);
-        left_scrollbox->appendChildWidget(scrollbar1);
-
         // button row
 
         MIP_ButtonRowWidget* buttonrow1 = new MIP_ButtonRowWidget(20,5,button_txt,MIP_BUTTON_ROW_SINGLE);
@@ -365,6 +369,15 @@ public: // gui
         buttonrow1->setDrawBorder(false);
         buttonrow1->setBackgroundColor(0.55);
         left_scrollbox->appendChildWidget(buttonrow1);
+
+        // button row multi
+
+        MIP_ButtonRowWidget* buttonrow2 = new MIP_ButtonRowWidget(20,5,button_txt,MIP_BUTTON_ROW_MULTI);
+        buttonrow2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        buttonrow2->setFillBackground(true);
+        buttonrow2->setDrawBorder(false);
+        buttonrow2->setBackgroundColor(0.55);
+        left_scrollbox->appendChildWidget(buttonrow2);
 
         // menu item
 
@@ -395,6 +408,21 @@ public: // gui
         plot1->setBackgroundColor(0.4);
         plot1->setNumValues(32);
         left_scrollbox->appendChildWidget(plot1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       }
 
       //----- left sizer -----
