@@ -351,7 +351,7 @@ public: // window
     int32_t elapsed = (ATime - MPrevClickTime);
     bool dblclick = (elapsed < MIP_WINDOW_DBLCLICK_MS);
     MPrevClickTime = ATime;
-    if (MHoverWidget != this) {
+    if (MHoverWidget && (MHoverWidget != this)) {
       if (dblclick && MHoverWidget->Options.doubleClick) {
         MClickedWidget = MHoverWidget;
         MHoverWidget->on_widget_mouse_dblclick(AButton,AState,AXpos,AYpos,ATime);

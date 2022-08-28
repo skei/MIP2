@@ -968,6 +968,7 @@ private: // events
       }
 
       case XCB_KEY_PRESS: {
+        //if (!MWindowMapped) break;
         xcb_key_press_event_t* key_press = (xcb_key_press_event_t*)AEvent;
         uint8_t  k  = key_press->detail;
         uint16_t s  = key_press->state;
@@ -979,6 +980,7 @@ private: // events
       }
 
       case XCB_KEY_RELEASE: {
+        //if (!MWindowMapped) break;
         xcb_key_release_event_t* key_release = (xcb_key_release_event_t*)AEvent;
         uint8_t  k  = key_release->detail;
         uint16_t s  = key_release->state;
@@ -990,6 +992,7 @@ private: // events
       }
 
       case XCB_BUTTON_PRESS: {
+        //if (!MWindowMapped) break;
         xcb_button_press_event_t* button_press = (xcb_button_press_event_t*)AEvent;
         uint8_t  b  = button_press->detail;
         uint32_t s  = button_press->state;
@@ -1003,6 +1006,7 @@ private: // events
       }
 
       case XCB_BUTTON_RELEASE: {
+        //if (!MWindowMapped) break;
         xcb_button_release_event_t* button_release = (xcb_button_release_event_t*)AEvent;
         uint32_t b  = button_release->detail;
         uint32_t s  = button_release->state;
@@ -1016,6 +1020,7 @@ private: // events
       }
 
       case XCB_MOTION_NOTIFY: {
+        //if (!MWindowMapped) break;
         xcb_motion_notify_event_t* motion_notify = (xcb_motion_notify_event_t*)AEvent;
         //uint32_t  b = motion_notify->detail;
         uint32_t  s = motion_notify->state;
@@ -1028,6 +1033,7 @@ private: // events
       }
 
       case XCB_ENTER_NOTIFY: {
+        if (!MWindowMapped) break;
         xcb_enter_notify_event_t* enter_notify = (xcb_enter_notify_event_t*)AEvent;
         //uint32_t  m = enter_notify->mode;
         //uint32_t  s = enter_notify->state;
@@ -1039,6 +1045,7 @@ private: // events
       }
 
       case XCB_LEAVE_NOTIFY: {
+        if (!MWindowMapped) break;
         xcb_leave_notify_event_t* leave_notify = (xcb_leave_notify_event_t*)AEvent;
         //uint32_t  m = leave_notify->mode;
         //uint32_t  s = leave_notify->state;
