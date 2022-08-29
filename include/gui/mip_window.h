@@ -58,8 +58,11 @@ protected:
   uint32_t          MCurrentCursor      = MIP_CURSOR_DEFAULT;
   MIP_PaintContext  MPaintContext       = {};
   MIP_Painter*      MWindowPainter      = nullptr;
+
+  #ifdef MIP_WINDOW_BUFFERED
   MIP_Painter*      MBufferPainter      = nullptr;
   MIP_Surface*      MBufferSurface      = nullptr;
+  #endif
 
   // click
 
@@ -123,9 +126,11 @@ public:
     return MWindowPainter;
   }
 
+  #ifdef MIP_WINDOW_BUFFERED
   MIP_Painter* getBufferPainter() {
     return MBufferPainter;
   }
+  #endif
 
   MIP_Painter* getPainter() {
     #ifdef MIP_WINDOW_BUFFERED
@@ -142,6 +147,8 @@ public:
   }
 
   //----------
+
+  #ifdef MIP_WINDOW_BUFFERED
 
   void createBuffer(uint32_t AWidth, uint32_t AHeight) {    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
     MBufferPainter = new MIP_Painter(this,MBufferSurface);
@@ -160,6 +167,8 @@ public:
   //void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
   //  on_resize_window()
   //}
+
+  #endif
 
   //----------
 
