@@ -11,12 +11,6 @@
 #ifdef MIP_PLUGIN
 #ifdef MIP_EXECUTABLE_SHARED_LIBRARY
 
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
 int main(int argc, char** argv, char** env);
 
 //----------------------------------------------------------------------
@@ -101,6 +95,8 @@ extern "C" {
   https://refspecs.linuxbase.org/LSB_3.1.0/LSB-generic/LSB-generic/baselib---libc-start-main-.html
   --enable-initfini-array ??
 */
+
+//----------
 
 /*
   #ifdef SIXTY_FOUR_BIT

@@ -89,7 +89,7 @@ public:
     MContent->appendChildWidget(textwidget);
     MNumLines += 1;
     MContent->alignChildWidgets();
-    do_widget_redraw(MContent,0);
+    do_widget_redraw(MContent,0); // only if visible?
 
   }
 

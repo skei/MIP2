@@ -1,18 +1,18 @@
 
+// nc -U -l -k /tmp/mip.socket
 #ifndef MIP_EXE
   #define MIP_DEBUG_PRINT_SOCKET
-  // nc -U -l -k /tmp/mip.socket
-#endif // MIP_EXE
+#endif
 
 //#define MIP_EXECUTABLE_SHARED_LIBRARY
 //-Wl,-e,entry_point
 
-//
+//----------
 
 #define MIP_GUI_XCB
-#define MIP_PAINTER_NANOVG
-//#define MIP_PAINTER_XCB
-//#define MIP_WINDOW_BUFFERED
+//#define MIP_PAINTER_NANOVG
+#define MIP_PAINTER_XCB
+#define MIP_WINDOW_BUFFERED
 
 //  #define MIP_GUI_WIN32
 //  #define MIP_PAINTER_GDI
@@ -39,7 +39,11 @@
 const clap_plugin_descriptor_t template_descriptor = {
   .clap_version  = CLAP_VERSION,
   .id            = "me/test_layout/0",
+  #ifdef MIP_DEBUG
+  .name          = "test_layout (debug)",
+  #else
   .name          = "test_layout",
+  #endif
   .vendor        = "me",
   .url           = "https://my_website.com",
   .manual_url    = "",

@@ -17,7 +17,7 @@
 //----------------------------------------------------------------------
 
 //#define MIP_XCB_WAIT_FOR_MAPNOTIFY
-
+#define MIP_XCB_WINDOW_RESIZE_SPEED 500
 
 //----------------------------------------------------------------------
 //
@@ -40,7 +40,8 @@
 
 class MIP_XcbWindow
 : public MIP_BaseWindow
-, public MIP_Drawable {
+, public MIP_Drawable
+/*, public MIP_TimerListener*/ {
 
   friend class MIP_OpenGLWindow;
 
@@ -106,6 +107,9 @@ private:
   double MWindowWidthScale = 1.0;
   double MWindowHeightScale = 1.0;
 
+  //bool        MResizing     = false;
+  //MIP_Timer*  MResizeTimer  = nullptr;
+
 //------------------------------
 public:
 //------------------------------
@@ -123,12 +127,9 @@ public:
     initWindow(AWidth,AHeight);
     initMouseCursor();
     initKeyboard();
-    if (AEmbedded) {
-      removeDecorations();
-    }
-    else {
-      wantQuitEvents();
-    }
+    if (AEmbedded) { removeDecorations(); }
+    else { wantQuitEvents(); }
+    //MResizeTimer = new MIP_Timer(this);
   }
 
   //----------
@@ -140,6 +141,7 @@ public:
     cleanupScreenGC();
     cleanupScreen();
     cleanupConnection();
+    //delete MResizeTimer;
   }
 
 //------------------------------
@@ -351,6 +353,7 @@ public: // window
     MEventThreadStopCallback = AStop;
   }
 
+
 //------------------------------
 public: // mouse
 //------------------------------
@@ -520,12 +523,14 @@ public: // paint
 private: // connection
 //------------------------------
 
+  /*
+    glx needs a Display*, so we need to use xlib to open a connection,
+    then do some 'trickery' and hand it over to xcb
+  */
+
   bool initConnection(const char* ADisplayName=nullptr) {
     //MConnection = xcb_connect(ADisplayName,&MDefaultScreen);
-
-    // ???
-    XInitThreads();
-
+    XInitThreads(); // is this needed ???
     MDisplay = XOpenDisplay(ADisplayName);
     MConnection = XGetXCBConnection(MDisplay);
     XSetEventQueueOwner(MDisplay,XCBOwnsEventQueue);
@@ -920,8 +925,51 @@ private: // events
         break;
       }
 
+      /*
+        Well... personally, I never needed these fancy functions.
+        The most complicated that I needed was "only handle the last
+        MotionNotify event in the queue and ignore earlier ones". For that,
+        I had a variable xcb_generic_event_t *motion = NULL; before my loop.
+        Each new motion notify event was not handled, but saved in this
+        function. Other events were handled immediately. After the loop,
+        if there was a motion notify event, it was handled.
+      */
+
       case XCB_CONFIGURE_NOTIFY: {
         xcb_configure_notify_event_t* configure_notify = (xcb_configure_notify_event_t*)AEvent;
+
+        // https://cairographics.org/cookbook/xcbsurface.c/
+        // Avoid extra redraws by checking if this is the last expose event in the sequence
+        /*
+          while(configure_notify->count != 0) {
+            xcb_generic_event_t* e2 = xcb_wait_for_event(MConnection);
+            xcb_expose_event_t* ex2 = (xcb_expose_event_t *)e2;
+            RECT.combine( KODE_Rect( ex2->x, ex2->y, ex2->width, ex2->height ) );
+          }
+        */
+
+        /*
+          while (TRUE) {
+            if (XPending(display) || !pendingRedraws) {
+              // if an event is pending, fetch it and process it
+              // otherwise, we have neither events nor pending redraws, so we can
+              // safely block on the event queue
+              XNextEvent (display, &ev);
+              if (isExposeEvent(&ev)) {
+                pendingRedraws = TRUE;
+            }
+            else {
+              processEvent(&ev);
+            }
+          }
+          else {
+            // we must have a pending redraw
+            redraw();
+            pendingRedraws = FALSE;
+          }
+        }
+        */
+
         int16_t x = configure_notify->x;
         int16_t y = configure_notify->y;
         int16_t w = configure_notify->width;
@@ -932,6 +980,7 @@ private: // events
           MWindowYpos = y;
           on_window_move(x,y);
         //}
+
         //if ((w != MWindowWidth) || (h != MWindowHeight)) {
 //          MIP_PRINT;
 //          if ((w > 0) && (h > 0)) {
@@ -939,10 +988,22 @@ private: // events
 //            MWindowHeightScale = (double)h / (double)MWindowInitialHeight;
 //            MIP_Print("scale: %.3f,%.3f\n",MWindowWidthScale,MWindowHeightScale);
 //          }
+
+//          if (MResizing) {
+//            //MIP_Print("We're already resizing!\n");
+//          }
+//          else {
+//            MResizing = true;
+//            MIP_Print("starting resize timer\n");
+//            MResizeTimer->start(MIP_XCB_WINDOW_RESIZE_SPEED,true);
+//          }
+
           MWindowWidth  = w;
           MWindowHeight = h;
+
           on_window_resize(w,h);
         //}
+
         break;
       }
 
@@ -950,9 +1011,12 @@ private: // events
         MWindowExposed = true;
         xcb_expose_event_t* expose = (xcb_expose_event_t *)AEvent;
 
-        // Unless this is the last contiguous expose, don’t draw the window
-        //if (e.xexpose.count == 0) {
-        //  // DRAW THINGS
+        // https://cairographics.org/cookbook/xcbsurface.c/
+        // Avoid extra redraws by checking if this is the last expose event in the sequence
+        //while(expose->count != 0) {
+        //  xcb_generic_event_t* e2 = xcb_wait_for_event(MConnection);
+        //  xcb_expose_event_t* ex2 = (xcb_expose_event_t *)e2;
+        //  RECT.combine( KODE_Rect( ex2->x, ex2->y, ex2->width, ex2->height ) );
         //}
 
         int16_t x = expose->x;
@@ -1095,6 +1159,18 @@ private: // events
     free(AEvent);
     return true; // we are still alive
   }
+
+//------------------------------
+//private: // resize timer
+//------------------------------
+
+//  void on_timerCallback(MIP_Timer* ATimer) {
+//    if (ATimer == MResizeTimer) {
+//      MIP_Print("resize timeout\n");
+//      MResizeTimer->stop();
+//      MResizing = false;
+//    }
+//  };
 
 //------------------------------
 //private: // event thread

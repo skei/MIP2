@@ -10,10 +10,9 @@
 
 * windows version
 
-  mingw64 ?
-  base: thread, timer, attributes,
+  todo: thread, timer, attributes
   debug: print_socket, crash_handler, call_stack
-  gui: window, painter, surface classes, opengl..
+  gui: window, painter, surface classes, opengl
   plugin: dll-entry
 
 * doubles
@@ -47,8 +46,7 @@
 
 * parameter smoothing
 
-  MIP_Parameter:
-
+  MIP_Parameter
     setValue()
     getValue()
     getSmoothValue() ?
@@ -59,7 +57,7 @@
   clap-as-vst2 (in progress)
   clap-as-vst3 (in progress)
 
-  hosting:
+* hosting
 
   ladspa-as-clap (works, more or less, but maybe rewrite using clap_factory)
   vst2-as-clap
@@ -114,6 +112,10 @@
 
   a set of basic drawing functions you combine and use to drawing widgets?
   on_widget_paint.. rounded rect, gradient, header, border, .. settings?
+
+* software renderer/painter
+  as an alternative to cairo
+
 
 //------------------------------
 // widgets
