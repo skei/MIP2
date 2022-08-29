@@ -24,11 +24,11 @@ protected:
 
   bool      MDrawWaveform   = true;
   double    MWaveformWidth  = 1;
-  MIP_Color MWaveformColor  = MIP_COLOR_DARK_GRAY;
+  MIP_Color MWaveformColor  = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
 
   bool      MDrawZeroLine   = true;
   double    MZeroLineWidth  = 0.5;
-  MIP_Color MZeroLineColor  = MIP_COLOR_BLACK;
+  MIP_Color MZeroLineColor  = MIP_Color(0);//MIP_COLOR_BLACK;
 
   //
 
@@ -41,18 +41,18 @@ protected:
   uint32_t  MNumGrid      = 0;
   uint32_t  MNumSubGrid   = 0;
 
-  MIP_Color MGridColor    = MIP_COLOR_BLACK;
-  MIP_Color MSubGridColor = MIP_COLOR_DARK_GRAY;
+  MIP_Color MGridColor    = MIP_Color(0);//MIP_COLOR_BLACK;
+  MIP_Color MSubGridColor = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
 
   bool      MMarkerActive[NUM_MARKERS]  = {false};
   uint32_t  MMarkerPos[NUM_MARKERS]     = {0};
-  MIP_Color MMarkerColor[NUM_MARKERS]   = {MIP_COLOR_DARK_GRAY};
+  MIP_Color MMarkerColor[NUM_MARKERS]   = { MIP_Color(0.25)/*MIP_COLOR_DARK_GRAY*/};
   double    MMarkerWidth[NUM_MARKERS]   = {1};
 
   bool      MAreaActive[NUM_AREAS]    = {false};
   uint32_t  MAreaStart[NUM_AREAS]     = {0};
   uint32_t  MAreaLength[NUM_AREAS]    = {0};
-  MIP_Color MAreaColor[NUM_AREAS]     = {MIP_COLOR_GREEN};
+  MIP_Color MAreaColor[NUM_AREAS]     = { MIP_Color(0,0.75,0,1)/*MIP_COLOR_GREEN*/};
 
 //------------------------------
 public:

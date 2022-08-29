@@ -140,22 +140,22 @@ private:
 protected:
 //------------------------------
 
-    MIP_Color MModuleColor             = MIP_COLOR_LIGHT_GRAY;
-    MIP_Color MSelectedModuleColor     = MIP_COLOR_DARK_GRAY;
+    MIP_Color MModuleColor             = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
+    MIP_Color MSelectedModuleColor     = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
 
-    MIP_Color MModuleBorder            = MIP_COLOR_DARK_GRAY;
-    MIP_Color MSelectedModuleBorder    = MIP_COLOR_LIGHT_GRAY;
+    MIP_Color MModuleBorder            = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
+    MIP_Color MSelectedModuleBorder    = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
 
-    MIP_Color MSignalPinColor          = MIP_COLOR_LIGHT_GRAY;
-    MIP_Color MDataPinColor            = MIP_COLOR_DARK_GRAY;
-    MIP_Color MSignalPinHoverColor     = MIP_COLOR_BLACK;
-    MIP_Color MDataPinHoverColor       = MIP_COLOR_WHITE;
+    MIP_Color MSignalPinColor          = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
+    MIP_Color MDataPinColor            = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
+    MIP_Color MSignalPinHoverColor     = MIP_Color(0);//MIP_COLOR_BLACK;
+    MIP_Color MDataPinHoverColor       = MIP_Color(1);//MIP_COLOR_WHITE;
 
-    MIP_Color MModuleNameColor         = MIP_COLOR_DARK_GRAY;
-    MIP_Color MSelectedModuleNameColor = MIP_COLOR_LIGHT_GRAY;
+    MIP_Color MModuleNameColor         = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
+    MIP_Color MSelectedModuleNameColor = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
 
-    MIP_Color MSignalWireColor          = MIP_COLOR_LIGHT_GRAY;
-    MIP_Color MDataWireColor            = MIP_COLOR_DARK_GRAY;
+    MIP_Color MSignalWireColor          = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
+    MIP_Color MDataWireColor            = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
 
     bool              MDraggingModules  = false;
     bool              MDraggingWire     = false;
@@ -733,7 +733,7 @@ public:
       painter->beginPath();
       painter->moveTo(MDragWireX1,MDragWireY1);
       painter->lineTo(MDragWireX2,MDragWireY2);
-      painter->strokeColor(MIP_COLOR_BLACK);
+      painter->strokeColor( MIP_Color(0) /*MIP_COLOR_BLACK*/ );
       painter->strokeWidth(0.5);
       painter->stroke();
 
@@ -745,7 +745,7 @@ public:
 
       painter->beginPath();
       painter->rect(MDragSelectX1,MDragSelectY1,w,h);
-      painter->strokeColor(MIP_COLOR_WHITE);
+      painter->strokeColor( MIP_Color(1) /*MIP_COLOR_WHITE*/ );
       painter->strokeWidth(0.5);
       painter->stroke();
 

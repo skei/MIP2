@@ -17,7 +17,7 @@ private:
   //bool      MDrawBackground     = true;
   //MIP_Color MBackColor          = MIP_COLOR_DARK_GRAY;
 
-  MIP_Color MLineColor          = MIP_COLOR_LIGHT_GRAY;
+  MIP_Color MLineColor          = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
   bool      MBipolar            = true;
   uint32_t  MNumValues          = 64;
   float     MValues[MAX_VALUES]  = {0};

@@ -100,7 +100,7 @@ public:
     host->setAEffect(effect);
     memset(effect,0,sizeof(AEffect));
     effect->magic                   = kEffectMagic;
-    effect->uniqueID                = 0x00000000;
+    effect->uniqueID                = MIP_MAGIC_M_PL;//0x00000000; // TODO
     effect->flags                   = flags;
     effect->numInputs               = num_inputs;
     effect->numOutputs              = num_outputs;

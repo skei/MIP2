@@ -15,7 +15,7 @@ class MIP_ColorWidget
 private:
 //------------------------------
 
-  MIP_Color MColor = MIP_COLOR_BLACK;
+  MIP_Color MColor = MIP_Color(0);//MIP_COLOR_BLACK;
 
 //------------------------------
 public:

@@ -11,8 +11,8 @@ class MIP_CurveWidget
 protected:
 //------------------------------
 
-    MIP_Color  MCurveColor     = MIP_COLOR_DARK_GRAY;
-    MIP_Color  MInteractColor  = MIP_COLOR_WHITE;
+    MIP_Color  MCurveColor     = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
+    MIP_Color  MInteractColor  = MIP_Color(1);//MIP_COLOR_WHITE;
     bool        MDecay          = false;
   //MIP_Point  MCoords[1024]   = {0};
     float       MXCoords[1024]   = {0};

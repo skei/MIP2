@@ -18,8 +18,8 @@ class MIP_MenuItemWidget
 protected:
 //------------------------------
 
-  MIP_Color MHighlightBackgroundColor = MIP_COLOR_DARK_GRAY;
-  MIP_Color MHighlightTextColor       = MIP_COLOR_LIGHT_GRAY;
+  MIP_Color MHighlightBackgroundColor = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
+  MIP_Color MHighlightTextColor       = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
   MIP_Color MNormalBackgroundColor    = MBackgroundColor;
   MIP_Color MNormalTextColor          = MTextColor;
 

@@ -23,6 +23,7 @@ void clap_entry_deinit_callback(void) {
 //----------
 
 const void* clap_entry_get_factory_callback(const char* factory_id) {
+  //MIP_DPrint("%s\n",factory_id);
   const void* factory = MIP_REGISTRY.findFactoryById(factory_id);
   if (!factory) {
     if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) return &MIP_CLAP_FACTORY;

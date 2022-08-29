@@ -44,6 +44,9 @@ struct MIP_ProcessContext {
 //
 //----------------------------------------------------------------------
 
+// todo: we need a timer/listener only if we have an editor..
+// and queues..
+
 class MIP_Plugin
 : public MIP_ClapPlugin
 #ifndef MIP_NO_GUI
@@ -67,18 +70,22 @@ protected:
   MIP_Timer           MGuiTimer                 = MIP_Timer(this);
   MIP_ParameterArray  MParameters               = {};
 
-  //MIP_AudioProcess
-  //MIP_VoiceManager
-
   #ifndef MIP_NO_GUI
   MIP_Editor*         MEditor                   = nullptr;
   #endif
+
+  //MIP_AudioProcess
+  //MIP_VoiceManager
 
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessParamQueue  = {}; // gui -> audio
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MProcessModQueue    = {}; //
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MGuiParamQueue      = {}; // host -> gui
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_PARAM_EVENTS> MGuiModQueue        = {}; //
   MIP_Queue<uint32_t,MIP_PLUGIN_MAX_GUI_EVENTS>   MHostParamQueue     = {}; // gui -> host
+
+  // TODO: replace these with queues, and always push/pop in sync
+  // currently later events overwrite the values of older events
+  // so we could risk sending the wrong values too early
 
   double  MQueuedProcessParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]      = {0};
   double  MQueuedProcessModValues[MIP_PLUGIN_MAX_PARAM_EVENTS]        = {0};
@@ -100,6 +107,7 @@ public:
   virtual ~MIP_Plugin() {
     //MIP_PRINT;
     #ifndef MIP_NO_AUTODELETE
+      // delete audio/note ports (not if ptr to static structs)..
       deleteParameters();
     #endif
   }
@@ -218,6 +226,8 @@ public: // EXT audio ports config
   }
 
   //----------
+
+  // what would happen if these doesn't match the ports themselves?
 
   bool audio_ports_config_get(uint32_t index, clap_audio_ports_config_t *config) override {
     config->id = 0;
@@ -353,7 +363,6 @@ public: // EXT gui
 
   //----------
 
-  // timer is started in open()
 
   bool gui_create(const char *api, bool is_floating) override {
     //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
@@ -362,6 +371,7 @@ public: // EXT gui
       // setup widgets
     #endif
     //MIP_Assert(MEditor);
+    // timer is started in open()
     return true;
   }
 
@@ -369,19 +379,22 @@ public: // EXT gui
 
   // stop timer in case close() haven't been called
 
+    // we could possibly receive timer events after we call stop()
+    // in the timer callback, we check the MEditor pointer,
+    // so set it to null as fast as possible, and hope the best :-)
+
   void gui_destroy() override {
-    //MIP_Assert(MEditor);
     //MIP_Print("\n");
-    MGuiTimer.stop();
-    // we could possibly receive timer events inbetween here..
-    delete MEditor;
+    MIP_Editor* editor = MEditor;
     MEditor = nullptr;
+    MGuiTimer.stop();
+    delete editor;
+    //MEditor = nullptr;
   }
 
   //----------
 
   bool gui_set_scale(double scale) override {
-    //MIP_Assert(MEditor);
     bool result = MEditor->setScale(scale);
     //MIP_Print("scale: %.3f -> %s\n",scale,result?"true":"false");
     return result;
@@ -390,7 +403,6 @@ public: // EXT gui
   //----------
 
   bool gui_get_size(uint32_t *width, uint32_t *height) override {
-    //MIP_Assert(MEditor);
     bool result = true;
     if (MEditor) {
       result = MEditor->getSize(width,height);
@@ -406,7 +418,6 @@ public: // EXT gui
   //----------
 
   bool gui_can_resize() override {
-    //MIP_Assert(MEditor);
     bool result = MEditor->canResize();
     //MIP_Print("-> %s\n",result?"true":"false");
     return result;
@@ -415,7 +426,6 @@ public: // EXT gui
   //----------
 
   bool gui_get_resize_hints(clap_gui_resize_hints_t *hints) override {
-    //MIP_Assert(MEditor);
     bool result = MEditor->getResizeHints(hints);
     //MIP_Print("-> %s\n",result?"true":"false");
     return result;
@@ -424,15 +434,12 @@ public: // EXT gui
   //----------
 
   bool gui_adjust_size(uint32_t *width, uint32_t *height) override {
-    //MIP_Assert(MEditor);
     bool result = MEditor->adjustSize(width,height);
     //uint32_t w = *width;
     //uint32_t h = *height;
     //MIP_Print("*width: %i *height %i -> %s (*width: %i *height %i)\n",w,h,result?"true":"false",*width,*height);
-
     //MEditorWidth = width;
     //MEditorHeight = height;
-
     return result;
   }
 
@@ -443,10 +450,8 @@ public: // EXT gui
   */
 
   bool gui_set_size(uint32_t width, uint32_t height) override {
-    //MIP_Assert(MEditor);
     MEditorWidth = width;
     MEditorHeight = height;
-
     bool result = MEditor->setSize(width,height);
     //MIP_Print("width: %i height: %i -> %s\n",width,height,result?"true":"false");
     return result;
@@ -463,7 +468,6 @@ public: // EXT gui
   //----------
 
   bool gui_set_transient(const clap_window_t *window) override {
-    //MIP_Assert(MEditor);
     //MIP_Print("window: %p -> true\n",window);
     return MEditor->setTransient(window);
   }
@@ -471,7 +475,6 @@ public: // EXT gui
   //----------
 
   void gui_suggest_title(const char *title) override {
-    //MIP_Assert(MEditor);
     //MIP_Print("title: '%s'\n",title);
     MEditor->suggestTitle(title);
   }
@@ -479,7 +482,6 @@ public: // EXT gui
   //----------
 
   bool gui_show() override {
-    //MIP_Assert(MEditor);
     //MIP_Print("-> true\n");
     updateEditorParameters();
     bool result = MEditor->show();
@@ -494,7 +496,6 @@ public: // EXT gui
   //----------
 
   bool gui_hide() override {
-    //MIP_Assert(MEditor);
     //MIP_Print("-> true\n");
     MGuiTimer.stop();
     return MEditor->hide();
@@ -513,6 +514,8 @@ public: // EXT latency
 //------------------------------
 public: // DRAFT midi mappings
 //------------------------------
+
+  // does midi mapping override note ports (midi dialect?)
 
   uint32_t  midi_mappings_count() override {
     return 0;
@@ -820,10 +823,7 @@ public: // DRAFT voice info
 public: // process audio
 //------------------------------
 
-  // shouldn't we use MIP_ProcessContext?
-
   virtual void processAudioBlock(MIP_ProcessContext* AContext) {
-  //virtual void processAudioBlock(const clap_process_t* process) {
   }
 
 //------------------------------
@@ -849,11 +849,13 @@ public: // process events
 //------------------------------
 
   virtual void preProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+    // setup voices
   }
 
   //----------
 
   virtual void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+    // cleanup voices, note ends..
   }
 
   //----------
@@ -1050,6 +1052,7 @@ public: // queues
     uint32_t index;
     while (MProcessParamQueue.read(&index)) {
       double value = MQueuedProcessParamValues[index];
+      //if (value != MFlushedProcessParamValues[index])
       clap_event_param_value_t event;
       event.header.size     = sizeof(clap_event_param_value_t);
       event.header.time     = 0;
@@ -1412,7 +1415,7 @@ public: // timer listener
 
   void on_timerCallback(MIP_Timer* ATimer) override {
     if (ATimer == &MGuiTimer) {
-      if (MEditor) {
+      if (MEditor) { // && editor is open
         flushGuiParams();
         flushGuiMods();
         // redraw?

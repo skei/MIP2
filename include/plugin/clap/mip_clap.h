@@ -2,7 +2,7 @@
 #define mip_clap_included
 //----------------------------------------------------------------------
 
-#include "mip.h"
+//#include "mip.h"
 #include "extern/clap/clap.h"
 
 // not included by clap.h

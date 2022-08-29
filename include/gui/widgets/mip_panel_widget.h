@@ -24,13 +24,13 @@ protected:
   bool      MFillBackground       = true;
   bool      MFillGradient         = false;//true;
 
-  MIP_Color MBackgroundColor      = MIP_COLOR_GRAY;
+  MIP_Color MBackgroundColor      = MIP_Color(0.5);//MIP_COLOR_GRAY;
   MIP_Color MGradientColor1       = MIP_Color(0.6, 0.6, 0.6);
   MIP_Color MGradientColor2       = MIP_Color(0.4, 0.4, 0.4);
 
   bool      MDrawBorder           = true;
   float     MBorderWidth          = 1.0;
-  MIP_Color MBorderColor          = MIP_COLOR_DARK_GRAY;
+  MIP_Color MBorderColor          = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
 
 //  bool      MDrawDropShadow       = false;
 //  MIP_Color MDropShadowInnerColor = MIP_Color(0,0,0,0.5);

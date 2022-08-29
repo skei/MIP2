@@ -88,13 +88,13 @@ protected:
   int               MLineJoin;
   float             MGlobalAlpha;
 
-  MIP_Color         MStrokeColor                = MIP_COLOR_BLACK;
+  MIP_Color         MStrokeColor                = MIP_Color(0);//MIP_COLOR_BLACK;
   MIP_PaintSource   MStrokePaint                = {};
   float             MStrokeWidth                = 1.0;
-  MIP_Color         MFillColor                  = MIP_COLOR_WHITE;
+  MIP_Color         MFillColor                  = MIP_Color(1);//MIP_COLOR_WHITE;
   MIP_PaintSource   MFillPaint                  = {};
   int               MFont                       = -1;
-  MIP_Color         MFontColor                  = MIP_COLOR_BLACK;
+  MIP_Color         MFontColor                  = MIP_Color(0);//MIP_COLOR_BLACK;
   float             MFontSize                   = 13.0;
 
   //MIP_PathItem      MPath[MIP_PATH_MAX_LENGTH]  = {};

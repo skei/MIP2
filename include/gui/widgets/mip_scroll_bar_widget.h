@@ -22,9 +22,9 @@ protected:
 
 //  MIP_Color  MBackgroundColor  = MIP_COLOR_DARK_GRAY;
 
-  MIP_Color  MThumbColor       = MIP_COLOR_LIGHT_GRAY;
-  MIP_Color  MThumbBorderColor = MIP_COLOR_DARK_GRAY;
-  MIP_Color  MInteractiveColor = MIP_COLOR_WHITE;
+  MIP_Color  MThumbColor       = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
+  MIP_Color  MThumbBorderColor = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
+  MIP_Color  MInteractiveColor = MIP_Color(1);//MIP_COLOR_WHITE;
 
   float       MThumbPos         = 0.0f;
   float       MPrevThumbPos     = 0.0f;

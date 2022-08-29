@@ -28,10 +28,10 @@ protected:
   float       MValue2               = 0.0f;
   bool        MDrawValueText        = true;
 
-  MIP_Color   MBackgroundColor      = MIP_COLOR_GRAY;
-  MIP_Color   MBarColor             = MIP_COLOR_LIGHT_GRAY;
+  MIP_Color   MBackgroundColor      = MIP_Color(0.5);//MIP_COLOR_GRAY;
+  MIP_Color   MBarColor             = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
 
-  MIP_Color   MEdgeColor            = MIP_COLOR_WHITE;
+  MIP_Color   MEdgeColor            = MIP_Color(1);//MIP_COLOR_WHITE;
   uint32_t    MEdgeWidth            = 3;
   int32_t     MHoverEdge            = -1;
   bool        MIsDragging1          = false;
@@ -51,7 +51,7 @@ protected:
 
   bool        MDrawLabel            = true;
   const char* MLabel                = "";
-  MIP_Color   MLabelColor           = MIP_COLOR_BLACK;
+  MIP_Color   MLabelColor           = MIP_Color(0);//MIP_COLOR_BLACK;
 
 //------------------------------
 public:

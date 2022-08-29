@@ -57,7 +57,7 @@ protected:
   bool      MDrawVerticalLines    = true;
   bool      MDrawSelectedCells    = true;
 
-  MIP_Color MGridColor            = MIP_COLOR_DARK_GRAY;
+  MIP_Color MGridColor            = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
   double    MGridLineWidth        = 1.0;
 
   //bool      MFillBackground       = false;
@@ -268,7 +268,7 @@ public:
           painter->beginPath();
           painter->rect( x,y,ww,hh );
           painter->strokeWidth(MGridLineWidth);
-          painter->strokeColor(MIP_COLOR_WHITE);
+          painter->strokeColor(MIP_Color(1)/*MIP_COLOR_WHITE*/);
           painter->stroke();
 
         }

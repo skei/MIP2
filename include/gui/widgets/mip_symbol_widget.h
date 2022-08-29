@@ -15,7 +15,7 @@ private:
 //------------------------------
 
     int32_t   MSymbol     = MIP_SYMBOL_FILL_TRI_DOWN;
-    MIP_Color MColor      = MIP_COLOR_LIGHT_GRAY;
+    MIP_Color MColor      = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
     float     MLineWidth  = 1.0;
 
 //------------------------------

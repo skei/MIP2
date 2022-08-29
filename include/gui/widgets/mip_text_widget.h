@@ -20,7 +20,7 @@ protected:
 
   bool        MDrawText       = true;
   char        MText[256]      = {0};
-  MIP_Color   MTextColor      = MIP_COLOR_DARK_GRAY;
+  MIP_Color   MTextColor      = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
   uint32_t    MTextAlignment  = MIP_TEXT_ALIGN_CENTER;
   float       MTextSize       = 13.0;
   MIP_DPoint  MTextOffset     = MIP_DPoint(0,0);

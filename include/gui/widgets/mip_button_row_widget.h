@@ -22,11 +22,11 @@ protected:
   bool        MStates[MIP_MAX_STATES] = {0};
   const char* MLabels[MIP_MAX_STATES] = {0};
 
-  MIP_Color   MTextColor              = MIP_COLOR_DARK_GRAY;
-  MIP_Color   MActiveTextColor        = MIP_COLOR_BLACK;
+  MIP_Color   MTextColor              = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
+  MIP_Color   MActiveTextColor        = MIP_Color(0);//MIP_COLOR_BLACK;
 
-  MIP_Color   MBackgroundCellColor    = MIP_COLOR_LIGHT_GRAY;
-  MIP_Color   MActiveCellColor        = MIP_COLOR_GRAY;
+  MIP_Color   MBackgroundCellColor    = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
+  MIP_Color   MActiveCellColor        = MIP_Color(0.5);//MIP_COLOR_GRAY;
 
   bool        MValueIsBits            = false;
   uint32_t    MNumBits                = 0;
@@ -209,7 +209,7 @@ public:
 
     painter->beginPath();
     painter->rect(ARect.x,ARect.y,ARect.w,ARect.h);
-    painter->strokeColor(MIP_COLOR_DARK_GRAY);
+    painter->strokeColor( MIP_Color(0.25) /*MIP_COLOR_DARK_GRAY*/ );
     painter->strokeWidth(1);
     painter->stroke();
 

@@ -19,8 +19,8 @@ protected:
 //------------------------------
 
   bool      MDrawArc      = true;
-  MIP_Color MArcColor     = MIP_COLOR_LIGHT_GRAY;
-  MIP_Color MArcBackColor = MIP_COLOR_DARK_GRAY;
+  MIP_Color MArcColor     = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
+  MIP_Color MArcBackColor = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
   double    MArcWidth     = 25.0;
 
 //------------------------------

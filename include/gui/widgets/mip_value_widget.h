@@ -25,13 +25,13 @@ protected:
   //double    MMinValue             = 0.0;
   //double    MMaxValue             = 1.0;
   //double    MDefValue             = 0.0;
-  MIP_Color MValueColor           = MIP_COLOR_BLACK;
+  MIP_Color MValueColor           = MIP_Color(0);//MIP_COLOR_BLACK;
   uint32_t  MValueAlignment       = MIP_TEXT_ALIGN_RIGHT;
   float     MValueSize            = 13.0;
 
   bool      MDrawModulation       = false;//true;
   double    MModulation           = 0.0;
-  MIP_Color MModulationColor      = MIP_COLOR_WHITE;
+  MIP_Color MModulationColor      = MIP_Color(1);//MIP_COLOR_WHITE;
   uint32_t  MModulationAlignment  = MIP_TEXT_ALIGN_CENTER;
   float     MModulationSize       = 10.0;
 

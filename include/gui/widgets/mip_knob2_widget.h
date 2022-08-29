@@ -48,7 +48,7 @@ public:
     MLabelWidget->setFillBackground(true);
     MLabelWidget->setDrawBorder(false);
     MLabelWidget->setTextSize(-1);
-    MLabelWidget->setTextColor(MIP_COLOR_BLACK);
+    MLabelWidget->setTextColor( MIP_Color(0)/*MIP_COLOR_BLACK*/);
     MLabelWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     MLabelWidget->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
     MLabelWidget->Layout.vertScale = MIP_WIDGET_SCALE_PARENT_RATIO;
@@ -62,7 +62,7 @@ public:
     MValueWidget->setDrawBorder(false);
     MValueWidget->setText(MKnobValueText);
     MValueWidget->setTextSize(-1);
-    MValueWidget->setTextColor(MIP_COLOR_BLACK);
+    MValueWidget->setTextColor( MIP_Color(0)/*MIP_COLOR_BLACK*/);
     appendChildWidget(MValueWidget);
 
     MKnobWidget = new MIP_KnobWidget( MIP_DRect(), "", 0.0 );

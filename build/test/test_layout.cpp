@@ -4,7 +4,7 @@
   #define MIP_DEBUG_PRINT_SOCKET
 #endif
 
-//#define MIP_EXECUTABLE_SHARED_LIBRARY
+#define MIP_EXECUTABLE_SHARED_LIBRARY
 //-Wl,-e,entry_point
 
 //----------
@@ -12,7 +12,7 @@
 #define MIP_GUI_XCB
 //#define MIP_PAINTER_NANOVG
 #define MIP_PAINTER_XCB
-//#define MIP_WINDOW_BUFFERED
+#define MIP_WINDOW_BUFFERED
 
 //  #define MIP_GUI_WIN32
 //  #define MIP_PAINTER_GDI
@@ -52,42 +52,6 @@ const clap_plugin_descriptor_t template_descriptor = {
   .description   = "",
   .features      =  (const char *[]){ CLAP_PLUGIN_FEATURE_AUDIO_EFFECT, nullptr }
 };
-
-//----------------------------------------------------------------------
-//
-// editor
-//
-//----------------------------------------------------------------------
-
-/*
-
-class myEditor
-: public MIP_Editor {
-
-public:
-
-  myEditor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight)
-  : MIP_Editor(AListener,AWidth,AHeight) {
-  }
-
-  virtual ~myEditor() {
-  }
-
-public:
-
-  void on_widget_config(MIP_Widget* AOwnerWindow) override {
-    MIP_PRINT;
-    MIP_Editor::on_widget_config(AOwnerWindow);
-  }
-
-public:
-
-  void config() {
-  }
-
-};
-
-*/
 
 //----------------------------------------------------------------------
 //
@@ -165,11 +129,7 @@ public: // plugin
     for (uint32_t i=0; i<PARAM_COUNT; i++) {
       appendParameter( new MIP_Parameter(&myParameters[i]) );
     }
-
-    MIP_Parameter* param4 = new MIP_Parameter(0,"param4","",-1,1,0,CLAP_PARAM_IS_AUTOMATABLE);
-    appendParameter(param4);
-
-    appendParameter( new MIP_Parameter(0,"param5","",-10,10,0,CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED) );
+    appendParameter( new MIP_Parameter(0,"param4","",-10,10,0,CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED) );
 
     return true;
   }
@@ -178,15 +138,10 @@ public: // plugin
 public: // gui
 //------------------------------
 
-  bool gui_create(const char *api, bool is_floating) override {
+  bool gui_create(const char *api, bool is_floating) final {
     //MIP_PRINT;
-
-    //MEditor = new myEditor(this,MEditorWidth,MEditorHeight); // crash???
-    //bool result = (MEditor != nullptr);
-
     bool result = MIP_Plugin::gui_create(api,is_floating);
-
-    if (result) {
+    if (result /*&& MEditor*/) {
       MEditor->setWidgetName("MEditor");
       MEditor->setWindowFillBackground(false);
 
@@ -224,7 +179,7 @@ public: // gui
       footer_panel->setFillBackground(true);
       footer_panel->setDrawBorder(false);
       footer_panel->setDrawText(true);
-      footer_panel->setTextColor(MIP_COLOR_LIGHT_GRAY);
+      footer_panel->setTextColor(MIP_Color(0.75)/*MIP_COLOR_LIGHT_GRAY*/);
       footer_panel->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
       footer_panel->setTextOffset(MIP_DPoint(5,0));
       footer_panel->setBackgroundColor(0.4);
@@ -242,7 +197,7 @@ public: // gui
 
         // color
 
-        MIP_ColorWidget* color1 = new MIP_ColorWidget(20,MIP_COLOR_GREEN);
+        MIP_ColorWidget* color1 = new MIP_ColorWidget(20,MIP_Color(0,0.5,0,1));
         color1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         left_scrollbox->appendChildWidget(color1);
 
@@ -330,7 +285,7 @@ public: // gui
           groupbox1_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
           groupbox1_panel->setFillBackground(true);
           groupbox1_panel->setDrawBorder(false);
-          groupbox1_panel->setBackgroundColor(MIP_COLOR_RED);
+          groupbox1_panel->setBackgroundColor(MIP_Color(0.5,0,0,1));
           groupbox1->appendChildWidget(groupbox1_panel);
         }
 
@@ -339,7 +294,7 @@ public: // gui
         for (uint32_t i=0; i<20; i++) {
           MIP_SymbolWidget* sym = new MIP_SymbolWidget(10,i);
           sym->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-          sym->setColor(MIP_COLOR_DARK_GRAY);
+          sym->setColor(MIP_Color(0.25)/*MIP_COLOR_DARK_GRAY*/);
           sym->setLineWidth(2);
           left_scrollbox->appendChildWidget(sym);
         }
@@ -413,20 +368,6 @@ public: // gui
         plot1->setNumValues(32);
         left_scrollbox->appendChildWidget(plot1);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       }
 
       //----- left sizer -----
@@ -472,7 +413,7 @@ public: // gui
             right_top_scrollbox->appendChildWidget(button);
           }
 
-          MIP_ColorWidget* color = new MIP_ColorWidget(5,MIP_COLOR_BLACK);
+          MIP_ColorWidget* color = new MIP_ColorWidget(5,MIP_Color(0)/*MIP_COLOR_BLACK*/);
           color->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
           right_top_scrollbox->appendChildWidget(color);
 

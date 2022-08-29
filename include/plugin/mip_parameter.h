@@ -100,6 +100,8 @@ public:
     MValue = MParamInfo.default_value;
   }
 
+  //TODO: sinpler variants..
+
   //----------
 
   virtual ~MIP_Parameter() {

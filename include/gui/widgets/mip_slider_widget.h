@@ -19,7 +19,7 @@ protected:
 //------------------------------
 
   bool MDrawSlider        = true;
-  MIP_Color MSliderColor  = MIP_COLOR_LIGHT_GRAY;
+  MIP_Color MSliderColor  = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
 
 //------------------------------
 public:

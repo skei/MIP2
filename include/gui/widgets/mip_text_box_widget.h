@@ -80,7 +80,7 @@ public:
     textwidget->setFillBackground(false);
     textwidget->setDrawBorder(false);
     textwidget->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
-    textwidget->setTextColor(MIP_COLOR_BLACK);
+    textwidget->setTextColor(MIP_Color(0)/*MIP_COLOR_BLACK*/);
     textwidget->setTextSize(MTextSize);
 
     // textwidget.updateTextSize() commented out..
