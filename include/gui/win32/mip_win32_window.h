@@ -96,7 +96,8 @@ private:
 public:
 //------------------------------
 
-  MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  //MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
   : MIP_BaseWindow() {
 
     MWindowTitle = "MIP_Win32Window";
@@ -109,10 +110,10 @@ public:
 
     RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
 
-    if (AEmbedded) {
+//    //if (AEmbedded) {
+//    if (AParent != 0) {
 
       MEmbedded = true;
-
       AdjustWindowRectEx(&rc,WS_POPUP,FALSE,WS_EX_TOOLWINDOW);
       int32_t x = rc.left;
       int32_t y = rc.top;
@@ -126,50 +127,52 @@ public:
         //kode_global_WinClassName,
         MIP_Win32ClassName(),
         0,
-        WS_POPUP + WS_VISIBLE, //WS_CHILD + WS_VISIBLE, //,
-        x, //rc.left,
-        y, //rc.top,
-        w, //rc.right-rc.left+1, // +2 ??
-        h, //rc.bottom-rc.top+1, // +2 ??
-        nullptr,//HWND(AParent), // Hint: Conversion between ordinals and pointers is not portable,
+        //WS_CHILD + WS_VISIBLE, //WS_POPUP,
+        WS_POPUP + WS_VISIBLE,
+        x,              //rc.left,
+        y,              //rc.top,
+        w,              //rc.right-rc.left+1, // +2 ??
+        h,              //rc.bottom-rc.top+1, // +2 ??
+        HWND(AParent),  // Hint: Conversion between ordinals and pointers is not portable,
         0,
         MIP_GLOBAL_WIN32_INSTANCE,
         0
       );
       //reparent(AParent);
 
-    }
-    else {
-
-      MEmbedded = false;
-
-      AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
-      int32_t wx = ((GetSystemMetrics(SM_CXSCREEN)-AWidth) >> 1) + rc.left;
-      int32_t wy = ((GetSystemMetrics(SM_CYSCREEN)-AHeight) >> 1) + rc.top;
-      int32_t x = wx;
-      int32_t y = wy;
-      int32_t w = rc.right-rc.left+1;
-      int32_t h = rc.bottom-rc.top+1;
-      MAdjustedWidth = w - AWidth;
-      MAdjustedHeight = h - AHeight;
-
-      MWinHandle = CreateWindowEx(
-        WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
-        MIP_Win32ClassName(),     // lpClassName
-        MWindowTitle,                     // lpWindowName
-        WS_OVERLAPPEDWINDOW,        // dwStyle
-        x,                          // center x
-        y,                          // center y
-        w,                          // wWidth
-        h,                          // wHeight
-        0,                          // hWndParent
-        0,                          // hMenu
-        MIP_GLOBAL_WIN32_INSTANCE,  // hInstance
-        0                           // lpParam
-      );
-      SetFocus(MWinHandle);
-
-    } // embedded
+//    }
+//
+//    else {
+//
+//      MEmbedded = false;
+//
+//      AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
+//      int32_t wx = ((GetSystemMetrics(SM_CXSCREEN)-AWidth) >> 1) + rc.left;
+//      int32_t wy = ((GetSystemMetrics(SM_CYSCREEN)-AHeight) >> 1) + rc.top;
+//      int32_t x = wx;
+//      int32_t y = wy;
+//      int32_t w = rc.right-rc.left+1;
+//      int32_t h = rc.bottom-rc.top+1;
+//      MAdjustedWidth = w - AWidth;
+//      MAdjustedHeight = h - AHeight;
+//
+//      MWinHandle = CreateWindowEx(
+//        WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
+//        MIP_Win32ClassName(),     // lpClassName
+//        MWindowTitle,                     // lpWindowName
+//        WS_OVERLAPPEDWINDOW,        // dwStyle
+//        x,                          // center x
+//        y,                          // center y
+//        w,                          // wWidth
+//        h,                          // wHeight
+//        0,                          // hWndParent
+//        0,                          // hMenu
+//        MIP_GLOBAL_WIN32_INSTANCE,  // hInstance
+//        0                           // lpParam
+//      );
+//      SetFocus(MWinHandle);
+//
+//    } // embedded
 
     SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
   }
@@ -177,7 +180,7 @@ public:
   //----------
 
   virtual ~MIP_Win32Window() {
-//    destroyUserCursors();
+    //destroyUserCursors();
     DestroyWindow(MWinHandle);
   }
 
@@ -238,6 +241,8 @@ public:
     SetWindowPos(MWinHandle,0,AXpos,AYpos,0,0,SWP_NOSIZE|SWP_NOACTIVATE|SWP_NOZORDER);
   }
 
+  //----------
+
   void setWindowSize(uint32_t AWidth, uint32_t AHeight) override {
     int w = AWidth + MAdjustedWidth + 0;
     int h = AHeight + MAdjustedHeight + 0;
@@ -248,9 +253,13 @@ public:
     MWindowHeight = h;
   }
 
+  //----------
+
   void setWindowTitle(const char* ATitle) override {
     SetWindowText(MWinHandle, ATitle);
   }
+
+  //----------
 
   void openWindow() override {
     ShowWindow(MWinHandle,SW_SHOW);
@@ -259,18 +268,26 @@ public:
     #endif
   }
 
+  //----------
+
   void closeWindow() override {
     #ifdef MIP_WIN32_IDLE_TIMER
     KillTimer(MWinHandle,s3_ts_idle);
     #endif
     ShowWindow(MWinHandle,SW_HIDE);
-}
+  }
+
+  //----------
 
   void flush(void) override {
   }
 
+  //----------
+
   void sync(void) override {
   }
+
+  //----------
 
   void eventLoop() override {
     MSG msg;
@@ -280,14 +297,22 @@ public:
     }
   }
 
+  //----------
+
   void startEventThread() override {
   }
+
+  //----------
 
   void stopEventThread() override {
   }
 
+  //----------
+
   void sendClientMessage(uint32_t AData, uint32_t AType) override {
   }
+
+  //----------
 
   void invalidateRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     RECT R;
@@ -298,22 +323,52 @@ public:
     InvalidateRect(MWinHandle,&R,false);
   }
 
+  //----------
+
   void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
   }
 
+  //----------
+
+  /*
+    AParent: A handle to the new parent window. If this parameter is NULL, the
+    desktop window becomes the new parent window. If this parameter is
+    HWND_MESSAGE, the child window becomes a message-only window.
+
+    Remarks
+    An application can use the SetParent function to set the parent window of a
+    pop-up, overlapped, or child window.
+    If the window identified by the hWndChild parameter is visible, the system
+    performs the appropriate redrawing and repainting.
+    For compatibility reasons, SetParent does not modify the WS_CHILD or
+    WS_POPUP window styles of the window whose parent is being changed.
+    Therefore, if hWndNewParent is NULL, you should also clear the WS_CHILD bit
+    and set the WS_POPUP style after calling SetParent. Conversely, if
+    hWndNewParent is not NULL and the window was previously a child of the
+    desktop, you should clear the WS_POPUP style and set the WS_CHILD style
+    before calling SetParent.
+  */
+
   void reparentWindow(intptr_t AParent) override {
+    MIP_PRINT;
     SetWindowLongPtr( MWinHandle, GWL_STYLE, ( GetWindowLongPtr(MWinHandle,GWL_STYLE) & ~WS_POPUP ) | WS_CHILD );
     SetParent(MWinHandle,(HWND)AParent);
     //MEmbedded = true;
   }
 
+  //----------
+
   void beginPaint()  override {
     MWinPaintDC = BeginPaint(MWinHandle,&MWinPaintStruct);
   }
 
+  //----------
+
   void endPaint()  override {
     EndPaint(MWinHandle,&MWinPaintStruct);
   }
+
+  //----------
 
   void setEventThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) override {
   }
@@ -331,33 +386,43 @@ public: // mouse
     }
   }
 
-    // Moves the cursor to the specified screen coordinates
-    // will fire a WM_MOUSEMOVE event..
+  //----------
+
+  // Moves the cursor to the specified screen coordinates
+  // will fire a WM_MOUSEMOVE event..
 
   void setMouseCursorPos(int32_t AXpos, int32_t AYpos) override {
-      POINT pos;
-      pos.x = AXpos;
-      pos.y = AYpos;
-      ClientToScreen(MWinHandle,&pos);
-      int32_t x = pos.x;
-      int32_t y = pos.y;
-      SetCursorPos(x,y);
+    POINT pos;
+    pos.x = AXpos;
+    pos.y = AYpos;
+    ClientToScreen(MWinHandle,&pos);
+    int32_t x = pos.x;
+    int32_t y = pos.y;
+    SetCursorPos(x,y);
   }
+
+  //----------
 
   void hideMouseCursor(void) override {
-      ShowCursor(false);
+    ShowCursor(false);
   }
+
+  //----------
 
   void showMouseCursor(void) override {
-      ShowCursor(true);
+    ShowCursor(true);
   }
+
+  //----------
 
   void grabMouseCursor(void) override {
-      SetCapture(MWinHandle);
+    SetCapture(MWinHandle);
   }
 
+  //----------
+
   void releaseMouseCursor(void) override {
-      ReleaseCapture();
+    ReleaseCapture();
   }
 
 //------------------------------
@@ -365,22 +430,18 @@ public: // paint
 //------------------------------
 
   void fillColor(uint32_t AColor) override {
-    MIP_PRINT;
   }
 
   void fillColor(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) override {
-    MIP_PRINT;
   }
 
   void blitBuffer(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) override {
-    MIP_PRINT;
   }
 
   //void blitImage(int32_t ADstX, int32_t ADstY, /*xcb_image_t*/void* AImage) {}
   //void blitDrawable(int32_t ADstX, int32_t ADstY, /*xcb_drawable_t*/intptr_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {}
 
   void blitDrawable(int32_t ADstX, int32_t ADstY, MIP_Drawable* ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) override {
-    MIP_PRINT;
   }
 
   //----------
@@ -388,9 +449,9 @@ public: // paint
   // only valid dugring begin/endPaint...
   // needs MWinPaintDC
 
-//  void blit(int32 dst_x, int32 dst_y, S3_Painter* APainter, int32 src_x, int32 src_y, int32 src_w, int32 src_h) {
-//    BitBlt(MWinPaintDC,dst_x,dst_y,src_w,src_h,APainter->hdc(),src_x,src_y,SRCCOPY);
-//  }
+  //  void blit(int32 dst_x, int32 dst_y, S3_Painter* APainter, int32 src_x, int32 src_y, int32 src_w, int32 src_h) {
+  //    BitBlt(MWinPaintDC,dst_x,dst_y,src_w,src_h,APainter->hdc(),src_x,src_y,SRCCOPY);
+  //  }
 
   /*
     a bitmap can't be attached to more than one dc at a time..
@@ -484,7 +545,6 @@ private: // event handler
     }
     return 0;
   }
-
 
   //------------------------------
   //
@@ -600,32 +660,34 @@ private: // event handler
         WM_LBUTTONDOWN, WM_LBUTTONUP, WM_LBUTTONDBLCLK, and WM_LBUTTONUP.
       */
 
-//      #ifdef MIP_MOUSE_DOUBLECLICK
-//      case WM_LBUTTONDBLCLK:
-//      case WM_MBUTTONDBLCLK:
-//      case WM_RBUTTONDBLCLK:
-//      case WM_XBUTTONDBLCLK: {
-//        switch (message) {
-//          case WM_LBUTTONDBLCLK:  b = s3_mb_left;   break;
-//          case WM_MBUTTONDBLCLK:  b = s3_mb_middle; break;
-//          case WM_RBUTTONDBLCLK:  b = s3_mb_right;  break;
-//          case WM_XBUTTONDBLCLK:  b = s3_mb_side;   break;
-//          default:                b = s3_mb_none;   //break;
-//        }
-//        if (b==s3_mb_side) {
-//          if ((wParam & MK_XBUTTON1) != 0) b = s3_mb_backward;
-//          if ((wParam & MK_XBUTTON2) != 0) b = s3_mb_forward;
-//        }
-//        //S3_Trace("dblclick: %i\n",b);
-//        x = short(LOWORD(lParam));
-//        y = short(HIWORD(lParam));
-//        //x = GET_X_LPARAM(lParam);
-//        //y = GET_Y_LPARAM(lParam);
-//        //if (MListener) MListener->on_mouseUp(this,x,y,b,remapKey(wParam));
-//        on_widgetMouseDoubleClick(this,x,y,b,remapMouseKey(wParam));
-//        break;
-//      }
-//      #endif // MIP_MOUSE_DOUBLECLICK
+      #ifdef MIP_MOUSE_DOUBLECLICK
+      /*
+      case WM_LBUTTONDBLCLK:
+      case WM_MBUTTONDBLCLK:
+      case WM_RBUTTONDBLCLK:
+      case WM_XBUTTONDBLCLK: {
+        switch (message) {
+          case WM_LBUTTONDBLCLK:  b = s3_mb_left;   break;
+          case WM_MBUTTONDBLCLK:  b = s3_mb_middle; break;
+          case WM_RBUTTONDBLCLK:  b = s3_mb_right;  break;
+          case WM_XBUTTONDBLCLK:  b = s3_mb_side;   break;
+          default:                b = s3_mb_none;   //break;
+        }
+        if (b==s3_mb_side) {
+          if ((wParam & MK_XBUTTON1) != 0) b = s3_mb_backward;
+          if ((wParam & MK_XBUTTON2) != 0) b = s3_mb_forward;
+        }
+        //S3_Trace("dblclick: %i\n",b);
+        x = short(LOWORD(lParam));
+        y = short(HIWORD(lParam));
+        //x = GET_X_LPARAM(lParam);
+        //y = GET_Y_LPARAM(lParam);
+        //if (MListener) MListener->on_mouseUp(this,x,y,b,remapKey(wParam));
+        on_widgetMouseDoubleClick(this,x,y,b,remapMouseKey(wParam));
+        break;
+      }
+      */
+      #endif // MIP_MOUSE_DOUBLECLICK
 
       /*
         is it possible to receive a WM_PAINT when some other thread is
@@ -637,21 +699,13 @@ private: // event handler
 
         int32_t x = MWinPaintStruct.rcPaint.left;
         int32_t y = MWinPaintStruct.rcPaint.top;
-        int32_t w = MWinPaintStruct.rcPaint.right -  MWinPaintStruct.rcPaint.left + 1;
+        int32_t w = MWinPaintStruct.rcPaint.right  - MWinPaintStruct.rcPaint.left + 1;
         int32_t h = MWinPaintStruct.rcPaint.bottom - MWinPaintStruct.rcPaint.top + 1;
-
         //if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
-
         //rc = MIP_DRect(x,y,w,h);
-        MIP_Print("WM_PAINT: x %i y %i w %i h %i\n",x,y,w,h);
+        //MIP_Print("WM_PAINT: x %i y %i w %i h %i\n",x,y,w,h);
+
         on_window_paint(x,y,w,h);
-//        if (MListener) {
-//          #ifndef S3_NO_WINDOW_BACKBUFFER
-//          MListener->on_bufferBlit(this,rc);
-//          #else
-//          MListener->on_windowPaint(this,rc);
-//          #endif
-//        }
         endPaint();
         break;
       }
@@ -672,27 +726,27 @@ private: // event handler
         h = short(HIWORD(lParam));
         //if ( (w!=MRect.w) || (h!=MRect.h) ) {
         if ( (w != MWindowWidth) || (h != MWindowHeight) ) {
-//          if (MListener) {
-//            #ifndef S3_NO_WINDOW_BACKBUFFER
-//            MListener->on_bufferResize(this,w,h);
-//            #else
-//            MListener->on_windowResize(this,w,h);
-//            #endif
-//          }
+          //if (MListener) {
+          //  #ifndef S3_NO_WINDOW_BACKBUFFER
+          //  MListener->on_bufferResize(this,w,h);
+          //  #else
+          //  MListener->on_windowResize(this,w,h);
+          //  #endif
+          //}
           on_window_resize(w,h);
-//          if (MFlags & s3_wf_autoalign) on_widgetAlign(this);
-//          #ifndef S3_NO_WINDOW_BACKBUFFER
-//          if (MListener) MListener->on_bufferPaint(this,S3_NULL,s3_pm_normal); //redraw;
-//          #endif
+          //if (MFlags & s3_wf_autoalign) on_widgetAlign(this);
+          //#ifndef S3_NO_WINDOW_BACKBUFFER
+          //if (MListener) MListener->on_bufferPaint(this,S3_NULL,s3_pm_normal); //redraw;
+          //#endif
         }
         break;
       }
 
       case WM_TIMER: {
-//        if (MListener) {
-//          if (wParam==s3_ts_timer) MListener->on_windowTimer(this);
-//          if (wParam==s3_ts_idle) MListener->on_windowIdle(this);
-//        }
+        //if (MListener) {
+        //  if (wParam==s3_ts_timer) MListener->on_windowTimer(this);
+        //  if (wParam==s3_ts_idle) MListener->on_windowIdle(this);
+        //}
         break;
       }
 
@@ -708,7 +762,7 @@ private: // event handler
 private:
 //------------------------------
 
-/*
+  /*
 
   virtual // S3_Window_Base
   void startTimer(int32 ms) {
@@ -780,7 +834,7 @@ private:
       ClipCursor(NULL);
     }
 
-*/
+  */
 
 };
 

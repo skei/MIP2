@@ -86,8 +86,10 @@ protected:
 public:
 //------------------------------
 
-  MIP_Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
-  : MIP_ImplementedWindow(AWidth,AHeight,AEmbedded)
+  //MIP_Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  //: MIP_ImplementedWindow(AWidth,AHeight,AEmbedded)
+  MIP_Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
+  : MIP_ImplementedWindow(AWidth,AHeight,AParent)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
 
     MName = "MIP_Window";
@@ -144,6 +146,12 @@ public:
 
   MIP_PaintContext* getPaintContext() {
     return &MPaintContext;
+  }
+
+  //----------
+
+  void unmodal() {
+    if (MModalWidget) MModalWidget->on_widget_unmodal();
   }
 
   //----------

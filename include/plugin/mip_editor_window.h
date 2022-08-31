@@ -1,13 +1,12 @@
-#ifndef mip_editor_included
-#define mip_editor_included
+#ifndef mip_editor_window_included
+#define mip_editor_window_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
-#include "base/system/mip_timer.h"
 #include "gui/mip_window.h"
-#include "plugin/mip_editor_window.h"
+#include "base/system/mip_timer.h"
 
-#define MIP_EDITOR_MAX_PARAMS 4096
+//#define MIP_EDITOR_MAX_PARAMS 4096
 
 //----------------------------------------------------------------------
 //
@@ -17,7 +16,6 @@
 
 // editor -> plugin
 
-/*
 class MIP_EditorListener {
 public:
   virtual void on_editor_listener_update_parameter(uint32_t AIndex, double AValue) { MIP_PRINT; };
@@ -25,7 +23,7 @@ public:
   //beginGEsture
   //endGEsture
 };
-*/
+
 
 //----------------------------------------------------------------------
 //
@@ -33,55 +31,50 @@ public:
 //
 //----------------------------------------------------------------------
 
-class MIP_Editor
-: /*public MIP_Window
-,*/ public MIP_EditorListener {
+class MIP_EditorWindow
+: public MIP_Window {
 
 //------------------------------
 protected:
 //------------------------------
 
   MIP_EditorListener* MEditorListener = nullptr;
-  MIP_EditorWindow*   MWindow         = nullptr;
   uint32_t            MEditorWidth    = 200;
   uint32_t            MEditorHeight   = 100;
-  intptr_t            MParent         = 100;
   double              MEditorScale    = 1.0;
   bool                MIsEditorOpen   = false;
-  double              MInitialWidth   = 0;
-  double              MInitialHeight  = 0;
+  //MIP_Widget**        MParameterToWidget  = nullptr;
 
-  MIP_Widget*         MParameterToWidget[MIP_EDITOR_MAX_PARAMS] = {0};
+  double MInitialWidth = 0;
+  double MInitialHeight = 0;
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
-  /*: MIP_Window(AWidth,AHeight,AParent)*/ {
+  MIP_EditorWindow(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
+  : MIP_Window(AWidth,AHeight,AParent) {
+    //MIP_Print("width %i height %i\n",AWidth,AHeight);
     MEditorListener = AListener;
     MEditorWidth = AWidth;
     MEditorHeight = AHeight;
+    setWidgetSize(AWidth,AHeight);
+    //uint32_t size = MIP_EDITOR_MAX_PARAMS * sizeof(MIP_Widget*);
+    //MParameterToWidget = (MIP_Widget**)malloc(size);
+    //memset(MParameterToWidget,0,size);
+    //MIP_PRINT;
     MInitialWidth = AWidth;
     MInitialHeight = AHeight;
-    MWindow = new MIP_EditorWindow(this,AWidth,AHeight,AParent);
-    MWindow->setWidgetSize(AWidth,AHeight);
   }
 
   //----------
 
-  virtual ~MIP_Editor() {
-    if (MWindow && MIsEditorOpen) {
-      MWindow->hide();
+  virtual ~MIP_EditorWindow() {
+    //MIP_PRINT;
+    if (MIsEditorOpen) {
+      hide();
     }
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-  MIP_Window* getWindow() {
-    return MWindow;
+    //free(MParameterToWidget);
   }
 
 //------------------------------
@@ -191,26 +184,32 @@ public: // clap gui
 
   virtual bool setSize(uint32_t width, uint32_t height) {
     //MIP_Print("%i,%i -> true\n",width,height);
+
+    setWindowSize(width,height);
+
     MEditorWidth = width;
     MEditorHeight = height;
 
-    if (MWindow) {
-      MWindow->setWindowSize(width,height);
-      //double xscale = (double)width / MInitialWidth;
-      //double yscale = (double)height / MInitialHeight;
-      //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
+    //double xscale = (double)width / MInitialWidth;
+    //double yscale = (double)height / MInitialHeight;
+    //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
 
-      // hack.. the modual stuff should have been in the wndoow class..
-      // but there were/are some issues getting resize events..
-      //if (MModalWidget) MModalWidget->on_widget_unmodal();
-      MWindow->unmodal();
+    // hack.. the modual stuff should have been in the wndoow class..
+    // but there were/are some issues getting resize events..
+    if (MModalWidget) MModalWidget->on_widget_unmodal();
 
-      //MIP_Window::on_window_resize(width,height);
-      MWindow->setWidgetSize(width,height);
+    //MIP_Window::on_window_resize(width,height);
+    setWidgetSize(width,height);
 
-      MWindow->alignChildWidgets();
-      //MWindow->scaleChildWidgets(xscale,true);
-    }
+    /*
+      if there are visible widgets with autoSize, calling painter methods..
+    */
+
+    alignChildWidgets();
+
+    //scaleChildWidgets(xscale,true);
+
+//    setWindowSize(width,height);
     return true;
   }
 
@@ -224,16 +223,13 @@ public: // clap gui
   virtual bool setParent(const clap_window_t *window) {
     MIP_PRINT;
     //MIP_Print("%p -> true\n",window);
-    if (MWindow) {
-      #ifdef MIP_LINUX
-        MWindow->reparentWindow(window->x11);
-      #endif
-      #ifdef MIP_WIN32
-        MWindow->reparentWindow((intptr_t)window->win32);
-      #endif
-      return true;
-    }
-    return false;
+    #ifdef MIP_LINUX
+      reparentWindow(window->x11);
+    #endif
+    #ifdef MIP_WIN32
+      reparentWindow((intptr_t)window->win32);
+    #endif
+    return true;
   }
 
   //----------
@@ -257,7 +253,7 @@ public: // clap gui
 
   virtual void suggestTitle(const char *title) {
     //MIP_Print("%s\n",title);
-    if (MWindow) MWindow->setWindowTitle(title);
+    setWindowTitle(title);
   }
 
   //----------
@@ -269,10 +265,10 @@ public: // clap gui
 
   virtual bool show() {
     //MIP_Print("-> true\n");
-    if (MWindow && !MIsEditorOpen) {
-      MWindow->openWindow();
+    if (!MIsEditorOpen) {
+      openWindow();
       MIsEditorOpen = true;
-      MWindow->startEventThread();
+      startEventThread();
     }
     return true;
   }
@@ -287,10 +283,10 @@ public: // clap gui
 
   virtual bool hide() {
     //MIP_Print("-> true\n");
-    if (MWindow && MIsEditorOpen) {
+    if (MIsEditorOpen) {
       MIsEditorOpen = false;
-      MWindow->stopEventThread();
-      MWindow->closeWindow();
+      stopEventThread();
+      closeWindow();
     }
     return true;
   }
@@ -299,16 +295,16 @@ public: // clap gui
 public: // widget
 //------------------------------
 
-//  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
-//    //MIP_Print("%s\n",ASender->getWidgetName());
-//    MIP_Parameter* parameter = ASender->getParameter();
-//    if (parameter) {
-//      uint32_t index = parameter->getIndex();
-//      double value = ASender->getValue();
-//      //MIP_Print("%i = %f\n",index,value);
-//      if (MEditorListener) MEditorListener->on_editor_listener_update_parameter(index,value);
-//    }
-//  }
+  void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
+    //MIP_Print("%s\n",ASender->getWidgetName());
+    MIP_Parameter* parameter = ASender->getParameter();
+    if (parameter) {
+      uint32_t index = parameter->getIndex();
+      double value = ASender->getValue();
+      //MIP_Print("%i = %f\n",index,value);
+      if (MEditorListener) MEditorListener->on_editor_listener_update_parameter(index,value);
+    }
+  }
 
 //------------------------------
 public: // timer
@@ -336,38 +332,6 @@ public: // timer
 //------------------------------
 public:
 //------------------------------
-
-  void connectWidget(MIP_Parameter* AParameter, MIP_Widget* AWidget) {
-    uint32_t param_index = AParameter->getIndex();
-    MParameterToWidget[param_index] = AWidget;
-    AWidget->setParameter(AParameter);
-    AWidget->setMinValue(AParameter->getMinValue());
-    AWidget->setMaxValue(AParameter->getMaxValue());
-    AWidget->setDefaultValue(AParameter->getDefaultValue());
-    AWidget->setValue(AParameter->getDefaultValue());
-    //AWidget->on_widget_connect(AParameter);
-  };
-
-  //----------
-
-  void updateParameter(uint32_t AIndex, double AValue, bool ARedraw=true) {
-    //MIP_Print("%i = %.3f\n",AIndex,AValue);
-    MIP_Widget* widget = MParameterToWidget[AIndex];
-    if (widget) {
-      widget->setValue(AValue);
-      if (ARedraw) widget->redraw();
-    }
-  }
-
-  //----------
-
-  void updateModulation(uint32_t AIndex, double AValue, bool ARedraw=true) {
-    //MIP_Widget* widget = MParameterToWidget[AIndex];
-    //if (widget) {
-    //  //widget->setModulation(AValue);
-    //  widget->redraw();
-    //}
-  }
 
 };
 

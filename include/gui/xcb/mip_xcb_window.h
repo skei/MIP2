@@ -114,7 +114,8 @@ private:
 public:
 //------------------------------
 
-  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
+  //MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
+  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, intptr_t AParent) {
 
     //MWindowListener = this;
 
@@ -127,7 +128,8 @@ public:
     initWindow(AWidth,AHeight);
     initMouseCursor();
     initKeyboard();
-    if (AEmbedded) { removeDecorations(); }
+    //if (AEmbedded) { removeDecorations(); }
+    if (AParent) { removeDecorations(); }
     else { wantQuitEvents(); }
     //MResizeTimer = new MIP_Timer(this);
   }

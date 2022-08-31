@@ -9,13 +9,13 @@
 
 //----------
 
-//#define MIP_GUI_XCB
+#define MIP_GUI_XCB
 //#define MIP_PAINTER_NANOVG
-//#define MIP_PAINTER_XCB
-//#define MIP_WINDOW_BUFFERED
+#define MIP_PAINTER_XCB
+#define MIP_WINDOW_BUFFERED
 
-  #define MIP_GUI_WIN32
-  #define MIP_PAINTER_GDI
+//  #define MIP_GUI_WIN32
+//  #define MIP_PAINTER_GDI
 
 //----------------------------------------------------------------------
 
@@ -142,8 +142,9 @@ public: // gui
     //MIP_PRINT;
     bool result = MIP_Plugin::gui_create(api,is_floating);
     if (result /*&& MEditor*/) {
-      MEditor->setWidgetName("MEditor");
-      MEditor->setWindowFillBackground(false);
+      MIP_Window* editor_window = MEditor->getWindow();
+      editor_window->setWidgetName("MEditor");
+      editor_window->setWindowFillBackground(false);
 
       //----- menu-----
 
@@ -162,7 +163,7 @@ public: // gui
       background->setDrawBorder(false);
       background->setDrawText(false);
       background->setBackgroundColor(0.55);
-      MEditor->appendChildWidget(background);
+      editor_window->appendChildWidget(background);
 
       //----- sa header -----
 
@@ -631,7 +632,7 @@ public: // gui
 
 #include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_entry.h"
-//#include "plugin/exe/mip_exe_entry.h"
+#include "plugin/exe/mip_exe_entry.h"
 //#include "plugin/vst2/mip_vst2_entry.h"
 //#include "plugin/vst3/mip_vst3_entry.h"
 

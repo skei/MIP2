@@ -364,12 +364,12 @@ public: // EXT gui
 
   bool gui_get_preferred_api(const char **api, bool *is_floating) override {
     #ifdef MIP_LINUX
-    *api = CLAP_WINDOW_API_X11;
-    *is_floating = false;
+      *api = CLAP_WINDOW_API_X11;
+      *is_floating = false;
     #endif
     #ifdef MIP_WIN32
-    *api = CLAP_WINDOW_API_WIN32;
-    *is_floating = false;
+      *api = CLAP_WINDOW_API_WIN32;
+      *is_floating = false;
     #endif
     //MIP_Print("-> true (api: '%s' is_floating: %s\n",*api,*is_floating?"true":"false");
     return true;
@@ -380,7 +380,7 @@ public: // EXT gui
 
   bool gui_create(const char *api, bool is_floating) override {
     //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
-    MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight); // crash???
+    MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight,0); // crash???
     #ifdef MIP_PLUGIN_DEFAULT_EDITOR
       // setup widgets
     #endif
