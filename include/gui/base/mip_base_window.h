@@ -85,7 +85,7 @@ public:
   virtual void sendClientMessage(uint32_t AData, uint32_t AType) {}
   virtual void invalidateRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
   virtual void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) {}
-  virtual void reparentWindow(uint32_t AParent) {}
+  virtual void reparentWindow(intptr_t AParent) {}
   virtual void beginPaint()  {}
   virtual void endPaint()  {}
   virtual void setEventThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) {}
@@ -94,7 +94,7 @@ public:
 public: // mouse
 //------------------------------
 
-  virtual void setMouseCursor(uint32_t ACursor) {}
+  virtual void setMouseCursor(int32_t ACursor) {}
   virtual void setMouseCursorPos(int32_t AXpos, int32_t AYpos) {}
   virtual void hideMouseCursor(void) {}
   virtual void showMouseCursor(void) {}

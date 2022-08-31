@@ -14,11 +14,13 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-fno-pie" />
+					<Add option="-flto" />
 					<Add option="-DMIP_EXE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-no-pie" />
+					<Add option="-flto" />
 					<Add library="pthread" />
 					<Add library="rt" />
 					<Add library="m" />
@@ -584,6 +586,7 @@
 		<Unit filename="../include/plugin/exe/mip_exe_host.h" />
 		<Unit filename="../include/plugin/exe/mip_exe_plugin.h" />
 		<Unit filename="../include/plugin/exe/mip_exe_utils.h" />
+		<Unit filename="../include/plugin/exe/mip_exe_window.h" />
 		<Unit filename="../include/plugin/ladspa/mip_ladspa.h" />
 		<Unit filename="../include/plugin/ladspa/mip_ladspa_plugin.h" />
 		<Unit filename="../include/plugin/mip_audio_port.h" />
@@ -636,23 +639,6 @@
 		<Unit filename="../source/private/sa_botage/sa_botage_params.h" />
 		<Unit filename="../source/private/sa_botage/sa_botage_process.h" />
 		<Unit filename="../source/private/sa_botage/sa_botage_widgets.h" />
-		<Unit filename="../source/private/sa_bulo.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/private/sa_bulo/sa_compciter.h" />
-		<Unit filename="../source/private/sa_bulo/sa_event_horizon.h" />
-		<Unit filename="../source/private/sa_bulo/sa_exciter.h" />
-		<Unit filename="../source/private/sa_bulo/sa_exciter2.h" />
-		<Unit filename="../source/private/sa_bulo/sa_hall_reverb.h" />
-		<Unit filename="../source/private/sa_bulo/sa_hrtf.h" />
-		<Unit filename="../source/private/sa_bulo/sa_large_room_reverb.h" />
-		<Unit filename="../source/private/sa_bulo/sa_limiter.h" />
-		<Unit filename="../source/private/sa_bulo/sa_saturation.h" />
-		<Unit filename="../source/private/sa_bulo/sa_small_room_reverb.h" />
-		<Unit filename="../source/private/sa_bulo/sa_sonic_maximizer.h" />
-		<Unit filename="../source/private/sa_bulo/sa_tilteq.h" />
-		<Unit filename="../source/private/sa_bulo/sa_transient_killer.h" />
 		<Unit filename="../source/private/sa_cred.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -670,6 +656,23 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/private/sa_nity/sa_nity_editor.h" />
+		<Unit filename="../source/private/sa_ports.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/private/sa_ports/sa_compciter.h" />
+		<Unit filename="../source/private/sa_ports/sa_event_horizon.h" />
+		<Unit filename="../source/private/sa_ports/sa_exciter.h" />
+		<Unit filename="../source/private/sa_ports/sa_exciter2.h" />
+		<Unit filename="../source/private/sa_ports/sa_hall_reverb.h" />
+		<Unit filename="../source/private/sa_ports/sa_hrtf.h" />
+		<Unit filename="../source/private/sa_ports/sa_large_room_reverb.h" />
+		<Unit filename="../source/private/sa_ports/sa_limiter.h" />
+		<Unit filename="../source/private/sa_ports/sa_saturation.h" />
+		<Unit filename="../source/private/sa_ports/sa_small_room_reverb.h" />
+		<Unit filename="../source/private/sa_ports/sa_sonic_maximizer.h" />
+		<Unit filename="../source/private/sa_ports/sa_tilteq.h" />
+		<Unit filename="../source/private/sa_ports/sa_transient_killer.h" />
 		<Unit filename="../tools/bin2h.c">
 			<Option compilerVar="CC" />
 			<Option compile="0" />

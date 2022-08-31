@@ -17,13 +17,10 @@
 //----------------------------------------------------------------------
 
 #ifdef MIP_WIN32
-  #undef MIP_DEBUG
-
   #undef MIP_DEBUG_ASSER
   #undef MIP_DEBUG_CALLSTACK
   #undef MIP_DEBUG_CRASH_HANDLER
   #undef MIP_DEBUG_MEMORY
-  #undef MIP_DEBUG_PRINT
   #undef MIP_DEBUG_PRINT_SOCKET
   #undef MIP_DEBUG_PRINT_THREAD
   #undef MIP_DEBUG_PRINT_TIME
@@ -33,7 +30,7 @@
 //----------
 
 #ifndef MIP_DEBUG
-  #undef MIP_DEBUG_ASSER
+undef MIP_DEBUG_ASSER
   #undef MIP_DEBUG_CALLSTACK
   #undef MIP_DEBUG_CRASH_HANDLER
   #undef MIP_DEBUG_MEMORY

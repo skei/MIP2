@@ -32,14 +32,18 @@
 #ifdef MIP_DEBUG
 
   #include <stdarg.h>   // va_
-  #include <sys/syscall.h>
   #include <sys/unistd.h>
 
-  #define gettid() syscall(SYS_gettid)
 
+  #ifdef MIP_LINUX
+  #include <sys/syscall.h>
+  #define gettid() syscall(SYS_gettid)
   pid_t MIP_GetThreadId() {
     return gettid();
   }
+  #endif
+
+
 
   #ifdef MIP_DEBUG_PRINT_TIME
     //#include <time.h>     // timer

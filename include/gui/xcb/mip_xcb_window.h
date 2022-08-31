@@ -330,7 +330,7 @@ public: // window
 
   //----------
 
-  void reparentWindow(uint32_t AParent) override {
+  void reparentWindow(intptr_t AParent) override {
     xcb_reparent_window(MConnection,MWindow,AParent,0,0);
     xcb_flush(MConnection);
   }
@@ -358,7 +358,7 @@ public: // window
 public: // mouse
 //------------------------------
 
-  void setMouseCursor(uint32_t ACursor) override {
+  void setMouseCursor(int32_t ACursor) override {
     setWMCursor(ACursor);
   }
 

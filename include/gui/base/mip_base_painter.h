@@ -81,6 +81,10 @@ public:
   virtual void      setClipRect(MIP_DRect ARect) {}
   virtual MIP_DRect getClipRect() { return MIP_DRect(); }
 
+//------------------------------
+public:
+//------------------------------
+
   //virtual void resize(uint32_t AWidth, uint32_t AHeight) {}
   virtual void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) {}
   virtual void triangle( double x1, double y1, double x2, double y2, double x3, double y3) {}

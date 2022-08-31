@@ -10,7 +10,8 @@
 
 // test
 
-#include "../build/test/test_layout.cpp"
+//#include "../build/test/test_layout.cpp"
+#include "../build/test/test_win32.cpp"
 
 //----------------------------------------------------------------------
 //

@@ -200,16 +200,11 @@ const MIP_Color MIP_COLOR_RED2            = MIP_Color( 0.50, 0.00, 0.25 );
 const MIP_Color MIP_COLOR_LIGHT_RED2      = MIP_Color( 0.75, 0.00, 0.37 );
 const MIP_Color MIP_COLOR_BRIGHT_RED2     = MIP_Color( 1.00, 0.00, 0.50 );
 
-
-/*
-const MIP_Color MIP_COLOR_                = MIP_Color( 0.00, 0.00, 0.00 );
-*/
-
-//const MIP_Color MIP_COLOR_BLACK           = MIP_Color( 0.00 );
-//const MIP_Color MIP_COLOR_DARK_GRAY       = MIP_Color( 0.25 );
-//const MIP_Color MIP_COLOR_GRAY            = MIP_Color( 0.50 );
-//const MIP_Color MIP_COLOR_LIGHT_GRAY      = MIP_Color( 0.75 );
-//const MIP_Color MIP_COLOR_WHITE           = MIP_Color( 1.00 );
+const MIP_Color MIP_COLOR_BLACK           = MIP_Color( 0.00 );
+const MIP_Color MIP_COLOR_DARK_GRAY       = MIP_Color( 0.25 );
+const MIP_Color MIP_COLOR_GRAY            = MIP_Color( 0.50 );
+const MIP_Color MIP_COLOR_LIGHT_GRAY      = MIP_Color( 0.75 );
+const MIP_Color MIP_COLOR_WHITE           = MIP_Color( 1.00 );
 
 
 //----------------------------------------------------------------------
