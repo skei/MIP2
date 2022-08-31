@@ -752,7 +752,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
 
-1661800533 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1661967428 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_widget.h"
@@ -841,7 +841,7 @@
 	"gui/xcb/mip_xcb.h"
 	"gui/xlib/mip_xlib.h"
 
-1661609164 /DISKS/sda2/code/git/MIP2/include/gui/base/mip_base_painter.h
+1661959727 /DISKS/sda2/code/git/MIP2/include/gui/base/mip_base_painter.h
 	"mip.h"
 	"gfx/mip_bitmap.h"
 	"gui/mip_drawable.h"
@@ -1699,13 +1699,14 @@
 	"gui/base/mip_base_painter.h"
 	"gui/mip_drawable.h"
 
-1661375970 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi_painter.h
+1661969874 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi_painter.h
 	"mip.h"
 	"gui/base/mip_base_painter.h"
 	"gui/gdi/mip_gdi.h"
 
-1661955983 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi.h
+1661960917 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi.h
 	"mip.h"
+	"gui/win32/mip_win32.h"
 
 1661378197 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl_painter.h
 	"mip.h"
@@ -1714,7 +1715,7 @@
 	"gui/wgl/mip_wgl.h"
 	"gui/wgl/mip_wgl_utils.h"
 
-1661814722 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_painter.h
+1661963423 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_painter.h
 	"mip.h"
 	"gui/base/mip_base_painter.h"
 	"gui/xcb/mip_xcb.h"
@@ -1723,18 +1724,19 @@
 	"extern/stb/stb_truetype.h"
 	"../data/fonts/liberation_ttf.h"
 
-1661958959 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32_window.h
+1661967423 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32_window.h
 	"mip.h"
 	"gui/base/mip_base_window.h"
 	"gui/win32/mip_win32.h"
 
-1661956487 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32.h
+1661962742 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32.h
 	<windows.h>
 	"mip.h"
 
-1661955921 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi_surface.h
+1661959694 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi_surface.h
 	"mip.h"
 	"gui/mip_drawable.h"
+	"gui/win32/mip_win32.h"
 	"gui/gdi/mip_gdi.h"
 
 1661374630 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl.h
@@ -1756,12 +1758,8 @@
 	"plugin/exe/mip_exe.h"
 	"gui/mip_window.h"
 
-1661956173 /DISKS/sda2/code/git/MIP2/build/test/test_win32.cpp
+1661967506 /DISKS/sda2/code/git/MIP2/build/test/test_win32.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
-	"plugin/mip_editor.h"
 	"gui/widgets/mip_widgets.h"
-	"plugin/mip_registry.h"
-	"plugin/clap/mip_clap_entry.h"
-	"plugin/exe/mip_exe_entry.h"
 

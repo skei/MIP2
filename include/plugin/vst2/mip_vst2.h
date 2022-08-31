@@ -12,7 +12,7 @@
 //#else
 
   #ifdef MIP_LINUX
-  #define __cdecl
+    #define __cdecl
   #endif
 
   #include "extern/vst2/aeffect.h"

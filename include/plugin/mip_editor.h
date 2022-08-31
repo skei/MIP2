@@ -226,7 +226,12 @@ public: // clap gui
 
   virtual bool setParent(const clap_window_t *window) {
     //MIP_Print("%p -> true\n",window);
-    reparentWindow(window->x11);
+    #ifdef MIP_LINUX
+      reparentWindow(window->x11);
+    #endif
+    #ifdef MIP_WIN32
+      reparentWindow((intptr_t)window->win32);
+    #endif
     return true;
   }
 

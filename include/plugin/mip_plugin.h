@@ -344,10 +344,18 @@ public: // EXT gui
   // currently we only support x11, non-floating
 
   bool gui_is_api_supported(const char *api, bool is_floating) override {
-    if ((strcmp(api,CLAP_WINDOW_API_X11) == 0) && (is_floating == false)) {
-      //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
-      return true;
-    }
+    #ifdef MIP_LINUX
+      if ((strcmp(api,CLAP_WINDOW_API_X11) == 0) && (is_floating == false)) {
+        //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
+        return true;
+      }
+    #endif
+    #ifdef MIP_WIN32
+      if ((strcmp(api,CLAP_WINDOW_API_WIN32) == 0) && (is_floating == false)) {
+        //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
+        return true;
+      }
+    #endif
     //MIP_Print("api: '%s' is_floating: %s -> false\n",api,is_floating?"true":"false");
     return false;
   }
@@ -355,8 +363,14 @@ public: // EXT gui
   //----------
 
   bool gui_get_preferred_api(const char **api, bool *is_floating) override {
+    #ifdef MIP_LINUX
     *api = CLAP_WINDOW_API_X11;
     *is_floating = false;
+    #endif
+    #ifdef MIP_WIN32
+    *api = CLAP_WINDOW_API_WIN32;
+    *is_floating = false;
+    #endif
     //MIP_Print("-> true (api: '%s' is_floating: %s\n",*api,*is_floating?"true":"false");
     return true;
   }

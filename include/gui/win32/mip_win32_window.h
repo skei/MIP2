@@ -9,7 +9,7 @@
     see bottom of this file for the singleton-ish class and global/static
     variable used for this..
   - if window is created with null listener, self is used..
-  - buffer-events (on_xxxBuffer) are only called if S3_NO_WINDOW_BACKBUFFER is not defined
+  - buffer-events (on_xxxBuffer) are only called if MIP_NO_WINDOW_BACKBUFFER is not defined
 */
 
 //----------------------------------------------------------------------
@@ -20,7 +20,7 @@
 
 //----------------------------------------------------------------------
 
-char* MIP_Window_ClassName(void);
+char* MIP_Win32ClassName(void);
 LRESULT CALLBACK mip_eventproc_win32(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 const char* mip_win32_cursors[] = {
@@ -63,33 +63,34 @@ class MIP_Win32Window
 private:
 //------------------------------
 
-    HCURSOR             MDefaultCursor;
-    HWND                MWinHandle;
-    HCURSOR             MWinCursor;
-    PAINTSTRUCT         MWinPaintStruct;
-    HDC                 MWinPaintDC;
-    HCURSOR             MUserCursors[128];
+  HCURSOR     MDefaultCursor;
+  HWND        MWinHandle;
+  HCURSOR     MWinCursor;
+  PAINTSTRUCT MWinPaintStruct;
+  HDC         MWinPaintDC;
+  HCURSOR     MUserCursors[128];
 
-//    const char*         MTitle;
-//    void*               MParent;
-    bool                MEmbedded;
-    int32_t               MMouseXpos;
-    int32_t               MMouseYpos;
-//    int32_t               MAdjustedWidth;
-//    int32_t               MAdjustedHeight;
-    int32_t               MCurrentCursor;
+  const char* MWindowTitle    = "";
+  void*       MWindowParent   = nullptr;
+  bool        MEmbedded       = false;
+  int32_t     MMouseXpos      = 0;
+  int32_t     MMouseYpos      = 0;
+  int32_t     MAdjustedWidth  = 0;
+  int32_t     MAdjustedHeight = 0;
+  int32_t     MCurrentCursor  = 0;
 
 //------------------------------
 private:
 //------------------------------
 
-  int32_t   MWindowWidth        = 0;
-  int32_t   MWindowHeight       = 0;
-  uint32_t  MScreenDepth        = 0;
-  double    MWindowWidthScale   = 1.0;
-  double    MWindowHeightScale  = 1.0;
-  bool      MFillBackground     = false;
-  uint32_t  MBackgroundColor    = 0x808080;
+  int32_t     MWindowWidth        = 0;
+  int32_t     MWindowHeight       = 0;
+  uint32_t    MScreenDepth        = 0;
+  double      MWindowWidthScale   = 1.0;
+  double      MWindowHeightScale  = 1.0;
+
+  bool        MFillBackground     = false;
+  uint32_t    MBackgroundColor    = 0x808080;
 
 //------------------------------
 public:
@@ -97,87 +98,87 @@ public:
 
   MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
   : MIP_BaseWindow() {
-    /*
-    MName = "S3_Window_Win32";
-    if (AListener) MListener = AListener;
-    else MListener = this;
-    MName = "S3_Window";
-    MTitle = "S3_Window";
-    MParent = AParent;
+
+    MWindowTitle = "MIP_Win32Window";
     //
     MMouseXpos  = -1;
     MMouseYpos  = -1;
-    S3_Memset(MUserCursors,0,sizeof(MUserCursors));
+    memset(MUserCursors,0,sizeof(MUserCursors));
     MCurrentCursor = -1;
-    setCursor(s3_mc_default);
-    //
-    RECT rc = { 0,0,ARect.w+1,ARect.h+1};
-    if (AParent) {
-      //MEmbedded = true;
+    setMouseCursor(MIP_CURSOR_DEFAULT);
+
+    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
+
+    if (AEmbedded) {
+
       MEmbedded = true;
+
       AdjustWindowRectEx(&rc,WS_POPUP,FALSE,WS_EX_TOOLWINDOW);
-      int32 x = rc.left;
-      int32 y = rc.top;
-      int32 w = rc.right - rc.left + 1;
-      int32 h = rc.bottom - rc.top + 1;
-      MAdjustedWidth = w - ARect.w;
-      MAdjustedHeight = h - ARect.h;
+      int32_t x = rc.left;
+      int32_t y = rc.top;
+      int32_t w = rc.right - rc.left + 1;
+      int32_t h = rc.bottom - rc.top + 1;
+      MAdjustedWidth = w - AWidth;
+      MAdjustedHeight = h - AHeight;
+
       MWinHandle = CreateWindowEx(
         0, //WS_EX_TOOLWINDOW,
         //kode_global_WinClassName,
-        S3_Window_ClassName(),
+        MIP_Win32ClassName(),
         0,
-        WS_CHILD + WS_VISIBLE, //WS_POPUP,
+        WS_POPUP + WS_VISIBLE, //WS_CHILD + WS_VISIBLE, //,
         x, //rc.left,
         y, //rc.top,
         w, //rc.right-rc.left+1, // +2 ??
         h, //rc.bottom-rc.top+1, // +2 ??
-        HWND(AParent), // Hint: Conversion between ordinals and pointers is not portable,
+        nullptr,//HWND(AParent), // Hint: Conversion between ordinals and pointers is not portable,
         0,
-        s3_global_WinInstance,
+        MIP_GLOBAL_WIN32_INSTANCE,
         0
       );
       //reparent(AParent);
 
     }
     else {
+
       MEmbedded = false;
+
       AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
-      int32 wx = ((GetSystemMetrics(SM_CXSCREEN)-MRect.w) >> 1) + rc.left;
-      int32 wy = ((GetSystemMetrics(SM_CYSCREEN)-MRect.h) >> 1) + rc.top;
-      int32 x = wx;
-      int32 y = wy;
-      int32 w = rc.right-rc.left+1;
-      int32 h = rc.bottom-rc.top+1;
-      MAdjustedWidth = w - MRect.w;
-      MAdjustedHeight = h - MRect.h;
+      int32_t wx = ((GetSystemMetrics(SM_CXSCREEN)-AWidth) >> 1) + rc.left;
+      int32_t wy = ((GetSystemMetrics(SM_CYSCREEN)-AHeight) >> 1) + rc.top;
+      int32_t x = wx;
+      int32_t y = wy;
+      int32_t w = rc.right-rc.left+1;
+      int32_t h = rc.bottom-rc.top+1;
+      MAdjustedWidth = w - AWidth;
+      MAdjustedHeight = h - AHeight;
+
       MWinHandle = CreateWindowEx(
-        WS_EX_OVERLAPPEDWINDOW,   // dwExStyle
-        S3_Window_ClassName(),     // lpClassName
-        MTitle,                   // lpWindowName
-        WS_OVERLAPPEDWINDOW,      // dwStyle
-        x,                        // center x
-        y,                        // center y
-        w,                        // wWidth
-        h,                        // wHeight
-        0,                        // hWndParent
-        0,                        // hMenu
-        s3_global_WinInstance,    // hInstance
-        0                         // lpParam
+        WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
+        MIP_Win32ClassName(),     // lpClassName
+        MWindowTitle,                     // lpWindowName
+        WS_OVERLAPPEDWINDOW,        // dwStyle
+        x,                          // center x
+        y,                          // center y
+        w,                          // wWidth
+        h,                          // wHeight
+        0,                          // hWndParent
+        0,                          // hMenu
+        MIP_GLOBAL_WIN32_INSTANCE,  // hInstance
+        0                           // lpParam
       );
       SetFocus(MWinHandle);
-    }
+
+    } // embedded
+
     SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
-    */
   }
 
   //----------
 
   virtual ~MIP_Win32Window() {
-    /*
-    destroyUserCursors();
+//    destroyUserCursors();
     DestroyWindow(MWinHandle);
-    */
   }
 
 //------------------------------
@@ -238,8 +239,8 @@ public:
   }
 
   void setWindowSize(uint32_t AWidth, uint32_t AHeight) override {
-    int w = AWidth;// + MAdjustedWidth + 0;
-    int h = AHeight;// + MAdjustedHeight + 0;
+    int w = AWidth + MAdjustedWidth + 0;
+    int h = AHeight + MAdjustedHeight + 0;
     SetWindowPos(MWinHandle,HWND_TOP,0,0,w,h, SWP_NOMOVE);
     //MRect.w = w;
     //MRect.h = h;
@@ -303,6 +304,7 @@ public:
   void reparentWindow(intptr_t AParent) override {
     SetWindowLongPtr( MWinHandle, GWL_STYLE, ( GetWindowLongPtr(MWinHandle,GWL_STYLE) & ~WS_POPUP ) | WS_CHILD );
     SetParent(MWinHandle,(HWND)AParent);
+    //MEmbedded = true;
   }
 
   void beginPaint()  override {
@@ -363,18 +365,22 @@ public: // paint
 //------------------------------
 
   void fillColor(uint32_t AColor) override {
+    MIP_PRINT;
   }
 
   void fillColor(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) override {
+    MIP_PRINT;
   }
 
   void blitBuffer(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) override {
+    MIP_PRINT;
   }
 
   //void blitImage(int32_t ADstX, int32_t ADstY, /*xcb_image_t*/void* AImage) {}
   //void blitDrawable(int32_t ADstX, int32_t ADstY, /*xcb_drawable_t*/intptr_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {}
 
   void blitDrawable(int32_t ADstX, int32_t ADstY, MIP_Drawable* ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) override {
+    MIP_PRINT;
   }
 
   //----------
@@ -485,36 +491,42 @@ private: // event handler
   //------------------------------
 
   LRESULT eventHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+
     LRESULT result = 0;
     MIP_DRect rc;
     int32_t x,y,b,w,h,d;//,k;
     switch (message) {
 
-      case WM_DESTROY:
+      case WM_DESTROY: {
         if (!MEmbedded) PostQuitMessage(0);
         break;
+      }
 
-      case WM_GETDLGCODE:
+      case WM_GETDLGCODE: {
         // we want keypresses
         result = DLGC_WANTALLKEYS;
         break;
+      }
 
-      case WM_ERASEBKGND:
+      case WM_ERASEBKGND: {
         // tell window not to erase background
         result = 1;
         break;
+      }
 
-      case WM_KEYDOWN:
+      case WM_KEYDOWN: {
         //if (MListener) MListener->on_keyDown(this,wParam,lParam);
         //k = remapKeyCode(wParam,lParam);
         on_window_key_press(wParam,lParam,0);
         break;
+      }
 
-      case WM_KEYUP:
+      case WM_KEYUP: {
         //if (MListener) MListener->on_keyUp(this,wParam,lParam);
         //k = remapKeyCode(wParam,lParam);
         on_window_key_release(wParam,lParam,0);
         break;
+      }
 
       //case WM_CHAR:
       //  break;
@@ -522,7 +534,7 @@ private: // event handler
       case WM_XBUTTONDOWN:
       case WM_LBUTTONDOWN:
       case WM_RBUTTONDOWN:
-      case WM_MBUTTONDOWN:
+      case WM_MBUTTONDOWN: {
         switch (message) {
           case WM_LBUTTONDOWN:  b = MIP_BUTTON_LEFT;   break;
           case WM_MBUTTONDOWN:  b = MIP_BUTTON_MIDDLE; break;
@@ -539,8 +551,9 @@ private: // event handler
         on_window_mouse_click(b,remapMouseKey(wParam),x,y,0);
 //        if (MFlags & s3_wf_capture) grabCursor();
         break;
+      }
 
-      case WM_MOUSEMOVE:
+      case WM_MOUSEMOVE: {
         x = short(LOWORD(lParam));
         y = short(HIWORD(lParam));
         //if (MListener) MListener->on_mouseMove(this,x,y,remapKey(wParam));
@@ -548,11 +561,12 @@ private: // event handler
         MMouseXpos = x;
         MMouseYpos = y;
         break;
+      }
 
       case WM_XBUTTONUP:
       case WM_LBUTTONUP:
       case WM_RBUTTONUP:
-      case WM_MBUTTONUP:
+      case WM_MBUTTONUP: {
         switch (message) {
           case WM_LBUTTONUP:  b = MIP_BUTTON_LEFT;   break;
           case WM_MBUTTONUP:  b = MIP_BUTTON_MIDDLE; break;
@@ -560,21 +574,22 @@ private: // event handler
           //case WM_XBUTTONUP:  b = MIP_BUTTON_s3_mb_side;   break;
           default:            b = MIP_BUTTON_NONE;   break;
         }
-
         x = short(LOWORD(lParam));
         y = short(HIWORD(lParam));
         //if (MListener) MListener->on_mouseUp(this,x,y,b,remapKey(wParam));
         on_window_mouse_release(b,remapMouseKey(wParam),x,y,0);
 //        if (MFlags&s3_wf_capture) releaseCursor();
         break;
+      }
 
-      case WM_MOUSEWHEEL:
+      case WM_MOUSEWHEEL: {
         d = GET_WHEEL_DELTA_WPARAM(wParam);
         //if (d>0) { if (MListener) MListener->on_mouseDown(this,MMouseXpos,MMouseYpos,smb_wheelUp,  smb_none); }
         //if (d<0) { if (MListener) MListener->on_mouseDown(this,MMouseXpos,MMouseYpos,smb_wheelDown,smb_none); }
         if (d > 0) { on_window_mouse_click(MIP_BUTTON_SCROLL_UP,   MIP_KEY_NONE, MMouseXpos,MMouseYpos,0); }
         if (d < 0) { on_window_mouse_click(MIP_BUTTON_SCROLL_DOWN, MIP_KEY_NONE, MMouseXpos,MMouseYpos,0); }
         break;
+      }
 
       /*
         Only windows that have the CS_DBLCLKS style can receive
@@ -585,43 +600,51 @@ private: // event handler
         WM_LBUTTONDOWN, WM_LBUTTONUP, WM_LBUTTONDBLCLK, and WM_LBUTTONUP.
       */
 
-      #ifdef S3_MOUSE_DOUBLECLICK
-      case WM_LBUTTONDBLCLK:
-      case WM_MBUTTONDBLCLK:
-      case WM_RBUTTONDBLCLK:
-      case WM_XBUTTONDBLCLK:
-        switch (message) {
-          case WM_LBUTTONDBLCLK:  b = s3_mb_left;   break;
-          case WM_MBUTTONDBLCLK:  b = s3_mb_middle; break;
-          case WM_RBUTTONDBLCLK:  b = s3_mb_right;  break;
-          case WM_XBUTTONDBLCLK:  b = s3_mb_side;   break;
-          default:                b = s3_mb_none;   //break;
-        }
-        if (b==s3_mb_side) {
-          if ((wParam & MK_XBUTTON1) != 0) b = s3_mb_backward;
-          if ((wParam & MK_XBUTTON2) != 0) b = s3_mb_forward;
-        }
-        //S3_Trace("dblclick: %i\n",b);
-        x = short(LOWORD(lParam));
-        y = short(HIWORD(lParam));
-        //x = GET_X_LPARAM(lParam);
-        //y = GET_Y_LPARAM(lParam);
-        //if (MListener) MListener->on_mouseUp(this,x,y,b,remapKey(wParam));
-        on_widgetMouseDoubleClick(this,x,y,b,remapMouseKey(wParam));
-        break;
-      #endif // S3_MOUSE_DOUBLECLICK
+//      #ifdef MIP_MOUSE_DOUBLECLICK
+//      case WM_LBUTTONDBLCLK:
+//      case WM_MBUTTONDBLCLK:
+//      case WM_RBUTTONDBLCLK:
+//      case WM_XBUTTONDBLCLK: {
+//        switch (message) {
+//          case WM_LBUTTONDBLCLK:  b = s3_mb_left;   break;
+//          case WM_MBUTTONDBLCLK:  b = s3_mb_middle; break;
+//          case WM_RBUTTONDBLCLK:  b = s3_mb_right;  break;
+//          case WM_XBUTTONDBLCLK:  b = s3_mb_side;   break;
+//          default:                b = s3_mb_none;   //break;
+//        }
+//        if (b==s3_mb_side) {
+//          if ((wParam & MK_XBUTTON1) != 0) b = s3_mb_backward;
+//          if ((wParam & MK_XBUTTON2) != 0) b = s3_mb_forward;
+//        }
+//        //S3_Trace("dblclick: %i\n",b);
+//        x = short(LOWORD(lParam));
+//        y = short(HIWORD(lParam));
+//        //x = GET_X_LPARAM(lParam);
+//        //y = GET_Y_LPARAM(lParam);
+//        //if (MListener) MListener->on_mouseUp(this,x,y,b,remapKey(wParam));
+//        on_widgetMouseDoubleClick(this,x,y,b,remapMouseKey(wParam));
+//        break;
+//      }
+//      #endif // MIP_MOUSE_DOUBLECLICK
 
       /*
         is it possible to receive a WM_PAINT when some other thread is
         drawing to the backbuffer?
       */
 
-      case WM_PAINT:
+      case WM_PAINT: {
         beginPaint();
-        rc = MIP_DRect( MWinPaintStruct.rcPaint.left,
-                        MWinPaintStruct.rcPaint.top,
-                        MWinPaintStruct.rcPaint.right -  MWinPaintStruct.rcPaint.left + 1,
-                        MWinPaintStruct.rcPaint.bottom - MWinPaintStruct.rcPaint.top + 1);
+
+        int32_t x = MWinPaintStruct.rcPaint.left;
+        int32_t y = MWinPaintStruct.rcPaint.top;
+        int32_t w = MWinPaintStruct.rcPaint.right -  MWinPaintStruct.rcPaint.left + 1;
+        int32_t h = MWinPaintStruct.rcPaint.bottom - MWinPaintStruct.rcPaint.top + 1;
+
+        //if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
+
+        //rc = MIP_DRect(x,y,w,h);
+        MIP_Print("WM_PAINT: x %i y %i w %i h %i\n",x,y,w,h);
+        on_window_paint(x,y,w,h);
 //        if (MListener) {
 //          #ifndef S3_NO_WINDOW_BACKBUFFER
 //          MListener->on_bufferBlit(this,rc);
@@ -631,8 +654,9 @@ private: // event handler
 //        }
         endPaint();
         break;
+      }
 
-      case WM_SETCURSOR:
+      case WM_SETCURSOR: {
         // called every mouse move
         if (LOWORD(lParam)==HTCLIENT) {
           SetCursor(MWinCursor);
@@ -641,8 +665,9 @@ private: // event handler
         }
         else result = DefWindowProc(hWnd,message,wParam,lParam);
         break;
+      }
 
-      case WM_SIZE:
+      case WM_SIZE: {
         w = short(LOWORD(lParam));
         h = short(HIWORD(lParam));
         //if ( (w!=MRect.w) || (h!=MRect.h) ) {
@@ -661,17 +686,20 @@ private: // event handler
 //          #endif
         }
         break;
+      }
 
-      case WM_TIMER:
+      case WM_TIMER: {
 //        if (MListener) {
 //          if (wParam==s3_ts_timer) MListener->on_windowTimer(this);
 //          if (wParam==s3_ts_idle) MListener->on_windowIdle(this);
 //        }
         break;
+      }
 
-      default:
+      default: {
         result = DefWindowProc(hWnd,message,wParam,lParam);
         break;
+      }
     }
     return result;
   }
@@ -799,56 +827,66 @@ LRESULT CALLBACK mip_win32_eventproc(HWND hWnd, UINT message, WPARAM wParam, LPA
 */
 
 class MIP_Win32WindowClass {
-  private:
-    bool     MRegistered;
-    char     MName[MIP_MAX_STRING_LENGTH];
-    ATOM     MAtom;
-    WNDCLASS MClass;
-  public:
-    MIP_Win32WindowClass() {
-      MRegistered = false;
-    }
-    ~MIP_Win32WindowClass() {
-      if (MRegistered) {
-        UnregisterClass(MName,mip_global_win32_instance);
-      }
-    }
-    char* registerClass(void) {
-      if (!MRegistered) {
-        MIP_CreateUniqueString(MName,(char*)"mip_window_",&mip_global_win32_instance);
-        memset(&MClass,0,sizeof(MClass));
-        MClass.style = CS_HREDRAW | CS_VREDRAW;// | CS_DBLCLKS;
-//        #ifdef MIP_MOUSE_DOUBLECLICK
-        MClass.style |= CS_DBLCLKS;
-//        #endif
-        MClass.lpfnWndProc    = &mip_win32_eventproc;
-        MClass.hInstance      = mip_global_win32_instance;
-        MClass.lpszClassName  = MName;
-        MAtom                 = RegisterClass(&MClass);
-        MRegistered           = true;
-      }
-      return MName;
-    }
-};
 
 //------------------------------
+private:
+//------------------------------
+
+  bool     MRegistered                  = false;
+  char     MName[MIP_MAX_STRING_LENGTH] = "mip_window_0";
+  ATOM     MAtom                        = 0;
+  WNDCLASS MClass                       = {};
+
+//------------------------------
+public:
+//------------------------------
+
+  MIP_Win32WindowClass() {
+    MRegistered = false;
+  }
+
+  //----------
+
+  ~MIP_Win32WindowClass() {
+    if (MRegistered) {
+      UnregisterClass(MName,MIP_GLOBAL_WIN32_INSTANCE);
+    }
+  }
+
+  //----------
+
+  char* registerClass(void) {
+    if (!MRegistered) {
+      MIP_CreateUniqueString(MName,(char*)"mip_window_",&MIP_GLOBAL_WIN32_INSTANCE);
+      memset(&MClass,0,sizeof(MClass));
+      MClass.style = CS_HREDRAW | CS_VREDRAW;// | CS_DBLCLKS;
+      //#ifdef MIP_MOUSE_DOUBLECLICK
+      MClass.style |= CS_DBLCLKS;
+      //#endif
+      MClass.lpfnWndProc    = &mip_win32_eventproc;
+      MClass.hInstance      = MIP_GLOBAL_WIN32_INSTANCE;
+      MClass.lpszClassName  = MName;
+      MAtom                 = RegisterClass(&MClass);
+      MRegistered           = true;
+    }
+    return MName;
+  }
+
+};
+
+//----------
 
 /*
   destructor automatically called when dll/exe unloaded
-
   it should have been hidden from user, but since we're using
   only .h files, that's a bit problematic..
 */
 
-MIP_Win32WindowClass mip_global_win32_window_class;
+MIP_Win32WindowClass MIP_GLOBAL_WIN32_WINDOW_CLASS;
 
-//----------
-
-// singleton-ish..
-
-//char* S3_Window_ClassName(void) {
-//  return s3_global_windowclass.registerClass();
-//}
+char* MIP_Win32ClassName(void) {
+  return MIP_GLOBAL_WIN32_WINDOW_CLASS.registerClass();
+}
 
 
 

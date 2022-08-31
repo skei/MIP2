@@ -61,7 +61,7 @@
 //----------
 
 //___MIP_UNUSED static
-HINSTANCE mip_global_win32_instance = 0;
+HINSTANCE MIP_GLOBAL_WIN32_INSTANCE = 0;
 
 /*
   http://msdn.microsoft.com/en-us/library/ms682583%28v=vs.85%29.aspx
@@ -79,30 +79,30 @@ HINSTANCE mip_global_win32_instance = 0;
 
 //----------
 
-/*
-  * this is called after initialization of global/static variables,
-  but before calling main/entrypoint
-*/
-
 #ifdef MIP_PLUGIN
 
   __MIP_EXTERNC
   BOOL APIENTRY
   DllMain(HINSTANCE hModule, DWORD reason, LPVOID lpReserved) {
     switch(reason) {
+
       case DLL_PROCESS_ATTACH:
-        mip_global_win32_instance = hModule;
+        MIP_GLOBAL_WIN32_INSTANCE = hModule;
         //MIP_RegisterWindowClass(&s3_global_WinInstance);
         break;
+
       //case DLL_PROCESS_DETACH:
       //  //MIP_UnregisterWindowClass();
       //  break;
+
       //case DLL_THREAD_ATTACH:
       //  break;
       //case DLL_THREAD_DETACH:
       //  break;
+
       //default:
       //  break;
+
     }
     return TRUE;
   }

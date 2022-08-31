@@ -7,11 +7,47 @@
   "..text rendering, BitBlts, AlphaBlend, TransparentBlt, and StretchBlt are all accelerated.."
 */
 
+//      GdiFlush();
+
+
 //----------------------------------------------------------------------
 
 #include "mip.h"
 #include "gui/base/mip_base_painter.h"
 #include "gui/gdi/mip_gdi.h"
+
+//----------------------------------------------------------------------
+
+// 10k * 68 = 680k
+#define MIP_PATH_MAX_LENGTH           1000
+
+#define MIP_PATH_MOVE_TO              1
+#define MIP_PATH_LINE_TO              2
+#define MIP_PATH_BEZIER_TO            3
+#define MIP_PATH_QUAD_TO              4
+#define MIP_PATH_ARC_TO               5
+
+#define MIP_PATH_ARC                  6
+#define MIP_PATH_RECT                 7
+#define MIP_PATH_ROUNDED_RECT         8
+#define MIP_PATH_ROUNDED_RECT_VARYING 9
+#define MIP_PATH_ELLIPSE              10
+#define MIP_PATH_CIRCLE               11
+
+// 4 + 8*8 = 68
+// 1000 = 68k
+
+struct MIP_PathItem {
+  uint32_t  type    = 0;
+  float     data[8] = {0};
+};
+
+typedef MIP_Array<MIP_PathItem> MIP_PathItemArray;
+
+//----------
+
+#define MIP_XCB_PAINTER_MAX_IMAGES  64
+#define MIP_XCB_PAINTER_MAX_FONTS   16
 
 //----------------------------------------------------------------------
 
@@ -24,14 +60,14 @@ private:
 
   HDC             MHandle;
 
-//  HGDIOBJ         MOldPen;
-//  HGDIOBJ         MOldBrush;
-//  HGDIOBJ         MOldFont;
-//  HGDIOBJ         MOldBitmap;
-//  HGDIOBJ         MDefaultPen;
-//  HGDIOBJ         MDefaultBrush;
-//  HGDIOBJ         MDefaultFont;
-//  HGDIOBJ         MDefaultBitmap;
+  HGDIOBJ         MOldPen;
+  HGDIOBJ         MOldBrush;
+  HGDIOBJ         MOldFont;
+  HGDIOBJ         MOldBitmap;
+  HGDIOBJ         MDefaultPen;
+  HGDIOBJ         MDefaultBrush;
+  HGDIOBJ         MDefaultFont;
+  HGDIOBJ         MDefaultBitmap;
 
   HPEN            MNullPen;
   HBRUSH          MNullBrush;
@@ -42,12 +78,71 @@ private:
   uint32_t        MSrcRasterOp;
   uint32_t        MDstRasterOp;
 
-//  S3_Pen*         MPen;
-//  S3_Brush*       MBrush;
-//  S3_Font*        MFont;
-  MIP_Color        MDrawColor; // COLORREF
-  MIP_Color        MFillColor; // COLORREF
-  MIP_Color        MTextColor; // COLORREF
+  HPEN            MPen;
+  HBRUSH          MBrush;
+  HFONT           MFont;
+  HBITMAP         MBitmap;
+
+//  MIP_Color        MDrawColor; // COLORREF
+//  MIP_Color        MFillColor; // COLORREF
+//  MIP_Color        MTextColor; // COLORREF
+
+  //
+
+//------------------------------
+protected:
+//------------------------------
+
+//  MIP_Drawable*     MSurface                  = nullptr;
+//  MIP_Drawable*     MTarget                   = nullptr;
+//
+//  xcb_connection_t* MConnection               = nullptr;
+//  xcb_visualid_t    MVisual                   = XCB_NONE;
+//  xcb_drawable_t    MDrawable                 = XCB_NONE;
+//  xcb_gcontext_t    MGC                       = XCB_NONE;
+//  //xcb_font_t        MFont                     = XCB_NONE;
+//
+//  uint32_t          MWidth                    = 0;
+//  uint32_t          MHeight                   = 0;
+//
+//  int32_t           MFontAscent               = 0;
+//  int32_t           MFontDescent              = 0;
+//  int32_t           MFontWidth                = 0;
+//  int32_t           MFontHeight               = 0;
+//  int32_t           MFontOrigin               = 0;
+//  int32_t           MFontLeft                 = 0;
+//  int32_t           MFontRight                = 0;
+//
+//  int               MShapeAntiAlias;
+//  float             MMiterLimit;
+//  int               MLineCap;
+//  int               MLineJoin;
+//  float             MGlobalAlpha;
+//
+//  MIP_Color         MStrokeColor                = MIP_Color(0);//MIP_COLOR_BLACK;
+//  MIP_PaintSource   MStrokePaint                = {};
+//  float             MStrokeWidth                = 1.0;
+//  MIP_Color         MFillColor                  = MIP_Color(1);//MIP_COLOR_WHITE;
+  MIP_PaintSource   MFillPaint                  = {};
+//  int               MFont                       = -1;
+//  MIP_Color         MFontColor                  = MIP_Color(0);//MIP_COLOR_BLACK;
+//  float             MFontSize                   = 13.0;
+
+  //
+
+  //MIP_PathItem      MPath[MIP_PATH_MAX_LENGTH]  = {};
+  MIP_PathItemArray  MPath;
+//  uint32_t          MPathLength                 = 0;
+  float             MPathXpos                   = 0.0f;
+  float             MPathYpos                   = 0.0f;
+
+  //MIP_PaintSource   MImages[MIP_XCB_PAINTER_MAX_IMAGES] = {0};
+  MIP_Bitmap*         MImages[MIP_XCB_PAINTER_MAX_IMAGES] = {0};
+
+  #ifdef MIP_XCB_USE_STB_TRUETYPE
+  stbtt_fontinfo*     MFonts[MIP_XCB_PAINTER_MAX_FONTS]   = {0};
+  #endif
+
 
 //------------------------------
 public:
@@ -55,50 +150,76 @@ public:
 
   MIP_GdiPainter(MIP_Drawable* ATarget, MIP_Drawable* ASource)
   : MIP_BasePainter(ATarget,ASource) {
-      HDC tempdc      = GetDC(0);
-      MHandle         = CreateCompatibleDC(tempdc); // CreateCompatibleDC(S3_NULL);
-      ReleaseDC(0,tempdc);
-      MDrawColor      = MIP_Color(1);
-      MFillColor      = MIP_Color(0.5);
-      MTextColor      = MIP_Color(0);
-//      MPen            = new S3_Pen();   // (MDrawColor);
-//      MBrush          = new S3_Brush(); // (MFillColor);
-//      MFont           = new S3_Font();  // ("Arial",8,MTextColor);
-//      MDefaultPen     = SelectObject(MHandle,MPen->hpen());
-//      MDefaultBrush   = SelectObject(MHandle,MBrush->hbrush());
-//      MDefaultFont    = SelectObject(MHandle,MFont->hfont());
-//      MDefaultBitmap  = SelectObject(MHandle,ADrawable->hbitmap());
-      MBlendFunc.BlendOp                = AC_SRC_OVER;
-      MBlendFunc.BlendFlags             = 0;
-      MBlendFunc.SourceConstantAlpha    = 255;          // 128;//0x7f;
-      MBlendFunc.AlphaFormat            = AC_SRC_ALPHA; // 0 =  ignore source alpha channel
-      MStretchFunc.BlendOp              = AC_SRC_OVER;
-      MStretchFunc.BlendFlags           = 0;
-      MStretchFunc.SourceConstantAlpha  = 255;          // 128;//0x7f;
-      MStretchFunc.AlphaFormat          = AC_SRC_ALPHA; // 0 =  ignore source alpha channel
-      MNullPen  = CreatePen(PS_NULL,0,0);
-      LOGBRUSH lbrush;
-      lbrush.lbStyle = BS_NULL; // BS_HATCHED, BS_HOLLOW, BS_NULL, BS_SOLID, ..
-      lbrush.lbColor = 0;       // ignored if null
-      lbrush.lbHatch = 0;       // if BS_HATCHED: HS_BDIAGONAL, HS_CROSS, HS_DIAGCROSS, HS_FDIAGONAL, HS_HORIZONTAL, HS_VERTICAL
-      MNullBrush = CreateBrushIndirect(&lbrush);
-      MSrcRasterOp = SRCCOPY;//s3_ro_src;
-      MDstRasterOp = DSTCOPY;//s3_ro_dst;
+
+    //MDrawColor      = MIP_Color(1);
+    //MFillColor      = MIP_Color(0.5);
+    //MTextColor      = MIP_Color(0);
+
+    HDC tempdc = GetDC(0);
+
+    MHandle = CreateCompatibleDC(tempdc); // CreateCompatibleDC(S3_NULL);
+    //ReleaseDC(0,tempdc);
+
+    //MPen = (HPEN)GetStockObject(DC_PEN);
+    MPen = CreatePen(PS_SOLID,1,0xff0000);
+
+    //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
+    MBrush = CreateSolidBrush(0x00ff00);
+
+    //MFont = (HFONT)GetStockObject(DC_FONT);
+    LOGFONT lfont;
+    memset(&lfont,0,sizeof(lfont));
+    strcpy(lfont.lfFaceName,"Arial");
+    lfont.lfHeight = -MulDiv(8,GetDeviceCaps(tempdc,LOGPIXELSY),72);
+    MFont = CreateFontIndirect(&lfont);
+
+    //MBitmap..
+
+    ReleaseDC(0,tempdc);
+
+    MDefaultPen = SelectObject(MHandle,MPen);
+    MDefaultBrush = SelectObject(MHandle,MBrush);
+    MDefaultFont = SelectObject(MHandle,MFont);
+    MDefaultBitmap = SelectObject(MHandle,MBitmap);
+
+    MNullPen = CreatePen(PS_NULL,0,0);
+
+    LOGBRUSH lbrush;
+    lbrush.lbStyle = BS_NULL; // BS_HATCHED, BS_HOLLOW, BS_NULL, BS_SOLID, ..
+    lbrush.lbColor = 0;       // ignored if null
+    lbrush.lbHatch = 0;       // if BS_HATCHED: HS_BDIAGONAL, HS_CROSS, HS_DIAGCROSS, HS_FDIAGONAL, HS_HORIZONTAL, HS_VERTICAL
+    MNullBrush = CreateBrushIndirect(&lbrush);
+
+    MBlendFunc.BlendOp = AC_SRC_OVER;
+    MBlendFunc.BlendFlags = 0;
+    MBlendFunc.SourceConstantAlpha = 255;          // 128;//0x7f;
+    MBlendFunc.AlphaFormat = AC_SRC_ALPHA; // 0 =  ignore source alpha channel
+
+    MStretchFunc.BlendOp = AC_SRC_OVER;
+    MStretchFunc.BlendFlags = 0;
+    MStretchFunc.SourceConstantAlpha = 255;          // 128;//0x7f;
+    MStretchFunc.AlphaFormat = AC_SRC_ALPHA; // 0 =  ignore source alpha channel
+
+    MSrcRasterOp = SRCCOPY;//s3_ro_src;
+    MDstRasterOp = DSTCOPY;//s3_ro_dst;
+
   }
 
   //----------
 
   virtual ~MIP_GdiPainter() {
-//      SelectObject(MHandle,MDefaultPen);
-//      SelectObject(MHandle,MDefaultBrush);
-//      SelectObject(MHandle,MDefaultFont);
-//      SelectObject(MHandle,MDefaultBitmap);
-      DeleteObject(MNullPen);
-      DeleteObject(MNullBrush);
-//      delete MPen;
-//      delete MBrush;
-//      delete MFont;
-//      DeleteDC(MHandle);
+    SelectObject(MHandle,MDefaultPen);
+    SelectObject(MHandle,MDefaultBrush);
+    SelectObject(MHandle,MDefaultFont);
+    //SelectObject(MHandle,MDefaultBitmap);
+    DeleteObject(MNullPen);
+    DeleteObject(MNullBrush);
+    // It is not necessary (but it is not harmful) to delete stock objects by
+    // calling DeleteObject.
+    DeleteObject(MPen);
+    DeleteObject(MBrush);
+    DeleteObject(MFont);
+    DeleteDC(MHandle);
   }
 
 //------------------------------
@@ -111,8 +232,13 @@ public:
 public:
 //------------------------------
 
-  void      beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {}
-  void      endPaint() override {}
+  void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    MIP_PRINT;
+  }
+
+  void endPaint() override {
+    MIP_PRINT;
+  }
 
   //------------------------------
   // clipping
@@ -182,6 +308,7 @@ public:
 //  }
 
   void setClip(MIP_DRect ARect) override {
+    MIP_PRINT;
     HRGN rgn = CreateRectRgn(
       ARect.x,//AX1,
       ARect.y,//AY1,
@@ -197,63 +324,105 @@ public:
   // To remove a device-context's clipping region, specify a NULL region handle.
 
   void resetClip() override {
+    MIP_PRINT;
     SelectClipRgn(MHandle,nullptr);
   }
 
   //----------
 
-  void      pushClip(MIP_DRect ARect) override {}
-  void      pushOverlapClip(MIP_DRect ARect) override {}
-
-  MIP_DRect popClip() override { return MIP_DRect(); }
-  void      resetClipStack() override {}
-  void      setClipRect(MIP_DRect ARect) override {}
-  MIP_DRect getClipRect() override { return MIP_DRect(); }
-
 //------------------------------
 public:
 //------------------------------
+
+//  void      pushClip(MIP_DRect ARect) override {}
+//  void      pushOverlapClip(MIP_DRect ARect) override {}
+//  MIP_DRect popClip() override { return MIP_DRect(); }
+//  void      resetClipStack() override {}
+//  void      setClipRect(MIP_DRect ARect) override {}
+//  MIP_DRect getClipRect() override { return MIP_DRect(); }
 
   //void resize(uint32_t AWidth, uint32_t AHeight) override {}
-  void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {}
-  void triangle( double x1, double y1, double x2, double y2, double x3, double y3) override {}
-  void rectangle(MIP_DRect r) override {}
-  void ellipse(MIP_DRect r) override {}
+
+//  void drawTextBox(MIP_DRect ARect, const char* AText, uint32_t AAlignment, MIP_Color AColor) override {}
+//  void triangle( double x1, double y1, double x2, double y2, double x3, double y3) override {}
+//  void rectangle(MIP_DRect r) override {}
+//  void ellipse(MIP_DRect r) override {}
 
 //------------------------------
 public:
 //------------------------------
 
-  void beginFrame(float windowWidth, float windowHeight, float devicePixelRatio) override {}
-  void cancelFrame() override {}
-  void endFrame() override {}
+  void beginFrame(float windowWidth, float windowHeight, float devicePixelRatio) override {
+    MIP_PRINT;
+  }
+
+  void cancelFrame() override {
+  }
+
+  void endFrame() override {
+    MIP_PRINT;
+  }
 
   // Composite operation
 
-  void globalCompositeOperation(int op) override {}
-  void globalCompositeBlendFunc(int sfactor, int dfactor) override {}
-  void globalCompositeBlendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) override {}
+  void globalCompositeOperation(int op) override {
+  }
+
+  void globalCompositeBlendFunc(int sfactor, int dfactor) override {
+  }
+
+  void globalCompositeBlendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha) override {
+  }
 
   // State Handling
 
-  void save() override {}
-  void restore() override {}
-  void reset() override {}
+  void save() override {
+  }
+
+  void restore() override {
+  }
+
+  void reset() override {
+  }
 
   // Render styles
 
-  void shapeAntiAlias(int enabled) override {}
-  void strokeColor(MIP_Color color) override {}
-  void strokePaint(MIP_PaintSource paint) override {}
-  //void strokePaint(int paint) override {}
-  void fillColor(MIP_Color color) override {}
-  void fillPaint(MIP_PaintSource paint) override {}
-  //void fillPaint(int paint) override {}
-  void miterLimit(float limit) override {}
-  void strokeWidth(float size) override {}
-  void lineCap(int cap) override {}
-  void lineJoin(int join) override {}
-  void globalAlpha(float alpha) override {}
+  void shapeAntiAlias(int enabled) override {
+    //MShapeAntiAlias = enabled;
+  }
+
+  void strokeColor(MIP_Color color) override {
+    MIP_PRINT;
+    //MDrawColor = color;
+    SetDCPenColor(MHandle,MIP_RGBA(color));
+  }
+
+  void strokePaint(MIP_PaintSource paint) override {
+  }
+
+  void fillColor(MIP_Color color) override {
+    MIP_PRINT;
+    SetDCBrushColor(MHandle,MIP_RGBA(color));
+  }
+
+  void fillPaint(MIP_PaintSource paint) override {
+    MFillPaint = paint;
+  }
+
+  void miterLimit(float limit) override {
+  }
+
+  void strokeWidth(float size) override {
+  }
+
+  void lineCap(int cap) override {
+  }
+
+  void lineJoin(int join) override {
+  }
+
+  void globalAlpha(float alpha) override {
+  }
 
   // Transforms
 
@@ -300,24 +469,435 @@ public:
   void intersectScissor(float x, float y, float w, float h) override {}
   void resetScissor() override {}
 
-  // Paths
+//  // Paths
+//
+//  void beginPath() override {}
+//  void moveTo(float x, float y) override {}
+//  void lineTo(float x, float y) override {}
+//  void bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) override {}
+//  void quadTo(float cx, float cy, float x, float y) override {}
+//  void arcTo(float x1, float y1, float x2, float y2, float radius) override {}
+//  void closePath() override {}
+//  void pathWinding(int dir) override {}
+//  void arc(float cx, float cy, float r, float a0, float a1, int dir) override {}
+//  void rect(float x, float y, float w, float h) override {}
+//  void roundedRect(float x, float y, float w, float h, float r) override {}
+//  void roundedRectVarying(float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft) override {}
+//  void ellipse(float cx, float cy, float rx, float ry) override {}
+//  void circle(float cx, float cy, float r) override {}
+//  void fill() override {}
+//  void stroke() override {}
 
-  void beginPath() override {}
-  void moveTo(float x, float y) override {}
-  void lineTo(float x, float y) override {}
-  void bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) override {}
-  void quadTo(float cx, float cy, float x, float y) override {}
-  void arcTo(float x1, float y1, float x2, float y2, float radius) override {}
-  void closePath() override {}
-  void pathWinding(int dir) override {}
-  void arc(float cx, float cy, float r, float a0, float a1, int dir) override {}
-  void rect(float x, float y, float w, float h) override {}
-  void roundedRect(float x, float y, float w, float h, float r) override {}
-  void roundedRectVarying(float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft) override {}
-  void ellipse(float cx, float cy, float rx, float ry) override {}
-  void circle(float cx, float cy, float r) override {}
-  void fill() override {}
-  void stroke() override {}
+  //--------------------
+  // Paths
+  //--------------------
+
+  void beginPath() override {
+    MIP_PRINT;
+    //MPathLength = 0;
+    //MFillPaint = {};//
+    MPath.clear(false);
+  }
+
+  //----------
+
+  void moveTo(float x, float y) override {
+    MIP_PRINT;
+    MIP_PathItem item;
+    item.type = MIP_PATH_MOVE_TO;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void lineTo(float x, float y) override {
+    MIP_PRINT;
+    MIP_PathItem item;
+    item.type = MIP_PATH_LINE_TO;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) override {
+    MIP_PathItem item;
+    item.type = MIP_PATH_BEZIER_TO;
+    item.data[0]  = c1x;
+    item.data[1]  = c1y;
+    item.data[2]  = c2y;
+    item.data[3]  = c2y;
+    item.data[4]  = x;
+    item.data[5]  = y;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void quadTo(float cx, float cy, float x, float y) override {
+    MIP_PathItem item;
+    item.type = MIP_PATH_QUAD_TO;
+    item.data[0]  = cx;
+    item.data[1]  = cy;
+    item.data[2]  = x;
+    item.data[3]  = y;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void arcTo(float x1, float y1, float x2, float y2, float radius) override {
+    MIP_PathItem item;
+    item.type = MIP_PATH_ARC_TO;
+    item.data[0]  = x1;
+    item.data[1]  = y1;
+    item.data[2]  = x2;
+    item.data[3]  = y2;
+    item.data[4]  = radius;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void closePath() override {
+  }
+
+  //----------
+
+  void pathWinding(int dir) override {
+  }
+
+  //----------
+
+  void arc(float cx, float cy, float r, float a0, float a1, int dir) override {
+    MIP_PathItem item;
+    item.type = MIP_PATH_ARC;
+    item.data[0]  = cx;
+    item.data[1]  = cy;
+    item.data[2]  = r;
+    item.data[3]  = a0;
+    item.data[4]  = a1;
+    item.data[5]  = dir;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void rect(float x, float y, float w, float h) override {
+    MIP_PRINT;
+    MIP_PathItem item;
+    item.type = MIP_PATH_RECT;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    item.data[2]  = w;
+    item.data[3]  = h;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void roundedRect(float x, float y, float w, float h, float r) override {
+    MIP_PRINT;
+    MIP_PathItem item;
+    item.type = MIP_PATH_ROUNDED_RECT;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    item.data[2]  = w;
+    item.data[3]  = h;
+    item.data[4]  = r;
+    MPath.append(item);
+
+  }
+
+  //----------
+
+  void roundedRectVarying(float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft) override {
+    MIP_PRINT;
+    MIP_PathItem item;
+    item.type = MIP_PATH_ROUNDED_RECT_VARYING;
+    item.data[0]  = x;
+    item.data[1]  = y;
+    item.data[2]  = w;
+    item.data[3]  = h;
+    item.data[4]  = radTopLeft;
+    item.data[5]  = radTopRight;
+    item.data[6]  = radBottomRight;
+    item.data[7]  = radBottomLeft;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void ellipse(float cx, float cy, float rx, float ry) override {
+    MIP_PathItem item;
+    item.type = MIP_PATH_ELLIPSE;
+    item.data[0]  = cx;
+    item.data[1]  = cy;
+    item.data[2]  = rx;
+    item.data[3]  = ry;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void circle(float cx, float cy, float r) override {
+    MIP_PathItem item;
+    item.type = MIP_PATH_CIRCLE;
+    item.data[0]  = cx;
+    item.data[1]  = cy;
+    item.data[2]  = r;
+    MPath.append(item);
+  }
+
+  //----------
+
+  void fill() override {
+    MIP_PRINT;
+
+    for (uint32_t i=0; i<MPath.size(); i++) {
+      switch (MPath[i].type) {
+
+        case MIP_PATH_MOVE_TO: {
+          MPathXpos = MPath[i].data[0];
+          MPathYpos = MPath[i].data[1];
+          break;
+        }
+
+        case MIP_PATH_LINE_TO: {
+          //..
+          MPathXpos = MPath[i].data[0];
+          MPathYpos = MPath[i].data[1];
+          break;
+        }
+
+        case MIP_PATH_BEZIER_TO: {
+          break;
+        }
+
+        case MIP_PATH_QUAD_TO: {
+          break;
+        }
+
+        case MIP_PATH_ARC_TO: {
+          break;
+        }
+
+        case MIP_PATH_ARC: {
+          break;
+        }
+
+        case MIP_PATH_RECT: {
+          //if (MFillPaint.image >= 0) {
+          //}
+          //else {
+          RECT R;
+          R.left    = MPath[i].data[0];
+          R.top     = MPath[i].data[1];
+          R.right   = MPath[i].data[0] + MPath[i].data[2] + 1;
+          R.bottom  = MPath[i].data[1] + MPath[i].data[3] + 1;
+          //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
+          //FillRect(MHandle,&R,brush);
+          FillRect(MHandle,&R,MBrush);
+          //Rectangle(mDC,aX1,aY1,aX2,aY2);
+
+          break;
+        }
+
+        case MIP_PATH_ROUNDED_RECT: {
+
+          //TODO:
+          RECT R;
+          R.left    = MPath[i].data[0];
+          R.top     = MPath[i].data[1];
+          R.right   = MPath[i].data[0] + MPath[i].data[2] + 1;
+          R.bottom  = MPath[i].data[1] + MPath[i].data[3] + 1;
+          //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
+          //FillRect(MHandle,&R,brush);
+          FillRect(MHandle,&R,MBrush);
+          //Rectangle(mDC,aX1,aY1,aX2,aY2);
+
+//          //float r   = MPath[i].data[4];// - 1;
+//          //float r2  = r * 2;
+//          //float AX1 = MPath[MPathLength].data[0];
+//          //float AY1 = MPath[MPathLength].data[0];
+//          //float AX2 = MPath[MPathLength].data[0] + MPath[MPathLength].data[2];
+//          //float AY2 = MPath[MPathLength].data[0] + MPath[MPathLength].data[2];
+//          //fillArc(       MIP_FRect(AX1-1,  AY1-1,   AX1+r2,   AY1+r2),   0.75, 0.25, AColor ); // upper left
+//          //fillArc(       MIP_FRect(AX2-r2, AY1-1,   AX2,      AY1+r2-1), 0.00, 0.25, AColor ); // upper right
+//          //fillArc(       MIP_FRect(AX1-1,  AY2-r2,  AX1+r2-1, AY2),      0.50, 0.25, AColor ); // lower left
+//          //fillArc(       MIP_FRect(AX2-r2, AY2-r2,  AX2,      AY2),      0.25, 0.25, AColor ); // lower right
+//          //fillRectangle( MIP_FRect(AX1+r,  AY1,     AX2-r,    AY1+r-1), AColor );  // top
+//          //fillRectangle( MIP_FRect(AX1,    AY1+r,   AX2,      AY2-r),   AColor );  // mid
+//          //fillRectangle( MIP_FRect(AX1+r,  AY2-r+1, AX2-r,    AY2),     AColor );  // bot
+          break;
+        }
+
+        case MIP_PATH_ROUNDED_RECT_VARYING: {
+
+          //TODO:
+          RECT R;
+          R.left    = MPath[i].data[0];
+          R.top     = MPath[i].data[1];
+          R.right   = MPath[i].data[0] + MPath[i].data[2] + 1;
+          R.bottom  = MPath[i].data[1] + MPath[i].data[3] + 1;
+          //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
+          //FillRect(MHandle,&R,brush);
+          FillRect(MHandle,&R,MBrush);
+          //Rectangle(mDC,aX1,aY1,aX2,aY2);
+        }
+
+        case MIP_PATH_ELLIPSE: {
+          //    set_color(AColor);
+          //    xcb_arc_t arcs[] = {
+          //      (int16_t)ARect.x,
+          //      (int16_t)ARect.y,
+          //      (uint16_t)ARect.w, // +1,
+          //      (uint16_t)ARect.h, // +1,
+          //      (int16_t)(0),
+          //      (int16_t)(360 * 64)
+          //    };
+          //    xcb_poly_fill_arc(MConnection, MDrawable, MGC, 1, arcs );
+          break;
+        }
+
+        case MIP_PATH_CIRCLE: {
+          break;
+        }
+
+      }
+    }
+    //MPathLength = 0;
+    MPath.clear(false);
+  }
+
+  //----------
+
+  void stroke() override {
+    MIP_PRINT;
+    //MIP_Print("MPathLength: %i\n",MPathLength);
+
+    for (uint32_t i=0; i<MPath.size(); i++) {
+      switch (MPath[i].type) {
+
+        case MIP_PATH_MOVE_TO: {
+          MPathXpos = MPath[i].data[0];
+          MPathYpos = MPath[i].data[1];
+          break;
+        }
+
+        case MIP_PATH_LINE_TO: {
+//          xcb_point_t polyline[] =  {
+//            (int16_t)MPathXpos, (int16_t)MPathYpos,
+//            (int16_t)MPath[i].data[0], (int16_t)MPath[i].data[1],
+//          };
+//          xcb_poly_line(MConnection,XCB_COORD_MODE_ORIGIN,MDrawable,MGC,2,polyline);
+          MPathXpos = MPath[i].data[0];
+          MPathYpos = MPath[i].data[1];
+          break;
+        }
+
+        case MIP_PATH_BEZIER_TO: {
+          break;
+        }
+
+        case MIP_PATH_QUAD_TO: {
+          break;
+        }
+
+        case MIP_PATH_ARC_TO: {
+          break;
+        }
+
+        case MIP_PATH_ARC: {
+//          float a1 = MIP_PI2 - MPath[i].data[3];
+//          float a2 = - MPath[i].data[4];
+//          float x  = MPath[i].data[0] - MPath[i].data[2];
+//          float y  = MPath[i].data[1] - MPath[i].data[2];
+//          float w  = MPath[i].data[2] * 2.0;
+//          float h  = MPath[i].data[2] * 2.0;
+//          xcb_arc_t arcs[] = {
+//            (int16_t)x,
+//            (int16_t)y,
+//            (uint16_t)w,
+//            (uint16_t)h,
+//            (int16_t)(a1 * 360.0f * 64.0f * MIP_INVPI2),
+//            (int16_t)(a2 * 360.0f * 64.0f * MIP_INVPI2)
+//          };
+//          xcb_poly_arc(MConnection, MDrawable, MGC, 1, arcs );
+          break;
+        }
+
+        case MIP_PATH_RECT: {
+          //TODO
+          float x = MPath[i].data[0];
+          float y = MPath[i].data[1];
+          float w = MPath[i].data[2];
+          float h = MPath[i].data[3];
+          Rectangle(MHandle,x,y,x+w+1,y+h+1);
+          break;
+        }
+
+        case MIP_PATH_ROUNDED_RECT: {
+          //TODO
+          float x = MPath[i].data[0];
+          float y = MPath[i].data[1];
+          float w = MPath[i].data[2];
+          float h = MPath[i].data[3];
+          Rectangle(MHandle,x,y,x+w+1,y+h+1);
+          break;
+          //    float r  = ARadius;// - 1;
+          //    float r2 = r*2;
+          //    float AX1 = ARect.x;
+          //    float AY1 = ARect.y;
+          //    float AX2 = ARect.x2();
+          //    float AY2 = ARect.y2();
+          //    drawArc(  MIP_FRect(AX1,      AY1,      AX1+r2-2, AY1+r2-3), 0.75, 0.25, AColor, AWidth ); // upper left
+          //    drawArc(  MIP_FRect(AX2-r2+1, AY1,      AX2-1,    AY1+r2-2), 0.00, 0.25, AColor, AWidth ); // upper right
+          //    drawArc(  MIP_FRect(AX1,      AY2-r2+1, AX1+r2-2, AY2-1),    0.50, 0.25, AColor, AWidth ); // lower left
+          //    drawArc(  MIP_FRect(AX2-r2+1, AY2-r2+2, AX2-1,    AY2-1),    0.25, 0.25, AColor, AWidth ); // lower right
+          //    drawLine( AX1+r,    AY1,      AX2-r,    AY1,   AColor, AWidth );  // top
+          //    drawLine( AX1+r,    AY2,      AX2-r,    AY2,   AColor, AWidth );  // bottom
+          //    drawLine( AX1,      AY1+r,    AX1,      AY2-r, AColor, AWidth );  // left
+          //    drawLine( AX2,      AY1+r,    AX2,      AY2-r, AColor, AWidth );  // right
+        }
+
+        case MIP_PATH_ROUNDED_RECT_VARYING: {
+          //TODO
+          float x = MPath[i].data[0];
+          float y = MPath[i].data[1];
+          float w = MPath[i].data[2];
+          float h = MPath[i].data[3];
+          Rectangle(MHandle,x,y,x+w+1,y+h+1);
+          break;
+        }
+
+        case MIP_PATH_ELLIPSE: {
+          //    set_color(AColor);
+          //    set_line_width(AWidth);
+          //    xcb_arc_t arcs[] = {
+          //      (int16_t)ARect.x,
+          //      (int16_t)ARect.y,
+          //      (uint16_t)ARect.w, // +1
+          //      (uint16_t)ARect.h, // +1
+          //      0,
+          //      360 * 64
+          //    };
+          //    xcb_poly_arc(MConnection, MDrawable, MGC, 1, arcs );
+          break;
+        }
+
+        case MIP_PATH_CIRCLE: {
+          break;
+        }
+
+      }
+    }
+    //MPathLength = 0;
+    MPath.clear(false);
+  }
 
   // Text
 
@@ -346,12 +926,158 @@ public:
   void textMetrics(float* ascender, float* descender, float* lineh) override {}
   int textBreakLines(const char* string, const char* end, float breakRowWidth, /*NVGtextRow*/void* rows, int maxRows) override { return 0; }
 
+//------------------------------
+private:
+//------------------------------
+
+  /*
+
+  // APen = nullptr -> invisible pen
+
+  void _select_pen(S3_Pen* APen, bool ARemember=true) {
+    HGDIOBJ old;
+    if (APen) {
+      MDrawColor = APen->penColor();
+      old = SelectObject(MHandle,APen->hpen());
+    }
+    else {
+      old = SelectObject(MHandle,MNullPen);
+    }
+    if (ARemember) MOldPen = old;
+  }
+
+  void _reset_pen(void) {
+    SelectObject(MHandle,MOldPen);
+  }
+
+  //----------
+
+  // ABrush = S3_NULL -> invisible brush
+
+  void _select_brush(S3_Brush* ABrush, bool ARemember=true) {
+    HGDIOBJ old;
+    if (ABrush) {
+      MFillColor = ABrush->brushColor();
+      old = SelectObject(MHandle,ABrush->hbrush());
+    }
+    else {
+      old = SelectObject(MHandle,MNullBrush);
+    }
+    if (ARemember) MOldBrush = old;
+  }
+
+  void _reset_brush(void) {
+    SelectObject(MHandle,MOldBrush);
+  }
+
+  //----------
+
+  void _select_font(S3_Font* AFont, bool ARemember=true) {
+    MTextColor = AFont->textColor();
+    if (ARemember) {
+      MOldFont = SelectObject(MHandle,AFont->hfont());
+    }
+    else {
+      SelectObject(MHandle,AFont->hfont());
+    }
+  }
+
+  void _reset_font(void) {
+    SelectObject(MHandle,MOldFont);
+  }
+
+  //----------
+
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/dd162957%28v=vs.85%29.aspx
+  // Bitmaps can only be selected into memory DC's. A single bitmap cannot be
+  // selected into more than one DC at the same time.
+
+  void _select_drawable(S3_Drawable* ADrawable, bool ARemember=true) {
+    HBITMAP hbitmap = ADrawable->hbitmap();
+    if (hbitmap) {
+      if (ARemember) MOldBitmap = SelectObject(MHandle,hbitmap);
+      else SelectObject(MHandle,hbitmap);
+    }
+  }
+
+  void _reset_drawable(void) {
+    SelectObject(MHandle,MOldBitmap);
+  }
+
+  */
+
+  //------------------------------
+  // get/set
+  //------------------------------
+
+  public:
+
+    /*
+      SetDCPenColor function sets the current device context (DC) pen color to
+      the specified color value.
+      If the function succeeds, the return value specifies the previous DC pen
+      color as a COLORREF value. If the function fails, the return value is
+      CLR_INVALID.
+      The function returns the previous DC_PEN color, even if the stock pen
+      DC_PEN is not selected in the DC; however, this will not be used in
+      drawing operations until the stock DC_PEN is selected in the DC.
+      The GetStockObject function with an argument of DC_BRUSH or DC_PEN can be
+      used interchangeably with the SetDCPenColor and SetDCBrushColor
+      functions.
+    */
+
+//    void setDrawColor(S3_Color AColor) {
+//      MDrawColor = AColor;
+//      SetDCPenColor(MHandle,S3_RGB(MDrawColor));
+//    }
+//
+//    //----------
+//
+//    void setFillColor(S3_Color AColor) {
+//      MFillColor = AColor;
+//      SetDCBrushColor(MHandle,S3_RGB(MFillColor));
+//    }
+//
+//    //----------
+//
+//    void setTextColor(S3_Color AColor) {
+//      MTextColor = AColor;
+//      SetTextColor(MHandle,S3_RGB(MTextColor));
+//    }
+
+    //----------
+
+    //void setTextSize(int32 ASize) {
+    //  LOGFONT lfont;
+    //  HFONT font = (HFONT)GetCurrentObject(MHandle,OBJ_FONT);
+    //  GetObject(font,sizeof(LOGFONT),&lfont);
+    //  lfont.lfHeight = -MulDiv(ASize,GetDeviceCaps(MHandle,LOGPIXELSY),72);
+    //  if (MFont) DeleteObject(MFont);
+    //  MFont = CreateFontIndirect(&lfont);
+    //  SelectObject(MHandle,MFont);
+    //}
+
+    //----------
+
+    int32_t _get_text_width(const char* AText) {
+      SIZE S;
+      GetTextExtentPoint32(MHandle,AText,strlen(AText),&S);
+      return S.cx;
+    }
+
+    //----------
+
+    int32_t _get_text_height(const char* AText) {
+      SIZE S;
+      GetTextExtentPoint32(MHandle,AText,strlen(AText),&S);
+      return S.cy;
+    }
+
+
 };
 
 //----------------------------------------------------------------------
 #endif
-
-
 
 
 
@@ -511,6 +1237,7 @@ const uint32 s3_win32_rasterops[] = {
 
 
 
+// qwe
 
 
 
@@ -519,178 +1246,7 @@ const uint32 s3_win32_rasterops[] = {
 
 
 
-    virtual // S3_Painter_Base
-    void flush(void) {
-      GdiFlush();
-    }
 
-  //------------------------------
-  // select/reset
-  //------------------------------
-
-  public:
-
-    // APen = S3_NULL -> invisible pen
-
-    virtual // S3_Painter_Base
-    void selectPen(S3_Pen* APen, bool ARemember=true) {
-      HGDIOBJ old;
-      if (APen) {
-        MDrawColor = APen->penColor();
-        old = SelectObject(MHandle,APen->hpen());
-      }
-      else {
-        old = SelectObject(MHandle,MNullPen);
-      }
-      if (ARemember) MOldPen = old;
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void resetPen(void) {
-      SelectObject(MHandle,MOldPen);
-    }
-
-    //----------
-
-    // ABrush = S3_NULL -> invisible brush
-
-    virtual // S3_Painter_Base
-    void selectBrush(S3_Brush* ABrush, bool ARemember=true) {
-      HGDIOBJ old;
-      if (ABrush) {
-        MFillColor = ABrush->brushColor();
-        old = SelectObject(MHandle,ABrush->hbrush());
-      }
-      else {
-        old = SelectObject(MHandle,MNullBrush);
-      }
-      if (ARemember) MOldBrush = old;
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void resetBrush(void) {
-      SelectObject(MHandle,MOldBrush);
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void selectFont(S3_Font* AFont, bool ARemember=true) {
-      MTextColor = AFont->textColor();
-      if (ARemember) {
-        MOldFont = SelectObject(MHandle,AFont->hfont());
-      }
-      else {
-        SelectObject(MHandle,AFont->hfont());
-      }
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void resetFont(void) {
-      SelectObject(MHandle,MOldFont);
-    }
-
-    //----------
-
-    /*
-      https://msdn.microsoft.com/en-us/library/windows/desktop/dd162957%28v=vs.85%29.aspx
-      Bitmaps can only be selected into memory DC's. A single bitmap cannot be
-      selected into more than one DC at the same time.
-    */
-
-    virtual // S3_Painter_Base
-    void selectDrawable(S3_Drawable* ADrawable, bool ARemember=true) {
-      HBITMAP hbitmap = ADrawable->hbitmap();
-      if (hbitmap) {
-        if (ARemember) MOldBitmap = SelectObject(MHandle,hbitmap);
-        else SelectObject(MHandle,hbitmap);
-      }
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void resetDrawable(void) {
-      SelectObject(MHandle,MOldBitmap);
-    }
-
-  //------------------------------
-  // get/set
-  //------------------------------
-
-  public:
-
-    /*
-      SetDCPenColor function sets the current device context (DC) pen color to
-      the specified color value.
-      If the function succeeds, the return value specifies the previous DC pen
-      color as a COLORREF value. If the function fails, the return value is
-      CLR_INVALID.
-      The function returns the previous DC_PEN color, even if the stock pen
-      DC_PEN is not selected in the DC; however, this will not be used in
-      drawing operations until the stock DC_PEN is selected in the DC.
-      The GetStockObject function with an argument of DC_BRUSH or DC_PEN can be
-      used interchangeably with the SetDCPenColor and SetDCBrushColor
-      functions.
-    */
-
-    virtual // S3_Painter_Base
-    void setDrawColor(S3_Color AColor) {
-      MDrawColor = AColor;
-      SetDCPenColor(MHandle,S3_RGB(MDrawColor));
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void setFillColor(S3_Color AColor) {
-      MFillColor = AColor;
-      SetDCBrushColor(MHandle,S3_RGB(MFillColor));
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void setTextColor(S3_Color AColor) {
-      MTextColor = AColor;
-      SetTextColor(MHandle,S3_RGB(MTextColor));
-    }
-
-    //----------
-
-    //void setTextSize(int32 ASize) {
-    //  LOGFONT lfont;
-    //  HFONT font = (HFONT)GetCurrentObject(MHandle,OBJ_FONT);
-    //  GetObject(font,sizeof(LOGFONT),&lfont);
-    //  lfont.lfHeight = -MulDiv(ASize,GetDeviceCaps(MHandle,LOGPIXELSY),72);
-    //  if (MFont) DeleteObject(MFont);
-    //  MFont = CreateFontIndirect(&lfont);
-    //  SelectObject(MHandle,MFont);
-    //}
-
-    //----------
-
-    virtual // S3_Painter_Base
-    int32 getTextWidth(const char* AText) {
-      SIZE S;
-      GetTextExtentPoint32(MHandle,AText,S3_Strlen(AText),&S);
-      return S.cx;
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    int32 getTextHeight(const char* AText) {
-      SIZE S;
-      GetTextExtentPoint32(MHandle,AText,S3_Strlen(AText),&S);
-      return S.cy;
-    }
 
   //------------------------------
   // shapes
@@ -1083,24 +1639,6 @@ const uint32 s3_win32_rasterops[] = {
 
 
 };
-
-//-----
-
-/*
-  don't call virtual functions in constructor..
-  ADrawable->hbitmap(), used in selectDrawable is virtual..
-
-  The reason is that C++ objects are constructed like onions, from the inside
-  out. Super-classes are constructed before derived classes. So, before a B can
-  be made, an A must be made. When A's constructor is called, it's not a B yet,
-  so the virtual function table still has the entry for A's copy of fn().
-
-  During base class construction, virtual functions never go down into derived
-  classes. Instead, the object behaves as if it were of the base type.
-  Informally speaking, during base class construction, virtual functions
-  aren't.
-
-*/
 
 
 #endif // 0

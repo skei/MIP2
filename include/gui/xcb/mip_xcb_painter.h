@@ -99,7 +99,6 @@ protected:
 
   //MIP_PathItem      MPath[MIP_PATH_MAX_LENGTH]  = {};
   MIP_PathItemArray  MPath;
-
   uint32_t          MPathLength                 = 0;
   float             MPathXpos                   = 0.0f;
   float             MPathYpos                   = 0.0f;
@@ -491,19 +490,11 @@ public:
     item.data[0]  = x;
     item.data[1]  = y;
     MPath.append(item);
-    //MPath[MPathLength].type     = MIP_PATH_MOVE_TO;
-    //MPath[MPathLength].data[0]  = x;
-    //MPath[MPathLength].data[1]  = y;
-    //MPathLength += 1;
   }
 
   //----------
 
   void lineTo(float x, float y) override {
-    //MPath[MPathLength].type     = MIP_PATH_LINE_TO;
-    //MPath[MPathLength].data[0]  = x;
-    //MPath[MPathLength].data[1]  = y;
-    //MPathLength += 1;
     MIP_PathItem item;
     item.type = MIP_PATH_LINE_TO;
     item.data[0]  = x;
@@ -514,14 +505,6 @@ public:
   //----------
 
   void bezierTo(float c1x, float c1y, float c2x, float c2y, float x, float y) override {
-    //MPath[MPathLength].type     = MIP_PATH_BEZIER_TO;
-    //MPath[MPathLength].data[0]  = c1x;
-    //MPath[MPathLength].data[1]  = c1y;
-    //MPath[MPathLength].data[2]  = c2x;
-    //MPath[MPathLength].data[3]  = c2y;
-    //MPath[MPathLength].data[4]  = x;
-    //MPath[MPathLength].data[5]  = y;
-    //MPathLength += 1;
     MIP_PathItem item;
     item.type = MIP_PATH_BEZIER_TO;
     item.data[0]  = c1x;
@@ -536,12 +519,6 @@ public:
   //----------
 
   void quadTo(float cx, float cy, float x, float y) override {
-    //MPath[MPathLength].type     = MIP_PATH_QUAD_TO;
-    //MPath[MPathLength].data[0]  = cx;
-    //MPath[MPathLength].data[1]  = cy;
-    //MPath[MPathLength].data[2]  = x;
-    //MPath[MPathLength].data[3]  = y;
-    //MPathLength += 1;
     MIP_PathItem item;
     item.type = MIP_PATH_QUAD_TO;
     item.data[0]  = cx;
@@ -554,13 +531,6 @@ public:
   //----------
 
   void arcTo(float x1, float y1, float x2, float y2, float radius) override {
-    //MPath[MPathLength].type     = MIP_PATH_ARC_TO;
-    //MPath[MPathLength].data[0]  = x1;
-    //MPath[MPathLength].data[1]  = y1;
-    //MPath[MPathLength].data[2]  = x2;
-    //MPath[MPathLength].data[3]  = y2;
-    //MPath[MPathLength].data[4]  = radius;
-    //MPathLength += 1;
     MIP_PathItem item;
     item.type = MIP_PATH_ARC_TO;
     item.data[0]  = x1;
@@ -584,14 +554,6 @@ public:
   //----------
 
   void arc(float cx, float cy, float r, float a0, float a1, int dir) override {
-    //MPath[MPathLength].type     = MIP_PATH_ARC;
-    //MPath[MPathLength].data[0]  = cx;
-    //MPath[MPathLength].data[1]  = cy;
-    //MPath[MPathLength].data[2]  = r;
-    //MPath[MPathLength].data[3]  = a0;
-    //MPath[MPathLength].data[4]  = a1;
-    //MPath[MPathLength].data[5]  = dir;
-    //MPathLength += 1;
     MIP_PathItem item;
     item.type = MIP_PATH_ARC;
     item.data[0]  = cx;
@@ -606,12 +568,6 @@ public:
   //----------
 
   void rect(float x, float y, float w, float h) override {
-    //MPath[MPathLength].type     = MIP_PATH_RECT;
-    //MPath[MPathLength].data[0]  = x;
-    //MPath[MPathLength].data[1]  = y;
-    //MPath[MPathLength].data[2]  = w;
-    //MPath[MPathLength].data[3]  = h;
-    //MPathLength += 1;
     MIP_PathItem item;
     item.type = MIP_PATH_RECT;
     item.data[0]  = x;
@@ -624,13 +580,6 @@ public:
   //----------
 
   void roundedRect(float x, float y, float w, float h, float r) override {
-    //MPath[MPathLength].type     = MIP_PATH_ROUNDED_RECT;
-    //MPath[MPathLength].data[0]  = x;
-    //MPath[MPathLength].data[1]  = y;
-    //MPath[MPathLength].data[2]  = w;
-    //MPath[MPathLength].data[3]  = h;
-    //MPath[MPathLength].data[4]  = r;
-    //MPathLength += 1;
     MIP_PathItem item;
     item.type = MIP_PATH_ROUNDED_RECT;
     item.data[0]  = x;
@@ -645,16 +594,6 @@ public:
   //----------
 
   void roundedRectVarying(float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft) override {
-    //MPath[MPathLength].type     = MIP_PATH_ROUNDED_RECT_VARYING;
-    //MPath[MPathLength].data[0]  = x;
-    //MPath[MPathLength].data[1]  = y;
-    //MPath[MPathLength].data[2]  = w;
-    //MPath[MPathLength].data[3]  = h;
-    //MPath[MPathLength].data[4]  = radTopLeft;
-    //MPath[MPathLength].data[5]  = radTopRight;
-    //MPath[MPathLength].data[6]  = radBottomRight;
-    //MPath[MPathLength].data[7]  = radBottomLeft;
-    //MPathLength += 1;
     MIP_PathItem item;
     item.type = MIP_PATH_ROUNDED_RECT_VARYING;
     item.data[0]  = x;
@@ -671,11 +610,6 @@ public:
   //----------
 
   void ellipse(float cx, float cy, float rx, float ry) override {
-    //MPath[MPathLength].type     = MIP_PATH_ELLIPSE;
-    //MPath[MPathLength].data[0]  = cx;
-    //MPath[MPathLength].data[1]  = cy;
-    //MPath[MPathLength].data[2]  = rx;
-    //MPath[MPathLength].data[3]  = ry;
     MIP_PathItem item;
     item.type = MIP_PATH_ELLIPSE;
     item.data[0]  = cx;
@@ -688,10 +622,6 @@ public:
   //----------
 
   void circle(float cx, float cy, float r) override {
-    //MPath[MPathLength].type     = MIP_PATH_CIRCLE;
-    //MPath[MPathLength].data[0]  = cx;
-    //MPath[MPathLength].data[1]  = cy;
-    //MPath[MPathLength].data[2]  = r;
     MIP_PathItem item;
     item.type = MIP_PATH_CIRCLE;
     item.data[0]  = cx;
@@ -703,7 +633,6 @@ public:
   //----------
 
   void fill() override {
-    //for (uint32_t i=0; i<MPathLength; i++) {
     for (uint32_t i=0; i<MPath.size(); i++) {
       switch (MPath[i].type) {
 
@@ -874,7 +803,6 @@ public:
 
   void stroke() override {
     //MIP_Print("MPathLength: %i\n",MPathLength);
-    //for (uint32_t i=0; i<MPathLength; i++) {
 
     for (uint32_t i=0; i<MPath.size(); i++) {
       switch (MPath[i].type) {
