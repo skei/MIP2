@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1662050372 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../build/test/test_layout.cpp"
+1662060456 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/plugins/gain.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
@@ -348,7 +348,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 
-1662052553 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1662052701 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_window.h"
 	"gui/xcb/mip_xcb.h"
@@ -753,7 +753,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
 
-1662052596 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1662056865 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_widget.h"
@@ -829,7 +829,7 @@
 	"gui/mip_theme.h"
 	"gui/mip_widget.h"
 
-1662040786 /DISKS/sda2/code/git/MIP2/include/gui/base/mip_base_window.h
+1662056808 /DISKS/sda2/code/git/MIP2/include/gui/base/mip_base_window.h
 	"mip.h"
 	"gui/mip_drawable.h"
 
@@ -1198,7 +1198,7 @@
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
 
-1661297028 /DISKS/sda2/code/git/MIP2/source/plugins/gain.cpp
+1662060524 /DISKS/sda2/code/git/MIP2/source/plugins/gain.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
@@ -1539,7 +1539,7 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1662052568 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
+1662052781 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
@@ -1701,7 +1701,7 @@
 	"gui/base/mip_base_painter.h"
 	"gui/mip_drawable.h"
 
-1662050323 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi_painter.h
+1662055218 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi_painter.h
 	"mip.h"
 	"gui/base/mip_base_painter.h"
 	"gui/gdi/mip_gdi.h"
@@ -1726,7 +1726,7 @@
 	"extern/stb/stb_truetype.h"
 	"../data/fonts/liberation_ttf.h"
 
-1662048343 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32_window.h
+1662059060 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32_window.h
 	"mip.h"
 	"gui/base/mip_base_window.h"
 	"gui/win32/mip_win32.h"
@@ -1760,7 +1760,7 @@
 	"plugin/exe/mip_exe.h"
 	"gui/mip_window.h"
 
-1662049732 /DISKS/sda2/code/git/MIP2/build/test/test_win32.cpp
+1662059176 /DISKS/sda2/code/git/MIP2/build/test/test_win32.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"gui/widgets/mip_widgets.h"

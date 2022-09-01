@@ -4,7 +4,7 @@
 //  #define MIP_DEBUG_PRINT_SOCKET
 //#endif
 
-//#define MIP_EXECUTABLE_SHARED_LIBRARY
+#define MIP_EXECUTABLE_SHARED_LIBRARY
 //-Wl,-e,entry_point
 
 //----------
@@ -42,7 +42,11 @@ const clap_plugin_descriptor_t template_descriptor = {
   .clap_version  = CLAP_VERSION,
   .id            = "me/test_layout/0",
   #ifdef MIP_DEBUG
-  .name          = "test_layout (debug)",
+    #ifdef MIP_EXECUTABLE_SHARED_LIBRARY
+      .name      = "test_layout (exec.so)",
+    #else
+      .name      = "test_layout (debug)",
+    #endif
   #else
   .name          = "test_layout",
   #endif

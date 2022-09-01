@@ -17,7 +17,8 @@ int main() {
 
     MIP_PanelWidget* panel1 = new MIP_PanelWidget(MIP_DRect(10,10,200,100));
     panel1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    panel1->setBackgroundColor(MIP_COLOR_WHITE);
+    panel1->setFillBackground(true);
+    panel1->setBackgroundColor(MIP_COLOR_RED);
 
     window->appendChildWidget(panel1);
 

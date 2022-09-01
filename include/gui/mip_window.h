@@ -86,15 +86,15 @@ protected:
 public:
 //------------------------------
 
-  MIP_Window(uint32_t AWidth, uint32_t AHeight)
-  : MIP_ImplementedWindow(AWidth,AHeight)
-  , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
-    setup(AWidth,AHeight);
-  }
+//  MIP_Window(uint32_t AWidth, uint32_t AHeight)
+//  : MIP_ImplementedWindow(AWidth,AHeight)
+//  , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
+//    setup(AWidth,AHeight);
+//  }
 
   //----------
 
-  MIP_Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
+  MIP_Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent=0)
   : MIP_ImplementedWindow(AWidth,AHeight,AParent)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
     setup(AWidth,AHeight);

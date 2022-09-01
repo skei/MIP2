@@ -65,29 +65,29 @@ private:
 
   HDC             MHandle         = nullptr;
 
-  HPEN            MPenHandle      = nullptr;
-  HBRUSH          MBrushHandle    = nullptr;
-  HFONT           MFontHandle     = nullptr;
-  HBITMAP         MBitmapHandle   = nullptr;
-
-  HGDIOBJ         MDefaultPen     = nullptr;
-  HGDIOBJ         MDefaultBrush   = nullptr;
-  HGDIOBJ         MDefaultFont    = nullptr;
-  HGDIOBJ         MDefaultBitmap  = nullptr;
+//  HPEN            MPenHandle      = nullptr;
+//  HBRUSH          MBrushHandle    = nullptr;
+//  HFONT           MFontHandle     = nullptr;
+//  HBITMAP         MBitmapHandle   = nullptr;
+//
+//  HGDIOBJ         MDefaultPen     = nullptr;
+//  HGDIOBJ         MDefaultBrush   = nullptr;
+//  HGDIOBJ         MDefaultFont    = nullptr;
+//  HGDIOBJ         MDefaultBitmap  = nullptr;
 
 //  HGDIOBJ         MOldPen         = nullptr;
 //  HGDIOBJ         MOldBrush       = nullptr;
 //  HGDIOBJ         MOldFont        = nullptr;
 //  HGDIOBJ         MOldBitmap      = nullptr;
 
-  HPEN            MNullPen = nullptr;
-  HBRUSH          MNullBrush    = nullptr;
-
-  uint32_t        MSrcRasterOp = SRCCOPY;
-  uint32_t        MDstRasterOp = DSTCOPY;
-
-  BLENDFUNCTION   MBlendFunc    = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
-  BLENDFUNCTION   MStretchFunc  = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
+//  HPEN            MNullPen = nullptr;
+//  HBRUSH          MNullBrush    = nullptr;
+//
+//  uint32_t        MSrcRasterOp = SRCCOPY;
+//  uint32_t        MDstRasterOp = DSTCOPY;
+//
+//  BLENDFUNCTION   MBlendFunc    = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
+//  BLENDFUNCTION   MStretchFunc  = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
 
 //------------------------------
 private:
@@ -159,32 +159,32 @@ public:
     if (need_cleanup) cleanup();
     MHandle = AHandle;
 
-    //MPen = (HPEN)GetStockObject(DC_PEN);
-    MPenHandle = CreatePen(PS_SOLID,1,0x000000);
-    MDefaultPen = SelectObject(MHandle,MPenHandle);
+//    //MPen = (HPEN)GetStockObject(DC_PEN);
+//    MPenHandle = CreatePen(PS_SOLID,1,0x000000);
+//    MDefaultPen = SelectObject(MHandle,MPenHandle);
 
-    MNullPen = CreatePen(PS_NULL,0,0);
+//    //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
+//    MBrushHandle = CreateSolidBrush(0x808080);
+//    MDefaultBrush = SelectObject(MHandle,MBrushHandle);
 
-    //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
-    MBrushHandle = CreateSolidBrush(0x808080);
-    MDefaultBrush = SelectObject(MHandle,MBrushHandle);
-
-    LOGBRUSH lbrush;
-    lbrush.lbStyle = BS_NULL; // BS_HATCHED, BS_HOLLOW, BS_NULL, BS_SOLID, ..
-    lbrush.lbColor = 0;       // ignored if null
-    lbrush.lbHatch = 0;       // if BS_HATCHED: HS_BDIAGONAL, HS_CROSS, HS_DIAGCROSS, HS_FDIAGONAL, HS_HORIZONTAL, HS_VERTICAL
-    MNullBrush = CreateBrushIndirect(&lbrush);
-
-    //MFont = (HFONT)GetStockObject(DC_FONT);
-    LOGFONT lfont;
-    memset(&lfont,0,sizeof(lfont));
-    strcpy(lfont.lfFaceName,"Arial");
-    lfont.lfHeight = -MulDiv(8,GetDeviceCaps(MHandle,LOGPIXELSY),72);
-    MFontHandle = CreateFontIndirect(&lfont);
-    MDefaultFont = SelectObject(MHandle,MFontHandle);
+//    //MFont = (HFONT)GetStockObject(DC_FONT);
+//    LOGFONT lfont;
+//    memset(&lfont,0,sizeof(lfont));
+//    strcpy(lfont.lfFaceName,"Arial");
+//    lfont.lfHeight = -MulDiv(8,GetDeviceCaps(MHandle,LOGPIXELSY),72);
+//    MFontHandle = CreateFontIndirect(&lfont);
+//    MDefaultFont = SelectObject(MHandle,MFontHandle);
 
     //TODO: MBitmap..
     //MDefaultBitmap = SelectObject(AHandle,MBitmapHandle);
+
+//    MNullPen = CreatePen(PS_NULL,0,0);
+//
+//    LOGBRUSH lbrush;
+//    lbrush.lbStyle = BS_NULL; // BS_HATCHED, BS_HOLLOW, BS_NULL, BS_SOLID, ..
+//    lbrush.lbColor = 0;       // ignored if null
+//    lbrush.lbHatch = 0;       // if BS_HATCHED: HS_BDIAGONAL, HS_CROSS, HS_DIAGCROSS, HS_FDIAGONAL, HS_HORIZONTAL, HS_VERTICAL
+//    MNullBrush = CreateBrushIndirect(&lbrush);
 
     need_cleanup = true;
   }
@@ -202,13 +202,17 @@ public:
       //SelectObject(MHandle,MDefaultBitmap);
       // It is not necessary (but it is not harmful) to delete stock objects
       // by scalling DeleteObject.
-      DeleteObject(MPenHandle);
-      DeleteObject(MBrushHandle);
-      DeleteObject(MFontHandle);
+//      DeleteObject(MPenHandle);
+//      DeleteObject(MBrushHandle);
+//      DeleteObject(MFontHandle);
       //DeleteObject(MBitmapHandle);
-      DeleteObject(MNullPen);
-      DeleteObject(MNullBrush);
-      DeleteDC(MHandle);
+//      DeleteObject(MNullPen);
+//      DeleteObject(MNullBrush);
+
+
+      //DeleteDC(MHandle);
+
+
     }
     need_cleanup = false;
   }
@@ -696,11 +700,12 @@ public: // paths
         case MIP_PATH_MOVE_TO: {
           MPathXpos = MPath[i].data[0];
           MPathYpos = MPath[i].data[1];
+          MoveToEx(MHandle,MPathXpos,MPathYpos,0);
           break;
         }
 
         case MIP_PATH_LINE_TO: {
-          //..
+          LineTo(MHandle,MPath[i].data[0],MPath[i].data[1]);
           MPathXpos = MPath[i].data[0];
           MPathYpos = MPath[i].data[1];
           break;
@@ -730,18 +735,20 @@ public: // paths
 
         case MIP_PATH_RECT: {
           //if (MFillPaint.image >= 0) {
+          //  // fill with bitmap..
           //}
           //else {
-          RECT R;
-          R.left    = MPath[i].data[0];
-          R.top     = MPath[i].data[1];
-          R.right   = MPath[i].data[0] + MPath[i].data[2] + 1;
-          R.bottom  = MPath[i].data[1] + MPath[i].data[3] + 1;
-          //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
-          //FillRect(MHandle,&R,brush);
-          //FillRect(MHandle,&R,MBrushHandle);
-          Rectangle(MHandle,R.left,R.top,R.right,R.bottom);
-          //Rectangle(mDC,aX1,aY1,aX2,aY2);
+            RECT R;
+            R.left    = MPath[i].data[0];
+            R.top     = MPath[i].data[1];
+            R.right   = MPath[i].data[0] + MPath[i].data[2] + 1;
+            R.bottom  = MPath[i].data[1] + MPath[i].data[3] + 1;
+            //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
+            //FillRect(MHandle,&R,brush);
+            //FillRect(MHandle,&R,MBrushHandle);
+            Rectangle(MHandle,R.left,R.top,R.right,R.bottom);
+            //Rectangle(mDC,aX1,aY1,aX2,aY2);
+          //}
 
           break;
         }
@@ -810,10 +817,12 @@ public: // paths
         case MIP_PATH_MOVE_TO: {
           MPathXpos = MPath[i].data[0];
           MPathYpos = MPath[i].data[1];
+          MoveToEx(MHandle,MPathXpos,MPathYpos,0);
           break;
         }
 
         case MIP_PATH_LINE_TO: {
+          LineTo(MHandle,MPath[i].data[0],MPath[i].data[1]);
           MPathXpos = MPath[i].data[0];
           MPathYpos = MPath[i].data[1];
           break;

@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="exe release">
-				<Option output="../bin/build" prefix_auto="0" extension_auto="0" />
+				<Option output="../bin/build_linux" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -43,7 +43,7 @@
 				</Linker>
 			</Target>
 			<Target title="exe debug">
-				<Option output="../bin/build_debug" prefix_auto="0" extension_auto="0" />
+				<Option output="../bin/build_debug_linux" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -79,7 +79,7 @@
 				</Linker>
 			</Target>
 			<Target title="exe sanitize">
-				<Option output="../bin/build_sanitize" prefix_auto="0" extension_auto="0" />
+				<Option output="../bin/build_sanitize_linux" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -117,7 +117,7 @@
 				</Linker>
 			</Target>
 			<Target title="plugin release">
-				<Option output="../bin/build.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
+				<Option output="../bin/build_linux.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/release/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -151,7 +151,7 @@
 				</Linker>
 			</Target>
 			<Target title="plugin debug">
-				<Option output="../bin/build_debug.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
+				<Option output="../bin/build_debug_linux.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -187,7 +187,7 @@
 				</Linker>
 			</Target>
 			<Target title="plugin sanitize">
-				<Option output="../bin/build_sanitize.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
+				<Option output="../bin/build_sanitize_linux.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -225,7 +225,7 @@
 				</Linker>
 			</Target>
 			<Target title="exec.so debug">
-				<Option output="../bin/build_debug_exec.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
+				<Option output="../bin/build_debug_exec_linux.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/debug/" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -262,6 +262,31 @@
 					<Add library="sndfile" />
 				</Linker>
 			</Target>
+			<Target title="win32 exe debug">
+				<Option output="../bin/build_debug_win.exe" prefix_auto="0" extension_auto="0" />
+				<Option object_output="obj/debug/" />
+				<Option type="1" />
+				<Option compiler="mingw" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-fno-pie" />
+					<Add option="-Wl,--export-all-symbols" />
+					<Add option="-Wl,-Bsymbolic" />
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-DMIP_EXE" />
+					<Add option="-DMIP_DEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
+					<Add option="-no-pie" />
+					<Add option="-Wl,--export-all-symbols" />
+					<Add library="pthread" />
+					<Add library="m" />
+					<Add library="gdi32" />
+				</Linker>
+			</Target>
 			<Target title="win32 plugin debug">
 				<Option output="../bin/build_debug_win.clap" imp_lib="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).a" def_file="$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).def" prefix_auto="0" extension_auto="0" />
 				<Option object_output="obj/debug/" />
@@ -278,36 +303,13 @@
 					<Add option="-DMIP_DEBUG" />
 				</Compiler>
 				<Linker>
+					<Add option="-static-libstdc++" />
+					<Add option="-static-libgcc" />
 					<Add option="-fPIE" />
 					<Add option="-Wl,--export-all-symbols" />
-					<Add option="-static-libstdc++" />
-					<Add option="-static-libgcc" />
 					<Add library="pthread" />
 					<Add library="m" />
-				</Linker>
-			</Target>
-			<Target title="win32 exe debug">
-				<Option output="../bin/build_debug_win32.exe" prefix_auto="0" extension_auto="0" />
-				<Option object_output="obj/debug/" />
-				<Option type="1" />
-				<Option compiler="mingw" />
-				<Compiler>
-					<Add option="-g" />
-					<Add option="-fno-pie" />
-					<Add option="-Wl,--export-all-symbols" />
-					<Add option="-Wl,-Bsymbolic" />
-					<Add option="-static-libstdc++" />
-					<Add option="-static-libgcc" />
-					<Add option="-DMIP_EXE" />
-					<Add option="-DMIP_DEBUG" />
-				</Compiler>
-				<Linker>
-					<Add option="-no-pie" />
-					<Add option="-Wl,--export-all-symbols" />
-					<Add option="-static-libstdc++" />
-					<Add option="-static-libgcc" />
-					<Add library="pthread" />
-					<Add library="m" />
+					<Add library="gdi32" />
 				</Linker>
 			</Target>
 		</Build>
@@ -494,12 +496,6 @@
 		<Unit filename="../include/gui/cairo/mip_cairo.h" />
 		<Unit filename="../include/gui/cairo/mip_cairo_painter.h" />
 		<Unit filename="../include/gui/cairo/mip_cairo_utils.h" />
-		<Unit filename="../include/gui/gdi/backup/s3_brush_gdi.h" />
-		<Unit filename="../include/gui/gdi/backup/s3_font_gdi.h" />
-		<Unit filename="../include/gui/gdi/backup/s3_image_gdi.h" />
-		<Unit filename="../include/gui/gdi/backup/s3_painter_gdi.h" />
-		<Unit filename="../include/gui/gdi/backup/s3_pen_gdi.h" />
-		<Unit filename="../include/gui/gdi/backup/s3_surface_gdi.h" />
 		<Unit filename="../include/gui/gdi/mip_gdi.h" />
 		<Unit filename="../include/gui/gdi/mip_gdi_painter.h" />
 		<Unit filename="../include/gui/gdi/mip_gdi_surface.h" />
@@ -563,8 +559,6 @@
 		<Unit filename="../include/gui/widgets/mip_widgets.h" />
 		<Unit filename="../include/gui/widgets/mip_xy_pad_widget.h" />
 		<Unit filename="../include/gui/widgets/template.h" />
-		<Unit filename="../include/gui/win32/backup/s3_win32.h" />
-		<Unit filename="../include/gui/win32/backup/s3_window_win32.h" />
 		<Unit filename="../include/gui/win32/mip_win32.h" />
 		<Unit filename="../include/gui/win32/mip_win32_utils.h" />
 		<Unit filename="../include/gui/win32/mip_win32_window.h" />
@@ -591,6 +585,7 @@
 		<Unit filename="../include/plugin/ladspa/mip_ladspa_plugin.h" />
 		<Unit filename="../include/plugin/mip_audio_port.h" />
 		<Unit filename="../include/plugin/mip_editor.h" />
+		<Unit filename="../include/plugin/mip_editor_window.h" />
 		<Unit filename="../include/plugin/mip_note_port.h" />
 		<Unit filename="../include/plugin/mip_parameter.h" />
 		<Unit filename="../include/plugin/mip_plugin.h" />
@@ -686,6 +681,10 @@
 		<Unit filename="../tools/dump_ttl.sh" />
 		<Unit filename="build.cpp" />
 		<Unit filename="test/test_layout.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="test/test_win32.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>

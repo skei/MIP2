@@ -1,8 +1,13 @@
 
 // the 'hello world!' of plugin development..
 
-#define MIP_GUI_XCB
-#define MIP_PAINTER_NANOVG
+#ifdef __gnu_linux__
+  #define MIP_GUI_XCB
+  #define MIP_PAINTER_NANOVG
+#else
+  #define MIP_GUI_WIN32
+  #define MIP_PAINTER_GDI
+#endif
 
 #ifndef MIP_EXE
   #define MIP_DEBUG_PRINT_SOCKET
@@ -118,13 +123,14 @@ public: // gui
 
     //MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
     MIP_Plugin::gui_create(api,is_floating);
+    MIP_Window* window = MEditor->getWindow();
 
-    MEditor->setWindowFillBackground(false);
+    //MEditor->setWindowFillBackground(false);
 
     MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(), MIP_COLOR_GRAY );
     background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     background->Layout.border = MIP_DRect(10,10,10,10);
-    MEditor->appendChildWidget(background);
+    window->appendChildWidget(background);
 
     MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(1,1), "Gain", 0.0 );
     gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
