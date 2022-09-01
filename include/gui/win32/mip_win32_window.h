@@ -98,7 +98,8 @@ public:
 
   //MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
   MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
-  : MIP_BaseWindow() {
+  : MIP_BaseWindow(AWidth,AHeight,AParent) {
+
 
     MWindowTitle = "MIP_Win32Window";
     //
@@ -108,71 +109,14 @@ public:
     MCurrentCursor = -1;
     setMouseCursor(MIP_CURSOR_DEFAULT);
 
-    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
-
-//    //if (AEmbedded) {
-//    if (AParent != 0) {
-
+    if (AParent == 0) {
+      MEmbedded = false;
+      MWinHandle = createWindow(AWidth,AHeight,"MIP_Win32Window");
+    }
+    else {
       MEmbedded = true;
-      AdjustWindowRectEx(&rc,WS_POPUP,FALSE,WS_EX_TOOLWINDOW);
-      int32_t x = rc.left;
-      int32_t y = rc.top;
-      int32_t w = rc.right - rc.left + 1;
-      int32_t h = rc.bottom - rc.top + 1;
-      MAdjustedWidth = w - AWidth;
-      MAdjustedHeight = h - AHeight;
-
-      MWinHandle = CreateWindowEx(
-        0, //WS_EX_TOOLWINDOW,
-        //kode_global_WinClassName,
-        MIP_Win32ClassName(),
-        0,
-        //WS_CHILD + WS_VISIBLE, //WS_POPUP,
-        WS_POPUP + WS_VISIBLE,
-        x,              //rc.left,
-        y,              //rc.top,
-        w,              //rc.right-rc.left+1, // +2 ??
-        h,              //rc.bottom-rc.top+1, // +2 ??
-        HWND(AParent),  // Hint: Conversion between ordinals and pointers is not portable,
-        0,
-        MIP_GLOBAL_WIN32_INSTANCE,
-        0
-      );
-      //reparent(AParent);
-
-//    }
-//
-//    else {
-//
-//      MEmbedded = false;
-//
-//      AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
-//      int32_t wx = ((GetSystemMetrics(SM_CXSCREEN)-AWidth) >> 1) + rc.left;
-//      int32_t wy = ((GetSystemMetrics(SM_CYSCREEN)-AHeight) >> 1) + rc.top;
-//      int32_t x = wx;
-//      int32_t y = wy;
-//      int32_t w = rc.right-rc.left+1;
-//      int32_t h = rc.bottom-rc.top+1;
-//      MAdjustedWidth = w - AWidth;
-//      MAdjustedHeight = h - AHeight;
-//
-//      MWinHandle = CreateWindowEx(
-//        WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
-//        MIP_Win32ClassName(),     // lpClassName
-//        MWindowTitle,                     // lpWindowName
-//        WS_OVERLAPPEDWINDOW,        // dwStyle
-//        x,                          // center x
-//        y,                          // center y
-//        w,                          // wWidth
-//        h,                          // wHeight
-//        0,                          // hWndParent
-//        0,                          // hMenu
-//        MIP_GLOBAL_WIN32_INSTANCE,  // hInstance
-//        0                           // lpParam
-//      );
-//      SetFocus(MWinHandle);
-//
-//    } // embedded
+      MWinHandle = createEmbeddedWindow(AWidth,AHeight,AParent);
+    }
 
     SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
   }
@@ -221,7 +165,7 @@ public: // drawable
   uint32_t            drawable_getHeight()         final { return MWindowHeight; }
   uint32_t            drawable_getDepth()          final { return MScreenDepth; }
 
-  //xcb_connection_t*   drawable_getXcbConnection()  final { return MConnection; }
+  HWND                drawable_getWin32Window()    final { return MWinHandle; }
   //xcb_visualid_t      drawable_getXcbVisual()      final { return MScreenVisual; }
   //xcb_drawable_t      drawable_getXcbDrawable()    final { return MWindow; }
   //xcb_window_t        drawable_getXcbWindow()      final { return MWindow; }
@@ -761,6 +705,85 @@ private: // event handler
 //------------------------------
 private:
 //------------------------------
+
+  HWND createWindow(int32_t AWidth, int32_t AHeight, const char* ATitle) {
+    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
+    AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
+    int32_t wx = ((GetSystemMetrics(SM_CXSCREEN) - AWidth ) >> 1) + rc.left;
+    int32_t wy = ((GetSystemMetrics(SM_CYSCREEN) - AHeight) >> 1) + rc.top;
+    int32_t x = wx;
+    int32_t y = wy;
+    int32_t w = rc.right - rc.left + 1;
+    int32_t h = rc.bottom - rc.top + 1;
+    MAdjustedWidth = w - AWidth;
+    MAdjustedHeight = h - AHeight;
+    HWND handle = CreateWindowEx(
+      WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
+      MIP_Win32ClassName(),       // lpClassName
+      ATitle,                     // lpWindowName
+      WS_OVERLAPPEDWINDOW,        // dwStyle
+      x,                          // center x
+      y,                          // center y
+      w,                          // wWidth
+      h,                          // wHeight
+      0,                          // hWndParent
+      0,                          // hMenu
+      MIP_GLOBAL_WIN32_INSTANCE,  // hInstance
+      0                           // lpParam
+    );
+    SetFocus(handle);
+    return handle;
+  }
+
+  //----------
+
+  HWND createEmbeddedWindow(int32_t AWidth, int32_t AHeight, intptr_t AParent) {
+    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
+    AdjustWindowRectEx(&rc,WS_POPUP,FALSE,WS_EX_TOOLWINDOW);
+    int32_t x = rc.left;
+    int32_t y = rc.top;
+    int32_t w = rc.right - rc.left + 1;
+    int32_t h = rc.bottom - rc.top + 1;
+    MAdjustedWidth = w - AWidth;
+    MAdjustedHeight = h - AHeight;
+    HWND handle = CreateWindowEx(
+      0, //WS_EX_TOOLWINDOW,
+      //kode_global_WinClassName,
+      MIP_Win32ClassName(),
+      0,
+      //WS_CHILD + WS_VISIBLE, //WS_POPUP,
+      WS_POPUP + WS_VISIBLE,
+      x,              //rc.left,
+      y,              //rc.top,
+      w,              //rc.right-rc.left+1, // +2 ??
+      h,              //rc.bottom-rc.top+1, // +2 ??
+      HWND(AParent),  // Hint: Conversion between ordinals and pointers is not portable,
+      0,
+      MIP_GLOBAL_WIN32_INSTANCE,
+      0
+    );
+    return handle;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /*
 

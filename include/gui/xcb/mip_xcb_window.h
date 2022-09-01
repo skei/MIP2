@@ -115,7 +115,8 @@ public:
 //------------------------------
 
   //MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
-  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, intptr_t AParent) {
+  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
+  : MIP_BaseWindow(AWidth,AHeight,AParent) {
 
     //MWindowListener = this;
 

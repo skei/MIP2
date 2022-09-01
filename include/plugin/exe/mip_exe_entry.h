@@ -41,7 +41,9 @@
 */
 
 int main(int argc, char** argv, char** env) {
-  //MIP_PRINT;
+
+  MIP_PRINT;
+
   //MIP_REGISTRY.getNumDescriptors();
   uint32_t index = 0; //TODO: arg[1] select index
 
@@ -81,47 +83,60 @@ int main(int argc, char** argv, char** env) {
             //MIP_Print("gui: %p\n",gui);
             if (gui) {
 
+              #ifdef MIP_LINUX
               if (gui->is_api_supported(clap_plugin,CLAP_WINDOW_API_X11,false)) {
-                //MIP_Print("X11, not floating - supported\n");
                 gui->create(clap_plugin,CLAP_WINDOW_API_X11,false);
-                //MIP_PRINT;
+              #endif
+
+              #ifdef MIP_WIN32
+              if (gui->is_api_supported(clap_plugin,CLAP_WINDOW_API_WIN32,false)) {
+                gui->create(clap_plugin,CLAP_WINDOW_API_WIN32,false);
+              #endif
+
                 gui->set_scale(clap_plugin,1.0);
-                //MIP_PRINT;
+
                 //bool can_resize = gui->can_resize(clap_plugin);
                 //if (can_resize) {
 
                 // plugin->MEditorWidth/Height
                 uint32_t width, height;
                 gui->get_size(clap_plugin,&width,&height);
-                //MIP_PRINT;
+
                 //}
                 //else {
                 //}
+
                 //gui->set_size(clap_plugin,width,height);
 
                 MIP_ExeWindow* exe_window = new MIP_ExeWindow(width,height,clap_plugin,gui);
-                //MIP_Print("exe_window: %p\n",exe_window);
                 if (exe_window) {
+
                   exe_window->openWindow();
 
                   #ifdef MIP_LINUX
-                  xcb_window_t xcb_window = exe_window->drawable_getXcbWindow();
-                  //MIP_Print("xcb_window: %p\n",xcb_window);
-                  clap_window_t clap_window;
-                  clap_window.api = CLAP_WINDOW_API_X11;
-                  clap_window.x11 = xcb_window;
-                  gui->set_parent(clap_plugin,&clap_window);
+                    xcb_window_t xcb_window = exe_window->drawable_getXcbWindow();
+                    clap_window_t clap_window;
+                    clap_window.api = CLAP_WINDOW_API_X11;
+                    clap_window.x11 = xcb_window;
+                    gui->set_parent(clap_plugin,&clap_window);
+                  #endif
+
+                  #ifdef MIP_WIN32
+                    HWND win32_window = exe_window->drawable_getWin32Window();
+                    clap_window_t clap_window;
+                    clap_window.api = CLAP_WINDOW_API_WIN32;
+                    clap_window.win32 = win32_window;
+                    gui->set_parent(clap_plugin,&clap_window);
+                  #endif
+
                   gui->show(clap_plugin);
-                  //redraw..
+                  //redraw?
                   gui->set_size(clap_plugin,width,height);
                   exe_window->eventLoop();
                   gui->hide(clap_plugin);
                   gui->destroy(clap_plugin);
                   exe_window->closeWindow();
                   delete exe_window;
-                  #endif
-                  #ifdef MIP_WIN32
-                  #endif
                 }
               }
             }

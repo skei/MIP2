@@ -4,12 +4,20 @@
 
 #include "mip.h"
 
+#ifdef MIP_USE_GDI
+  #include "gui/gdi/mip_gdi.h"
+#endif
+
 #ifdef MIP_USE_GLX
   #include "gui/glx/mip_glx.h"
 #endif
 
 #ifdef MIP_USE_NANOVG
   #include "gui/nanovg/mip_nanovg.h"
+#endif
+
+#ifdef MIP_USE_WIN32
+  #include "gui/win32/mip_win32.h"
 #endif
 
 #ifdef MIP_USE_XCB
@@ -44,6 +52,10 @@ public:
   //#endif
 
   #ifdef MIP_USE_NANOVG
+  #endif
+
+  #ifdef MIP_USE_WIN32
+    virtual HWND              drawable_getWin32Window()   { return nullptr; }
   #endif
 
   #ifdef MIP_USE_XCB

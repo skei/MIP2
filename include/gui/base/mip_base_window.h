@@ -31,7 +31,7 @@ protected:
 public:
 //------------------------------
 
-  MIP_BaseWindow() {
+  MIP_BaseWindow(uint32_t AWidth, uint32_t AHeight, intptr_t AParent) {
   }
 
   //----------

@@ -42,7 +42,7 @@ protected:
 //------------------------------
 
   MIP_EditorListener* MEditorListener = nullptr;
-  MIP_EditorWindow*   MWindow         = nullptr;
+  MIP_EditorWindow*   MEditorWindow         = nullptr;
   uint32_t            MEditorWidth    = 200;
   uint32_t            MEditorHeight   = 100;
   intptr_t            MParent         = 100;
@@ -64,15 +64,15 @@ public:
     MEditorHeight = AHeight;
     MInitialWidth = AWidth;
     MInitialHeight = AHeight;
-    MWindow = new MIP_EditorWindow(this,AWidth,AHeight,AParent);
-    MWindow->setWidgetSize(AWidth,AHeight);
+    MEditorWindow = new MIP_EditorWindow(this,AWidth,AHeight,AParent);
+    MEditorWindow->setWidgetSize(AWidth,AHeight);
   }
 
   //----------
 
   virtual ~MIP_Editor() {
-    if (MWindow && MIsEditorOpen) {
-      MWindow->hide();
+    if (MEditorWindow && MIsEditorOpen) {
+      MEditorWindow->hide();
     }
   }
 
@@ -81,7 +81,7 @@ public:
 //------------------------------
 
   MIP_Window* getWindow() {
-    return MWindow;
+    return MEditorWindow;
   }
 
 //------------------------------
@@ -194,8 +194,8 @@ public: // clap gui
     MEditorWidth = width;
     MEditorHeight = height;
 
-    if (MWindow) {
-      MWindow->setWindowSize(width,height);
+    if (MEditorWindow) {
+      MEditorWindow->setWindowSize(width,height);
       //double xscale = (double)width / MInitialWidth;
       //double yscale = (double)height / MInitialHeight;
       //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
@@ -203,12 +203,12 @@ public: // clap gui
       // hack.. the modual stuff should have been in the wndoow class..
       // but there were/are some issues getting resize events..
       //if (MModalWidget) MModalWidget->on_widget_unmodal();
-      MWindow->unmodal();
+      MEditorWindow->unmodal();
 
       //MIP_Window::on_window_resize(width,height);
-      MWindow->setWidgetSize(width,height);
+      MEditorWindow->setWidgetSize(width,height);
 
-      MWindow->alignChildWidgets();
+      MEditorWindow->alignChildWidgets();
       //MWindow->scaleChildWidgets(xscale,true);
     }
     return true;
@@ -224,12 +224,12 @@ public: // clap gui
   virtual bool setParent(const clap_window_t *window) {
     MIP_PRINT;
     //MIP_Print("%p -> true\n",window);
-    if (MWindow) {
+    if (MEditorWindow) {
       #ifdef MIP_LINUX
-        MWindow->reparentWindow(window->x11);
+        MEditorWindow->reparentWindow(window->x11);
       #endif
       #ifdef MIP_WIN32
-        MWindow->reparentWindow((intptr_t)window->win32);
+        MEditorWindow->reparentWindow((intptr_t)window->win32);
       #endif
       return true;
     }
@@ -257,7 +257,7 @@ public: // clap gui
 
   virtual void suggestTitle(const char *title) {
     //MIP_Print("%s\n",title);
-    if (MWindow) MWindow->setWindowTitle(title);
+    if (MEditorWindow) MEditorWindow->setWindowTitle(title);
   }
 
   //----------
@@ -269,10 +269,10 @@ public: // clap gui
 
   virtual bool show() {
     //MIP_Print("-> true\n");
-    if (MWindow && !MIsEditorOpen) {
-      MWindow->openWindow();
+    if (MEditorWindow && !MIsEditorOpen) {
+      MEditorWindow->openWindow();
       MIsEditorOpen = true;
-      MWindow->startEventThread();
+      MEditorWindow->startEventThread();
     }
     return true;
   }
@@ -287,13 +287,27 @@ public: // clap gui
 
   virtual bool hide() {
     //MIP_Print("-> true\n");
-    if (MWindow && MIsEditorOpen) {
+    if (MEditorWindow && MIsEditorOpen) {
       MIsEditorOpen = false;
-      MWindow->stopEventThread();
-      MWindow->closeWindow();
+      MEditorWindow->stopEventThread();
+      MEditorWindow->closeWindow();
     }
     return true;
   }
+
+//------------------------------
+public: // editor window listener
+//------------------------------
+
+  void on_editor_listener_update_parameter(uint32_t AIndex, double AValue) override {
+    MIP_PRINT;
+    if (MEditorListener) MEditorListener->on_editor_listener_update_parameter(AIndex,AValue);
+  };
+
+  void on_editor_listener_resize_window(uint32_t AWidth, uint32_t AHeight) override {
+    MIP_PRINT;
+    if (MEditorListener) MEditorListener->on_editor_listener_resize_window(AWidth,AHeight);
+  };
 
 //------------------------------
 public: // widget

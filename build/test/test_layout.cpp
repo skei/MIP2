@@ -1,10 +1,10 @@
 
 // nc -U -l -k /tmp/mip.socket
-#ifndef MIP_EXE
-  #define MIP_DEBUG_PRINT_SOCKET
-#endif
+//#ifndef MIP_EXE
+//  #define MIP_DEBUG_PRINT_SOCKET
+//#endif
 
-#define MIP_EXECUTABLE_SHARED_LIBRARY
+//#define MIP_EXECUTABLE_SHARED_LIBRARY
 //-Wl,-e,entry_point
 
 //----------
@@ -12,7 +12,7 @@
 #define MIP_GUI_XCB
 //#define MIP_PAINTER_NANOVG
 #define MIP_PAINTER_XCB
-#define MIP_WINDOW_BUFFERED
+//#define MIP_WINDOW_BUFFERED
 
 //  #define MIP_GUI_WIN32
 //  #define MIP_PAINTER_GDI
@@ -110,6 +110,7 @@ public:
 
   test_layout_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
+    MIP_Print("Creating plugin\n");
     MEditorWidth  = 800;
     MEditorHeight = 600;
   }
@@ -119,6 +120,7 @@ public: // plugin
 //------------------------------
 
   bool init() final {
+    MIP_Print("Initializing plugin\n");
 
     appendAudioInputPort( &myAudioInputPorts[0] );
     appendAudioOutputPort(&myAudioOutputPorts[0]);
@@ -139,9 +141,14 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) final {
-    //MIP_PRINT;
+
+    MIP_Print("Creating editor\n");
+
     bool result = MIP_Plugin::gui_create(api,is_floating);
     if (result /*&& MEditor*/) {
+
+      MIP_Print("Setting up editor widgets\n");
+
       MIP_Window* editor_window = MEditor->getWindow();
       editor_window->setWidgetName("MEditor");
       editor_window->setWindowFillBackground(false);
