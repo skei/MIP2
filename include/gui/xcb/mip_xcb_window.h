@@ -114,37 +114,22 @@ private:
 public:
 //------------------------------
 
-  //MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false) {
+  MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight)
+  : MIP_BaseWindow(AWidth,AHeight) {
+    setup(AWidth,AHeight,0);
+  }
+
+  //----------
+
   MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
   : MIP_BaseWindow(AWidth,AHeight,AParent) {
-
-    //MWindowListener = this;
-
-    MWindowInitialWidth = AWidth;
-    MWindowInitialHeight = AHeight;
-
-    initConnection(nullptr);
-    initScreen();
-    initScreenGC();
-    initWindow(AWidth,AHeight);
-    initMouseCursor();
-    initKeyboard();
-    //if (AEmbedded) { removeDecorations(); }
-    if (AParent) { removeDecorations(); }
-    else { wantQuitEvents(); }
-    //MResizeTimer = new MIP_Timer(this);
+    setup(AWidth,AHeight,AParent);
   }
 
   //----------
 
   virtual ~MIP_XcbWindow() {
-    cleanupKeyboard();
-    cleanupMouseCursor();
-    cleanupWindow();
-    cleanupScreenGC();
-    cleanupScreen();
-    cleanupConnection();
-    //delete MResizeTimer;
+    cleanup();
   }
 
 //------------------------------
@@ -188,6 +173,37 @@ public: // drawable
   //bool                drawable_isCairo()           final { return true; }
   //cairo_surface_t*    drawable_getCairoSurface()   final { return MCairoSurface; }
   //#endif
+
+//------------------------------
+public:
+//------------------------------
+
+  void setup(uint32_t AWidth, uint32_t AHeight, intptr_t AParent) {
+    //MWindowListener = this;
+    MWindowInitialWidth = AWidth;
+    MWindowInitialHeight = AHeight;
+    initConnection(nullptr);
+    initScreen();
+    initScreenGC();
+    initWindow(AWidth,AHeight);
+    initMouseCursor();
+    initKeyboard();
+    if (AParent == 0) { wantQuitEvents(); }
+    else { removeDecorations(); }
+    //MResizeTimer = new MIP_Timer(this);
+  }
+
+  //----------
+
+  void cleanup() {
+    cleanupKeyboard();
+    cleanupMouseCursor();
+    cleanupWindow();
+    cleanupScreenGC();
+    cleanupScreen();
+    cleanupConnection();
+    //delete MResizeTimer;
+  }
 
 //------------------------------
 public: // window
@@ -332,6 +348,10 @@ public: // window
   }
 
   //----------
+
+  /*
+    if APArent == 0
+  */
 
   void reparentWindow(intptr_t AParent) override {
     xcb_reparent_window(MConnection,MWindow,AParent,0,0);

@@ -112,23 +112,16 @@ int main(int argc, char** argv, char** env) {
                 if (exe_window) {
 
                   exe_window->openWindow();
-
+                  clap_window_t clap_window;
                   #ifdef MIP_LINUX
-                    xcb_window_t xcb_window = exe_window->drawable_getXcbWindow();
-                    clap_window_t clap_window;
                     clap_window.api = CLAP_WINDOW_API_X11;
-                    clap_window.x11 = xcb_window;
-                    gui->set_parent(clap_plugin,&clap_window);
+                    clap_window.x11 = exe_window->drawable_getXcbWindow();
                   #endif
-
                   #ifdef MIP_WIN32
-                    HWND win32_window = exe_window->drawable_getWin32Window();
-                    clap_window_t clap_window;
                     clap_window.api = CLAP_WINDOW_API_WIN32;
-                    clap_window.win32 = win32_window;
-                    gui->set_parent(clap_plugin,&clap_window);
+                    clap_window.win32 = exe_window->drawable_getWin32Window();
                   #endif
-
+                  gui->set_parent(clap_plugin,&clap_window);
                   gui->show(clap_plugin);
                   //redraw?
                   gui->set_size(clap_plugin,width,height);

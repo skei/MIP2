@@ -25,7 +25,7 @@ public:
 //------------------------------
 
   MIP_ExeWindow(uint32_t AWidth, uint32_t AHeight, const clap_plugin_t* APlugin, const clap_plugin_gui_t* AGui)
-  : MIP_ImplementedWindow(AWidth,AHeight,false) {
+  : MIP_ImplementedWindow(AWidth,AHeight) {
   //: MIP_Window(AWidth,AHeight,false) {
     plugin = APlugin;
     gui = AGui;

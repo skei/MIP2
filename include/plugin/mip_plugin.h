@@ -379,8 +379,8 @@ public: // EXT gui
 
 
   bool gui_create(const char *api, bool is_floating) override {
-    //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
-    MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight,0); // crash???
+    MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
+    MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
     #ifdef MIP_PLUGIN_DEFAULT_EDITOR
       // setup widgets
     #endif

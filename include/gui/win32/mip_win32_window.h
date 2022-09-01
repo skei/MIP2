@@ -96,28 +96,19 @@ private:
 public:
 //------------------------------
 
-  //MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
+  MIP_Win32Window(uint32_t AWidth, uint32_t AHeight)
+  : MIP_BaseWindow(AWidth,AHeight,0) {
+    MEmbedded = false;
+    MWinHandle = createWindow(AWidth,AHeight,"MIP_Win32Window");
+    SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
+  }
+
+  //----------
+
   MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
   : MIP_BaseWindow(AWidth,AHeight,AParent) {
-
-
-    MWindowTitle = "MIP_Win32Window";
-    //
-    MMouseXpos  = -1;
-    MMouseYpos  = -1;
-    memset(MUserCursors,0,sizeof(MUserCursors));
-    MCurrentCursor = -1;
-    setMouseCursor(MIP_CURSOR_DEFAULT);
-
-    if (AParent == 0) {
-      MEmbedded = false;
-      MWinHandle = createWindow(AWidth,AHeight,"MIP_Win32Window");
-    }
-    else {
-      MEmbedded = true;
-      MWinHandle = createEmbeddedWindow(AWidth,AHeight,AParent);
-    }
-
+    MEmbedded = true;
+    MWinHandle = createEmbeddedWindow(AWidth,AHeight,AParent);
     SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
   }
 
@@ -282,22 +273,39 @@ public:
     Remarks
     An application can use the SetParent function to set the parent window of a
     pop-up, overlapped, or child window.
+
     If the window identified by the hWndChild parameter is visible, the system
     performs the appropriate redrawing and repainting.
+
     For compatibility reasons, SetParent does not modify the WS_CHILD or
     WS_POPUP window styles of the window whose parent is being changed.
-    Therefore, if hWndNewParent is NULL, you should also clear the WS_CHILD bit
-    and set the WS_POPUP style after calling SetParent. Conversely, if
-    hWndNewParent is not NULL and the window was previously a child of the
-    desktop, you should clear the WS_POPUP style and set the WS_CHILD style
-    before calling SetParent.
+    Therefore:
+    - if hWndNewParent is NULL, you should also clear the WS_CHILD bit
+    and set the WS_POPUP style after calling SetParent.
+    - Conversely, if hWndNewParent is not NULL and the window was previously a
+    child of the desktop, you should clear the WS_POPUP style and set the
+    WS_CHILD style before calling SetParent.
+  */
+
+  /*
+    if APArent == 0
   */
 
   void reparentWindow(intptr_t AParent) override {
     MIP_PRINT;
-    SetWindowLongPtr( MWinHandle, GWL_STYLE, ( GetWindowLongPtr(MWinHandle,GWL_STYLE) & ~WS_POPUP ) | WS_CHILD );
+    LONG_PTR style = GetWindowLongPtr(MWinHandle,GWL_STYLE);
+    if (AParent == 0) {
+      style &= ~WS_CHILD;
+      style |= ~WS_POPUP;
+      //MEmbedded = false;
+    }
+    else {
+      style &= ~WS_POPUP;
+      style |= ~WS_CHILD;
+      //MEmbedded = true;
+    }
+    SetWindowLongPtr( MWinHandle, GWL_STYLE, style );
     SetParent(MWinHandle,(HWND)AParent);
-    //MEmbedded = true;
   }
 
   //----------
@@ -707,7 +715,16 @@ private:
 //------------------------------
 
   HWND createWindow(int32_t AWidth, int32_t AHeight, const char* ATitle) {
+
+    MWindowTitle = "MIP_Win32Window";
+    MMouseXpos  = -1;
+    MMouseYpos  = -1;
+    memset(MUserCursors,0,sizeof(MUserCursors));
+    MCurrentCursor = -1;
+    setMouseCursor(MIP_CURSOR_DEFAULT);
+
     RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
+
     AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
     int32_t wx = ((GetSystemMetrics(SM_CXSCREEN) - AWidth ) >> 1) + rc.left;
     int32_t wy = ((GetSystemMetrics(SM_CYSCREEN) - AHeight) >> 1) + rc.top;
@@ -717,6 +734,7 @@ private:
     int32_t h = rc.bottom - rc.top + 1;
     MAdjustedWidth = w - AWidth;
     MAdjustedHeight = h - AHeight;
+
     HWND handle = CreateWindowEx(
       WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
       MIP_Win32ClassName(),       // lpClassName
@@ -738,7 +756,16 @@ private:
   //----------
 
   HWND createEmbeddedWindow(int32_t AWidth, int32_t AHeight, intptr_t AParent) {
+
+    MWindowTitle = "MIP_Win32Window";
+    MMouseXpos  = -1;
+    MMouseYpos  = -1;
+    memset(MUserCursors,0,sizeof(MUserCursors));
+    MCurrentCursor = -1;
+    setMouseCursor(MIP_CURSOR_DEFAULT);
+
     RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
+
     AdjustWindowRectEx(&rc,WS_POPUP,FALSE,WS_EX_TOOLWINDOW);
     int32_t x = rc.left;
     int32_t y = rc.top;
@@ -746,18 +773,19 @@ private:
     int32_t h = rc.bottom - rc.top + 1;
     MAdjustedWidth = w - AWidth;
     MAdjustedHeight = h - AHeight;
+
     HWND handle = CreateWindowEx(
       0, //WS_EX_TOOLWINDOW,
       //kode_global_WinClassName,
       MIP_Win32ClassName(),
       0,
-      //WS_CHILD + WS_VISIBLE, //WS_POPUP,
-      WS_POPUP + WS_VISIBLE,
+      //WS_CHILD,// + WS_VISIBLE,
+      WS_POPUP,
       x,              //rc.left,
       y,              //rc.top,
       w,              //rc.right-rc.left+1, // +2 ??
       h,              //rc.bottom-rc.top+1, // +2 ??
-      HWND(AParent),  // Hint: Conversion between ordinals and pointers is not portable,
+      HWND(AParent),
       0,
       MIP_GLOBAL_WIN32_INSTANCE,
       0
@@ -765,25 +793,9 @@ private:
     return handle;
   }
 
+//------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//------------------------------
 
   /*
 
@@ -933,33 +945,34 @@ public:
   //----------
 
   char* registerClass(void) {
+    MIP_Print("*** registerClass (uses MIP_GLOBAL_WIN32_INSTANCE)\n");
     if (!MRegistered) {
       MIP_CreateUniqueString(MName,(char*)"mip_window_",&MIP_GLOBAL_WIN32_INSTANCE);
       memset(&MClass,0,sizeof(MClass));
-      MClass.style = CS_HREDRAW | CS_VREDRAW;// | CS_DBLCLKS;
-      //#ifdef MIP_MOUSE_DOUBLECLICK
-      MClass.style |= CS_DBLCLKS;
-      //#endif
+      MClass.style          = CS_HREDRAW | CS_VREDRAW;
       MClass.lpfnWndProc    = &mip_win32_eventproc;
       MClass.hInstance      = MIP_GLOBAL_WIN32_INSTANCE;
       MClass.lpszClassName  = MName;
-      MAtom                 = RegisterClass(&MClass);
-      MRegistered           = true;
+      //#ifdef MIP_MOUSE_DOUBLECLICK
+      //MClass.style |= CS_DBLCLKS;
+      //#endif
+      MAtom = RegisterClass(&MClass);
+      MRegistered = true;
     }
     return MName;
   }
 
 };
 
-//----------
-
-/*
-  destructor automatically called when dll/exe unloaded
-  it should have been hidden from user, but since we're using
-  only .h files, that's a bit problematic..
-*/
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
 
 MIP_Win32WindowClass MIP_GLOBAL_WIN32_WINDOW_CLASS;
+
+//----------
 
 char* MIP_Win32ClassName(void) {
   return MIP_GLOBAL_WIN32_WINDOW_CLASS.registerClass();

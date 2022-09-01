@@ -133,8 +133,8 @@ public:
 
     HDC tempdc = GetDC(0);
     HDC handle = CreateCompatibleDC(tempdc); // (nullptr);
-    setup(handle);
     ReleaseDC(0,tempdc);
+    setup(handle);
 
   }
 
@@ -155,17 +155,19 @@ public:
   //----------
 
   void setup(HDC AHandle) {
+
     if (need_cleanup) cleanup();
     MHandle = AHandle;
-    //MPen = (HPEN)GetStockObject(DC_PEN);
-    MPenHandle = CreatePen(PS_SOLID,1,0xff0000);
-    MDefaultPen = SelectObject(AHandle,MPenHandle);
 
-    //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
-    MBrushHandle = CreateSolidBrush(0x00ff00);
-    MDefaultBrush = SelectObject(AHandle,MBrushHandle);
+    //MPen = (HPEN)GetStockObject(DC_PEN);
+    MPenHandle = CreatePen(PS_SOLID,1,0x000000);
+    MDefaultPen = SelectObject(MHandle,MPenHandle);
 
     MNullPen = CreatePen(PS_NULL,0,0);
+
+    //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
+    MBrushHandle = CreateSolidBrush(0x808080);
+    MDefaultBrush = SelectObject(MHandle,MBrushHandle);
 
     LOGBRUSH lbrush;
     lbrush.lbStyle = BS_NULL; // BS_HATCHED, BS_HOLLOW, BS_NULL, BS_SOLID, ..
@@ -177,7 +179,7 @@ public:
     LOGFONT lfont;
     memset(&lfont,0,sizeof(lfont));
     strcpy(lfont.lfFaceName,"Arial");
-    lfont.lfHeight = -MulDiv(8,GetDeviceCaps(AHandle,LOGPIXELSY),72);
+    lfont.lfHeight = -MulDiv(8,GetDeviceCaps(MHandle,LOGPIXELSY),72);
     MFontHandle = CreateFontIndirect(&lfont);
     MDefaultFont = SelectObject(MHandle,MFontHandle);
 
@@ -191,9 +193,12 @@ public:
 
   void cleanup() {
     if (need_cleanup) {
+      /*
+      // is MHandle valid?
       SelectObject(MHandle,MDefaultPen);
       SelectObject(MHandle,MDefaultBrush);
       SelectObject(MHandle,MDefaultFont);
+      */
       //SelectObject(MHandle,MDefaultBitmap);
       // It is not necessary (but it is not harmful) to delete stock objects
       // by scalling DeleteObject.
@@ -734,7 +739,8 @@ public: // paths
           R.bottom  = MPath[i].data[1] + MPath[i].data[3] + 1;
           //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
           //FillRect(MHandle,&R,brush);
-          FillRect(MHandle,&R,MBrushHandle);
+          //FillRect(MHandle,&R,MBrushHandle);
+          Rectangle(MHandle,R.left,R.top,R.right,R.bottom);
           //Rectangle(mDC,aX1,aY1,aX2,aY2);
 
           break;
@@ -749,8 +755,8 @@ public: // paths
           R.bottom  = MPath[i].data[1] + MPath[i].data[3] + 1;
           //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
           //FillRect(MHandle,&R,brush);
-          FillRect(MHandle,&R,MBrushHandle);
-          //Rectangle(mDC,aX1,aY1,aX2,aY2);
+          //FillRect(MHandle,&R,MBrushHandle);
+          Rectangle(MHandle,R.left,R.top,R.right,R.bottom);
           //float r   = MPath[i].data[4];// - 1;
           //float r2  = r * 2;
           //float AX1 = MPath[MPathLength].data[0];
@@ -776,7 +782,8 @@ public: // paths
           R.bottom  = MPath[i].data[1] + MPath[i].data[3] + 1;
           //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
           //FillRect(MHandle,&R,brush);
-          FillRect(MHandle,&R,MBrushHandle);
+          //FillRect(MHandle,&R,MBrushHandle);
+          Rectangle(MHandle,R.left,R.top,R.right,R.bottom);
           //Rectangle(mDC,aX1,aY1,aX2,aY2);
         }
 

@@ -9,6 +9,13 @@
 
 #define MIP_EDITOR_MAX_PARAMS 4096
 
+// not yet.. our widgets are created in gui_create
+// and attached to editor!
+// we need to have a gui_setup_widgets(), or something
+// !! on_widget_open
+
+//#define MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
+
 //----------------------------------------------------------------------
 //
 // listeners
@@ -38,18 +45,25 @@ class MIP_Editor
 ,*/ public MIP_EditorListener {
 
 //------------------------------
+private:
+//------------------------------
+
+  clap_window_t MClapWindow = {"",0};
+
+//------------------------------
 protected:
 //------------------------------
 
   MIP_EditorListener* MEditorListener = nullptr;
-  MIP_EditorWindow*   MEditorWindow         = nullptr;
+  MIP_EditorWindow*   MEditorWindow   = nullptr;
   uint32_t            MEditorWidth    = 200;
   uint32_t            MEditorHeight   = 100;
   intptr_t            MParent         = 100;
   double              MEditorScale    = 1.0;
   bool                MIsEditorOpen   = false;
-  double              MInitialWidth   = 0;
-  double              MInitialHeight  = 0;
+
+//  double              MInitialWidth   = 0;
+//  double              MInitialHeight  = 0;
 
   MIP_Widget*         MParameterToWidget[MIP_EDITOR_MAX_PARAMS] = {0};
 
@@ -57,22 +71,33 @@ protected:
 public:
 //------------------------------
 
-  MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
+  MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight/*, intptr_t AParent*/)
   /*: MIP_Window(AWidth,AHeight,AParent)*/ {
+    MIP_PRINT;
     MEditorListener = AListener;
     MEditorWidth = AWidth;
     MEditorHeight = AHeight;
-    MInitialWidth = AWidth;
-    MInitialHeight = AHeight;
-    MEditorWindow = new MIP_EditorWindow(this,AWidth,AHeight,AParent);
-    MEditorWindow->setWidgetSize(AWidth,AHeight);
+//    MInitialWidth = AWidth;
+//    MInitialHeight = AHeight;
+
+    #ifndef MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
+      MEditorWindow = new MIP_EditorWindow(this,AWidth,AHeight,0);
+      MEditorWindow->setWidgetSize(AWidth,AHeight);
+    #endif
+
   }
 
   //----------
 
   virtual ~MIP_Editor() {
-    if (MEditorWindow && MIsEditorOpen) {
-      MEditorWindow->hide();
+    if (MEditorWindow) {
+      if (MIsEditorOpen) {
+        //MEditorWindow->hide();
+        hide();
+      }
+      #ifndef MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
+      delete MEditorWindow;
+      #endif
     }
   }
 
@@ -147,11 +172,11 @@ public: // clap gui
     //MIP_Print("-> true (aspect:%i:%i)\n",420,620);
     hints->can_resize_horizontally  = true;
     hints->can_resize_vertically    = true;
-    hints->aspect_ratio_width       = 420;
-    hints->aspect_ratio_height      = 620;
+    hints->aspect_ratio_width       = 0;//420;
+    hints->aspect_ratio_height      = 0;//620;
     hints->preserve_aspect_ratio    = false;//true;
-    //return true;
-    return false;
+    return true;
+    //return false;
   }
 
   //----------
@@ -222,9 +247,15 @@ public: // clap gui
   */
 
   virtual bool setParent(const clap_window_t *window) {
-    MIP_PRINT;
+    //MIP_PRINT;
+    MClapWindow.api = window->api;
+    MClapWindow.ptr = window->ptr;
     //MIP_Print("%p -> true\n",window);
+
+    //TODO: move to show() ?
+
     if (MEditorWindow) {
+      //MEditorWindow->reparentWindow(window->ptr);
       #ifdef MIP_LINUX
         MEditorWindow->reparentWindow(window->x11);
       #endif
@@ -233,6 +264,7 @@ public: // clap gui
       #endif
       return true;
     }
+
     return false;
   }
 
@@ -269,7 +301,21 @@ public: // clap gui
 
   virtual bool show() {
     //MIP_Print("-> true\n");
+
+    #ifdef MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
+      MEditorWindow = new MIP_EditorWindow(this,MEditorWidth,MEditorHeight,(intptr_t)MClapWindow.win32);
+      MEditorWindow->setWidgetSize(MEditorWidth,MEditorHeight);
+    #endif
+
     if (MEditorWindow && !MIsEditorOpen) {
+
+//      #ifdef MIP_LINUX
+//        MEditorWindow->reparentWindow(window->x11);
+//      #endif
+//      #ifdef MIP_WIN32
+//        MEditorWindow->reparentWindow((intptr_t)window->win32);
+//      #endif
+
       MEditorWindow->openWindow();
       MIsEditorOpen = true;
       MEditorWindow->startEventThread();
@@ -291,6 +337,11 @@ public: // clap gui
       MIsEditorOpen = false;
       MEditorWindow->stopEventThread();
       MEditorWindow->closeWindow();
+
+      #ifdef MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
+        delete MEditorWindow;
+      #endif
+
     }
     return true;
   }

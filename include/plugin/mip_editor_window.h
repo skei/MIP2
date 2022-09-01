@@ -71,9 +71,9 @@ public:
 
   virtual ~MIP_EditorWindow() {
     //MIP_PRINT;
-    if (MIsEditorOpen) {
-      hide();
-    }
+//    if (MIsEditorOpen) {
+//      hide();
+//    }
     //free(MParameterToWidget);
   }
 
@@ -281,15 +281,15 @@ public: // clap gui
     [main-thread]
   */
 
-  virtual bool hide() {
-    //MIP_Print("-> true\n");
-    if (MIsEditorOpen) {
-      MIsEditorOpen = false;
-      stopEventThread();
-      closeWindow();
-    }
-    return true;
-  }
+//  virtual bool hide() {
+//    //MIP_Print("-> true\n");
+//    if (MIsEditorOpen) {
+//      MIsEditorOpen = false;
+//      stopEventThread();
+//      closeWindow();
+//    }
+//    return true;
+//  }
 
 //------------------------------
 public: // widget

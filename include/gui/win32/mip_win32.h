@@ -87,6 +87,7 @@ HINSTANCE MIP_GLOBAL_WIN32_INSTANCE = 0;
     switch(reason) {
 
       case DLL_PROCESS_ATTACH:
+        MIP_Print("*** MIP_GLOBAL_WIN32_INSTANCE = hModule;\n");
         MIP_GLOBAL_WIN32_INSTANCE = hModule;
         //MIP_RegisterWindowClass(&s3_global_WinInstance);
         break;

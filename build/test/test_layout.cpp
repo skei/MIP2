@@ -9,13 +9,15 @@
 
 //----------
 
-#define MIP_GUI_XCB
-//#define MIP_PAINTER_NANOVG
-#define MIP_PAINTER_XCB
-//#define MIP_WINDOW_BUFFERED
-
-//  #define MIP_GUI_WIN32
-//  #define MIP_PAINTER_GDI
+#ifdef __gnu_linux__
+  #define MIP_GUI_XCB
+  #define MIP_PAINTER_XCB
+  #define MIP_WINDOW_BUFFERED
+  //#define MIP_PAINTER_NANOVG
+#else
+  #define MIP_GUI_WIN32
+  #define MIP_PAINTER_GDI
+#endif
 
 //----------------------------------------------------------------------
 
@@ -141,15 +143,13 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) final {
-
     MIP_Print("Creating editor\n");
-
     bool result = MIP_Plugin::gui_create(api,is_floating);
     if (result /*&& MEditor*/) {
-
       MIP_Print("Setting up editor widgets\n");
 
       MIP_Window* editor_window = MEditor->getWindow();
+
       editor_window->setWidgetName("MEditor");
       editor_window->setWindowFillBackground(false);
 

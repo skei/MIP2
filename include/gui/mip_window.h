@@ -86,38 +86,24 @@ protected:
 public:
 //------------------------------
 
-  //MIP_Window(uint32_t AWidth, uint32_t AHeight, bool AEmbedded=false)
-  //: MIP_ImplementedWindow(AWidth,AHeight,AEmbedded)
+  MIP_Window(uint32_t AWidth, uint32_t AHeight)
+  : MIP_ImplementedWindow(AWidth,AHeight)
+  , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
+    setup(AWidth,AHeight);
+  }
+
+  //----------
+
   MIP_Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
   : MIP_ImplementedWindow(AWidth,AHeight,AParent)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
-
-    MName = "MIP_Window";
-    MWindowPainter = new MIP_Painter(this,this);
-
-    #ifdef MIP_WINDOW_BUFFERED
-      createBuffer(AWidth,AHeight);
-      MPaintContext.painter = MBufferPainter;
-    #else
-      MPaintContext.painter = MWindowPainter;
-    #endif
-
-    MParent = nullptr;
-    MRect.setPos(0.0);
-    Layout.baseRect = MRect;
-    MIndex = -1;
-
+    setup(AWidth,AHeight);
   }
 
   //----------
 
   virtual ~MIP_Window() {
-    delete MWindowPainter;
-    #ifdef MIP_WINDOW_BUFFERED
-      //delete MBufferPainter;
-      //delete MBufferSurface;
-      deleteBuffer();
-    #endif
+    cleanup();
   }
 
 //------------------------------
@@ -152,6 +138,34 @@ public:
 
   void unmodal() {
     if (MModalWidget) MModalWidget->on_widget_unmodal();
+  }
+
+  //----------
+
+  void setup(uint32_t AWidth, uint32_t AHeight) {
+    MName = "MIP_Window";
+    MWindowPainter = new MIP_Painter(this,this);
+    #ifdef MIP_WINDOW_BUFFERED
+      createBuffer(AWidth,AHeight);
+      MPaintContext.painter = MBufferPainter;
+    #else
+      MPaintContext.painter = MWindowPainter;
+    #endif
+    MParent = nullptr;
+    MRect.setPos(0.0);
+    Layout.baseRect = MRect;
+    MIndex = -1;
+  }
+
+  //----------
+
+  void cleanup() {
+    delete MWindowPainter;
+    #ifdef MIP_WINDOW_BUFFERED
+      //delete MBufferPainter;
+      //delete MBufferSurface;
+      deleteBuffer();
+    #endif
   }
 
   //----------
@@ -243,6 +257,15 @@ public: // timer
 //------------------------------
 public: // window
 //------------------------------
+
+  void beginPaint()  override {
+    MIP_ImplementedWindow::beginPaint();
+    #ifdef MIP_GUI_WIN32
+      MWindowPainter->setup( hdc() );
+    #endif
+  }
+
+
 
   /*
     standalone: on_window_resize() will be called afterwards..
