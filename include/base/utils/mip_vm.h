@@ -66,36 +66,6 @@ enum MIP_EVMOpcodes {
 
 };
 
-const char* MIP_VMOpcodeNames[MIP_VM_NUM_OPCODES] = {
-  "noop",   // 0
-  "exit",   // 1
-  "push",   // 2
-  "drop",   // 3
-  "dup",    // 4
-  "dup2",   // 5
-  "pushr",  // 6
-  "popr",   // 7
-  "pushd",  // 8
-  "popd",   // 9
-  "call",   // 10
-  "ret",    // 11
-  "jmp",    // 12
-  "jz",     // 13
-  "jnz",    // 14
-  "eq",     // 15
-  "gr",     // 16
-  "le",     // 17
-  "ne",     // 18
-  "add",    // 19
-  "sub",    // 20
-  "mul",    // 21
-  "div",    // 22
-  "inc",    // 23
-  "dec",    // 24
-  "print",  // 25
-  "ext"     // 26
-};
-
 //----------------------------------------------------------------------
 
 //typedef union {
@@ -205,7 +175,6 @@ public:
       #define VM_POS(x)     MCodeSegment[x]
 
       MIP = &MCodeSegment[APosition];
-      //MIP_Print("APosition %i *MIP: %i\n",APosition,*MIP);
       VM_NEXT;
 
       //----- opcodes -----
@@ -484,7 +453,7 @@ public:
           //case MIP_VM_OP_TYPE_NONE:
           //  break;
           case MIP_VM_OP_TYPE_INTERNAL:
-            VM_WRITE( op_adr[ (MIP_VMValue)value ] );
+            VM_WRITE( op_adr[ value ] );
             break;
           case MIP_VM_OP_TYPE_EXTERNAL:
           case MIP_VM_OP_TYPE_WORD:
@@ -494,11 +463,14 @@ public:
             VM_WRITE(value);
             break;
           case MIP_VM_OP_TYPE_DATAPTR:
-            VM_WRITE( &MDataSegment[ (MIP_VMValue)value ] );
+            VM_WRITE( &MDataSegment[ value ] );
             break;
           case MIP_VM_OP_TYPE_CODEPTR:
-            VM_WRITE( &MCodeSegment[ (MIP_VMValue)value ] );
+            VM_WRITE( &MCodeSegment[ value ] );
             break;
+          //default:
+          //  //error
+          //  break;
         } // switch type
       } // for size
       MCodeSegment_size = pos;

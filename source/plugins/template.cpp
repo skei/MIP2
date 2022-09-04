@@ -182,10 +182,11 @@ public: // gui
     //MEditor = new myEditor(this,MEditorWidth,MEditorHeight);
     bool result = MIP_Plugin::gui_create(api,is_floating);
     if (result) {
-      MEditor->setWindowFillBackground(false);
+      MIP_Window* window = MEditor->getWindow();
+      window->setWindowFillBackground(false);
       MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect( 0,0,500,400), MIP_COLOR_GRAY );
       background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-      MEditor->appendChildWidget(background);
+      window->appendChildWidget(background);
     }
     return result;
   }
@@ -216,8 +217,8 @@ public: // gui
 
   //----------
 
-  void MIP_Register(MIP_Registry* ARegistry) {
-    ARegistry->appendDescriptor(&myDescriptor);
+  void MIP_Register() {
+    MIP_REGISTRY.appendDescriptor(&myDescriptor);
   };
 
   //----------

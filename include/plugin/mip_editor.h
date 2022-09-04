@@ -73,7 +73,7 @@ public:
 
   MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight/*, intptr_t AParent*/)
   /*: MIP_Window(AWidth,AHeight,AParent)*/ {
-    MIP_PRINT;
+    //MIP_PRINT;
     MEditorListener = AListener;
     MEditorWidth = AWidth;
     MEditorHeight = AHeight;
@@ -354,6 +354,8 @@ public: // editor window listener
     MIP_PRINT;
     if (MEditorListener) MEditorListener->on_editor_listener_update_parameter(AIndex,AValue);
   };
+
+  //----------
 
   void on_editor_listener_resize_window(uint32_t AWidth, uint32_t AHeight) override {
     MIP_PRINT;

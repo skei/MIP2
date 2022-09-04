@@ -1,19 +1,21 @@
 
 // nc -U -l -k /tmp/mip.socket
-//#ifndef MIP_EXE
-//  #define MIP_DEBUG_PRINT_SOCKET
-//#endif
+#ifndef MIP_EXE
+  #define MIP_DEBUG_PRINT_SOCKET
+#endif
 
-#define MIP_EXECUTABLE_SHARED_LIBRARY
+//#define MIP_EXECUTABLE_SHARED_LIBRARY
 //-Wl,-e,entry_point
+
+//#define MIP_PLUGIN_GENERIC_EDITOR
 
 //----------
 
 #ifdef __gnu_linux__
   #define MIP_GUI_XCB
-  #define MIP_PAINTER_XCB
-  #define MIP_WINDOW_BUFFERED
-  //#define MIP_PAINTER_NANOVG
+  //#define MIP_PAINTER_XCB
+  //#define MIP_WINDOW_BUFFERED
+  #define MIP_PAINTER_NANOVG
 #else
   #define MIP_GUI_WIN32
   #define MIP_PAINTER_GDI
@@ -26,7 +28,7 @@
 #include "plugin/mip_editor.h"
 #include "gui/widgets/mip_widgets.h"
 
-//#include "plugin/exe/mip_exe.h"
+//----------
 
 #define TEXTBOX1_LINE_SIZE    256
 #define TEXTBOX1_LINE_COUNT   256
@@ -116,7 +118,7 @@ public:
 
   test_layout_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
-    MIP_Print("Creating plugin\n");
+    //MIP_Print("Creating plugin\n");
     MEditorWidth  = 800;
     MEditorHeight = 600;
   }
@@ -126,7 +128,7 @@ public: // plugin
 //------------------------------
 
   bool init() final {
-    MIP_Print("Initializing plugin\n");
+    //MIP_Print("Initializing plugin\n");
 
     appendAudioInputPort( &myAudioInputPorts[0] );
     appendAudioOutputPort(&myAudioOutputPorts[0]);
@@ -146,15 +148,14 @@ public: // plugin
 public: // gui
 //------------------------------
 
+#ifndef MIP_PLUGIN_GENERIC_EDITOR
+
   bool gui_create(const char *api, bool is_floating) final {
-    MIP_Print("Creating editor\n");
     bool result = MIP_Plugin::gui_create(api,is_floating);
     if (result /*&& MEditor*/) {
-      MIP_Print("Setting up editor widgets\n");
+
 
       MIP_Window* editor_window = MEditor->getWindow();
-
-      editor_window->setWidgetName("MEditor");
       editor_window->setWindowFillBackground(false);
 
       //----- menu-----
@@ -629,9 +630,12 @@ public: // gui
       //-----
 
       background->appendChildWidget(menu1);
-    }
+
+    } // editor
     return result;
   }
+
+#endif // MIP_PLUGIN_GENERIC_EDITOR
 
 };
 
@@ -641,6 +645,18 @@ public: // gui
 //
 //----------------------------------------------------------------------
 
+/*
+  todo/consider:
+
+  #define MIP_PLUGIN_MAIN(desc,plug)
+
+  #define MIP_PLUGIN_MAIN_BEGIN(formats)
+  #define MIP_PLUGIN_MAIN_APPEND(desc,plug)
+  #define MIP_PLUGIN_MAIN_END
+*/
+
+//----------
+
 #include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
@@ -649,8 +665,8 @@ public: // gui
 
 //----------
 
-void MIP_Register(MIP_Registry* ARegistry) {
-  ARegistry->appendDescriptor(&template_descriptor);
+void MIP_Register() {
+  MIP_REGISTRY.appendDescriptor(&template_descriptor);
 };
 
 //----------

@@ -86,7 +86,6 @@ enum MIP_EPluginFormat {
   MIP_PLUGIN_FORMAT_CLAP         = 7
 };
 
-
 enum MIP_EPluginPlayStates {
   MIP_PLUGIN_PLAYSTATE_NONE      = 0x00,
   MIP_PLUGIN_PLAYSTATE_PLAYING   = 0x01,
@@ -326,8 +325,8 @@ enum MIP_ETextAlignment {
 //----------------------------------------------------------------------
 
 enum MIP_EPluginPortType {
-  MIP_PLUGIN_PORT_AUDIO = 0,
-  MIP_PLUGIN_PORT_MIDI  = 1,
+  MIP_PLUGIN_PORT_AUDIO = 0,  // audio port
+  MIP_PLUGIN_PORT_MIDI  = 1,  // note port
 };
 
 enum MIP_EPluginPortDirection {
@@ -338,10 +337,10 @@ enum MIP_EPluginPortDirection {
 enum MIP_EVoiceState {
   MIP_VOICE_OFF      = 0,
   //MIP_VOICE_ON       = 1,
-  MIP_VOICE_WAITING  = 1,
-  MIP_VOICE_PLAYING  = 2,//1,
-  MIP_VOICE_RELEASED = 3,//2,
-  MIP_VOICE_FINISHED = 4//3
+  MIP_VOICE_WAITING  = 1,     // _PREPARED
+  MIP_VOICE_PLAYING  = 2,     //1,
+  MIP_VOICE_RELEASED = 3,     //2,
+  MIP_VOICE_FINISHED = 4      //3
 };
 
 enum MIP_ENoteExpression {

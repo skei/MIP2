@@ -120,14 +120,10 @@ public: // gui
 //------------------------------
 
   bool gui_create(const char *api, bool is_floating) override {
-
-    //MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
     MIP_Plugin::gui_create(api,is_floating);
     MIP_Window* window = MEditor->getWindow();
 
-    //MEditor->setWindowFillBackground(false);
-
-    MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(), MIP_COLOR_GRAY );
+    MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(), MIP_COLOR_RED );
     background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     background->Layout.border = MIP_DRect(10,10,10,10);
     window->appendChildWidget(background);
@@ -148,15 +144,13 @@ public: // gui
 public: // process
 //------------------------------
 
-  void processParamValue/*Event*/(const clap_event_param_value_t* event) final {
-    //MIP_Plugin::processParamValueEvent(event);
+  void processParamValue(const clap_event_param_value_t* event) final {
     switch (event->param_id) {
       case PAR_GAIN : par_gain = event->value; break;
     }
   }
 
   //----------
-
 
   void processAudioBlock(MIP_ProcessContext* AContext) final {
     const clap_process_t* process = AContext->process;
@@ -183,14 +177,13 @@ public: // process
 #include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-
 //#include "plugin/vst2/mip_vst2_entry.h"
 //#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 
-void MIP_Register(MIP_Registry* ARegistry) {
-  ARegistry->appendDescriptor(&gain_descriptor);
+void MIP_Register() {
+  MIP_REGISTRY.appendDescriptor(&gain_descriptor);
 };
 
 //----------

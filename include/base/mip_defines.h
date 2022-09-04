@@ -58,6 +58,12 @@
 //
 //----------------------------------------------------------------------
 
+// use     = include code for..
+// gui     = window/surface
+// painter = paint
+
+//
+
 #undef MIP_GUI_DEFINED
 #undef MIP_PAINTER_DEFINED
 
@@ -71,9 +77,13 @@
   #undef MIP_USE_WIN32
   #undef MIP_USE_WGL
   #undef MIP_USE_XCB
+  #undef MIP_GUI_WIN32
+  #undef MIP_GUI_XCB
   #define MIP_GUI_DEFINED
   #define MIP_NO_PAINTER
 #endif
+
+//-----
 
 #ifdef MIP_GUI_XCB
   #define MIP_USE_XCB
@@ -119,16 +129,15 @@
   #define MIP_PAINTER_DEFINED
 #endif
 
-
 //----------
 
 #ifndef MIP_GUI_DEFINED
-  #warning No Gui defined (MIP_GUI_*)
+  #warning No GUI defined.
   #define MIP_NO_GUI
 #endif
 
 #ifndef MIP_PAINTER_DEFINED
-  #warning No Painter defined (MIP_PAINTER_*)
+  #warning No PAINTER defined.
   #define MIP_NO_GUI
 #endif
 

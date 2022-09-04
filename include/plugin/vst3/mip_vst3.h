@@ -30,6 +30,9 @@
 // https://github.com/phil-monroe/midiplug/blob/master/SDKs/vst3/public.sdk/source/vst/vstsinglecomponenteffect.h
 // work around for the name clash of IComponent::setState and IEditController::setState
 
+// see also travesty:
+// https://github.com/DISTRHO/DPF/tree/develop/distrho/src/travesty
+
 #define setState setEditorState
 #define getState getEditorState
 

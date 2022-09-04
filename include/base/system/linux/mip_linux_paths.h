@@ -89,7 +89,7 @@ const char* MIP_GetLibPath(char* ABuffer) {
 
 //----------------------------------------------------------------------
 
-#ifdef MIP_LIB
+#ifdef MIP_PLUGIN
   #define MIP_GetBaseFilename  MIP_GetLibFilename
   #define MIP_GetBasePath      MIP_GetLibPath
 #else

@@ -542,6 +542,8 @@ public: // paint
     xcb_flush(MConnection);
   }
 
+
+
 //------------------------------
 private: // connection
 //------------------------------
@@ -555,6 +557,7 @@ private: // connection
     //MConnection = xcb_connect(ADisplayName,&MDefaultScreen);
     XInitThreads(); // is this needed ???
     MDisplay = XOpenDisplay(ADisplayName);
+    MDefaultScreen = DefaultScreen(MDisplay); // ???
     MConnection = XGetXCBConnection(MDisplay);
     XSetEventQueueOwner(MDisplay,XCBOwnsEventQueue);
     return true;

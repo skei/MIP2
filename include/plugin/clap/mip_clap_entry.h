@@ -22,6 +22,14 @@ void clap_entry_deinit_callback(void) {
 
 //----------
 
+/*
+  bitwig asks for
+    clap.plugin-factory
+    clap.plugin-invalidation-factory/draft0
+  reaper asks for
+    clap.plugin-factory
+*/
+
 const void* clap_entry_get_factory_callback(const char* factory_id) {
   //MIP_DPrint("%s\n",factory_id);
   const void* factory = MIP_REGISTRY.findFactoryById(factory_id);
@@ -34,7 +42,7 @@ const void* clap_entry_get_factory_callback(const char* factory_id) {
 
 //----------------------------------------------------------------------
 
-__MIP_EXPORT
+//__MIP_EXPORT
 CLAP_EXPORT extern const clap_plugin_entry_t clap_entry {
   .clap_version = CLAP_VERSION,
   .init         = clap_entry_init_callback,

@@ -2,6 +2,12 @@
 #define mip_included
 //----------------------------------------------------------------------
 
+//#define MIP_IMPLEMENTATION
+
+//------------------------------
+//
+// system includes
+//
 //------------------------------
 
 #include <stdint.h>
@@ -21,8 +27,13 @@
 #endif
 
 //------------------------------
+//
+// compiler warnings
+//
+//------------------------------
 
 /*
+  -Wall -Wextra
   we still have LOTS of unimplemented stub functions, so -Wextra prints
   gazillions of 'unused parameter' warnings..
   TODO: remove this when we have implemented everything
@@ -30,14 +41,18 @@
 */
 
 //#pragma GCC diagnostic push
-//#pragma GCC diagnostic error "-Wuninitialized"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 //#pragma GCC diagnostic push
 
 // stb_image
+// todo: move this closer to stb_image, and pop the setting afterwards
 #pragma GCC diagnostic ignored "-Wshift-negative-value"
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 
+//------------------------------
+//
+// mip framework
+//
 //------------------------------
 
 // be careful, ordering might be important..
@@ -50,12 +65,13 @@
 
 #include "base/debug/mip_debug.h"
 
-//----------
+//------------------------------
+//
+// helpers
+//
+//------------------------------
 
 #include "base/types/mip_types.h"
-//#include "base/types/mip_color.h"
-//#include "base/types/mip_point.h"
-//#include "base/types/mip_rect.h"
 
 //#include <vector>
 

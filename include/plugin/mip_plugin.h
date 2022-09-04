@@ -4,6 +4,9 @@
 
 // TODO: #ifndef MIP_NO_GUI around all editor stuff..
 
+//#define MIP_PLUGIN_GENERIC_EDITOR
+
+
 #include "mip.h"
 #include "base/types/mip_queue.h"
 #include "plugin/mip_audio_port.h"
@@ -14,8 +17,10 @@
 
 #ifndef MIP_NO_GUI
   #include "plugin/mip_editor.h"
+  #include "gui/widgets/mip_widgets.h"
 #endif
 
+// yimer for gui only.. ?
 #include "base/system/mip_timer.h"
 
 //----------------------------------------------------------------------
@@ -379,14 +384,38 @@ public: // EXT gui
 
 
   bool gui_create(const char *api, bool is_floating) override {
-    MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
-    MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
-    #ifdef MIP_PLUGIN_DEFAULT_EDITOR
-      // setup widgets
+    //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
+
+    #ifdef MIP_PLUGIN_GENERIC_EDITOR
+
+      MEditorWidth = getGenericWidth();
+      MEditorHeight = getGenericHeight();
+      MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
+      if (MEditor) {
+        MIP_Window* editor_window = MEditor->getWindow();
+        if (editor_window) {
+          editor_window->setWindowFillBackground(false);
+          MIP_Widget* editor_widget = setupGenericEditor();
+          editor_window->appendChildWidget(editor_widget);
+        }
+        return true;
+      }
+
+    #else
+
+      MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
+      if (MEditor) {
+        MIP_Window* editor_window = MEditor->getWindow();
+        if (editor_window) {
+          editor_window->setWindowFillBackground(false);
+        }
+        return true;
+      }
+
     #endif
-    //MIP_Assert(MEditor);
+
     // timer is started in open()
-    return true;
+    return false;
   }
 
   //----------
@@ -1439,6 +1468,100 @@ public: // timer listener
 
   #endif
 
+//------------------------------
+public: // timer listener
+//------------------------------
+
+  #ifndef MIP_NO_GUI
+
+  uint32_t getGenericNumControls() {
+    uint32_t num = 0;
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      MIP_Parameter* parameter = MParameters[i];
+      if (parameter->isAutomatable())
+        if (!parameter->isHidden())
+          num += 1;
+    }
+    return num;
+  }
+
+  //----------
+
+  uint32_t getGenericWidth() {
+    return 400;
+  }
+
+  //----------
+
+  uint32_t getGenericHeight() {
+    uint32_t numparams = getGenericNumControls();
+    return 60 + 10 + (numparams * 20) + ((numparams-1) * 5) + 10 + 25;
+  }
+
+  //----------
+
+  MIP_Widget* setupGenericEditor() {
+
+    //----- background -----
+
+    MIP_PanelWidget* editor = new MIP_PanelWidget(0);
+    editor->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    editor->setFillBackground(true);
+    editor->setDrawBorder(false);
+    editor->setBackgroundColor(0.55);
+
+    //----- sa header -----
+
+    MIP_SAHeaderWidget* saheader = new MIP_SAHeaderWidget(60);
+    editor->appendChildWidget(saheader);
+    saheader->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+    saheader->setPluginName("MIP_Plugin");
+    saheader->setPluginVersion("v0.0.0");
+
+    //----- footer -----
+
+    MIP_TextWidget* footer_panel = new MIP_TextWidget(25,"footer");
+    editor->appendChildWidget(footer_panel);
+    footer_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
+    footer_panel->setFillBackground(true);
+    footer_panel->setBackgroundColor(0.4);
+    footer_panel->setDrawBorder(false);
+    footer_panel->setDrawText(true);
+    footer_panel->setTextColor(MIP_Color(0.75));
+    footer_panel->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
+    footer_panel->setTextOffset(MIP_DPoint(5,0));
+
+    //----- center -----
+
+    MIP_PanelWidget* center = new MIP_PanelWidget(0);
+    editor->appendChildWidget(center);
+    center->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    center->setFillBackground(false);
+    center->setDrawBorder(false);
+    center->Layout.border = { 10,10,10,10 };
+    center->Layout.spacing = { 5,5 };
+
+    //----- parameters -----
+
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      MIP_Parameter* parameter = MParameters[i];
+      if (parameter->isAutomatable()) {
+        if (!parameter->isHidden()) {
+          const char* name = parameter->getName();
+          double value = parameter->getDefaultValue();
+          MIP_Widget* widget = new MIP_SliderWidget(20,name,value);
+          center->appendChildWidget(widget);
+          widget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+          MEditor->connectWidget(parameter,widget);
+        }
+      }
+    }
+
+    return editor;
+
+  }
+
+  #endif // MIP_NO_GUI
 
 };
 

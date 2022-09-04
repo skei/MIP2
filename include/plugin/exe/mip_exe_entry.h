@@ -42,7 +42,7 @@
 
 int main(int argc, char** argv, char** env) {
 
-  MIP_PRINT;
+  //MIP_PRINT;
 
   //MIP_REGISTRY.getNumDescriptors();
   uint32_t index = 0; //TODO: arg[1] select index

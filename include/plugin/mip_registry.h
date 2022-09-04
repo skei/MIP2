@@ -12,8 +12,13 @@
 
 class MIP_Registry;
 
-extern void         MIP_Register(MIP_Registry* ARegistry) __MIP_WEAK;
-extern void         MIP_Unregister(MIP_Registry* ARegistry) __MIP_WEAK;
+//extern void MIP_Register(MIP_Registry* ARegistry) __MIP_WEAK;
+//extern void MIP_Unregister(MIP_Registry* ARegistry) __MIP_WEAK;
+
+extern void MIP_Register() __MIP_WEAK;
+extern void MIP_Unregister() __MIP_WEAK;
+
+// -> factory
 extern MIP_Plugin*  MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) __MIP_WEAK;
 
 //----------------------------------------------------------------------
@@ -39,7 +44,7 @@ public:
 //------------------------------
 
   MIP_Registry() {
-    MIP_PRINT;
+    //MIP_PRINT;
     //if (MIP_Register) MIP_Register(this);
     initialize();
   }
@@ -47,8 +52,8 @@ public:
   //----------
 
   ~MIP_Registry() {
-    MIP_PRINT;
-    if (MIP_Unregister) MIP_Unregister(this);
+    //MIP_PRINT;
+    if (MIP_Unregister) MIP_Unregister();
     #ifndef MIP_NO_AUTODELETE
       deleteFactories();
       //deleteDescriptors();  // must be done manually, since we have many ways
@@ -71,7 +76,7 @@ public:
 
   void initialize() {
     if (!MInitialized) {
-      if (MIP_Register) MIP_Register(this);
+      if (MIP_Register) MIP_Register();
     }
     MInitialized = true;
   }
@@ -181,7 +186,7 @@ public: // descriptors
 
 //----------------------------------------------------------------------
 //
-//
+// global registry object
 //
 //----------------------------------------------------------------------
 

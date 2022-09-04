@@ -145,6 +145,26 @@ public:
   bool                      getPolyModulated()    { return MPolyModulated; }
   double                    getValue()            { return MValue; }
 
+  bool isHidden()       { return (MParamInfo.flags & CLAP_PARAM_IS_HIDDEN); }
+  bool isStepped()      { return (MParamInfo.flags & CLAP_PARAM_IS_STEPPED); }
+  bool isPeriodic()     { return (MParamInfo.flags & CLAP_PARAM_IS_PERIODIC); }
+  bool isReadOnly()     { return (MParamInfo.flags & CLAP_PARAM_IS_READONLY); }
+  bool isBypass()       { return (MParamInfo.flags & CLAP_PARAM_IS_BYPASS); }
+  bool isAutomatable()  { return (MParamInfo.flags & CLAP_PARAM_IS_AUTOMATABLE); }
+  bool isModulatable()  { return (MParamInfo.flags & CLAP_PARAM_IS_MODULATABLE); }
+
+  //CLAP_PARAM_IS_AUTOMATABLE_PER_NOTE_ID
+  //CLAP_PARAM_IS_AUTOMATABLE_PER_KEY
+  //CLAP_PARAM_IS_AUTOMATABLE_PER_CHANNEL
+  //CLAP_PARAM_IS_AUTOMATABLE_PER_PORT
+
+  //CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID
+  //CLAP_PARAM_IS_MODULATABLE_PER_KEY
+  //CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
+  //CLAP_PARAM_IS_MODULATABLE_PER_PORT
+
+  //CLAP_PARAM_REQUIRES_PROCESS
+
 //------------------------------
 public:
 //------------------------------

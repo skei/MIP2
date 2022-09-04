@@ -51,6 +51,7 @@ protected:
 //------------------------------
 
   MIP_WidgetArray   MDirtyWidgets       = {};
+
   MIP_Widget*       MHoverWidget        = nullptr;
   MIP_Widget*       MClickedWidget      = nullptr;
   MIP_Widget*       MModalWidget        = nullptr;

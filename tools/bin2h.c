@@ -12,6 +12,8 @@ int main (int argc, char **argv)
 	unsigned char a[NUM];
 	unsigned int i,c,size = 0;
 
+  fprintf(stderr,"Hello World!!\n");
+
 	if (argc!=4)
 	{
 		fprintf(stderr,"usage: bin2h inputfile output.h name[]\n");

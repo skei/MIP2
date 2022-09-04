@@ -3,22 +3,22 @@
 //----------------------------------------------------------------------
 
 /*
-MIP_32BIT
-MIP_64BIT
-MIP_BIG_ENDIAN
-MIP_CPP11
-MIP_LINUX
-MIP_LITTLE_ENDIAN
-MIP_MAC
-MIP_WIN32
+  MIP_32BIT
+  MIP_64BIT
+  MIP_BIG_ENDIAN
+  MIP_CPP11
+  MIP_LINUX
+  MIP_LITTLE_ENDIAN
+  MIP_MAC
+  MIP_WIN32
 */
 
-//#define MIP_EXE
-//#define MIP_PLUGIN
-//#define MIP_LIB // todo: -> mip_plugin
+/*
+  #define MIP_EXE
+  #define MIP_PLUGIN
+*/
 
-//
-
+//----------------------------------------------------------------------
 
 //#define MIP_DEBUG
 //#define MIP_DEBUG_ASSERT
@@ -30,10 +30,16 @@ MIP_WIN32
 //#define MIP_DEBUG_PRINT_TIME
 //#define MIP_DEBUG_WATCHES
 
+//#define MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
+
+//#define MIP_EXECUTABLE_SHARED_LIBRARY
+
 //#define MIP_FAST_MATH_EXTRA_PRECISION
 
 //#define MIP_GUI_XCB
 //#define MIP_GUI_WIN32
+
+//#define MIP_MOUSE_DOUBLECLICK
 
 //#define MIP_NO_AUTODELETE
 //#define MIP_NO_BITMAP_DRAW
@@ -52,20 +58,32 @@ MIP_WIN32
 //#define MIP_PAINTER_GDI
 //#define MIP_PAINTER_GLX
 //#define MIP_PAINTER_NANOVG
+//#define MIP_PAINTER_WGL
 //#define MIP_PAINTER_XCB
 
-//#define MIP_PLUGIN_DEFAULT_EDITOR
+//#define MIP_PLUGIN_GENERIC_EDITOR
 
 //#define MIP_RANDOM_SYSTEM
 
 //#define MIP_USE_CAIRO
+//#define MIP_USE_GDI
 //#define MIP_USE_GLX
 //#define MIP_USE_NANOVG
+//#define MIP_USE_WGL
+//#define MIP_USE_WIN32
 //#define MIP_USE_XCB
 
 //#define MIP_VST2_FST
 //#define MIP_VST2_VESTIGE
 
+//#define MIP_VST3_TRAVESTY
+
+//#define MIP_WIN32_GDIPLUS
+//#define MIP_WIN32_IDLE_TIMER
+
+//#define MIP_WINDOW_BUFFERED
+
+//#define MIP_XCB_USE_STB_TRUETYPE
 //#define MIP_XCB_WAIT_FOR_MAPNOTIFY
 
 //----------------------------------------------------------------------

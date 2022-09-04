@@ -600,6 +600,7 @@
 		<Unit filename="../include/plugin/vst3/mip_vst3_host_implementation.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_plugin.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_utils.h" />
+		<Unit filename="../include/test/mip_test.h" />
 		<Unit filename="../source/apps/clap-host/arguments.hpp" />
 		<Unit filename="../source/apps/clap-host/audio_file.hpp" />
 		<Unit filename="../source/apps/clap-host/host.hpp" />

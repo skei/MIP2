@@ -46,6 +46,38 @@ typedef MIP_Array<const char*>                        MIP_VMTokens;
 
 //----------------------------------------------------------------------
 
+const char* MIP_VMOpcodeNames[MIP_VM_NUM_OPCODES] = {
+  "noop",   // 0
+  "exit",   // 1
+  "push",   // 2
+  "drop",   // 3
+  "dup",    // 4
+  "dup2",   // 5
+  "pushr",  // 6
+  "popr",   // 7
+  "pushd",  // 8
+  "popd",   // 9
+  "call",   // 10
+  "ret",    // 11
+  "jmp",    // 12
+  "jz",     // 13
+  "jnz",    // 14
+  "eq",     // 15
+  "gr",     // 16
+  "le",     // 17
+  "ne",     // 18
+  "add",    // 19
+  "sub",    // 20
+  "mul",    // 21
+  "div",    // 22
+  "inc",    // 23
+  "dec",    // 24
+  "print",  // 25
+  "ext"     // 26
+};
+
+//----------------------------------------------------------------------
+
 class MIP_VMCompiler {
 
 //------------------------------

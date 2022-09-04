@@ -6,6 +6,8 @@
 #include "plugin/clap/mip_clap.h"
 #include "plugin/mip_registry.h"
 
+//extern MIP_Plugin*  MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) __MIP_WEAK;
+
 //----------------------------------------------------------------------
 
 uint32_t clap_plugin_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
@@ -21,11 +23,13 @@ const clap_plugin_descriptor_t* clap_plugin_factory_get_plugin_descriptor_callba
 //----------
 
 const clap_plugin_t* clap_plugin_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-  int32_t index = MIP_REGISTRY.findDescriptorById(plugin_id);
-  if (index >= 0) {
-    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
-    MIP_Plugin* plugin = MIP_CreatePlugin(index,descriptor,host);
-    return plugin->getPlugin();
+  if (MIP_CreatePlugin) {
+    int32_t index = MIP_REGISTRY.findDescriptorById(plugin_id);
+    if (index >= 0) {
+      const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
+      MIP_Plugin* plugin = MIP_CreatePlugin(index,descriptor,host);
+      return plugin->getPlugin();
+    }
   }
   return nullptr;
 }
