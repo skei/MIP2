@@ -47,11 +47,12 @@ public:
   AEffect* entry(audioMasterCallback audioMaster) {
     //MIP_Print("\n");
 
-    char path[1024] = {};
+//    char path[1024] = {};
     //const char* plugin_path = MIP_GetLibPath(path);
-    const char* plugin_path = MIP_GetLibFilename(path);
-    MIP_Print("plugin_path '%s'\n",plugin_path);
-    MIP_REGISTRY.setPath(plugin_path);
+
+//    const char* plugin_path = MIP_GetLibFilename(path);
+//    MIP_Print("plugin_path '%s'\n",plugin_path);
+//    MIP_REGISTRY.setPath(plugin_path);
 
     MIP_Vst2Host* host = new MIP_Vst2Host(audioMaster); // deleted in MIP_Vst2Plugin destructor
     //const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(0);

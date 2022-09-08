@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1662219862 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+1662503308 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
 	"../build/test/test_layout.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
@@ -33,7 +33,7 @@
 
 1641519085 /DISKS/sda2/code/git/MIP2/include/base/mip_attributes.h
 
-1662133985 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug.h
+1662501630 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug.h
 	"mip.h"
 	"base/debug/mip_debug_print.h"
 	"base/debug/mip_debug_assert.h"
@@ -689,7 +689,7 @@
 1656614747 /DISKS/sda2/code/git/MIP2/include/extern/clap/ext/draft/transport-control.h
 	"../../plugin.h"
 
-1662209168 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
+1662406268 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
 	"mip.h"
 	"base/types/mip_queue.h"
 	"plugin/mip_audio_port.h"
@@ -749,7 +749,7 @@
 	"plugin/mip_plugin.h"
 	"plugin/clap/mip_clap.h"
 
-1662143952 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_factory.h
+1662221707 /DISKS/sda2/code/git/MIP2/include/plugin/clap/mip_clap_factory.h
 	"mip.h"
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
@@ -789,7 +789,7 @@
 	"gui/mip_drawable.h"
 	"gui/xcb/mip_xcb.h"
 
-1661635533 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1662304693 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"gui/mip_paint_context.h"
 	"plugin/mip_parameter.h"
@@ -1074,12 +1074,12 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1662134006 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe_entry.h
+1662484476 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe_entry.h
 	"mip.h"
 	"plugin/mip_registry.h"
 	"plugin/clap/mip_clap_host_implementation.h"
 	"plugin/exe/mip_exe.h"
-	"plugin/exe/mip_exe_host.h"
+	"plugin/exe/mip_exe_host_implementation.h"
 	"gui/mip_window.h"
 	"plugin/exe/mip_exe_window.h"
 
@@ -1199,7 +1199,7 @@
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
 
-1662143590 /DISKS/sda2/code/git/MIP2/source/plugins/gain.cpp
+1662483449 /DISKS/sda2/code/git/MIP2/source/plugins/gain.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
@@ -1208,7 +1208,7 @@
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
 
-1661813944 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_entry.h
+1662645628 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_entry.h
 	"mip.h"
 	"base/system/mip_paths.h"
 	"plugin/clap/mip_clap.h"
@@ -1221,7 +1221,7 @@
 	"base/system/linux/mip_linux_paths.h"
 	"base/system/win32/mip_win32_paths.h"
 
-1660268340 /DISKS/sda2/code/git/MIP2/include/base/system/linux/mip_linux_paths.h
+1662135741 /DISKS/sda2/code/git/MIP2/include/base/system/linux/mip_linux_paths.h
 	<stdio.h>
 	<stdlib.h>
 	<unistd.h>
@@ -1238,7 +1238,7 @@
 	<dlfcn.h>
 	<unistd.h>
 
-1661342046 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2.h
+1661972395 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2.h
 	"mip.h"
 	"extern/vst2/aeffect.h"
 	"extern/vst2/aeffectx.h"
@@ -1250,7 +1250,7 @@
 1440689074 /DISKS/sda2/code/git/MIP2/include/extern/vst2/aeffectx.h
 	"aeffect.h"
 
-1661367362 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_plugin.h
+1662510418 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_plugin.h
 	"mip.h"
 	"base/types/mip_queue.h"
 	"plugin/clap/mip_clap.h"
@@ -1269,7 +1269,7 @@
 	"plugin/vst3/mip_vst3_utils.h"
 	"plugin/mip_plugin.h"
 
-1661367575 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3.h
+1662509763 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3.h
 	"mip.h"
 	"pluginterfaces/base/coreiids.cpp"
 	"pluginterfaces/base/ustring.cpp"
@@ -1435,7 +1435,7 @@
 1655451196 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3_host_implementation.h
 	"plugin/clap/mip_clap_host_implementation.h"
 
-1661367458 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3_plugin.h
+1662510098 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3_plugin.h
 	"mip.h"
 	"plugin/clap/mip_clap.h"
 	"plugin/vst3/mip_vst3.h"
@@ -1540,13 +1540,16 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1662221667 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
+1662645643 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
 	"gui/widgets/mip_widgets.h"
 	"plugin/mip_registry.h"
+	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
+	"plugin/vst2/mip_vst2_entry.h"
+	"plugin/vst3/mip_vst3_entry.h"
 
 1661635365 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_pages_widget.h
 	"mip.h"
@@ -1785,4 +1788,8 @@
 1662215534 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_vm_compiler.h
 	"base/types/mip_stack.h"
 	"base/utils/mip_vm.h"
+
+1662482747 /DISKS/sda2/code/git/MIP2/include/plugin/exe/mip_exe_host_implementation.h
+	"mip.h"
+	"plugin/clap/mip_clap_host_implementation.h"
 

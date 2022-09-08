@@ -4,9 +4,6 @@
   #define MIP_DEBUG_PRINT_SOCKET
 #endif
 
-//#define MIP_EXECUTABLE_SHARED_LIBRARY
-//-Wl,-e,entry_point
-
 //#define MIP_PLUGIN_GENERIC_EDITOR
 
 //----------
@@ -645,23 +642,11 @@ public: // gui
 //
 //----------------------------------------------------------------------
 
-/*
-  todo/consider:
-
-  #define MIP_PLUGIN_MAIN(desc,plug)
-
-  #define MIP_PLUGIN_MAIN_BEGIN(formats)
-  #define MIP_PLUGIN_MAIN_APPEND(desc,plug)
-  #define MIP_PLUGIN_MAIN_END
-*/
-
-//----------
-
-#include "plugin/mip_registry.h"
+//#include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-//#include "plugin/vst2/mip_vst2_entry.h"
-//#include "plugin/vst3/mip_vst3_entry.h"
+#include "plugin/vst2/mip_vst2_entry.h"
+#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 

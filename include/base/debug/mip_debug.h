@@ -30,7 +30,7 @@
 //----------
 
 #ifndef MIP_DEBUG
-undef MIP_DEBUG_ASSER
+  #undef MIP_DEBUG_ASSERT
   #undef MIP_DEBUG_CALLSTACK
   #undef MIP_DEBUG_CRASH_HANDLER
   #undef MIP_DEBUG_MEMORY

@@ -1231,8 +1231,10 @@ public: // parameters
 
   //----------
 
+
   void deleteParameters() {
     for (uint32_t i=0; i<MParameters.size(); i++) {
+      //note to self: if !null
       delete MParameters[i];
       MParameters[i] = nullptr;
     }

@@ -1,5 +1,5 @@
-#ifndef mip_exe_host_included
-#define mip_exe_host_included
+#ifndef mip_exe_host_implementation_included
+#define mip_exe_host_implementation_included
 //----------------------------------------------------------------------
 
 #include "mip.h"
@@ -13,7 +13,6 @@
 
 class MIP_ExeHostImplementation
 : public MIP_ClapHostImplementation {
-
 };
 
 //----------------------------------------------------------------------

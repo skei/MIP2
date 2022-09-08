@@ -577,18 +577,43 @@ public: // vst2
       case effEditOpen: // 14
         MIP_Print("effEditOpen\n");
         #ifndef MIP_NO_GUI
+
+          #ifdef MIP_LINUX
           if (MGui && MGui->is_api_supported(MPlugin,CLAP_WINDOW_API_X11,false)) {
+          #endif
+
+          #ifdef MIP_WIN32
+          if (MGui && MGui->is_api_supported(MPlugin,CLAP_WINDOW_API_WIN32,false)) {
+          #endif
+
             if (!MIsEditorOpen) {
               MIsEditorOpen = true;
+
+              #ifdef MIP_LINUX
               MGui->create(MPlugin,CLAP_WINDOW_API_X11,false);
+              #endif
+
+              #ifdef MIP_WIN32
+              MGui->create(MPlugin,CLAP_WINDOW_API_WIN32,false);
+              #endif
+
               MGui->set_scale(MPlugin,1.0);
               uint32_t width = 0;
               uint32_t height = 0;
               MGui->get_size(MPlugin,&width,&height);
               MGui->set_size(MPlugin,width,height);
               clap_window_t clap_window = {};
+
+              #ifdef MIP_LINUX
               clap_window.api = CLAP_WINDOW_API_X11;
-              clap_window.x11 = (clap_xwnd)ptr;//MWindow->getXcbWindow();
+              clap_window.x11 = (clap_xwnd)ptr;
+              #endif
+
+              #ifdef MIP_WIN32
+              clap_window.api = CLAP_WINDOW_API_WIN32;
+              clap_window.win32 = (clap_hwnd)ptr;
+              #endif
+
               MGui->set_parent(MPlugin,&clap_window);
               //updateAllEditorParameters(MEditor,false);
               MGui->show(MPlugin);

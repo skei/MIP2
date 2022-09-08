@@ -124,18 +124,18 @@ public: // gui
     MIP_Window* window = MEditor->getWindow();
 
     MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(), MIP_COLOR_RED );
+    window->appendChildWidget(background);
     background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     background->Layout.border = MIP_DRect(10,10,10,10);
-    window->appendChildWidget(background);
 
-    MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(1,1), "Gain", 0.0 );
-    gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-    gain_knob->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
-    gain_knob->Layout.vertScale = MIP_WIDGET_SCALE_PARENT_RATIO;
-    gain_knob->Layout.aspectRatio = (4.0 / 6.0);
-    background->appendChildWidget(gain_knob);
+      MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(1,1), "Gain", 0.0 );
+      background->appendChildWidget(gain_knob);
+      gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      gain_knob->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
+      gain_knob->Layout.vertScale = MIP_WIDGET_SCALE_PARENT_RATIO;
+      gain_knob->Layout.aspectRatio = (4.0 / 6.0);
 
-    MEditor->connectWidget(MParameters[PAR_GAIN],gain_knob);
+      MEditor->connectWidget(MParameters[PAR_GAIN],gain_knob);
 
     return true;
   }
@@ -160,7 +160,7 @@ public: // process
     float* out0 = process->audio_outputs[0].data32[0];
     float* out1 = process->audio_outputs[0].data32[1];
     for (uint32_t i=0; i<len; i++) {
-      //double par_gain = MParameters[PAR_GAIN]->getValue();
+      double par_gain = MParameters[PAR_GAIN]->getValue();
       *out0++ = *in0++ * par_gain;
       *out1++ = *in1++ * par_gain;
     }

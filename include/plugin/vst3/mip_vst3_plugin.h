@@ -47,7 +47,9 @@ class MIP_Vst3Plugin
 , public IEditController
 , public IEditController2
 , public IPlugView
+#ifndef MIP_WIN32
 , public ITimerHandler
+#endif
 /*, public MIP_WindowListener*/ {
 
 //------------------------------
@@ -2195,9 +2197,15 @@ public:
 
   tresult PLUGIN_API isPlatformTypeSupported(FIDString type) override {
     // "X11EmbedWindowID"
-    if (type && strcmp(type,kPlatformTypeX11EmbedWindowID) == 0) {
-      return kResultOk;
-    }
+
+    #ifdef MIP_LINUX
+      if (type && strcmp(type,kPlatformTypeX11EmbedWindowID) == 0) return kResultOk;
+    #endif
+
+    #ifdef MIP_WIN32
+      if (type && strcmp(type,kPlatformTypeHWND) == 0) return kResultOk;
+    #endif
+
     return kResultFalse;
   }
 
@@ -2219,8 +2227,17 @@ public:
   tresult PLUGIN_API attached(void* parent, FIDString type) override {
     const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
     const clap_plugin_t* plugin = MPlugin->getPlugin();
+
+    #ifdef MIP_LINUX
     if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_X11,false)) {
       if (gui->create(plugin,CLAP_WINDOW_API_X11,false)) {
+    #endif
+
+    #ifdef MIP_WIN32
+    if (gui && gui->is_api_supported(plugin,CLAP_WINDOW_API_WIN32,false)) {
+      if (gui->create(plugin,CLAP_WINDOW_API_WIN32,false)) {
+    #endif
+
         gui->set_scale(plugin,1.0);
         uint32_t width = 0;
         uint32_t height = 0;
@@ -2234,13 +2251,18 @@ public:
           MPlugFrame->resizeView(this,&r);
         }
         clap_window_t clap_window = {};
+
         #ifdef MIP_LINUX
         clap_window.api = CLAP_WINDOW_API_X11;
-        clap_window.x11 = (clap_xwnd)parent;//MWindow->getXcbWindow();
+        clap_window.x11 = (clap_xwnd)parent;
+        #endif
+
+        #ifdef MIP_WIN32
+        clap_window.api = CLAP_WINDOW_API_WIN32;
+        clap_window.win32 = (clap_hwnd)parent;
         #endif
 
         gui->set_size(plugin,width,height);
-
         gui->set_parent(plugin,&clap_window);
         gui->show(plugin);
       }
@@ -2338,9 +2360,9 @@ public:
 
   tresult PLUGIN_API setFrame(IPlugFrame* frame) override {
     MPlugFrame = frame;
-    //tresult res =
     #ifdef MIP_LINUX
-    MPlugFrame->queryInterface(IRunLoop_iid, (void**)&MRunLoop);
+      //tresult res =
+      MPlugFrame->queryInterface(IRunLoop_iid, (void**)&MRunLoop);
     #endif
     return kResultOk;
   }
@@ -2379,10 +2401,15 @@ public:
   */
 
   #ifdef MIP_LINUX
-  void onTimer() override {
-    //MPlugin->on_updateEditor(MEditor);
-    //MPlugin->flushParamsToHost();
-  }
+    void onTimer() override {
+      //MPlugin->on_updateEditor(MEditor);
+      //MPlugin->flushParamsToHost();
+    }
+  #endif
+
+  #ifdef MIP_WIN32
+    //void onTimer() override {
+    //}
   #endif
 
 //
