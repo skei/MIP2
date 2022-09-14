@@ -16,7 +16,6 @@
 
 //----------------------------------------------------------------------
 
-#include "mip.h"
 #include "plugin/mip_plugin.h"
 #include "plugin/mip_editor.h"
 #include "gui/widgets/mip_widgets.h"
@@ -28,16 +27,16 @@
 //----------------------------------------------------------------------
 
 const clap_plugin_descriptor_t gain_descriptor = {
-   .clap_version  = CLAP_VERSION,
-   .id            = "skei.audio/gain/0",
-   .name          = "gain",
-   .vendor        = "skei.audio",
-   .url           = "https://torhelgeskei.com",
-   .manual_url    = "",
-   .support_url   = "",
-   .version       = "0.0.1",
-   .description   = "",
-   .features      = (const char*[]){ CLAP_PLUGIN_FEATURE_AUDIO_EFFECT, nullptr }
+  .clap_version  = CLAP_VERSION,
+  .id            = "skei.audio/gain/0",
+  .name          = "gain",
+  .vendor        = "skei.audio",
+  .url           = "https://torhelgeskei.com",
+  .manual_url    = "",
+  .support_url   = "",
+  .version       = "0.0.1",
+  .description   = "",
+  .features      = (const char*[]){ CLAP_PLUGIN_FEATURE_AUDIO_EFFECT, nullptr }
 };
 
 //----------------------------------------------------------------------
@@ -160,7 +159,7 @@ public: // process
     float* out0 = process->audio_outputs[0].data32[0];
     float* out1 = process->audio_outputs[0].data32[1];
     for (uint32_t i=0; i<len; i++) {
-      double par_gain = MParameters[PAR_GAIN]->getValue();
+      //double par_gain = MParameters[PAR_GAIN]->getValue();
       *out0++ = *in0++ * par_gain;
       *out1++ = *in1++ * par_gain;
     }
@@ -174,11 +173,11 @@ public: // process
 //
 //----------------------------------------------------------------------
 
-#include "plugin/mip_registry.h"
+//#include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-//#include "plugin/vst2/mip_vst2_entry.h"
-//#include "plugin/vst3/mip_vst3_entry.h"
+#include "plugin/vst2/mip_vst2_entry.h"
+#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 

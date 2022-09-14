@@ -49,6 +49,11 @@
 #pragma GCC diagnostic ignored "-Wshift-negative-value"
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 
+//vst3
+#ifdef MIP_WIN32
+  #pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#endif
+
 //------------------------------
 //
 // mip framework

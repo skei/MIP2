@@ -6,6 +6,7 @@
 
 #include "mip.h"
 #include "base/system/mip_paths.h"
+#include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap.h"
 //#include "plugin/clap/mip_clap_host.h"
 #include "plugin/vst2/mip_vst2.h"
@@ -58,7 +59,7 @@ public:
     //const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(0);
 
     uint32_t index = 0; // TODO
-    const clap_plugin_descriptor_t* descriptor  = MIP_REGISTRY.getDescriptor(index);
+    const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
 
     //const clap_plugin_t* plugin = MIP_CreatePlugin(host->ptr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
     MIP_ClapPlugin* plugin = MIP_CreatePlugin(0,descriptor,host->getHost());
@@ -90,16 +91,23 @@ public:
     if (gui) {
       flags |= effFlagsHasEditor;
     }
+
+    // is_synth..
+    // flags |= effFlagsProgramChunks;
+    // flags |= effFlagsNoSoundInStop;
+    // flags |= effFlagsCanDoubleReplacing;
+
     const clap_plugin_params_t* params = (const clap_plugin_params_t*)plugin->get_extension(CLAP_EXT_PARAMS);
     if (params) {
       num_params = params->count(clap_plugin/*plugin->ptr()*/);
     }
-    // flags |= effFlagsProgramChunks;
-    // flags |= effFlagsNoSoundInStop;
-    // flags |= effFlagsCanDoubleReplacing;
+
+    // move all of the below to vst2plugin ?
+
     AEffect* effect = vst2plugin->getAEffect();
     host->setAEffect(effect);
     memset(effect,0,sizeof(AEffect));
+
     effect->magic                   = kEffectMagic;
     effect->uniqueID                = MIP_MAGIC_M_PL;//0x00000000; // TODO
     effect->flags                   = flags;
@@ -116,6 +124,7 @@ public:
     effect->getParameter            = vst2_getParameter_callback;
     effect->processReplacing        = vst2_process_callback;
     effect->processDoubleReplacing  = vst2_processDouble_callback;
+
     return effect;
   }
 

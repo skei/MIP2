@@ -1,6 +1,6 @@
 # MIP 2
 "multum in parvo"  
-(much in little)
+(latin, much in little)
 
 #### plugins, wrappers, abstractions, simplifications, helpers, ..
 

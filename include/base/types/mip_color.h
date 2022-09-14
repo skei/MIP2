@@ -18,7 +18,7 @@ struct NVGcolor {
 
 
 
-
+// struct?
 class MIP_Color {
 
 public:

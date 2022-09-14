@@ -35,7 +35,7 @@ public:
   virtual bool              drawable_isBitmap()          { return false; }
   virtual bool              drawable_isSurface()         { return false; }
   virtual bool              drawable_isWindow()          { return false; }
-  virtual bool              drawable_isDrawable()         { return false; }
+  virtual bool              drawable_isDrawable()        { return false; }
 
   virtual uint32_t          drawable_getWidth()          { return 0; }
   virtual uint32_t          drawable_getHeight()         { return 0; }

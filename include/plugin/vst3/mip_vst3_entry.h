@@ -253,7 +253,7 @@ bool vst3_module_exit(void) asm ("ModuleExit");
 //__MIP_EXPORT
 __attribute__ ((visibility ("default")))
 IPluginFactory* PLUGIN_API mip_vst3_entry() {
-    MIP_Print("GetPluginFactory\n");
+  MIP_Print("GetPluginFactory\n");
   return new MIP_Vst3Entry();
 }
 
