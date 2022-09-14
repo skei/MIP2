@@ -43,6 +43,16 @@ public:
 public:
 //------------------------------
 
+//  void on_widget_config(MIP_Widget* AOwnerWindow) {
+//    MIP_Window* window = (MIP_Window*)AOwnerWindow;
+//    MIP_Painter* painter = window->getPainter();
+//    MIP_Print("painter: %p\n",painter);
+//  }
+
+//------------------------------
+public:
+//------------------------------
+
   virtual void setMaxLines(uint32_t ANum) { MMaxLines = ANum; }
   //virtual void setTextHeight(float ASize) { MTextHeight = ASize; }
 
@@ -63,6 +73,7 @@ public:
     MIP_ScrollBoxWidget::alignChildWidgets(ARecursive);
   }
 
+  //----------
 
   virtual void appendLine(const char* AText, bool ARedraw=true) {
     if (MNumLines >= MMaxLines) { removeOldestLine(); }
@@ -83,14 +94,17 @@ public:
     textwidget->setTextColor(MIP_Color(0)/*MIP_COLOR_BLACK*/);
     textwidget->setTextSize(MTextSize);
 
-    // textwidget.updateTextSize() commented out..
     textwidget->Options.autoSize = true;
+    //textwidget->setFillBackground(true);
+    //textwidget->setBackgroundColor(0.55);
 
     MContent->appendChildWidget(textwidget);
     MNumLines += 1;
-    MContent->alignChildWidgets();
-    do_widget_redraw(MContent,0); // only if visible?
 
+    // do we need to align for each line?
+    MContent->alignChildWidgets();
+
+    if (ARedraw) do_widget_redraw(MContent,0); // only if visible?
   }
 
   //----------

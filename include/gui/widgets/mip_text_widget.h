@@ -36,6 +36,7 @@ public:
     MName = "MIP_TextWidget";
     setDrawRoundedCorners(false);
     strcpy(MText,AText);
+//    Options.autoSize = true;
   }
 
   //----------
@@ -86,6 +87,7 @@ public: // parent to child
 
   void on_widget_config(MIP_Widget* AOwnerWindow) override {
     MOwnerWindow = (MIP_Window*)AOwnerWindow;
+    //MIP_Print("MOwnerWindow: %p\n",MOwnerWindow);
     MIP_PanelWidget::on_widget_config(AOwnerWindow);
   }
 
@@ -106,8 +108,8 @@ public:
   // widget with autoSize flag calls painter
 
   virtual void updateTextSize() {
+    //MIP_Print("MOwnerWindow: %p\n",MOwnerWindow);
     if (Options.autoSize) {
-      /*
       MIP_Painter* painter = MOwnerWindow->getPainter();
       if (painter) {
         float bounds[4];;
@@ -124,7 +126,6 @@ public:
         Layout.baseRect.w = width;
         Layout.baseRect.h = height;
       }
-      */
     }
   }
 
