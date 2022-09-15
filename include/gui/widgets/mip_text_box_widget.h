@@ -43,11 +43,17 @@ public:
 public:
 //------------------------------
 
-//  void on_widget_config(MIP_Widget* AOwnerWindow) {
-//    MIP_Window* window = (MIP_Window*)AOwnerWindow;
-//    MIP_Painter* painter = window->getPainter();
-//    MIP_Print("painter: %p\n",painter);
-//  }
+  void on_widget_config(MIP_Widget* AOwnerWindow) {
+    MIP_Window* window = (MIP_Window*)AOwnerWindow;
+    MIP_Painter* painter = window->getPainter();
+    uint32_t num = MContent->getNumChildWidgets();
+    for (uint32_t i=0; i<num; i++) {
+      MIP_TextWidget* textwidget = (MIP_TextWidget*)MContent->getChildWidget(i);
+      if (textwidget) {
+        textwidget->updateTextRect(painter);
+      }
+    }
+  }
 
 //------------------------------
 public:
@@ -60,50 +66,23 @@ public:
 public:
 //------------------------------
 
-  /*
-    this could be called if the window, context, etc, is not valid yet?
-  */
-
-  void alignChildWidgets(bool ARecursive=true) override {
-    //MIP_PRINT;
-    for (uint32_t i=0; i<MContent->getNumChildWidgets(); i++) {
-      MIP_TextWidget* textwidget = (MIP_TextWidget*)MContent->getChildWidget(i);
-      textwidget->updateTextSize();
-    }
-    MIP_ScrollBoxWidget::alignChildWidgets(ARecursive);
-  }
-
-  //----------
-
   virtual void appendLine(const char* AText, bool ARedraw=true) {
     if (MNumLines >= MMaxLines) { removeOldestLine(); }
     //while (MNumLines >= MMaxLines) { removeOldestLine(); }
     MIP_TextWidget* textwidget = new MIP_TextWidget( MIP_DRect(600,MTextSize),AText);
-
-    /*
-      this means we can't scroll..
-      todo: some kind of autosize..
-      keep track of the widest line (appendLine
-    */
     //textwidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
     textwidget->Layout.alignment = MIP_WIDGET_ALIGN_TOP_LEFT;
-
     textwidget->setFillBackground(false);
     textwidget->setDrawBorder(false);
     textwidget->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     textwidget->setTextColor(MIP_Color(0)/*MIP_COLOR_BLACK*/);
     textwidget->setTextSize(MTextSize);
-
-    textwidget->Options.autoSize = true;
+    //textwidget->Options.autoSize = true;
     //textwidget->setFillBackground(true);
     //textwidget->setBackgroundColor(0.55);
-
     MContent->appendChildWidget(textwidget);
     MNumLines += 1;
-
-    // do we need to align for each line?
-    MContent->alignChildWidgets();
-
+    MContent->alignChildWidgets(); // do we need to align for each line?
     if (ARedraw) do_widget_redraw(MContent,0); // only if visible?
   }
 

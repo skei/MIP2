@@ -241,11 +241,6 @@ public: // child to parent
     if (MParent) MParent->do_widget_notify(ASender,AMode,AValue);
   }
 
-//  virtual MIP_Widget* do_widget_get_owner_window(MIP_Widget* ASender) {
-//    if (MParent) return MParent->do_widget_get_owner_window(ASender);
-//    else return nullptr;
-//  }
-
   /*
     called by MIP_WidgetSizer (etc?)
     resize ourselves, and tell parent to realign all its children
@@ -256,8 +251,6 @@ public: // child to parent
     //if (MParent) MParent->do_widget_resized(ASender,ADeltaX,ADeltaY);
     MRect.w += ADeltaX;
     MRect.h += ADeltaY;
-    //MInitialRect.w += ADeltaX;
-    //MInitialRect.h += ADeltaY;
     Layout.baseRect.w += ADeltaX;
     Layout.baseRect.h += ADeltaY;
     //resize(ADeltaX,ADeltaY);
@@ -470,13 +463,7 @@ public: // hierarchy
       for (uint32_t i=0; i<MChildren.size(); i++) {
         MIP_Widget* child = MChildren[i];
         if (child->State.visible) {
-// !!!
-          //child->prepareForAlignment();
-// !!!
           MIP_DRect child_rect = child->Layout.baseRect;
-
-
-
           uint32_t  alignment = child->Layout.alignment;
 
           // sizemode

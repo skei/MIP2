@@ -25,8 +25,6 @@ protected:
   float       MTextSize       = 13.0;
   MIP_DPoint  MTextOffset     = MIP_DPoint(0,0);
 
-  MIP_Window* MOwnerWindow    = nullptr;
-
 //------------------------------
 public:
 //------------------------------
@@ -36,7 +34,7 @@ public:
     MName = "MIP_TextWidget";
     setDrawRoundedCorners(false);
     strcpy(MText,AText);
-//    Options.autoSize = true;
+    Options.autoSize = true;
   }
 
   //----------
@@ -61,38 +59,6 @@ public:
 public: // parent to child
 //------------------------------
 
-  /*
-  void prepareForAlignment() override {
-    MIP_PRINT;
-    MIP_Window* window = (MIP_Window*)getOwnerWindow();
-    if (window) {
-      MIP_Painter* painter = window->getPainter();
-      if (painter) {
-        float bounds[4];;
-        painter->textBounds(MRect.x,MRect.y,MText,nullptr,bounds);
-        float xmin = bounds[0];
-        //float ymin = bounds[1];
-        float xmax = bounds[2];
-        //float ymax = bounds[3];
-        float width = xmax - xmin;
-        MRect.w = width;
-      }
-    }
-  }
-  */
-
-//------------------------------
-public: // parent to child
-//------------------------------
-
-  void on_widget_config(MIP_Widget* AOwnerWindow) override {
-    MOwnerWindow = (MIP_Window*)AOwnerWindow;
-    //MIP_Print("MOwnerWindow: %p\n",MOwnerWindow);
-    MIP_PanelWidget::on_widget_config(AOwnerWindow);
-  }
-
-  //----------
-
   void on_widget_paint(MIP_PaintContext* AContext) override {
     fillBackground(AContext);
     paintChildWidgets(AContext);
@@ -104,22 +70,17 @@ public: // parent to child
 public:
 //------------------------------
 
-  // opening/resizing window, realignment,
-  // widget with autoSize flag calls painter
-
-  virtual void updateTextSize() {
-    //MIP_Print("MOwnerWindow: %p\n",MOwnerWindow);
-    if (Options.autoSize) {
-      MIP_Painter* painter = MOwnerWindow->getPainter();
-      if (painter) {
+  virtual void updateTextRect(MIP_Painter* APainter) {
+    if (APainter) {
+      if (Options.autoSize) {
         float bounds[4];;
         double textsize = MTextSize;
         if (textsize < 0) textsize = MRect.h * (- textsize);
-        painter->fontSize(textsize);
+        APainter->fontSize(textsize);
         float width = 0;
         float height = 0;
         if (MText) {
-          painter->textBounds(MRect.x,MRect.y,MText,nullptr,bounds);
+          APainter->textBounds(MRect.x,MRect.y,MText,nullptr,bounds);
           width  = bounds[2] - bounds[0];
           height = bounds[3] - bounds[1];
         }

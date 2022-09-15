@@ -115,11 +115,17 @@ public:
     return MWindowPainter;
   }
 
-  #ifdef MIP_WINDOW_BUFFERED
+  //----------
+
   MIP_Painter* getBufferPainter() {
-    return MBufferPainter;
+    #ifdef MIP_WINDOW_BUFFERED
+      return MBufferPainter;
+    #else
+      return nullptr;
+    #endif
   }
-  #endif
+
+  //----------
 
   MIP_Painter* getPainter() {
     #ifdef MIP_WINDOW_BUFFERED
@@ -275,15 +281,12 @@ public: // window
 
   void on_window_open() override {
     //MIP_Print("on_window_open\n");
-//    for (uint32_t i=0; i<MChildren.size(); i++) {
-//      MChildren[i]->on_widget_open(this);
-//    }
     on_widget_config(this);
   }
 
   //----------
 
-  // alignChildWidgets assumes 0,0 is upper corner..ren
+  // alignChildWidgets assumes 0,0 is upper corner..
 
   void on_window_move(int32_t AXpos, int32_t AYpos) override {
     //MIP_PRINT;
@@ -304,19 +307,13 @@ public: // window
       MPaintContext.painter = MWindowPainter;
     #endif
     MRect.setSize(AWidth,AHeight);
-
-// in case widgets need to update painter..
-// images, fonts..
-
+    // in case widgets need to update painter.. images, fonts..
     on_widget_config(this);
 
     //alignChildWidgets();
-
     //    double xscale = AWidth / Layout.baseRect.w;
     //    double yscale = AHeight / Layout.baseRect.h;
     //    MIP_Print("xscale %f yscale %f\n",xscale,yscale);
-
-
   }
 
   //----------
@@ -348,18 +345,12 @@ public: // window
 
     if (painter) {
       painter->beginPaint(0,0,MRect.w,MRect.h);
-      //painter->beginPaint(AXpos,AYpos,AWidth,AHeight);
-      //painter->pushClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
-      //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       paintChildWidgets(&MPaintContext);
-      //painter->popClip();
       painter->endPaint();
     }
 
-    //intptr_t drawable = MBufferSurface->drawable_getDrawable();
     #ifdef MIP_WINDOW_BUFFERED
-      //MIP_Print("%i,%i,%i,%i\n",AXpos,AYpos,AWidth,AHeight);
       blitDrawable(AXpos,AYpos,MBufferSurface,AXpos,AYpos,AWidth,AHeight);
     #endif
 
@@ -586,16 +577,17 @@ public:
 //    #endif
 //  }
 
-//  //----------
+  //----------
 
 //  MIP_Widget* getOwnerWindow() override {
 //    return this;
 //  }
 
+  //----------
 
-  //void redrawEditor() {
-  //  invalidateRegion(0,0,getWindowWidth(),getWindowHeight());
-  //}
+//  void redrawEditor() {
+//    invalidateRegion(0,0,getWindowWidth(),getWindowHeight());
+//  }
 
 };
 
