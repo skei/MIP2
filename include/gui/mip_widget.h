@@ -23,17 +23,18 @@ typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 //----------
 
 struct MIP_WidgetLayout {
-  uint32_t    alignment   = MIP_WIDGET_ALIGN_PARENT;      // alignment relative to parent
-  double      aspectRatio = -1;                           // if > 0, force aspect ratio (scale down)
-  uint32_t    horizScale  = MIP_WIDGET_SCALE_PIXELS;      // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
-  uint32_t    vertScale   = MIP_WIDGET_SCALE_PIXELS;      // y,h - --"--
-  MIP_DRect   initialRect = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
-  MIP_DRect   baseRect    = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
-  MIP_DRect   border      = MIP_DRect(0,0,0,0);           // inner border
-  MIP_DRect   extraBorder = MIP_DRect(0,0,0,0);           // additional border
-  MIP_DPoint  spacing     = MIP_DPoint(0,0);              // spacing between child widgets
-  MIP_DPoint  minSize     = MIP_DPoint(0,0);              // minimum size
-  MIP_DPoint  maxSize     = MIP_DPoint(999999,999999);    // maximum size
+  uint32_t    alignment     = MIP_WIDGET_ALIGN_PARENT;      // alignment relative to parent
+  double      aspectRatio   = -1;                           // if > 0, force aspect ratio (scale down)
+  uint32_t    horizScale    = MIP_WIDGET_SCALE_PIXELS;      // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
+  uint32_t    vertScale     = MIP_WIDGET_SCALE_PIXELS;      // y,h - --"--
+  MIP_DRect   initialRect   = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
+//MIP_DPoint  initialRatio  = MIP_DPoint(0,0);
+  MIP_DRect   baseRect      = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
+  MIP_DRect   border        = MIP_DRect(0,0,0,0);           // inner border
+  MIP_DRect   extraBorder   = MIP_DRect(0,0,0,0);           // additional border
+  MIP_DPoint  spacing       = MIP_DPoint(0,0);              // spacing between child widgets
+  MIP_DPoint  minSize       = MIP_DPoint(0,0);              // minimum size
+  MIP_DPoint  maxSize       = MIP_DPoint(999999,999999);    // maximum size
 };
 
 //----------
@@ -187,6 +188,10 @@ public: // parent to child
 //------------------------------
 
   virtual void on_widget_config(MIP_Widget* AOwnerWindow)  {
+    //double winw = AOwnerWindow->MRect.w;
+    //double winh = AOwnerWindow->MRect.h;
+    //Layout.initialRatio.x = MRect.w / winw;
+    //Layout.initialRatio.y = MRect.h / winh;
     for (uint32_t i=0; i<MChildren.size(); i++) {
       MChildren[i]->on_widget_config(AOwnerWindow);
     }
@@ -296,15 +301,15 @@ public: // hierarchy
 
   //----------
 
-  virtual void scaleChildWidgets(double AScale, bool ARecursive=true) {
+  virtual void scaleChildWidgets(double AXScale, double AYScale, bool ARecursive=true) {
     uint32_t num = 0;
     num = MChildren.size();
     for (uint32_t i=0; i<num; i++) {
       MIP_Widget* child = MChildren[i];
       if (child) {
-        child->MRect.scale(AScale);
+        child->MRect.scale(AXScale,AYScale,AXScale,AYScale);
         //child->Layout.baseRect.scale(AScale);
-        if (ARecursive) child->scaleChildWidgets(AScale,ARecursive);
+        if (ARecursive) child->scaleChildWidgets(AXScale,AYScale,ARecursive);
       }
     }
   }

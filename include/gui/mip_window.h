@@ -74,7 +74,7 @@ protected:
   uint32_t          MMouseClickedS      = 0;
   uint32_t          MMouseClickedT      = 0;
 
-  uint32_t MPrevClickTime = 0;
+  uint32_t          MPrevClickTime      = 0;
 
   // drag
 
@@ -161,6 +161,7 @@ public:
     MParent = nullptr;
     MRect.setPos(0.0);
     Layout.baseRect = MRect;
+    Layout.initialRect = MRect;
     MIndex = -1;
   }
 
@@ -280,7 +281,7 @@ public: // window
   */
 
   void on_window_open() override {
-    //MIP_Print("on_window_open\n");
+    //MIP_Print("on_window_open (MRect: %.0f,%.0f)\n",MRect.w,MRect.h);
     on_widget_config(this);
   }
 

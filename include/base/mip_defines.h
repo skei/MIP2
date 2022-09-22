@@ -139,6 +139,7 @@
 #ifndef MIP_PAINTER_DEFINED
   #warning No PAINTER defined.
   #define MIP_NO_GUI
+  #define MIP_NO_PAINTER
 #endif
 
 //----------------------------------------------------------------------

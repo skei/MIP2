@@ -21,14 +21,15 @@
 //----------------------------------------------------------------------
 
 //#define MIP_DEBUG
-//#define MIP_DEBUG_ASSERT
-//#define MIP_DEBUG_CALLSTACK
-//#define MIP_DEBUG_CRASH_HANDLER
+#define MIP_DEBUG_ASSERT
+#define MIP_DEBUG_CALLSTACK
+#define MIP_DEBUG_CRASH_HANDLER
 //#define MIP_DEBUG_MEMORY
+#define MIP_DEBUG_PRINT
 //#define MIP_DEBUG_PRINT_SOCKET
-//#define MIP_DEBUG_PRINT_THREAD
-//#define MIP_DEBUG_PRINT_TIME
-//#define MIP_DEBUG_WATCHES
+#define MIP_DEBUG_PRINT_THREAD
+#define MIP_DEBUG_PRINT_TIME
+#define MIP_DEBUG_WATCHES
 
 //#define MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
 

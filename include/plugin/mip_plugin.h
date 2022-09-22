@@ -189,7 +189,9 @@ public: // clap plugin
     if (strcmp(id,CLAP_EXT_CHECK_FOR_UPDATE)    == 0) return &MCheckForUpdate;  // draft
     if (strcmp(id,CLAP_EXT_CV)                  == 0) return &MCv;              // draft
     if (strcmp(id,CLAP_EXT_FILE_REFERENCE)      == 0) return &MFileReference;   // draft
+    #ifndef MIP_NO_GUI
     if (strcmp(id,CLAP_EXT_GUI)                 == 0) return &MGui;
+    #endif
     if (strcmp(id,CLAP_EXT_LATENCY)             == 0) return &MLatency;
     if (strcmp(id,CLAP_EXT_MIDI_MAPPINGS)       == 0) return &MMidiMappings;    // draft
     if (strcmp(id,CLAP_EXT_NOTE_NAME)           == 0) return &MNoteName;
@@ -1471,7 +1473,7 @@ public: // timer listener
   #endif
 
 //------------------------------
-public: // timer listener
+public: // generic gui
 //------------------------------
 
   #ifndef MIP_NO_GUI
