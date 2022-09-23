@@ -1111,7 +1111,8 @@ public: // queues
       event.channel         = -1;
       event.key             = -1;
       event.value           = value;
-      processParamValue/*Event*/(&event);
+//      processParamValue/*Event*/(&event);
+      processParamValueEvent(&event);
       //MAudioprocessor->updateParameter(index,value);
     }
   }
