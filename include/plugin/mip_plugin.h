@@ -59,6 +59,8 @@ class MIP_Plugin
 #endif
 , public MIP_TimerListener {
 
+  friend class MIP_ExeWindow;
+
 //------------------------------
 protected:
 //------------------------------

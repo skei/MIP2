@@ -83,6 +83,8 @@ protected:
   int32_t           MMouseDragX         = 0;
   int32_t           MMouseDragY         = 0;
 
+  bool              MScaleWindow        = false;
+
 //------------------------------
 public:
 //------------------------------
@@ -110,6 +112,11 @@ public:
 //------------------------------
 public:
 //------------------------------
+
+  void setScaleWindow(bool AScale)  { MScaleWindow = AScale; }
+  bool getScaleWindow()             { return MScaleWindow; }
+
+  //----------
 
   MIP_Painter* getWindowPainter() {
     return MWindowPainter;
@@ -160,8 +167,8 @@ public:
     #endif
     MParent = nullptr;
     MRect.setPos(0.0);
-    Layout.baseRect = MRect;
     Layout.initialRect = MRect;
+    Layout.baseRect = MRect;
     MIndex = -1;
   }
 
@@ -180,7 +187,8 @@ public:
 
   #ifdef MIP_WINDOW_BUFFERED
 
-  void createBuffer(uint32_t AWidth, uint32_t AHeight) {    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+  void createBuffer(uint32_t AWidth, uint32_t AHeight) {
+    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
     MBufferPainter = new MIP_Painter(this,MBufferSurface);
   }
 
@@ -218,25 +226,27 @@ public:
       }
       MHoverWidget = hover;
     }
-//    // edges/resizable
-//    if (MHoverWidget) {
-//      MIP_DRect r = MHoverWidget->getRect();
-//      if (AXpos >= (r.x2() - 5)) {
-//        setMouseCursor(MIP_CURSOR_ARROW_RIGHT);
-//      }
-//      else if (AXpos <= (r.x + 5)) {
-//        setMouseCursor(MIP_CURSOR_ARROW_LEFT);
-//      }
-//      else if (AYpos >= (r.y2() - 5)) {
-//        setMouseCursor(MIP_CURSOR_ARROW_DOWN);
-//      }
-//      else if (AYpos <= (r.y + 5)) {
-//        setMouseCursor(MIP_CURSOR_ARROW_UP);
-//      }
-//      else {
-//        setMouseCursor(MIP_CURSOR_DEFAULT);
-//      }
-//    }
+    /*
+    // edges/resizable
+    if (MHoverWidget) {
+      MIP_DRect r = MHoverWidget->getRect();
+      if (AXpos >= (r.x2() - 5)) {
+        setMouseCursor(MIP_CURSOR_ARROW_RIGHT);
+      }
+      else if (AXpos <= (r.x + 5)) {
+        setMouseCursor(MIP_CURSOR_ARROW_LEFT);
+      }
+      else if (AYpos >= (r.y2() - 5)) {
+        setMouseCursor(MIP_CURSOR_ARROW_DOWN);
+      }
+      else if (AYpos <= (r.y + 5)) {
+        setMouseCursor(MIP_CURSOR_ARROW_UP);
+      }
+      else {
+        setMouseCursor(MIP_CURSOR_DEFAULT);
+      }
+    }
+    */
 
   }
 
@@ -281,8 +291,13 @@ public: // window
   */
 
   void on_window_open() override {
-    //MIP_Print("on_window_open (MRect: %.0f,%.0f)\n",MRect.w,MRect.h);
+    //MIP_Print("MRect: %.0f,%.0f)\n",MRect.w,MRect.h);
+    //setOwnerWindow(this);
+    //MRect.setSize(AWidth,AHeight);
     on_widget_config(this);
+
+    //freezeLayout();
+
   }
 
   //----------
@@ -297,7 +312,6 @@ public: // window
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    //MIP_Print("%i,%i MWindowPainter: %p\n",AWidth,AHeight,MWindowPainter);
     if (MWindowPainter) delete MWindowPainter;
     MWindowPainter = new MIP_Painter(this,this);
     MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
@@ -308,13 +322,12 @@ public: // window
       MPaintContext.painter = MWindowPainter;
     #endif
     MRect.setSize(AWidth,AHeight);
-    // in case widgets need to update painter.. images, fonts..
     on_widget_config(this);
-
-    //alignChildWidgets();
-    //    double xscale = AWidth / Layout.baseRect.w;
-    //    double yscale = AHeight / Layout.baseRect.h;
-    //    MIP_Print("xscale %f yscale %f\n",xscale,yscale);
+    /*
+    double xscale = AWidth / Layout.initialRect.w;
+    double yscale = AHeight / Layout.initialRect.h;
+    MIP_Print("xscale %f yscale %f\n",xscale,yscale);
+    */
   }
 
   //----------
@@ -346,6 +359,7 @@ public: // window
 
     if (painter) {
       painter->beginPaint(0,0,MRect.w,MRect.h);
+      //painter->beginPaint(0,0,AWidth,AHeight);
       painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       paintChildWidgets(&MPaintContext);
       painter->endPaint();

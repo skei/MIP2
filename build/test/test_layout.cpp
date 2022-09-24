@@ -10,9 +10,9 @@
 
 #ifdef __gnu_linux__
   #define MIP_GUI_XCB
-  #define MIP_PAINTER_NANOVG
-  //#define MIP_PAINTER_XCB
-  //#define MIP_WINDOW_BUFFERED
+  //#define MIP_PAINTER_NANOVG
+  #define MIP_PAINTER_XCB
+  #define MIP_WINDOW_BUFFERED
 #else
   #define MIP_GUI_WIN32
   #define MIP_PAINTER_GDI
@@ -508,19 +508,19 @@ public: // gui
 
         MIP_PanelWidget* aspect_inner_rect1 = new MIP_PanelWidget( MIP_DRect(0.02,0.02,0.96,0.96) );
         aspect_inner_rect1->Layout.alignment = MIP_WIDGET_ALIGN_CLIENT;
-        aspect_inner_rect1->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
-        aspect_inner_rect1->Layout.vertScale = MIP_WIDGET_SCALE_PARENT_RATIO;
+        aspect_inner_rect1->Layout.hRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+        aspect_inner_rect1->Layout.vRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
         aspect_rect1->appendChildWidget(aspect_inner_rect1);
 
         MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(MIP_DRect(0,0,0.45,0.45),"knob1",0.5);
         knob1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-        knob1->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
+        knob1->Layout.hRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
         knob1->Layout.aspectRatio = 2.0 / 3.0;
         aspect_inner_rect1->appendChildWidget(knob1);
 
         MIP_Knob2Widget* knob2 = new MIP_Knob2Widget(MIP_DRect(0.02,0,0.45,0.45),"knob2",0.5);
         knob2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-        knob2->Layout.horizScale = MIP_WIDGET_SCALE_PARENT_RATIO;
+        knob2->Layout.hRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
         knob2->Layout.aspectRatio = 2.0 / 3.0;
         knob2->getKnobWidget()->Options.autoHideCursor = false;
         aspect_inner_rect1->appendChildWidget(knob2);
@@ -627,6 +627,7 @@ public: // gui
       //-----
 
       background->appendChildWidget(menu1);
+      //background->Options.freezeLayout = true;
 
     } // editor
     return result;

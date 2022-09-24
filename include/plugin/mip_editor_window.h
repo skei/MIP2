@@ -39,14 +39,13 @@ protected:
 //------------------------------
 
   MIP_EditorListener* MEditorListener = nullptr;
-  uint32_t            MEditorWidth    = 200;
-  uint32_t            MEditorHeight   = 100;
-  double              MEditorScale    = 1.0;
-  bool                MIsEditorOpen   = false;
-  //MIP_Widget**        MParameterToWidget  = nullptr;
-
-  double MInitialWidth = 0;
-  double MInitialHeight = 0;
+//  uint32_t            MEditorWidth    = 200;
+//  uint32_t            MEditorHeight   = 100;
+//  double              MEditorScale    = 1.0;
+//  bool                MIsEditorOpen   = false;
+//MIP_Widget**        MParameterToWidget  = nullptr;
+//  double MInitialWidth = 0;
+//  double MInitialHeight = 0;
 
 //------------------------------
 public:
@@ -56,24 +55,22 @@ public:
   : MIP_Window(AWidth,AHeight,AParent) {
     //MIP_Print("width %i height %i\n",AWidth,AHeight);
     MEditorListener = AListener;
-    MEditorWidth = AWidth;
-    MEditorHeight = AHeight;
-    setWidgetSize(AWidth,AHeight);
-    //uint32_t size = MIP_EDITOR_MAX_PARAMS * sizeof(MIP_Widget*);
-    //MParameterToWidget = (MIP_Widget**)malloc(size);
-    //memset(MParameterToWidget,0,size);
-    //MIP_PRINT;
-    MInitialWidth = AWidth;
-    MInitialHeight = AHeight;
+    //MEditorWidth = AWidth;
+    //MEditorHeight = AHeight;
+    //setWidgetSize(AWidth,AHeight);
+    ////uint32_t size = MIP_EDITOR_MAX_PARAMS * sizeof(MIP_Widget*);
+    ////MParameterToWidget = (MIP_Widget**)malloc(size);
+    ////memset(MParameterToWidget,0,size);
+    ////MIP_PRINT;
+    //MInitialWidth = AWidth;
+    //MInitialHeight = AHeight;
   }
 
   //----------
 
   virtual ~MIP_EditorWindow() {
     //MIP_PRINT;
-//    if (MIsEditorOpen) {
-//      hide();
-//    }
+    //if (MIsEditorOpen) hide();
     //free(MParameterToWidget);
   }
 
@@ -93,11 +90,11 @@ public: // clap gui
     [main-thread]
   */
 
-  virtual bool setScale(double scale) {
-    //MIP_Print("scale %f -> true\n",scale);
-    MEditorScale = scale;
-    return true;
-  }
+  //virtual bool setScale(double scale) {
+  //  //MIP_Print("scale %f -> true\n",scale);
+  //  MEditorScale = scale;
+  //  return true;
+  //}
 
   //----------
 
@@ -107,12 +104,12 @@ public: // clap gui
     [main-thread]
   */
 
-  virtual bool getSize(uint32_t *width, uint32_t *height) {
-    //MIP_Print("-> true (%i, %i)\n",MEditorWidth,MEditorHeight);
-    *width = MEditorWidth;
-    *height = MEditorHeight;
-    return true;
-  }
+  //virtual bool getSize(uint32_t *width, uint32_t *height) {
+  //  //MIP_Print("-> true (%i, %i)\n",MEditorWidth,MEditorHeight);
+  //  *width = MEditorWidth;
+  //  *height = MEditorHeight;
+  //  return true;
+  //}
 
   //----------
 
@@ -122,10 +119,10 @@ public: // clap gui
     [main-thread]
   */
 
-  virtual bool canResize() {
-    //MIP_Print("-> true\n");
-    return true;
-  }
+  //virtual bool canResize() {
+  //  //MIP_Print("-> true\n");
+  //  return true;
+  //}
 
   //----------
 
@@ -136,16 +133,16 @@ public: // clap gui
 
   // ratios could be calculated from initial size..
 
-  virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
-    //MIP_Print("-> true (aspect:%i:%i)\n",420,620);
-    hints->can_resize_horizontally  = true;
-    hints->can_resize_vertically    = true;
-    hints->aspect_ratio_width       = 420;
-    hints->aspect_ratio_height      = 620;
-    hints->preserve_aspect_ratio    = false;//true;
-    //return true;
-    return false;
-  }
+  //virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
+  //  //MIP_Print("-> true (aspect:%i:%i)\n",420,620);
+  //  hints->can_resize_horizontally  = true;
+  //  hints->can_resize_vertically    = true;
+  //  hints->aspect_ratio_width       = 420;
+  //  hints->aspect_ratio_height      = 620;
+  //  hints->preserve_aspect_ratio    = false;//true;
+  //  //return true;
+  //  return false;
+  //}
 
   //----------
 
@@ -159,21 +156,21 @@ public: // clap gui
 
   // 'the given size' indicates the cointent of width/height is valid?
 
-  virtual bool adjustSize(uint32_t *width, uint32_t *height) {
-//    double aspect = 420.0 / 620.0; //(double)MEditorWidth / (double)MEditorHeight;
-    double w = *width;
-    double h = *height;
-//    double a = w / h;
-//    MIP_Print("aspect %f w %f h %f a %f\n",aspect,w,h,a);
-//    //if (h > 0) {
-//      if (a >= aspect) w = h * aspect;
-//      else h = w / aspect;
-//    //}
-    //MIP_Print("%i,%i -> true (%f, %f)\n",*width,*height,w,h);
-    *width = w;
-    *height = h;
-    return true;
-  }
+  //virtual bool adjustSize(uint32_t *width, uint32_t *height) {
+  //  //double aspect = 420.0 / 620.0; //(double)MEditorWidth / (double)MEditorHeight;
+  //  double w = *width;
+  //  double h = *height;
+  //  //double a = w / h;
+  //  //MIP_Print("aspect %f w %f h %f a %f\n",aspect,w,h,a);
+  //  ////if (h > 0) {
+  //  //  if (a >= aspect) w = h * aspect;
+  //  //  else h = w / aspect;
+  //  ////}
+  //  //MIP_Print("%i,%i -> true (%f, %f)\n",*width,*height,w,h);
+  //  *width = w;
+  //  *height = h;
+  //  return true;
+  //}
 
   //----------
 
@@ -182,36 +179,19 @@ public: // clap gui
     [main-thread]
   */
 
-  virtual bool setSize(uint32_t width, uint32_t height) {
-    //MIP_Print("%i,%i -> true\n",width,height);
-
-    setWindowSize(width,height);
-
-    MEditorWidth = width;
-    MEditorHeight = height;
-
-    //double xscale = (double)width / MInitialWidth;
-    //double yscale = (double)height / MInitialHeight;
-    //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
-
-    // hack.. the modual stuff should have been in the wndoow class..
-    // but there were/are some issues getting resize events..
-    if (MModalWidget) MModalWidget->on_widget_unmodal();
-
-    //MIP_Window::on_window_resize(width,height);
-    setWidgetSize(width,height);
-
-    /*
-      if there are visible widgets with autoSize, calling painter methods..
-    */
-
-    alignChildWidgets();
-
-    //scaleChildWidgets(xscale,true);
-
-//    setWindowSize(width,height);
-    return true;
-  }
+  //virtual bool setSize(uint32_t width, uint32_t height) {
+  //  setWindowSize(width,height);
+  //  MEditorWidth = width;
+  //  MEditorHeight = height;
+  //  // hack.. the modual stuff should have been in the wndoow class..
+  //  // but there were/are some issues getting resize events..
+  //  if (MModalWidget) MModalWidget->on_widget_unmodal();
+  //  setWidgetSize(width,height);
+  //  MIP_PRINT;
+  //  alignChildWidgets();
+  //  //freezeLayout();
+  //  return true;
+  //}
 
   //----------
 
@@ -220,17 +200,17 @@ public: // clap gui
     [main-thread & !floating]
   */
 
-  virtual bool setParent(const clap_window_t *window) {
-    MIP_PRINT;
-    //MIP_Print("%p -> true\n",window);
-    #ifdef MIP_LINUX
-      reparentWindow(window->x11);
-    #endif
-    #ifdef MIP_WIN32
-      reparentWindow((intptr_t)window->win32);
-    #endif
-    return true;
-  }
+  //virtual bool setParent(const clap_window_t *window) {
+  //  MIP_PRINT;
+  //  //MIP_Print("%p -> true\n",window);
+  //  #ifdef MIP_LINUX
+  //    reparentWindow(window->x11);
+  //  #endif
+  //  #ifdef MIP_WIN32
+  //    reparentWindow((intptr_t)window->win32);
+  //  #endif
+  //  return true;
+  //}
 
   //----------
 
@@ -239,10 +219,10 @@ public: // clap gui
     [main-thread & floating]
   */
 
-  virtual bool setTransient(const clap_window_t *window) {
-    //MIP_Print("%p -> true\n",window);
-    return true;
-  }
+  //virtual bool setTransient(const clap_window_t *window) {
+  //  //MIP_Print("%p -> true\n",window);
+  //  return true;
+  //}
 
   //----------
 
@@ -251,10 +231,10 @@ public: // clap gui
     [main-thread & floating]
   */
 
-  virtual void suggestTitle(const char *title) {
-    //MIP_Print("%s\n",title);
-    setWindowTitle(title);
-  }
+  //virtual void suggestTitle(const char *title) {
+  //  //MIP_Print("%s\n",title);
+  //  setWindowTitle(title);
+  //}
 
   //----------
 
@@ -263,15 +243,16 @@ public: // clap gui
     [main-thread]
   */
 
-  virtual bool show() {
-    //MIP_Print("-> true\n");
-    if (!MIsEditorOpen) {
-      openWindow();
-      MIsEditorOpen = true;
-      startEventThread();
-    }
-    return true;
-  }
+  //virtual bool show() {
+  //  //MIP_Print("-> true\n");
+  //  if (!MIsEditorOpen) {
+  //    //freezeLayout();
+  //    openWindow();
+  //    MIsEditorOpen = true;
+  //    startEventThread();
+  //  }
+  //  return true;
+  //}
 
   //----------
 
@@ -304,6 +285,7 @@ public: // widget
       //MIP_Print("%i = %f\n",index,value);
       if (MEditorListener) MEditorListener->on_editor_listener_update_parameter(index,value);
     }
+    //MIP_Window::do_widget_update(ASender,AMode);
   }
 
 //------------------------------

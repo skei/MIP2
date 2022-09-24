@@ -63,11 +63,14 @@ public: // parent to child
 public: // parent to child
 //------------------------------
 
+
+
   void on_widget_config(MIP_Widget* AOwnerWindow) override {
-    //MIP_PRINT;
     MOwnerWindow = (MIP_Window*)AOwnerWindow;
     MIP_PanelWidget::on_widget_config(AOwnerWindow);
   }
+
+  //----------
 
   void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     if (!MRect.contains(AXpos,AYpos)) {

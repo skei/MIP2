@@ -527,6 +527,7 @@ public: // paint
   //----------
 
   void blitDrawable(int32_t ADstX, int32_t ADstY, MIP_Drawable* ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) override {
+    //MIP_Print("%i,%i, %i,%i,%i,%i\n",ADstX,ADstY,ASrcX,ASrcY,ASrcW,ASrcH);
     xcb_copy_area(
       MConnection,  // Pointer to the xcb_connection_t structure
       ADrawable->drawable_getXcbDrawable(),    // The Drawable we want to paste
@@ -1001,13 +1002,14 @@ private: // events
         int16_t w = configure_notify->width;
         int16_t h = configure_notify->height;
         //MIP_Print("w,h: %i,%i MWindowWidth/Height: %i,%i  \n",w,h,MWindowWidth,MWindowHeight);
-        //if ((x != MWindowXpos) || (y != MWindowYpos)) {
+
+        if ((x != MWindowXpos) || (y != MWindowYpos)) {
           MWindowXpos = x;
           MWindowYpos = y;
           on_window_move(x,y);
-        //}
+        }
 
-        //if ((w != MWindowWidth) || (h != MWindowHeight)) {
+        if ((w != MWindowWidth) || (h != MWindowHeight)) {
 //          MIP_PRINT;
 //          if ((w > 0) && (h > 0)) {
 //            MWindowWidthScale = (double)w / (double)MWindowInitialWidth;
@@ -1028,7 +1030,7 @@ private: // events
           MWindowHeight = h;
 
           on_window_resize(w,h);
-        //}
+        }
 
         break;
       }

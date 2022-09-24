@@ -48,9 +48,7 @@ public:
 
   MIP_XcbSurface(MIP_Drawable* ATarget, uint32_t AWidth, uint32_t AHeight, uint32_t ADepth=0) {
   //: MIP_BaseSurface() {
-
     //void* test_mem_leak = malloc(666000);
-
     MTarget         = ATarget;
     MWidth          = AWidth;
     MHeight         = AHeight;

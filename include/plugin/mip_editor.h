@@ -49,6 +49,7 @@ private:
 //------------------------------
 
   clap_window_t MClapWindow = {"",0};
+  //bool MNeedInitialAlignment = true;
 
 //------------------------------
 protected:
@@ -56,14 +57,13 @@ protected:
 
   MIP_EditorListener* MEditorListener = nullptr;
   MIP_EditorWindow*   MEditorWindow   = nullptr;
-  uint32_t            MEditorWidth    = 200;
-  uint32_t            MEditorHeight   = 100;
-  intptr_t            MParent         = 100;
+  double              MEditorWidth    = 200.0;
+  double              MEditorHeight   = 100.0;
+//  intptr_t            MParent         = 0; // 100;
   double              MEditorScale    = 1.0;
   bool                MIsEditorOpen   = false;
-
-//  double              MInitialWidth   = 0;
-//  double              MInitialHeight  = 0;
+  double              MInitialWidth   = 0;
+  double              MInitialHeight  = 0;
 
   MIP_Widget*         MParameterToWidget[MIP_EDITOR_MAX_PARAMS] = {0};
 
@@ -77,8 +77,8 @@ public:
     MEditorListener = AListener;
     MEditorWidth = AWidth;
     MEditorHeight = AHeight;
-//    MInitialWidth = AWidth;
-//    MInitialHeight = AHeight;
+    MInitialWidth = AWidth;
+    MInitialHeight = AHeight;
 
     #ifndef MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
       MEditorWindow = new MIP_EditorWindow(this,AWidth,AHeight,0);
@@ -215,25 +215,24 @@ public: // clap gui
   */
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    //MIP_Print("%i,%i -> true\n",width,height);
+//    MIP_Print("%i,%i MEditorRect %.2f,%.2f MInitialRect %.2f,%.2f\n",width,height,MEditorWidth,MEditorHeight,MInitialWidth,MInitialHeight);
     MEditorWidth = width;
     MEditorHeight = height;
 
     if (MEditorWindow) {
+      MEditorWindow->unmodal(); // ouch.. modual stuff should have been in window class.. but some problems with getting resize events..
       MEditorWindow->setWindowSize(width,height);
-      //double xscale = (double)width / MInitialWidth;
-      //double yscale = (double)height / MInitialHeight;
-      //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
-
-      // hack.. the modual stuff should have been in the wndoow class..
-      // but there were/are some issues getting resize events..
-      //if (MModalWidget) MModalWidget->on_widget_unmodal();
-      MEditorWindow->unmodal();
-
-      //MIP_Window::on_window_resize(width,height);
       MEditorWindow->setWidgetSize(width,height);
-
-      MEditorWindow->alignChildWidgets();
+//      if (MNeedInitialAlignment) {
+        MEditorWindow->alignChildWidgets();
+//        MNeedInitialAlignment = false;
+//      }
+//      else {
+//        double xscale = (double)width / MInitialWidth;
+//        double yscale = (double)height / MInitialHeight;
+//        //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
+//        MEditorWindow->scaleWidget(xscale,yscale);
+//      }
       //MWindow->scaleChildWidgets(xscale,true);
     }
     return true;

@@ -131,10 +131,10 @@ public:
   }
 
   void scale(T sx, T sy, T sw, T sh) {
-    x += sx;
-    y += sy;
-    w += sw;
-    h += sh;
+    x *= sx;
+    y *= sy;
+    w *= sw;
+    h *= sh;
   }
 
   //----------
