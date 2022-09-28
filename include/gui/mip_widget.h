@@ -36,6 +36,7 @@ struct MIP_WidgetLayout {
   MIP_DPoint  minSize       = MIP_DPoint(0,0);              // minimum size
   MIP_DPoint  maxSize       = MIP_DPoint(999999,999999);    // maximum size
 //bool        frozen        = false;
+//  MIP_DPoint  scale         = MIP_DPoint(1,1);              // spacing between child widgets
 };
 
 //----------
@@ -302,7 +303,7 @@ public: // hierarchy
   //virtual void scaleChildWidgets(double AXScale, double AYScale, bool ARecursive=true) {
   virtual void scaleWidget(double AXScale, double AYScale, bool ARecursive=true) {
     MRect.scale(AXScale,AYScale,AXScale,AYScale);
-    Layout.baseRect.scale(AXScale,AYScale,AXScale,AYScale);
+    //Layout.baseRect.scale(AXScale,AYScale,AXScale,AYScale);
     if (ARecursive) {
       for (uint32_t i=0; i<MChildren.size(); i++) {
         MIP_Widget* child = MChildren[i];
@@ -364,6 +365,19 @@ public: // hierarchy
       for (uint32_t i=0; i<num; i++) {
         MIP_Widget* child = MChildren[i];
         child->setSkin(ASkin,ARecursive);
+      }
+    }
+  }
+  */
+
+  /*
+  virtual void setScale(double AScaleX=1.0, double AScaleY=1.0, bool ARecursive=true) {
+    Layout.scale.x = AScaleX;
+    Layout.scale.y = AScaleY;
+    if (ARecursive) {
+      for (uint32_t i=0; i<MChildren.size(); i++) {
+        MIP_Widget* child = MChildren[i];
+        child->setScale(AScaleX,AScaleY,ARecursive);
       }
     }
   }
@@ -433,12 +447,12 @@ public: // hierarchy
 
   virtual void alignChildWidgets(bool ARecursive=true) {
 
-//    if (Layout.frozen) {
-//      for (uint32_t i=0; i<MChildren.size(); i++) {
-//        MIP_Widget* child = MChildren[i];
-//      }
-//      return;
-//    }
+    //if (Layout.frozen) {
+    //  for (uint32_t i=0; i<MChildren.size(); i++) {
+    //    MIP_Widget* child = MChildren[i];
+    //  }
+    //  return;
+    //}
 
     // todo: take sizemode into account.. (ratios)
     //double parent_xscale = MRect.w / Layout.baseRect.w;
@@ -446,40 +460,45 @@ public: // hierarchy
 
     // stacking
 
-    float stackx = 0;
-    float stacky = 0;
-    float stack_highest = 0;
-    float stack_widest = 0;
-    uint32_t prev_alignment = MIP_WIDGET_ALIGN_NONE;
+    float       stackx          = 0;
+    float       stacky          = 0;
+    float       stack_highest   = 0;
+    float       stack_widest    = 0;
+    uint32_t    prev_alignment  = MIP_WIDGET_ALIGN_NONE;
 
-    MIP_DRect border = Layout.border;
-    MIP_DPoint spacing = Layout.spacing;
+    MIP_DRect   border          = Layout.border;
+    MIP_DPoint  spacing         = Layout.spacing;
 
     //if (Layout.scaleChildren) {
     //  border.scale(n);
     //  spacing.scale(n);
     //}
 
+//    border.scale(Layout.scale);
+//    spacing.scale(Layout.scale);
+
     //
 
     MIP_DRect parent_rect = MRect;
     MIP_DRect client_rect = MRect;
-    MContentRect = MRect;
+    MContentRect          = MRect;
 
     parent_rect.shrink(border);
     client_rect.shrink(border);
     MContentRect.shrink(border);
-
     //content.setPos(0,0);
     MContentRect.setSize(0,0);
 
-    uint32_t num = MChildren.size();
-    if (num > 0) {
+    //uint32_t num = MChildren.size();
+    //if (num > 0) {
 
       // for all children..
-      for (uint32_t i=0; i<num/*MChildren.size()*/; i++) {
+      //for (uint32_t i=0; i<num/*MChildren.size()*/; i++) {
+      for (uint32_t i=0; i<MChildren.size(); i++) {
+
         MIP_Widget* child = MChildren[i];
         if (child->State.visible) {
+
           MIP_DRect child_rect = child->Layout.baseRect;
           uint32_t  alignment = child->Layout.alignment;
 
@@ -861,7 +880,7 @@ public: // hierarchy
           // min/max size
           child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
           child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
-          // scale
+          // todo: scale
 
           // aspect
           if (child->Layout.aspectRatio > 0) {
@@ -879,23 +898,34 @@ public: // hierarchy
           } // aspect > 0
 
           MIP_DRect extra_border = child->Layout.extraBorder;
+//          extra_border.scale(Layout.scale);
           child_rect.shrink(extra_border);
+
+          //
+
+
           child->MRect = child_rect;
+//          child->MRect.scale(Layout.scale);
           MContentRect.combine(child_rect);
           if (ARecursive) {
             child->alignChildWidgets(ARecursive);
           }
+
         } //  visible
 
       } // for
-    } // num > 0
+
+    //} // num > 0
 
     if (Options.autoSizeContent) {
       MRect.w = MContentRect.w;
       MRect.h = MContentRect.h;
     }
-    MContentRect.w += (border.x + border.w);
-    MContentRect.h += (border.y + border.h);
+
+    MContentRect.w += (border.x + border.w);// * Layout.scale;
+    MContentRect.h += (border.y + border.h);// * Layout.scale;
+
+    // post-align: scale?
 
   }
 

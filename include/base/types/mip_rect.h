@@ -130,12 +130,27 @@ public:
     h *= AScale;
   }
 
+  void scale(T sx, T sy) {
+    x *= sx;
+    y *= sy;
+    w *= sx;
+    h *= sy;
+  }
+
+  void scale(MIP_Point<T> s) {
+    x *= s.x;
+    y *= s.y;
+    w *= s.x;
+    h *= s.y;
+  }
+
   void scale(T sx, T sy, T sw, T sh) {
     x *= sx;
     y *= sy;
     w *= sw;
     h *= sh;
   }
+
 
   //----------
 
@@ -452,89 +467,3 @@ typedef MIP_Rect<double>   MIP_DRect;
 
 //----------------------------------------------------------------------
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//class MIP_Rect {
-//
-//public:
-//
-//  union {
-//    struct { float x,y,w,h; };
-//    struct { float left,top,right,bottom; };
-//  };
-//
-//public:
-//
-//  MIP_Rect() {}
-//  MIP_Rect(float v) {}
-//  MIP_Rect(float w, float h) {}
-//  MIP_Rect(float x, float y, float w, float h) {}
-//  MIP_Rect(MIP_Point APos) {}
-//  MIP_Rect(MIP_Point APos,MIP_Point ASize) {}
-//
-//public:
-//
-//  void x1(float _x1) { w -= (_x1 - x); x = _x1; }
-//  void y1(float _y1) { h -= (_y1 - y); y = _y1; }
-//  float x1() { return x; }
-//  float y1() { return y; }
-//
-//  void x2(float _x2) { w += (_x2 - x - w); }
-//  void y2(float _y2) { h += (_y2 - y - h); }
-//  float x2() { return x + w; }
-//  float y2() { return y + h; }
-//
-//  void setPos(float AXpos, float AYpos) {
-//    x = AXpos;
-//    y = AYpos;
-//  }
-//
-//  void setSize(float AWidth, float AHeight) {
-//    w = AWidth;
-//    h = AHeight;
-//  }
-//
-//public:
-//
-//  // returns true if any of the edges intersects
-//
-//  bool intersect(MIP_Rect ARect) {
-//    return false;
-//  }
-//
-//  // returns true if we are completely inside ARect
-//
-//  bool inside(MIP_Rect ARect) {
-//    return false;
-//  }
-//
-//  // returns true if APoint is inside
-//
-//  bool contains(MIP_Point APoint) {
-//    return false;
-//  }
-//
-//  // combine rects (so that both of them fits inside)
-//
-//  void combine(MIP_Rect ARect) {
-//  }
-//
-//  // remove ARect (so that it lies outside)
-//
-//  void remove(MIP_Rect ARect)   {
-//  }
-//
-//};
-

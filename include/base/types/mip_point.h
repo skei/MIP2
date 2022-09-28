@@ -30,13 +30,74 @@ public:
     y = y_;
   }
 
+  //MIP_Point(MIP_Point<T> APoint) {}
+
 public:
 
-  void scale(T s) {
-    x *= s;
-    y *= s;
+//------------------------------
+public:
+//------------------------------
+
+  MIP_Point<T>& operator += (MIP_Point<T> P) {
+    add(P);
+    return *this;
   }
 
+  MIP_Point<T>& operator -= (MIP_Point<T> P) {
+    sub(P);
+    return *this;
+  }
+
+//  MIP_Rect<T>& operator += (MIP_Point<T> P) {
+//    add(P);
+//    return *this;
+//  }
+//
+//  MIP_Rect<T>& operator -= (MIP_Point<T> P) {
+//    sub(P);
+//    return *this;
+//  }
+
+//------------------------------
+public:
+//------------------------------
+
+  void scale(T AScale) {
+    x *= AScale;
+    y *= AScale;
+  }
+
+  void scale(T sx, T sy) {
+    x *= sx;
+    y *= sy;
+  }
+
+  void scale(MIP_Point<T> s) {
+    x *= s.x;
+    y *= s.y;
+  }
+
+  //----------
+
+  void add(T AValue) {
+    x += AValue;
+    y += AValue;
+  }
+
+  void add(T ax, T ay) {
+    x += ax;
+    y += ay;
+  }
+
+  void sub(T AValue) {
+    x -= AValue;
+    y -= AValue;
+  }
+
+  void sub(T ax, T ay) {
+    x -= ax;
+    y -= ay;
+  }
 
 };
 

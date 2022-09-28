@@ -83,7 +83,10 @@ protected:
   int32_t           MMouseDragX         = 0;
   int32_t           MMouseDragY         = 0;
 
-  bool              MScaleWindow        = false;
+//bool              MScaleWindow        = false;
+
+  double MWindowScaleX = 1.0;
+  double MWindowScaleY = 1.0;
 
 //------------------------------
 public:
@@ -113,8 +116,81 @@ public:
 public:
 //------------------------------
 
-  void setScaleWindow(bool AScale)  { MScaleWindow = AScale; }
-  bool getScaleWindow()             { return MScaleWindow; }
+  void setup(uint32_t AWidth, uint32_t AHeight) {
+    MName = "MIP_Window";
+    MWindowPainter = new MIP_Painter(this,this);
+    #ifdef MIP_WINDOW_BUFFERED
+      createBuffer(AWidth,AHeight);
+      MPaintContext.painter = MBufferPainter;
+    #else
+      MPaintContext.painter = MWindowPainter;
+    #endif
+    MParent = nullptr;
+    MRect.setPos(0.0);
+    Layout.initialRect = MRect;
+    Layout.baseRect = MRect;
+    MIndex = -1;
+  }
+
+  //----------
+
+  void cleanup() {
+    delete MWindowPainter;
+    #ifdef MIP_WINDOW_BUFFERED
+      //delete MBufferPainter;
+      //delete MBufferSurface;
+      deleteBuffer();
+    #endif
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  #ifdef MIP_WINDOW_BUFFERED
+
+  void createBuffer(uint32_t AWidth, uint32_t AHeight) {
+    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+    MBufferPainter = new MIP_Painter(this,MBufferSurface);
+  }
+
+  //----------
+
+  void deleteBuffer() {
+    delete MBufferPainter;
+    delete MBufferSurface;
+  }
+
+  //----------
+
+  void resizeBuffer(uint32_t AWidth, uint32_t AHeight) {
+    if (MBufferSurface) delete MBufferSurface;
+    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
+    if (MBufferPainter) delete MBufferPainter;
+    MBufferPainter = new MIP_Painter(this,MBufferSurface);
+  }
+
+  //----------
+
+  //void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
+  //  on_resize_window()
+  //}
+
+  #endif
+
+//------------------------------
+public:
+//------------------------------
+
+  //void setScaleWindow(bool AScale) {
+  //  MScaleWindow = AScale;
+  //}
+
+  //----------
+
+  //bool getScaleWindow() {
+  //  return MScaleWindow;
+  //}
 
   //----------
 
@@ -148,7 +224,9 @@ public:
     return &MPaintContext;
   }
 
-  //----------
+//------------------------------
+public:
+//------------------------------
 
   void unmodal() {
     if (MModalWidget) MModalWidget->on_widget_unmodal();
@@ -156,57 +234,10 @@ public:
 
   //----------
 
-  void setup(uint32_t AWidth, uint32_t AHeight) {
-    MName = "MIP_Window";
-    MWindowPainter = new MIP_Painter(this,this);
-    #ifdef MIP_WINDOW_BUFFERED
-      createBuffer(AWidth,AHeight);
-      MPaintContext.painter = MBufferPainter;
-    #else
-      MPaintContext.painter = MWindowPainter;
-    #endif
-    MParent = nullptr;
-    MRect.setPos(0.0);
-    Layout.initialRect = MRect;
-    Layout.baseRect = MRect;
-    MIndex = -1;
-  }
-
-  //----------
-
-  void cleanup() {
-    delete MWindowPainter;
-    #ifdef MIP_WINDOW_BUFFERED
-      //delete MBufferPainter;
-      //delete MBufferSurface;
-      deleteBuffer();
-    #endif
-  }
-
-  //----------
-
-  #ifdef MIP_WINDOW_BUFFERED
-
-  void createBuffer(uint32_t AWidth, uint32_t AHeight) {
-    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
-    MBufferPainter = new MIP_Painter(this,MBufferSurface);
-  }
-
-  void deleteBuffer() {    delete MBufferPainter;
-    delete MBufferSurface;
-  }
-
-  void resizeBuffer(uint32_t AWidth, uint32_t AHeight) {    if (MBufferSurface) delete MBufferSurface;
-    MBufferSurface = new MIP_Surface(this,AWidth,AHeight);
-    if (MBufferPainter) delete MBufferPainter;
-    MBufferPainter = new MIP_Painter(this,MBufferSurface);
-  }
-
-  //void resizeWindow(uint32_t AWidth, uint32_t AHeight) {
-  //  on_resize_window()
+  //void alignWidgets() {
+  //  alignChildWidgets(true);
+  //  scaleWidget(MWindowScaleX,MWindowScaleY,true);
   //}
-
-  #endif
 
   //----------
 

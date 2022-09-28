@@ -70,6 +70,10 @@ public:
     //  free(reply);
     //}
 
+    //#ifdef MIP_GUI_NANOVG
+
+    #ifdef MIP_WINDOW_BUFFERED
+
     MIP_Plugin* plug = (MIP_Plugin*)plugin->plugin_data;
     if (plug) {
       if (plug->MEditor) {
@@ -79,6 +83,8 @@ public:
         }
       }
     }
+
+    #endif
 
     // let our plugin know..
     gui->set_size(plugin,AWidth,AHeight);

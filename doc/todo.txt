@@ -1,12 +1,27 @@
 
 ...
 
+* the toolbox itself needs a thorough comb-through
+  fixing all the small missing bits and pieces,
+  at least the low hanging fruits..
+
+* asserts, test return values, error checking, safety, ..
+
+* proper logging system
+  LOG(FAILURE,"Couldn't load OpenGl")
+
+* tests
+  (explore.. see how other testing libs/suites do this)..
 
 //----------------------------------------------------------------------
 //
 // GENERAL
 //
 //----------------------------------------------------------------------
+
+* debug
+
+  cleanup debugging code..
 
 * windows version
 
@@ -18,12 +33,13 @@
 * doubles
 
   doubles for anything related to audio or parameter values
+  (check old copy/pasted code)
 
 * MIP_Print
 
   logfile
   debug output window (with watches)
-  MIP_Write() always write, also in release builds..
+  MIP_Write() or MIP_APrint, always write, also in release builds
 
 //----------------------------------------------------------------------
 //
@@ -37,6 +53,9 @@
   MIP_Object
   MIP_RefCount
   garbage collection?
+  MIP_GLOBAL.. to also contain the MIP_Debug class?
+  initialize function, if !initialized
+  (postpone, see if we can contol global construction)
 
 //----------------------------------------------------------------------
 //
@@ -155,9 +174,12 @@
 
 * filter frequency response
 * voice manager
-* modulation_manager? (mod matrix)
-
+* modulation_manager (mod matrix)
+* oversampling
+* ticks
+  64 bytes, cachelines, 16 floats, 4 simd
+  optimizations
+  building blocks of these..
 * generalize building blocks
   filters, dsp, fft, ..
 
-* oversampling

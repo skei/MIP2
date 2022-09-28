@@ -8,11 +8,13 @@
 
 //----------
 
+// MIP_LINUX is not defined yet (mip_defines.h)
+
 #ifdef __gnu_linux__
   #define MIP_GUI_XCB
-  //#define MIP_PAINTER_NANOVG
-  #define MIP_PAINTER_XCB
-  #define MIP_WINDOW_BUFFERED
+  #define MIP_PAINTER_NANOVG
+  //#define MIP_PAINTER_XCB
+  //#define MIP_WINDOW_BUFFERED
 #else
   #define MIP_GUI_WIN32
   #define MIP_PAINTER_GDI
@@ -628,6 +630,8 @@ public: // gui
 
       background->appendChildWidget(menu1);
       //background->Options.freezeLayout = true;
+
+      //editor_window->setScale(1,0.5,true);
 
     } // editor
     return result;
