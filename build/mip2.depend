@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1664119958 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../build/test/test_layout.cpp"
+1664567496 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../build/test/test_layout2.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
@@ -29,7 +29,7 @@
 
 1660269806 /DISKS/sda2/code/git/MIP2/include/base/mip_const.h
 
-1664032190 /DISKS/sda2/code/git/MIP2/include/base/mip_enums.h
+1664565923 /DISKS/sda2/code/git/MIP2/include/base/mip_enums.h
 
 1641519085 /DISKS/sda2/code/git/MIP2/include/base/mip_attributes.h
 
@@ -44,7 +44,7 @@
 	<list>
 	"base/debug/mip_debug_memory.h"
 
-1661955674 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_print.h
+1664393111 /DISKS/sda2/code/git/MIP2/include/base/debug/mip_debug_print.h
 	"mip.h"
 	<stdarg.h>
 	<sys/unistd.h>
@@ -709,7 +709,7 @@
 	"base/types/mip_array.h"
 	"plugin/clap/mip_clap.h"
 
-1664040810 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
+1664564977 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_window.h"
@@ -754,7 +754,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
 
-1664119686 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1664562834 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_widget.h"
@@ -789,7 +789,7 @@
 	"gui/mip_drawable.h"
 	"gui/xcb/mip_xcb.h"
 
-1664119392 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1664568191 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"gui/mip_paint_context.h"
 	"plugin/mip_parameter.h"
@@ -952,8 +952,9 @@
 	"mip.h"
 	"gui/mip_widget.h"
 
-1661640800 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_widgets.h
+1664447933 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_widgets.h
 	"mip.h"
+	"gui/mip_widget.h"
 	"gui/widgets/template.h"
 	"gui/widgets/mip_button_widget.h"
 	"gui/widgets/mip_button_row_widget.h"
@@ -1109,7 +1110,7 @@
 	"base/utils/mip_math.h"
 	"base/types/mip_color.h"
 
-1664029275 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_image_widget.h
+1664559371 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_image_widget.h
 	"mip.h"
 	"gfx/mip_bitmap.h"
 	"gui/widgets/mip_panel_widget.h"
@@ -1133,7 +1134,7 @@
 	"mip.h"
 	"gui/widgets/mip_text_widget.h"
 
-1664031956 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_menu_widget.h
+1664562428 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_menu_widget.h
 	"mip.h"
 	"gui/widgets/mip_panel_widget.h"
 	"gui/widgets/mip_menu_item_widget.h"
@@ -1146,7 +1147,7 @@
 	"gui/mip_paint_context.h"
 	"gui/widgets/mip_panel_widget.h"
 
-1664029692 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_selector_widget.h
+1664559363 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_selector_widget.h
 	"mip.h"
 	"gui/widgets/mip_panel_widget.h"
 
@@ -1455,7 +1456,7 @@
 	"gui/widgets/mip_panel_widget.h"
 	"gui/mip_paint_context.h"
 
-1660609030 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_scroll_box_widget.h
+1664562468 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_scroll_box_widget.h
 	"mip.h"
 	"gui/widgets/mip_panel_widget.h"
 	"gui/mip_paint_context.h"
@@ -1502,7 +1503,7 @@
 1659989974 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_parser.h
 	"base/types/mip_array.h"
 
-1661635365 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_group_box_widget.h
+1664563729 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_group_box_widget.h
 	"mip.h"
 	"gui/mip_widget.h"
 	"gui/widgets/mip_button_widget.h"
@@ -1542,7 +1543,7 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1664120666 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
+1664567251 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
@@ -1555,14 +1556,14 @@
 	"gui/mip_widget.h"
 	"gui/mip_paint_context.h"
 
-1660609034 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_tabs_widget.h
+1664563809 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_tabs_widget.h
 	"mip.h"
 	"gui/mip_widget.h"
 	"gui/widgets/mip_button_row_widget.h"
 	"gui/widgets/mip_pages_widget.h"
 	"gui/mip_paint_context.h"
 
-1664029699 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_box_widget.h
+1664563896 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_text_box_widget.h
 	"gui/widgets/mip_widgets.h"
 
 1660471761 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_keyboard_widget.h
@@ -1767,7 +1768,7 @@
 	"plugin/mip_plugin.h"
 	"gui/widgets/mip_widgets.h"
 
-1664035341 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor_window.h
+1664562947 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor_window.h
 	"mip.h"
 	"gui/mip_window.h"
 	"base/system/mip_timer.h"
@@ -1800,6 +1801,14 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
+	"plugin/clap/mip_clap_entry.h"
+	"plugin/exe/mip_exe_entry.h"
+
+1664568749 /DISKS/sda2/code/git/MIP2/build/test/test_layout2.cpp
+	"mip.h"
+	"plugin/mip_plugin.h"
+	"plugin/mip_editor.h"
+	"gui/widgets/mip_widgets.h"
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
 

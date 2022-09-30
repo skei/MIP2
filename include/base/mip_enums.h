@@ -251,7 +251,8 @@ enum MIP_EWidgetAlignment {
 enum MIP_EWidgetRectModes {
   MIP_WIDGET_RECT_MODE_PIXELS               = 0,  // pixels
   MIP_WIDGET_RECT_MODE_PARENT_RATIO         = 1,  // parent
-  MIP_WIDGET_RECT_MODE_CLIENT_RATIO         = 2   // client (current rect)
+  MIP_WIDGET_RECT_MODE_CLIENT_RATIO         = 2,  // client (current rect)
+  MIP_WIDGET_RECT_MODE_INITIAL_RATIO        = 3
 };
 
 //----------------------------------------------------------------------

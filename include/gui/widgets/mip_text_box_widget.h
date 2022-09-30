@@ -53,6 +53,7 @@ public:
         textwidget->updateTextRect(painter);
       }
     }
+    MIP_ScrollBoxWidget::on_widget_config(AOwnerWindow);
   }
 
 //------------------------------
@@ -82,8 +83,11 @@ public:
     //textwidget->setBackgroundColor(0.55);
     MContent->appendChildWidget(textwidget);
     MNumLines += 1;
-    MContent->alignChildWidgets(); // do we need to align for each line?
-    if (ARedraw) do_widget_redraw(MContent,0); // only if visible?
+
+    if (ARedraw) {
+      MContent->alignChildWidgets();
+      do_widget_redraw(MContent,0); // only if visible?
+    }
   }
 
   //----------

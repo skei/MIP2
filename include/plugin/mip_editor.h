@@ -224,7 +224,11 @@ public: // clap gui
       MEditorWindow->setWindowSize(width,height);
       MEditorWindow->setWidgetSize(width,height);
 //      if (MNeedInitialAlignment) {
+
+        //MIP_Assert(MEditorWindow->getOwnerWindow());
+
         MEditorWindow->alignChildWidgets();
+
 //        MNeedInitialAlignment = false;
 //      }
 //      else {
@@ -314,6 +318,8 @@ public: // clap gui
 //      #ifdef MIP_WIN32
 //        MEditorWindow->reparentWindow((intptr_t)window->win32);
 //      #endif
+
+//      MEditorWindow->alignChildWidgets();
 
       MEditorWindow->openWindow();
       MIsEditorOpen = true;

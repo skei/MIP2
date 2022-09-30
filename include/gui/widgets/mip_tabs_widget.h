@@ -90,8 +90,10 @@ public: // child to parent
     if (ASender == MHeader) {
       int32_t sel = MHeader->getSelected();
       MPages->setPage(sel/*,true*/);
-//      MPages->on_realign();
+      //MPages->on_realign();
+
       MPages->alignChildWidgets();
+
       do_widget_redraw(MPages,0);
     }
     MIP_Widget::do_widget_update(ASender);

@@ -109,7 +109,6 @@ public: // parent to child
   }
 
   void on_widget_config(MIP_Widget* AOwnerWindow) override {
-    //MIP_Print("MOwnerWindow %p AOwnerWindow %p\n",MOwnerWindow,AOwnerWindow);
     //MIP_PRINT;
     MImageValid = false;
     MIP_PanelWidget::on_widget_config(AOwnerWindow);

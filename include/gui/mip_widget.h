@@ -36,7 +36,7 @@ struct MIP_WidgetLayout {
   MIP_DPoint  minSize       = MIP_DPoint(0,0);              // minimum size
   MIP_DPoint  maxSize       = MIP_DPoint(999999,999999);    // maximum size
 //bool        frozen        = false;
-//  MIP_DPoint  scale         = MIP_DPoint(1,1);              // spacing between child widgets
+//MIP_DPoint  scale         = MIP_DPoint(1,1);              // spacing between child widgets
 };
 
 //----------
@@ -50,9 +50,11 @@ struct MIP_WidgetOptions {
   bool autoSize         = false;
   bool autoSizeContent  = false;
   bool wantHoverEvents  = false;
-  //bool clipChildren     = false;
-//bool freezeLayout    = false;
+//bool clipChildren     = false;
+//bool freezeLayout     = false;
 };
+
+//----------
 
 struct MIP_WidgetState {
   bool active           = true;
@@ -85,7 +87,7 @@ protected:
 //------------------------------
 
   const char*       MName         = "MIP_Widget";
-//MIP_Widget*       MOwnerWindow  = nullptr;
+  MIP_Widget*       MOwnerWindow  = nullptr; // typecast (MIP_Window*)
   MIP_Widget*       MParent       = nullptr;
   MIP_WidgetArray   MChildren     = {};
   MIP_DRect         MRect         = {0};
@@ -142,20 +144,21 @@ public:
 public:
 //------------------------------
 
-  virtual const char*     getWidgetName()                   { return MName; }
+  virtual const char*       getWidgetName()   { return MName; }
 
-  //virtual MIP_Widget*     getParentWidget() { return MParent; }
-  virtual MIP_DRect       getWidgetRect()   { return MRect; }
-  virtual double          getWidgetXPos()   { return MRect.x; }
-  virtual double          getWidgetYPos()   { return MRect.y; }
-  virtual double          getWidgetWidth()  { return MRect.w; }
-  virtual double          getWidgetHeight() { return MRect.h; }
-  virtual int32_t         getWidgetIndex()  { return MIndex; }
+//virtual MIP_Widget*       getParentWidget() { return MParent; }
+//virtual MIP_Widget*       getOwnerWindow()  { return MOwnerWindow; }
+  virtual MIP_DRect         getWidgetRect()   { return MRect; }
+  virtual double            getWidgetXPos()   { return MRect.x; }
+  virtual double            getWidgetYPos()   { return MRect.y; }
+  virtual double            getWidgetWidth()  { return MRect.w; }
+  virtual double            getWidgetHeight() { return MRect.h; }
+  virtual int32_t           getWidgetIndex()  { return MIndex; }
 
-  virtual MIP_Parameter*  getParameter()    { return MParameter; }
+  virtual MIP_Parameter*    getParameter()    { return MParameter; }
 
-  virtual bool              isInteractive()  { return State.interactive; }
-  virtual bool              isDirty()        { return State.dirty; }
+  virtual bool              isInteractive()   { return State.interactive; }
+  virtual bool              isDirty()         { return State.dirty; }
 
   virtual MIP_DRect         getRect()         { return MRect; }
   virtual MIP_DRect         getContentRect()  { return MContentRect; }
@@ -180,14 +183,15 @@ public:
   virtual void setWidgetHeight(double AHeight)              { MRect.h = AHeight; }
   virtual void setWidgetindex(int32_t AIndex)               { MIndex = AIndex; }
 
-  virtual void setParameter(MIP_Parameter* AParameter)  { MParameter = AParameter; }
-  virtual void setWidgetCursor(uint32_t ACursor)        { MMouseCursor = ACursor; }
+  virtual void setParameter(MIP_Parameter* AParameter)      { MParameter = AParameter; }
+  virtual void setWidgetCursor(uint32_t ACursor)            { MMouseCursor = ACursor; }
 
 //------------------------------
 public: // parent to child
 //------------------------------
 
   virtual void on_widget_config(MIP_Widget* AOwnerWindow)  {
+    MOwnerWindow = AOwnerWindow;
     //double winw = AOwnerWindow->MRect.w;
     //double winh = AOwnerWindow->MRect.h;
     //Layout.initialRatio.x = MRect.w / winw;
@@ -199,7 +203,7 @@ public: // parent to child
 
   virtual void on_widget_move(double AXpos, double AYpos)  {}
   virtual void on_widget_resize(double AWidth, double AHeight) {}
-  virtual void on_widget_align(bool ARecursive=true) {}
+//virtual void on_widget_align(bool ARecursive=true) {}
   virtual void on_widget_paint(MIP_PaintContext* AContext) { paintChildWidgets(AContext); }
 
   virtual void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) {}
@@ -207,7 +211,7 @@ public: // parent to child
 
   virtual void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_dblclick(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
-virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
+  virtual void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
   virtual void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime) {}
 
   virtual void on_widget_enter(MIP_Widget* AFrom, double AXpos, double AYpos, uint32_t ATime) {
@@ -447,17 +451,6 @@ public: // hierarchy
 
   virtual void alignChildWidgets(bool ARecursive=true) {
 
-    //if (Layout.frozen) {
-    //  for (uint32_t i=0; i<MChildren.size(); i++) {
-    //    MIP_Widget* child = MChildren[i];
-    //  }
-    //  return;
-    //}
-
-    // todo: take sizemode into account.. (ratios)
-    //double parent_xscale = MRect.w / Layout.baseRect.w;
-    //double parent_yscale = MRect.h / Layout.baseRect.h;
-
     // stacking
 
     float       stackx          = 0;
@@ -469,25 +462,26 @@ public: // hierarchy
     MIP_DRect   border          = Layout.border;
     MIP_DPoint  spacing         = Layout.spacing;
 
-    //if (Layout.scaleChildren) {
-    //  border.scale(n);
-    //  spacing.scale(n);
-    //}
-
-//    border.scale(Layout.scale);
-//    spacing.scale(Layout.scale);
+    //border.scale(Layout.scale);
+    //spacing.scale(Layout.scale);
 
     //
 
-    MIP_DRect parent_rect = MRect;
-    MIP_DRect client_rect = MRect;
-    MContentRect          = MRect;
+    MIP_DRect parent_rect   = MRect;
+    MIP_DRect client_rect   = MRect;
+    MIP_DRect initial_rect  = Layout.initialRect;
+    MContentRect = MRect;
 
     parent_rect.shrink(border);
     client_rect.shrink(border);
     MContentRect.shrink(border);
     //content.setPos(0,0);
     MContentRect.setSize(0,0);
+
+    double w_scaled = 1.0;
+    double h_scaled = 1.0;
+    if (initial_rect.w > 0) w_scaled = parent_rect.w / initial_rect.w;
+    if (initial_rect.h > 0) h_scaled = parent_rect.h / initial_rect.h;
 
     //uint32_t num = MChildren.size();
     //if (num > 0) {
@@ -515,6 +509,14 @@ public: // hierarchy
               child_rect.x *= client_rect.w;
               child_rect.w *= client_rect.w;
               break;
+            case MIP_WIDGET_RECT_MODE_INITIAL_RATIO:
+              child_rect.x *= w_scaled;
+              child_rect.w *= w_scaled;
+              break;
+            //case MIP_WIDGET_RECT_MODE_PARENT_1000:
+            //  child_rect.x = (child_rect.x * 0.001) * parent_rect.w;
+            //  child_rect.w = (child_rect.w * 0.001) * parent_rect.w;
+            //  break;
           }
           switch (child->Layout.vRectMode) {
             case MIP_WIDGET_RECT_MODE_PIXELS:
@@ -527,6 +529,14 @@ public: // hierarchy
               child_rect.y *= client_rect.h;
               child_rect.h *= client_rect.h;
               break;
+            case MIP_WIDGET_RECT_MODE_INITIAL_RATIO:
+              child_rect.y *= h_scaled;
+              child_rect.h *= h_scaled;
+              break;
+            //case MIP_WIDGET_RECT_MODE_PARENT_1000:
+            //  child_rect.y = (child_rect.y * 0.001) * parent_rect.h;
+            //  child_rect.h = (child_rect.h * 0.001) * parent_rect.h;
+            //  break;
           }
 
           //  if we were stacking, but isn't now (end stacking)

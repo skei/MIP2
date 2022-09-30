@@ -21,7 +21,6 @@ protected:
   bool            MDrawArrow    = true;
   MIP_Color       MArrowColor   = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
   MIP_MenuWidget* MMenu         = nullptr;
-//MIP_Window*     MOwnerWindow  = nullptr;
 
 //------------------------------
 public:

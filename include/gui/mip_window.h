@@ -103,6 +103,7 @@ public:
   MIP_Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent=0)
   : MIP_ImplementedWindow(AWidth,AHeight,AParent)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
+    MOwnerWindow = this;
     setup(AWidth,AHeight);
   }
 

@@ -9,12 +9,11 @@
 //----------
 
 // MIP_LINUX is not defined yet (mip_defines.h)
-
 #ifdef __gnu_linux__
   #define MIP_GUI_XCB
-  #define MIP_PAINTER_NANOVG
   //#define MIP_PAINTER_XCB
   //#define MIP_WINDOW_BUFFERED
+  #define MIP_PAINTER_NANOVG
 #else
   #define MIP_GUI_WIN32
   #define MIP_PAINTER_GDI
@@ -153,7 +152,6 @@ public: // gui
     bool result = MIP_Plugin::gui_create(api,is_floating);
     if (result /*&& MEditor*/) {
 
-
       MIP_Window* editor_window = MEditor->getWindow();
       editor_window->setWindowFillBackground(false);
 
@@ -211,6 +209,7 @@ public: // gui
 
         MIP_ColorWidget* color1 = new MIP_ColorWidget(20,MIP_Color(0,0.5,0,1));
         color1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        //color1->Layout.vRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO; // only works for 'static' containers/widgets..
         left_scrollbox->appendChildWidget(color1);
 
         // panel
@@ -554,6 +553,9 @@ public: // gui
         center_panel->appendChildWidget(tabs1);
 
         {
+
+          // page 1
+
           MIP_PanelWidget* tabs1_page1 = new MIP_PanelWidget(0);
           tabs1_page1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
           tabs1_page1->setFillBackground(false);
@@ -570,6 +572,8 @@ public: // gui
             MIP_GridWidget* grid1 = new MIP_GridWidget(MIP_DRect(200,150),10,8);
             tabs1_page1->appendChildWidget(grid1);
           }
+
+          // page 1
 
           MIP_PanelWidget* tabs1_page2 = new MIP_PanelWidget(0);
           tabs1_page2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
@@ -594,6 +598,8 @@ public: // gui
               graph1->addModule(module, i * 10, i * 30, "module");
             }
           }
+
+          // page 1
 
           MIP_PanelWidget* tabs1_page3 = new MIP_PanelWidget(0);
           tabs1_page3->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
@@ -620,6 +626,8 @@ public: // gui
             tabs1_page3->appendChildWidget(textbox1);
 
           }
+
+          //
 
         }
         tabs1->selectPage(0);

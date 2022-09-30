@@ -32,7 +32,6 @@ protected:
 //------------------------------
 
   MIP_MenuListener* MListener = nullptr;
-  MIP_Window*       MOwnerWindow = nullptr;
 
 //------------------------------
 public:
@@ -62,15 +61,6 @@ public: // parent to child
 //------------------------------
 public: // parent to child
 //------------------------------
-
-
-
-  void on_widget_config(MIP_Widget* AOwnerWindow) override {
-    MOwnerWindow = (MIP_Window*)AOwnerWindow;
-    MIP_PanelWidget::on_widget_config(AOwnerWindow);
-  }
-
-  //----------
 
   void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     if (!MRect.contains(AXpos,AYpos)) {
@@ -115,9 +105,10 @@ public:
   virtual void open(double AXpos, double AYpos, bool AModal/*=true*/) {
     double x = AXpos;
     double y = AYpos;
-    if (MOwnerWindow) {
-      uint32_t winw = MOwnerWindow->getWindowWidth();
-      uint32_t winh = MOwnerWindow->getWindowHeight();
+    MIP_Window* window = (MIP_Window*)MOwnerWindow;
+    if (window) {
+      uint32_t winw = window->getWindowWidth();
+      uint32_t winh = window->getWindowHeight();
       if ((x + MRect.w) > winw) { x = winw - MRect.w; }
       if ((y + MRect.h) > winh) { y = winh - MRect.h; }
     }
