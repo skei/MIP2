@@ -25,6 +25,8 @@ protected:
   MIP_Color   MTextColor              = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
   MIP_Color   MActiveTextColor        = MIP_Color(0);//MIP_COLOR_BLACK;
 
+  double      MTextSize               = 12.0;
+
   MIP_Color   MBackgroundCellColor    = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
   MIP_Color   MActiveCellColor        = MIP_Color(0.5);//MIP_COLOR_GRAY;
 
@@ -84,6 +86,8 @@ public:
   void setDrawRoundedBottom(bool AState) {
     MDrawRoundedBottom = AState;
   }
+
+  void setTextSize(double ASize) { MTextSize = ASize; }
 
 //------------------------------
 public:
@@ -218,13 +222,17 @@ public:
     if (MStates[AX]) color = MActiveTextColor;
     else color = MTextColor;
     if (txt) {
-      painter->fontSize(12);
+      double textsize = MTextSize;
+      if (MTextSize < 0) { textsize = MRect.h * (- MTextSize); }
+      painter->fontSize(textsize);
       painter->drawTextBox(ARect,txt,MIP_TEXT_ALIGN_CENTER,color);
 
     }
     else {
       sprintf(buf,"%i",AX);
-      painter->fontSize(12);
+      double textsize = MTextSize;
+      if (MTextSize < 0) { textsize = MRect.h * (- MTextSize); }
+      painter->fontSize(textsize);
       painter->drawTextBox(ARect,buf,MIP_TEXT_ALIGN_CENTER,color);
     }
   }

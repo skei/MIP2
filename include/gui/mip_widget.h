@@ -25,8 +25,7 @@ typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 struct MIP_WidgetLayout {
   uint32_t    alignment     = MIP_WIDGET_ALIGN_PARENT;      // alignment relative to parent
   double      aspectRatio   = -1;                           // if > 0, force aspect ratio (scale down)
-  uint32_t    hRectMode     = MIP_WIDGET_RECT_MODE_PIXELS;      // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
-  uint32_t    vRectMode     = MIP_WIDGET_RECT_MODE_PIXELS;      // y,h - --"--
+  uint32_t    rectMode      = MIP_WIDGET_RECT_MODE_PIXELS;      // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
   MIP_DRect   initialRect   = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
 //MIP_DPoint  initialRatio  = MIP_DPoint(0,0);
   MIP_DRect   baseRect      = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
@@ -35,7 +34,6 @@ struct MIP_WidgetLayout {
   MIP_DPoint  spacing       = MIP_DPoint(0,0);              // spacing between child widgets
   MIP_DPoint  minSize       = MIP_DPoint(0,0);              // minimum size
   MIP_DPoint  maxSize       = MIP_DPoint(999999,999999);    // maximum size
-//bool        frozen        = false;
 //MIP_DPoint  scale         = MIP_DPoint(1,1);              // spacing between child widgets
 };
 
@@ -51,7 +49,6 @@ struct MIP_WidgetOptions {
   bool autoSizeContent  = false;
   bool wantHoverEvents  = false;
 //bool clipChildren     = false;
-//bool freezeLayout     = false;
 };
 
 //----------
@@ -223,6 +220,14 @@ public: // parent to child
   virtual void on_widget_unmodal() {}
 
 //------------------------------
+public:
+//------------------------------
+
+  void redraw() {
+    do_widget_redraw(this);
+  }
+
+//------------------------------
 public: // child to parent
 //------------------------------
 
@@ -269,13 +274,7 @@ public: // child to parent
     }
   }
 
-//------------------------------
-public:
-//------------------------------
 
-  void redraw() {
-    do_widget_redraw(this);
-  }
 
 //------------------------------
 public: // hierarchy
@@ -498,45 +497,27 @@ public: // hierarchy
 
           // sizemode
 
-          switch (child->Layout.hRectMode) {
+          switch (child->Layout.rectMode) {
             case MIP_WIDGET_RECT_MODE_PIXELS:
               break;
             case MIP_WIDGET_RECT_MODE_PARENT_RATIO:
               child_rect.x *= parent_rect.w;
-              child_rect.w *= parent_rect.w;
-              break;
-            case MIP_WIDGET_RECT_MODE_CLIENT_RATIO:
-              child_rect.x *= client_rect.w;
-              child_rect.w *= client_rect.w;
-              break;
-            case MIP_WIDGET_RECT_MODE_INITIAL_RATIO:
-              child_rect.x *= w_scaled;
-              child_rect.w *= w_scaled;
-              break;
-            //case MIP_WIDGET_RECT_MODE_PARENT_1000:
-            //  child_rect.x = (child_rect.x * 0.001) * parent_rect.w;
-            //  child_rect.w = (child_rect.w * 0.001) * parent_rect.w;
-            //  break;
-          }
-          switch (child->Layout.vRectMode) {
-            case MIP_WIDGET_RECT_MODE_PIXELS:
-              break;
-            case MIP_WIDGET_RECT_MODE_PARENT_RATIO:
               child_rect.y *= parent_rect.h;
+              child_rect.w *= parent_rect.w;
               child_rect.h *= parent_rect.h;
               break;
             case MIP_WIDGET_RECT_MODE_CLIENT_RATIO:
+              child_rect.x *= client_rect.w;
               child_rect.y *= client_rect.h;
+              child_rect.w *= client_rect.w;
               child_rect.h *= client_rect.h;
               break;
             case MIP_WIDGET_RECT_MODE_INITIAL_RATIO:
+              child_rect.x *= w_scaled;
               child_rect.y *= h_scaled;
+              child_rect.w *= w_scaled;
               child_rect.h *= h_scaled;
               break;
-            //case MIP_WIDGET_RECT_MODE_PARENT_1000:
-            //  child_rect.y = (child_rect.y * 0.001) * parent_rect.h;
-            //  child_rect.h = (child_rect.h * 0.001) * parent_rect.h;
-            //  break;
           }
 
           //  if we were stacking, but isn't now (end stacking)
@@ -938,31 +919,6 @@ public: // hierarchy
     // post-align: scale?
 
   }
-
-  //----------
-
-  //virtual void freezeLayout(bool AState=true, bool ARecursive=true) {
-  //  //Layout.frozen = AState;
-  //  for (uint32_t i=0; i<MChildren.size(); i++) {
-  //    MIP_Widget* child = MChildren[i];
-  //    if (AState) {
-  //      MIP_DRect child_rect = child->getRect();
-  //      double xscale = child_rect.w / MRect.w;
-  //      double yscale = child_rect.h / MRect.h;
-  //      MIP_DRect r = MIP_DRect(
-  //        child_rect.x * xscale,
-  //        child_rect.y * yscale,
-  //        child_rect.w * xscale,
-  //        child_rect.h * yscale
-  //      );
-  //      child->setWidgetRect(r);
-  //      child->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-  //      child->Layout.hRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
-  //      child->Layout.vRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
-  //    }
-  //    if (ARecursive) child->freezeLayout(AState,ARecursive);
-  //  }
-  //}
 
 };
 

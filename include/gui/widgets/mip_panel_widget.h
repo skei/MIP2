@@ -16,27 +16,27 @@ protected:
 
   bool      MDrawRoundedCorners   = false;//true;
   //float     MCornerRadius         = 4.0;
-  float     MULCornerRadius       = 4.0;
-  float     MURCornerRadius       = 4.0;
-  float     MBRCornerRadius       = 4.0;
-  float     MBLCornerRadius       = 4.0;
+  float     MULCornerRadius       = 0.0;
+  float     MURCornerRadius       = 0.0;
+  float     MBRCornerRadius       = 0.0;
+  float     MBLCornerRadius       = 0.0;
 
   bool      MFillBackground       = true;
   bool      MFillGradient         = false;//true;
 
-  MIP_Color MBackgroundColor      = MIP_Color(0.5);//MIP_COLOR_GRAY;
+  MIP_Color MBackgroundColor      = MIP_Color(0.5);
   MIP_Color MGradientColor1       = MIP_Color(0.6, 0.6, 0.6);
   MIP_Color MGradientColor2       = MIP_Color(0.4, 0.4, 0.4);
 
   bool      MDrawBorder           = true;
   float     MBorderWidth          = 1.0;
-  MIP_Color MBorderColor          = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
+  MIP_Color MBorderColor          = MIP_Color(0.25);
 
-//  bool      MDrawDropShadow       = false;
-//  MIP_Color MDropShadowInnerColor = MIP_Color(0,0,0,0.5);
-//  MIP_Color MDropShadowOuterColor = MIP_Color(0,0,0,0.1);
-//  float     MDropShadowRounded    = 5;
-//  float     MDropShadowFeather    = 10;
+  bool      MDrawDropShadow       = false;
+  MIP_Color MDropShadowInnerColor = MIP_Color( 0.0, 0.0, 0.0, 1.0);
+  MIP_Color MDropShadowOuterColor = MIP_Color( 0.0, 0.0, 0.0, 0.0);
+  float     MDropShadowFeather    = 10;
+  bool     MDropShadowInner       = false;
 
 //------------------------------
 public:
@@ -57,7 +57,7 @@ public:
 //------------------------------
 
   virtual void setDrawRoundedCorners(bool ADraw=true)                   { MDrawRoundedCorners = ADraw; }
-  //virtual void setDrawDropShadow(bool ADraw=true)                       { MDrawDropShadow = ADraw; }
+  virtual void setDrawDropShadow(bool ADraw=true)                       { MDrawDropShadow = ADraw; }
   virtual void setFillBackground(bool AFill=true)                       { MFillBackground = AFill; }
   virtual void setFillGradient(bool AFill=true)                         { MFillGradient = AFill; }
   virtual void setDrawBorder(bool ADraw=true)                           { MDrawBorder = ADraw; }
@@ -71,42 +71,25 @@ public:
   virtual void setBorderColor(MIP_Color AColor) { MBorderColor = AColor; }
   virtual void setBorderWidth(double AWidth) { MBorderWidth = AWidth; }
 
+  virtual void setDropShadowInnerColor(MIP_Color AColor) { MDropShadowInnerColor = AColor; }
+  virtual void setDropShadowOuterColor(MIP_Color AColor) { MDropShadowOuterColor = AColor; }
+  virtual void setDropShadowFeather(float AFeather) {  MDropShadowFeather = AFeather; }
+  virtual void setDropShadowInner(bool AInner=true) { MDropShadowInner = AInner; }
 
 //------------------------------
 public:
 //------------------------------
 
   void on_widget_paint(MIP_PaintContext* AContext) override {
-    //drawDropShadow(AContext);
     fillBackground(AContext);
     paintChildWidgets(AContext);
     drawBorder(AContext);
+    //drawDropShadow(AContext);
   }
 
 //------------------------------
 public:
 //------------------------------
-
-  virtual void fillBackground(MIP_PaintContext* AContext) {
-    if (MFillBackground) {
-      MIP_Painter* painter = AContext->painter;
-      painter->beginPath();
-      if (MDrawRoundedCorners) painter->roundedRectVarying(MRect.x,MRect.y,MRect.w,MRect.h, MULCornerRadius, MURCornerRadius, MBRCornerRadius, MBLCornerRadius);
-      else painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
-//      if (MFillGradient) {
-//        //MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y2(), MGradientColor1, MGradientColor2);
-//        //painter->fillPaint(paint);
-//        MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y2(), MGradientColor1, MGradientColor2);
-//        painter->fillPaint(paint);
-//      }
-//      else {
-        painter->fillColor(MBackgroundColor);
-//      }
-      painter->fill();
-    }
-  }
-
-  //----------
 
   virtual void drawBorder(MIP_PaintContext* AContext) {
     if (MDrawBorder) {
@@ -122,30 +105,80 @@ public:
 
   //----------
 
-//  virtual void drawDropShadow(MIP_PaintContext* AContext) {
-//    if (MDrawDropShadow) {
-//      MIP_Painter* painter = AContext->painter;
-//      MIP_DRect rect = MRect;
-//      //bndDropShadow(nvg,rect.x+3,rect.y+3,rect.w,rect.h,MDropShadowRounded,MDropShadowFeather,0.5); // radius, feather, alpha
-//      //rect.grow(MRoundedCorners);
-//      painter->beginPath();
-//      //nvgRect(nvg,rect.x+8,rect.y+8,rect.w,rect.h);
-//      painter->roundedRect(MRect.x+8,MRect.y+8,MRect.w,MRect.h, MRoundedCorners);
-//      NVGpaint paint = painter->boxGradient(
-//        rect.x,
-//        rect.y,
-//        rect.w,
-//        rect.h,
-//        MDropShadowRounded,
-//        MDropShadowFeather,
-//        nvg_color(MDropShadowInnerColor),
-//        nvg_color(MDropShadowOuterColor)
-//      );
-//      painter->fillPaint(paint);
-//      painter->fill();
-//
-//    }
-//  }
+  virtual void fillBackground(MIP_PaintContext* AContext) {
+    //if (MDrawDropShadow && !MDropShadowInner) drawDropShadow(AContext);
+    if (MFillBackground) {
+      MIP_Painter* painter = AContext->painter;
+      painter->beginPath();
+      if (MDrawRoundedCorners) painter->roundedRectVarying(MRect.x,MRect.y,MRect.w,MRect.h, MULCornerRadius, MURCornerRadius, MBRCornerRadius, MBLCornerRadius);
+      else painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
+      //if (MFillGradient) {
+      //  //MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y2(), MGradientColor1, MGradientColor2);
+      //  //painter->fillPaint(paint);
+      //  MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y2(), MGradientColor1, MGradientColor2);
+      //  painter->fillPaint(paint);
+      //}
+      //else {
+      painter->fillColor(MBackgroundColor);
+      //}
+      painter->fill();
+    }
+    //if (MDrawDropShadow && MDropShadowInner) drawDropShadow(AContext);
+  }
+
+  //----------
+
+  virtual void drawDropShadow(MIP_PaintContext* AContext) {
+    if (MDrawDropShadow) {
+      MIP_Painter* painter = AContext->painter;
+      MIP_DRect rect = MRect;
+      double rounded = 0.0;
+      double feather = MDropShadowFeather;
+      if (MDrawRoundedCorners) rounded = MULCornerRadius;
+      painter->beginPath();
+      if (MDropShadowInner) {
+        MIP_PaintSource paint = painter->boxGradient(
+          rect.x,
+          rect.y,
+          rect.w,
+          rect.h,
+          rounded,
+          feather,
+          MDropShadowOuterColor,
+          MDropShadowInnerColor
+        );
+
+        rect.shrink(feather);
+        painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
+        painter->fillPaint(paint);
+        painter->fill();
+      }
+      else {
+
+        MIP_DRect cr = painter->getClipRect();
+        painter->resetClip();
+
+        MIP_PaintSource paint = painter->boxGradient(
+          rect.x,
+          rect.y,
+          rect.w,
+          rect.h,
+          rounded,
+          feather,
+          MDropShadowInnerColor,
+          MDropShadowOuterColor
+        );
+
+        rect.grow(feather);
+        painter->rect(rect.x,rect.y,rect.w,rect.h);
+        painter->fillPaint(paint);
+        painter->fill();
+
+        painter->setClip(cr);
+
+      }
+    }
+  }
 
 };
 

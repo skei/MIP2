@@ -56,7 +56,9 @@ protected:
   MIP_Widget*       MClickedWidget      = nullptr;
   MIP_Widget*       MModalWidget        = nullptr;
   MIP_Widget*       MLockedWidget       = nullptr;
+
   uint32_t          MCurrentCursor      = MIP_CURSOR_DEFAULT;
+
   MIP_PaintContext  MPaintContext       = {};
   MIP_Painter*      MWindowPainter      = nullptr;
 
@@ -66,27 +68,20 @@ protected:
   #endif
 
   // click
-
   MIP_Widget*       MMouseClickedW      = nullptr;
   int32_t           MMouseClickedX      = 0;
   int32_t           MMouseClickedY      = 0;
   uint32_t          MMouseClickedB      = 0;
   uint32_t          MMouseClickedS      = 0;
   uint32_t          MMouseClickedT      = 0;
-
   uint32_t          MPrevClickTime      = 0;
-
-  // drag
-
   int32_t           MMousePrevX         = 0;
   int32_t           MMousePrevY         = 0;
   int32_t           MMouseDragX         = 0;
   int32_t           MMouseDragY         = 0;
-
 //bool              MScaleWindow        = false;
-
-  double MWindowScaleX = 1.0;
-  double MWindowScaleY = 1.0;
+  double            MWindowScaleX       = 1.0;
+  double            MWindowScaleY       = 1.0;
 
 //------------------------------
 public:
@@ -338,7 +333,7 @@ public: // window
 
   void on_window_move(int32_t AXpos, int32_t AYpos) override {
     //MIP_PRINT;
-    MRect.setPos(0,0);
+    MRect.setPos(0,0); // still needed?
   }
 
   //----------

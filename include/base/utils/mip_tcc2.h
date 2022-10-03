@@ -82,6 +82,8 @@ private:
 public:
 //------------------------------
 
+// path = path to tcc.so
+
   MIP_Tcc(const char* path) {
     load_lib(path);
 

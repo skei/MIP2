@@ -63,8 +63,8 @@ public:
     //nvgFontFaceId(MContext,MFont);
     //nvgFontSize(MContext,10);
 
-    //MFont = createFontMem("font1",(unsigned char*)liberation_ttf,liberation_ttf_size,0);
-    MFont = createFont("font1","/usr/share/fonts/truetype/freefont/FreeSerif.ttf");
+    MFont = createFontMem("font1",(unsigned char*)liberation_ttf,liberation_ttf_size,0);
+    //MFont = createFont("font1","/usr/share/fonts/truetype/freefont/FreeSerif.ttf");
     fontFaceId(MFont);
 
     //bndSetFont(MFont);

@@ -83,11 +83,20 @@ public:
       if (range > 0) {
         double v = value / range; // 0..1
 
-        double arcwidth = MRect.w * MArcWidth / 100.0;
+        double arcwidth,cx,cy,r;
 
-        double cx = MRect.x + (MRect.w * 0.5);
-        double cy = MRect.y + (MRect.h * 0.5) + (arcwidth * 0.25);
-        double r  = (MRect.w * 0.5) - (arcwidth * 0.5);
+        if (MRect.w > MRect.h) {
+          arcwidth = MRect.h * MArcWidth / 100.0;
+          cx = MRect.x + (MRect.w * 0.5);
+          cy = MRect.y + (MRect.h * 0.5) + (arcwidth * 0.25);
+          r  = (MRect.h * 0.5) - (arcwidth * 0.5);
+        }
+        else {
+          arcwidth = MRect.w * MArcWidth / 100.0;
+          cx = MRect.x + (MRect.w * 0.5);
+          cy = MRect.y + (MRect.h * 0.5) + (arcwidth * 0.25);
+          r  = (MRect.w * 0.5) - (arcwidth * 0.5);
+        }
         //double a1 = (0.0 - 0.25 - 0.1) * MIP_PI2;
         //double a2 = a1 - (v * 0.8 * MIP_PI2);
         double a1 = (0.35    * MIP_PI2);

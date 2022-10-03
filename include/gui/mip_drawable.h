@@ -48,7 +48,7 @@ public:
   #endif
 
   //#ifdef MIP_USE_GLX
-  //  virtual Display* drawable_getXlibDisplay() { return nullptr; }
+  //  virtual Display*          drawable_getXlibDisplay() { return nullptr; }
   //#endif
 
   #ifdef MIP_USE_NANOVG
@@ -66,6 +66,10 @@ public:
     virtual xcb_pixmap_t      drawable_getXcbPixmap()     { return XCB_NONE; }
     virtual Display*          drawable_getXlibDisplay()   { return nullptr; }
   #endif
+
+  //#ifdef MIP_USE_XLIB
+  //  virtual Display*          drawable_getXlibDisplay()   { return nullptr; }
+  //#endif
 
 };
 

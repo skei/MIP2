@@ -343,9 +343,9 @@ public: // window
     xcb_flush(MConnection);
   }
 
-  void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    invalidateRegion(AXpos,AYpos,AWidth,AHeight);
-  }
+  //void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+  //  invalidateRegion(AXpos,AYpos,AWidth,AHeight);
+  //}
 
   //----------
 

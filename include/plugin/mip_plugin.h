@@ -185,6 +185,7 @@ public: // clap plugin
   //----------
 
   const void* get_extension(const char *id) override {
+    MIP_Print("ext: '%s'\n",id);
     if (strcmp(id,CLAP_EXT_AMBISONIC)           == 0) return &MAmbisonic;       // draft
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG)  == 0) return &MAudioPortsConfig;
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS)         == 0) return &MAudioPorts;
@@ -388,7 +389,6 @@ public: // EXT gui
 
 
   bool gui_create(const char *api, bool is_floating) override {
-    //MIP_Print("api: '%s' is_floating: %s -> true\n",api,is_floating?"true":"false");
 
     #ifdef MIP_PLUGIN_GENERIC_EDITOR
 

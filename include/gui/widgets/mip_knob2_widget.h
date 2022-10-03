@@ -50,14 +50,12 @@ public:
     MLabelWidget->setTextSize(-1);
     MLabelWidget->setTextColor( MIP_Color(0)/*MIP_COLOR_BLACK*/);
     MLabelWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    MLabelWidget->Layout.hRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
-    MLabelWidget->Layout.vRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+    MLabelWidget->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
     appendChildWidget(MLabelWidget);
 
     MValueWidget = new MIP_TextWidget( MIP_DRect( 1, 0.20 ), AText );
     MValueWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
-    MValueWidget->Layout.hRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
-    MValueWidget->Layout.vRectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+    MValueWidget->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
     MValueWidget->setFillBackground(true);
     MValueWidget->setDrawBorder(false);
     MValueWidget->setText(MKnobValueText);

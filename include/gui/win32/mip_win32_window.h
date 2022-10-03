@@ -320,8 +320,8 @@ public:
 
   //----------
 
-  void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-  }
+  //void redrawRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+  //}
 
   //----------
 

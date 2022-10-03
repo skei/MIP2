@@ -101,9 +101,7 @@ public:
       rect.x += MTextOffset.x;
       rect.y += MTextOffset.y;
       double textsize = MTextSize;
-      if (MTextSize < 0) {
-        textsize = MRect.h * (- MTextSize);
-      }
+      if (MTextSize < 0) { textsize = MRect.h * (- MTextSize); }
       painter->fontSize(textsize);
       painter->beginPath();
       painter->drawTextBox(rect,MText,MTextAlignment,MTextColor);

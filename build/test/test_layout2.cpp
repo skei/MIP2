@@ -4,9 +4,7 @@
   #define MIP_DEBUG_PRINT_SOCKET
 #endif
 
-//#define MIP_PLUGIN_GENERIC_EDITOR
-
-//----------
+//-----
 
 // MIP_LINUX is not defined yet (mip_defines.h)
 #ifdef __gnu_linux__
@@ -19,8 +17,9 @@
   #define MIP_PAINTER_GDI
 #endif
 
-#define EDITOR_WIDTH  640
-#define EDITOR_HEIGHT 480
+//-----
+
+//#define MIP_PLUGIN_GENERIC_EDITOR
 
 //----------------------------------------------------------------------
 
@@ -34,6 +33,9 @@
 //#define TEXTBOX1_LINE_SIZE    256
 //#define TEXTBOX1_LINE_COUNT   256
 //#define TEXTBOX1_BUFFER_SIZE  (TEXTBOX1_LINE_COUNT * TEXTBOX1_LINE_SIZE)
+
+#define EDITOR_WIDTH  640
+#define EDITOR_HEIGHT 480
 
 //----------------------------------------------------------------------
 //
@@ -153,57 +155,67 @@ public: // gui
     if (result /*&& MEditor*/) {
 
       MIP_Window* editor_window = MEditor->getWindow();
+      //editor_window->setWindowBackgroundColor(0.5);
+      //editor_window->setWindowFillBackground(true);
 
       //----- background -----
 
-      MIP_PanelWidget* background = new MIP_PanelWidget(MIP_DRect(EDITOR_WIDTH,EDITOR_HEIGHT));
-      background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+      MIP_PanelWidget* background = new MIP_PanelWidget( MIP_DRect(EDITOR_WIDTH,EDITOR_HEIGHT) );
+      //MIP_PanelWidget* background = new MIP_PanelWidget( MIP_DRect(0,0,1,1) );
+      //background->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+      background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_PARENT;
       background->setFillBackground(true);
       background->setBackgroundColor(0.5);
-      background->setDrawBorder(false);
-      background->setBorderColor(0.55);
+      background->setDrawBorder(true);
+      background->setBorderColor(0);
+      background->Layout.aspectRatio = ((double)EDITOR_WIDTH / (double)EDITOR_HEIGHT);
       editor_window->appendChildWidget(background);
+
+//#if 0
 
       //----------
 
       MIP_PanelWidget* p = new MIP_PanelWidget( MIP_DRect(50,50,540,380) );
       p->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-      p->Layout.hRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p->Layout.vRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      p->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
       p->setFillBackground(true);
-      p->setBackgroundColor(0.7);
+      p->setBackgroundColor( MIP_Color(0.6,0.5,0.5));
       p->setDrawBorder(true);
       p->setBorderColor(0.3);
       background->appendChildWidget(p);
 
-      MIP_PanelWidget* p1 = new MIP_PanelWidget( MIP_DRect(   0, 0, 80, 80 ) );
-      MIP_PanelWidget* p2 = new MIP_PanelWidget( MIP_DRect( 100, 0, 80, 80 ) );
-      MIP_PanelWidget* p3 = new MIP_PanelWidget( MIP_DRect( 200, 0, 80, 80 ) );
-      MIP_PanelWidget* p4 = new MIP_PanelWidget( MIP_DRect( 300, 0, 80, 80 ) );
-      MIP_PanelWidget* p5 = new MIP_PanelWidget( MIP_DRect( 400, 0, 80, 80 ) );
+      MIP_PanelWidget*  p1 = new MIP_PanelWidget( MIP_DRect(   0,  0, 80, 80 ) );
       p1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-      p1->Layout.hRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p1->Layout.vRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p2->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-      p2->Layout.hRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p2->Layout.vRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p3->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-      p3->Layout.hRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p3->Layout.vRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p4->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-      p4->Layout.hRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p4->Layout.vRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p5->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-      p5->Layout.hRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      p5->Layout.vRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      p1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      p1->setBackgroundColor( MIP_Color(0.5,0.6,0.5));
       p->appendChildWidget(p1);
+
+      MIP_PanelWidget*  p2 = new MIP_PanelWidget( MIP_DRect( 100, 10, 80, 80 ) );
+      p2->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      p2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      p2->setBackgroundColor( MIP_Color(0.5,0.6,0.5));
       p->appendChildWidget(p2);
+
+      MIP_PanelWidget*  p3 = new MIP_PanelWidget( MIP_DRect( 200, 10, 80, 80 ) );
+      p3->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      p3->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      p3->setBackgroundColor( MIP_Color(0.5,0.6,0.5));
       p->appendChildWidget(p3);
+
+      MIP_PanelWidget*  p4 = new MIP_PanelWidget( MIP_DRect( 300, 10, 80, 80 ) );
+      p4->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      p4->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      p4->setBackgroundColor( MIP_Color(0.5,0.6,0.5));
       p->appendChildWidget(p4);
+
+      MIP_SymbolWidget* p5 = new MIP_SymbolWidget( MIP_DRect( 400, 10, 80, 80 ), MIP_SYMBOL_FILL_ELLIPSE );
+      p5->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+      p5->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      p5->setFillBackground(false);
+      p5->setColor(MIP_COLOR_BLACK);
       p->appendChildWidget(p5);
 
-
-
+//#endif // 0
 
     } // editor
     return result;

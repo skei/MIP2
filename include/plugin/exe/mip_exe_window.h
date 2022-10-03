@@ -29,6 +29,10 @@ public:
   //: MIP_Window(AWidth,AHeight,false) {
     plugin = APlugin;
     gui = AGui;
+    setWindowTitle("MIP_ExeWindow");
+    //setWindowBackgroundColor(0.5);
+    //setWindowFillBackground(true);
+
   }
 
   //----------
@@ -41,6 +45,9 @@ public:
 //------------------------------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
+
+    // scaling
+
     //double xscale = (double)AWidth / MInitialWidth;
     //double yscale = (double)AHeight / MInitialHeight;
     //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
@@ -63,7 +70,6 @@ public:
     //    xcb_window_t child = children[i];
     //    int32_t values[] = { AWidth, AHeight };
     //    xcb_configure_window(connection,child,XCB_CONFIG_WINDOW_WIDTH | XCB_CONFIG_WINDOW_HEIGHT,values);
-    //
     //  }
     //  //xcb_aux_sync(connection);
     //  xcb_flush(connection);
@@ -71,31 +77,22 @@ public:
     //}
 
     //#ifdef MIP_GUI_NANOVG
-
     #ifdef MIP_WINDOW_BUFFERED
-
-    MIP_Plugin* plug = (MIP_Plugin*)plugin->plugin_data;
-    if (plug) {
-      if (plug->MEditor) {
-        MIP_Window* window = plug->MEditor->getWindow();
-        if (window) {
-          window->on_window_resize(AWidth,AHeight);
+      MIP_Plugin* plug = (MIP_Plugin*)plugin->plugin_data;
+      if (plug) {
+        if (plug->MEditor) {
+          MIP_Window* window = plug->MEditor->getWindow();
+          if (window) {
+            window->on_window_resize(AWidth,AHeight);
+          }
         }
       }
-    }
-
     #endif
 
     // let our plugin know..
     gui->set_size(plugin,AWidth,AHeight);
 
-
   }
-
-  //void do_widget_modal(MIP_Widget* ASender, uint32_t AMode=0) override {
-  //  MIP_Window::do_widget_modal(ASender,AMode);
-  //}
-
 
 };
 

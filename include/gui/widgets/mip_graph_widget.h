@@ -193,6 +193,7 @@ public:
     clearSelection();
 //    setFlag(MIP_WIDGET_HOVER);
 //    //setFlag(MIP_WIDGET_CLIP);
+    setFillBackground(false);
     setBackgroundColor( MIP_Color(0.55f) );
 
   }

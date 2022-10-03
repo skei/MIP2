@@ -105,9 +105,7 @@ public:
       //rect.shrink(2);
 
       double valuesize = MValueSize;
-      if (valuesize < 0) {
-        valuesize = MRect.h * (- valuesize);
-      }
+      if (valuesize < 0) { valuesize = MRect.h * (- valuesize); }
 
       painter->fontSize(valuesize);
       painter->beginPath();
