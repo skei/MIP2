@@ -182,17 +182,28 @@ public:
     plugin->init();
     MIP_Vst3Plugin* vst3plugin = new MIP_Vst3Plugin(plugin,vst3_host);
 
-//    MIP_Plugin* pl = (MIP_Plugin*)plugin;
+//    MIP_Plugin* plug = (MIP_Plugin*)plugin;
+//    uint32_t num_par = plug->getParameterCount();
+//    for (uint32_t i=0; i<num_par; i++) {
+//      //clap_param_info_t info;
+//      //MPlugin->params_get_info(id,&info);
+//      MIP_Parameter* param = plug->getParameter(i);
+//      double value = param->getDefaultValue();
+//      //value = param->normalize(value);
+//      param->setValue(value);
+//    }
+
 //    MIP_ParameterArray* pa = pl->getParameters();
 //    vst3plugin->setParameters(pa);
-//      plugin->setListener(vst3_instance);
-//      plugin->on_plugin_open();
-//      plugin->setDefaultParameterValues();
-//      plugin->updateAllParameters();
+//    plugin->setListener(vst3_instance);
+//    plugin->on_plugin_open();
+//    plugin->setDefaultParameterValues();
+//    plugin->updateAllParameters();
 
-      *obj = (Vst::IComponent*)vst3plugin;
-      return kResultOk;
-    return kNotImplemented;
+    *obj = (Vst::IComponent*)vst3plugin;
+    return kResultOk;
+
+    //return kNotImplemented;
   }
 
   //--------------------

@@ -21,9 +21,11 @@
 #define MIP_VST3_MAX_EVENT_SIZE         256
 #define MIP_VST3_MAX_NOTE_IDS           32
 
+#define MIP_VST3_MAX_GUI_EVENTS         32
+
 // events buffer : 4096 * 256 = 1m
 
-struct note_id_t {
+struct MIP_Vst3NoteId {
   int32_t note_id   = -1;
   int16_t port      = -1;
   int16_t channel   = -1;
@@ -89,7 +91,12 @@ private:
   uint32_t                        MNumEvents                                                        = 0;
   char                            MEvents[MIP_VST3_MAX_EVENTS_PER_BLOCK * MIP_VST3_MAX_EVENT_SIZE]  = {0};
   uint32_t                        MLastNoteId                                                       = 0;
-  note_id_t                       MNoteIds[MIP_VST3_MAX_NOTE_IDS]                                   = {};
+  MIP_Vst3NoteId                  MNoteIds[MIP_VST3_MAX_NOTE_IDS]                                   = {};
+
+  MIP_Queue<uint32_t,MIP_VST3_MAX_GUI_EVENTS> MHostParamQueue = {}; // gui -> host
+  double  MQueuedHostParamValues[MIP_VST3_MAX_GUI_EVENTS] = {0};
+
+  //double  MQueuedHostParamValues[MIP_VST3_MAX_EVENTS_PER_BLOCK] = {0};
 
 //------------------------------
 public:
@@ -160,8 +167,64 @@ private: // out_events
 //------------------------------
 
   bool vst3_output_events_try_push(const clap_event_header_t *event) {
-    MIP_Print("TODO\n");
-    return true;
+    //MIP_Print("TODO\n");
+    if (event->space_id == CLAP_CORE_EVENT_SPACE_ID) {
+      switch (event->type) {
+        case CLAP_EVENT_NOTE_ON:
+          MIP_Print("TODO: send NOTE_ON to host\n");
+          return true;
+        case CLAP_EVENT_NOTE_OFF:
+          MIP_Print("TODO: send NOTE_OFF to host\n");
+          return true;
+        case CLAP_EVENT_NOTE_CHOKE:
+          MIP_Print("TODO: send NOTE_CHOKE to host\n");
+          return true;
+        case CLAP_EVENT_NOTE_END:
+          MIP_Print("TODO: send NOTE_END to host\n");
+          return true;
+        case CLAP_EVENT_NOTE_EXPRESSION:
+          MIP_Print("TODO: send NOTE_EXPRESSION to host\n");
+          return true;
+        case CLAP_EVENT_PARAM_GESTURE_BEGIN:
+          MIP_Print("TODO: send PARAM_GESTURE_BEGIN to host\n");
+          return true;
+        case CLAP_EVENT_PARAM_GESTURE_END:
+          MIP_Print("TODO: send PARAM_GESTURE_BEGIN to host\n");
+          return true;
+        case CLAP_EVENT_PARAM_VALUE:
+          MIP_Print("queueing PARAM_VALUE (to host)\n");
+          {
+            clap_event_param_value_t* param_value = (clap_event_param_value_t*)event;
+            uint32_t index = param_value->param_id;
+            double value = param_value->value;
+            clap_param_info_t info;
+            MPlugin->params_get_info(index,&info);
+            double range = info.max_value - info.min_value;
+            if (range > 0) {
+              value -= info.min_value;
+              value /= range;
+            }
+            queueHostParam(index,value);
+          }
+          return true;
+        case CLAP_EVENT_PARAM_MOD:
+          MIP_Print("TODO: send PARAM_MOD to host\n");
+          return true;
+        case CLAP_EVENT_TRANSPORT:
+          MIP_Print("TODO: send TRANSPORT to host\n");
+          return true;
+        case CLAP_EVENT_MIDI:
+          MIP_Print("TODO: send MIDI to host\n");
+          return true;
+        case CLAP_EVENT_MIDI_SYSEX:
+          MIP_Print("TODO: send MIDI_SYSEX to host\n");
+          return true;
+        case CLAP_EVENT_MIDI2:
+          MIP_Print("TODO: send MIDI2 to host\n");
+          return true;
+      } // switch
+    } // clap_space
+    return false;
   }
 
   clap_output_events_t MVst3OutputEvents = {
@@ -182,6 +245,44 @@ private: // out_events
 private:
 //------------------------------
 
+  void queueHostParam(uint32_t AIndex, double AValue) {
+    MQueuedHostParamValues[AIndex] = AValue;
+    MHostParamQueue.write(AIndex);
+  }
+
+  //----------
+
+  //void notifyHostUpdateParameter(uint32_t AIndex, float AValue) override {
+  //  if (MComponentHandler) {
+  //    //if (MComponentHandler2) MComponentHandler2->startGroupEdit();
+  //    MComponentHandler->beginEdit(AIndex);          // click
+  //    MComponentHandler->performEdit(AIndex,AValue);  // drag
+  //    MComponentHandler->endEdit(AIndex);            // release
+  //    //if (MComponentHandler2) MComponentHandler2->finishGroupEdit();
+  //  }
+  //}
+
+
+  void flushHostParams() {
+    if (MComponentHandler) {
+      uint32_t index;
+      while (MHostParamQueue.read(&index)) {
+        double value = MQueuedHostParamValues[index];
+        MIP_Print("flush! %i = %.3f\n",index,value);
+
+        // convert back to 0..1
+
+        //if (MComponentHandler2) MComponentHandler2->startGroupEdit();
+        MComponentHandler->beginEdit(index);          // click
+        MComponentHandler->performEdit(index,value);  // drag
+        MComponentHandler->endEdit(index);            // release
+        //if (MComponentHandler2) MComponentHandler2->finishGroupEdit();
+      }
+    }
+  }
+
+  //----------
+
   void prepareParameters(ProcessData& data) {
     IParameterChanges* paramChanges = data.inputParameterChanges;
     if (paramChanges) {
@@ -192,11 +293,16 @@ private:
           if (paramQueue) {
             uint32_t id = paramQueue->getParameterId();
             if (id < MPlugin->params_count()) {
+
+              clap_param_info_t info;
+              MPlugin->params_get_info(id,&info);
+
               int32_t pointcount = paramQueue->getPointCount();
               for (int32_t j=0; j<pointcount; j++) {
                 int32_t offset = 0;
                 double value = 0;
                 paramQueue->getPoint(j,offset,value);
+                value = info.min_value + ((info.max_value - info.min_value) * value);
                 uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
                 clap_event_param_value_t* param_value_event = (clap_event_param_value_t*)&MEvents[pos];
                 memset(param_value_event,0,sizeof(clap_event_param_value_t));
@@ -205,12 +311,13 @@ private:
                 param_value_event->header.space_id = CLAP_CORE_EVENT_SPACE_ID;
                 param_value_event->header.type     = CLAP_EVENT_PARAM_VALUE;
                 param_value_event->header.flags    = 0;
-                param_value_event->param_id        = paramQueue->getParameterId();
+                param_value_event->param_id        = id;//paramQueue->getParameterId();
                 param_value_event->note_id         = -1;
                 param_value_event->port_index      = 0;
                 param_value_event->channel         = 0;
                 param_value_event->key             = 0;
                 param_value_event->value           = value;
+                //MIP_Print("param_value: %i = %.3f\n",paramQueue->getParameterId(),value);
               }
             } // id < param
           } // paramqueue
@@ -2070,8 +2177,9 @@ public:
       MIP_Plugin* plugin = (MIP_Plugin*)MPlugin;
       MIP_Parameter* param = plugin->getParameter(id);
       double v = param->getValue();
+
       //float v = 0;
-      return v;
+      return param->normalize(v);
     }
     else {
       return 0;
@@ -2095,6 +2203,7 @@ public:
   // bitwig sends a ParamID = 0x3f800000
 
   tresult PLUGIN_API setParamNormalized(ParamID id, ParamValue value) override {
+    MIP_Print("%i = %.3f\n",id,value);
     //if (id >= MDescriptor->getNumParameters()) {
     //  return kResultFalse; // ???
     //}
@@ -2225,6 +2334,7 @@ public:
   */
 
   tresult PLUGIN_API attached(void* parent, FIDString type) override {
+
     const clap_plugin_gui_t* gui = (const clap_plugin_gui_t*)MPlugin->get_extension(CLAP_EXT_GUI);
     const clap_plugin_t* plugin = MPlugin->getPlugin();
 
@@ -2265,6 +2375,9 @@ public:
         gui->set_size(plugin,width,height);
         gui->set_parent(plugin,&clap_window);
         gui->show(plugin);
+
+        MRunLoop->registerTimer(this,MIP_VST3_TIMER_MS);
+
       }
     }
     return kResultOk;
@@ -2284,8 +2397,10 @@ public:
     if (gui) {
       gui->hide(plugin);
       gui->destroy(plugin);
+
+      MRunLoop->unregisterTimer(this);
+
     }
-    //MRunLoop->unregisterTimer(this);
     return kResultOk;
   }
 
@@ -2404,6 +2519,8 @@ public:
     void onTimer() override {
       //MPlugin->on_updateEditor(MEditor);
       //MPlugin->flushParamsToHost();
+      //MIP_PRINT;
+      flushHostParams();
     }
   #endif
 
