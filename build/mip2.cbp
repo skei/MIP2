@@ -553,12 +553,14 @@
 		<Unit filename="../include/gui/glx/mip_glx.h" />
 		<Unit filename="../include/gui/glx/mip_glx_painter.h" />
 		<Unit filename="../include/gui/glx/mip_glx_utils.h" />
+		<Unit filename="../include/gui/mip_buffered_window.h" />
 		<Unit filename="../include/gui/mip_drawable.h" />
 		<Unit filename="../include/gui/mip_paint_context.h" />
 		<Unit filename="../include/gui/mip_painter.h" />
 		<Unit filename="../include/gui/mip_surface.h" />
 		<Unit filename="../include/gui/mip_theme.h" />
 		<Unit filename="../include/gui/mip_widget.h" />
+		<Unit filename="../include/gui/mip_widget_window.h" />
 		<Unit filename="../include/gui/mip_window.h" />
 		<Unit filename="../include/gui/nanovg/mip_nanovg.h" />
 		<Unit filename="../include/gui/nanovg/mip_nanovg_painter.h" />

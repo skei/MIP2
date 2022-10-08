@@ -153,6 +153,8 @@ public: // gui
     bool result = MIP_Plugin::gui_create(api,is_floating);
     if (result /*&& MEditor*/) {
 
+      MEditor->setCanResizeEditor(true);
+
       MIP_Window* editor_window = MEditor->getWindow();
       editor_window->setWindowFillBackground(false);
 

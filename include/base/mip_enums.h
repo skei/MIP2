@@ -12,30 +12,30 @@
 //----------------------------------------------------------------------
 
 enum MIP_EDirections {
-  MIP_UP                         = 0,
-  MIP_DOWN                       = 1,
-  MIP_LEFT                       = 2,
-  MIP_RIGHT                      = 3,
-  MIP_HORIZONTAL                 = 0,
-  MIP_VERTICAL                   = 1
+  MIP_UP                          = 0,
+  MIP_DOWN                        = 1,
+  MIP_LEFT                        = 2,
+  MIP_RIGHT                       = 3,
+  MIP_HORIZONTAL                  = 0,
+  MIP_VERTICAL                    = 1
 };
 
 enum MIP_EEdges {
-  MIP_EDGE_NONE                  = 0x00,
-  MIP_EDGE_TOP                   = 0x01,
-  MIP_EDGE_BOTTOM                = 0x02,
-  MIP_EDGE_LEFT                  = 0x04,
-  MIP_EDGE_RIGHT                 = 0x08,
-  MIP_EDGE_ALL                   = 0xFF
+  MIP_EDGE_NONE                   = 0x00,
+  MIP_EDGE_TOP                    = 0x01,
+  MIP_EDGE_BOTTOM                 = 0x02,
+  MIP_EDGE_LEFT                   = 0x04,
+  MIP_EDGE_RIGHT                  = 0x08,
+  MIP_EDGE_ALL                    = 0xFF
 };
 
 enum MIP_ECorners {
-  MIP_CORNER_NONE                = 0x00,
-  MIP_CORNER_LEFT_TOP            = 0x01,
-  MIP_CORNER_LEFT_BOTTOM         = 0x02,
-  MIP_CORNER_RIGHT_TOP           = 0x04,
-  MIP_CORNER_RIGHT_BOTTOM       = 0x08,
-  MIP_CORNER_ALL                 = 0xFF
+  MIP_CORNER_NONE                 = 0x00,
+  MIP_CORNER_LEFT_TOP             = 0x01,
+  MIP_CORNER_LEFT_BOTTOM          = 0x02,
+  MIP_CORNER_RIGHT_TOP            = 0x04,
+  MIP_CORNER_RIGHT_BOTTOM         = 0x08,
+  MIP_CORNER_ALL                  = 0xFF
 };
 
 enum MIP_EWinding {

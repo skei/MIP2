@@ -22,7 +22,7 @@ protected:
   char        MText[256]      = {0};
   MIP_Color   MTextColor      = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
   uint32_t    MTextAlignment  = MIP_TEXT_ALIGN_CENTER;
-  float       MTextSize       = 13.0;
+  double      MTextSize       = 13.0;
   MIP_DPoint  MTextOffset     = MIP_DPoint(0,0);
 
 //------------------------------
@@ -50,7 +50,7 @@ public:
   virtual void  setText(const char* AText)        { strcpy(MText,AText); }
   virtual void  setTextColor(MIP_Color AColor)    { MTextColor = AColor; }
   virtual void  setTextAlignment(uint32_t AAlign) { MTextAlignment = AAlign; }
-  virtual void  setTextSize(float ASize)          { MTextSize = ASize; }
+  virtual void  setTextSize(double ASize)          { MTextSize = ASize; }
   virtual void  setTextOffset(MIP_DPoint AOffset) { MTextOffset = AOffset; }
 
   virtual const char* getText() { return MText; }

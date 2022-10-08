@@ -125,6 +125,7 @@ public: // clap plugin
 
   bool init() override {
     //MIP_PRINT;
+    //setDefaultParameterValues(); // call this ASFTER you have appended parameters..
     return true;
   }
 
@@ -185,7 +186,7 @@ public: // clap plugin
   //----------
 
   const void* get_extension(const char *id) override {
-    MIP_Print("ext: '%s'\n",id);
+    //MIP_Print("ext: '%s'\n",id);
     if (strcmp(id,CLAP_EXT_AMBISONIC)           == 0) return &MAmbisonic;       // draft
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS_CONFIG)  == 0) return &MAudioPortsConfig;
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS)         == 0) return &MAudioPorts;
@@ -940,33 +941,33 @@ public: // process events
   //----------
 
   void processNoteOnEvent(const clap_event_note_t* event) {
-    MIP_Print("NOTE ON key %i note_id %i\n",event->key,event->note_id);
+    //MIP_Print("NOTE ON key %i note_id %i\n",event->key,event->note_id);
     processNoteOn(event);
   }
 
   void processNoteOffEvent(const clap_event_note_t* event) {
-    MIP_Print("NOTE OFF key %i note_id %i\n",event->key,event->note_id);
+    //MIP_Print("NOTE OFF key %i note_id %i\n",event->key,event->note_id);
     processNoteOff(event);
   }
 
   void processNoteChokeEvent(const clap_event_note_t* event) {
-    MIP_Print("NOTE CHOKE key %i note_id %i\n",event->key,event->note_id);
+    //MIP_Print("NOTE CHOKE key %i note_id %i\n",event->key,event->note_id);
     processNoteChoke(event);
   }
 
   // not called.. (plugin -> host)
   void processNoteEndEvent(const clap_event_note_t* event) {
-    MIP_Print("NOTE END !\n");
+    //MIP_Print("NOTE END !\n");
     processNoteEnd(event);
   }
 
   void processNoteExpressionEvent(const clap_event_note_expression_t* event) {
-    MIP_Print("NOTE EXPRESSION expr %i key %i note_id %i value %.3f\n",event->expression_id,event->key,event->note_id,event->value);
+    //MIP_Print("NOTE EXPRESSION expr %i key %i note_id %i value %.3f\n",event->expression_id,event->key,event->note_id,event->value);
     processNoteExpression(event);
   }
 
   void processParamValueEvent(const clap_event_param_value_t* event) {
-    MIP_Print("PARAM VALUE index %i value %.3f\n",event->param_id,event->value);
+    //MIP_Print("PARAM VALUE index %i value %.3f\n",event->param_id,event->value);
     uint32_t index = event->param_id;
     double value = event->value;
     setParameterValue(index,value);
@@ -977,7 +978,7 @@ public: // process events
   }
 
   void processParamModEvent(const clap_event_param_mod_t* event) {
-    MIP_Print("PARAM MOD index %i value %.3f\n",event->param_id,event->amount);
+    //MIP_Print("PARAM MOD index %i value %.3f\n",event->param_id,event->amount);
     uint32_t index = event->param_id;
     double value = event->amount;
     setParameterModulation(index,value);
@@ -989,23 +990,23 @@ public: // process events
 
   // not called.. (plugin -> host)
   void processParamGestureBeginEvent(const clap_event_param_gesture_t* event) {
-    MIP_Print("PARAM GESTURE BEGIN\n");
+    //MIP_Print("PARAM GESTURE BEGIN\n");
     processParamGestureBegin(event);
   }
 
   // not called.. (plugin -> host)
   void processParamGestureEndEvent(const clap_event_param_gesture_t* event) {
-    MIP_Print("PARAM GESTURE END\n");
+    //MIP_Print("PARAM GESTURE END\n");
     processParamGestureEnd(event);
   }
 
   void processTransportEvent(const clap_event_transport_t* event) {
-    MIP_Print("TRANSPORT\n");
+    //MIP_Print("TRANSPORT\n");
     processTransport(event);
   }
 
   void processMidiEvent(const clap_event_midi_t* event) {
-    MIP_Print("MIDI\n");
+    //MIP_Print("MIDI\n");
     processMidi(event);
     /*
     uint8_t msg   = event->data[0] & 0xf0;
@@ -1051,12 +1052,12 @@ public: // process events
   }
 
   void processMidiSysexEvent(const clap_event_midi_sysex_t* event) {
-    MIP_Print("MIDI SYSEX\n");
+    //MIP_Print("MIDI SYSEX\n");
     processMidiSysex(event);
   }
 
   void processMidi2Event(const clap_event_midi2_t* event) {
-    MIP_Print("MIDI2\n");
+    //MIP_Print("MIDI2\n");
     processMidi2(event);
   }
 
@@ -1232,6 +1233,10 @@ public: // parameters
     uint32_t index = MParameters.size();
     AParameter->setIndex(index);
     MParameters.push_back(AParameter);
+
+    double value = AParameter->getDefaultValue();
+    AParameter->setValue(value);
+
   }
 
   //----------
@@ -1243,6 +1248,12 @@ public: // parameters
       delete MParameters[i];
       MParameters[i] = nullptr;
     }
+  }
+
+  //----------
+
+  uint32_t getParameterCount() {
+    return MParameters.size();
   }
 
   //----------

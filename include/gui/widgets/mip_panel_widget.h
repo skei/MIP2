@@ -36,7 +36,7 @@ protected:
   MIP_Color MDropShadowInnerColor = MIP_Color( 0.0, 0.0, 0.0, 1.0);
   MIP_Color MDropShadowOuterColor = MIP_Color( 0.0, 0.0, 0.0, 0.0);
   float     MDropShadowFeather    = 10;
-  bool     MDropShadowInner       = false;
+  bool      MDropShadowInner      = false;
 
 //------------------------------
 public:

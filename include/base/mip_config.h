@@ -3,6 +3,7 @@
 //----------------------------------------------------------------------
 
 /*
+  see: mip_defines.h
   MIP_32BIT
   MIP_64BIT
   MIP_BIG_ENDIAN
@@ -75,8 +76,11 @@
 //#define MIP_USE_XCB
 
 //#define MIP_VST2_FST
+//#define MIP_VST2_SDK
 //#define MIP_VST2_VESTIGE
+//#define MIP_VST2_XAYMAR
 
+//#define MIP_VST3_SDK
 //#define MIP_VST3_TRAVESTY
 
 //#define MIP_WIN32_GDIPLUS

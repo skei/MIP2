@@ -98,6 +98,7 @@ public:
   MIP_Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent=0)
   : MIP_ImplementedWindow(AWidth,AHeight,AParent)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
     MOwnerWindow = this;
     setup(AWidth,AHeight);
   }
@@ -339,6 +340,7 @@ public: // window
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
+    MIP_Print("%i,%i\n",AWidth,AHeight);
     if (MWindowPainter) delete MWindowPainter;
     MWindowPainter = new MIP_Painter(this,this);
     MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
@@ -451,7 +453,7 @@ public: // window
   //----------
 
   void on_window_mouse_move(uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
-    if (MLockedWidget) {
+    if (MLockedWidget) { // todo: also add if mouse_clicked?
       if ((AXpos == MMouseClickedX) && (AYpos == MMouseClickedY)) {
         MMousePrevX = AXpos;
         MMousePrevY = AYpos;

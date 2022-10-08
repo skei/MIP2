@@ -1,5 +1,7 @@
 
-// the 'hello world!' of plugin development..
+//----------------------------------------------------------------------
+// gui
+//----------------------------------------------------------------------
 
 #ifdef __gnu_linux__
   #define MIP_GUI_XCB
@@ -9,11 +11,21 @@
   #define MIP_PAINTER_GDI
 #endif
 
+//----------
+
+//#define MIP_PLUGIN_GENERIC_EDITOR
+
+//----------------------------------------------------------------------
+// debug
+//----------------------------------------------------------------------
+
 #ifndef MIP_EXE
   #define MIP_DEBUG_PRINT_SOCKET
   // nc -U -l -k /tmp/mip.socket
 #endif
 
+//----------------------------------------------------------------------
+// includes
 //----------------------------------------------------------------------
 
 #include "plugin/mip_plugin.h"
@@ -52,6 +64,10 @@ class gain_plugin
 private:
 //------------------------------
 
+  //---------------
+  // parameters
+  //---------------
+
   enum gain_parameter_enums {
     PAR_GAIN = 0,
     PARAM_COUNT
@@ -61,7 +77,9 @@ private:
     { PAR_GAIN, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Gain", "", 0, 1, 0 }
   };
 
-  //----------
+  //---------------
+  // ports
+  //---------------
 
   const clap_audio_port_info_t gain_audioInputPorts[1] = {
     { 0, "audio in 1", CLAP_AUDIO_PORT_IS_MAIN, 2, CLAP_PORT_STEREO, CLAP_INVALID_ID }
@@ -79,7 +97,9 @@ private:
 //    { 0, CLAP_NOTE_DIALECT_CLAP, CLAP_NOTE_DIALECT_CLAP, "note out 1" }
 //  };
 
-  //----------
+  //---------------
+  //
+  //---------------
 
   double par_gain = 0.0;
 
@@ -106,8 +126,8 @@ public: // plugin
     bool result = MIP_Plugin::init();
     appendAudioInputPort( &gain_audioInputPorts[0] );
     appendAudioOutputPort(&gain_audioOutputPorts[0]);
-//    appendNoteInputPort(  &gain_noteInputPorts[0]  );
-//    appendNoteOutputPort( &gain_noteOutputPorts[0] );
+    //appendNoteInputPort(  &gain_noteInputPorts[0]  );
+    //appendNoteOutputPort( &gain_noteOutputPorts[0] );
     for (uint32_t i=0; i<PARAM_COUNT; i++) {
       appendParameter( new MIP_Parameter(&gain_parameters[i]) );
     }
@@ -118,8 +138,12 @@ public: // plugin
 public: // gui
 //------------------------------
 
+  #ifndef MIP_PLUGIN_GENERIC_EDITOR
+
   bool gui_create(const char *api, bool is_floating) override {
     MIP_Plugin::gui_create(api,is_floating);
+
+    MEditor->setCanResizeEditor(true);
     MIP_Window* window = MEditor->getWindow();
 
     MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(), MIP_COLOR_RED );
@@ -137,6 +161,8 @@ public: // gui
 
     return true;
   }
+
+  #endif
 
 //------------------------------
 public: // process
@@ -173,7 +199,7 @@ public: // process
 //----------------------------------------------------------------------
 
 #include "plugin/clap/mip_clap_entry.h"
-#include "plugin/exe/mip_exe_entry.h"
+//#include "plugin/exe/mip_exe_entry.h"
 #include "plugin/vst2/mip_vst2_entry.h"
 #include "plugin/vst3/mip_vst3_entry.h"
 

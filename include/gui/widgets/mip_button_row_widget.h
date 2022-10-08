@@ -30,8 +30,8 @@ protected:
   MIP_Color   MBackgroundCellColor    = MIP_Color(0.75);//MIP_COLOR_LIGHT_GRAY;
   MIP_Color   MActiveCellColor        = MIP_Color(0.5);//MIP_COLOR_GRAY;
 
-  bool        MValueIsBits            = false;
-  uint32_t    MNumBits                = 0;
+  bool        MValueIsBits            = true;
+  uint32_t    MNumBits                = 8;
 
   bool        MDrawRoundedBottom      = true;
   float       MRounded                = 8;
@@ -137,30 +137,34 @@ public:
 
   //----------
 
-//  float getValue() override {
-//    if (MValueIsBits) {
-//      uint32_t bits = getButtonBits();
-//      float v = (float)bits / 255.0;
-//      MIP_GridWidget::setValue(v);
-//      return v;
-//    }
-//    else {
-//      return MIP_GridWidget::getValue();
-//    }
-//  }
-//
-//  void setValue(float AValue) override {
-//    if (MValueIsBits) {
-//      float f = AValue * 255.0;
-//      int i = (int)f;
-//      setButtonBits(i);
-//      MIP_GridWidget::setValue(AValue);
-//    }
-//    else {
-//      MIP_GridWidget::setValue(AValue);
-//      selectValue(AValue);
-//    }
-//  }
+  double getValue() override {
+    if (MValueIsBits) {
+      return getButtonBits();
+      //uint32_t bits = getButtonBits();
+      //double v = (float)bits / 255.0;
+      //MIP_GridWidget::setValue(v);
+      //return v;
+    }
+    else {
+      return MIP_GridWidget::getValue();
+    }
+  }
+
+  void setValue(double AValue) override {
+    if (MValueIsBits) {
+      int i = (int)AValue;
+      setButtonBits(i);
+      MIP_GridWidget::setValue(AValue);
+      //double f = AValue * 255.0;
+      //int i = (int)f;
+      //setButtonBits(i);
+      //MIP_GridWidget::setValue(AValue);
+    }
+    else {
+      MIP_GridWidget::setValue(AValue);
+      selectValue(AValue);
+    }
+  }
 
   //----------
 
