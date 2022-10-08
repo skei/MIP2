@@ -49,6 +49,7 @@ struct MIP_WidgetOptions {
   bool autoSizeContent  = false;
   bool wantHoverEvents  = false;
 //bool clipChildren     = false;
+  bool alignIfHidden    = false;
 };
 
 //----------
@@ -488,10 +489,8 @@ public: // hierarchy
       // for all children..
       //for (uint32_t i=0; i<num/*MChildren.size()*/; i++) {
       for (uint32_t i=0; i<MChildren.size(); i++) {
-
         MIP_Widget* child = MChildren[i];
-        if (child->State.visible) {
-
+        if (child->State.visible || (child->Options.alignIfHidden)) {
           MIP_DRect child_rect = child->Layout.baseRect;
           uint32_t  alignment = child->Layout.alignment;
 

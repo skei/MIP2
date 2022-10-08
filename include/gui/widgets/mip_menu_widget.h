@@ -43,6 +43,7 @@ public:
     MListener = AListener;
     State.active = false;
     State.visible = false;
+    Options.alignIfHidden = true;
   }
 
   //----------
