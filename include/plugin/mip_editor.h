@@ -67,13 +67,20 @@ protected:
 
   MIP_Widget*         MParameterToWidget[MIP_EDITOR_MAX_PARAMS] = {0};
 
+  bool    MCanResizeEditor    = false;
+  bool    MResizeProportional = false;
+  double  MProportionalWidth  = 1.0;
+  double  MProportionalHeight = 1.0;
+
 //------------------------------
 public:
 //------------------------------
 
   MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight/*, intptr_t AParent*/)
   /*: MIP_Window(AWidth,AHeight,AParent)*/ {
-    //MIP_PRINT;
+
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
+
     MEditorListener = AListener;
     MEditorWidth = AWidth;
     MEditorHeight = AHeight;
@@ -90,6 +97,7 @@ public:
   //----------
 
   virtual ~MIP_Editor() {
+    //MIP_PRINT;
     if (MEditorWindow) {
       if (MIsEditorOpen) {
         //MEditorWindow->hide();
@@ -109,6 +117,12 @@ public:
     return MEditorWindow;
   }
 
+  void setCanResizeEditor(bool AResize=true)              { MCanResizeEditor    = AResize ; }
+  void setResizeProportional(bool AProp=true)             { MResizeProportional = AProp; }
+  void setProportionalWidth(double AWidth)                { MProportionalWidth  = AWidth; }
+  void setProportionalHeight(double AHeight)              { MProportionalHeight = AHeight; }
+  void setProportionalSize(double AWidth, double AHeight) { MProportionalWidth  = AWidth; MProportionalHeight = AHeight; }
+
 //------------------------------
 public: // clap gui
 //------------------------------
@@ -126,7 +140,7 @@ public: // clap gui
   */
 
   virtual bool setScale(double scale) {
-    //MIP_Print("scale %f -> true\n",scale);
+    MIP_Print("%.3f\n",scale);
     MEditorScale = scale;
     return true;
   }
@@ -140,9 +154,9 @@ public: // clap gui
   */
 
   virtual bool getSize(uint32_t *width, uint32_t *height) {
-    //MIP_Print("-> true (%i, %i)\n",MEditorWidth,MEditorHeight);
-    *width = MEditorWidth;
-    *height = MEditorHeight;
+    //MIP_Print("*w/h:%i,%i -> %i,%i\n",*width,*height,(int)MEditorWidth,(int)MEditorHeight);
+    *width = (int)MEditorWidth;
+    *height = (int)MEditorHeight;
     return true;
   }
 
@@ -155,8 +169,9 @@ public: // clap gui
   */
 
   virtual bool canResize() {
-    //MIP_Print("-> true\n");
-    return true;
+    //if (MCanResizeEditor) { MIP_Print("true\n"); }
+    //else  { MIP_Print("false\n"); }
+    return MCanResizeEditor;
   }
 
   //----------
@@ -169,12 +184,30 @@ public: // clap gui
   // ratios could be calculated from initial size..
 
   virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
-    //MIP_Print("-> true (aspect:%i:%i)\n",420,620);
-    hints->can_resize_horizontally  = true;
-    hints->can_resize_vertically    = true;
-    hints->aspect_ratio_width       = 0;//420;
-    hints->aspect_ratio_height      = 0;//620;
-    hints->preserve_aspect_ratio    = false;//true;
+    //MIP_Print("");
+    if (MCanResizeEditor) {
+      hints->can_resize_horizontally  = true;
+      hints->can_resize_vertically    = true;
+      //MIP_DPrint("crh,crv:true");
+    }
+    else {
+      hints->can_resize_horizontally  = false;
+      hints->can_resize_vertically    = false;
+      //MIP_DPrint("crh,crv:false");
+    }
+    if (MCanResizeEditor && MResizeProportional) {
+      hints->aspect_ratio_width       = (int)MProportionalWidth;
+      hints->aspect_ratio_height      = (int)MProportionalHeight;
+      hints->preserve_aspect_ratio    = true;
+      //MIP_DPrint(", arw:%i arh:%i par:true",(int)MProportionalWidth,(int)MProportionalHeight);
+    }
+    else{
+      hints->aspect_ratio_width       = 1;
+      hints->aspect_ratio_height      = 1;
+      hints->preserve_aspect_ratio    = false;
+      //MIP_DPrint(", 1 1 false");
+    }
+    //MIP_DPrint("\n");
     return true;
     //return false;
   }
@@ -192,18 +225,19 @@ public: // clap gui
   // 'the given size' indicates the cointent of width/height is valid?
 
   virtual bool adjustSize(uint32_t *width, uint32_t *height) {
-//    double aspect = 420.0 / 620.0; //(double)MEditorWidth / (double)MEditorHeight;
     double w = *width;
     double h = *height;
-//    double a = w / h;
-//    MIP_Print("aspect %f w %f h %f a %f\n",aspect,w,h,a);
-//    //if (h > 0) {
-//      if (a >= aspect) w = h * aspect;
-//      else h = w / aspect;
-//    //}
-    //MIP_Print("%i,%i -> true (%f, %f)\n",*width,*height,w,h);
-    *width = w;
-    *height = h;
+    if (MResizeProportional) {
+      double orig_aspect = (double)MProportionalWidth / (double)MProportionalHeight;
+      if (h > 0) {
+        double a = w / h;
+        if (a >= orig_aspect) w = h * a;
+        else h = w / orig_aspect;
+      }
+    }
+    //MIP_Print("%i,%i -> %i,%i\n",*width,*height,(int)w,(int)h);
+    *width = (int)w;
+    *height = (int)h;
     return true;
   }
 
@@ -214,30 +248,17 @@ public: // clap gui
     [main-thread]
   */
 
+  // if our editor is not resizable, we won't get an initial setSize..
+
   virtual bool setSize(uint32_t width, uint32_t height) {
-//    MIP_Print("%i,%i MEditorRect %.2f,%.2f MInitialRect %.2f,%.2f\n",width,height,MEditorWidth,MEditorHeight,MInitialWidth,MInitialHeight);
+    //MIP_Print("width %i height %i\n",width,height);
     MEditorWidth = width;
     MEditorHeight = height;
-
     if (MEditorWindow) {
       MEditorWindow->unmodal(); // ouch.. modual stuff should have been in window class.. but some problems with getting resize events..
       MEditorWindow->setWindowSize(width,height);
       MEditorWindow->setWidgetSize(width,height);
-//      if (MNeedInitialAlignment) {
-
-        //MIP_Assert(MEditorWindow->getOwnerWindow());
-
-        MEditorWindow->alignChildWidgets();
-
-//        MNeedInitialAlignment = false;
-//      }
-//      else {
-//        double xscale = (double)width / MInitialWidth;
-//        double yscale = (double)height / MInitialHeight;
-//        //MIP_Print("xscale %f yscale %f\n",xscale,yscale);
-//        MEditorWindow->scaleWidget(xscale,yscale);
-//      }
-      //MWindow->scaleChildWidgets(xscale,true);
+      MEditorWindow->alignChildWidgets();
     }
     return true;
   }
@@ -250,7 +271,7 @@ public: // clap gui
   */
 
   virtual bool setParent(const clap_window_t *window) {
-    //MIP_PRINT;
+    //MIP_Peinr("\n");
     MClapWindow.api = window->api;
     MClapWindow.ptr = window->ptr;
     //MIP_Print("%p -> true\n",window);
@@ -279,7 +300,7 @@ public: // clap gui
   */
 
   virtual bool setTransient(const clap_window_t *window) {
-    //MIP_Print("%p -> true\n",window);
+    //MIP_Print("%p\n",window);
     return true;
   }
 
@@ -303,7 +324,7 @@ public: // clap gui
   */
 
   virtual bool show() {
-    //MIP_Print("-> true\n");
+    //MIP_Print("\n");
 
     #ifdef MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
       MEditorWindow = new MIP_EditorWindow(this,MEditorWidth,MEditorHeight,(intptr_t)MClapWindow.win32);
@@ -319,7 +340,12 @@ public: // clap gui
 //        MEditorWindow->reparentWindow((intptr_t)window->win32);
 //      #endif
 
-//      MEditorWindow->alignChildWidgets();
+      // if out editor is not resizable, we won't get an initial setSize,
+      // where we align the child widgets...
+
+      if (!MCanResizeEditor) {
+        MEditorWindow->alignChildWidgets();
+      }
 
       MEditorWindow->openWindow();
       MIsEditorOpen = true;
@@ -337,7 +363,7 @@ public: // clap gui
   */
 
   virtual bool hide() {
-    //MIP_Print("-> true\n");
+    //MIP_Print("\n");
     if (MEditorWindow && MIsEditorOpen) {
       MIsEditorOpen = false;
       MEditorWindow->stopEventThread();
@@ -356,14 +382,14 @@ public: // editor window listener
 //------------------------------
 
   void on_editor_listener_update_parameter(uint32_t AIndex, double AValue) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (MEditorListener) MEditorListener->on_editor_listener_update_parameter(AIndex,AValue);
   };
 
   //----------
 
   void on_editor_listener_resize_window(uint32_t AWidth, uint32_t AHeight) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (MEditorListener) MEditorListener->on_editor_listener_resize_window(AWidth,AHeight);
   };
 
