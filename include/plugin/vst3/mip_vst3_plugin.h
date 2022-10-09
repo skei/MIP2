@@ -157,6 +157,8 @@ private: // in_events
     return plugin->vst3_input_events_size();
   }
 
+  //----------
+
   static const clap_event_header_t* vst3_input_events_get_callback(const struct clap_input_events *list, uint32_t index) {
     MIP_Vst3Plugin* plugin = (MIP_Vst3Plugin*)list->ctx;
     return plugin->vst3_input_events_get(index);
@@ -227,6 +229,8 @@ private: // out_events
     return false;
   }
 
+  //----------
+
   clap_output_events_t MVst3OutputEvents = {
     this,
     vst3_output_events_try_push_callback
@@ -252,25 +256,12 @@ private:
 
   //----------
 
-  //void notifyHostUpdateParameter(uint32_t AIndex, float AValue) override {
-  //  if (MComponentHandler) {
-  //    //if (MComponentHandler2) MComponentHandler2->startGroupEdit();
-  //    MComponentHandler->beginEdit(AIndex);          // click
-  //    MComponentHandler->performEdit(AIndex,AValue);  // drag
-  //    MComponentHandler->endEdit(AIndex);            // release
-  //    //if (MComponentHandler2) MComponentHandler2->finishGroupEdit();
-  //  }
-  //}
-
-
   void flushHostParams() {
     if (MComponentHandler) {
       uint32_t index;
       while (MHostParamQueue.read(&index)) {
         double value = MQueuedHostParamValues[index];
-        MIP_Print("flush! %i = %.3f\n",index,value);
-
-        // convert back to 0..1
+        //MIP_Print("flush! %i = %.3f\n",index,value);
 
         //if (MComponentHandler2) MComponentHandler2->startGroupEdit();
         MComponentHandler->beginEdit(index);          // click
@@ -2453,6 +2444,9 @@ public:
     //MEditorWidth = newSize->getWidth();
     //MEditorHeight = newSize->getHeight();
     //TODO: resize/redraw editor
+    uint32_t w = newSize->getWidth();
+    uint32_t h = newSize->getHeight();
+    MPlugin->gui_set_size(w,h);
     return kResultOk;
   }
 
@@ -2489,7 +2483,8 @@ public:
   */
 
   tresult PLUGIN_API canResize() override {
-    return kResultFalse;
+    if (MPlugin->get_extension(CLAP_EXT_GUI)) return kResultTrue;
+    else return kResultFalse;
   }
 
   //----------
