@@ -2446,7 +2446,7 @@ public:
     //TODO: resize/redraw editor
     uint32_t w = newSize->getWidth();
     uint32_t h = newSize->getHeight();
-    MPlugin->gui_set_size(w,h);
+    if (MPlugin) MPlugin->gui_set_size(w,h);
     return kResultOk;
   }
 

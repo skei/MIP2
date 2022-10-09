@@ -500,8 +500,11 @@ public: // EXT gui
   bool gui_set_size(uint32_t width, uint32_t height) override {
     MEditorWidth = width;
     MEditorHeight = height;
-    bool result = MEditor->setSize(width,height);
-    //MIP_Print("width: %i height: %i -> %s\n",width,height,result?"true":"false");
+    bool result = false;
+    if (MEditor) {
+      result = MEditor->setSize(width,height);
+      //MIP_Print("width: %i height: %i -> %s\n",width,height,result?"true":"false");
+    }
     return result;
   }
 

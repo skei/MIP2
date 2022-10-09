@@ -10,8 +10,9 @@
 #include "plugin/clap/mip_clap.h"
 //#include "plugin/clap/mip_clap_host.h"
 #include "plugin/vst2/mip_vst2.h"
-#include "plugin/vst2/mip_vst2_plugin.h"
 #include "plugin/vst2/mip_vst2_host_implementation.h"
+#include "plugin/vst2/mip_vst2_plugin.h"
+#include "plugin/vst2/mip_vst2_utils.h"
 
 //----------------------------------------------------------------------
 //
@@ -45,20 +46,44 @@ public:
 public:
 //------------------------------
 
+// host cando "shellCategory"
+// ask the host about shellCategorycurid;
+
+
   AEffect* entry(audioMasterCallback audioMaster) {
     //MIP_Print("\n");
 
-//    char path[1024] = {};
-    //const char* plugin_path = MIP_GetLibPath(path);
+    uint32_t index = 0;
 
-//    const char* plugin_path = MIP_GetLibFilename(path);
-//    MIP_Print("plugin_path '%s'\n",plugin_path);
-//    MIP_REGISTRY.setPath(plugin_path);
+    // shell
+
+    if ( audioMaster(nullptr,audioMasterCanDo,0,0,(void*)"shellCategory",0) == 1) {
+      //MIP_Print("host supports shellCategory\n");
+
+      uint32_t cur_id = audioMaster(nullptr,audioMasterCurrentId,0,0,nullptr,0);
+      MIP_Print("shellCategory.. cur_id: %i\n",cur_id);
+      for (int32_t i=0; i<MIP_REGISTRY.getNumDescriptors(); i++) {
+        const clap_plugin_descriptor_t* desc = MIP_REGISTRY.getDescriptor(i);
+        if (getUniqueId(desc) == cur_id) {
+          MIP_Print("found plugin %i = '%s'\n",i,desc->name);
+          index = i;
+          break;
+        }
+      }
+    }
+
+    //    if ( audioMaster(effect,audioMasterCanDo,0,0,(void*)"shellCategorycurID",0) == 1) {
+    //      MIP_Print("host supports shellCategorycurID\n");
+    //    }
+
+    char path[1024] = {};
+    const char* plugin_path = MIP_GetLibFilename(path);
+    //MIP_Print("plugin_path '%s'\n",plugin_path);
+    MIP_REGISTRY.setPath(plugin_path);
 
     MIP_Vst2Host* host = new MIP_Vst2Host(audioMaster); // deleted in MIP_Vst2Plugin destructor
     //const clap_plugin_descriptor_t* descriptor = MIP_GetDescriptor(0);
 
-    uint32_t index = 0; // TODO
     const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
 
     //const clap_plugin_t* plugin = MIP_CreatePlugin(host->ptr(),descriptor->id); // deleted in MIP_Vst2Plugin destructor
@@ -108,8 +133,10 @@ public:
     host->setAEffect(effect);
     memset(effect,0,sizeof(AEffect));
 
+    //
+
     effect->magic                   = kEffectMagic;
-    effect->uniqueID                = MIP_MAGIC_M_PL;//0x00000000; // TODO
+    effect->uniqueID                = getUniqueId(descriptor);
     effect->flags                   = flags;
     effect->numInputs               = num_inputs;
     effect->numOutputs              = num_outputs;

@@ -140,7 +140,7 @@ public: // clap gui
   */
 
   virtual bool setScale(double scale) {
-    MIP_Print("%.3f\n",scale);
+    //MIP_Print("%.3f\n",scale);
     MEditorScale = scale;
     return true;
   }
