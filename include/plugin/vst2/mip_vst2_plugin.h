@@ -32,6 +32,8 @@ struct MIP_VstEvents {
 
 class MIP_Vst2Plugin {
 
+  friend class MIP_Vst2Entry;
+
 //------------------------------
 private:
 //------------------------------
@@ -64,8 +66,8 @@ private:
   //  MIP_Editor*         MEditor             = nullptr;
   //#endif // MIP_NO_GUI
 
-  int32_t MShellPluginLastQueried = -1;
-
+  int32_t   MShellPluginLastQueried = -1;
+  uint32_t  MShellPluginCurrentId = 0;
 //------------------------------
 public:
 //------------------------------
@@ -961,10 +963,17 @@ public: // vst2
         uint32_t res = 0;
 
         //MIP_Plugin* plugin = (MIP_Plugin*)MPlugin->plugin_data;
-        if (MIP_REGISTRY.getNumDescriptors() > 1) {
-          MIP_Print("shell!\n");
-          res = kPlugCategShell;
-          MShellPluginLastQueried = 0;
+
+//TODO: only for shell plugin itself..
+
+        if (MShellPluginCurrentId == 0) {
+          if (MIP_REGISTRY.getNumDescriptors() > 1) {
+            //if (MShellPluginLastQueried == -1) {
+              MIP_Print("effGetPlugCategory -> shell\n");
+              res = kPlugCategShell;
+              MShellPluginLastQueried = 0;
+            //}
+          }
         }
         else {
           if (strstr(MDescriptor->id,"instrument")) res = kPlugCategSynth;

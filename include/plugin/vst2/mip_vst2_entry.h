@@ -53,18 +53,18 @@ public:
   AEffect* entry(audioMasterCallback audioMaster) {
     //MIP_Print("\n");
 
-    uint32_t index = 0;
-
     // shell
+
+    uint32_t current_id = 0;
+    uint32_t index = 0;
 
     if ( audioMaster(nullptr,audioMasterCanDo,0,0,(void*)"shellCategory",0) == 1) {
       //MIP_Print("host supports shellCategory\n");
-
-      uint32_t cur_id = audioMaster(nullptr,audioMasterCurrentId,0,0,nullptr,0);
-      MIP_Print("shellCategory.. cur_id: %i\n",cur_id);
+      current_id = audioMaster(nullptr,audioMasterCurrentId,0,0,nullptr,0);
+      MIP_Print("shellCategory.. current_id: %i\n",current_id);
       for (int32_t i=0; i<MIP_REGISTRY.getNumDescriptors(); i++) {
         const clap_plugin_descriptor_t* desc = MIP_REGISTRY.getDescriptor(i);
-        if (getUniqueId(desc) == cur_id) {
+        if (getUniqueId(desc) == current_id) {
           MIP_Print("found plugin %i = '%s'\n",i,desc->name);
           index = i;
           break;
@@ -93,6 +93,8 @@ public:
     clap_plugin->init(clap_plugin); // destroy called in effClose
     //MIP_GLOBAL_CLAP_LIST.appendInstance(plugin);
     MIP_Vst2Plugin* vst2plugin  = new MIP_Vst2Plugin(host,clap_plugin/*plugin->ptr()*/,audioMaster); // deleted in vst2_dispatcher_callback(effClose)
+
+    vst2plugin->MShellPluginCurrentId = current_id;
 
     /*
       assumes stereo in & out
