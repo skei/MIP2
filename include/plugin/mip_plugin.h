@@ -65,6 +65,8 @@ class MIP_Plugin
 protected:
 //------------------------------
 
+  const clap_host_t*  MClapHost = nullptr;
+
   MIP_AudioPortArray  MAudioInputPorts          = {};
   MIP_AudioPortArray  MAudioOutputPorts         = {};
   MIP_NotePortArray   MNoteInputPorts           = {};
@@ -107,6 +109,7 @@ public:
   MIP_Plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_ClapPlugin(ADescriptor) {
     //MIP_PRINT;
+    MClapHost = AHost;
   }
 
   //----------
@@ -1460,9 +1463,17 @@ public: // editor listener
       resize handle (programmatically), you do the realigning and positioning,
       using the current scale..
       best of two worlds, or just confusing and useless?
+
+    "The host doesn't have to call set_size()"
   */
 
   void on_editor_listener_resize_window(uint32_t AWidth, uint32_t AHeight) final {
+    MIP_Print("%i,%i\n",AWidth,AHeight);
+    //clap_host_gui_t* host_gui = (clap_host_gui_t*)MClapHost->get_extension(MClapHost,CLAP_EXT_GUI);
+    //if (host_gui) {
+    //  host_gui->request_resize(MClapHost,AWidth,AHeight);
+    //  gui_set_size(AWidth,AHeight);
+    //}
   }
 
   #endif

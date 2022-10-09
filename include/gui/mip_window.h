@@ -538,10 +538,6 @@ public: // parent to child
 public: // child to parent
 //------------------------------
 
-  /*
-    editor can overload this, and catch the parameter from the sender widget
-  */
-
   void do_widget_update(MIP_Widget* ASender, uint32_t AMode=0) override {
   }
 
@@ -598,6 +594,11 @@ public: // child to parent
   //----------
 
   void do_widget_notify(MIP_Widget* ASender, uint32_t AMode, int32_t AValue) override {
+  }
+
+  //----------
+
+  void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) override {
   }
 
   //----------

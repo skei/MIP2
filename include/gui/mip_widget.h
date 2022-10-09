@@ -264,14 +264,19 @@ public: // child to parent
 
   virtual void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) {
     //if (MParent) MParent->do_widget_resized(ASender,ADeltaX,ADeltaY);
-    MRect.w += ADeltaX;
-    MRect.h += ADeltaY;
-    Layout.baseRect.w += ADeltaX;
-    Layout.baseRect.h += ADeltaY;
-    //resize(ADeltaX,ADeltaY);
-    if (MParent) {
-      MParent->alignChildWidgets();
-      MParent->redraw();
+    if (AMode == MIP_WIDGET_SIZER_WINDOW) {
+      if (MParent) MParent->do_widget_resized(ASender,ADeltaX,ADeltaY,AMode);
+    }
+    else {
+      MRect.w += ADeltaX;
+      MRect.h += ADeltaY;
+      Layout.baseRect.w += ADeltaX;
+      Layout.baseRect.h += ADeltaY;
+      //resize(ADeltaX,ADeltaY);
+      if (MParent) {
+        MParent->alignChildWidgets();
+        MParent->redraw();
+      }
     }
   }
 

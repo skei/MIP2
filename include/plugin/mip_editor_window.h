@@ -71,6 +71,14 @@ public: // widget
     //MIP_Window::do_widget_update(ASender,AMode);
   }
 
+  //----------
+
+  void do_widget_resized(MIP_Widget* ASender, float ADeltaX=0.0f, float ADeltaY=0.0f, uint32_t AMode=0) override {
+    uint32_t width = getWindowWidth() + ADeltaX;
+    uint32_t height = getWindowHeight() + ADeltaY;
+    if (MEditorListener) MEditorListener->on_editor_listener_resize_window(width,height);
+  }
+
 };
 
 //----------------------------------------------------------------------

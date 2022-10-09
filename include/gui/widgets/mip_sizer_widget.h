@@ -7,13 +7,6 @@
 #include "gui/mip_widget.h"
 
 
-#define MIP_SIZER_NONE   0
-#define MIP_SIZER_LEFT   1
-#define MIP_SIZER_RIGHT  2
-#define MIP_SIZER_TOP    3
-#define MIP_SIZER_BOTTOM 4
-#define MIP_SIZER_WINDOW 5
-
 //----------------------------------------------------------------------
 
 class MIP_SizerWidget
@@ -27,34 +20,34 @@ class MIP_SizerWidget
     float       prevy = 0.0f;
     bool        MIsDragging =false;
     MIP_Widget* MTarget = nullptr;
-    uint32_t    MMode = MIP_SIZER_NONE;
+    uint32_t    MMode = MIP_WIDGET_SIZER_NONE;
     MIP_Color   MFillColor = MIP_Color( 0.45 );
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_SizerWidget(MIP_DRect ARect,uint32_t AMode=MIP_SIZER_NONE,MIP_Widget* ATarget=nullptr)
+  MIP_SizerWidget(MIP_DRect ARect,uint32_t AMode=MIP_WIDGET_SIZER_NONE,MIP_Widget* ATarget=nullptr)
   : MIP_Widget(ARect) {
     MName = "MIP_SizerWidget";
     //setHint("sizer");
     setMode(AMode);
     setTarget(ATarget);
     switch (AMode) {
-      case MIP_SIZER_NONE:
-      case MIP_SIZER_LEFT:
+      case MIP_WIDGET_SIZER_NONE:
+      case MIP_WIDGET_SIZER_LEFT:
         Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
         break;
-      case MIP_SIZER_RIGHT:
+      case MIP_WIDGET_SIZER_RIGHT:
         Layout.alignment = MIP_WIDGET_ALIGN_FILL_RIGHT;
         break;
-      case MIP_SIZER_TOP:
+      case MIP_WIDGET_SIZER_TOP:
         Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         break;
-      case MIP_SIZER_BOTTOM:
+      case MIP_WIDGET_SIZER_BOTTOM:
         Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
         break;
-      case MIP_SIZER_WINDOW:
+      case MIP_WIDGET_SIZER_WINDOW:
         //Layout.alignment = MIP_WIDGET_ALIGN_LEFT_BOTTOM;
         break;
     }
@@ -70,12 +63,12 @@ public:
   virtual void setMode(uint32_t AMode) {
     MMode = AMode;
     switch(MMode) {
-      case MIP_SIZER_NONE:     MMouseCursor = MIP_CURSOR_DEFAULT;             break;
-      case MIP_SIZER_LEFT:     MMouseCursor = MIP_CURSOR_ARROW_LEFT_RIGHT;    break;
-      case MIP_SIZER_RIGHT:    MMouseCursor = MIP_CURSOR_ARROW_LEFT_RIGHT;    break;
-      case MIP_SIZER_TOP:      MMouseCursor = MIP_CURSOR_ARROW_UP_DOWN;       break;
-      case MIP_SIZER_BOTTOM:   MMouseCursor = MIP_CURSOR_ARROW_UP_DOWN;       break;
-      case MIP_SIZER_WINDOW:   MMouseCursor = MIP_CURSOR_ARROW_BOTTOM_RIGHT;  break;
+      case MIP_WIDGET_SIZER_NONE:     MMouseCursor = MIP_CURSOR_DEFAULT;             break;
+      case MIP_WIDGET_SIZER_LEFT:     MMouseCursor = MIP_CURSOR_ARROW_LEFT_RIGHT;    break;
+      case MIP_WIDGET_SIZER_RIGHT:    MMouseCursor = MIP_CURSOR_ARROW_LEFT_RIGHT;    break;
+      case MIP_WIDGET_SIZER_TOP:      MMouseCursor = MIP_CURSOR_ARROW_UP_DOWN;       break;
+      case MIP_WIDGET_SIZER_BOTTOM:   MMouseCursor = MIP_CURSOR_ARROW_UP_DOWN;        break;
+      case MIP_WIDGET_SIZER_WINDOW:   MMouseCursor = MIP_CURSOR_CROSS2;               break;
     }
   }
 
@@ -101,10 +94,14 @@ public:
     //}
     MIP_Painter* painter = AContext->painter;
     painter->beginPath();
-    painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
+    if (MMode == MIP_WIDGET_SIZER_WINDOW) {
+      painter->triangle(MRect.x2(),MRect.y,MRect.x2(),MRect.y2(),MRect.x,MRect.y2());
+    }
+    else {
+      painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
+    }
     painter->fillColor(MFillColor);
     painter->fill();
-
   }
 
   //----------
@@ -129,21 +126,21 @@ public:
       float deltax = AXpos - prevx;
       float deltay = AYpos - prevy;
       switch(MMode) {
-        case MIP_SIZER_LEFT:
+        case MIP_WIDGET_SIZER_LEFT:
           deltay = 0;
           break;
-        case MIP_SIZER_RIGHT:
+        case MIP_WIDGET_SIZER_RIGHT:
           deltay = 0;
           deltax = -deltax;
           break;
-        case MIP_SIZER_TOP:
+        case MIP_WIDGET_SIZER_TOP:
           deltax = 0;
           break;
-        case MIP_SIZER_BOTTOM:
+        case MIP_WIDGET_SIZER_BOTTOM:
           deltax = 0;
           deltay = -deltay;
           break;
-        case MIP_SIZER_WINDOW:
+        case MIP_WIDGET_SIZER_WINDOW:
           break;
 
       } // switch mode
@@ -157,7 +154,7 @@ public:
 
         if (MTarget) {
 
-          if (MMode == MIP_SIZER_WINDOW) {
+          if (MMode == MIP_WIDGET_SIZER_WINDOW) {
             MTarget->do_widget_resized(this,deltax,deltay);
           }
           else {

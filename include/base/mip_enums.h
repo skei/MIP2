@@ -255,6 +255,15 @@ enum MIP_EWidgetRectModes {
   MIP_WIDGET_RECT_MODE_INITIAL_RATIO        = 3
 };
 
+enum MIP_EWidgetSizerModes {
+  MIP_WIDGET_SIZER_NONE    = 0,
+  MIP_WIDGET_SIZER_LEFT    = 1,
+  MIP_WIDGET_SIZER_RIGHT   = 2,
+  MIP_WIDGET_SIZER_TOP     = 3,
+  MIP_WIDGET_SIZER_BOTTOM  = 4,
+  MIP_WIDGET_SIZER_WINDOW  = 5
+};
+
 //----------------------------------------------------------------------
 //
 // painting
