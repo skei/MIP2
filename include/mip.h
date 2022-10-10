@@ -4,6 +4,7 @@
 
 //#define MIP_IMPLEMENTATION
 
+
 //------------------------------
 //
 // system includes
@@ -78,7 +79,17 @@
 
 #include "base/types/mip_types.h"
 
-//#include <vector>
+//------------------------------
+//
+//
+//
+//------------------------------
+
+#ifndef MIP_LINUX
+#endif
+
+#ifndef MIP_WIN32
+#endif
 
 //----------------------------------------------------------------------
 #endif
