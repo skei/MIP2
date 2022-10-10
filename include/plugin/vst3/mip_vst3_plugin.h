@@ -15,13 +15,12 @@
 
 //typedef MIP_Array<clap_event_header_t*> MIP_Vst3EventHeaders;
 
-#define MIP_VST3_TIMER_MS               50
-#define MIP_VST3_MAX_AUDIO_BLOCK_SIZE   4096
-#define MIP_VST3_MAX_EVENTS_PER_BLOCK   4096
-#define MIP_VST3_MAX_EVENT_SIZE         256
-#define MIP_VST3_MAX_NOTE_IDS           32
-
-#define MIP_VST3_MAX_GUI_EVENTS         32
+#define MIP_PLUGIN_VST3_TIMER_MS               50
+#define MIP_PLUGIN_VST3_MAX_AUDIO_BLOCK_SIZE   4096
+#define MIP_PLUGIN_VST3_MAX_EVENTS_PER_BLOCK   4096
+#define MIP_PLUGIN_VST3_MAX_EVENT_SIZE         256
+#define MIP_PLUGIN_VST3_MAX_NOTE_IDS           32
+#define MIP_PLUGIN_VST3_MAX_GUI_EVENTS         32
 
 // events buffer : 4096 * 256 = 1m
 
@@ -42,7 +41,7 @@ class MIP_Vst3Plugin
 : public IComponent
 , public IAudioProcessor
 , public IUnitInfo
-, public IConnectionPoint
+, public Vst::IConnectionPoint
 , public IMidiMapping
 , public IKeyswitchController
 , public INoteExpressionController
@@ -89,14 +88,14 @@ private:
   clap_audio_buffer_t             MAudioOutputs;// = {0};
 
   uint32_t                        MNumEvents                                                        = 0;
-  char                            MEvents[MIP_VST3_MAX_EVENTS_PER_BLOCK * MIP_VST3_MAX_EVENT_SIZE]  = {0};
+  char                            MEvents[MIP_PLUGIN_VST3_MAX_EVENTS_PER_BLOCK * MIP_PLUGIN_VST3_MAX_EVENT_SIZE]  = {0};
   uint32_t                        MLastNoteId                                                       = 0;
-  MIP_Vst3NoteId                  MNoteIds[MIP_VST3_MAX_NOTE_IDS]                                   = {};
+  MIP_Vst3NoteId                  MNoteIds[MIP_PLUGIN_VST3_MAX_NOTE_IDS]                                   = {};
 
-  MIP_Queue<uint32_t,MIP_VST3_MAX_GUI_EVENTS> MHostParamQueue = {}; // gui -> host
-  double  MQueuedHostParamValues[MIP_VST3_MAX_GUI_EVENTS] = {0};
+  MIP_Queue<uint32_t,MIP_PLUGIN_VST3_MAX_GUI_EVENTS> MHostParamQueue = {}; // gui -> host
+  double  MQueuedHostParamValues[MIP_PLUGIN_VST3_MAX_GUI_EVENTS] = {0};
 
-  //double  MQueuedHostParamValues[MIP_VST3_MAX_EVENTS_PER_BLOCK] = {0};
+  //double  MQueuedHostParamValues[MIP_PLUGIN_VST3_MAX_EVENTS_PER_BLOCK] = {0};
 
 //------------------------------
 public:
@@ -138,7 +137,7 @@ private: // in_events
   //----------
 
   const clap_event_header_t* vst3_input_events_get(uint32_t index) {
-    uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * index;
+    uint32_t pos = MIP_PLUGIN_VST3_MAX_EVENT_SIZE * index;
     return (const clap_event_header_t*)&MEvents[pos];
   }
 
@@ -193,22 +192,23 @@ private: // out_events
         case CLAP_EVENT_PARAM_GESTURE_END:
           MIP_Print("TODO: send PARAM_GESTURE_BEGIN to host\n");
           return true;
-        case CLAP_EVENT_PARAM_VALUE:
+
+        case CLAP_EVENT_PARAM_VALUE: {
           MIP_Print("queueing PARAM_VALUE (to host)\n");
-          {
-            clap_event_param_value_t* param_value = (clap_event_param_value_t*)event;
-            uint32_t index = param_value->param_id;
-            double value = param_value->value;
-            clap_param_info_t info;
-            MPlugin->params_get_info(index,&info);
-            double range = info.max_value - info.min_value;
-            if (range > 0) {
-              value -= info.min_value;
-              value /= range;
-            }
-            queueHostParam(index,value);
+          clap_event_param_value_t* param_value = (clap_event_param_value_t*)event;
+          uint32_t index = param_value->param_id;
+          double value = param_value->value;
+          clap_param_info_t info;
+          MPlugin->params_get_info(index,&info);
+          double range = info.max_value - info.min_value;
+          if (range > 0) {
+            value -= info.min_value;
+            value /= range;
           }
+          queueHostParam(index,value);
           return true;
+        }
+
         case CLAP_EVENT_PARAM_MOD:
           MIP_Print("TODO: send PARAM_MOD to host\n");
           return true;
@@ -294,7 +294,7 @@ private:
                 double value = 0;
                 paramQueue->getPoint(j,offset,value);
                 value = info.min_value + ((info.max_value - info.min_value) * value);
-                uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
+                uint32_t pos = MIP_PLUGIN_VST3_MAX_EVENT_SIZE * MNumEvents++;
                 clap_event_param_value_t* param_value_event = (clap_event_param_value_t*)&MEvents[pos];
                 memset(param_value_event,0,sizeof(clap_event_param_value_t));
                 param_value_event->header.size     = sizeof(clap_event_param_value_t);
@@ -329,7 +329,7 @@ private:
         switch (event.type) {
 
           case Event::kNoteOnEvent: {
-            uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
+            uint32_t pos = MIP_PLUGIN_VST3_MAX_EVENT_SIZE * MNumEvents++;
             clap_event_note_t* note_event = (clap_event_note_t*)&MEvents[pos];
             memset(note_event,0,sizeof(clap_event_note_t));
             note_event->header.size     = sizeof(clap_event_note_t);
@@ -349,12 +349,12 @@ private:
             MNoteIds[MLastNoteId].channel = event.noteOn.channel;
             MNoteIds[MLastNoteId].key     = event.noteOn.pitch;
             MLastNoteId += 1;
-            MLastNoteId %= MIP_VST3_MAX_NOTE_IDS;
+            MLastNoteId %= MIP_PLUGIN_VST3_MAX_NOTE_IDS;
             break;
           }
 
           case Event::kNoteOffEvent: {
-            uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
+            uint32_t pos = MIP_PLUGIN_VST3_MAX_EVENT_SIZE * MNumEvents++;
             clap_event_note_t* note_event = (clap_event_note_t*)&MEvents[pos];
             memset(note_event,0,sizeof(clap_event_note_t));
             note_event->header.size     = sizeof(clap_event_note_t);
@@ -368,7 +368,7 @@ private:
             note_event->key             = event.noteOff.pitch;
             note_event->velocity        = event.noteOff.velocity;
             //event.noteOff.tuning
-            for (uint32_t i=0; i<MIP_VST3_MAX_NOTE_IDS; i++) {
+            for (uint32_t i=0; i<MIP_PLUGIN_VST3_MAX_NOTE_IDS; i++) {
               if (MNoteIds[i].note_id == event.noteOff.noteId) {
                 MNoteIds[i].note_id = -1;
                 MNoteIds[i].port    = -1;
@@ -380,7 +380,7 @@ private:
           }
 
           case Event::kPolyPressureEvent: {
-            uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
+            uint32_t pos = MIP_PLUGIN_VST3_MAX_EVENT_SIZE * MNumEvents++;
             clap_event_note_expression_t* note_expression_event = (clap_event_note_expression_t*)&MEvents[pos];
             memset(note_expression_event,0,sizeof(clap_event_note_expression_t));
             note_expression_event->header.size     = sizeof(clap_event_note_expression_t);
@@ -398,7 +398,7 @@ private:
           }
 
           case Event::kNoteExpressionValueEvent: {
-            uint32_t pos = MIP_VST3_MAX_EVENT_SIZE * MNumEvents++;
+            uint32_t pos = MIP_PLUGIN_VST3_MAX_EVENT_SIZE * MNumEvents++;
             clap_event_note_expression_t* note_expression_event = (clap_event_note_expression_t*)&MEvents[pos];
             memset(note_expression_event,0,sizeof(clap_event_note_expression_t));
             //uint32_t chan = (event.noteExpressionValue.noteId >> 8);
@@ -406,7 +406,7 @@ private:
             int32_t port = -1;
             int32_t chan = -1;
             int32_t key = -1;
-            for (uint32_t i=0; i<MIP_VST3_MAX_NOTE_IDS; i++) {
+            for (uint32_t i=0; i<MIP_PLUGIN_VST3_MAX_NOTE_IDS; i++) {
               if (MNoteIds[i].note_id == event.noteExpressionValue.noteId) {
                 port    = MNoteIds[i].port;
                 chan    = MNoteIds[i].channel;
@@ -483,7 +483,7 @@ private:
   //----------
 
   void sortEvents() {
-    qsort(MEvents,MNumEvents,MIP_VST3_MAX_EVENT_SIZE, compare_events);
+    qsort(MEvents,MNumEvents,MIP_PLUGIN_VST3_MAX_EVENT_SIZE, compare_events);
   }
 
 //------------------------------
@@ -1617,13 +1617,13 @@ public:
     //if (busIndex == 0) {
     //  switch (midiControllerNumber) {
     //    case kAfterTouch: // 128
-    //      id = MIP_VST3_PARAM_AFTERTOUCH + channel;
+    //      id = MIP_PLUGIN_VST3_PARAM_AFTERTOUCH + channel;
     //      return kResultOk;
     //    case kPitchBend: // 129
-    //      id = MIP_VST3_PARAM_PITCHBEND + channel;
+    //      id = MIP_PLUGIN_VST3_PARAM_PITCHBEND + channel;
     //      return kResultOk;
     //    case kCtrlFilterResonance: // cc 74 (slide)
-    //      id = MIP_VST3_PARAM_BRIGHTNESS + channel;
+    //      id = MIP_PLUGIN_VST3_PARAM_BRIGHTNESS + channel;
     //      return kResultOk;
     //  }
     //}
@@ -2083,11 +2083,11 @@ public:
           break;
       }
       switch (paramIndex & 0xffff0000) {
-        case MIP_VST3_PARAM_AFTERTOUCH:
+        case MIP_PLUGIN_VST3_PARAM_AFTERTOUCH:
           break;
-        case MIP_VST3_PARAM_PITCHBEND:
+        case MIP_PLUGIN_VST3_PARAM_PITCHBEND:
           break;
-        case MIP_VST3_PARAM_BRIGHTNESS:
+        case MIP_PLUGIN_VST3_PARAM_BRIGHTNESS:
           break;
       }
       //return kResultOk;
@@ -2354,20 +2354,22 @@ public:
         clap_window_t clap_window = {};
 
         #ifdef MIP_LINUX
-        clap_window.api = CLAP_WINDOW_API_X11;
-        clap_window.x11 = (clap_xwnd)parent;
+          clap_window.api = CLAP_WINDOW_API_X11;
+          clap_window.x11 = (clap_xwnd)parent;
         #endif
 
         #ifdef MIP_WIN32
-        clap_window.api = CLAP_WINDOW_API_WIN32;
-        clap_window.win32 = (clap_hwnd)parent;
+          clap_window.api = CLAP_WINDOW_API_WIN32;
+          clap_window.win32 = (clap_hwnd)parent;
         #endif
 
         gui->set_size(plugin,width,height);
         gui->set_parent(plugin,&clap_window);
         gui->show(plugin);
 
-        MRunLoop->registerTimer(this,MIP_VST3_TIMER_MS);
+        #ifdef MIP_LINUX
+          MRunLoop->registerTimer(this,MIP_PLUGIN_VST3_TIMER_MS);
+        #endif
 
       }
     }
@@ -2389,7 +2391,9 @@ public:
       gui->hide(plugin);
       gui->destroy(plugin);
 
-      MRunLoop->unregisterTimer(this);
+      #ifdef MIP_LINUX
+        MRunLoop->unregisterTimer(this);
+      #endif
 
     }
     return kResultOk;
@@ -2528,11 +2532,11 @@ public:
 
 };
 
-#undef MIP_VST3_TIMER_MS
-#undef MIP_VST3_MAX_AUDIO_BLOCK_SIZE
-#undef MIP_VST3_MAX_EVENTS_PER_BLOCK
-#undef MIP_VST3_MAX_EVENT_SIZE
-#undef MIP_VST3_MAX_NOTE_IDS
+#undef MIP_PLUGIN_VST3_TIMER_MS
+#undef MIP_PLUGIN_VST3_MAX_AUDIO_BLOCK_SIZE
+#undef MIP_PLUGIN_VST3_MAX_EVENTS_PER_BLOCK
+#undef MIP_PLUGIN_VST3_MAX_EVENT_SIZE
+#undef MIP_PLUGIN_VST3_MAX_NOTE_IDS
 
 //----------------------------------------------------------------------
 #endif

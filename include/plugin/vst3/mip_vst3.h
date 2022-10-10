@@ -11,9 +11,9 @@
 
 //----------------------------------------------------------------------
 
-#define MIP_VST3_PARAM_AFTERTOUCH  0x10000 // kAfterTouch (128)
-#define MIP_VST3_PARAM_PITCHBEND   0x20000 // kPitchBend (129)
-#define MIP_VST3_PARAM_BRIGHTNESS  0x30000 // kCtrlFilterResonance (74)
+#define MIP_PLUGIN_VST3_PARAM_AFTERTOUCH  0x10000 // kAfterTouch (128)
+#define MIP_PLUGIN_VST3_PARAM_PITCHBEND   0x20000 // kPitchBend (129)
+#define MIP_PLUGIN_VST3_PARAM_BRIGHTNESS  0x30000 // kCtrlFilterResonance (74)
 
 //----------------------------------------------------------------------
 

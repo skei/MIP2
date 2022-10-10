@@ -961,18 +961,12 @@ public: // vst2
 
       case effGetPlugCategory: { // 35
         uint32_t res = 0;
-
         //MIP_Plugin* plugin = (MIP_Plugin*)MPlugin->plugin_data;
-
-//TODO: only for shell plugin itself..
-
         if (MShellPluginCurrentId == 0) {
           if (MIP_REGISTRY.getNumDescriptors() > 1) {
-            //if (MShellPluginLastQueried == -1) {
-              MIP_Print("effGetPlugCategory -> shell\n");
-              res = kPlugCategShell;
-              MShellPluginLastQueried = 0;
-            //}
+            //MIP_Print("effGetPlugCategory -> shell\n");
+            res = kPlugCategShell;
+            MShellPluginLastQueried = 0;
           }
         }
         else {
