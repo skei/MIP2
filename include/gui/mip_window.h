@@ -305,9 +305,16 @@ public: // window
 //------------------------------
 
   void beginPaint()  override {
+    //MIP_PRINT;
     MIP_ImplementedWindow::beginPaint();
     #ifdef MIP_GUI_WIN32
-      MWindowPainter->setup( hdc() );
+      HDC dc = hdc();
+      #ifdef MIP_WINDOW_BUFFERED
+        //MWindowPainter->setup(dc);
+        MBufferPainter->setup(dc);
+      #else
+        MWindowPainter->setup(dc);
+      #endif
     #endif
   }
 
@@ -380,6 +387,11 @@ public: // window
     #else
       painter = MWindowPainter;
     #endif
+
+    // -> beginPaint
+    //#ifdef MIP_WIN32
+    //  painter->setup( hdc() );
+    //#endif
 
     MPaintContext.mode        = MIP_WIDGET_PAINT_NORMAL;
     MPaintContext.theme       = &MIP_DefaultTheme;

@@ -58,21 +58,22 @@ class MIP_GdiPainter
 private:
 //------------------------------
 
-  bool need_cleanup = false;
+//  bool need_cleanup = false;
 
   //MIP_Drawable*   MSurface        = nullptr;
   //MIP_Drawable*   MTarget         = nullptr;
 
+  HDC             MScreenDC       = nullptr;
   HDC             MHandle         = nullptr;
 
-//  HPEN            MPenHandle      = nullptr;
-//  HBRUSH          MBrushHandle    = nullptr;
-//  HFONT           MFontHandle     = nullptr;
+  HPEN            MPenHandle      = nullptr;
+  HBRUSH          MBrushHandle    = nullptr;
+  HFONT           MFontHandle     = nullptr;
 //  HBITMAP         MBitmapHandle   = nullptr;
-//
-//  HGDIOBJ         MDefaultPen     = nullptr;
-//  HGDIOBJ         MDefaultBrush   = nullptr;
-//  HGDIOBJ         MDefaultFont    = nullptr;
+
+  HGDIOBJ         MDefaultPen     = nullptr;
+  HGDIOBJ         MDefaultBrush   = nullptr;
+  HGDIOBJ         MDefaultFont    = nullptr;
 //  HGDIOBJ         MDefaultBitmap  = nullptr;
 
 //  HGDIOBJ         MOldPen         = nullptr;
@@ -80,8 +81,8 @@ private:
 //  HGDIOBJ         MOldFont        = nullptr;
 //  HGDIOBJ         MOldBitmap      = nullptr;
 
-//  HPEN            MNullPen = nullptr;
-//  HBRUSH          MNullBrush    = nullptr;
+  HPEN            MNullPen = nullptr;
+  HBRUSH          MNullBrush    = nullptr;
 //
 //  uint32_t        MSrcRasterOp = SRCCOPY;
 //  uint32_t        MDstRasterOp = DSTCOPY;
@@ -132,9 +133,9 @@ public:
   : MIP_BasePainter(ATarget,ASource) {
 
     HDC tempdc = GetDC(0);
-    HDC handle = CreateCompatibleDC(tempdc); // (nullptr);
+    MScreenDC = CreateCompatibleDC(tempdc); // (nullptr);
     ReleaseDC(0,tempdc);
-    setup(handle);
+    setup(MScreenDC);
 
   }
 
@@ -142,6 +143,7 @@ public:
 
   virtual ~MIP_GdiPainter() {
     cleanup();
+    DeleteDC(MScreenDC);
   }
 
 //------------------------------
@@ -155,66 +157,66 @@ public:
   //----------
 
   void setup(HDC AHandle) {
+    MIP_PRINT;
 
-    if (need_cleanup) cleanup();
+    if (MHandle) cleanup();
     MHandle = AHandle;
 
-//    //MPen = (HPEN)GetStockObject(DC_PEN);
-//    MPenHandle = CreatePen(PS_SOLID,1,0x000000);
-//    MDefaultPen = SelectObject(MHandle,MPenHandle);
+    //MPen = (HPEN)GetStockObject(DC_PEN);
+    //MPenHandle = CreatePen(PS_SOLID,1,MIP_RGBA(MStrokeColor));
+    MPenHandle = CreatePen(PS_SOLID,1,0xff0000);
+    MDefaultPen = SelectObject(MHandle,MPenHandle);
 
-//    //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
-//    MBrushHandle = CreateSolidBrush(0x808080);
-//    MDefaultBrush = SelectObject(MHandle,MBrushHandle);
+    //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
+    //MBrushHandle = CreateSolidBrush(MIP_RGBA(MFillColor));
+    MBrushHandle = CreateSolidBrush(0x000088);
+    MDefaultBrush = SelectObject(MHandle,MBrushHandle);
 
-//    //MFont = (HFONT)GetStockObject(DC_FONT);
-//    LOGFONT lfont;
-//    memset(&lfont,0,sizeof(lfont));
-//    strcpy(lfont.lfFaceName,"Arial");
-//    lfont.lfHeight = -MulDiv(8,GetDeviceCaps(MHandle,LOGPIXELSY),72);
-//    MFontHandle = CreateFontIndirect(&lfont);
-//    MDefaultFont = SelectObject(MHandle,MFontHandle);
+    //MFont = (HFONT)GetStockObject(DC_FONT);
+    LOGFONT lfont;
+    memset(&lfont,0,sizeof(lfont));
+    strcpy(lfont.lfFaceName,"Arial");
+    lfont.lfHeight = -MulDiv(8,GetDeviceCaps(MHandle,LOGPIXELSY),72);
+    MFontHandle = CreateFontIndirect(&lfont);
+    MDefaultFont = SelectObject(MHandle,MFontHandle);
 
     //TODO: MBitmap..
     //MDefaultBitmap = SelectObject(AHandle,MBitmapHandle);
 
-//    MNullPen = CreatePen(PS_NULL,0,0);
-//
-//    LOGBRUSH lbrush;
-//    lbrush.lbStyle = BS_NULL; // BS_HATCHED, BS_HOLLOW, BS_NULL, BS_SOLID, ..
-//    lbrush.lbColor = 0;       // ignored if null
-//    lbrush.lbHatch = 0;       // if BS_HATCHED: HS_BDIAGONAL, HS_CROSS, HS_DIAGCROSS, HS_FDIAGONAL, HS_HORIZONTAL, HS_VERTICAL
-//    MNullBrush = CreateBrushIndirect(&lbrush);
+    MNullPen = CreatePen(PS_NULL,0,0);
 
-    need_cleanup = true;
+    LOGBRUSH lbrush;
+    lbrush.lbStyle = BS_NULL; // BS_HATCHED, BS_HOLLOW, BS_NULL, BS_SOLID, ..
+    lbrush.lbColor = 0;       // ignored if null
+    lbrush.lbHatch = 0;       // if BS_HATCHED: HS_BDIAGONAL, HS_CROSS, HS_DIAGCROSS, HS_FDIAGONAL, HS_HORIZONTAL, HS_VERTICAL
+    MNullBrush = CreateBrushIndirect(&lbrush);
+
   }
 
   //----------
 
   void cleanup() {
-    if (need_cleanup) {
-      /*
+    //if (need_cleanup) {
+    if (MHandle) {
+      MIP_PRINT;
       // is MHandle valid?
       SelectObject(MHandle,MDefaultPen);
       SelectObject(MHandle,MDefaultBrush);
       SelectObject(MHandle,MDefaultFont);
-      */
       //SelectObject(MHandle,MDefaultBitmap);
       // It is not necessary (but it is not harmful) to delete stock objects
-      // by scalling DeleteObject.
-//      DeleteObject(MPenHandle);
-//      DeleteObject(MBrushHandle);
-//      DeleteObject(MFontHandle);
-      //DeleteObject(MBitmapHandle);
-//      DeleteObject(MNullPen);
-//      DeleteObject(MNullBrush);
-
-
+      // by calling DeleteObject.
+      DeleteObject(MPenHandle);
+      DeleteObject(MBrushHandle);
+      DeleteObject(MFontHandle);
+    //DeleteObject(MBitmapHandle);
+      DeleteObject(MNullPen);
+      DeleteObject(MNullBrush);
       //DeleteDC(MHandle);
 
-
     }
-    need_cleanup = false;
+    //need_cleanup = false;
+    MHandle = nullptr;
   }
 
 //------------------------------
@@ -222,11 +224,13 @@ public:
 //------------------------------
 
   void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    MIP_PRINT;
   }
 
   //----------
 
   void endPaint() override {
+    MIP_PRINT;
   }
 
 //------------------------------
@@ -287,7 +291,7 @@ public: // clipping
 
     */
 
-  //  virtual // S3_Painter_Base
+  //  virtual // MIP_Painter_Base
   //  void clip(int32 AX1, int32 AY1, int32 AX2, int32 AY2) {
   //    //self.noClip;
   //    HRGN rgn = CreateRectRgn( AX1, AY1, AX2+1, AY2+1 );
@@ -330,6 +334,10 @@ public: // clipping
   //  void triangle( double x1, double y1, double x2, double y2, double x3, double y3) override {}
   //  void rectangle(MIP_DRect r) override {}
   //  void ellipse(MIP_DRect r) override {}
+
+//------------------------------
+public:
+//------------------------------
 
 //------------------------------
 public: // frame
@@ -408,7 +416,8 @@ public: // render styles
 
   void strokeColor(MIP_Color color) override {
     MStrokeColor = color;
-    SetDCPenColor(MHandle,MIP_RGBA(color));
+    //SetDCPenColor(MHandle,MIP_RGBA(color));
+    SetDCPenColor(MHandle,0x000000);
   }
 
   //----------
@@ -421,7 +430,8 @@ public: // render styles
 
   void fillColor(MIP_Color color) override {
     MFillColor = color;
-    SetDCBrushColor(MHandle,MIP_RGBA(color));
+    //SetDCBrushColor(MHandle,MIP_RGBA(color));
+    SetDCBrushColor(MHandle,0xffffff);
   }
 
   //----------
@@ -908,8 +918,58 @@ public: // text
   void textAlign(int align) override {}
   void fontFaceId(int font) override {}
   void fontFace(const char* font) override {}
-  float text(float x, float y, const char* string, const char* end) override { return 0.0; }
-  void textBox(float x, float y, float breakRowWidth, const char* string, const char* end) override {}
+
+//    void drawText(int32 AX1, int32 AY1, int32 AX2, int32 AY2, const char* AText, uint32 AAlign) {
+//      SetBkMode(MHandle,TRANSPARENT);
+//      RECT R;
+//      R.left    = AX1;
+//      R.top     = AY1;
+//      R.right   = AX2;
+//      R.bottom  = AY2;
+//      int flags = 0;
+//      if (AAlign & s3_ta_left) flags = flags | DT_LEFT;
+//      else if (AAlign & s3_ta_right) flags = flags | DT_RIGHT;
+//      else flags = flags | DT_CENTER;
+//      if (AAlign & s3_ta_top) flags = flags | DT_TOP;
+//      else if (AAlign & s3_ta_bottom) flags = flags | DT_BOTTOM;
+//      else flags = flags | DT_VCENTER;
+//      //HFONT oldfont = (HFONT)SelectObject(MHandle,MFont);
+//      DrawText(MHandle,AText,-1,&R,flags|DT_NOCLIP|DT_SINGLELINE|DT_NOPREFIX);
+//      //SelectObject(MHandle, oldfont);
+//    }
+
+  //----------
+
+  float text(float x, float y, const char* string, const char* end) override {
+    MIP_PRINT;
+    //SetBkMode(MHandle,TRANSPARENT);
+
+    //HFONT oldfont = (HFONT)SelectObject(MHandle,MFontHandle);
+    SetTextColor(MHandle,MIP_RGBA(MIP_COLOR_BLACK));
+    TextOut(MHandle,x,y,string,strlen(string));
+    //SelectObject(MHandle, oldfont);
+
+    //RECT R;
+    //R.left    = x;
+    //R.top     = AY1;
+    //R.right   = AX2;
+    //R.bottom  = AY2;
+    //int flags = 0;
+    //if (AAlign & s3_ta_left) flags = flags | DT_LEFT;
+    //else if (AAlign & s3_ta_right) flags = flags | DT_RIGHT;
+    //else flags = flags | DT_CENTER;
+    //if (AAlign & s3_ta_top) flags = flags | DT_TOP;
+    //else if (AAlign & s3_ta_bottom) flags = flags | DT_BOTTOM;
+    //else flags = flags | DT_VCENTER;
+    //HFONT oldfont = (HFONT)SelectObject(MHandle,MFont);
+    //DrawText(MHandle,string,-1,&R,flags|DT_NOCLIP|DT_SINGLELINE|DT_NOPREFIX);
+    //SelectObject(MHandle, oldfont);
+    return 0.0;
+  }
+
+  void textBox(float x, float y, float breakRowWidth, const char* string, const char* end) override {
+  }
+
   float textBounds(float x, float y, const char* string, const char* end, float* bounds) override { return 0.0; }
   void textBoxBounds(float x, float y, float breakRowWidth, const char* string, const char* end, float* bounds) override {}
   //int textGlyphPositions(float x, float y, const char* string, const char* end, NVGglyphPosition* positions, int maxPositions) override { return 0; }
@@ -921,81 +981,79 @@ public: // text
 private:
 //------------------------------
 
-  int32_t _get_text_width(const char* AText) {
-    SIZE S;
-    GetTextExtentPoint32(MHandle,AText,strlen(AText),&S);
-    return S.cx;
-  }
+//  int32_t getTextWidth(const char* AText) {
+//    SIZE S;
+//    GetTextExtentPoint32(MHandle,AText,strlen(AText),&S);
+//    return S.cx;
+//  }
 
   //----------
 
-  int32_t _get_text_height(const char* AText) {
-    SIZE S;
-    GetTextExtentPoint32(MHandle,AText,strlen(AText),&S);
-    return S.cy;
-  }
+//  int32_t getTextHeight(const char* AText) {
+//    SIZE S;
+//    GetTextExtentPoint32(MHandle,AText,strlen(AText),&S);
+//    return S.cy;
+//  }
 
   //----------
 
-  /*
-
-  // APen = nullptr -> invisible pen
-  void _select_pen(S3_Pen* APen, bool ARemember=true) {
-    HGDIOBJ old;
-    if (APen) {
-      MDrawColor = APen->penColor();
-      old = SelectObject(MHandle,APen->hpen());
-    }
-    else {
-      old = SelectObject(MHandle,MNullPen);
-    }
-    if (ARemember) MOldPen = old;
-  }
+//  // APen = nullptr -> invisible pen
+//  void selectPen(MIP_Pen* APen, bool ARemember=true) {
+//    HGDIOBJ old;
+//    if (APen) {
+//      MDrawColor = APen->penColor();
+//      old = SelectObject(MHandle,APen->hpen());
+//    }
+//    else {
+//      old = SelectObject(MHandle,MNullPen);
+//    }
+//    if (ARemember) MOldPen = old;
+//  }
 
   //----------
 
-  void _reset_pen(void) {
-    SelectObject(MHandle,MOldPen);
-  }
+//  void resetPen(void) {
+//    SelectObject(MHandle,MOldPen);
+//  }
 
   //----------
 
-  // ABrush = S3_NULL -> invisible brush
-  void _select_brush(S3_Brush* ABrush, bool ARemember=true) {
-    HGDIOBJ old;
-    if (ABrush) {
-      MFillColor = ABrush->brushColor();
-      old = SelectObject(MHandle,ABrush->hbrush());
-    }
-    else {
-      old = SelectObject(MHandle,MNullBrush);
-    }
-    if (ARemember) MOldBrush = old;
-  }
+//  // ABrush = MIP_NULL -> invisible brush
+//  void selectBrush(MIP_Brush* ABrush, bool ARemember=true) {
+//    HGDIOBJ old;
+//    if (ABrush) {
+//      MFillColor = ABrush->brushColor();
+//      old = SelectObject(MHandle,ABrush->hbrush());
+//    }
+//    else {
+//      old = SelectObject(MHandle,MNullBrush);
+//    }
+//    if (ARemember) MOldBrush = old;
+//  }
 
   //----------
 
-  void _reset_brush(void) {
-    SelectObject(MHandle,MOldBrush);
-  }
+//  void resetBrush(void) {
+//    SelectObject(MHandle,MOldBrush);
+//  }
 
   //----------
 
-  void _select_font(S3_Font* AFont, bool ARemember=true) {
-    MTextColor = AFont->textColor();
-    if (ARemember) {
-      MOldFont = SelectObject(MHandle,AFont->hfont());
-    }
-    else {
-      SelectObject(MHandle,AFont->hfont());
-    }
-  }
+//  void selectFont(MIP_Font* AFont, bool ARemember=true) {
+//    MTextColor = AFont->textColor();
+//    if (ARemember) {
+//      MOldFont = SelectObject(MHandle,AFont->hfont());
+//    }
+//    else {
+//      SelectObject(MHandle,AFont->hfont());
+//    }
+//  }
 
   //----------
 
-  void _reset_font(void) {
-    SelectObject(MHandle,MOldFont);
-  }
+//  void resetFont(void) {
+//    SelectObject(MHandle,MOldFont);
+//  }
 
   //----------
 
@@ -1003,41 +1061,39 @@ private:
   // Bitmaps can only be selected into memory DC's. A single bitmap cannot be
   // selected into more than one DC at the same time.
 
-  void _select_drawable(S3_Drawable* ADrawable, bool ARemember=true) {
-    HBITMAP hbitmap = ADrawable->hbitmap();
-    if (hbitmap) {
-      if (ARemember) MOldBitmap = SelectObject(MHandle,hbitmap);
-      else SelectObject(MHandle,hbitmap);
-    }
-  }
+//  void selectDrawable(MIP_Drawable* ADrawable, bool ARemember=true) {
+//    HBITMAP hbitmap = ADrawable->hbitmap();
+//    if (hbitmap) {
+//      if (ARemember) MOldBitmap = SelectObject(MHandle,hbitmap);
+//      else SelectObject(MHandle,hbitmap);
+//    }
+//  }
 
   //----------
 
-  void _reset_drawable(void) {
-    SelectObject(MHandle,MOldBitmap);
-  }
-
-  */
+//  void resetDrawable(void) {
+//    SelectObject(MHandle,MOldBitmap);
+//  }
 
   //----------
 
-  //    void setDrawColor(S3_Color AColor) {
+  //    void setDrawColor(MIP_Color AColor) {
   //      MDrawColor = AColor;
-  //      SetDCPenColor(MHandle,S3_RGB(MDrawColor));
+  //      SetDCPenColor(MHandle,MIP_RGB(MDrawColor));
   //    }
   //
   //    //----------
   //
-  //    void setFillColor(S3_Color AColor) {
+  //    void setFillColor(MIP_Color AColor) {
   //      MFillColor = AColor;
-  //      SetDCBrushColor(MHandle,S3_RGB(MFillColor));
+  //      SetDCBrushColor(MHandle,MIP_RGB(MFillColor));
   //    }
   //
   //    //----------
   //
-  //    void setTextColor(S3_Color AColor) {
+  //    void setTextColor(MIP_Color AColor) {
   //      MTextColor = AColor;
-  //      SetTextColor(MHandle,S3_RGB(MTextColor));
+  //      SetTextColor(MHandle,MIP_RGB(MTextColor));
   //    }
 
   //----------
@@ -1053,6 +1109,360 @@ private:
   //}
 
   //----------
+
+  //------------------------------
+  // shapes
+  //------------------------------
+
+  public:
+
+//    void drawPoint(int32_t AX, int32_t AY) {
+//      SetPixel(MHandle,AX,AY,MIP_RGBA(MStrokeColor));
+//    }
+
+    //----------
+
+//    void drawLine(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2) {
+//      MoveToEx(MHandle,AX1,AY1,0);
+//      LineTo(MHandle,AX2,AY2);
+//      SetPixel(MHandle,AX2,AY2,MIP_RGBA(MStrokeColor));
+//    }
+
+    //----------
+
+//    void drawRectangle(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2) {
+//      MoveToEx(MHandle,AX1,AY1,0);
+//      LineTo(MHandle,AX2,AY1);
+//      LineTo(MHandle,AX2,AY2);
+//      LineTo(MHandle,AX1,AY2);
+//      LineTo(MHandle,AX1,AY1);
+//      //drawPoint(aX2,aY2);         // !!!
+//    }
+
+    //----------
+
+//    void drawRoundedRectangle(void) {
+//    }
+
+    //----------
+
+//    void drawEllipse(int32 AX1, int32 AY1, int32 AX2, int32 AY2) {
+//      //Ellipse(mDC, aX1,aY1,aX2,aY2 );
+//      Arc( MHandle,AX1,AY1,AX2+1,AY2+1,0,0,0,0);
+//    }
+
+    //----------
+
+    /*
+      angle 1 = start angle, relative to 3 o'clock
+      angle 2 = 'distance' 0..1, counter-clockwise
+    */
+
+//    void drawArc(int32 AX1, int32 AY1, int32 AX2, int32 AY2, float AAngle1, float AAngle2) {
+//      AX2 += 1;
+//      AY2 += 1;
+//      if (fabsf(AAngle2) >= 0.01) {
+//        float a1 = AAngle1 -= 0.25;
+//        float a2 = a1 + AAngle2;
+//        if (AAngle2>0) {
+//          float temp = a1;
+//          a1 = a2;
+//          a2 = temp;
+//        }
+//        float w = AX2-AX1+1;
+//        float h = AY2-AY1+1;
+//        float s = fmaxf(w,h);
+//        float x = AX1 + w*0.5;
+//        float y = AY1 + h*0.5;
+//        float x1 = x + cosf(a1*MIP_PI2) * s;
+//        float y1 = y + sinf(a1*MIP_PI2) * s;
+//        float x2 = x + cosf(a2*MIP_PI2) * s;
+//        float y2 = y + sinf(a2*MIP_PI2) * s;
+//        Arc(MHandle,AX1,AY1,AX2,AY2,(int)x1,(int)y1,(int)x2,(int)y2);
+//      }
+//    }
+
+    //----------
+
+//    void drawTriangle(int32 AX1, int32 AY1, int32 AX2, int32 AY2, int32 AX3, int32 AY3) {
+//      drawLine(AX1,AY1,AX2,AY2);
+//      drawLine(AX2,AY2,AX3,AY3);
+//      drawLine(AX3,AY3,AX1,AY1);
+//    }
+
+  //------------------------------
+  // fill shapes
+  //------------------------------
+
+//    void fillRectangle(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2) {
+//      RECT R;
+//      R.left    = AX1;
+//      R.top     = AY1;
+//      R.right   = AX2+1;           // !!!
+//      R.bottom  = AY2+1;           // !!!
+//      HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
+//      FillRect(MHandle,&R,brush);
+//      //Rectangle(mDC,aX1,aY1,aX2,aY2);
+//    }
+
+    //----------
+
+//    void fillRoundedRectangle(void) {
+//    }
+
+    //----------
+
+    /*
+      The Ellipse function draws an ellipse. The center of the ellipse is the
+      center of the specified bounding rectangle. The ellipse is outlined by
+      using the current pen and is filled by using the current brush.
+    */
+
+//    void fillEllipse(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2) {
+//      AX2 += 2;
+//      AY2 += 2;
+//      selectPen(nullptr);
+//      Ellipse( MHandle,AX1,AY1,AX2,AY2);
+//      resetPen();
+//    }
+
+    //----------
+
+    // angle 1 = start angle, relative to 3 o'clock
+    // angle 2 = 'distance' 0..1, counter-clockwise
+
+//    void fillArc(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2, float AAngle1, float AAngle2) {
+//      AX2 += 2;
+//      AY2 += 2;
+//      if( fabsf(AAngle2) >= 0.01 ) {
+//        float a1 = AAngle1 -= 0.25;
+//        float a2 = a1 + AAngle2;
+//        if ( AAngle2>0 ) {
+//          float temp = a1;
+//          a1 = a2;
+//          a2 = temp;
+//        }
+//        float w = AX2-AX1+1;
+//        float h = AY2-AY1+1;
+//        float s = fmaxf(w,h);
+//        float x = AX1 + w*0.5;
+//        float y = AY1 + h*0.5;
+//        float x1 = x + cosf(a1*MIP_PI2) * s;
+//        float y1 = y + sinf(a1*MIP_PI2) * s;
+//        float x2 = x + cosf(a2*MIP_PI2) * s;
+//        float y2 = y + sinf(a2*MIP_PI2) * s;
+//        selectPen(MIP_NULL);
+//        Pie(MHandle,AX1,AY1,AX2,AY2,(int)x1,(int)y1,(int)x2,(int)y2);
+//        resetPen();
+//      }
+//    }
+
+    //----------
+
+//    void fillTriangle(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2, int32_t AX3, int32_t AY3) {
+//      POINT points[3];
+//      points[0].x = AX1;
+//      points[0].y = AY1;
+//      points[1].x = AX2;
+//      points[1].y = AY2;
+//      points[2].x = AX3;
+//      points[2].y = AY3;
+//      selectPen(MIP_NULL);
+//      Polygon(MHandle,points,3);
+//      resetPen();
+//    }
+
+  //------------------------------
+  // gradients
+  //------------------------------
+
+  /*
+    gradients are not gamma correct..
+  */
+
+//    void gradientRectangle(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2, MIP_Color AUpperLeft, MIP_Color ALowerRight, bool AVertical=true) {
+//      TRIVERTEX vertices[2];
+//      vertices[0].x     = AX1;
+//      vertices[0].y     = AY1;
+//      vertices[0].Red   = (uint32_t)(AUpperLeft.r * 255) << 8;
+//      vertices[0].Green = (uint32_t)(AUpperLeft.g * 255) << 8;
+//      vertices[0].Blue  = (uint32_t)(AUpperLeft.b * 255) << 8;
+//      vertices[0].Alpha = (uint32_t)(AUpperLeft.a * 255) << 8;
+//      vertices[1].x     = AX2;
+//      vertices[1].y     = AY2;
+//      vertices[1].Red   = (uint32_t)(ALowerRight.r * 255) << 8;
+//      vertices[1].Green = (uint32_t)(ALowerRight.g * 255) << 8;
+//      vertices[1].Blue  = (uint32_t)(ALowerRight.b * 255) << 8;
+//      vertices[1].Alpha = (uint32_t)(ALowerRight.a * 255) << 8;
+//      GRADIENT_RECT R;
+//      R.UpperLeft  = 0;
+//      R.LowerRight = 1;
+//      uint32_t mode = GRADIENT_FILL_RECT_H;
+//      if (AVertical) mode = GRADIENT_FILL_RECT_V;
+//      GdiGradientFill(MHandle,vertices,2,&R,1,mode);
+//    }
+
+    //----------
+
+//    void gradientTriangle(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2, int32_t AX3, int32_t AY3, MIP_Color AColor1, MIP_Color AColor2, MIP_Color AColor3) {
+//      TRIVERTEX vertices[3];
+//      vertices[0].x     = AX1;
+//      vertices[0].y     = AY1;
+//      vertices[0].Red   = (uint32_t)(AColor1.r * 255) << 8;
+//      vertices[0].Green = (uint32_t)(AColor1.g * 255) << 8;
+//      vertices[0].Blue  = (uint32_t)(AColor1.b * 255) << 8;
+//      vertices[0].Alpha = (uint32_t)(AColor1.a * 255) << 8;
+//      vertices[1].x     = AX2;
+//      vertices[1].y     = AY2;
+//      vertices[1].Red   = (uint32_t)(AColor2.r * 255) << 8;
+//      vertices[1].Green = (uint32_t)(AColor2.g * 255) << 8;
+//      vertices[1].Blue  = (uint32_t)(AColor2.b * 255) << 8;
+//      vertices[1].Alpha = (uint32_t)(AColor2.a * 255) << 8;
+//      vertices[2].x     = AX3;
+//      vertices[2].y     = AY3;
+//      vertices[2].Red   = (uint32_t)(AColor3.r * 255) << 8;
+//      vertices[2].Green = (uint32_t)(AColor3.g * 255) << 8;
+//      vertices[2].Blue  = (uint32_t)(AColor3.b * 255) << 8;
+//      vertices[2].Alpha = (uint32_t)(AColor3.a * 255) << 8;
+//      GRADIENT_TRIANGLE T;
+//      T.Vertex1 = 0;
+//      T.Vertex2 = 1;
+//      T.Vertex3 = 2;
+//      uint32_t mode = GRADIENT_FILL_TRIANGLE;
+//      GdiGradientFill(MHandle,vertices,3,&T,1,mode);
+//    }
+
+  //------------------------------
+  // blend shapes
+  //------------------------------
+
+//    void blendRectangle(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2) {
+//    }
+
+  //------------------------------
+  // text
+  //------------------------------
+
+    /*
+      hack alert!
+      draw to a rect size 1000x1000, and align to upper left
+    */
+
+    //----------
+
+//    void drawText(int32_t AX, int32_t AY, const char* AText) {
+//      //SetBkMode(mDC,TRANSPARENT);
+//      //TextOut(mDC,aX,aY,aText.ptr(), aText.length() );
+//      this->drawText( AX,AY, AX+1000,AY+1000, AText, s3_ta_left|s3_ta_top);
+//    }
+
+    //----------
+
+//    void drawText(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2, const char* AText, uint32_t AAlign) {
+//      SetBkMode(MHandle,TRANSPARENT);
+//      RECT R;
+//      R.left    = AX1;
+//      R.top     = AY1;
+//      R.right   = AX2;
+//      R.bottom  = AY2;
+//      int flags = 0;
+//      if (AAlign & s3_ta_left) flags = flags | DT_LEFT;
+//      else if (AAlign & s3_ta_right) flags = flags | DT_RIGHT;
+//      else flags = flags | DT_CENTER;
+//      if (AAlign & s3_ta_top) flags = flags | DT_TOP;
+//      else if (AAlign & s3_ta_bottom) flags = flags | DT_BOTTOM;
+//      else flags = flags | DT_VCENTER;
+//      //HFONT oldfont = (HFONT)SelectObject(MHandle,MFont);
+//      DrawText(MHandle,AText,-1,&R,flags|DT_NOCLIP|DT_SINGLELINE|DT_NOPREFIX);
+//      //SelectObject(MHandle, oldfont);
+//    }
+
+  //------------------------------
+  // bitmaps
+  //------------------------------
+
+    /*
+      https://msdn.microsoft.com/en-us/library/windows/desktop/dd183385%28v=vs.85%29.aspx
+      BitBlt          draw
+      AlphaBlend      blend
+      StretchBlt      stretch
+      MaskBlt         alphaMask
+      TransparentBlt  bitMask
+      GradientFill    gradient
+      ExtFloodFill
+      PlgBlt          parallellogram
+    */
+
+    /*
+      see also:
+      StretchDIBits
+      https://msdn.microsoft.com/en-us/library/windows/desktop/dd145121%28v=vs.85%29.aspx
+      https://msdn.microsoft.com/en-us/library/windows/desktop/dd183370%28v=vs.85%29.aspx
+    */
+
+//    void drawBitmap(int32_t ADstX, int32_t ADstY, MIP_Drawable* ASource, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {
+//      HDC tempdc = CreateCompatibleDC(MHandle);
+//      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
+//      uint32_t rop = s3_win32_rasterops[MSrcRasterOp];  // SRCCOPY;
+//      BitBlt(MHandle,ADstX,ADstY,ASrcW,ASrcH,tempdc,ASrcX,ASrcY,rop);
+//      SelectObject(tempdc,oldbitmap);
+//      DeleteDC(tempdc);
+//    }
+
+//    void maskBitmap(int32_t ADstX, int32_t ADstY, MIP_Drawable* ASource, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH, MIP_Drawable* AMask, int32_t AMaskX, int32_t AMaskY) {
+//      HDC tempdc = CreateCompatibleDC(MHandle);
+//      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
+//      uint32_t fore = s3_win32_rasterops[MSrcRasterOp]; // SRCCOPY;
+//      uint32_t back = s3_win32_rasterops[MDstRasterOp]; // DSTCOPY;
+//      uint32_t rop = MAKEROP4(fore,back);
+//      MaskBlt(MHandle,ADstX,ADstY,ASrcW,ASrcH,tempdc,ASrcX,ASrcY,AMask->hbitmap(),AMaskX,AMaskY,rop);
+//      SelectObject(tempdc,oldbitmap);
+//      DeleteDC(tempdc);
+//    }
+
+//    void tileBitmap(void) {
+//      // https://msdn.microsoft.com/en-us/library/windows/desktop/dd162778%28v=vs.85%29.aspx
+//      // PatBlt
+//    }
+
+    //----------
+
+//    void transparentBitmap(int32_t ADstX, int32_t ADstY, int32_t ADstW, int32_t ADstH, MIP_Drawable* ASource, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH, MIP_Color ATransparentColor) {
+//      HDC tempdc = CreateCompatibleDC(MHandle);
+//      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
+//      //GdiAlphaBlend(MHandle,ADstX,ADstY,ADstW,ADstH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,MStretchFunc);
+//      UINT color = MIP_RGB(ATransparentColor);
+//      GdiTransparentBlt(MHandle,ADstX,ADstY,ADstW,ADstH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,color);
+//      SelectObject(tempdc,oldbitmap);
+//      DeleteDC(tempdc);
+//    }
+
+    //----------
+
+    // link with: libmsimg32, or..
+    // are also in gdi32 with Gdi* prefix
+
+    //----------
+
+//    void blendBitmap(int32_t ADstX, int32_t ADstY, MIP_Drawable* ASource, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {
+//      HDC tempdc = CreateCompatibleDC(MHandle);
+//      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
+//      GdiAlphaBlend(MHandle,ADstX,ADstY,ASrcW,ASrcH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,MBlendFunc);
+//      SelectObject(tempdc,oldbitmap);
+//      DeleteDC(tempdc);
+//    }
+
+    //----------
+
+//    void stretchBitmap(int32_t ADstX, int32_t ADstY, int32_t ADstW, int32_t ADstH, MIP_Drawable* ASource, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {
+//      HDC tempdc = CreateCompatibleDC(MHandle);
+//      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
+//      GdiAlphaBlend(MHandle,ADstX,ADstY,ADstW,ADstH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,MStretchFunc);
+//      //      uint32_t rop = s3_win32_rasterops[MSrcRasterOp]; // SRCCOPY;
+//      //      StretchBlt(MHandle,ADstX,ADstY,ADstW,ADstH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,rop);
+//      SelectObject(tempdc,oldbitmap);
+//      DeleteDC(tempdc);
+//    }
 
 };
 
@@ -1161,7 +1571,7 @@ private:
 // DWORD   dwRop
 // FORE_ROP3(dwRop)
 
-const uint32 s3_win32_rasterops[] = {
+const uint32_t s3_win32_rasterops[] = {
   BLACKNESS,    // s3_ro_black
   PATCOPY,      // s3_ro_brush
   PATPAINT,     // s3_ro_brush_or_invsrcor_or_dst
@@ -1180,445 +1590,5 @@ const uint32 s3_win32_rasterops[] = {
   SRCINVERT,    // s3_ro_src_xor_dst
   WHITENESS     //s3_ro_white                     =
 };
-
-//----------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// qwe
-
-
-
-
-
-
-
-
-
-
-  //------------------------------
-  // shapes
-  //------------------------------
-
-  public:
-
-    virtual // S3_Painter_Base
-    void drawPoint(int32 AX, int32 AY) {
-      SetPixel(MHandle,AX,AY,S3_RGB(MDrawColor));
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void drawLine(int32 AX1, int32 AY1, int32 AX2, int32 AY2) {
-      MoveToEx(MHandle,AX1,AY1,0);
-      LineTo(MHandle,AX2,AY2);
-      SetPixel(MHandle,AX2,AY2,S3_RGB(MDrawColor));
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void drawRectangle(int32 AX1, int32 AY1, int32 AX2, int32 AY2) {
-      MoveToEx(MHandle,AX1,AY1,0);
-      LineTo(MHandle,AX2,AY1);
-      LineTo(MHandle,AX2,AY2);
-      LineTo(MHandle,AX1,AY2);
-      LineTo(MHandle,AX1,AY1);
-      //drawPoint(aX2,aY2);         // !!!
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void drawRoundedRectangle(void) {
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void drawEllipse(int32 AX1, int32 AY1, int32 AX2, int32 AY2) {
-      //Ellipse(mDC, aX1,aY1,aX2,aY2 );
-      Arc( MHandle,AX1,AY1,AX2+1,AY2+1,0,0,0,0);
-    }
-
-    //----------
-
-    /*
-      angle 1 = start angle, relative to 3 o'clock
-      angle 2 = 'distance' 0..1, counter-clockwise
-    */
-
-    virtual // S3_Painter_Base
-    void drawArc(int32 AX1, int32 AY1, int32 AX2, int32 AY2, float AAngle1, float AAngle2) {
-      AX2 += 1;
-      AY2 += 1;
-      if (fabsf(AAngle2) >= 0.01) {
-        float a1 = AAngle1 -= 0.25;
-        float a2 = a1 + AAngle2;
-        if (AAngle2>0) {
-          float temp = a1;
-          a1 = a2;
-          a2 = temp;
-        }
-        float w = AX2-AX1+1;
-        float h = AY2-AY1+1;
-        float s = fmaxf(w,h);
-        float x = AX1 + w*0.5;
-        float y = AY1 + h*0.5;
-        float x1 = x + cosf(a1*S3_PI2) * s;
-        float y1 = y + sinf(a1*S3_PI2) * s;
-        float x2 = x + cosf(a2*S3_PI2) * s;
-        float y2 = y + sinf(a2*S3_PI2) * s;
-        Arc(MHandle,AX1,AY1,AX2,AY2,(int)x1,(int)y1,(int)x2,(int)y2);
-      }
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void drawTriangle(int32 AX1, int32 AY1, int32 AX2, int32 AY2, int32 AX3, int32 AY3) {
-      drawLine(AX1,AY1,AX2,AY2);
-      drawLine(AX2,AY2,AX3,AY3);
-      drawLine(AX3,AY3,AX1,AY1);
-    }
-
-  //------------------------------
-  // fill shapes
-  //------------------------------
-
-  public:
-
-    virtual // S3_Painter_Base
-    void fillRectangle(int32 AX1, int32 AY1, int32 AX2, int32 AY2) {
-      RECT R;
-      R.left    = AX1;
-      R.top     = AY1;
-      R.right   = AX2+1;           // !!!
-      R.bottom  = AY2+1;           // !!!
-      HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
-      FillRect(MHandle,&R,brush);
-      //Rectangle(mDC,aX1,aY1,aX2,aY2);
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void fillRoundedRectangle(void) {
-    }
-
-    //----------
-
-    /*
-      The Ellipse function draws an ellipse. The center of the ellipse is the
-      center of the specified bounding rectangle. The ellipse is outlined by
-      using the current pen and is filled by using the current brush.
-    */
-
-    virtual // S3_Painter_Base
-    void fillEllipse(int32 AX1, int32 AY1, int32 AX2, int32 AY2) {
-      AX2 += 2;
-      AY2 += 2;
-      selectPen(S3_NULL);
-      Ellipse( MHandle,AX1,AY1,AX2,AY2);
-      resetPen();
-    }
-
-    //----------
-
-    // angle 1 = start angle, relative to 3 o'clock
-    // angle 2 = 'distance' 0..1, counter-clockwise
-
-    virtual // S3_Painter_Base
-    void fillArc(int32 AX1, int32 AY1, int32 AX2, int32 AY2, float AAngle1, float AAngle2) {
-      AX2 += 2;
-      AY2 += 2;
-      if( fabsf(AAngle2) >= 0.01 ) {
-        float a1 = AAngle1 -= 0.25;
-        float a2 = a1 + AAngle2;
-        if ( AAngle2>0 ) {
-          float temp = a1;
-          a1 = a2;
-          a2 = temp;
-        }
-        float w = AX2-AX1+1;
-        float h = AY2-AY1+1;
-        float s = fmaxf(w,h);
-        float x = AX1 + w*0.5;
-        float y = AY1 + h*0.5;
-        float x1 = x + cosf(a1*S3_PI2) * s;
-        float y1 = y + sinf(a1*S3_PI2) * s;
-        float x2 = x + cosf(a2*S3_PI2) * s;
-        float y2 = y + sinf(a2*S3_PI2) * s;
-        selectPen(S3_NULL);
-        Pie(MHandle,AX1,AY1,AX2,AY2,(int)x1,(int)y1,(int)x2,(int)y2);
-        resetPen();
-      }
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void fillTriangle(int32 AX1, int32 AY1, int32 AX2, int32 AY2, int32 AX3, int32 AY3) {
-      POINT points[3];
-      points[0].x = AX1;
-      points[0].y = AY1;
-      points[1].x = AX2;
-      points[1].y = AY2;
-      points[2].x = AX3;
-      points[2].y = AY3;
-      selectPen(S3_NULL);
-      Polygon(MHandle,points,3);
-      resetPen();
-    }
-
-  //------------------------------
-  // gradients
-  //------------------------------
-
-  /*
-    gradients are not gamma correct..
-  */
-
-  public:
-
-    virtual // S3_Painter_Base
-    void gradientRectangle(int32 AX1, int32 AY1, int32 AX2, int32 AY2, S3_Color AUpperLeft, S3_Color ALowerRight, bool AVertical=true) {
-      TRIVERTEX vertices[2];
-      vertices[0].x     = AX1;
-      vertices[0].y     = AY1;
-      vertices[0].Red   = (uint32)(AUpperLeft.r * 255) << 8;
-      vertices[0].Green = (uint32)(AUpperLeft.g * 255) << 8;
-      vertices[0].Blue  = (uint32)(AUpperLeft.b * 255) << 8;
-      vertices[0].Alpha = (uint32)(AUpperLeft.a * 255) << 8;
-      vertices[1].x     = AX2;
-      vertices[1].y     = AY2;
-      vertices[1].Red   = (uint32)(ALowerRight.r * 255) << 8;
-      vertices[1].Green = (uint32)(ALowerRight.g * 255) << 8;
-      vertices[1].Blue  = (uint32)(ALowerRight.b * 255) << 8;
-      vertices[1].Alpha = (uint32)(ALowerRight.a * 255) << 8;
-      GRADIENT_RECT R;
-      R.UpperLeft  = 0;
-      R.LowerRight = 1;
-      uint32 mode = GRADIENT_FILL_RECT_H;
-      if (AVertical) mode = GRADIENT_FILL_RECT_V;
-      GdiGradientFill(MHandle,vertices,2,&R,1,mode);
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void gradientTriangle(int32 AX1, int32 AY1, int32 AX2, int32 AY2, int32 AX3, int32 AY3, S3_Color AColor1, S3_Color AColor2, S3_Color AColor3) {
-      TRIVERTEX vertices[3];
-      vertices[0].x     = AX1;
-      vertices[0].y     = AY1;
-      vertices[0].Red   = (uint32)(AColor1.r * 255) << 8;
-      vertices[0].Green = (uint32)(AColor1.g * 255) << 8;
-      vertices[0].Blue  = (uint32)(AColor1.b * 255) << 8;
-      vertices[0].Alpha = (uint32)(AColor1.a * 255) << 8;
-      vertices[1].x     = AX2;
-      vertices[1].y     = AY2;
-      vertices[1].Red   = (uint32)(AColor2.r * 255) << 8;
-      vertices[1].Green = (uint32)(AColor2.g * 255) << 8;
-      vertices[1].Blue  = (uint32)(AColor2.b * 255) << 8;
-      vertices[1].Alpha = (uint32)(AColor2.a * 255) << 8;
-      vertices[2].x     = AX3;
-      vertices[2].y     = AY3;
-      vertices[2].Red   = (uint32)(AColor3.r * 255) << 8;
-      vertices[2].Green = (uint32)(AColor3.g * 255) << 8;
-      vertices[2].Blue  = (uint32)(AColor3.b * 255) << 8;
-      vertices[2].Alpha = (uint32)(AColor3.a * 255) << 8;
-      GRADIENT_TRIANGLE T;
-      T.Vertex1 = 0;
-      T.Vertex2 = 1;
-      T.Vertex3 = 2;
-      uint32 mode = GRADIENT_FILL_TRIANGLE;
-      GdiGradientFill(MHandle,vertices,3,&T,1,mode);
-    }
-
-  //------------------------------
-  // blend shapes
-  //------------------------------
-
-  public:
-
-    virtual // S3_Painter_Base
-    void blendRectangle(int32 AX1, int32 AY1, int32 AX2, int32 AY2) {
-    }
-
-  //------------------------------
-  // text
-  //------------------------------
-
-  public:
-
-    /*
-      hack alert!
-      draw to a rect size 1000x1000, and align to upper left
-    */
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void drawText(int32 AX, int32 AY, const char* AText) {
-      //SetBkMode(mDC,TRANSPARENT);
-      //TextOut(mDC,aX,aY,aText.ptr(), aText.length() );
-      this->drawText( AX,AY, AX+1000,AY+1000, AText, s3_ta_left|s3_ta_top);
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void drawText(int32 AX1, int32 AY1, int32 AX2, int32 AY2, const char* AText, uint32 AAlign) {
-      SetBkMode(MHandle,TRANSPARENT);
-      RECT R;
-      R.left    = AX1;
-      R.top     = AY1;
-      R.right   = AX2;
-      R.bottom  = AY2;
-      int flags = 0;
-      if (AAlign & s3_ta_left) flags = flags | DT_LEFT;
-      else if (AAlign & s3_ta_right) flags = flags | DT_RIGHT;
-      else flags = flags | DT_CENTER;
-      if (AAlign & s3_ta_top) flags = flags | DT_TOP;
-      else if (AAlign & s3_ta_bottom) flags = flags | DT_BOTTOM;
-      else flags = flags | DT_VCENTER;
-      //HFONT oldfont = (HFONT)SelectObject(MHandle,MFont);
-      DrawText(MHandle,AText,-1,&R,flags|DT_NOCLIP|DT_SINGLELINE|DT_NOPREFIX);
-      //SelectObject(MHandle, oldfont);
-    }
-
-  //------------------------------
-  // bitmaps
-  //------------------------------
-
-  /*
-    https://msdn.microsoft.com/en-us/library/windows/desktop/dd183385%28v=vs.85%29.aspx
-    BitBlt          draw
-    AlphaBlend      blend
-    StretchBlt      stretch
-    MaskBlt         alphaMask
-    TransparentBlt  bitMask
-    GradientFill    gradient
-    ExtFloodFill
-    PlgBlt          parallellogram
-  */
-
-  public:
-
-    /*
-      see also:
-      StretchDIBits
-      https://msdn.microsoft.com/en-us/library/windows/desktop/dd145121%28v=vs.85%29.aspx
-      https://msdn.microsoft.com/en-us/library/windows/desktop/dd183370%28v=vs.85%29.aspx
-    */
-
-    virtual // S3_Painter_Base
-    void drawBitmap(int32 ADstX, int32 ADstY, S3_Drawable* ASource, int32 ASrcX, int32 ASrcY, int32 ASrcW, int32 ASrcH) {
-      HDC tempdc = CreateCompatibleDC(MHandle);
-      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
-      uint32 rop = s3_win32_rasterops[MSrcRasterOp];  // SRCCOPY;
-      BitBlt(MHandle,ADstX,ADstY,ASrcW,ASrcH,tempdc,ASrcX,ASrcY,rop);
-      SelectObject(tempdc,oldbitmap);
-      DeleteDC(tempdc);
-    }
-
-    virtual // S3_Painter_Base
-    void maskBitmap(int32 ADstX, int32 ADstY, S3_Drawable* ASource, int32 ASrcX, int32 ASrcY, int32 ASrcW, int32 ASrcH, S3_Drawable* AMask, int32 AMaskX, int32 AMaskY) {
-      HDC tempdc = CreateCompatibleDC(MHandle);
-      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
-      uint32 fore = s3_win32_rasterops[MSrcRasterOp]; // SRCCOPY;
-      uint32 back = s3_win32_rasterops[MDstRasterOp]; // DSTCOPY;
-      uint32 rop = MAKEROP4(fore,back);
-      MaskBlt(MHandle,ADstX,ADstY,ASrcW,ASrcH,tempdc,ASrcX,ASrcY,AMask->hbitmap(),AMaskX,AMaskY,rop);
-      SelectObject(tempdc,oldbitmap);
-      DeleteDC(tempdc);
-    }
-
-    virtual // S3_Painter_Base
-    void tileBitmap(void) {
-      // https://msdn.microsoft.com/en-us/library/windows/desktop/dd162778%28v=vs.85%29.aspx
-      // PatBlt
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void transparentBitmap(int32 ADstX, int32 ADstY, int32 ADstW, int32 ADstH, S3_Drawable* ASource, int32 ASrcX, int32 ASrcY, int32 ASrcW, int32 ASrcH, S3_Color ATransparentColor) {
-      HDC tempdc = CreateCompatibleDC(MHandle);
-      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
-      //GdiAlphaBlend(MHandle,ADstX,ADstY,ADstW,ADstH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,MStretchFunc);
-      UINT color = S3_RGB(ATransparentColor);
-      GdiTransparentBlt(MHandle,ADstX,ADstY,ADstW,ADstH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,color);
-      SelectObject(tempdc,oldbitmap);
-      DeleteDC(tempdc);
-    }
-
-    //----------
-
-    // link with: libmsimg32, or..
-    // are also in gdi32 with Gdi* prefix
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void blendBitmap(int32 ADstX, int32 ADstY, S3_Drawable* ASource, int32 ASrcX, int32 ASrcY, int32 ASrcW, int32 ASrcH) {
-      HDC tempdc = CreateCompatibleDC(MHandle);
-      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
-      GdiAlphaBlend(MHandle,ADstX,ADstY,ASrcW,ASrcH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,MBlendFunc);
-      SelectObject(tempdc,oldbitmap);
-      DeleteDC(tempdc);
-    }
-
-    //----------
-
-    virtual // S3_Painter_Base
-    void stretchBitmap(int32 ADstX, int32 ADstY, int32 ADstW, int32 ADstH, S3_Drawable* ASource, int32 ASrcX, int32 ASrcY, int32 ASrcW, int32 ASrcH) {
-      HDC tempdc = CreateCompatibleDC(MHandle);
-      HGDIOBJ oldbitmap = SelectObject(tempdc,ASource->hbitmap());
-
-      GdiAlphaBlend(MHandle,ADstX,ADstY,ADstW,ADstH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,MStretchFunc);
-
-//      uint32 rop = s3_win32_rasterops[MSrcRasterOp]; // SRCCOPY;
-//      StretchBlt(MHandle,ADstX,ADstY,ADstW,ADstH,tempdc,ASrcX,ASrcY,ASrcW,ASrcH,rop);
-      SelectObject(tempdc,oldbitmap);
-      DeleteDC(tempdc);
-    }
-
-
-};
-
 
 #endif // 0

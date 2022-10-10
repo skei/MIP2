@@ -355,15 +355,15 @@ public:
     MIP_PRINT;
     LONG_PTR style = GetWindowLongPtr(MWinHandle,GWL_STYLE);
     if (AParent == 0) {
-      style &= ~WS_CHILD;
-      style |= ~WS_POPUP;
+      //style &= ~WS_CHILD;
+      style &= ~WS_POPUP;
       style |= WS_OVERLAPPEDWINDOW;
       //MEmbedded = false;
     }
     else {
-      style &= ~WS_POPUP;
+      //style &= ~WS_CHILD;
       style &= ~WS_OVERLAPPEDWINDOW;
-      style |= ~WS_CHILD;
+      style |= WS_POPUP;
       //MEmbedded = true;
     }
     SetWindowLongPtr( MWinHandle, GWL_STYLE, style );
