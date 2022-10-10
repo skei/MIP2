@@ -8,7 +8,8 @@
 
 #ifdef MIP_LINUX
   #include "gui/glx/mip_glx.h"
-#else
+#endif
+#ifdef MIP_WIN32
   #include "gui/wgl/mip_wgl.h"
 #endif
 

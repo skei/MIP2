@@ -35,6 +35,8 @@ struct MIP_PaintSource {
     #ifdef MIP_PAINTER_NANOVG
       NVGpaint nvg;
     #endif
+    #ifdef MIP_PAINTER_WGL
+    #endif
     #ifdef MIP_PAINTER_XCB
       int image = -1;
     #endif

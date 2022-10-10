@@ -308,12 +308,14 @@ public: // window
     //MIP_PRINT;
     MIP_ImplementedWindow::beginPaint();
     #ifdef MIP_GUI_WIN32
+      #ifdef MIP_PAINTER_GDI
       HDC dc = hdc();
-      #ifdef MIP_WINDOW_BUFFERED
-        //MWindowPainter->setup(dc);
-        MBufferPainter->setup(dc);
-      #else
-        MWindowPainter->setup(dc);
+        #ifdef MIP_WINDOW_BUFFERED
+          //MWindowPainter->setup(dc);
+          MBufferPainter->setup(dc);
+        #else
+          MWindowPainter->setup(dc);
+        #endif
       #endif
     #endif
   }

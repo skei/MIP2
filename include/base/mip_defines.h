@@ -114,13 +114,24 @@
 #endif
 
 #ifdef MIP_PAINTER_GLX
+  //#define MIP_USE_XCB
   #define MIP_USE_GLX
   #define MIP_PAINTER_DEFINED
 #endif
 
 #ifdef MIP_PAINTER_NANOVG
-  #define MIP_USE_GLX
+  #ifdef MIP_LINUX
+    #define MIP_USE_GLX
+  #endif
+  #ifdef MIP_WIN32
+    #define MIP_USE_WGL
+  #endif
   #define MIP_USE_NANOVG
+  #define MIP_PAINTER_DEFINED
+#endif
+
+#ifdef MIP_PAINTER_WGL
+  #define MIP_USE_WGL
   #define MIP_PAINTER_DEFINED
 #endif
 
@@ -128,6 +139,7 @@
   #define MIP_USE_XCB
   #define MIP_PAINTER_DEFINED
 #endif
+
 
 //----------
 

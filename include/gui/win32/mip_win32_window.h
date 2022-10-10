@@ -228,6 +228,9 @@ public: // drawable
   //cairo_surface_t*    drawable_getCairoSurface()   final { return MCairoSurface; }
   //#endif
 
+  HDC                 drawable_getDC()            { return MWinPaintDC; }
+
+
 //------------------------------
 public:
 //------------------------------
@@ -259,7 +262,7 @@ public:
   void openWindow() override {
     ShowWindow(MWinHandle,SW_SHOW);
     #ifdef MIP_WIN32_IDLE_TIMER
-    SetTimer(MWinHandle,s3_ts_idle,S3_WIN32_IDLE_MS,S3_NULL);
+      SetTimer(MWinHandle,s3_ts_idle,S3_WIN32_IDLE_MS,S3_NULL);
     #endif
   }
 
@@ -267,7 +270,7 @@ public:
 
   void closeWindow() override {
     #ifdef MIP_WIN32_IDLE_TIMER
-    KillTimer(MWinHandle,s3_ts_idle);
+      KillTimer(MWinHandle,s3_ts_idle);
     #endif
     ShowWindow(MWinHandle,SW_HIDE);
   }

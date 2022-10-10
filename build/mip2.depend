@@ -1,12 +1,12 @@
 # depslib dependency file v1.0
-1665232638 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../build/test/test_layout.cpp"
+1665416755 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/private/sa_botage.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
 	"extern/nanogfx.h"
 
-1663018140 /DISKS/sda2/code/git/MIP2/include/mip.h
+1665416345 /DISKS/sda2/code/git/MIP2/include/mip.h
 	<stdint.h>
 	<stdio.h>
 	<stdlib.h>
@@ -25,11 +25,11 @@
 
 1665083151 /DISKS/sda2/code/git/MIP2/include/base/mip_config.h
 
-1663828512 /DISKS/sda2/code/git/MIP2/include/base/mip_defines.h
+1665431374 /DISKS/sda2/code/git/MIP2/include/base/mip_defines.h
 
 1660269806 /DISKS/sda2/code/git/MIP2/include/base/mip_const.h
 
-1665083303 /DISKS/sda2/code/git/MIP2/include/base/mip_enums.h
+1665345887 /DISKS/sda2/code/git/MIP2/include/base/mip_enums.h
 
 1641519085 /DISKS/sda2/code/git/MIP2/include/base/mip_attributes.h
 
@@ -466,7 +466,7 @@
 	"gui/xcb/mip_xcb.h"
 	"gui/xcb/mip_xcb_window.h"
 
-1662217138 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg.h
+1665429506 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg.h
 	"mip.h"
 	"gui/glx/mip_glx.h"
 	"gui/wgl/mip_wgl.h"
@@ -689,7 +689,7 @@
 1656614747 /DISKS/sda2/code/git/MIP2/include/extern/clap/ext/draft/transport-control.h
 	"../../plugin.h"
 
-1664914938 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
+1665348158 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
 	"mip.h"
 	"base/types/mip_queue.h"
 	"plugin/mip_audio_port.h"
@@ -709,7 +709,7 @@
 	"base/types/mip_array.h"
 	"plugin/clap/mip_clap.h"
 
-1664914954 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
+1665349293 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_window.h"
@@ -754,7 +754,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
 
-1665168685 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1665430383 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_widget.h"
@@ -789,7 +789,7 @@
 	"gui/mip_drawable.h"
 	"gui/xcb/mip_xcb.h"
 
-1664896269 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1665345896 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"gui/mip_paint_context.h"
 	"plugin/mip_parameter.h"
@@ -798,13 +798,13 @@
 	"mip.h"
 	"gui/mip_painter.h"
 
-1661593395 /DISKS/sda2/code/git/MIP2/include/gui/mip_painter.h
+1665429083 /DISKS/sda2/code/git/MIP2/include/gui/mip_painter.h
 	"mip.h"
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_painter.h"
 	"gui/cairo/mip_cairo_painter.h"
 	"gui/gdi/mip_gdi_painter.h"
-	"gui/opengl/mip_opengl_painter.h"
+	"gui/glx/mip_opengl_painter.h"
 	"gui/nanovg/mip_nanovg_painter.h"
 	"gui/wgl/mip_wgl_painter.h"
 	"gui/xcb/mip_xcb_painter.h"
@@ -836,16 +836,17 @@
 
 1664116981 /DISKS/sda2/code/git/MIP2/include/base/types/mip_point.h
 
-1664644444 /DISKS/sda2/code/git/MIP2/include/gui/mip_drawable.h
+1665433362 /DISKS/sda2/code/git/MIP2/include/gui/mip_drawable.h
 	"mip.h"
 	"gui/gdi/mip_gdi.h"
 	"gui/glx/mip_glx.h"
 	"gui/nanovg/mip_nanovg.h"
+	"gui/wgl/mip_wgl.h"
 	"gui/win32/mip_win32.h"
 	"gui/xcb/mip_xcb.h"
 	"gui/xlib/mip_xlib.h"
 
-1664830499 /DISKS/sda2/code/git/MIP2/include/gui/base/mip_base_painter.h
+1665429430 /DISKS/sda2/code/git/MIP2/include/gui/base/mip_base_painter.h
 	"mip.h"
 	"gfx/mip_bitmap.h"
 	"gui/mip_drawable.h"
@@ -872,7 +873,7 @@
 1658514761 /DISKS/sda2/code/git/MIP2/include/gui/mip_theme.h
 	"mip.h"
 
-1664722386 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg_painter.h
+1665429728 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg_painter.h
 	"mip.h"
 	"gui/glx/mip_glx_painter.h"
 	"gui/wgl/mip_wgl_painter.h"
@@ -944,7 +945,7 @@
 	"mip.h"
 	"gui/mip_widget.h"
 
-1658177505 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg_utils.h
+1665431924 /DISKS/sda2/code/git/MIP2/include/gui/nanovg/mip_nanovg_utils.h
 	"mip.h"
 	"gui/nanovg/mip_nanovg.h"
 
@@ -1209,36 +1210,33 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/vst3/mip_vst3_entry.h"
 
-1662899278 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_entry.h
+1665408359 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_entry.h
 	"mip.h"
 	"base/system/mip_paths.h"
 	"plugin/mip_registry.h"
 	"plugin/clap/mip_clap.h"
 	"plugin/vst2/mip_vst2.h"
-	"plugin/vst2/mip_vst2_plugin.h"
 	"plugin/vst2/mip_vst2_host_implementation.h"
+	"plugin/vst2/mip_vst2_plugin.h"
+	"plugin/vst2/mip_vst2_utils.h"
 
 1641606314 /DISKS/sda2/code/git/MIP2/include/base/system/mip_paths.h
 	"mip.h"
 	"base/system/linux/mip_linux_paths.h"
 	"base/system/win32/mip_win32_paths.h"
 
-1662135741 /DISKS/sda2/code/git/MIP2/include/base/system/linux/mip_linux_paths.h
+1665407761 /DISKS/sda2/code/git/MIP2/include/base/system/linux/mip_linux_paths.h
 	<stdio.h>
 	<stdlib.h>
 	<unistd.h>
 	<dlfcn.h>
 
-1641606792 /DISKS/sda2/code/git/MIP2/include/base/system/win32/mip_win32_paths.h
+1665408032 /DISKS/sda2/code/git/MIP2/include/base/system/win32/mip_win32_paths.h
 	<stdio.h>
 	<stdlib.h>
-	<unistd.h>
-	<dlfcn.h>
-	<Shlobj.h>
-	"base/mip.h"
-	"base/mip_const.h"
-	<dlfcn.h>
-	<unistd.h>
+	"mip.h"
+	"gui/win32/mip_win32.h"
+	<shlobj.h>
 
 1661972395 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2.h
 	"mip.h"
@@ -1252,17 +1250,18 @@
 1440689074 /DISKS/sda2/code/git/MIP2/include/extern/vst2/aeffectx.h
 	"aeffect.h"
 
-1662510418 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_plugin.h
+1665334417 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_plugin.h
 	"mip.h"
 	"base/types/mip_queue.h"
 	"plugin/clap/mip_clap.h"
 	"plugin/vst2/mip_vst2.h"
 	"plugin/vst2/mip_vst2_host_implementation.h"
+	"plugin/vst2/mip_vst2_utils.h"
 
 1656867483 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_host_implementation.h
 	"plugin/clap/mip_clap_host_implementation.h"
 
-1662901366 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3_entry.h
+1665249874 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3_entry.h
 	"mip.h"
 	"plugin/clap/mip_clap.h"
 	"plugin/vst3/mip_vst3.h"
@@ -1271,7 +1270,7 @@
 	"plugin/vst3/mip_vst3_utils.h"
 	"plugin/mip_plugin.h"
 
-1662509763 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3.h
+1665406742 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3.h
 	"mip.h"
 	"pluginterfaces/base/coreiids.cpp"
 	"pluginterfaces/base/ustring.cpp"
@@ -1437,7 +1436,7 @@
 1655451196 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3_host_implementation.h
 	"plugin/clap/mip_clap_host_implementation.h"
 
-1662510098 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3_plugin.h
+1665407799 /DISKS/sda2/code/git/MIP2/include/plugin/vst3/mip_vst3_plugin.h
 	"mip.h"
 	"plugin/clap/mip_clap.h"
 	"plugin/vst3/mip_vst3.h"
@@ -1517,7 +1516,7 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1660404949 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_sizer_widget.h
+1665346742 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_sizer_widget.h
 	"gui/mip_widget.h"
 	"gui/mip_widget.h"
 
@@ -1669,7 +1668,7 @@
 	"mip.h"
 	<sys/types.h>
 
-1664919427 /DISKS/sda2/code/git/MIP2/source/private/sa_botage.cpp
+1665431415 /DISKS/sda2/code/git/MIP2/source/private/sa_botage.cpp
 	"plugin/mip_plugin.h"
 	"sa_botage/sa_botage_editor.h"
 	"sa_botage/sa_botage_params.h"
@@ -1680,14 +1679,14 @@
 	"plugin/vst2/mip_vst2_entry.h"
 	"plugin/vst3/mip_vst3_entry.h"
 
-1664916823 /DISKS/sda2/code/git/MIP2/source/private/sa_botage/sa_botage_editor.h
+1665349770 /DISKS/sda2/code/git/MIP2/source/private/sa_botage/sa_botage_editor.h
 	"mip.h"
 	"plugin/mip_editor.h"
 	"gui/widgets/mip_widgets.h"
 	"sa_botage_process.h"
 	"sa_botage_widgets.h"
 
-1664913108 /DISKS/sda2/code/git/MIP2/source/private/sa_botage/sa_botage_process.h
+1665419807 /DISKS/sda2/code/git/MIP2/source/private/sa_botage/sa_botage_process.h
 	"mip.h"
 	"sa_botage_params.h"
 
@@ -1705,7 +1704,7 @@
 	"gui/base/mip_base_painter.h"
 	"gui/mip_drawable.h"
 
-1662055218 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi_painter.h
+1665426242 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi_painter.h
 	"mip.h"
 	"gui/base/mip_base_painter.h"
 	"gui/gdi/mip_gdi.h"
@@ -1714,7 +1713,7 @@
 	"mip.h"
 	"gui/win32/mip_win32.h"
 
-1661378197 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl_painter.h
+1665434448 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl_painter.h
 	"mip.h"
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_painter.h"
@@ -1730,14 +1729,13 @@
 	"extern/stb/stb_truetype.h"
 	"../data/fonts/liberation_ttf.h"
 
-1664738310 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32_window.h
+1665433432 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32_window.h
 	"mip.h"
 	"gui/base/mip_base_window.h"
 	"gui/win32/mip_win32.h"
 
-1662044630 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32.h
-	<windows.h>
-	"mip.h"
+1665419965 /DISKS/sda2/code/git/MIP2/include/gui/win32/mip_win32.h
+	"base/mip_win32.h"
 
 1661959694 /DISKS/sda2/code/git/MIP2/include/gui/gdi/mip_gdi_surface.h
 	"mip.h"
@@ -1745,9 +1743,15 @@
 	"gui/win32/mip_win32.h"
 	"gui/gdi/mip_gdi.h"
 
-1661374630 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl.h
+1665431686 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl.h
+	"mip.h"
+	"gui/mip_drawable.h"
+	"extern/simple-opengl-loader.h"
+	<GL/gl.h>
 
-1661374630 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl_utils.h
+1665429819 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl_utils.h
+	"mip.h"
+	"gui/wgl/mip_wgl.h"
 
 1661814913 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_dual_slider_widget.h
 	"mip.h"
@@ -1769,7 +1773,7 @@
 	"plugin/mip_plugin.h"
 	"gui/widgets/mip_widgets.h"
 
-1664562947 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor_window.h
+1665346571 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor_window.h
 	"mip.h"
 	"gui/mip_window.h"
 	"base/system/mip_timer.h"
@@ -1821,4 +1825,10 @@
 	"plugin/ladspa//mip_ladspa_plugin.h"
 	"plugin/mip_registry.h"
 	"plugin/clap/mip_clap_entry.h"
+
+1665330914 /DISKS/sda2/code/git/MIP2/include/plugin/vst2/mip_vst2_utils.h
+	"plugin/vst2/mip_vst2.h"
+
+1665416633 /DISKS/sda2/code/git/MIP2/include/base/mip_win32.h
+	<windows.h>
 

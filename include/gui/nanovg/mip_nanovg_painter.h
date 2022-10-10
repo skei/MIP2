@@ -11,7 +11,8 @@
 
 #ifdef MIP_LINUX
   #include "gui/glx/mip_glx_painter.h"
-#else
+#endif
+#ifdef MIP_WIN32
   #include "gui/wgl/mip_wgl_painter.h"
 #endif
 
@@ -35,7 +36,8 @@
 class MIP_NanoVGPainter
 #ifdef MIP_LINUX
 : public MIP_GlxPainter {
-#else
+#endif
+#ifdef MIP_WIN32
 : public MIP_WglPainter {
 #endif
 
@@ -52,9 +54,17 @@ public:
 //------------------------------
 
   MIP_NanoVGPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
-  : MIP_GlxPainter(ASurface,ATarget) {
 
+  #ifdef MIP_LINUX
+  : MIP_GlxPainter(ASurface,ATarget) {
     MIP_GlxPainter::makeCurrent();
+  #endif
+  #ifdef MIP_WIN32
+  : MIP_WglPainter(ASurface,ATarget) {
+    MIP_WglPainter::makeCurrent();
+  #endif
+
+    //MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES); // NVG_DEBUG
 
     MContext = nvgCreateGL3(NVG_ANTIALIAS);// | NVG_STENCIL_STROKES); // NVG_DEBUG
 
@@ -75,7 +85,12 @@ public:
     bndSetFont(MFont);
     #endif
 
-    MIP_GlxPainter::resetCurrent();
+    #ifdef MIP_LINUX
+      MIP_GlxPainter::resetCurrent();
+    #endif
+    #ifdef MIP_WIN32
+      MIP_WglPainter::resetCurrent();
+    #endif
 
   }
 
@@ -112,7 +127,12 @@ public:
 //------------------------------
 
   void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    MIP_GlxPainter::beginPaint(AXpos,AYpos,AWidth,AHeight);
+    #ifdef MIP_LINUX
+      MIP_GlxPainter::beginPaint(AXpos,AYpos,AWidth,AHeight);
+    #endif
+    #ifdef MIP_WIN32
+      MIP_WglPainter::beginPaint(AXpos,AYpos,AWidth,AHeight);
+    #endif
     nvgBeginFrame(MContext,AWidth,AHeight,1.0);
   }
 
@@ -120,7 +140,13 @@ public:
 
   void endPaint() override {
     nvgEndFrame(MContext);
-    MIP_GlxPainter::endPaint();
+    #ifdef MIP_LINUX
+      MIP_GlxPainter::endPaint();
+    #endif
+    #ifdef MIP_WIN32
+      MIP_WglPainter::endPaint();
+    #endif
+
   }
 
   //----------

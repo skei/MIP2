@@ -386,7 +386,7 @@ public: // gui
 
       //----- left sizer -----
 
-      MIP_SizerWidget* left_sizer = new MIP_SizerWidget(5,MIP_SIZER_LEFT,left_scrollbox);
+      MIP_SizerWidget* left_sizer = new MIP_SizerWidget(5,MIP_WIDGET_SIZER_LEFT,left_scrollbox);
       left_sizer->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
       left_sizer->setFillColor(0.4);
       background->appendChildWidget(left_sizer);
@@ -447,7 +447,7 @@ public: // gui
 
         //----- right top sizer -----
 
-        MIP_SizerWidget* right_top_sizer = new MIP_SizerWidget(5,MIP_SIZER_TOP,right_top_scrollbox);
+        MIP_SizerWidget* right_top_sizer = new MIP_SizerWidget(5,MIP_WIDGET_SIZER_TOP,right_top_scrollbox);
         right_top_sizer->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         right_top_sizer->setFillColor(0.4);
         right_panel->appendChildWidget(right_top_sizer);
@@ -484,7 +484,7 @@ public: // gui
 
       //----- right sizer -----
 
-      MIP_SizerWidget* right_sizer = new MIP_SizerWidget(5,MIP_SIZER_RIGHT,right_panel);
+      MIP_SizerWidget* right_sizer = new MIP_SizerWidget(5,MIP_WIDGET_SIZER_RIGHT,right_panel);
       right_sizer->Layout.alignment = MIP_WIDGET_ALIGN_FILL_RIGHT;
       right_sizer->setFillColor(0.4);
       background->appendChildWidget(right_sizer);
@@ -532,7 +532,7 @@ public: // gui
 
       //----- center bottom sizer -----
 
-      MIP_SizerWidget* center_bottom_sizer = new MIP_SizerWidget(5,MIP_SIZER_BOTTOM,center_bottom_panel);
+      MIP_SizerWidget* center_bottom_sizer = new MIP_SizerWidget(5,MIP_WIDGET_SIZER_BOTTOM,center_bottom_panel);
       center_bottom_sizer->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
       center_bottom_sizer->setFillColor(0.4);
       background->appendChildWidget(center_bottom_sizer);

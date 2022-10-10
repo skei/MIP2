@@ -26,7 +26,7 @@
 #endif
 
 #ifdef MIP_PAINTER_GLX
-  #include "gui/opengl/mip_opengl_painter.h"
+  #include "gui/glx/mip_opengl_painter.h"
   typedef MIP_GlxPainter MIP_ImplementedPainter;
 #endif
 

@@ -16,6 +16,10 @@
   #include "gui/nanovg/mip_nanovg.h"
 #endif
 
+#ifdef MIP_USE_WGL
+  #include "gui/wgl/mip_wgl.h"
+#endif
+
 #ifdef MIP_USE_WIN32
   #include "gui/win32/mip_win32.h"
 #endif
@@ -48,11 +52,16 @@ public:
   #endif
 
   //#ifdef MIP_USE_GLX
-  //  virtual Display*          drawable_getXlibDisplay() { return nullptr; }
+  //  virtual Display*          drawable_getXlibDisplay()   { return nullptr; }
   //#endif
 
   #ifdef MIP_USE_NANOVG
   #endif
+
+  #ifdef MIP_USE_WGL
+    virtual HDC               drawable_getDC()            { return nullptr; }
+  #endif
+
 
   #ifdef MIP_USE_WIN32
     virtual HWND              drawable_getWin32Window()   { return nullptr; }

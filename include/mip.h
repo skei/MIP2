@@ -50,10 +50,13 @@
 #pragma GCC diagnostic ignored "-Wshift-negative-value"
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 
+
 //vst3
-#ifdef MIP_WIN32
-  #pragma GCC diagnostic ignored "-Wunknown-pragmas"
-#endif
+//#ifdef MIP_WIN32
+//  #pragma GCC diagnostic ignored "-Wunknown-pragmas"
+//#endif
+
+// -> compiler option: -Wno-unknown-pragmas
 
 //------------------------------
 //
