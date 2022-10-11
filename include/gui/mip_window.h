@@ -100,20 +100,7 @@ public:
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
     //MIP_Print("%i,%i\n",AWidth,AHeight);
     MOwnerWindow = this;
-    setup(AWidth,AHeight);
-  }
-
-  //----------
-
-  virtual ~MIP_Window() {
-    cleanup();
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-  void setup(uint32_t AWidth, uint32_t AHeight) {
+    //setup(AWidth,AHeight);
     MName = "MIP_Window";
     MWindowPainter = new MIP_Painter(this,this);
     #ifdef MIP_WINDOW_BUFFERED
@@ -127,11 +114,13 @@ public:
     Layout.initialRect = MRect;
     Layout.baseRect = MRect;
     MIndex = -1;
+
   }
 
   //----------
 
-  void cleanup() {
+  virtual ~MIP_Window() {
+    //cleanup();
     delete MWindowPainter;
     #ifdef MIP_WINDOW_BUFFERED
       //delete MBufferPainter;
@@ -139,6 +128,37 @@ public:
       deleteBuffer();
     #endif
   }
+
+//------------------------------
+public:
+//------------------------------
+
+//  void setup(uint32_t AWidth, uint32_t AHeight) {
+//    MName = "MIP_Window";
+//    MWindowPainter = new MIP_Painter(this,this);
+//    #ifdef MIP_WINDOW_BUFFERED
+//      createBuffer(AWidth,AHeight);
+//      MPaintContext.painter = MBufferPainter;
+//    #else
+//      MPaintContext.painter = MWindowPainter;
+//    #endif
+//    MParent = nullptr;
+//    MRect.setPos(0.0);
+//    Layout.initialRect = MRect;
+//    Layout.baseRect = MRect;
+//    MIndex = -1;
+//  }
+
+  //----------
+
+//  void cleanup() {
+//    delete MWindowPainter;
+//    #ifdef MIP_WINDOW_BUFFERED
+//      //delete MBufferPainter;
+//      //delete MBufferSurface;
+//      deleteBuffer();
+//    #endif
+//  }
 
 //------------------------------
 public:
@@ -304,12 +324,13 @@ public: // timer
 public: // window
 //------------------------------
 
+/*
   void beginPaint()  override {
     //MIP_PRINT;
     MIP_ImplementedWindow::beginPaint();
     #ifdef MIP_GUI_WIN32
       #ifdef MIP_PAINTER_GDI
-      HDC dc = hdc();
+        HDC dc = getWinPaintDC();
         #ifdef MIP_WINDOW_BUFFERED
           //MWindowPainter->setup(dc);
           MBufferPainter->setup(dc);
@@ -319,7 +340,7 @@ public: // window
       #endif
     #endif
   }
-
+*/
 
 
   /*

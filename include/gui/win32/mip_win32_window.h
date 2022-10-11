@@ -63,12 +63,15 @@ class MIP_Win32Window
 private:
 //------------------------------
 
-  HCURSOR     MDefaultCursor;
-  HWND        MWinHandle;
-  HCURSOR     MWinCursor;
-  PAINTSTRUCT MWinPaintStruct;
-  HDC         MWinPaintDC;
-  HCURSOR     MUserCursors[128];
+  //HDC         MScreenDC         = nullptr;
+  //HDC         MWindowDC         = nullptr;
+
+  HCURSOR     MDefaultCursor    = nullptr;
+  HWND        MWinHandle        = nullptr;
+  HCURSOR     MWinCursor        = nullptr;
+  PAINTSTRUCT MWinPaintStruct   = {};
+  HDC         MWinPaintDC       = nullptr;
+  HCURSOR     MUserCursors[128] = {0};
 
   const char* MWindowTitle    = "";
   void*       MWindowParent   = nullptr;
@@ -107,7 +110,7 @@ public:
     setMouseCursor(MIP_CURSOR_DEFAULT);
     //RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
 
-    //MWinHandle = createWindow(AWidth,AHeight);
+    //MScreenDC = GetDC(0);
 
     if (AParent == 0) {
       MEmbedded = false;
@@ -161,6 +164,10 @@ public:
       );
     }
     SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
+
+//    // If hwnd argument is NULL, GetDC retrieves the DC for the entire screen.
+//    MWindowDC = GetDC(MWinHandle);
+
   }
 
   //----------
@@ -176,6 +183,8 @@ public:
 
   virtual ~MIP_Win32Window() {
     //destroyUserCursors();
+    //ReleaseDC(0,MWindowDC);
+    //ReleaseDC(0,MScreenDC);
     DestroyWindow(MWinHandle);
   }
 
@@ -183,8 +192,10 @@ public:
 public:
 //------------------------------
 
-  HWND  hwnd(void)  { return MWinHandle; }
-  HDC   hdc(void)   { return MWinPaintDC; }
+  HWND  getWinHandle(void)    { return MWinHandle; }
+  HDC   getWinPaintDC(void)   { return MWinPaintDC; }
+//HDC   getScreenDC(void)     { return MScreenDC; }
+//HDC   getWindowDC(void)     { return MWindowDC; }
 
 //------------------------------
 public:
@@ -216,19 +227,18 @@ public: // drawable
   uint32_t            drawable_getHeight()         final { return MWindowHeight; }
   uint32_t            drawable_getDepth()          final { return MScreenDepth; }
 
-  HWND                drawable_getWin32Window()    final { return MWinHandle; }
-  //xcb_visualid_t      drawable_getXcbVisual()      final { return MScreenVisual; }
-  //xcb_drawable_t      drawable_getXcbDrawable()    final { return MWindow; }
-  //xcb_window_t        drawable_getXcbWindow()      final { return MWindow; }
+  HWND                drawable_getWin32Hwnd()           final { return MWinHandle; }
 
-  //Display*            drawable_getXlibDisplay()    final { return MDisplay; }
+  // cairo
 
   //#ifdef MIP_USE_CAIRO
   //bool                drawable_isCairo()           final { return true; }
   //cairo_surface_t*    drawable_getCairoSurface()   final { return MCairoSurface; }
   //#endif
 
-  HDC                 drawable_getDC()            { return MWinPaintDC; }
+  // wgl
+
+  HDC                 drawable_getWin32DC()            final { return MWinPaintDC; }
 
 
 //------------------------------
@@ -780,85 +790,85 @@ private: // event handler
 private:
 //------------------------------
 
-  HWND createWindow(int32_t AWidth, int32_t AHeight) {
-
-    //MWindowTitle = ;
-    setWindowTitle("MIP_Win32Window");
-    MMouseXpos  = -1;
-    MMouseYpos  = -1;
-    memset(MUserCursors,0,sizeof(MUserCursors));
-    MCurrentCursor = -1;
-    setMouseCursor(MIP_CURSOR_DEFAULT);
-
-    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
-
-    AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
-    int32_t wx = ((GetSystemMetrics(SM_CXSCREEN) - AWidth ) >> 1) + rc.left;
-    int32_t wy = ((GetSystemMetrics(SM_CYSCREEN) - AHeight) >> 1) + rc.top;
-    int32_t x = wx;
-    int32_t y = wy;
-    int32_t w = rc.right - rc.left + 1;
-    int32_t h = rc.bottom - rc.top + 1;
-    MAdjustedWidth = w - AWidth;
-    MAdjustedHeight = h - AHeight;
-
-    HWND handle = CreateWindowEx(
-      WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
-      MIP_Win32ClassName(),       // lpClassName
-      "MIP_Win32Window",          // lpWindowName
-      WS_OVERLAPPEDWINDOW,        // dwStyle
-      x,                          // center x
-      y,                          // center y
-      w,                          // wWidth
-      h,                          // wHeight
-      0,                          // hWndParent
-      0,                          // hMenu
-      MIP_GLOBAL_WIN32_INSTANCE,  // hInstance
-      0                           // lpParam
-    );
-    SetFocus(handle);
-    return handle;
-  }
-
-  //----------
-
-  HWND createEmbeddedWindow(int32_t AWidth, int32_t AHeight, intptr_t AParent) {
-
-    MWindowTitle = "MIP_Win32Window";
-    MMouseXpos  = -1;
-    MMouseYpos  = -1;
-    memset(MUserCursors,0,sizeof(MUserCursors));
-    MCurrentCursor = -1;
-    setMouseCursor(MIP_CURSOR_DEFAULT);
-
-    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
-
-    AdjustWindowRectEx(&rc,WS_POPUP,FALSE,WS_EX_TOOLWINDOW);
-    int32_t x = rc.left;
-    int32_t y = rc.top;
-    int32_t w = rc.right - rc.left + 1;
-    int32_t h = rc.bottom - rc.top + 1;
-    MAdjustedWidth = w - AWidth;
-    MAdjustedHeight = h - AHeight;
-
-    HWND handle = CreateWindowEx(
-      0, //WS_EX_TOOLWINDOW,
-      //kode_global_WinClassName,
-      MIP_Win32ClassName(),
-      0,
-      //WS_CHILD, + WS_VISIBLE,
-      WS_POPUP + WS_VISIBLE,
-      x,              //rc.left,
-      y,              //rc.top,
-      w,              //rc.right-rc.left+1, // +2 ??
-      h,              //rc.bottom-rc.top+1, // +2 ??
-      HWND(AParent),
-      0,
-      MIP_GLOBAL_WIN32_INSTANCE,
-      0
-    );
-    return handle;
-  }
+//  HWND createWindow(int32_t AWidth, int32_t AHeight) {
+//
+//    //MWindowTitle = ;
+//    setWindowTitle("MIP_Win32Window");
+//    MMouseXpos  = -1;
+//    MMouseYpos  = -1;
+//    memset(MUserCursors,0,sizeof(MUserCursors));
+//    MCurrentCursor = -1;
+//    setMouseCursor(MIP_CURSOR_DEFAULT);
+//
+//    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
+//
+//    AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
+//    int32_t wx = ((GetSystemMetrics(SM_CXSCREEN) - AWidth ) >> 1) + rc.left;
+//    int32_t wy = ((GetSystemMetrics(SM_CYSCREEN) - AHeight) >> 1) + rc.top;
+//    int32_t x = wx;
+//    int32_t y = wy;
+//    int32_t w = rc.right - rc.left + 1;
+//    int32_t h = rc.bottom - rc.top + 1;
+//    MAdjustedWidth = w - AWidth;
+//    MAdjustedHeight = h - AHeight;
+//
+//    HWND handle = CreateWindowEx(
+//      WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
+//      MIP_Win32ClassName(),       // lpClassName
+//      "MIP_Win32Window",          // lpWindowName
+//      WS_OVERLAPPEDWINDOW,        // dwStyle
+//      x,                          // center x
+//      y,                          // center y
+//      w,                          // wWidth
+//      h,                          // wHeight
+//      0,                          // hWndParent
+//      0,                          // hMenu
+//      MIP_GLOBAL_WIN32_INSTANCE,  // hInstance
+//      0                           // lpParam
+//    );
+//    SetFocus(handle);
+//    return handle;
+//  }
+//
+//  //----------
+//
+//  HWND createEmbeddedWindow(int32_t AWidth, int32_t AHeight, intptr_t AParent) {
+//
+//    MWindowTitle = "MIP_Win32Window";
+//    MMouseXpos  = -1;
+//    MMouseYpos  = -1;
+//    memset(MUserCursors,0,sizeof(MUserCursors));
+//    MCurrentCursor = -1;
+//    setMouseCursor(MIP_CURSOR_DEFAULT);
+//
+//    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
+//
+//    AdjustWindowRectEx(&rc,WS_POPUP,FALSE,WS_EX_TOOLWINDOW);
+//    int32_t x = rc.left;
+//    int32_t y = rc.top;
+//    int32_t w = rc.right - rc.left + 1;
+//    int32_t h = rc.bottom - rc.top + 1;
+//    MAdjustedWidth = w - AWidth;
+//    MAdjustedHeight = h - AHeight;
+//
+//    HWND handle = CreateWindowEx(
+//      0, //WS_EX_TOOLWINDOW,
+//      //kode_global_WinClassName,
+//      MIP_Win32ClassName(),
+//      0,
+//      //WS_CHILD, + WS_VISIBLE,
+//      WS_POPUP + WS_VISIBLE,
+//      x,              //rc.left,
+//      y,              //rc.top,
+//      w,              //rc.right-rc.left+1, // +2 ??
+//      h,              //rc.bottom-rc.top+1, // +2 ??
+//      HWND(AParent),
+//      0,
+//      MIP_GLOBAL_WIN32_INSTANCE,
+//      0
+//    );
+//    return handle;
+//  }
 
 //------------------------------
 

@@ -49,6 +49,7 @@ public:
   #endif
 
   #ifdef MIP_USE_GDI
+    virtual HDC             drawable_getWin32DC()        { return 0; }
   #endif
 
   //#ifdef MIP_USE_GLX
@@ -59,12 +60,11 @@ public:
   #endif
 
   #ifdef MIP_USE_WGL
-    virtual HDC               drawable_getDC()            { return nullptr; }
   #endif
 
 
   #ifdef MIP_USE_WIN32
-    virtual HWND              drawable_getWin32Window()   { return nullptr; }
+    virtual HWND              drawable_getWin32Hwnd()   { return nullptr; }
   #endif
 
   #ifdef MIP_USE_XCB

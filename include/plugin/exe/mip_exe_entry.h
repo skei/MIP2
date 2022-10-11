@@ -107,7 +107,7 @@ int main(int argc, char** argv, char** env) {
                     #endif
                     #ifdef MIP_WIN32
                     clap_window.api = CLAP_WINDOW_API_WIN32;
-                    clap_window.win32 = exe_window->drawable_getWin32Window();
+                    clap_window.win32 = exe_window->drawable_getWin32Hwnd();
                     #endif
                     gui->set_parent(clap_plugin,&clap_window);
                     gui->show(clap_plugin);

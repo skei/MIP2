@@ -11,6 +11,85 @@
 
 
 //----------------------------------------------------------------------
+/*
+
+  https://learn.microsoft.com/en-us/windows/win32/gdi/windows-gdi
+
+  A device context is a structure that defines a set of graphic objects and
+  their associated attributes, as well as the graphic modes that affect output.
+  The graphic objects include a pen for line drawing, a brush for painting and
+  filling, a bitmap for copying or scrolling parts of the screen, a palette for
+  defining the set of available colors, a region for clipping and other
+  operations, and a path for painting and drawing operations. The remainder of
+  this section is divided into the following three areas.
+
+  ----------
+
+  A device context (DC) is a data structure defining the graphics objects,
+  their associated attributes, and the graphics modes affecting output on a
+  device. To create a DC, call the CreateDC function; to retrieve a DC, call
+  the GetDC function.
+
+  Before returning a handle that identifies that DC, the system selects a
+  drawing surface into the DC. If the application called the CreateDC function
+  to create a device context for a VGA display, the dimensions of this drawing
+  surface are 640-by-480 pixels. If the application called the GetDC function,
+  the dimensions reflect the size of the client area.
+
+  Before an application can begin drawing, it must select a bitmap with the
+  appropriate width and height into the DC by calling the SelectObject
+  function. When an application passes the handle to the DC to one of the
+  graphics device interface (GDI) drawing functions, the requested output
+  appears on the drawing surface selected into the DC.
+
+  ----------
+
+  To enable applications to place output in memory rather than sending it to an
+  actual device, use a special device context for bitmap operations called a
+  memory device context. A memory DC enables the system to treat a portion of
+  memory as a virtual device. It is an array of bits in memory that an
+  application can use temporarily to store the color data for bitmaps created
+  on a normal drawing surface. Because the bitmap is compatible with the
+  device, a memory DC is also sometimes referred to as a compatible device
+  context.
+
+  The memory DC stores bitmap images for a particular device. An application
+  can create a memory DC by calling the CreateCompatibleDC function.
+
+  The original bitmap in a memory DC is simply a placeholder. Its dimensions
+  are one pixel by one pixel. Before an application can begin drawing, it must
+  select a bitmap with the appropriate width and height into the DC by calling
+  the SelectObject function. To create a bitmap of the appropriate dimensions,
+  use the CreateBitmap, CreateBitmapIndirect, or CreateCompatibleBitmap
+  function. After the bitmap is selected into the memory DC, the system
+  replaces the single-bit array with an array large enough to store color
+  information for the specified rectangle of pixels.
+
+  When an application passes the handle returned by CreateCompatibleDC to one
+  of the drawing functions, the requested output does not appear on a device's
+  drawing surface. Instead, the system stores the color information for the
+  resultant line, curve, text, or region in the array of bits. The application
+  can copy the image stored in memory back onto a drawing surface by calling
+  the BitBlt function, identifying the memory DC as the source device context
+  and a window or screen DC as the target device context.
+
+  When displaying a DIB or a DDB created from a DIB on a palette device, you
+  can improve the speed at which the image is drawn by arranging the logical
+  palette to match the layout of the system palette. To do this, call
+  GetDeviceCaps with the NUMRESERVED value to get the number of reserved colors
+  in the system. Then call GetSystemPaletteEntries and fill in the first and
+  last NUMRESERVED/2 entries of the logical palette with the corresponding
+  system colors. For example, if NUMRESERVED is 20, you would fill in the first
+  and last 10 entries of the logical palette with the system colors. Then fill
+  in the remaining 256-NUMRESERVED colors of the logical palette (in our
+  example, the remaining 236 colors) with colors from the DIB and set the
+  PC_NOCOLLAPSE flag on each of these colors.
+
+  For more information about color and palettes, see Colors. For more
+  information about bitmaps and bitmap operations, see Bitmaps.
+
+*/
+//----------------------------------------------------------------------
 
 #include "mip.h"
 #include "gui/base/mip_base_painter.h"
@@ -63,7 +142,7 @@ private:
   //MIP_Drawable*   MSurface        = nullptr;
   //MIP_Drawable*   MTarget         = nullptr;
 
-  HDC             MScreenDC       = nullptr;
+  //HDC             MScreenDC       = nullptr;
   HDC             MHandle         = nullptr;
 
   HPEN            MPenHandle      = nullptr;
@@ -132,39 +211,24 @@ public:
   MIP_GdiPainter(MIP_Drawable* ATarget, MIP_Drawable* ASource)
   : MIP_BasePainter(ATarget,ASource) {
 
-    HDC tempdc = GetDC(0);
-    MScreenDC = CreateCompatibleDC(tempdc); // (nullptr);
-    ReleaseDC(0,tempdc);
-    setup(MScreenDC);
-
-  }
-
-  //----------
-
-  virtual ~MIP_GdiPainter() {
-    cleanup();
-    DeleteDC(MScreenDC);
-  }
-
-//------------------------------
-public:
-//------------------------------
-
-  HDC getHandle(void) {
-    return MHandle;
-  }
-
-  //----------
-
-  void setup(HDC AHandle) {
-    MIP_PRINT;
-
-    if (MHandle) cleanup();
-    MHandle = AHandle;
+    if (ASource->drawable_isWindow()) {
+      //HDC tempdc = GetDC(0);
+      //HDC tempdc = ASource->drawable_getWin32DC();
+      HWND hwnd = ASource->drawable_getWin32Hwnd();
+      HDC tempdc = GetDC(hwnd);
+      MIP_Assert(tempdc);
+      MHandle = CreateCompatibleDC(tempdc); // (nullptr);
+      MIP_Assert(MHandle);
+      //ReleaseDC(hwnd,tempdc);
+    }
+    //else if (ASource->drawable_isSurface()) {
+    //}
+    //else if (ASource->drawable_isBitmap()) {
+    //}
 
     //MPen = (HPEN)GetStockObject(DC_PEN);
     //MPenHandle = CreatePen(PS_SOLID,1,MIP_RGBA(MStrokeColor));
-    MPenHandle = CreatePen(PS_SOLID,1,0xff0000);
+    MPenHandle = CreatePen(PS_SOLID,1,0xffffff);
     MDefaultPen = SelectObject(MHandle,MPenHandle);
 
     //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
@@ -195,28 +259,31 @@ public:
 
   //----------
 
-  void cleanup() {
-    //if (need_cleanup) {
-    if (MHandle) {
-      MIP_PRINT;
-      // is MHandle valid?
-      SelectObject(MHandle,MDefaultPen);
-      SelectObject(MHandle,MDefaultBrush);
-      SelectObject(MHandle,MDefaultFont);
-      //SelectObject(MHandle,MDefaultBitmap);
-      // It is not necessary (but it is not harmful) to delete stock objects
-      // by calling DeleteObject.
-      DeleteObject(MPenHandle);
-      DeleteObject(MBrushHandle);
-      DeleteObject(MFontHandle);
-    //DeleteObject(MBitmapHandle);
-      DeleteObject(MNullPen);
-      DeleteObject(MNullBrush);
-      //DeleteDC(MHandle);
+  virtual ~MIP_GdiPainter() {
 
-    }
-    //need_cleanup = false;
-    MHandle = nullptr;
+    //SelectObject(MHandle,MDefaultPen);
+    //SelectObject(MHandle,MDefaultBrush);
+    //SelectObject(MHandle,MDefaultFont);
+    //SelectObject(MHandle,MDefaultBitmap);
+    // It is not necessary (but it is not harmful) to delete stock objects
+    // by calling DeleteObject.
+    DeleteObject(MPenHandle);
+    DeleteObject(MBrushHandle);
+    DeleteObject(MFontHandle);
+    //DeleteObject(MBitmapHandle);
+    DeleteObject(MNullPen);
+    DeleteObject(MNullBrush);
+    //DeleteDC(MHandle);
+
+    DeleteDC(MHandle);
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  HDC getHandle(void) {
+    return MHandle;
   }
 
 //------------------------------
@@ -224,13 +291,11 @@ public:
 //------------------------------
 
   void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    MIP_PRINT;
   }
 
   //----------
 
   void endPaint() override {
-    MIP_PRINT;
   }
 
 //------------------------------
@@ -416,8 +481,8 @@ public: // render styles
 
   void strokeColor(MIP_Color color) override {
     MStrokeColor = color;
-    //SetDCPenColor(MHandle,MIP_RGBA(color));
-    SetDCPenColor(MHandle,0x000000);
+    SetDCPenColor(MHandle,MIP_RGBA(color));
+    //SetDCPenColor(MHandle,0x000000);
   }
 
   //----------
@@ -430,8 +495,8 @@ public: // render styles
 
   void fillColor(MIP_Color color) override {
     MFillColor = color;
-    //SetDCBrushColor(MHandle,MIP_RGBA(color));
-    SetDCBrushColor(MHandle,0xffffff);
+    SetDCBrushColor(MHandle,MIP_RGBA(color));
+    //SetDCBrushColor(MHandle,0xffffff);
   }
 
   //----------

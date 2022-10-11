@@ -109,6 +109,7 @@
 #endif
 
 #ifdef MIP_PAINTER_GDI
+  #define MIP_USE_WIN32
   #define MIP_USE_GDI
   #define MIP_PAINTER_DEFINED
 #endif
@@ -131,6 +132,8 @@
 #endif
 
 #ifdef MIP_PAINTER_WGL
+  #define MIP_USE_WIN32
+  #define MIP_USE_GDI
   #define MIP_USE_WGL
   #define MIP_PAINTER_DEFINED
 #endif
