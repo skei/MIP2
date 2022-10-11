@@ -310,6 +310,7 @@
 					<Add library="pthread" />
 					<Add library="m" />
 					<Add library="gdi32" />
+					<Add library="opengl32" />
 				</Linker>
 			</Target>
 			<Target title="win32 plugin release">
@@ -368,6 +369,7 @@
 			<Add option="-Wall" />
 			<Add option="-std=gnu++14" />
 			<Add option="-Wl,--as-needed" />
+			<Add option="-Wno-unknown-pragmas" />
 			<Add directory="../include" />
 			<Add directory="../include/extern/vst3" />
 		</Compiler>
@@ -388,6 +390,8 @@
 		<Unit filename="../include/base/mip_const.h" />
 		<Unit filename="../include/base/mip_defines.h" />
 		<Unit filename="../include/base/mip_enums.h" />
+		<Unit filename="../include/base/mip_linux.h" />
+		<Unit filename="../include/base/mip_win32.h" />
 		<Unit filename="../include/base/system/linux/mip_linux.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_dialogs.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_library.h" />

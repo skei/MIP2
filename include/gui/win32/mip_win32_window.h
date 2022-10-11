@@ -712,6 +712,7 @@ private: // event handler
       */
 
       case WM_PAINT: {
+
         beginPaint();
 
         int32_t x = MWinPaintStruct.rcPaint.left;
@@ -1015,7 +1016,7 @@ public:
     if (!MRegistered) {
       MIP_CreateUniqueString(MName,(char*)"mip_window_",&MIP_GLOBAL_WIN32_INSTANCE);
       memset(&MClass,0,sizeof(MClass));
-      MClass.style          = CS_HREDRAW | CS_VREDRAW;
+      MClass.style          = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
       MClass.lpfnWndProc    = &mip_win32_eventproc;
       MClass.hInstance      = MIP_GLOBAL_WIN32_INSTANCE;
       MClass.lpszClassName  = MName;
