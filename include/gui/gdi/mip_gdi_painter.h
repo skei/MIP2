@@ -160,7 +160,7 @@ private:
 //  HGDIOBJ         MOldFont        = nullptr;
 //  HGDIOBJ         MOldBitmap      = nullptr;
 
-  HPEN            MNullPen = nullptr;
+  HPEN            MNullPen      = nullptr;
   HBRUSH          MNullBrush    = nullptr;
 //
 //  uint32_t        MSrcRasterOp = SRCCOPY;
@@ -193,13 +193,13 @@ protected:
   int               MLineJoin       = 0;
   float             MGlobalAlpha    = 0;
 
-  MIP_Color         MStrokeColor    = MIP_Color(0.2);
+  MIP_Color         MStrokeColor    = MIP_Color(1.0);
   MIP_PaintSource   MStrokePaint    = {};
   float             MStrokeWidth    = 1.0;
-  MIP_Color         MFillColor      = MIP_Color(0.8);
+  MIP_Color         MFillColor      = MIP_Color(0.5);
   MIP_PaintSource   MFillPaint      = {};
   int               MFont           = -1;
-  MIP_Color         MFontColor      = MIP_Color(0);
+  MIP_Color         MFontColor      = MIP_Color(0.0);
   float             MFontSize       = 13.0;
 
   //
@@ -215,10 +215,8 @@ public:
       //HDC tempdc = GetDC(0);
       //HDC tempdc = ASource->drawable_getWin32DC();
       HWND hwnd = ASource->drawable_getWin32Hwnd();
-      HDC tempdc = GetDC(hwnd);
-      MIP_Assert(tempdc);
-      MHandle = CreateCompatibleDC(tempdc); // (nullptr);
-      MIP_Assert(MHandle);
+      MHandle = GetDC(hwnd);
+      //MHandle = CreateCompatibleDC(tempdc); // (nullptr);
       //ReleaseDC(hwnd,tempdc);
     }
     //else if (ASource->drawable_isSurface()) {
@@ -227,22 +225,23 @@ public:
     //}
 
     //MPen = (HPEN)GetStockObject(DC_PEN);
-    //MPenHandle = CreatePen(PS_SOLID,1,MIP_RGBA(MStrokeColor));
-    MPenHandle = CreatePen(PS_SOLID,1,0xffffff);
+    MPenHandle = CreatePen(PS_SOLID,1,MIP_GdiColor(MStrokeColor));
+    //MPenHandle = CreatePen(PS_SOLID,1,0xffffff);
     MDefaultPen = SelectObject(MHandle,MPenHandle);
 
     //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
-    //MBrushHandle = CreateSolidBrush(MIP_RGBA(MFillColor));
-    MBrushHandle = CreateSolidBrush(0x000088);
+    MBrushHandle = CreateSolidBrush(MIP_GdiColor(MFillColor));
+    //MBrushHandle = CreateSolidBrush(0x000088);
     MDefaultBrush = SelectObject(MHandle,MBrushHandle);
 
     //MFont = (HFONT)GetStockObject(DC_FONT);
     LOGFONT lfont;
     memset(&lfont,0,sizeof(lfont));
-    strcpy(lfont.lfFaceName,"Arial");
+    strcpy(lfont.lfFaceName,"Liberation");
     lfont.lfHeight = -MulDiv(8,GetDeviceCaps(MHandle,LOGPIXELSY),72);
     MFontHandle = CreateFontIndirect(&lfont);
     MDefaultFont = SelectObject(MHandle,MFontHandle);
+    SetTextColor(MHandle,MIP_GdiColor(MIP_COLOR_BLACK));
 
     //TODO: MBitmap..
     //MDefaultBitmap = SelectObject(AHandle,MBitmapHandle);
@@ -275,7 +274,10 @@ public:
     DeleteObject(MNullBrush);
     //DeleteDC(MHandle);
 
-    DeleteDC(MHandle);
+    //DeleteDC(MHandle);
+
+    // Class and private DCs do not have to be released.
+    //ReleaseDC(MHandle);
   }
 
 //------------------------------
@@ -286,11 +288,24 @@ public:
     return MHandle;
   }
 
+  //----------
+
+  uint32_t MIP_GdiColor(MIP_Color AColor) {
+    uint8_t r = (255.0 * AColor.r);
+    uint8_t g = (255.0 * AColor.g);
+    uint8_t b = (255.0 * AColor.b);
+    //uint8_t a = (255.0 * AColor.a);
+    return (r) + (g << 8) + (b << 16);// + (a << 24);
+  }
+
 //------------------------------
 public:
 //------------------------------
 
   void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
+    //SelectObject(MHandle,MPenHandle);
+    //SelectObject(MHandle,MBrushHandle);
+    //SelectObject(MHandle,MFontHandle);
   }
 
   //----------
@@ -479,9 +494,18 @@ public: // render styles
     functions.
   */
 
+            //SelectObject(MHandle,MNullPen);
+            //SelectObject(MHandle,MNullBrush);
+
+            //SelectObject(MHandle,MPenHandle);
+            //SelectObject(MHandle,MBrushHandle);
+
+
   void strokeColor(MIP_Color color) override {
+    //SelectObject(MHandle,MPenHandle);
+    //SelectObject(MHandle,MNullBrush);
     MStrokeColor = color;
-    SetDCPenColor(MHandle,MIP_RGBA(color));
+    SetDCPenColor(MHandle,MIP_GdiColor(color));
     //SetDCPenColor(MHandle,0x000000);
   }
 
@@ -494,8 +518,10 @@ public: // render styles
   //----------
 
   void fillColor(MIP_Color color) override {
+    //SelectObject(MHandle,MNullPen);
+    //SelectObject(MHandle,MBrushHandle);
     MFillColor = color;
-    SetDCBrushColor(MHandle,MIP_RGBA(color));
+    SetDCBrushColor(MHandle,MIP_GdiColor(color));
     //SetDCBrushColor(MHandle,0xffffff);
   }
 
@@ -821,8 +847,11 @@ public: // paths
             //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
             //FillRect(MHandle,&R,brush);
             //FillRect(MHandle,&R,MBrushHandle);
+            //SelectObject(MHandle,MNullPen);
+            //SelectObject(MHandle,MNullBrush);
             Rectangle(MHandle,R.left,R.top,R.right,R.bottom);
-            //Rectangle(mDC,aX1,aY1,aX2,aY2);
+            //SelectObject(MHandle,MPenHandle);
+            //SelectObject(MHandle,MBrushHandle);
           //}
 
           break;
@@ -838,7 +867,9 @@ public: // paths
           //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
           //FillRect(MHandle,&R,brush);
           //FillRect(MHandle,&R,MBrushHandle);
+          //SelectObject(MHandle,MNullPen);
           Rectangle(MHandle,R.left,R.top,R.right,R.bottom);
+          //SelectObject(MHandle,MPenHandle);
           //float r   = MPath[i].data[4];// - 1;
           //float r2  = r * 2;
           //float AX1 = MPath[MPathLength].data[0];
@@ -921,31 +952,46 @@ public: // paths
 
         case MIP_PATH_RECT: {
           //TODO
-          float x = MPath[i].data[0];
-          float y = MPath[i].data[1];
-          float w = MPath[i].data[2];
-          float h = MPath[i].data[3];
-          Rectangle(MHandle,x,y,x+w+1,y+h+1);
+          float x1 = MPath[i].data[0];
+          float y1 = MPath[i].data[1];
+          float x2 = x1 + MPath[i].data[2] - 1;
+          float y2 = y1 + MPath[i].data[3] - 1;
+          //Rectangle(MHandle,x,y,x+w+1,y+h+1);
+          MoveToEx(MHandle,x1,y1,0);
+          LineTo(MHandle,x2,y1);
+          LineTo(MHandle,x2,y2);
+          LineTo(MHandle,x1,y2);
+          LineTo(MHandle,x1,y1);
           break;
         }
 
         case MIP_PATH_ROUNDED_RECT: {
           //TODO
-          float x = MPath[i].data[0];
-          float y = MPath[i].data[1];
-          float w = MPath[i].data[2];
-          float h = MPath[i].data[3];
-          Rectangle(MHandle,x,y,x+w+1,y+h+1);
+          float x1 = MPath[i].data[0];
+          float y1 = MPath[i].data[1];
+          float x2 = x1 + MPath[i].data[2] - 1;
+          float y2 = y1 + MPath[i].data[3] - 1;
+          //Rectangle(MHandle,x,y,x+w+1,y+h+1);
+          MoveToEx(MHandle,x1,y1,0);
+          LineTo(MHandle,x2,y1);
+          LineTo(MHandle,x2,y2);
+          LineTo(MHandle,x1,y2);
+          LineTo(MHandle,x1,y1);
           break;
         }
 
         case MIP_PATH_ROUNDED_RECT_VARYING: {
           //TODO
-          float x = MPath[i].data[0];
-          float y = MPath[i].data[1];
-          float w = MPath[i].data[2];
-          float h = MPath[i].data[3];
-          Rectangle(MHandle,x,y,x+w+1,y+h+1);
+          float x1 = MPath[i].data[0];
+          float y1 = MPath[i].data[1];
+          float x2 = x1 + MPath[i].data[2] - 1;
+          float y2 = y1 + MPath[i].data[3] - 1;
+          //Rectangle(MHandle,x,y,x+w+1,y+h+1);
+          MoveToEx(MHandle,x1,y1,0);
+          LineTo(MHandle,x2,y1);
+          LineTo(MHandle,x2,y2);
+          LineTo(MHandle,x1,y2);
+          LineTo(MHandle,x1,y1);
           break;
         }
 
@@ -1007,13 +1053,20 @@ public: // text
 
   float text(float x, float y, const char* string, const char* end) override {
     MIP_PRINT;
-    //SetBkMode(MHandle,TRANSPARENT);
-
-    //HFONT oldfont = (HFONT)SelectObject(MHandle,MFontHandle);
-    SetTextColor(MHandle,MIP_RGBA(MIP_COLOR_BLACK));
-    TextOut(MHandle,x,y,string,strlen(string));
-    //SelectObject(MHandle, oldfont);
-
+    SetBkMode(MHandle,TRANSPARENT);
+    //    HFONT oldfont = (HFONT)SelectObject(MHandle,MFontHandle);
+    //    SetTextColor(MHandle,MIP_GdiColor(MIP_COLOR_BLACK));
+    //    TextOut(MHandle,x,y,string,strlen(string));
+    //    MoveToEx(MHandle,0,0,0);
+    //    TextOut(MHandle,x,y,string,strlen(string));
+    //    SelectObject(MHandle, oldfont);
+    RECT R;
+    R.left    = x;
+    R.top     = y;
+    R.right   = x + 1000;
+    R.bottom  = y + 1000;
+    int flags = DT_LEFT | DT_TOP;
+    DrawText(MHandle,string,-1,&R,flags|DT_NOCLIP|DT_SINGLELINE|DT_NOPREFIX);
     //RECT R;
     //R.left    = x;
     //R.top     = AY1;
@@ -1033,9 +1086,19 @@ public: // text
   }
 
   void textBox(float x, float y, float breakRowWidth, const char* string, const char* end) override {
+    text(x,y,string,end);
   }
 
-  float textBounds(float x, float y, const char* string, const char* end, float* bounds) override { return 0.0; }
+  float textBounds(float x, float y, const char* string, const char* end, float* bounds) override {
+    SIZE S;
+    GetTextExtentPoint32(MHandle,string,strlen(string),&S);
+    bounds[0] = x;
+    bounds[1] = y;
+    bounds[2] = x + S.cx;
+    bounds[3] = y + S.cy;
+    return 0.0;
+  }
+
   void textBoxBounds(float x, float y, float breakRowWidth, const char* string, const char* end, float* bounds) override {}
   //int textGlyphPositions(float x, float y, const char* string, const char* end, NVGglyphPosition* positions, int maxPositions) override { return 0; }
   int textGlyphPositions(float x, float y, const char* string, const char* end, /*NVGglyphPosition*/void* positions, int maxPositions) override { return 0; }
@@ -1182,7 +1245,7 @@ private:
   public:
 
 //    void drawPoint(int32_t AX, int32_t AY) {
-//      SetPixel(MHandle,AX,AY,MIP_RGBA(MStrokeColor));
+//      SetPixel(MHandle,AX,AY,MIP_GdiColor(MStrokeColor));
 //    }
 
     //----------
@@ -1190,7 +1253,7 @@ private:
 //    void drawLine(int32_t AX1, int32_t AY1, int32_t AX2, int32_t AY2) {
 //      MoveToEx(MHandle,AX1,AY1,0);
 //      LineTo(MHandle,AX2,AY2);
-//      SetPixel(MHandle,AX2,AY2,MIP_RGBA(MStrokeColor));
+//      SetPixel(MHandle,AX2,AY2,MIP_GdiColor(MStrokeColor));
 //    }
 
     //----------

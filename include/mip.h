@@ -70,28 +70,17 @@
 #include "base/mip_defines.h"
 #include "base/mip_const.h"
 #include "base/mip_enums.h"
+
 #include "base/mip_attributes.h"
-
 #include "base/debug/mip_debug.h"
-
-//------------------------------
-//
-// helpers
-//
-//------------------------------
-
 #include "base/types/mip_types.h"
 
-//------------------------------
-//
-//
-//
-//------------------------------
-
-#ifndef MIP_LINUX
+#ifdef MIP_LINUX
+  #include "base/mip_linux.h"
 #endif
 
-#ifndef MIP_WIN32
+#ifdef MIP_WIN32
+  #include "base/mip_win32.h"
 #endif
 
 //----------------------------------------------------------------------

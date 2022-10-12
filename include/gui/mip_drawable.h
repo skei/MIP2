@@ -49,7 +49,7 @@ public:
   #endif
 
   #ifdef MIP_USE_GDI
-    virtual HDC             drawable_getWin32DC()        { return 0; }
+    virtual HDC             drawable_getWin32PaintDC()    { return 0; }
   #endif
 
   //#ifdef MIP_USE_GLX

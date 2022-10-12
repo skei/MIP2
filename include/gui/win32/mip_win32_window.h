@@ -238,7 +238,7 @@ public: // drawable
 
   // wgl
 
-  HDC                 drawable_getWin32DC()            final { return MWinPaintDC; }
+  HDC                 drawable_getWin32PaintDC()       final { return MWinPaintDC; }
 
 
 //------------------------------
@@ -1021,12 +1021,22 @@ public:
 
   //----------
 
+  /*
+    CS_OWNDC    Allocates a unique device context for each window in the class
+    CS_HREDRAW  Redraws the entire window if a movement or size adjustment
+                changes the width of the client area.
+    CS_VREDRAW  Redraws the entire window if a movement or size adjustment
+                changes the height of the client area.
+  */
+
+  //----------
+
   char* registerClass(void) {
     MIP_Print("*** registerClass (uses MIP_GLOBAL_WIN32_INSTANCE)\n");
     if (!MRegistered) {
       MIP_CreateUniqueString(MName,(char*)"mip_window_",&MIP_GLOBAL_WIN32_INSTANCE);
       memset(&MClass,0,sizeof(MClass));
-      MClass.style          = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+      MClass.style          = CS_HREDRAW | CS_VREDRAW;// | CS_OWNDC;
       MClass.lpfnWndProc    = &mip_win32_eventproc;
       MClass.hInstance      = MIP_GLOBAL_WIN32_INSTANCE;
       MClass.lpszClassName  = MName;
