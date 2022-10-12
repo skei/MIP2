@@ -62,7 +62,6 @@ public:
   #ifdef MIP_USE_WGL
   #endif
 
-
   #ifdef MIP_USE_WIN32
     virtual HWND              drawable_getWin32Hwnd()   { return nullptr; }
   #endif

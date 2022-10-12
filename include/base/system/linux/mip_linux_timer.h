@@ -69,7 +69,7 @@ private:
 
 public:
 
-  MIP_Timer(MIP_TimerListener* AListener, void* AUserPtr) {
+  MIP_Timer(MIP_TimerListener* AListener/*, void* AUserPtr*/) {
 
     MListener = AListener;
 

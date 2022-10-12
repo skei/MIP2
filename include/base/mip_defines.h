@@ -122,9 +122,12 @@
 
 #ifdef MIP_PAINTER_NANOVG
   #ifdef MIP_LINUX
+    //#define MIP_USE_XCB
     #define MIP_USE_GLX
   #endif
   #ifdef MIP_WIN32
+    #define MIP_USE_WIN32
+    #define MIP_USE_GDI
     #define MIP_USE_WGL
   #endif
   #define MIP_USE_NANOVG
