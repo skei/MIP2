@@ -137,37 +137,36 @@ class MIP_GdiPainter
 private:
 //------------------------------
 
-//  bool need_cleanup = false;
+//bool need_cleanup = false;
+//MIP_Drawable*   MSurface        = nullptr;
+//MIP_Drawable*   MTarget         = nullptr;
+//HDC             MScreenDC       = nullptr;
 
-  //MIP_Drawable*   MSurface        = nullptr;
-  //MIP_Drawable*   MTarget         = nullptr;
-
-  //HDC             MScreenDC       = nullptr;
   HDC             MHandle         = nullptr;
 
   HPEN            MPenHandle      = nullptr;
   HBRUSH          MBrushHandle    = nullptr;
   HFONT           MFontHandle     = nullptr;
-//  HBITMAP         MBitmapHandle   = nullptr;
+//HBITMAP         MBitmapHandle   = nullptr;
 
   HGDIOBJ         MDefaultPen     = nullptr;
   HGDIOBJ         MDefaultBrush   = nullptr;
   HGDIOBJ         MDefaultFont    = nullptr;
-//  HGDIOBJ         MDefaultBitmap  = nullptr;
+//HGDIOBJ         MDefaultBitmap  = nullptr;
 
-//  HGDIOBJ         MOldPen         = nullptr;
-//  HGDIOBJ         MOldBrush       = nullptr;
-//  HGDIOBJ         MOldFont        = nullptr;
-//  HGDIOBJ         MOldBitmap      = nullptr;
+//HGDIOBJ         MOldPen         = nullptr;
+//HGDIOBJ         MOldBrush       = nullptr;
+//HGDIOBJ         MOldFont        = nullptr;
+//HGDIOBJ         MOldBitmap      = nullptr;
 
-  HPEN            MNullPen      = nullptr;
-  HBRUSH          MNullBrush    = nullptr;
-//
-//  uint32_t        MSrcRasterOp = SRCCOPY;
-//  uint32_t        MDstRasterOp = DSTCOPY;
-//
-//  BLENDFUNCTION   MBlendFunc    = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
-//  BLENDFUNCTION   MStretchFunc  = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
+  HPEN            MNullPen        = nullptr;
+  HBRUSH          MNullBrush      = nullptr;
+
+//uint32_t        MSrcRasterOp    = SRCCOPY;
+//uint32_t        MDstRasterOp    = DSTCOPY;
+
+//BLENDFUNCTION   MBlendFunc      = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
+//BLENDFUNCTION   MStretchFunc    = { AC_SRC_OVER, 0, 255, AC_SRC_ALPHA };
 
 //------------------------------
 private:
@@ -211,18 +210,23 @@ public:
   MIP_GdiPainter(MIP_Drawable* ATarget, MIP_Drawable* ASource)
   : MIP_BasePainter(ATarget,ASource) {
 
+    //HDC tempdc = GetDC(0);
+    //HDC tempdc = ASource->drawable_getWin32DC();
+    //MHandle = CreateCompatibleDC(tempdc); // (nullptr);
+    //ReleaseDC(hwnd,tempdc);
+
     if (ASource->drawable_isWindow()) {
-      //HDC tempdc = GetDC(0);
-      //HDC tempdc = ASource->drawable_getWin32DC();
       HWND hwnd = ASource->drawable_getWin32Hwnd();
       MHandle = GetDC(hwnd);
-      //MHandle = CreateCompatibleDC(tempdc); // (nullptr);
-      //ReleaseDC(hwnd,tempdc);
     }
-    //else if (ASource->drawable_isSurface()) {
-    //}
-    //else if (ASource->drawable_isBitmap()) {
-    //}
+    else if (ASource->drawable_isSurface()) {
+      MIP_Print("TODO: painter for surface\n");
+    }
+    else if (ASource->drawable_isBitmap()) {
+      MIP_Print("TODO: painter for bitmap\n");
+    }
+
+    MIP_Assert(MHandle);
 
     //MPen = (HPEN)GetStockObject(DC_PEN);
     MPenHandle = CreatePen(PS_SOLID,1,MIP_GdiColor(MStrokeColor));
@@ -237,11 +241,11 @@ public:
     //MFont = (HFONT)GetStockObject(DC_FONT);
     LOGFONT lfont;
     memset(&lfont,0,sizeof(lfont));
-    strcpy(lfont.lfFaceName,"Liberation");
+    strcpy(lfont.lfFaceName,"Arial");
     lfont.lfHeight = -MulDiv(8,GetDeviceCaps(MHandle,LOGPIXELSY),72);
     MFontHandle = CreateFontIndirect(&lfont);
     MDefaultFont = SelectObject(MHandle,MFontHandle);
-    SetTextColor(MHandle,MIP_GdiColor(MIP_COLOR_BLACK));
+    SetTextColor(MHandle,MIP_GdiColor(MFontColor));
 
     //TODO: MBitmap..
     //MDefaultBitmap = SelectObject(AHandle,MBitmapHandle);
@@ -258,26 +262,29 @@ public:
 
   //----------
 
+  // It is not necessary (but it is not harmful) to delete stock objects
+  // by calling DeleteObject.
+  //
+  // Class and private DCs do not have to be released.
+
   virtual ~MIP_GdiPainter() {
 
     //SelectObject(MHandle,MDefaultPen);
     //SelectObject(MHandle,MDefaultBrush);
     //SelectObject(MHandle,MDefaultFont);
     //SelectObject(MHandle,MDefaultBitmap);
-    // It is not necessary (but it is not harmful) to delete stock objects
-    // by calling DeleteObject.
+
     DeleteObject(MPenHandle);
     DeleteObject(MBrushHandle);
     DeleteObject(MFontHandle);
     //DeleteObject(MBitmapHandle);
+
     DeleteObject(MNullPen);
     DeleteObject(MNullBrush);
-    //DeleteDC(MHandle);
 
     //DeleteDC(MHandle);
-
-    // Class and private DCs do not have to be released.
     //ReleaseDC(MHandle);
+
   }
 
 //------------------------------
@@ -290,12 +297,13 @@ public:
 
   //----------
 
-  uint32_t MIP_GdiColor(MIP_Color AColor) {
+  COLORREF MIP_GdiColor(MIP_Color AColor) {
     uint8_t r = (255.0 * AColor.r);
     uint8_t g = (255.0 * AColor.g);
     uint8_t b = (255.0 * AColor.b);
     //uint8_t a = (255.0 * AColor.a);
-    return (r) + (g << 8) + (b << 16);// + (a << 24);
+    //return (r) + (g << 8) + (b << 16);// + (a << 24);
+    return RGB(r,g,b);
   }
 
 //------------------------------
@@ -494,19 +502,24 @@ public: // render styles
     functions.
   */
 
-            //SelectObject(MHandle,MNullPen);
-            //SelectObject(MHandle,MNullBrush);
+  //SelectObject(MHandle,MNullPen);
+  //SelectObject(MHandle,MNullBrush);
 
-            //SelectObject(MHandle,MPenHandle);
-            //SelectObject(MHandle,MBrushHandle);
+  //SelectObject(MHandle,MPenHandle);
+  //SelectObject(MHandle,MBrushHandle);
 
 
   void strokeColor(MIP_Color color) override {
-    //SelectObject(MHandle,MPenHandle);
-    //SelectObject(MHandle,MNullBrush);
     MStrokeColor = color;
-    SetDCPenColor(MHandle,MIP_GdiColor(color));
-    //SetDCPenColor(MHandle,0x000000);
+    //SetDCPenColor(MHandle,MIP_GdiColor(color));
+
+    HPEN pen = CreatePen(PS_SOLID,1,MIP_GdiColor(color));
+    HGDIOBJ old_pen = SelectObject(MHandle,pen);
+    DeleteObject(old_pen);
+
+    //MPen = (HPEN)GetStockObject(DC_PEN);
+    //HPEN pen = CreatePen(PS_SOLID,1,MIP_GdiColor(color));
+    //HOBJETC prev_pen = SelectObject(MHandle,MPenHandle);
   }
 
   //----------
@@ -518,11 +531,19 @@ public: // render styles
   //----------
 
   void fillColor(MIP_Color color) override {
-    //SelectObject(MHandle,MNullPen);
-    //SelectObject(MHandle,MBrushHandle);
     MFillColor = color;
-    SetDCBrushColor(MHandle,MIP_GdiColor(color));
-    //SetDCBrushColor(MHandle,0xffffff);
+
+    //SelectObject(MHandle,MBrushHandle);
+    //SetDCBrushColor(MHandle,MIP_GdiColor(color));
+
+    HBRUSH brush = CreateSolidBrush(MIP_GdiColor(color));
+    HGDIOBJ old_brush = SelectObject(MHandle,brush);
+    DeleteObject(old_brush);
+
+
+    //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
+    //MBrushHandle = CreateSolidBrush(MIP_GdiColor(color));
+    //MDefaultBrush = SelectObject(MHandle,MBrushHandle);
   }
 
   //----------
@@ -1052,8 +1073,12 @@ public: // text
   //----------
 
   float text(float x, float y, const char* string, const char* end) override {
-    MIP_PRINT;
+    //MIP_PRINT;
     SetBkMode(MHandle,TRANSPARENT);
+
+    //SetTextColor(MHandle,RGB(255,0,255));
+    SetTextColor(MHandle,MIP_GdiColor(MFontColor));
+
     //    HFONT oldfont = (HFONT)SelectObject(MHandle,MFontHandle);
     //    SetTextColor(MHandle,MIP_GdiColor(MIP_COLOR_BLACK));
     //    TextOut(MHandle,x,y,string,strlen(string));

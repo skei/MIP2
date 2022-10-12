@@ -370,7 +370,7 @@ public: // window
   //----------
 
   void on_window_resize(int32_t AWidth, int32_t AHeight) override {
-    MIP_Print("%i,%i\n",AWidth,AHeight);
+    //MIP_Print("%i,%i\n",AWidth,AHeight);
     if (MWindowPainter) delete MWindowPainter;
     MWindowPainter = new MIP_Painter(this,this);
     MWindowPainter->setClipRect(MIP_DRect(0,0,AWidth,AHeight));
@@ -422,10 +422,14 @@ public: // window
     MPaintContext.painter     = painter;
 
     if (painter) {
+
       painter->beginPaint(0,0,MRect.w,MRect.h);
       //painter->beginPaint(0,0,AWidth,AHeight);
+      painter->resetClip();
+      //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       paintChildWidgets(&MPaintContext);
+      painter->resetClip();
       painter->endPaint();
     }
 

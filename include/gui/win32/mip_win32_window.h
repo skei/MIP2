@@ -6,10 +6,7 @@
   - the HINSTANCE is saved when DllMain is called..
     after global variable initialization, but before main()
   - window class is registered the first time a window is created
-    see bottom of this file for the singleton-ish class and global/static
-    variable used for this..
-  - if window is created with null listener, self is used..
-  - buffer-events (on_xxxBuffer) are only called if MIP_NO_WINDOW_BACKBUFFER is not defined
+    (see bottom of this file)
 */
 
 //----------------------------------------------------------------------
@@ -63,24 +60,24 @@ class MIP_Win32Window
 private:
 //------------------------------
 
-  //HDC         MScreenDC         = nullptr;
-  //HDC         MWindowDC         = nullptr;
+//HDC         MScreenDC         = nullptr;
+//HDC         MWindowDC         = nullptr;
 
-  HCURSOR     MDefaultCursor    = nullptr;
-  HWND        MWinHandle        = nullptr;
-  HCURSOR     MWinCursor        = nullptr;
-  PAINTSTRUCT MWinPaintStruct   = {};
-  HDC         MWinPaintDC       = nullptr;
-  HCURSOR     MUserCursors[128] = {0};
+  HCURSOR     MDefaultCursor      = nullptr;
+  HWND        MWinHandle          = nullptr;
+  HCURSOR     MWinCursor          = nullptr;
+  PAINTSTRUCT MWinPaintStruct     = {};
+  HDC         MWinPaintDC         = nullptr;
+  HCURSOR     MUserCursors[128]   = {0};
 
-  const char* MWindowTitle    = "";
-  void*       MWindowParent   = nullptr;
-  bool        MEmbedded       = false;
-  int32_t     MMouseXpos      = 0;
-  int32_t     MMouseYpos      = 0;
-  int32_t     MAdjustedWidth  = 0;
-  int32_t     MAdjustedHeight = 0;
-  int32_t     MCurrentCursor  = 0;
+  const char* MWindowTitle        = "";
+  void*       MWindowParent       = nullptr;
+  bool        MEmbedded           = false;
+  int32_t     MMouseXpos          = 0;
+  int32_t     MMouseYpos          = 0;
+  int32_t     MAdjustedWidth      = 0;
+  int32_t     MAdjustedHeight     = 0;
+  int32_t     MCurrentCursor      = 0;
 
 //------------------------------
 private:
@@ -109,9 +106,7 @@ public:
     MCurrentCursor = -1;
     setMouseCursor(MIP_CURSOR_DEFAULT);
     //RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
-
     //MScreenDC = GetDC(0);
-
     if (AParent == 0) {
       MEmbedded = false;
       //AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
@@ -157,7 +152,7 @@ public:
         0,        //y,  //rc.top,
         AWidth,   //w,  //rc.right-rc.left+1,
         AHeight,  //h,   //rc.bottom-rc.top+1,
-        HWND(AParent),
+        (HWND)AParent,
         0,
         MIP_GLOBAL_WIN32_INSTANCE,
         0
@@ -374,9 +369,9 @@ public:
       //MEmbedded = false;
     }
     else {
-      //style &= ~WS_CHILD;
       style &= ~WS_OVERLAPPEDWINDOW;
       style |= WS_POPUP;
+      //style |= WS_CHILD;
       //MEmbedded = true;
     }
     SetWindowLongPtr( MWinHandle, GWL_STYLE, style );
@@ -729,9 +724,11 @@ private: // event handler
         int32_t y = MWinPaintStruct.rcPaint.top;
         int32_t w = MWinPaintStruct.rcPaint.right  - MWinPaintStruct.rcPaint.left + 1;
         int32_t h = MWinPaintStruct.rcPaint.bottom - MWinPaintStruct.rcPaint.top + 1;
+
+        MIP_Print("WM_PAINT: x %i y %i w %i h %i\n",x,y,w,h);
+
         //if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
         //rc = MIP_DRect(x,y,w,h);
-        //MIP_Print("WM_PAINT: x %i y %i w %i h %i\n",x,y,w,h);
 
         on_window_paint(x,y,w,h);
         endPaint();
@@ -752,6 +749,9 @@ private: // event handler
       case WM_SIZE: {
         w = short(LOWORD(lParam));
         h = short(HIWORD(lParam));
+
+        MIP_Print("WM_SIZE: w %i h %i\n",w,h);
+
         //if ( (w!=MRect.w) || (h!=MRect.h) ) {
         if ( (w != MWindowWidth) || (h != MWindowHeight) ) {
           //if (MListener) {
@@ -761,6 +761,8 @@ private: // event handler
           //  MListener->on_windowResize(this,w,h);
           //  #endif
           //}
+          MWindowWidth  = w;
+          MWindowHeight = h;
           on_window_resize(w,h);
           //if (MFlags & s3_wf_autoalign) on_widgetAlign(this);
           //#ifndef S3_NO_WINDOW_BACKBUFFER
