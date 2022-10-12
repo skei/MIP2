@@ -32,7 +32,6 @@ public:
     setWindowTitle("MIP_ExeWindow");
     //setWindowBackgroundColor(0.5);
     //setWindowFillBackground(true);
-
   }
 
   //----------

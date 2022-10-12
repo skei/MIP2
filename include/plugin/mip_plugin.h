@@ -542,7 +542,12 @@ public: // EXT gui
     // redraw?
     //MEditor->redrawEditor();
     if (result) {
-      MGuiTimer.start(MIP_GUI_UPDATE_RATE_MS);
+      #ifdef MIP_WIN32
+        HWND hwnd = MEditor->getWindow()->getWinHandle();
+        MGuiTimer.start(MIP_GUI_UPDATE_RATE_MS,hwnd);
+      #else
+        MGuiTimer.start(MIP_GUI_UPDATE_RATE_MS);
+      #endif
     }
     return result;
   }

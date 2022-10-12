@@ -2,13 +2,6 @@
 #define mip_win32_timer_included
 //----------------------------------------------------------------------
 
-//// -lrt
-//
-//#include <time.h>   // timer
-//#include <signal.h> // sigval
-////#include <sys/time.h>
-////#include <errno.h>      // errno
-
 #include "base/utils/mip_math.h"
 
 //----------------------------------------------------------------------
@@ -25,14 +18,13 @@ class MIP_TimerListener {
 //----------------------------------------------------------------------
 
 //static void mip_timer_callback(sigval val) {
-//  //MIP_TimerListener* listener = (MIP_TimerListener*)val.sival_ptr;
-//  //if (listener) listener->on_timerCallback(val.sival_int);
-//  MIP_Timer* timer = (MIP_Timer*)val.sival_ptr;
-//  if (timer) {
-//    timer->on_timer();
-//    //if (listener) listener->on_timerCallback(val.sival_int);
-//  }
+//  if (listener) listener->on_timerCallback(val.sival_int);
 //}
+
+//static
+//void mip_win32_timerproc(HWND unnamedParam1, UINT unnamedParam2, UINT_PTR unnamedParam3, DWORD unnamedParam4) {
+//}
+
 
 //----------------------------------------------------------------------
 //
@@ -57,38 +49,24 @@ private:
 //    }
 //  }
 
+  static void mip_win32_timerproc(HWND hwnd, UINT message, UINT_PTR idTimer, DWORD dwTime) {
+    //MIP_Print("HWND %p WM_TIMER %i idTimer %i dwTime %i\n",hwnd,message,idTimer,dwTime);
+    MIP_Timer* timer = (MIP_Timer*)idTimer;
+    if (timer) {
+      timer->on_timer();
+    }
+  }
+
 private:
 
-//  sigevent            MSigEvent;
-//  timer_t             MTimer;
-//  itimerspec          MTimerSpec;
-  bool                MRunning  = false;
-  MIP_TimerListener*  MListener = nullptr;
+  bool                MRunning    = false;
+  MIP_TimerListener*  MListener   = nullptr;
+  HWND                MWinHandle  = NULL;
 
 public:
 
   MIP_Timer(MIP_TimerListener* AListener) {
     MListener = AListener;
-//    MSigEvent.sigev_notify            = SIGEV_THREAD;
-//    MSigEvent.sigev_notify_function   = mip_timer_callback;
-//    MSigEvent.sigev_notify_attributes = nullptr;
-//    MSigEvent.sigev_value.sival_ptr   = this;//AListener;
-//    //int res =
-//    timer_create(CLOCK_REALTIME, &MSigEvent, &MTimer);
-//    //MIP_Print("MTimer %i\n",MTimer);
-//    /*if (res == -1) {
-//      switch(errno) {
-//        case EAGAIN:
-//          MIP_Print("timer_create error: Temporary error during kernel allocation of timer structures.\n");
-//          break;
-//        case EINVAL:
-//          MIP_Print("timer_create error: Clock ID, sigev_notify, sigev_signo, or sigev_notify_thread_id is invalid.\n");
-//          break;
-//        case ENOMEM:
-//          MIP_Print("timer_create error: Could not allocate memory.\n");
-//          break;
-//      }
-//    }*/
   }
 
   //----------
@@ -99,44 +77,15 @@ public:
   // deleted timer is unspecified.
 
   ~MIP_Timer() {
-//    timer_delete(MTimer);
   }
 
-  //----------
+public:
 
-  void start(float ms, bool oneshot=false) {
+  void start(float ms, HWND hwnd, bool oneshot=false) {
+    MWinHandle = hwnd;
     if (!MRunning) {
-//      float s = ms * 0.001f;
-//      float sec = MIP_Trunc(s);
-//      float nsec = (s-sec) * 1000000000; // 1000000.0f * (sec - MIP_Fract(s));
-//      time_t isec = sec;
-//      long insec = nsec;
-//      //MIP_Print("s %.4f sec %.4f nsec %.4f isec %i insec %i\n",s,sec,nsec,isec,insec);
-//      if (oneshot) {
-//        MTimerSpec.it_interval.tv_sec   = 0;
-//        MTimerSpec.it_interval.tv_nsec  = 0;
-//      }
-//      else {
-//        MTimerSpec.it_interval.tv_sec   = isec;
-//        MTimerSpec.it_interval.tv_nsec  = insec;
-//      }
-//      MTimerSpec.it_value.tv_sec      = isec;
-//      MTimerSpec.it_value.tv_nsec     = insec;
-//      //int res =
-//      timer_settime(MTimer, 0, &MTimerSpec, 0);
-//      /*if (res == -1) {
-//        switch(errno) {
-//          case EFAULT:
-//            MIP_Print("timer_settime error: new_value, old_value, or curr_value is not a valid pointer.\n");
-//            break;
-//          //case EINVAL:
-//          //  MIP_Print("timer_settime error: timerid is invalid.\n");
-//          //  break;
-//          case EINVAL:
-//            MIP_Print("timer_settime: new_value.it_value is negative; or new_value.it_value.tv_nsec is negative or greater than 999,999,999.\n");
-//            break;
-//        }
-//      }*/
+      //SetTimer(MWinHandle,MTimerId,ms,(TIMERPROC)NULL);
+      SetTimer(MWinHandle,(UINT_PTR)this,ms,mip_win32_timerproc);
       MRunning = true;
     }
   }
@@ -152,12 +101,7 @@ public:
 
   void stop() {
     if (MRunning) {
-//      MTimerSpec.it_interval.tv_sec   = 0;
-//      MTimerSpec.it_interval.tv_nsec  = 0;
-//      MTimerSpec.it_value.tv_sec      = 0;
-//      MTimerSpec.it_value.tv_nsec     = 0;
-//      /*int res =*/ timer_settime(MTimer, 0, &MTimerSpec, 0);
-//      //if (res != 0) { MIP_Print("error stopping timer\n"); }
+      KillTimer(MWinHandle,(UINT_PTR)this);
       MRunning = false;
     }
   }

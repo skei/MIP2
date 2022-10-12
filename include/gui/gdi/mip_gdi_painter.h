@@ -504,7 +504,6 @@ public: // render styles
 
   //SelectObject(MHandle,MNullPen);
   //SelectObject(MHandle,MNullBrush);
-
   //SelectObject(MHandle,MPenHandle);
   //SelectObject(MHandle,MBrushHandle);
 
@@ -512,11 +511,9 @@ public: // render styles
   void strokeColor(MIP_Color color) override {
     MStrokeColor = color;
     //SetDCPenColor(MHandle,MIP_GdiColor(color));
-
     HPEN pen = CreatePen(PS_SOLID,1,MIP_GdiColor(color));
     HGDIOBJ old_pen = SelectObject(MHandle,pen);
     DeleteObject(old_pen);
-
     //MPen = (HPEN)GetStockObject(DC_PEN);
     //HPEN pen = CreatePen(PS_SOLID,1,MIP_GdiColor(color));
     //HOBJETC prev_pen = SelectObject(MHandle,MPenHandle);
@@ -532,15 +529,11 @@ public: // render styles
 
   void fillColor(MIP_Color color) override {
     MFillColor = color;
-
     //SelectObject(MHandle,MBrushHandle);
     //SetDCBrushColor(MHandle,MIP_GdiColor(color));
-
     HBRUSH brush = CreateSolidBrush(MIP_GdiColor(color));
     HGDIOBJ old_brush = SelectObject(MHandle,brush);
     DeleteObject(old_brush);
-
-
     //MBrush = (HBRUSH)GetStockObject(DC_BRUSH);
     //MBrushHandle = CreateSolidBrush(MIP_GdiColor(color));
     //MDefaultBrush = SelectObject(MHandle,MBrushHandle);
@@ -552,21 +545,34 @@ public: // render styles
     MFillPaint = paint;
   }
 
+  //----------
+
   void miterLimit(float limit) override {
     MMiterLimit = limit;
   }
 
+  //----------
+
   void strokeWidth(float size) override {
     MStrokeWidth = size;
+    HPEN pen = CreatePen(PS_SOLID,(int)size,MIP_GdiColor(MStrokeColor));
+    HGDIOBJ old_pen = SelectObject(MHandle,pen);
+    DeleteObject(old_pen);
   }
+
+  //----------
 
   void lineCap(int cap) override {
     MLineCap = cap;
   }
 
+  //----------
+
   void lineJoin(int join) override {
     MLineJoin = join;
   }
+
+  //----------
 
   void globalAlpha(float alpha) override {
     MGlobalAlpha = alpha;
@@ -845,7 +851,56 @@ public: // paths
           break;
         }
 
+        //void drawArc(int32 AX1, int32 AY1, int32 AX2, int32 AY2, float AAngle1, float AAngle2) {
+        //  AX2 += 1;
+        //  AY2 += 1;
+        //  if (fabsf(AAngle2) >= 0.01) {
+        //    float a1 = AAngle1 -= 0.25;
+        //    float a2 = a1 + AAngle2;
+        //    if (AAngle2>0) {
+        //      float temp = a1;
+        //      a1 = a2;
+        //      a2 = temp;
+        //    }
+        //    float w = AX2-AX1+1;
+        //    float h = AY2-AY1+1;
+        //    float s = fmaxf(w,h);
+        //    float x = AX1 + w*0.5;
+        //    float y = AY1 + h*0.5;
+        //    float x1 = x + cosf(a1*MIP_PI2) * s;
+        //    float y1 = y + sinf(a1*MIP_PI2) * s;
+        //    float x2 = x + cosf(a2*MIP_PI2) * s;
+        //    float y2 = y + sinf(a2*MIP_PI2) * s;
+        //    Arc(MHandle,AX1,AY1,AX2,AY2,(int)x1,(int)y1,(int)x2,(int)y2);
+        //  }
+        //}
+
         case MIP_PATH_ARC: {
+
+          float cx = MPath[i].data[0];
+          float cy = MPath[i].data[1];
+          float r  = MPath[i].data[2];
+          float a1 = MPath[i].data[3];
+          float a2 = MPath[i].data[4];
+          //float a1 = MIP_PI2 - MPath[i].data[3];
+          //float a2 = - MPath[i].data[4];
+          float x1 = cx - r;          // MPath[i].data[0] - MPath[i].data[2];
+          float y1 = cy - r;          //MPath[i].data[1] - MPath[i].data[2];
+          float x2 = x1 + (r * 2.0);  // MPath[i].data[2] * 2.0;
+          float y2 = y1 + (r * 2.0);  // MPath[i].data[2] * 2.0;
+          float s = fmaxf((x2-x1),(y2-y1));
+          //float ax1 = cx + (cosf(a1 * MIP_PI2) * s);
+          //float ay1 = cy + (sinf(a1 * MIP_PI2) * s);
+          //float ax2 = cx + (cosf(a2 * MIP_PI2) * s);
+          //float ay2 = cy + (sinf(a2 * MIP_PI2) * s);
+          float ax1 = cx + (cosf(a1) * s);
+          float ay1 = cy + (sinf(a1) * s);
+          float ax2 = cx + (cosf(a2) * s);
+          float ay2 = cy + (sinf(a2) * s);
+
+          SetArcDirection(MHandle,AD_COUNTERCLOCKWISE); //MPath[i].data[4]
+          Arc(MHandle,x1,y1,x2,y2,(int)ax1,(int)ay1,(int)ax2,(int)ay2);
+
           break;
         }
 
@@ -968,6 +1023,57 @@ public: // paths
         }
 
         case MIP_PATH_ARC: {
+
+          if (MPath[i].data[4] <= 0.0) break;
+
+          float cx = MPath[i].data[0];
+          float cy = MPath[i].data[1];
+          float r  = MPath[i].data[2];
+
+          //float a1 = MPath[i].data[3];
+          //float a2 = MPath[i].data[4];
+
+          //float a1 = MIP_PI2 - MPath[i].data[3];
+          //float a2 = - MPath[i].data[4];
+          //a1 = MIP_PI2 * 0.35;
+          //a2 = a1
+
+          float a1 = MPath[i].data[3];// -  0.35);
+          float a2 = a1 + MPath[i].data[4];
+
+
+          if (MPath[i].data[4] > 0) {
+            float temp = a1;
+            a1 = a2;
+            a2 = temp;
+          }
+
+          float x1 = cx - r;          // MPath[i].data[0] - MPath[i].data[2];
+          float y1 = cy - r;          //MPath[i].data[1] - MPath[i].data[2];
+          float x2 = x1 + (r * 2.0);  // MPath[i].data[2] * 2.0;
+          float y2 = y1 + (r * 2.0);  // MPath[i].data[2] * 2.0;
+          float s = fmaxf((x2-x1),(y2-y1));
+          //float ax1 = cx + (cosf(a1 * MIP_PI2) * s);
+          //float ay1 = cy + (sinf(a1 * MIP_PI2) * s);
+          //float ax2 = cx + (cosf(a2 * MIP_PI2) * s);
+          //float ay2 = cy + (sinf(a2 * MIP_PI2) * s);
+          float ax1 = cx + (cosf(a1) * s);
+          float ay1 = cy + (sinf(a1) * s);
+          float ax2 = cx + (cosf(a2) * s);
+          float ay2 = cy + (sinf(a2) * s);
+
+          switch ( (int)MPath[i].data[2] ) {
+            case MIP_WINDING_CLOCKWISE:
+              SetArcDirection(MHandle,AD_CLOCKWISE);
+              break;
+            case MIP_WINDING_COUNTER_CLOCKWISE:
+              SetArcDirection(MHandle,AD_COUNTERCLOCKWISE);
+              break;
+          }
+
+          Arc(MHandle,x1,y1,x2,y2,(int)ax1,(int)ay1,(int)ax2,(int)ay2);
+          //Pie(MHandle,x1,y1,x2,y2,(int)ax1,(int)ay1,(int)ax2,(int)ay2);
+
           break;
         }
 

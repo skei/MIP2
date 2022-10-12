@@ -20,28 +20,41 @@
 char* MIP_Win32ClassName(void);
 LRESULT CALLBACK mip_eventproc_win32(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
+
+
+
+
 const char* mip_win32_cursors[] = {
-  IDC_ARROW,        //  0  smc_default
-  IDC_ARROW,        //  1  smc_arrow
-  IDC_UPARROW,      //  2  smc_arrowUp
-  IDC_ARROW,        //  3  smc_arrowDown        // missing
-  IDC_ARROW,        //  4  smc_arrowLeft        // missing
-  IDC_ARROW,        //  5  smc_arrowRight       // missing
-  IDC_SIZENS,       //  6  smc_arrowUpDown
-  IDC_SIZEWE,       //  7  smc_arrowLeftRight
-  IDC_SIZENWSE,     //  8  smc_arrowDiagLeft
-  IDC_SIZENESW,     //  9  smc_arrowDiagRight
-  IDC_SIZEALL,      // 10  smc_move
-  IDC_WAIT,         // 11  smc_wait
-  IDC_APPSTARTING,  // 12  smc_arrowWait
-  IDC_HAND,         // 13  smc_hand             // missing
-  IDC_HAND,         // 14  smc_finger
-  IDC_CROSS,        // 15  smc_cross
-  IDC_ARROW,        // 16  smc_pencil           // missing
-  IDC_ARROW,        // 17  smc_plus             // missing
-  IDC_HELP,         // 18  smc_question
-  IDC_IBEAM         // 19  smc_ibeam
-  //IDC_NO
+  IDC_ARROW,        // MIP_CURSOR_DEFAULT
+  IDC_ARROW,        // MIP_CURSOR_ARROW
+  IDC_UPARROW,      // MIP_CURSOR_ARROW_UP
+  IDC_ARROW,        // MIP_CURSOR_ARROW_DOWN
+  IDC_ARROW,        // MIP_CURSOR_ARROW_LEFT
+  IDC_ARROW,        // MIP_CURSOR_ARROW_RIGHT
+  IDC_SIZENS,       // MIP_CURSOR_ARROW_UP_DOWN
+  IDC_SIZEWE,       // MIP_CURSOR_ARROW_LEFT_RIGHT
+  IDC_SIZENWSE,     // MIP_CURSOR_ARROW_TOP_LEFT
+  IDC_SIZENESW,     // MIP_CURSOR_ARROW_TOP_RIGHT
+  IDC_SIZENESW,     // MIP_CURSOR_ARROW_BOTTOM_LEFT
+  IDC_SIZENWSE,     // MIP_CURSOR_ARROW_BOTTOM_RIGHT
+  IDC_ARROW,        // MIP_CURSOR_ARROW_LEFT_SIDE
+  IDC_ARROW,        // MIP_CURSOR_ARROW_RIGHT_SIDE
+  IDC_ARROW,        // MIP_CURSOR_ARROW_TOP_SIDE
+  IDC_ARROW,        // MIP_CURSOR_ARROW_BOTTOM_SIDE
+  IDC_SIZEALL,      // MIP_CURSOR_MOVE
+  IDC_WAIT,         // MIP_CURSOR_WAIT
+  IDC_APPSTARTING,  // MIP_CURSOR_ARROW_WAIT
+  IDC_HAND,         // MIP_CURSOR_HAND
+  IDC_HAND,         // MIP_CURSOR_FINGER
+  IDC_CROSS,        // MIP_CURSOR_CROSS
+  IDC_ARROW,        // MIP_CURSOR_CROSS2
+  IDC_ARROW,        // MIP_CURSOR_PENCIL
+  IDC_ARROW,        // MIP_CURSOR_PLUS
+  IDC_HELP,         // MIP_CURSOR_QUESTION
+  IDC_IBEAM,        // MIP_CURSOR_IBEAM
+  IDC_ARROW,        // MIP_CURSOR_ARROW_INVALID
+  IDC_ARROW,        // MIP_CURSOR_INVALID
+  IDC_ARROW         // MIP_CURSOR_X
 };
 
 //----------------------------------------------------------------------
@@ -119,7 +132,7 @@ public:
       //MAdjustedWidth  = w - AWidth;
       //MAdjustedHeight = h - AHeight;
       MWinHandle = CreateWindowEx(
-        WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
+        0,//WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
         MIP_Win32ClassName(),       // lpClassName
         "MIP_Win32Window",          // lpWindowName
         WS_OVERLAPPEDWINDOW,        // dwStyle
@@ -196,20 +209,13 @@ public:
 public:
 //------------------------------
 
-  virtual int32_t getWindowWidth()  { return MWindowWidth; }
-  virtual int32_t getWindowHeight() { return MWindowHeight; }
-  virtual double  getWindowWidthScale()  { return MWindowWidthScale; }
-  virtual double  getWindowHeightScale() { return MWindowHeightScale; }
+  virtual int32_t getWindowWidth()        { return MWindowWidth; }
+  virtual int32_t getWindowHeight()       { return MWindowHeight; }
+  virtual double  getWindowWidthScale()   { return MWindowWidthScale; }
+  virtual double  getWindowHeightScale()  { return MWindowHeightScale; }
 
-  virtual void    setWindowFillBackground(bool AFill=true)          { MFillBackground = AFill; }
-  virtual void    setWindowBackgroundColor(uint32_t AColor)         { MBackgroundColor = AColor; }
-
-  //virtual bool    isWindowExposed() { return MWindowExposed; }
-  //virtual bool    isWindowMapped()  { return MWindowMapped; }
-
-  //virtual void paint() {
-  //  if (MWindowListener) MWindowListener->on_window_paint(0,0,MWindowWidth,MWindowHeight);
-  //}
+  virtual void    setWindowFillBackground(bool AFill=true)  { MFillBackground = AFill; }
+  virtual void    setWindowBackgroundColor(uint32_t AColor) { MBackgroundColor = AColor; }
 
 //------------------------------
 public: // drawable
@@ -217,24 +223,11 @@ public: // drawable
 
   bool                drawable_isWindow()          final { return true; }
   bool                drawable_isDrawable()        final { return true; }
-
   uint32_t            drawable_getWidth()          final { return MWindowWidth; }
   uint32_t            drawable_getHeight()         final { return MWindowHeight; }
   uint32_t            drawable_getDepth()          final { return MScreenDepth; }
-
-  HWND                drawable_getWin32Hwnd()           final { return MWinHandle; }
-
-  // cairo
-
-  //#ifdef MIP_USE_CAIRO
-  //bool                drawable_isCairo()           final { return true; }
-  //cairo_surface_t*    drawable_getCairoSurface()   final { return MCairoSurface; }
-  //#endif
-
-  // wgl
-
-  HDC                 drawable_getWin32PaintDC()       final { return MWinPaintDC; }
-
+  HWND                drawable_getWin32Hwnd()      final { return MWinHandle; }
+  HDC                 drawable_getWin32PaintDC()   final { return MWinPaintDC; }
 
 //------------------------------
 public:
@@ -363,7 +356,7 @@ public:
     MIP_PRINT;
     LONG_PTR style = GetWindowLongPtr(MWinHandle,GWL_STYLE);
     if (AParent == 0) {
-      //style &= ~WS_CHILD;
+      style &= ~WS_CHILD;
       style &= ~WS_POPUP;
       style |= WS_OVERLAPPEDWINDOW;
       //MEmbedded = false;
@@ -371,7 +364,7 @@ public:
     else {
       style &= ~WS_OVERLAPPEDWINDOW;
       style |= WS_POPUP;
-      //style |= WS_CHILD;
+      style |= WS_CHILD;
       //MEmbedded = true;
     }
     SetWindowLongPtr( MWinHandle, GWL_STYLE, style );
@@ -750,10 +743,12 @@ private: // event handler
         w = short(LOWORD(lParam));
         h = short(HIWORD(lParam));
 
-        MIP_Print("WM_SIZE: w %i h %i\n",w,h);
 
         //if ( (w!=MRect.w) || (h!=MRect.h) ) {
         if ( (w != MWindowWidth) || (h != MWindowHeight) ) {
+
+          MIP_Print("WM_SIZE: w %i h %i\n",w,h);
+
           //if (MListener) {
           //  #ifndef S3_NO_WINDOW_BACKBUFFER
           //  MListener->on_bufferResize(this,w,h);
@@ -761,9 +756,16 @@ private: // event handler
           //  MListener->on_windowResize(this,w,h);
           //  #endif
           //}
+
+          bool need_redraw = false;
+          //if ((w < MWindowWidth) || (h < MWindowHeight)) {
+            need_redraw = true;
+          //}
+
           MWindowWidth  = w;
           MWindowHeight = h;
           on_window_resize(w,h);
+          if (need_redraw) invalidateRegion(0,0,w,h);
           //if (MFlags & s3_wf_autoalign) on_widgetAlign(this);
           //#ifndef S3_NO_WINDOW_BACKBUFFER
           //if (MListener) MListener->on_bufferPaint(this,S3_NULL,s3_pm_normal); //redraw;
@@ -773,10 +775,11 @@ private: // event handler
       }
 
       case WM_TIMER: {
-        //if (MListener) {
-        //  if (wParam==s3_ts_timer) MListener->on_windowTimer(this);
-        //  if (wParam==s3_ts_idle) MListener->on_windowIdle(this);
-        //}
+        MIP_PRINT;
+//        if (MListener) {
+//          if (wParam == MGuiTimer.getId()) MListener->on_timerCallback(this);
+//          //  if (wParam==s3_ts_idle) MListener->on_windowIdle(this);
+//        }
         break;
       }
 
