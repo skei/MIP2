@@ -69,11 +69,11 @@ public:
     //if (!MGlRc) MIP_Win32PrintError("wglCreateContext");
     //makeCurrent();
 
-    MGlRc = init_gl_ctx(MDc);
+    MGlRc = MIP_WglInitContext(MDc);
     if (!MGlRc) MIP_Win32PrintError("init_gl_ctx");
 
-//    makeCurrent();
-//    loadOpenGL();
+    //    makeCurrent();
+    //    loadOpenGL();
 
     //wglDeleteContext(MGlRc);
     //ReleaseDC(0,MDc);

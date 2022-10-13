@@ -1542,7 +1542,7 @@
 	"plugin/exe/mip_exe_entry.h"
 	"plugin/mip_registry.h"
 
-1665609397 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
+1665657012 /DISKS/sda2/code/git/MIP2/build/test/test_layout.cpp
 	"mip.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_editor.h"
@@ -1745,14 +1745,15 @@
 	"gui/win32/mip_win32.h"
 	"gui/gdi/mip_gdi.h"
 
-1665655063 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl.h
+1665656701 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl.h
 	"mip.h"
 	"gui/mip_drawable.h"
-	"extern/simple-opengl-loader.h"
+	"extern/glloadgen/gl_core.3.2.h"
+	"extern/glloadgen/gl_core.3.2.c"
 	<GL/gl.h>
 	<GL/wglext.h>
 
-1665655220 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl_utils.h
+1665656964 /DISKS/sda2/code/git/MIP2/include/gui/wgl/mip_wgl_utils.h
 	"mip.h"
 	"gui/wgl/mip_wgl.h"
 
@@ -1836,4 +1837,22 @@
 	<windows.h>
 
 1665416403 /DISKS/sda2/code/git/MIP2/include/base/mip_linux.h
+
+1662932812 /DISKS/sda2/code/git/MIP2/include/extern/glloadgen/gl_core.3.2.h
+	<windows.h>
+	<windows.h>
+	<stddef.h>
+	<inttypes.h>
+	<inttypes.h>
+	<inttypes.h>
+	<stdint.h>
+	<stdint.h>
+	<inttypes.h>
+
+1662932812 /DISKS/sda2/code/git/MIP2/include/extern/glloadgen/gl_core.3.2.c
+	<stdlib.h>
+	<string.h>
+	<stddef.h>
+	"gl_core.3.2.h"
+	<dlfcn.h>
 
