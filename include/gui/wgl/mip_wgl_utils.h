@@ -5,6 +5,273 @@
 #include "mip.h"
 #include "gui/wgl/mip_wgl.h"
 
+//#include <GL/wglext.h>
+//#include "gui/nanovg/mip_nanovg.h"
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+// https://www.khronos.org/opengl/wiki/Load_OpenGL_Functions
+
+/*
+void *GetAnyGLFuncAddress(const char *name) {
+  void *p = (void *)wglGetProcAddress(name);
+  if (p == 0 || (p == (void*)0x1) || (p == (void*)0x2) || (p == (void*)0x3) || (p == (void*)-1)) {
+    HMODULE module = LoadLibraryA("opengl32.dll");
+    p = (void *)GetProcAddress(module, name);
+  }
+  return p;
+}
+*/
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+// https://github.com/wrl/rutabaga/blob/c25215c0a3a502d7f5f3a6dfd5d069b55780f622/src/platform/win/window.c#L281-L390
+
+//----------
+
+const int ctx_attribs[] = {
+  WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+  WGL_CONTEXT_MINOR_VERSION_ARB, 2,
+  WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+  0
+};
+
+//----------
+
+PIXELFORMATDESCRIPTOR pd = {
+  sizeof(pd),
+  1,
+  PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+  PFD_TYPE_RGBA,
+  32,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  24,
+  8,
+  0,
+  PFD_MAIN_PLANE,
+  0, 0, 0, 0
+};
+
+//----------------------------------------------------------------------
+//
+//----------------------------------------------------------------------
+
+// PFNWGLSWAPINTERVALEXTPROC swap_interval;
+
+
+HGLRC init_gl_ctx(HDC hdc) {
+
+  //--------------------
+  //--------------------
+
+  SetPixelFormat(hdc, ChoosePixelFormat(hdc, &pd), &pd);
+
+  HGLRC trampoline_ctx = wglCreateContext(hdc);
+  if (!trampoline_ctx) {
+    MIP_Print("wglCreateContext returned null\n");
+    return NULL;
+  }
+
+  //--------------------
+  //--------------------
+
+  MIP_PRINT;
+  wglMakeCurrent(hdc, trampoline_ctx);
+
+  // check
+  HGLRC current_gl_context = wglGetCurrentContext();
+  if (!current_gl_context) {
+    MIP_Print("ouch! no gl context\n");
+  }
+
+  //--------------------
+  //--------------------
+
+  MIP_PRINT;
+
+  if (ogl_LoadFunctions() == ogl_LOAD_FAILED) {
+    MIP_Print("error loading opengl functions\n");
+    wglMakeCurrent(hdc, NULL);
+    wglDeleteContext(trampoline_ctx);
+    return NULL;
+  }
+
+//  if (!sogl_loadOpenGL()) {
+//  //if (ogl_LoadFunctions() == ogl_LOAD_FAILED) {
+//    MIP_Print("error loading opengl functions\n");
+//    // print sogl errors:
+//    MIP_Print("Error: sogl_loadOpenGL returns false.. couldn't load:\n");
+//    MIP_Print("sogl_getFailures() : ");
+//    const char** failures = sogl_getFailures();
+//    while (*failures) {
+//      MIP_DPrint("%s ",*failures);
+//      failures++;
+//    }
+//    MIP_DPrint("\n");
+//    wglMakeCurrent(hdc, NULL);
+//    wglDeleteContext(trampoline_ctx);
+//    return NULL;
+//    //exit(1);
+//  }
+
+  //--------------------
+  //--------------------
+
+  int maj, min;
+  glGetIntegerv(GL_MAJOR_VERSION, &maj);
+  glGetIntegerv(GL_MINOR_VERSION, &min);
+  MIP_Print("GL_MAJOR_VERSION: %i GL_MINOR_VERSION: %i\n",maj,min);   // GL_MAJOR_VERSION: 3 GL_MINOR_VERSION: 1
+
+  //--------------------
+  //--------------------
+
+  MIP_Print("GL_VERSION: %s\n",   (char*)glGetString(GL_VERSION));    // 3.1 Mesa 21.2.6
+  MIP_Print("GL_VENDOR: %s\n",    (char*)glGetString(GL_VENDOR));     // Mesa/X.org
+  MIP_Print("GL_RENDERER: %s\n",  (char*)glGetString(GL_RENDERER));   // llvmpipe (LLVM 12.0.0, 256 bits)
+
+  // a modern OpenGL driver will return a very long string for the
+  // glGetString(GL_EXTENSIONS) query and if the application naively copies the
+  // string into a fixed-size buffer it can overflow the buffer and crash the
+  // application.
+
+//  char* gl_ext_str = (char*)glGetString(GL_EXTENSIONS);
+//  MIP_Print("GL_EXTENSIONS: %s\n",gl_ext_str);
+
+  //--------------------
+  //--------------------
+
+  PFNWGLGETEXTENSIONSSTRINGEXTPROC wglGetExtensionsStringEXT;
+  wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+
+  if (!wglGetExtensionsStringEXT) {
+    MIP_Print("error getting wglGetExtensionsStringEXT\n");
+    return NULL;
+  }
+
+  //  const char *extensions;
+  //  extensions = get_extensions_string();
+  //
+  //  if (strstr(extensions, "WGL_ARB_create_context")) {
+  //    MIP_Print("has WGL_ARB_create_context\n");
+  //    //ext->create_context_attribs = 1;
+  //  }
+  //  if (strstr(extensions, "WGL_EXT_swap_control")) {
+  //    MIP_Print("has WGL_EXT_swap_control\n");
+  //    //ext->swap_control = 1;
+  //    if (strstr(extensions, "WGL_EXT_swap_control_tear")) {
+  //      MIP_Print("has WGL_EXT_swap_control_tear\n");
+  //      //ext->swap_control_tear = 1;
+  //    }
+  //  }
+  //  if (strstr(extensions, "NV")) {
+  //    MIP_Print("appears to be nvidia\n");
+  //    //ext->appears_to_be_nvidia = 1;
+  //  }
+
+  //--------------------
+  //--------------------
+
+  /* we want at least an openGL 3.2 context. if we've already got one,
+  * bail out here. otherwise, we'll need to use
+  * wglCreateContextAttribsARB. */
+
+  //  MIP_Print("calling sogl_loadOpenGL\n");
+  //  if (!sogl_loadOpenGL()) {
+  //    MIP_Print("Error: sogl_loadOpenGL returns false.. couldn't load:\n");
+  //    MIP_Print("");
+  //    const char** failures = sogl_getFailures();
+  //    while (*failures) {
+  //      MIP_DPrint("%s ",*failures);
+  //      failures++;
+  //    }
+  //    MIP_DPrint("\n");
+  //    //exit(1);
+  //    goto err_ctx_version;
+  //  }
+
+  //  glGetIntegerv(GL_MAJOR_VERSION, &maj);
+  //  glGetIntegerv(GL_MINOR_VERSION, &min);
+  //  MIP_Print("trampoline opengl version: v%i.%i\n",maj,min);
+
+  //  glGetError();
+  //  if (glGetError() == GL_INVALID_ENUM) {
+  //    //messageboxf(title,
+  //    //L"need an openGL version of 3.2 or higher, "
+  //    //L"context only supports %s", glGetString(GL_VERSION));
+  //    MIP_Print("need an openGL version of 3.2 or higher. context only supports %s\n",glGetString(GL_VERSION));
+  //    goto err_ctx_version;
+  //  }
+
+  //  glGetIntegerv(GL_MAJOR_VERSION, &maj);
+  //  glGetIntegerv(GL_MINOR_VERSION, &min);
+  //  MIP_Print("v%i.%i\n",maj,min);
+
+  //--------------------
+  //--------------------
+
+  //  if (!ext.create_context_attribs) {
+  //    //messageboxf(title,
+  //    //  L"wglCreateContextAttribsARB is unsupported – "
+  //    //  L"can't create the necessary openGL context.",
+  //    //  min, maj
+  //    //);
+  //    MIP_Print("wglCreateContextAttribsARB is unsupported – can't create the necessary openGL context. (maj:%i, min.%i)\n",maj,min);
+  //    goto err_ctx_version;
+  //  }
+
+  //--------------------
+  //--------------------
+
+  PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB;
+  wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+  if (!wglCreateContextAttribsARB) {
+    MIP_Print("error getting wglCreateContextAttribsARB\n");
+    return NULL;
+  }
+
+  HGLRC gl_ctx = wglCreateContextAttribsARB(hdc, NULL, ctx_attribs);
+  if (!gl_ctx) {
+    MIP_Print("error creating context\n");
+    wglMakeCurrent(hdc, NULL);
+    wglDeleteContext(trampoline_ctx);
+    return NULL;
+  }
+
+  //--------------------
+  //--------------------
+
+  wglMakeCurrent(hdc,NULL);
+  wglDeleteContext(trampoline_ctx);
+  wglMakeCurrent(hdc, gl_ctx);
+
+  //--------------------
+  //--------------------
+
+  // swap interval
+  //
+  //  if (ext.swap_control) {
+  //    swap_interval = (PFNWGLSWAPINTERVALEXTPROC)
+  //    wglGetProcAddress("wglSwapIntervalEXT");
+  //    /* vsync + wgl + nvidia == stupid high CPU usage */
+  //    if (ext.appears_to_be_nvidia) swap_interval(0);
+  //    else swap_interval(1);
+  //  }
+
+  //--------------------
+  //--------------------
+
+  return gl_ctx;
+
+}
+
 //----------------------------------------------------------------------
 //
 //
@@ -105,17 +372,17 @@ bool MIP_GLExtensionSupported(const char *extList, const char *extension) {
 //#define MIP_OPENGL_ERROR_CHECK { MIP_Print("gl error: %i\n",glGetError()); }
 
 void MIP_PrintGLError(GLint err) {
-  switch (err) {
-    case GL_NO_ERROR:                       MIP_DPrint("OpenGL Error: No error has been recorded. The value of this symbolic constant is guaranteed to be 0.\n"); break;
-    case GL_INVALID_ENUM:                   MIP_DPrint("OpenGL Error: An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
-    case GL_INVALID_VALUE:                  MIP_DPrint("OpenGL Error: A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
-    case GL_INVALID_OPERATION:              MIP_DPrint("OpenGL Error: The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
-    case GL_INVALID_FRAMEBUFFER_OPERATION:  MIP_DPrint("OpenGL Error: The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
-    case GL_OUT_OF_MEMORY:                  MIP_DPrint("OpenGL Error: There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.\n"); break;
-    case GL_STACK_UNDERFLOW:                MIP_DPrint("OpenGL Error: An attempt has been made to perform an operation that would cause an internal stack to underflow.\n"); break;
-    case GL_STACK_OVERFLOW:                 MIP_DPrint("OpenGL Error: An attempt has been made to perform an operation that would cause an internal stack to overflow.\n"); break;
-    default:                                MIP_DPrint("OpenGL Error: Unknown error %i\n",err); break;
-  }
+//  switch (err) {
+//    case GL_NO_ERROR:                       MIP_DPrint("OpenGL Error: No error has been recorded. The value of this symbolic constant is guaranteed to be 0.\n"); break;
+//    case GL_INVALID_ENUM:                   MIP_DPrint("OpenGL Error: An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
+//    case GL_INVALID_VALUE:                  MIP_DPrint("OpenGL Error: A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
+//    case GL_INVALID_OPERATION:              MIP_DPrint("OpenGL Error: The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
+//    case GL_INVALID_FRAMEBUFFER_OPERATION:  MIP_DPrint("OpenGL Error: The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.\n"); break;
+//    case GL_OUT_OF_MEMORY:                  MIP_DPrint("OpenGL Error: There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.\n"); break;
+//    case GL_STACK_UNDERFLOW:                MIP_DPrint("OpenGL Error: An attempt has been made to perform an operation that would cause an internal stack to underflow.\n"); break;
+//    case GL_STACK_OVERFLOW:                 MIP_DPrint("OpenGL Error: An attempt has been made to perform an operation that would cause an internal stack to overflow.\n"); break;
+//    default:                                MIP_DPrint("OpenGL Error: Unknown error %i\n",err); break;
+//  }
 }
 
 //void MIP_PrintWGLError(GLint err) {

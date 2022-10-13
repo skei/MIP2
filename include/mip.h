@@ -50,6 +50,10 @@
 #pragma GCC diagnostic ignored "-Wshift-negative-value"
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 
+// opengl
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+
 
 //vst3
 //#ifdef MIP_WIN32

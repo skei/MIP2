@@ -34,22 +34,38 @@ https://www.codeproject.com/Articles/66250/BeginPaint-EndPaint-or-GetDC-ReleaseD
 
 //----------------------------------------------------------------------
 
-#define MIP_OPENGL_MAJOR 3
-#define MIP_OPENGL_MINOR 2
-
-//----------------------------------------------------------------------
-
 #include "mip.h"
 #include "gui/mip_drawable.h"
 
+//#define MIP_OPENGL_MAJOR 3
+//#define MIP_OPENGL_MINOR 2
+
+//----------------------------------------------------------------------
+// glloadgen
+//----------------------------------------------------------------------
+
+#include "extern/glloadgen/gl_core.3.2.h"
+#include "extern/glloadgen/gl_core.3.2.c"
+
+//----------
+
+//----------------------------------------------------------------------
 // https://github.com/tsherif/simple-opengl-loader
-#define SOGL_MAJOR_VERSION MIP_OPENGL_MAJOR
-#define SOGL_MINOR_VERSION MIP_OPENGL_MINOR
-#define SOGL_IMPLEMENTATION_WIN32
-#include "extern/simple-opengl-loader.h"
+//----------------------------------------------------------------------
+
+//#define SOGL_MAJOR_VERSION 3
+//#define SOGL_MINOR_VERSION 2
+//#define SOGL_IMPLEMENTATION_WIN32
+//
+//#include "extern/simple-opengl-loader.h"
+
+//----------------------------------------------------------------------
+//
+//----------------------------------------------------------------------
 
 #include <GL/gl.h>
 //#include <GL/wgl.h>
+#include <GL/wglext.h>
 
 //----------------------------------------------------------------------
 #endif

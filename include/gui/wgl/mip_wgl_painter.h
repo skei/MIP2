@@ -65,18 +65,21 @@ public:
 
     MIP_Print("Creating opengl context\n");
 
-    MGlRc = wglCreateContext(MDc);
-    if (!MGlRc) MIP_Win32PrintError("wglCreateContext");
+    //MGlRc = wglCreateContext(MDc);
+    //if (!MGlRc) MIP_Win32PrintError("wglCreateContext");
+    //makeCurrent();
 
-    makeCurrent();
-    loadOpenGL();
+    MGlRc = init_gl_ctx(MDc);
+    if (!MGlRc) MIP_Win32PrintError("init_gl_ctx");
+
+//    makeCurrent();
+//    loadOpenGL();
 
     //wglDeleteContext(MGlRc);
     //ReleaseDC(0,MDc);
     //resetCurrent();
 
-    MIP_Print("ok\n");
-
+    MIP_PRINT;
 
   }
 
@@ -85,7 +88,7 @@ public:
   virtual ~MIP_WglPainter() {
     ReleaseDC(0,MDc);
     wglDeleteContext(MGlRc);
-    unloadOpenGL();
+//    unloadOpenGL();
     MIP_Print("\n");
   }
 
@@ -183,30 +186,30 @@ public:
 
   //----------
 
-  bool loadOpenGL() {
-    MIP_Print("calling sogl_loadOpenGL\n");
-    if (!sogl_loadOpenGL()) {
-      MIP_Print("Error: sogl_loadOpenGL returns false\n");
-
-      MIP_Print("couldn't load: ");
-      const char** failures = sogl_getFailures();
-      while (*failures) {
-        MIP_DPrint("%s ",*failures);
-        failures++;
-      }
-      MIP_DPrint("\n");
-
-      exit(1);
-      //return false;
-    }
-    return true;
-  }
-
-  //----------
-
-  void unloadOpenGL() {
-    sogl_cleanup();
-  }
+//  bool loadOpenGL() {
+//    MIP_Print("calling sogl_loadOpenGL\n");
+//    if (!sogl_loadOpenGL()) {
+//      MIP_Print("Error: sogl_loadOpenGL returns false\n");
+//
+//      MIP_Print("couldn't load: ");
+//      const char** failures = sogl_getFailures();
+//      while (*failures) {
+//        MIP_DPrint("%s ",*failures);
+//        failures++;
+//      }
+//      MIP_DPrint("\n");
+//
+//      exit(1);
+//      //return false;
+//    }
+//    return true;
+//  }
+//
+//  //----------
+//
+//  void unloadOpenGL() {
+//    sogl_cleanup();
+//  }
 
 };
 

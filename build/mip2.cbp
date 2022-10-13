@@ -521,6 +521,12 @@
 		<Unit filename="../include/extern/clap/stream.h" />
 		<Unit filename="../include/extern/clap/string-sizes.h" />
 		<Unit filename="../include/extern/clap/version.h" />
+		<Unit filename="../include/extern/glloadgen/gl_core.3.2.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../include/extern/glloadgen/gl_core.3.2.h" />
 		<Unit filename="../include/extern/nanovg/LICENSE.txt" />
 		<Unit filename="../include/extern/nanovg/README.md" />
 		<Unit filename="../include/extern/nanovg/fontstash.h" />
