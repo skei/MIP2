@@ -73,99 +73,44 @@ public:
     MSurface = ASurface;
     MTarget = ATarget;
 
-    //----------
+    // pixel format
 
-    // The GetDC function retrieves a handle to a device context (DC) for the
-    // client area of a specified window or for the entire screen
-    // If hwnd argument is NULL, GetDC retrieves the DC for the entire screen.
-
-    //HDC tempdc = GetDC(0);
-    //HDC tempdc = GetDC(MTarget->drawable_getWin32Hwnd());
-    //if (!tempdc) MIP_Win32PrintError("GetDC");
-
-    HWND hwnd = MTarget->drawable_getWin32Hwnd();
-    MDc = GetDC(hwnd);
-    if (!MDc) MIP_Win32PrintError("GetDC");
-
-    // The CreateCompatibleDC function creates a memory device context (DC)
-    // compatible with the specified device.
-
-        // ugh.. we want the DC for the screen,
-        // not an off-screen memory buffer, don't we
-
-    //MDc = CreateCompatibleDC(tempdc);
-    //if (!MDc) MIP_Win32PrintError("CreateCompatibleDC");
-
-    // The ReleaseDC function releases a device context (DC), freeing it for
-    // use by other applications.
-    // The effect of the ReleaseDC function depends on the type of DC. It frees
-    // only common and window DCs. It has no effect on class or private DCs.
-
-    //ReleaseDC(0,tempdc);
-
-    //----------
-
-    MIP_Print("Creating opengl context\n");
-
-    // a)
-
-    // The wglCreateContext function creates a new OpenGL rendering context,
-    // which is suitable for drawing on the device referenced by hdc. The
-    // rendering context has the same pixel format as the device context.
-
-    //MGlRc = wglCreateContext(MDc);
-    //if (!MGlRc) MIP_Win32PrintError("wglCreateContext");
-
-    //makeCurrent();
-    //loadOpenGL();
-
-    // b)
-
-    //MGlRc = MIP_WglInitContext(MDc);
-    //if (!MGlRc) MIP_Win32PrintError("init_gl_ctx");
-
-    //----------
-
-    if (ATarget->drawable_isWindow()) {
+    if (MTarget->drawable_isWindow()) {
+      HWND hwnd = MTarget->drawable_getWin32Hwnd();
+      MDc = GetDC(hwnd);
+      if (!MDc) MIP_Win32PrintError("GetDC");
       int pf = ChoosePixelFormat(MDc, &MIP_WglWindowPFD);
       SetPixelFormat(MDc, pf, &MIP_WglWindowPFD);
     }
-    //else {
-    //  int pf = ChoosePixelFormat(hdc, &MIP_WglSurfacePFD);
-    //  SetPixelFormat(hdc, pf, &MIP_WglSurfacePFD);
-    //}
+    else {
+      HDC tempdc = GetDC(0);
+      MDc = CreateCompatibleDC(tempdc);
+      ReleaseDC(0,tempdc);
+      //int pf = ChoosePixelFormat(hdc, &MIP_WglSurfacePFD);
+      //SetPixelFormat(hdc, pf, &MIP_WglSurfacePFD);
+    }
 
-    //----------
+    // temp context
 
     HGLRC temp_ctx = wglCreateContext(MDc);
-    if (!temp_ctx) {
-      MIP_Print("error! couldn't create temp context\n");
-      //return NULL;
-      exit(1);
+    if (temp_ctx) {
+      MIP_Print("created temp context\n");
+      wglMakeCurrent(MDc,temp_ctx);
     }
     else {
-      MIP_Print("created temp context\n");
+      MIP_Print("error! couldn't create temp conext\n");
+      exit(1);
     }
 
-    //----------
+    // extension string
 
-    MIP_Print("making temp context current\n");
-    wglMakeCurrent(MDc,temp_ctx);
-
-    //----------
-
-    // wglGetExtensionsStringEXT
-
+    /*
+    const char* get_extensions();
     PFNWGLGETEXTENSIONSSTRINGEXTPROC wgl_GetExtensionsStringEXT;
     wgl_GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
-
-    //HMODULE gl_module = LoadLibrary(TEXT("opengl32.dll"));
-    //wgl_GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)GetProcAddress(gl_module,"wglGetExtensionsStringEXT");
-    //FreeLibrary(gl_module);
-
     if (!wgl_GetExtensionsStringEXT) {
       MIP_Print("error! wglGetExtensionsStringEXT not found\n");
-      //return NULL;
+      exit(1);
     }
     else {
       MIP_Print("wglGetExtensionsStringEXT found\n");
@@ -183,29 +128,12 @@ public:
         //ext->appears_to_be_nvidia = 1;
       }
     }
-
     //MIP_Assert( wgl_GetExtensionsStringEXT );
+    */
 
-    //----------
-
-    // a) gl_core.3.2
-
-    //if (ogl_LoadFunctions() == ogl_LOAD_FAILED) {
-    //  MIP_Print("error loading opengl functions\n");
-    //  wglMakeCurrent(hdc, NULL);
-    //  wglDeleteContext(temp_ctx);
-    //  return NULL;
-    //}
-    //else {
-    //  MIP_Print("loaded opengl functions (ogl_LoadFunctions)\n");
-    //}
-    ////MIP_Print("(major %i minor %i)\n",ogl_GetMajorVersion(),ogl_GetMinorVersion());
-
-    // b) simple-opengl-loader
+    // load opengl functions
 
     if (!sogl_loadOpenGL()) {
-    //if (ogl_LoadFunctions() == ogl_LOAD_FAILED) {
-      // print sogl errors:
       MIP_Print("error! sogl_loadOpenGL failures: \n");
       const char** failures = sogl_getFailures();
       while (*failures) {
@@ -215,14 +143,13 @@ public:
       MIP_DPrint("\n");
       wglMakeCurrent(MDc, NULL);
       wglDeleteContext(temp_ctx);
-      //return NULL;
       exit(1);
     }
     else {
       MIP_Print("loaded opengl functions (sogl_loadOpenGL)\n");
     }
 
-    //----------
+    // check version
 
     int maj, min;
     glGetIntegerv(GL_MAJOR_VERSION, &maj);
@@ -234,23 +161,17 @@ public:
     MIP_Print("GL_RENDERER: %s\n",    (char*)glGetString(GL_RENDERER));   // llvmpipe (LLVM 12.0.0, 256 bits)
     //MIP_Print("GL_EXTENSIONS: %s\n",  (char*)glGetString(GL_EXTENSIONS)); // crashes!
 
-    //----------
-
-    // wglCreateContextAttribsARB
+    // create context ARB
 
     PFNWGLCREATECONTEXTATTRIBSARBPROC wgl_CreateContextAttribsARB;
     wgl_CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
     if (!wgl_CreateContextAttribsARB) {
       MIP_Print("error! wglCreateContextAttribsARB not found\n");
-      //return NULL;
+      exit(1);
     }
     else {
       MIP_Print("wglCreateContextAttribsARBfound\n");
     }
-
-    //----------
-
-    MIP_Assert( wgl_CreateContextAttribsARB );
 
     const int ctx_attribs[] = {
       WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -264,7 +185,6 @@ public:
       MIP_Print("error creating context\n");
       wglMakeCurrent(MDc, NULL);
       wglDeleteContext(temp_ctx);
-      //return NULL;
       exit(1);
     }
     else {
@@ -275,15 +195,7 @@ public:
 
     wglMakeCurrent(MDc,NULL);
     wglDeleteContext(temp_ctx);
-
     wglMakeCurrent(MDc, MGlrc);
-    //return gl_ctx;
-
-    //wglDeleteContext(MGlRc);
-    //ReleaseDC(0,MDc);
-    //resetCurrent();
-
-    MIP_PRINT;
 
   }
 
@@ -292,7 +204,7 @@ public:
   virtual ~MIP_WglPainter() {
     ReleaseDC(0,MDc);
     wglDeleteContext(MGlrc);
-//    unloadOpenGL();
+    //unloadOpenGL();
     MIP_Print("\n");
   }
 
@@ -423,3 +335,10 @@ private:
 
 //----------------------------------------------------------------------
 #endif
+
+
+
+    //HMODULE gl_module = LoadLibrary(TEXT("opengl32.dll"));
+    //wgl_GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)GetProcAddress(gl_module,"wglGetExtensionsStringEXT");
+    //FreeLibrary(gl_module);
+

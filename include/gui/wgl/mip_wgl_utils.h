@@ -2,6 +2,8 @@
 #define mip_wgl_utils_included
 //----------------------------------------------------------------------
 
+#if 0
+
 /*
   https://community.khronos.org/t/cant-get-wglgetprocaddress-to-work-in-opengl-3-1/58281
 
@@ -442,6 +444,8 @@ void MIP_GLXDisableVSync(Display* ADisplay, GLXDrawable ADrawable) {
     }
   }
   */
+
+#endif // 0
 
 //----------------------------------------------------------------------
 #endif
