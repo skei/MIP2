@@ -2,6 +2,24 @@
 #define mip_wgl_utils_included
 //----------------------------------------------------------------------
 
+/*
+  https://community.khronos.org/t/cant-get-wglgetprocaddress-to-work-in-opengl-3-1/58281
+
+  If you want to retrieve the function pointers for core 1.1 functionality,
+  wglGetProcAddress only returns 0. But for these functions GetProcAddress()
+  works. Unfortunately GetProcAddress does not work for non-core-1.1-functions
+*/
+
+/*
+  typedef void (APIENTRY *PFNGLBEGINPROC)(GLenum);
+  PFNGLBEGINPROC glBegin;
+  HMODULE gl_module = LoadLibrary(TEXT("opengl32.dll"));
+  glBegin = (PFNGLBEGINPROC)GetProcAddress("glBegin");
+  FreeLibrary(gl_module);
+*/
+
+//----------------------------------------------------------------------
+
 #include "mip.h"
 #include "gui/wgl/mip_wgl.h"
 
@@ -26,54 +44,58 @@
 
 // https://github.com/wrl/rutabaga/blob/c25215c0a3a502d7f5f3a6dfd5d069b55780f622/src/platform/win/window.c#L281-L390
 
-//----------
-
-const int ctx_attribs[] = {
-  WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-  WGL_CONTEXT_MINOR_VERSION_ARB, 2,
-  WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-  0
-};
-
-//----------
-
-PIXELFORMATDESCRIPTOR pd = {
-  sizeof(pd),
-  1,
-  PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-  PFD_TYPE_RGBA,
-  32,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  24,
-  8,
-  0,
-  PFD_MAIN_PLANE,
-  0, 0, 0, 0
-};
-
 //----------------------------------------------------------------------
 //
 //
 //
 //----------------------------------------------------------------------
+
+  /*
+    PFD_DRAW_TO_WINDOW
+    PFD_DRAW_TO_BITMAP
+    PFD_SUPPORT_OPENGL
+    PFD_GENERIC_ACCELERATED
+    PFD_DOUBLEBUFFER
+    PFD_SWAP_LAYER_BUFFERS
+  */
 
 HGLRC MIP_WglInitContext(HDC hdc) {
 
-  SetPixelFormat(hdc, ChoosePixelFormat(hdc, &pd), &pd);
+  PIXELFORMATDESCRIPTOR pd = {
+    sizeof(pd),
+    1,
+    PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+    PFD_TYPE_RGBA,
+    32,               // bits
+    0, 0, 0, 0, 0, 0,
+    8,//0,            // alpha
+    0,                // shift
+    0,                // accumulation
+    0, 0, 0, 0,
+    24,               // depth
+    8,//0,            // stencil
+    0,                // aux
+    PFD_MAIN_PLANE,
+    0, 0, 0, 0
+  };
+
+
+  int pixel_format = ChoosePixelFormat(hdc, &pd);
+  SetPixelFormat(hdc, pixel_format, &pd);
 
   //--------------------
 
-  HGLRC trampoline_ctx = wglCreateContext(hdc);
-  if (!trampoline_ctx) {
-    MIP_Print("error! couldn't create trampoline context\n");
+  HGLRC temp_ctx = wglCreateContext(hdc);
+  if (!temp_ctx) {
+    MIP_Print("error! couldn't create temp context\n");
     return NULL;
   }
   else {
-    MIP_Print("created trampoline context\n");
+    MIP_Print("created temp context\n");
   }
 
-  MIP_Print("making trampoline context current\n");
-  wglMakeCurrent(hdc, trampoline_ctx);
+  MIP_Print("making temp context current\n");
+  wglMakeCurrent(hdc, temp_ctx);
 
   //----------
 
@@ -81,6 +103,13 @@ HGLRC MIP_WglInitContext(HDC hdc) {
 
   PFNWGLGETEXTENSIONSSTRINGEXTPROC wgl_GetExtensionsStringEXT;
   wgl_GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+
+  /*
+    HMODULE gl_module = LoadLibrary(TEXT("opengl32.dll"));
+    wgl_GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)GetProcAddress(gl_module,"wglGetExtensionsStringEXT");
+    FreeLibrary(gl_module);
+  */
+
   if (!wgl_GetExtensionsStringEXT) {
     MIP_Print("error! wglGetExtensionsStringEXT not found\n");
     //return NULL;
@@ -108,20 +137,21 @@ HGLRC MIP_WglInitContext(HDC hdc) {
 
   // a) gl_core.3.2
 
+  /*
   if (ogl_LoadFunctions() == ogl_LOAD_FAILED) {
     MIP_Print("error loading opengl functions\n");
     wglMakeCurrent(hdc, NULL);
-    wglDeleteContext(trampoline_ctx);
+    wglDeleteContext(temp_ctx);
     return NULL;
   }
   else {
     MIP_Print("loaded opengl functions (ogl_LoadFunctions)\n");
   }
   //MIP_Print("(major %i minor %i)\n",ogl_GetMajorVersion(),ogl_GetMinorVersion());
+  */
 
   // b) simple-opengl-loader
 
-  /*
   if (!sogl_loadOpenGL()) {
   //if (ogl_LoadFunctions() == ogl_LOAD_FAILED) {
     // print sogl errors:
@@ -133,14 +163,13 @@ HGLRC MIP_WglInitContext(HDC hdc) {
     }
     MIP_DPrint("\n");
     wglMakeCurrent(hdc, NULL);
-    wglDeleteContext(trampoline_ctx);
+    wglDeleteContext(temp_ctx);
     return NULL;
     //exit(1);
   }
   else {
-    MIP_Print("loaded opeengl functions (sogl_loadOpenGL)\n");
+    MIP_Print("loaded opengl functions (sogl_loadOpenGL)\n");
   }
-  */
 
   //--------------------
 
@@ -172,11 +201,18 @@ HGLRC MIP_WglInitContext(HDC hdc) {
 
   MIP_Assert( wgl_CreateContextAttribsARB );
 
+  const int ctx_attribs[] = {
+    WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+    WGL_CONTEXT_MINOR_VERSION_ARB, 2,
+    WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+    0
+  };
+
   HGLRC gl_ctx = wgl_CreateContextAttribsARB(hdc, NULL, ctx_attribs);
   if (!gl_ctx) {
     MIP_Print("error creating context\n");
     wglMakeCurrent(hdc, NULL);
-    wglDeleteContext(trampoline_ctx);
+    wglDeleteContext(temp_ctx);
     return NULL;
   }
   else {
@@ -186,7 +222,8 @@ HGLRC MIP_WglInitContext(HDC hdc) {
   //--------------------
 
   wglMakeCurrent(hdc,NULL);
-  wglDeleteContext(trampoline_ctx);
+  wglDeleteContext(temp_ctx);
+
   wglMakeCurrent(hdc, gl_ctx);
   return gl_ctx;
 

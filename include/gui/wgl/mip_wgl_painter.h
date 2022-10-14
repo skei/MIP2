@@ -67,13 +67,12 @@ public:
 
     //MGlRc = wglCreateContext(MDc);
     //if (!MGlRc) MIP_Win32PrintError("wglCreateContext");
+
     //makeCurrent();
+    //loadOpenGL();
 
     MGlRc = MIP_WglInitContext(MDc);
     if (!MGlRc) MIP_Win32PrintError("init_gl_ctx");
-
-    //    makeCurrent();
-    //    loadOpenGL();
 
     //wglDeleteContext(MGlRc);
     //ReleaseDC(0,MDc);

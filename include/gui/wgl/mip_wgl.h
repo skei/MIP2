@@ -48,8 +48,8 @@ https://www.codeproject.com/Articles/66250/BeginPaint-EndPaint-or-GetDC-ReleaseD
 
 // a) glloadgen
 
-#include "extern/glloadgen/gl_core.3.2.h"
-#include "extern/glloadgen/gl_core.3.2.c"
+//#include "extern/glloadgen/gl_core.3.2.h"
+//#include "extern/glloadgen/gl_core.3.2.c"
 
 //----------
 
@@ -57,11 +57,10 @@ https://www.codeproject.com/Articles/66250/BeginPaint-EndPaint-or-GetDC-ReleaseD
 
 // https://github.com/tsherif/simple-opengl-loader
 
-//#define SOGL_MAJOR_VERSION 3
-//#define SOGL_MINOR_VERSION 2
-//#define SOGL_IMPLEMENTATION_WIN32
-//
-//#include "extern/simple-opengl-loader.h"
+#define SOGL_MAJOR_VERSION 3
+#define SOGL_MINOR_VERSION 2
+#define SOGL_IMPLEMENTATION_WIN32
+#include "extern/simple-opengl-loader.h"
 
 //----------------------------------------------------------------------
 //
