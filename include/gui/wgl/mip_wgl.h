@@ -46,15 +46,6 @@ https://www.codeproject.com/Articles/66250/BeginPaint-EndPaint-or-GetDC-ReleaseD
 //
 //----------------------------------------------------------------------
 
-// a) glloadgen
-
-//#include "extern/glloadgen/gl_core.3.2.h"
-//#include "extern/glloadgen/gl_core.3.2.c"
-
-//----------
-
-// b) simple-opengl-loader
-
 // https://github.com/tsherif/simple-opengl-loader
 
 #define SOGL_MAJOR_VERSION 3
