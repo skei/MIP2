@@ -97,6 +97,15 @@ HGLRC MIP_WglInitContext(HDC hdc) {
   MIP_Print("making temp context current\n");
   wglMakeCurrent(hdc, temp_ctx);
 
+  // not available until we have loaded the opengl functions
+  //
+  //MIP_Print("GL_VERSION: %s\n",     (char*)glGetString(GL_VERSION));    // 3.1 Mesa 21.2.6
+  //MIP_Print("GL_VENDOR: %s\n",      (char*)glGetString(GL_VENDOR));     // Mesa/X.org
+  //int maj, min;
+  //glGetIntegerv(GL_MAJOR_VERSION, &maj);
+  //glGetIntegerv(GL_MINOR_VERSION, &min);
+  //MIP_Print("GL_MAJOR_VERSION: %i GL_MINOR_VERSION: %i\n",maj,min);   // GL_MAJOR_VERSION: 3 GL_MINOR_VERSION: 1
+
   //----------
 
   // wglGetExtensionsStringEXT
