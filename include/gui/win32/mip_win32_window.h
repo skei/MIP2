@@ -7,6 +7,21 @@
     after global variable initialization, but before main()
   - window class is registered the first time a window is created
     (see bottom of this file)
+
+  ----------
+
+  1. Set a flag when you see the WM_ENTERSIZEMOVE.
+  2. Change your WM_SIZE handler to check the flag and do nothing if set.
+  3. Change your WM_PAINT handler to check the flag and do a simple, fast
+     fill of the window in a solid color if it's set.
+  4. Clear the flag when you see WM_EXITSIZEMOVE, and then trigger your
+     layout code and invalidate your window so that everything gets
+     updated based on the final size.
+  If your slow window is a child rather than your application's top-level
+  window, you'll have to signal the child window when the top-level
+  window gets the WM_ENTERSIZEMOVE and WM_EXITSIZEMOVE in order to
+  implement steps 1 and 4.
+
 */
 
 //----------------------------------------------------------------------
@@ -17,11 +32,16 @@
 
 //----------------------------------------------------------------------
 
+#define MIP_WIN32_STANDALONE_STYLE    ( WS_OVERLAPPEDWINDOW )
+#define MIP_WIN32_EMBEDDED_STYLE      ( WS_POPUP /* WS_CHILD */ )
+
+#define MIP_WIN32_EX_STANDALONE_STYLE ( WS_EX_OVERLAPPEDWINDOW )
+#define MIP_WIN32_EX_EMBEDDED_STYLE   ( 0 /* WS_EX_TOOLWINDOW */ )
+
 char* MIP_Win32ClassName(void);
 LRESULT CALLBACK mip_eventproc_win32(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-
-
+//----------
 
 
 const char* mip_win32_cursors[] = {
@@ -88,9 +108,13 @@ private:
   bool        MEmbedded           = false;
   int32_t     MMouseXpos          = 0;
   int32_t     MMouseYpos          = 0;
-  int32_t     MAdjustedWidth      = 0;
-  int32_t     MAdjustedHeight     = 0;
   int32_t     MCurrentCursor      = 0;
+
+  int32_t     MAdjustedStandaloneWidth  = 0;
+  int32_t     MAdjustedStandaloneHeight = 0;
+  int32_t     MAdjustedEmbeddedWidth    = 0;
+  int32_t     MAdjustedEmbeddedHeight   = 0;
+
 
 //------------------------------
 private:
@@ -111,6 +135,7 @@ public:
 
   MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent=0)
   : MIP_BaseWindow(AWidth,AHeight,AParent) {
+    MWindowType = "MIP_Win32Window";
 
     setWindowTitle("MIP_Win32Window");
     MMouseXpos  = -1;
@@ -118,74 +143,63 @@ public:
     memset(MUserCursors,0,sizeof(MUserCursors));
     MCurrentCursor = -1;
     setMouseCursor(MIP_CURSOR_DEFAULT);
-    //RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
-    //MScreenDC = GetDC(0);
+
+    RECT src = { 0, 0, (long int)AWidth, (long int)AHeight };
+    AdjustWindowRectEx(&src,MIP_WIN32_STANDALONE_STYLE,FALSE,MIP_WIN32_EX_STANDALONE_STYLE);
+    MAdjustedStandaloneWidth  = (src.right  - src.left) - AWidth;
+    MAdjustedStandaloneHeight = (src.bottom - src.top)  - AHeight;
+    int32_t swidth  = src.right  - src.left;
+    int32_t sheight  = src.bottom - src.top;
+
+    RECT erc = { 0, 0, (long int)AWidth, (long int)AHeight };
+    AdjustWindowRectEx(&erc,MIP_WIN32_EMBEDDED_STYLE,FALSE,MIP_WIN32_EX_EMBEDDED_STYLE);
+    MAdjustedEmbeddedWidth  = (erc.right  - erc.left) - AWidth;
+    MAdjustedEmbeddedHeight = (erc.bottom - erc.top)  - AHeight;
+    int32_t ewidth = erc.right  - erc.left;
+    int32_t eheight = erc.bottom - erc.top;
+
     if (AParent == 0) {
       MEmbedded = false;
-      //AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
-      //int32_t wx = ((GetSystemMetrics(SM_CXSCREEN) - AWidth ) >> 1) + rc.left;
-      //int32_t wy = ((GetSystemMetrics(SM_CYSCREEN) - AHeight) >> 1) + rc.top;
-      //int32_t x  = wx;
-      //int32_t y  = wy;
-      //int32_t w  = rc.right - rc.left + 1;
-      //int32_t h  = rc.bottom - rc.top + 1;
-      //MAdjustedWidth  = w - AWidth;
-      //MAdjustedHeight = h - AHeight;
+      MWindowType = "STANDALONE";
       MWinHandle = CreateWindowEx(
-        0,//WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
-        MIP_Win32ClassName(),       // lpClassName
-        "MIP_Win32Window",          // lpWindowName
-        WS_OVERLAPPEDWINDOW,        // dwStyle
-        0,        //x,              // center x
-        0,        //y,              // center y
-        AWidth,   //w,              // wWidth
-        AHeight,  //h,              // wHeight
-        0,                          // hWndParent
-        0,                          // hMenu
-        MIP_GLOBAL_WIN32_INSTANCE,  // hInstance
-        0                           // lpParam
+        MIP_WIN32_EX_STANDALONE_STYLE,
+        MIP_Win32ClassName(),
+        "MIP_Win32Window",
+        MIP_WIN32_STANDALONE_STYLE,
+        0,
+        0,
+        swidth,
+        sheight,
+        NULL,
+        0,
+        MIP_GLOBAL_WIN32_INSTANCE,
+        0
       );
       SetFocus(MWinHandle);
     }
+
     else {
       MEmbedded = true;
-      //AdjustWindowRectEx(&rc,WS_POPUP,FALSE,WS_EX_TOOLWINDOW);
-      //int32_t x = rc.left;
-      //int32_t y = rc.top;
-      //int32_t w = rc.right - rc.left + 1;
-      //int32_t h = rc.bottom - rc.top + 1;
-      //MAdjustedWidth  = w - AWidth;
-      //MAdjustedHeight = h - AHeight;
+      MWindowType = "EMBEDDED";
       MWinHandle = CreateWindowEx(
-        0, //WS_EX_TOOLWINDOW,
+        MIP_WIN32_EX_EMBEDDED_STYLE,
         MIP_Win32ClassName(),
         nullptr,
-        WS_POPUP, //WS_CHILD + WS_VISIBLE,
-        0,        //x,  //rc.left,
-        0,        //y,  //rc.top,
-        AWidth,   //w,  //rc.right-rc.left+1,
-        AHeight,  //h,   //rc.bottom-rc.top+1,
+        MIP_WIN32_EMBEDDED_STYLE,
+        0,
+        0,
+        ewidth,
+        eheight,
         (HWND)AParent,
         0,
         MIP_GLOBAL_WIN32_INSTANCE,
         0
       );
+      SetFocus(MWinHandle);
     }
+
     SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
-
-//    // If hwnd argument is NULL, GetDC retrieves the DC for the entire screen.
-//    MWindowDC = GetDC(MWinHandle);
-
   }
-
-  //----------
-
-//  MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
-//  : MIP_BaseWindow(AWidth,AHeight,AParent) {
-//    MEmbedded = true;
-//    //MWinHandle = createEmbeddedWindow(AWidth,AHeight,AParent);
-//    SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
-//  }
 
   //----------
 
@@ -202,6 +216,7 @@ public:
 
   HWND  getWinHandle(void)    { return MWinHandle; }
   HDC   getWinPaintDC(void)   { return MWinPaintDC; }
+
 //HDC   getScreenDC(void)     { return MScreenDC; }
 //HDC   getWindowDC(void)     { return MWindowDC; }
 
@@ -240,8 +255,15 @@ public:
   //----------
 
   void setWindowSize(uint32_t AWidth, uint32_t AHeight) override {
-    int w = AWidth + MAdjustedWidth + 0;
-    int h = AHeight + MAdjustedHeight + 0;
+    int w,h;
+    if (MEmbedded) {
+      w = AWidth + MAdjustedEmbeddedWidth + 0;
+      h = AHeight + MAdjustedEmbeddedHeight + 0;
+    }
+    else {
+      w = AWidth + MAdjustedStandaloneWidth + 0;
+      h = AHeight + MAdjustedStandaloneHeight + 0;
+    }
     SetWindowPos(MWinHandle,HWND_TOP,0,0,w,h, SWP_NOMOVE);
     //MRect.w = w;
     //MRect.h = h;
@@ -310,6 +332,30 @@ public:
 
   //----------
 
+  /*
+    The invalidated areas accumulate in the update region until the region is
+    processed when the next WM_PAINT message occurs or until the region is
+    validated by using the ValidateRect or ValidateRgn function.
+    The system sends a WM_PAINT message to a window whenever its update region
+    is not empty and there are no other messages in the application queue for
+    that window.
+    If the bErase parameter is TRUE for any part of the update region, the
+    background is erased in the entire region, not just in the specified part.
+  */
+
+  /*
+    The UpdateWindow function updates the client area of the specified window
+    by sending a WM_PAINT message to the window if the window's update region
+    is not empty. The function sends a WM_PAINT message directly to the window
+    procedure of the specified window, bypassing the application queue. If the
+    update region is empty, no message is sent.
+  */
+
+  /*
+    The RedrawWindow function updates the specified rectangle or region in a
+    window's client area.
+  */
+
   void invalidateRegion(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     RECT R;
     R.left   = AXpos;
@@ -317,6 +363,8 @@ public:
     R.right  = AXpos + AWidth;  // - 1;
     R.bottom = AYpos + AHeight; // - 1;
     InvalidateRect(MWinHandle,&R,false);
+    //UpdateWindow(MWinHandle);
+    //RedrawWindow(MWinHandle,&R,NULL,RDW_UPDATENOW);
   }
 
   //----------
@@ -353,25 +401,43 @@ public:
   */
 
   void reparentWindow(intptr_t AParent) override {
-    MIP_PRINT;
     LONG_PTR style = GetWindowLongPtr(MWinHandle,GWL_STYLE);
+    LONG_PTR exstyle = GetWindowLongPtr(MWinHandle,GWL_EXSTYLE);
     if (AParent == 0) {
-      style &= ~WS_CHILD;
-      style &= ~WS_POPUP;
-      style |= WS_OVERLAPPEDWINDOW;
-      //MEmbedded = false;
+      MIP_Print("reparent %s -> STANDALONE\n",MWindowType);
+      MWindowType = "STANDALONE";
+      MEmbedded = false;
+      style &= ~MIP_WIN32_EMBEDDED_STYLE;
+      style |= MIP_WIN32_STANDALONE_STYLE;
+      exstyle &= ~MIP_WIN32_EX_EMBEDDED_STYLE;
+      exstyle |= MIP_WIN32_EX_STANDALONE_STYLE;
     }
     else {
-      style &= ~WS_OVERLAPPEDWINDOW;
-      style |= WS_POPUP;
-      style |= WS_CHILD;
-      //MEmbedded = true;
+      MIP_Print("reparent %s -> EMBEDDED\n",MWindowType);
+      MWindowType = "EMBEDDED";
+      MEmbedded = true;
+      style &= ~MIP_WIN32_STANDALONE_STYLE;
+      style |= MIP_WIN32_EMBEDDED_STYLE;
+      exstyle &= ~MIP_WIN32_EX_STANDALONE_STYLE;
+      exstyle |= MIP_WIN32_EX_EMBEDDED_STYLE;
     }
     SetWindowLongPtr( MWinHandle, GWL_STYLE, style );
+    SetWindowLongPtr( MWinHandle, GWL_EXSTYLE, exstyle );
     SetParent(MWinHandle,(HWND)AParent);
   }
 
   //----------
+
+  /*
+    The BeginPaint function prepares the specified window for painting and
+    fills a PAINTSTRUCT structure with information about the painting.
+
+    The BeginPaint function automatically sets the clipping region of the
+    device context to exclude any area outside the update region. The update
+    region is set by the InvalidateRect or InvalidateRgn function and by the
+    system after sizing, moving, creating, scrolling, or any other operation
+    that affects the client area.
+  */
 
   void beginPaint()  override {
     MWinPaintDC = BeginPaint(MWinHandle,&MWinPaintStruct);
@@ -379,13 +445,16 @@ public:
 
   //----------
 
+  /*
+    The EndPaint function marks the end of painting in the specified window.
+    This function is required for each call to the BeginPaint function, but
+    only after painting is complete.
+
+    EndPaint releases the display device context that BeginPaint retrieved.
+  */
+
   void endPaint()  override {
     EndPaint(MWinHandle,&MWinPaintStruct);
-  }
-
-  //----------
-
-  void setEventThreadCallbacks( void (*AStart)(void* AUser), void (*AStop)(void* AUser) ) override {
   }
 
 //------------------------------
@@ -447,16 +516,14 @@ public: // paint
   void fillColor(uint32_t AColor) override {
   }
 
+  //----------
+
   void fillColor(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) override {
   }
 
+  //----------
+
   void blitBuffer(int32_t ADstX, int32_t ADstY, void* AData, uint32_t AStride, int32_t ASrcW, int32_t ASrcH) override {
-  }
-
-  //void blitImage(int32_t ADstX, int32_t ADstY, /*xcb_image_t*/void* AImage) {}
-  //void blitDrawable(int32_t ADstX, int32_t ADstY, /*xcb_drawable_t*/intptr_t ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) {}
-
-  void blitDrawable(int32_t ADstX, int32_t ADstY, MIP_Drawable* ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) override {
   }
 
   //----------
@@ -483,6 +550,12 @@ public: // paint
   //  SelectObject(tempdc,oldbitmap);
   //  DeleteDC(tempdc);
   //}
+
+  void blitDrawable(int32_t ADstX, int32_t ADstY, MIP_Drawable* ADrawable, int32_t ASrcX, int32_t ASrcY, int32_t ASrcW, int32_t ASrcH) override {
+  }
+
+  //----------
+
 
 //------------------------------
 private: // event handler
@@ -565,7 +638,16 @@ private: // event handler
   //
   //------------------------------
 
+  // note:
+  // see ExeWindow, one window embedded into another
+
   LRESULT eventHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+
+    // NULL for mouse events?
+    //if (hWnd != MWinHandle) {
+    //  //MIP_Print("wrong window\n");
+    //  return DefWindowProc(hWnd,message,wParam,lParam);
+    //}
 
     LRESULT result = 0;
     MIP_DRect rc;
@@ -589,22 +671,151 @@ private: // event handler
         break;
       }
 
-      case WM_KEYDOWN: {
-        //if (MListener) MListener->on_keyDown(this,wParam,lParam);
-        //k = remapKeyCode(wParam,lParam);
-        on_window_key_press(wParam,lParam,0);
+      case WM_SETCURSOR: {
+        // called every mouse move
+        if (LOWORD(lParam)==HTCLIENT) {
+          SetCursor(MWinCursor);
+          //setCursor(MCurrentCursor);
+          result = 1;
+        }
+        else result = DefWindowProc(hWnd,message,wParam,lParam);
         break;
       }
 
-      case WM_KEYUP: {
-        //if (MListener) MListener->on_keyUp(this,wParam,lParam);
-        //k = remapKeyCode(wParam,lParam);
-        on_window_key_release(wParam,lParam,0);
+      /*
+        Sent to a window when the size or position of the window is about to
+        change. An application can use this message to override the window's
+        default maximized size and position, or its default minimum or maximum
+        tracking size.
+
+        typedef struct tagMINMAXINFO {
+          POINT ptReserved;
+          POINT ptMaxSize;
+          POINT ptMaxPosition;
+          POINT ptMinTrackSize;
+          POINT ptMaxTrackSize;
+        } MINMAXINFO, *PMINMAXINFO, *LPMINMAXINFO;
+      */
+
+      case WM_GETMINMAXINFO: {
+        MIP_Print("WM_GETMINMAXINFO\n");
+        //MINMAXINFO* info = (MINMAXINFO*)lParam;
         break;
       }
 
-      //case WM_CHAR:
-      //  break;
+      /*
+        Sent one time to a window after it enters the moving or sizing modal
+        loop. The window enters the moving or sizing modal loop when the user
+        clicks the window's title bar or sizing border, or when the window
+        passes the WM_SYSCOMMAND message to the DefWindowProc function and the
+        wParam parameter of the message specifies the SC_MOVE or SC_SIZE value.
+        The operation is complete when DefWindowProc returns.
+        The system sends the WM_ENTERSIZEMOVE message regardless of whether the
+        dragging of full windows is enabled.
+      */
+
+      case WM_ENTERSIZEMOVE: {
+        MIP_Print("WM_ENTERSIZEMOVE\n");
+        break;
+      }
+
+      /*
+        Sent one time to a window, after it has exited the moving or sizing
+        modal loop. The window enters the moving or sizing modal loop when the
+        user clicks the window's title bar or sizing border, or when the window
+        passes the WM_SYSCOMMAND message to the DefWindowProc function and the
+        wParam parameter of the message specifies the SC_MOVE or SC_SIZE value.
+        The operation is complete when DefWindowProc returns.
+      */
+
+      case WM_EXITSIZEMOVE: {
+        MIP_Print("WM_EXITSIZEMOVE\n");
+        break;
+      }
+
+      /*
+        Sent to a window that the user is resizing. By processing this message,
+        an application can monitor the size and position of the drag rectangle
+        and, if needed, change its size or position.
+        wParam  The edge of the window that is being sized.
+          case WMSZ_BOTTOM:       break; // Bottom edge
+          case WMSZ_BOTTOMLEFT:   break; // Bottom-left corner
+          case WMSZ_BOTTOMRIGHT:  break; // Bottom-right corner
+          case WMSZ_LEFT:         break; // Left edge
+          case WMSZ_RIGHT:        break; // Right edge
+          case WMSZ_TOP:          break; // Top edge
+          case WMSZ_TOPLEFT:      break; // Top-left corner
+          case WMSZ_TOPRIGHT:     break; // Top-right corner
+        lParam  A pointer to a RECT structure with the screen coordinates of
+                the drag rectangle. To change the size or position of the drag
+                rectangle, an application must change the members of this
+                structure.
+        An application should return TRUE if it processes this message.
+      */
+
+      case WM_SIZING: {
+        RECT* R = (RECT*)lParam;
+        int32_t x = R->left;
+        int32_t y = R->top;
+        int32_t w = R->right - R->left;
+        int32_t h = R->bottom - R->top;
+        MIP_Print("WM_SIZING x %i y %i w %i h %i\n",x,y,w,h);
+        break;
+      }
+
+      /*
+        Sent to a window after its size has changed.
+        wParam: The type of resizing requested.
+          case SIZE_MAXHIDE:    // Message is sent to all pop-up windows when some other window is maximized.
+          case SIZE_MAXIMIZED:  // The window has been maximized.
+          case SIZE_MAXSHOW:    // Message is sent to all pop-up windows when some other window has been restored to its former size.
+          case SIZE_MINIMIZED:  // The window has been minimized.
+          case SIZE_RESTORED:   // The window has been resized, but neither the SIZE_MINIMIZED nor SIZE_MAXIMIZED value applies.
+        The low-order word of lParam specifies the new width of the client area.
+        The high-order word of lParam specifies the new height of the client area.
+      */
+
+      case WM_SIZE: {
+        w = short(LOWORD(lParam));
+        h = short(HIWORD(lParam));
+        MIP_Print("WM_SIZE %s w %i h %i (type %i)\n",MWindowType,w,h,wParam);
+        //if ( (w != MRect.w) || (h != MRect.h) ) {
+        //if ( (w != MWindowWidth) || (h != MWindowHeight) ) {
+          //MIP_Print("-> on_window_resize\n");
+          MWindowWidth  = w;
+          MWindowHeight = h;
+          on_window_resize(w,h);
+          //invalidateRegion(0,0,w,h);
+          //if (MFlags & s3_wf_autoalign) on_widgetAlign(this);
+          //#ifndef S3_NO_WINDOW_BACKBUFFER
+          //if (MListener) MListener->on_bufferPaint(this,S3_NULL,s3_pm_normal); //redraw;
+          //#endif
+        //}
+        break;
+      }
+
+      case WM_PAINT: {
+        beginPaint();
+        int32_t x = MWinPaintStruct.rcPaint.left;
+        int32_t y = MWinPaintStruct.rcPaint.top;
+        int32_t w = MWinPaintStruct.rcPaint.right  - MWinPaintStruct.rcPaint.left;
+        int32_t h = MWinPaintStruct.rcPaint.bottom - MWinPaintStruct.rcPaint.top;
+        MIP_Print("WM_PAINT %s x %i y %i w %i h %i\n",MWindowType,x,y,w,h);
+        //if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
+        on_window_paint(x,y,w,h);
+        endPaint();
+        break;
+      }
+
+      case WM_MOUSEMOVE: {
+        x = short(LOWORD(lParam));
+        y = short(HIWORD(lParam));
+        //if (MListener) MListener->on_mouseMove(this,x,y,remapKey(wParam));
+        on_window_mouse_move(remapMouseKey(wParam),x,y,0);
+        MMouseXpos = x;
+        MMouseYpos = y;
+        break;
+      }
 
       case WM_XBUTTONDOWN:
       case WM_LBUTTONDOWN:
@@ -624,17 +835,7 @@ private: // event handler
         y = short(HIWORD(lParam));
         //if (MListener) MListener->on_mouseDown(this,x,y,b,remapKey(wParam));
         on_window_mouse_click(b,remapMouseKey(wParam),x,y,0);
-//        if (MFlags & s3_wf_capture) grabCursor();
-        break;
-      }
-
-      case WM_MOUSEMOVE: {
-        x = short(LOWORD(lParam));
-        y = short(HIWORD(lParam));
-        //if (MListener) MListener->on_mouseMove(this,x,y,remapKey(wParam));
-        on_window_mouse_move(remapMouseKey(wParam),x,y,0);
-        MMouseXpos = x;
-        MMouseYpos = y;
+        //        if (MFlags & s3_wf_capture) grabCursor();
         break;
       }
 
@@ -653,16 +854,7 @@ private: // event handler
         y = short(HIWORD(lParam));
         //if (MListener) MListener->on_mouseUp(this,x,y,b,remapKey(wParam));
         on_window_mouse_release(b,remapMouseKey(wParam),x,y,0);
-//        if (MFlags&s3_wf_capture) releaseCursor();
-        break;
-      }
-
-      case WM_MOUSEWHEEL: {
-        d = GET_WHEEL_DELTA_WPARAM(wParam);
-        //if (d>0) { if (MListener) MListener->on_mouseDown(this,MMouseXpos,MMouseYpos,smb_wheelUp,  smb_none); }
-        //if (d<0) { if (MListener) MListener->on_mouseDown(this,MMouseXpos,MMouseYpos,smb_wheelDown,smb_none); }
-        if (d > 0) { on_window_mouse_click(MIP_BUTTON_SCROLL_UP,   MIP_KEY_NONE, MMouseXpos,MMouseYpos,0); }
-        if (d < 0) { on_window_mouse_click(MIP_BUTTON_SCROLL_DOWN, MIP_KEY_NONE, MMouseXpos,MMouseYpos,0); }
+        //        if (MFlags&s3_wf_capture) releaseCursor();
         break;
       }
 
@@ -704,78 +896,45 @@ private: // event handler
       */
       #endif // MIP_MOUSE_DOUBLECLICK
 
+      case WM_MOUSEWHEEL: {
+        d = GET_WHEEL_DELTA_WPARAM(wParam);
+        //if (d>0) { if (MListener) MListener->on_mouseDown(this,MMouseXpos,MMouseYpos,smb_wheelUp,  smb_none); }
+        //if (d<0) { if (MListener) MListener->on_mouseDown(this,MMouseXpos,MMouseYpos,smb_wheelDown,smb_none); }
+        if (d > 0) { on_window_mouse_click(MIP_BUTTON_SCROLL_UP,   MIP_KEY_NONE, MMouseXpos,MMouseYpos,0); }
+        if (d < 0) { on_window_mouse_click(MIP_BUTTON_SCROLL_DOWN, MIP_KEY_NONE, MMouseXpos,MMouseYpos,0); }
+        break;
+      }
+
+      case WM_KEYDOWN: {
+        //if (MListener) MListener->on_keyDown(this,wParam,lParam);
+        //k = remapKeyCode(wParam,lParam);
+        on_window_key_press(wParam,lParam,0);
+        break;
+      }
+
+      case WM_KEYUP: {
+        //if (MListener) MListener->on_keyUp(this,wParam,lParam);
+        //k = remapKeyCode(wParam,lParam);
+        on_window_key_release(wParam,lParam,0);
+        break;
+      }
+
+      //case WM_CHAR:
+      //  break;
+
       /*
-        is it possible to receive a WM_PAINT when some other thread is
-        drawing to the backbuffer?
+        The WM_PAINT message is sent when the system or another application
+        makes a request to paint a portion of an application's window.
+        The message is sent when the UpdateWindow or RedrawWindow function is
+        called, or by the DispatchMessage function when the application obtains
+        a WM_PAINT message by using the GetMessage or PeekMessage function.
+
+        //is it possible to receive a WM_PAINT when some other thread is
+        //drawing to the backbuffer?
       */
 
-      case WM_PAINT: {
-
-        beginPaint();
-
-        int32_t x = MWinPaintStruct.rcPaint.left;
-        int32_t y = MWinPaintStruct.rcPaint.top;
-        int32_t w = MWinPaintStruct.rcPaint.right  - MWinPaintStruct.rcPaint.left + 1;
-        int32_t h = MWinPaintStruct.rcPaint.bottom - MWinPaintStruct.rcPaint.top + 1;
-
-        MIP_Print("WM_PAINT: x %i y %i w %i h %i\n",x,y,w,h);
-
-        //if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
-        //rc = MIP_DRect(x,y,w,h);
-
-        on_window_paint(x,y,w,h);
-        endPaint();
-        break;
-      }
-
-      case WM_SETCURSOR: {
-        // called every mouse move
-        if (LOWORD(lParam)==HTCLIENT) {
-          SetCursor(MWinCursor);
-          //setCursor(MCurrentCursor);
-          result = 1;
-        }
-        else result = DefWindowProc(hWnd,message,wParam,lParam);
-        break;
-      }
-
-      case WM_SIZE: {
-        w = short(LOWORD(lParam));
-        h = short(HIWORD(lParam));
-
-
-        //if ( (w!=MRect.w) || (h!=MRect.h) ) {
-        if ( (w != MWindowWidth) || (h != MWindowHeight) ) {
-
-          MIP_Print("WM_SIZE: w %i h %i\n",w,h);
-
-          //if (MListener) {
-          //  #ifndef S3_NO_WINDOW_BACKBUFFER
-          //  MListener->on_bufferResize(this,w,h);
-          //  #else
-          //  MListener->on_windowResize(this,w,h);
-          //  #endif
-          //}
-
-          bool need_redraw = false;
-          //if ((w < MWindowWidth) || (h < MWindowHeight)) {
-            need_redraw = true;
-          //}
-
-          MWindowWidth  = w;
-          MWindowHeight = h;
-          on_window_resize(w,h);
-          if (need_redraw) invalidateRegion(0,0,w,h);
-          //if (MFlags & s3_wf_autoalign) on_widgetAlign(this);
-          //#ifndef S3_NO_WINDOW_BACKBUFFER
-          //if (MListener) MListener->on_bufferPaint(this,S3_NULL,s3_pm_normal); //redraw;
-          //#endif
-        }
-        break;
-      }
-
       case WM_TIMER: {
-        MIP_PRINT;
+        MIP_Print("WM_TIMER\n");
 //        if (MListener) {
 //          if (wParam == MGuiTimer.getId()) MListener->on_timerCallback(this);
 //          //  if (wParam==s3_ts_idle) MListener->on_windowIdle(this);
@@ -795,89 +954,6 @@ private: // event handler
 private:
 //------------------------------
 
-//  HWND createWindow(int32_t AWidth, int32_t AHeight) {
-//
-//    //MWindowTitle = ;
-//    setWindowTitle("MIP_Win32Window");
-//    MMouseXpos  = -1;
-//    MMouseYpos  = -1;
-//    memset(MUserCursors,0,sizeof(MUserCursors));
-//    MCurrentCursor = -1;
-//    setMouseCursor(MIP_CURSOR_DEFAULT);
-//
-//    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
-//
-//    AdjustWindowRectEx(&rc,WS_OVERLAPPEDWINDOW,FALSE,WS_EX_OVERLAPPEDWINDOW);
-//    int32_t wx = ((GetSystemMetrics(SM_CXSCREEN) - AWidth ) >> 1) + rc.left;
-//    int32_t wy = ((GetSystemMetrics(SM_CYSCREEN) - AHeight) >> 1) + rc.top;
-//    int32_t x = wx;
-//    int32_t y = wy;
-//    int32_t w = rc.right - rc.left + 1;
-//    int32_t h = rc.bottom - rc.top + 1;
-//    MAdjustedWidth = w - AWidth;
-//    MAdjustedHeight = h - AHeight;
-//
-//    HWND handle = CreateWindowEx(
-//      WS_EX_OVERLAPPEDWINDOW,     // dwExStyle
-//      MIP_Win32ClassName(),       // lpClassName
-//      "MIP_Win32Window",          // lpWindowName
-//      WS_OVERLAPPEDWINDOW,        // dwStyle
-//      x,                          // center x
-//      y,                          // center y
-//      w,                          // wWidth
-//      h,                          // wHeight
-//      0,                          // hWndParent
-//      0,                          // hMenu
-//      MIP_GLOBAL_WIN32_INSTANCE,  // hInstance
-//      0                           // lpParam
-//    );
-//    SetFocus(handle);
-//    return handle;
-//  }
-//
-//  //----------
-//
-//  HWND createEmbeddedWindow(int32_t AWidth, int32_t AHeight, intptr_t AParent) {
-//
-//    MWindowTitle = "MIP_Win32Window";
-//    MMouseXpos  = -1;
-//    MMouseYpos  = -1;
-//    memset(MUserCursors,0,sizeof(MUserCursors));
-//    MCurrentCursor = -1;
-//    setMouseCursor(MIP_CURSOR_DEFAULT);
-//
-//    RECT rc = { 0,0,(long int)AWidth + 1,(long int)AHeight + 1};
-//
-//    AdjustWindowRectEx(&rc,WS_POPUP,FALSE,WS_EX_TOOLWINDOW);
-//    int32_t x = rc.left;
-//    int32_t y = rc.top;
-//    int32_t w = rc.right - rc.left + 1;
-//    int32_t h = rc.bottom - rc.top + 1;
-//    MAdjustedWidth = w - AWidth;
-//    MAdjustedHeight = h - AHeight;
-//
-//    HWND handle = CreateWindowEx(
-//      0, //WS_EX_TOOLWINDOW,
-//      //kode_global_WinClassName,
-//      MIP_Win32ClassName(),
-//      0,
-//      //WS_CHILD, + WS_VISIBLE,
-//      WS_POPUP + WS_VISIBLE,
-//      x,              //rc.left,
-//      y,              //rc.top,
-//      w,              //rc.right-rc.left+1, // +2 ??
-//      h,              //rc.bottom-rc.top+1, // +2 ??
-//      HWND(AParent),
-//      0,
-//      MIP_GLOBAL_WIN32_INSTANCE,
-//      0
-//    );
-//    return handle;
-//  }
-
-//------------------------------
-
-//------------------------------
 
   /*
 
@@ -1037,11 +1113,12 @@ public:
   //----------
 
   char* registerClass(void) {
-    MIP_Print("*** registerClass (uses MIP_GLOBAL_WIN32_INSTANCE)\n");
+    MIP_PRINT;
     if (!MRegistered) {
       MIP_CreateUniqueString(MName,(char*)"mip_window_",&MIP_GLOBAL_WIN32_INSTANCE);
+      MIP_Print("window name: %s\n",MName);
       memset(&MClass,0,sizeof(MClass));
-      MClass.style          = CS_HREDRAW | CS_VREDRAW;// | CS_OWNDC;
+      MClass.style          = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
       MClass.lpfnWndProc    = &mip_win32_eventproc;
       MClass.hInstance      = MIP_GLOBAL_WIN32_INSTANCE;
       MClass.lpszClassName  = MName;

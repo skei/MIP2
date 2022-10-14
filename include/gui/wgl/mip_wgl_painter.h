@@ -70,6 +70,8 @@ public:
   MIP_WglPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
   : MIP_BasePainter(ASurface,ATarget) {
 
+    MIP_PRINT;
+
     MSurface = ASurface;
     MTarget = ATarget;
 
@@ -94,7 +96,7 @@ public:
 
     HGLRC temp_ctx = wglCreateContext(MDc);
     if (temp_ctx) {
-      MIP_Print("created temp context\n");
+      //MIP_Print("created temp context\n");
       wglMakeCurrent(MDc,temp_ctx);
     }
     else {
@@ -146,20 +148,20 @@ public:
       exit(1);
     }
     else {
-      MIP_Print("loaded opengl functions (sogl_loadOpenGL)\n");
+      //MIP_Print("loaded opengl functions (sogl_loadOpenGL)\n");
     }
 
     // check version
 
-    int maj, min;
-    glGetIntegerv(GL_MAJOR_VERSION, &maj);
-    glGetIntegerv(GL_MINOR_VERSION, &min);
-    MIP_Print("GL_MAJOR_VERSION: %i GL_MINOR_VERSION: %i\n",maj,min);   // GL_MAJOR_VERSION: 3 GL_MINOR_VERSION: 1
-
-    MIP_Print("GL_VERSION: %s\n",     (char*)glGetString(GL_VERSION));    // 3.1 Mesa 21.2.6
-    MIP_Print("GL_VENDOR: %s\n",      (char*)glGetString(GL_VENDOR));     // Mesa/X.org
-    MIP_Print("GL_RENDERER: %s\n",    (char*)glGetString(GL_RENDERER));   // llvmpipe (LLVM 12.0.0, 256 bits)
-    //MIP_Print("GL_EXTENSIONS: %s\n",  (char*)glGetString(GL_EXTENSIONS)); // crashes!
+//    int maj, min;
+//    glGetIntegerv(GL_MAJOR_VERSION, &maj);
+//    glGetIntegerv(GL_MINOR_VERSION, &min);
+//    MIP_Print("GL_MAJOR_VERSION: %i GL_MINOR_VERSION: %i\n",maj,min);   // GL_MAJOR_VERSION: 3 GL_MINOR_VERSION: 1
+//
+//    MIP_Print("GL_VERSION: %s\n",     (char*)glGetString(GL_VERSION));    // 3.1 Mesa 21.2.6
+//    MIP_Print("GL_VENDOR: %s\n",      (char*)glGetString(GL_VENDOR));     // Mesa/X.org
+//    MIP_Print("GL_RENDERER: %s\n",    (char*)glGetString(GL_RENDERER));   // llvmpipe (LLVM 12.0.0, 256 bits)
+//    //MIP_Print("GL_EXTENSIONS: %s\n",  (char*)glGetString(GL_EXTENSIONS)); // crashes!
 
     // create context ARB
 
@@ -170,7 +172,7 @@ public:
       exit(1);
     }
     else {
-      MIP_Print("wglCreateContextAttribsARBfound\n");
+      //MIP_Print("wglCreateContextAttribsARBfound\n");
     }
 
     const int ctx_attribs[] = {
@@ -188,7 +190,7 @@ public:
       exit(1);
     }
     else {
-      MIP_Print("context created\n");
+      //MIP_Print("context created\n");
     }
 
     //----------
@@ -202,10 +204,10 @@ public:
   //----------
 
   virtual ~MIP_WglPainter() {
+    MIP_PRINT;
     ReleaseDC(0,MDc);
     wglDeleteContext(MGlrc);
     //unloadOpenGL();
-    MIP_Print("\n");
   }
 
 //------------------------------
@@ -221,12 +223,10 @@ public:
 //  }
 
   void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
-
+    //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
     //    MDc = MTarget->drawable_getDC();
     //    MIP_Assert(MDc);
     //    MGlRc = wglCreateContext(MDc);
-
     makeCurrent();
     //loadOpenGL();
     glViewport(0,0,AWidth,AHeight);
@@ -240,11 +240,11 @@ public:
     swapBuffers();
     resetCurrent();
     //unloadOpenGL();
-//    wglDeleteContext(MGlRc);
-//    ReleaseDC(0,MDc);
+    //    wglDeleteContext(MGlRc);
+    //    ReleaseDC(0,MDc);
     //MDc = nullptr;
     //MGlRc = nullptr;
-    MIP_Print("\n");
+    //MIP_Print("\n");
   }
 
   //----------
@@ -274,7 +274,7 @@ public:
   */
 
   bool makeCurrent() {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     wglMakeCurrent(MDc, MGlrc);
     return true;
   }
@@ -282,7 +282,7 @@ public:
   //----------
 
   bool resetCurrent() {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     wglMakeCurrent(nullptr,nullptr);
     return true;
   }
@@ -296,7 +296,7 @@ public:
   */
 
   void swapBuffers() {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     SwapBuffers(MDc);
   }
 

@@ -26,6 +26,7 @@ protected:
 //------------------------------
 
   //MIP_WindowListener* MWindowListener = this;
+  const char* MWindowType = "MIP_BaseWindow";
 
 //------------------------------
 public:

@@ -46,6 +46,7 @@ public:
 
   MIP_EditorWindow(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
   : MIP_Window(AWidth,AHeight,AParent) {
+    MWindowType = "MIP_EditorWindow";
     MEditorListener = AListener;
     MOwnerWindow = this;
   }

@@ -116,6 +116,7 @@ public:
 
   MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight)
   : MIP_BaseWindow(AWidth,AHeight) {
+    MWindowType = "MIP_XcbWindow";
     setup(AWidth,AHeight,0);
   }
 
@@ -123,6 +124,7 @@ public:
 
   MIP_XcbWindow(uint32_t AWidth, uint32_t AHeight, intptr_t AParent)
   : MIP_BaseWindow(AWidth,AHeight,AParent) {
+    MWindowType = "MIP_XcbWindow";
     setup(AWidth,AHeight,AParent);
   }
 

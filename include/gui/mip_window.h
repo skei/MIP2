@@ -98,6 +98,7 @@ public:
   MIP_Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent=0)
   : MIP_ImplementedWindow(AWidth,AHeight,AParent)
   , MIP_Widget(MIP_DRect(0,0,AWidth,AHeight)) {
+    //MWindowType = "MIP_Window";
     //MIP_Print("%i,%i\n",AWidth,AHeight);
     MOwnerWindow = this;
     //setup(AWidth,AHeight);
@@ -324,25 +325,6 @@ public: // timer
 public: // window
 //------------------------------
 
-/*
-  void beginPaint()  override {
-    //MIP_PRINT;
-    MIP_ImplementedWindow::beginPaint();
-    #ifdef MIP_GUI_WIN32
-      #ifdef MIP_PAINTER_GDI
-        HDC dc = getWinPaintDC();
-        #ifdef MIP_WINDOW_BUFFERED
-          //MWindowPainter->setup(dc);
-          MBufferPainter->setup(dc);
-        #else
-          MWindowPainter->setup(dc);
-        #endif
-      #endif
-    #endif
-  }
-*/
-
-
   /*
     standalone: on_window_resize() will be called afterwards..
     TODO: check plugin..
@@ -382,6 +364,7 @@ public: // window
     #endif
     MRect.setSize(AWidth,AHeight);
     on_widget_config(this);
+
     /*
     double xscale = AWidth / Layout.initialRect.w;
     double yscale = AHeight / Layout.initialRect.h;
