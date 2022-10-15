@@ -269,17 +269,20 @@ public: // gui
 
   //----------
 
-  void MIP_Register() {
-    MIP_REGISTRY.appendDescriptor(&myDescriptor);
-  };
+  //  void MIP_Register() {
+  //    MIP_REGISTRY.appendDescriptor(&myDescriptor);
+  //  };
+  //
+  //  //----------
+  //
+  //  MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
+  //    if (AIndex == 0) {
+  //      return new myPlugin(ADescriptor,AHost);
+  //    }
+  //    return nullptr;
+  //  }
 
-  //----------
+  MIP_BASIC_ENTRY(template_descriptor,test_layout_plugin);
 
-  MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-    if (AIndex == 0) {
-      return new myPlugin(ADescriptor,AHost);
-    }
-    return nullptr;
-  }
 
 //#endif
