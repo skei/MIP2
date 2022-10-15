@@ -413,6 +413,7 @@ public: // window
       painter->beginPaint(0,0,MRect.w,MRect.h);
       painter->resetClip();
       painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
+      //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       paintChildWidgets(&MPaintContext);
       painter->resetClip();
       painter->endPaint();

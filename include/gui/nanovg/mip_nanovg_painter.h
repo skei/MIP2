@@ -9,10 +9,12 @@
 
 #include "mip.h"
 
-#ifdef MIP_LINUX
+//#ifdef MIP_LINUX
+#ifdef MIP_USE_GLX
   #include "gui/glx/mip_glx_painter.h"
 #endif
-#ifdef MIP_WIN32
+//#ifdef MIP_WIN32
+#ifdef MIP_USE_WGL
   #include "gui/wgl/mip_wgl_painter.h"
 #endif
 
@@ -34,10 +36,12 @@
 //----------------------------------------------------------------------
 
 class MIP_NanoVGPainter
-#ifdef MIP_LINUX
+//#ifdef MIP_LINUX
+#ifdef MIP_USE_GLX
 : public MIP_GlxPainter {
 #endif
-#ifdef MIP_WIN32
+//#ifdef MIP_WIN32
+#ifdef MIP_USE_WGL
 : public MIP_WglPainter {
 #endif
 
@@ -55,11 +59,14 @@ public:
 
   MIP_NanoVGPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
 
-  #ifdef MIP_LINUX
+  //#ifdef MIP_LINUX
+  #ifdef MIP_USE_GLX
   : MIP_GlxPainter(ASurface,ATarget) {
     MIP_GlxPainter::makeCurrent();
   #endif
-  #ifdef MIP_WIN32
+
+  //#ifdef MIP_WIN32
+  #ifdef MIP_USE_WGL
   : MIP_WglPainter(ASurface,ATarget) {
     MIP_WglPainter::makeCurrent();
   #endif
@@ -85,10 +92,12 @@ public:
     bndSetFont(MFont);
     #endif
 
-    #ifdef MIP_LINUX
+    //#ifdef MIP_LINUX
+    #ifdef MIP_USE_GLX
       MIP_GlxPainter::resetCurrent();
     #endif
-    #ifdef MIP_WIN32
+    //#ifdef MIP_WIN32
+    #ifdef MIP_USE_WGL
       MIP_WglPainter::resetCurrent();
     #endif
 
@@ -127,10 +136,12 @@ public:
 //------------------------------
 
   void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    #ifdef MIP_LINUX
+    //#ifdef MIP_LINUX
+    #ifdef MIP_USE_GLX
       MIP_GlxPainter::beginPaint(AXpos,AYpos,AWidth,AHeight);
     #endif
-    #ifdef MIP_WIN32
+    //#ifdef MIP_WIN32
+    #ifdef MIP_USE_WGL
       MIP_WglPainter::beginPaint(AXpos,AYpos,AWidth,AHeight);
     #endif
     nvgBeginFrame(MContext,AWidth,AHeight,1.0);
@@ -140,10 +151,12 @@ public:
 
   void endPaint() override {
     nvgEndFrame(MContext);
-    #ifdef MIP_LINUX
+    //#ifdef MIP_LINUX
+    #ifdef MIP_USE_GLX
       MIP_GlxPainter::endPaint();
     #endif
-    #ifdef MIP_WIN32
+    //#ifdef MIP_WIN32
+    #ifdef MIP_USE_WGL
       MIP_WglPainter::endPaint();
     #endif
 

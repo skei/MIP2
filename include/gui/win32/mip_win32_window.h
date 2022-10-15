@@ -32,12 +32,23 @@
 
 //----------------------------------------------------------------------
 
-#define MIP_WIN32_STANDALONE_STYLE    ( WS_OVERLAPPEDWINDOW )
-//#define MIP_WIN32_EMBEDDED_STYLE      ( WS_POPUP )
-#define MIP_WIN32_EMBEDDED_STYLE      ( WS_CHILD )
+/*
+  CS_OWNDC    Allocates a unique device context for each window in the class
+  CS_HREDRAW  Redraws the entire window if a movement or size adjustment
+              changes the width of the client area.
+  CS_VREDRAW  Redraws the entire window if a movement or size adjustment
+              changes the height of the client area.
+*/
 
+#define MIP_WIN32_CLASS_STYLE         ( CS_OWNDC | CS_HREDRAW | CS_VREDRAW )
+
+#define MIP_WIN32_STANDALONE_STYLE    ( WS_OVERLAPPEDWINDOW )
 #define MIP_WIN32_EX_STANDALONE_STYLE ( WS_EX_OVERLAPPEDWINDOW )
+
+#define MIP_WIN32_EMBEDDED_STYLE      ( WS_POPUP + WS_VISIBLE )
 #define MIP_WIN32_EX_EMBEDDED_STYLE   ( 0 /* WS_EX_TOOLWINDOW */ )
+
+//----------
 
 char* MIP_Win32ClassName(void);
 LRESULT CALLBACK mip_eventproc_win32(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -94,41 +105,40 @@ class MIP_Win32Window
 private:
 //------------------------------
 
-//HDC         MScreenDC         = nullptr;
-//HDC         MWindowDC         = nullptr;
+//HDC         MScreenDC                 = nullptr;
+//HDC         MWindowDC                 = nullptr;
 
-  HCURSOR     MDefaultCursor      = nullptr;
-  HWND        MWinHandle          = nullptr;
-  HCURSOR     MWinCursor          = nullptr;
-  PAINTSTRUCT MWinPaintStruct     = {};
-  HDC         MWinPaintDC         = nullptr;
-  HCURSOR     MUserCursors[128]   = {0};
+  HCURSOR     MDefaultCursor            = nullptr;
+  HWND        MWinHandle                = nullptr;
+  HCURSOR     MWinCursor                = nullptr;
+  PAINTSTRUCT MWinPaintStruct           = {};
+  HDC         MWinPaintDC               = nullptr;
+  HCURSOR     MUserCursors[128]         = {0};
 
-  const char* MWindowTitle        = "";
-  void*       MWindowParent       = nullptr;
-  bool        MEmbedded           = false;
-  int32_t     MMouseXpos          = 0;
-  int32_t     MMouseYpos          = 0;
-  int32_t     MCurrentCursor      = 0;
+  const char* MWindowTitle              = "";
+  void*       MWindowParent             = nullptr;
+  bool        MEmbedded                 = false;
+  int32_t     MMouseXpos                = 0;
+  int32_t     MMouseYpos                = 0;
+  int32_t     MCurrentCursor            = 0;
 
   int32_t     MAdjustedStandaloneWidth  = 0;
   int32_t     MAdjustedStandaloneHeight = 0;
   int32_t     MAdjustedEmbeddedWidth    = 0;
   int32_t     MAdjustedEmbeddedHeight   = 0;
 
-
 //------------------------------
 private:
 //------------------------------
 
-  int32_t     MWindowWidth        = 0;
-  int32_t     MWindowHeight       = 0;
-  uint32_t    MScreenDepth        = 0;
-  double      MWindowWidthScale   = 1.0;
-  double      MWindowHeightScale  = 1.0;
+  int32_t     MWindowWidth              = 0;
+  int32_t     MWindowHeight             = 0;
+  uint32_t    MScreenDepth              = 0;
+  double      MWindowWidthScale         = 1.0;
+  double      MWindowHeightScale        = 1.0;
 
-  bool        MFillBackground     = false;
-  uint32_t    MBackgroundColor    = 0x808080;
+  bool        MFillBackground           = false;
+  uint32_t    MBackgroundColor          = 0x808080;
 
 //------------------------------
 public:
@@ -136,8 +146,7 @@ public:
 
   MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent=0)
   : MIP_BaseWindow(AWidth,AHeight,AParent) {
-    MWindowType = "MIP_Win32Window";
-
+    MWindowType = "";//"MIP_Win32Window";
     setWindowTitle("MIP_Win32Window");
     MMouseXpos  = -1;
     MMouseYpos  = -1;
@@ -152,12 +161,17 @@ public:
     int32_t swidth  = src.right  - src.left;
     int32_t sheight  = src.bottom - src.top;
 
-    RECT erc = { 0, 0, (long int)AWidth, (long int)AHeight };
-    AdjustWindowRectEx(&erc,MIP_WIN32_EMBEDDED_STYLE,FALSE,MIP_WIN32_EX_EMBEDDED_STYLE);
-    MAdjustedEmbeddedWidth  = (erc.right  - erc.left) - AWidth;
-    MAdjustedEmbeddedHeight = (erc.bottom - erc.top)  - AHeight;
-    int32_t ewidth = erc.right  - erc.left;
-    int32_t eheight = erc.bottom - erc.top;
+//    RECT erc = { 0, 0, (long int)AWidth, (long int)AHeight };
+//    AdjustWindowRectEx(&erc,MIP_WIN32_EMBEDDED_STYLE,FALSE,MIP_WIN32_EX_EMBEDDED_STYLE);
+//    MAdjustedEmbeddedWidth  = (erc.right  - erc.left) - AWidth;
+//    MAdjustedEmbeddedHeight = (erc.bottom - erc.top)  - AHeight;
+//    int32_t ewidth = erc.right  - erc.left;
+//    int32_t eheight = erc.bottom - erc.top;
+
+    MAdjustedEmbeddedWidth  = 0;
+    MAdjustedEmbeddedHeight = 0;
+    int32_t ewidth = AWidth;
+    int32_t eheight = AHeight;
 
     if (AParent == 0) {
       MEmbedded = false;
@@ -256,6 +270,7 @@ public:
   //----------
 
   void setWindowSize(uint32_t AWidth, uint32_t AHeight) override {
+
     int w,h;
     if (MEmbedded) {
       w = AWidth + MAdjustedEmbeddedWidth + 0;
@@ -298,38 +313,52 @@ public:
 
   //----------
 
-  void flush(void) override {
-  }
+  //void flush(void) override {
+  //}
 
   //----------
 
-  void sync(void) override {
-  }
+  //void sync(void) override {
+  //}
 
   //----------
+
+//    MSG msg;
+//    BOOL bRet;
+//    while((bRet = GetMessage(&msg,NULL,0,0)) != 0) {
+//      if (bRet == -1) {
+//        // handle the error and possibly exit
+//      }
+//      else {
+//        TranslateMessage(&msg);
+//        DispatchMessage(&msg);
+//      }
+//    }
 
   void eventLoop() override {
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
+    //while (GetMessage(&msg, MWinHandle,0,0)) {
       TranslateMessage(&msg);
       DispatchMessage(&msg);
     }
   }
 
-  //----------
-
-  void startEventThread() override {
-  }
 
   //----------
 
-  void stopEventThread() override {
-  }
+  //void startEventThread() override {
+  //}
 
   //----------
 
-  void sendClientMessage(uint32_t AData, uint32_t AType) override {
-  }
+  //void stopEventThread() override {
+  //}
+
+  //----------
+
+  //void sendClientMessage(uint32_t AData, uint32_t AType) override {
+  //}
 
   //----------
 
@@ -364,7 +393,7 @@ public:
     R.right  = AXpos + AWidth;  // - 1;
     R.bottom = AYpos + AHeight; // - 1;
     InvalidateRect(MWinHandle,&R,false);
-//    UpdateWindow(MWinHandle);
+    //UpdateWindow(MWinHandle);
     //RedrawWindow(MWinHandle,&R,NULL,RDW_UPDATENOW);
   }
 
@@ -402,28 +431,37 @@ public:
   */
 
   void reparentWindow(intptr_t AParent) override {
-    LONG_PTR style = GetWindowLongPtr(MWinHandle,GWL_STYLE);
+
+    LONG_PTR style   = GetWindowLongPtr(MWinHandle,GWL_STYLE);
     LONG_PTR exstyle = GetWindowLongPtr(MWinHandle,GWL_EXSTYLE);
+
     if (AParent == 0) {
       MIP_Print("reparent %s -> STANDALONE\n",MWindowType);
       MWindowType = "STANDALONE";
       MEmbedded = false;
-      style &= ~MIP_WIN32_EMBEDDED_STYLE;
-      style |= MIP_WIN32_STANDALONE_STYLE;
+      style   &= ~MIP_WIN32_EMBEDDED_STYLE;
+      style   |=  MIP_WIN32_STANDALONE_STYLE;
       exstyle &= ~MIP_WIN32_EX_EMBEDDED_STYLE;
-      exstyle |= MIP_WIN32_EX_STANDALONE_STYLE;
+      exstyle |=  MIP_WIN32_EX_STANDALONE_STYLE;
     }
     else {
       MIP_Print("reparent %s -> EMBEDDED\n",MWindowType);
       MWindowType = "EMBEDDED";
       MEmbedded = true;
-      style &= ~MIP_WIN32_STANDALONE_STYLE;
-      style |= MIP_WIN32_EMBEDDED_STYLE;
+      style   &= ~MIP_WIN32_STANDALONE_STYLE;
+      style   |=  MIP_WIN32_EMBEDDED_STYLE;
       exstyle &= ~MIP_WIN32_EX_STANDALONE_STYLE;
-      exstyle |= MIP_WIN32_EX_EMBEDDED_STYLE;
+      exstyle |=  MIP_WIN32_EX_EMBEDDED_STYLE;
+
+      setWindowPos(0,0);
+      setWindowSize(MWindowWidth,MWindowHeight);
+
     }
-    SetWindowLongPtr( MWinHandle, GWL_STYLE, style );
+
+
+    SetWindowLongPtr( MWinHandle, GWL_STYLE,   style   );
     SetWindowLongPtr( MWinHandle, GWL_EXSTYLE, exstyle );
+
     SetParent(MWinHandle,(HWND)AParent);
   }
 
@@ -456,6 +494,7 @@ public:
 
   void endPaint()  override {
     EndPaint(MWinHandle,&MWinPaintStruct);
+    //UpdateWindow(MWinHandle);
   }
 
 //------------------------------
@@ -557,6 +596,90 @@ public: // paint
 
   //----------
 
+//
+//    //----------------------------------------
+//    // bitmap
+//    //----------------------------------------
+//
+//    //BOOL BitBlt(
+//    //  HDC hdcDest,  // Handle to the destination device context.
+//    //  int nXDest,   // logical x-coordinate of the upper-left corner of the destination rectangle.
+//    //  int nYDest,   // logical y-coordinate of the upper-left corner of the destination rectangle.
+//    //  int nWidth,   // logical width of the source and destination rectangles.
+//    //  int nHeight,  // logical height of the source and the destination rectangles.
+//    //  HDC hdcSrc,   // Handle to the source device context.
+//    //  int nXSrc,    // logical x-coordinate of the upper-left corner of the source rectangle.
+//    //  int nYSrc,    // logical y-coordinate of the upper-left corner of the source rectangle.
+//    //  DWORD dwRop   // raster-operation code.
+//    //);
+//
+//    virtual void drawBitmap(h_Bitmap* aBitmap, int aX, int aY, int aSrcX, int aSrcY, int aSrcW, int aSrcH)
+//      {
+//        HDC tempdc = CreateCompatibleDC(m_DC);
+//        SelectObject(tempdc,/*(HBITMAP)*/aBitmap->getBitmap());
+//        BitBlt(m_DC,aX,aY,aSrcW,aSrcH,tempdc,aSrcX,aSrcY,SRCCOPY);
+//        DeleteDC(tempdc);
+//      }
+//
+//    //--------------------------------------------------
+//    // surface
+//    //--------------------------------------------------
+//
+//    //virtual void drawImage(axImage* aImage, int aX, int aY, int aSrcX, int aSrcY, int aSrcW, int aSrcH)
+//    virtual void drawSurface(h_PaintSource* aSource, int aX, int aY, int aSrcX, int aSrcY, int aSrcW, int aSrcH)
+//      {
+//        //HDC tempdc = (HDC)aImage->getHandle();
+//        //HDC tempdc = (HDC)aSurface->getHandle();
+//        HDC tempdc = aSource->getDC();
+//        BitBlt(m_DC,aX,aY,aSrcW,aSrcH,tempdc,aSrcX,aSrcY,SRCCOPY);
+//      }
+//
+//    //----------
+//
+//    //virtual void renderBitmap(axBitmap* aBitmap, int aX, int aY, int aSrcX, int aSrcY, int aSrcW, int aSrcH)
+//    //  {
+//    //    drawBitmap(aBitmap,aX,aY,aSrcX,aSrcY,aSrcW,aSrcH);
+//    //  }
+//
+//    //typedef struct _BLENDFUNCTION {
+//    //  BYTE BlendOp;
+//    //  BYTE BlendFlags;
+//    //  BYTE SourceConstantAlpha;
+//    //  BYTE AlphaFormat;
+//    //} BLENDFUNCTION, *PBLENDFUNCTION, *LPBLENDFUNCTION;
+//
+//    //virtual void renderImage( axImage*  aImage,  int aX, int aY, int aSrcX, int aSrcY, int aSrcW, int aSrcH)
+//    virtual void blendSurface( h_PaintSource* aSource,  int aX, int aY, int aSrcX, int aSrcY, int aSrcW, int aSrcH)
+//      {
+//        //HDC tempdc = (HDC)aImage->getHandle();
+//        HDC tempdc = /*(HDC)*/aSource->getDC();
+//        AlphaBlend(m_DC,aX,aY,aSrcW,aSrcH,tempdc,aSrcX,aSrcY,aSrcW,aSrcH,m_BlendFunc);
+//        // link with: libmsimg32
+//      }
+//
+//    //BOOL StretchBlt(
+//    //  __in  HDC hdcDest,
+//    //  __in  int nXOriginDest,
+//    //  __in  int nYOriginDest,
+//    //  __in  int nWidthDest,
+//    //  __in  int nHeightDest,
+//    //  __in  HDC hdcSrc,
+//    //  __in  int nXOriginSrc,
+//    //  __in  int nYOriginSrc,
+//    //  __in  int nWidthSrc,
+//    //  __in  int nHeightSrc,
+//    //  __in  DWORD dwRop
+//    //);
+//
+//    //virtual void stretchImage( axImage*  aImage,  int aX, int aY, int aW, int aH, int aSrcX, int aSrcY, int aSrcW, int aSrcH)
+//    virtual void stretchSurface( h_PaintSource* aSource, int aX, int aY, int aW, int aH, int aSrcX, int aSrcY, int aSrcW, int aSrcH)
+//      {
+//        //HDC tempdc = (HDC)aImage->getHandle();
+//        HDC tempdc = (HDC)aSource->getDC();
+//        AlphaBlend(m_DC,aX,aY,aW,aH,tempdc,aSrcX,aSrcY,aSrcW,aSrcH,m_BlendFunc);
+//        // link with: libmsimg32
+//      }
+//
 
 //------------------------------
 private: // event handler
@@ -805,6 +928,7 @@ private: // event handler
         //if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
         on_window_paint(x,y,w,h);
         endPaint();
+
         break;
       }
 
@@ -1103,23 +1227,13 @@ public:
 
   //----------
 
-  /*
-    CS_OWNDC    Allocates a unique device context for each window in the class
-    CS_HREDRAW  Redraws the entire window if a movement or size adjustment
-                changes the width of the client area.
-    CS_VREDRAW  Redraws the entire window if a movement or size adjustment
-                changes the height of the client area.
-  */
-
-  //----------
-
-  char* registerClass(void) {
+  char* getWindowClass() {
     MIP_PRINT;
     if (!MRegistered) {
       MIP_CreateUniqueString(MName,(char*)"mip_window_",&MIP_GLOBAL_WIN32_INSTANCE);
       MIP_Print("window name: %s\n",MName);
       memset(&MClass,0,sizeof(MClass));
-      MClass.style          = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+      MClass.style          = MIP_WIN32_CLASS_STYLE;
       MClass.lpfnWndProc    = &mip_win32_eventproc;
       MClass.hInstance      = MIP_GLOBAL_WIN32_INSTANCE;
       MClass.lpszClassName  = MName;
@@ -1144,8 +1258,8 @@ MIP_Win32WindowClass MIP_GLOBAL_WIN32_WINDOW_CLASS;
 
 //----------
 
-char* MIP_Win32ClassName(void) {
-  return MIP_GLOBAL_WIN32_WINDOW_CLASS.registerClass();
+char* MIP_Win32ClassName() {
+  return MIP_GLOBAL_WIN32_WINDOW_CLASS.getWindowClass();
 }
 
 
