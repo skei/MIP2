@@ -666,17 +666,19 @@ public: // gui
 
 //----------
 
-void MIP_Register() {
-  MIP_REGISTRY.appendDescriptor(&template_descriptor);
-};
+//void MIP_Register() {
+//  MIP_REGISTRY.appendDescriptor(&template_descriptor);
+//};
+//
+////----------
+//
+//MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
+//  if (AIndex == 0) {
+//    return new test_layout_plugin(ADescriptor,AHost);
+//  }
+//  return nullptr;
+//}
 
-//----------
-
-MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-  if (AIndex == 0) {
-    return new test_layout_plugin(ADescriptor,AHost);
-  }
-  return nullptr;
-}
+MIP_BASIC_ENTRY(template_descriptor,test_layout_plugin);
 
 

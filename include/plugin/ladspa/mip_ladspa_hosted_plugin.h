@@ -1,5 +1,5 @@
-#ifndef mip_wrapped_ladspa_plugin_included
-#define mip_wrapped_ladspa_plugin_included
+#ifndef mip_ladspa_hosted_plugin_included
+#define mip_ladspa_hosted_plugin_included
 //----------------------------------------------------------------------
 
 // ladspa-as-clap
@@ -54,7 +54,7 @@ struct MIP_LadspaPort {
 //
 //----------------------------------------------------------------------
 
-class MIP_LadspaPlugin
+class MIP_LadspaHostedPlugin
 : public MIP_Plugin {
 
 //------------------------------
@@ -93,7 +93,7 @@ private:
 public:
 //------------------------------
 
-  MIP_LadspaPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
+  MIP_LadspaHostedPlugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
 
 //    loadIni(MIP_REGISTRY.getPath());
@@ -121,7 +121,7 @@ public:
 
   //----------
 
-  virtual ~MIP_LadspaPlugin() {
+  virtual ~MIP_LadspaHostedPlugin() {
     MIP_Print("\n");
     unloadLadspaPlugin();
     delete MHost;

@@ -385,7 +385,8 @@ public: // window
   */
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-    //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
+
+    MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
 
     MIP_Painter* painter;
     #ifdef MIP_WINDOW_BUFFERED
@@ -406,10 +407,11 @@ public: // window
 
     if (painter) {
 
-      painter->beginPaint(0,0,MRect.w,MRect.h);
+      //painter->beginPaint(AXpos,AYpos,AWidth,AHeight);
       //painter->beginPaint(0,0,AWidth,AHeight);
+
+      painter->beginPaint(0,0,MRect.w,MRect.h);
       painter->resetClip();
-      //painter->setClip(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       painter->setClipRect(MIP_DRect(AXpos,AYpos,AWidth,AHeight));
       paintChildWidgets(&MPaintContext);
       painter->resetClip();

@@ -4,14 +4,17 @@
 
 // host from the plugins perspective..
 
-/*
-class MIP_Host {
+#include "plugin/clap/mip_clap_host.h"
+
+class MIP_Host
+: public MIP_ClapHost {
 
 //------------------------------
 public:
 //------------------------------
 
-  MIP_Host() {
+  MIP_Host(const clap_host_t* AHost)
+  : MIP_ClapHost(AHost) {
   }
 
   //----------

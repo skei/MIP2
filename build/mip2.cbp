@@ -285,6 +285,7 @@
 					<Add library="pthread" />
 					<Add library="m" />
 					<Add library="gdi32" />
+					<Add library="opengl32" />
 				</Linker>
 			</Target>
 			<Target title="win32 exe debug">
@@ -336,6 +337,7 @@
 					<Add library="pthread" />
 					<Add library="m" />
 					<Add library="gdi32" />
+					<Add library="opengl32" />
 				</Linker>
 			</Target>
 			<Target title="win32 plugin debug">
@@ -361,6 +363,7 @@
 					<Add library="pthread" />
 					<Add library="m" />
 					<Add library="gdi32" />
+					<Add library="opengl32" />
 				</Linker>
 			</Target>
 		</Build>
@@ -644,7 +647,7 @@
 		<Unit filename="../include/plugin/exe/mip_exe_utils.h" />
 		<Unit filename="../include/plugin/exe/mip_exe_window.h" />
 		<Unit filename="../include/plugin/ladspa/mip_ladspa.h" />
-		<Unit filename="../include/plugin/ladspa/mip_ladspa_plugin.h" />
+		<Unit filename="../include/plugin/ladspa/mip_ladspa_hosted_plugin.h" />
 		<Unit filename="../include/plugin/mip_audio_port.h" />
 		<Unit filename="../include/plugin/mip_editor.h" />
 		<Unit filename="../include/plugin/mip_editor_window.h" />
@@ -657,11 +660,13 @@
 		<Unit filename="../include/plugin/vst2/mip_vst2.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2_entry.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2_host_implementation.h" />
+		<Unit filename="../include/plugin/vst2/mip_vst2_hosted_plugin.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2_plugin.h" />
 		<Unit filename="../include/plugin/vst2/mip_vst2_utils.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_entry.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_host_implementation.h" />
+		<Unit filename="../include/plugin/vst3/mip_vst3_hosted_plugin.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_plugin.h" />
 		<Unit filename="../include/plugin/vst3/mip_vst3_utils.h" />
 		<Unit filename="../include/test/mip_test.h" />

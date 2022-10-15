@@ -189,4 +189,18 @@ public: // descriptors
 MIP_Registry MIP_REGISTRY = {};
 
 //----------------------------------------------------------------------
+//----------------------------------------------------------------------
+
+#define MIP_BASIC_ENTRY(DESC,PLUG)                                                                                        \
+                                                                                                                          \
+  void MIP_Register() {                                                                                                   \
+    MIP_REGISTRY.appendDescriptor(&DESC);                                                                                 \
+  };                                                                                                                      \
+                                                                                                                          \
+  MIP_Plugin* MIP_CreatePlugin( uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) { \
+    if (AIndex == 0) return new PLUG(ADescriptor,AHost);                                                                  \
+    return nullptr;                                                                                                       \
+  }                                                                                                                       \
+
+//----------------------------------------------------------------------
 #endif

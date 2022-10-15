@@ -102,7 +102,7 @@ public:
           MIP_Window* window = plug->MEditor->getWindow();
           if (window) {
             window->invalidateRegion(0,0,AWidth,AHeight);
-            HWND hwnd = window->getWinHandle();
+            //HWND hwnd = window->getWinHandle();
             //UpdateWindow(hwnd);
             //RedrawWindow
           }

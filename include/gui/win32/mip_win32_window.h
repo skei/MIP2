@@ -33,7 +33,8 @@
 //----------------------------------------------------------------------
 
 #define MIP_WIN32_STANDALONE_STYLE    ( WS_OVERLAPPEDWINDOW )
-#define MIP_WIN32_EMBEDDED_STYLE      ( WS_POPUP /* WS_CHILD */ )
+//#define MIP_WIN32_EMBEDDED_STYLE      ( WS_POPUP )
+#define MIP_WIN32_EMBEDDED_STYLE      ( WS_CHILD )
 
 #define MIP_WIN32_EX_STANDALONE_STYLE ( WS_EX_OVERLAPPEDWINDOW )
 #define MIP_WIN32_EX_EMBEDDED_STYLE   ( 0 /* WS_EX_TOOLWINDOW */ )
@@ -363,7 +364,7 @@ public:
     R.right  = AXpos + AWidth;  // - 1;
     R.bottom = AYpos + AHeight; // - 1;
     InvalidateRect(MWinHandle,&R,false);
-    //UpdateWindow(MWinHandle);
+//    UpdateWindow(MWinHandle);
     //RedrawWindow(MWinHandle,&R,NULL,RDW_UPDATENOW);
   }
 
