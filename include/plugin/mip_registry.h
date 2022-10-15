@@ -191,7 +191,7 @@ MIP_Registry MIP_REGISTRY = {};
 //----------------------------------------------------------------------
 //----------------------------------------------------------------------
 
-#define MIP_BASIC_ENTRY(DESC,PLUG)                                                                                        \
+#define MIP_DEFAULT_ENTRY(DESC,PLUG)                                                                                        \
                                                                                                                           \
   void MIP_Register() {                                                                                                   \
     MIP_REGISTRY.appendDescriptor(&DESC);                                                                                 \

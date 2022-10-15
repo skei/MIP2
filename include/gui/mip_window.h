@@ -385,9 +385,7 @@ public: // window
   */
 
   void on_window_paint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
-
-    MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
-
+    //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
     MIP_Painter* painter;
     #ifdef MIP_WINDOW_BUFFERED
       painter = MBufferPainter;
