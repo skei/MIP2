@@ -150,12 +150,16 @@
 //----------
 
 #ifndef MIP_GUI_DEFINED
-  #warning No GUI defined.
+  #ifndef MIP_NO_WARNINGS
+    #warning No GUI defined.
+  #endif
   #define MIP_NO_GUI
 #endif
 
 #ifndef MIP_PAINTER_DEFINED
-  #warning No PAINTER defined.
+  #ifndef MIP_NO_WARNINGS
+    #warning No PAINTER defined.
+  #endif
   #define MIP_NO_GUI
   #define MIP_NO_PAINTER
 #endif

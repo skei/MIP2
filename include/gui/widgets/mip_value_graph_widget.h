@@ -34,10 +34,10 @@ private:
 public:
 //------------------------------
 
-  MIP_ValueGraphWidget(MIP_FRect ARect, int32_t ANum)
+  MIP_ValueGraphWidget(MIP_DRect ARect, int32_t ANum)
   : MIP_Widget(ARect) {
-    setName("MIP_ValueGraphWidget");
-    setHint("valuegraph");
+    MName = "MIP_ValueGraphWidget";
+    //setHint("valuegraph");
     MBackColor = MIP_COLOR_DARK_GRAY;
     MLineColor = MIP_COLOR_LIGHT_GRAY;
     MNodeColor = MIP_COLOR_BRIGHT_YELLOW;
@@ -50,6 +50,9 @@ public:
       MNodes[i].value = MIP_RandomSigned();
       MNodes[i].flags = 0;
     }
+
+    Options.wantHoverEvents = true;
+
   }
 
 //------------------------------
@@ -83,9 +86,16 @@ public:
 public:
 //------------------------------
 
-  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
-    MIP_FRect mrect = getRect();
-      APainter->fillRectangle(mrect,MBackColor);
+  void on_widget_paint(MIP_PaintContext* AContext) override {
+    MIP_DRect mrect = getRect();
+    MIP_Painter* painter = AContext->painter;
+
+      //APainter->fillRectangle(mrect,MBackColor);
+      painter->beginPath();
+      painter->rect(mrect.x,mrect.y,mrect.w,mrect.h);
+      painter->fillColor(MBackColor);
+      painter->fill();
+
       //APainter->setFillColor(MNodeColor);
       if (MNumNodes>0) {
         //int32 halfw = (mrect.w/2);
@@ -93,12 +103,26 @@ public:
         if (MNumNodes==1) {
           //STrace("NumNodes: %i\n",MNumNodes);
           int32_t h = halfh - ( (MNodes[0].value * halfh ) );
-          APainter->drawLine(mrect.x,mrect.y+h,mrect.x2(),mrect.y+h,MLineColor);
+
+          //APainter->drawLine(mrect.x,mrect.y+h,mrect.x2(),mrect.y+h,MLineColor);
+          painter->beginPath();
+          painter->moveTo(mrect.x,mrect.y+h);
+          painter->lineTo(mrect.x2(),mrect.y+h);
+          painter->strokeColor(MLineColor);
+          painter->stroke();
+
         }
         else if (MNumNodes==2) {
           int32_t h1 = halfh - ( (MNodes[0].value * halfh ) );
           int32_t h2 = halfh - ( (MNodes[1].value * halfh ) );
-          APainter->drawLine(mrect.x,mrect.y+h1,mrect.x2(),mrect.y+h2,MLineColor);
+
+          //APainter->drawLine(mrect.x,mrect.y+h1,mrect.x2(),mrect.y+h2,MLineColor);
+          painter->beginPath();
+          painter->moveTo(mrect.x,mrect.y+h1);
+          painter->lineTo(mrect.x2(),mrect.y+h2);
+          painter->strokeColor(MLineColor);
+          painter->stroke();
+
         }
         else {
           float w = (float)mrect.w / (float)(MNumNodes-1);
@@ -108,11 +132,24 @@ public:
             h1 = halfh - ( (MNodes[i].value * halfh ) );
             if (i<MNumNodes-1) {
               h2 = halfh - ( (MNodes[i+1].value * halfh ) );
-              APainter->drawLine(x,mrect.y+h1,x+w,mrect.y+h2,MLineColor);
+
+              //APainter->drawLine(x,mrect.y+h1,x+w,mrect.y+h2,MLineColor);
+              painter->beginPath();
+              painter->moveTo(x,mrect.y+h1);
+              painter->lineTo(x+w,mrect.y+h2);
+              painter->strokeColor(MLineColor);
+              painter->stroke();
+
             }
 
             if (i==MSelected) {
-              APainter->fillRectangle( MIP_FRect(x-3, mrect.y+h1-3, 6, 6), MNodeColor );
+
+              //APainter->fillRectangle( MIP_DRect(x-3, mrect.y+h1-3, 6, 6), MNodeColor );
+              painter->beginPath();
+              painter->rect(x-3,mrect.y+h1-3,6,6);
+              painter->fillColor(MNodeColor);
+              painter->fill();
+
             }
 
             x += w;
@@ -127,7 +164,7 @@ public:
 //  void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
 //  }
 
-  void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp=0) override {
+  void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime=0) override {
       //SWidget::on_mouseMove(AXpos,AYpos,AState);
 
       //float w = (float)(AXpos - mrect.x) / (float)mrect.w; // 0..1
@@ -137,7 +174,7 @@ public:
       if (index != MSelected) {
         MSelected = index;
         //STrace("MSelected: %i\n",MSelected);
-        do_widget_redraw(this,getRect(),0);
+        do_widget_redraw(this,0);
       }
   }
 
@@ -146,15 +183,15 @@ public:
 //    //if (flags.autoHint) do_widget_setHint(this,MHint);
 //  }
 
-  void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo/*, uint32_t ATimeStamp=0*/) override {
+  void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime=0) override {
 //    //if (flags.autoCursor) do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
 //    //if (flags.autoHint) do_widget_setHint(this,"");
       //SWidget::on_leave(AWidget);
       if (MSelected>=0) {
         MSelected = -1;
-        do_widget_redraw(this,getRect(),0);
+        do_widget_redraw(this,0);
       }
-      MIP_Widget::on_widget_mouseLeave(AXpos,AYpos,ATo/*,ATimeStamp*/);
+      MIP_Widget::on_widget_leave(ATo,AXpos,AYpos,ATime);
   }
 
 };

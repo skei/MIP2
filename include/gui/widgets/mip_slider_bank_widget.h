@@ -1,4 +1,4 @@
-#ifndef mip_slider_bank_widget_includedbutton
+#ifndef mip_slider_bank_widget_included
 #define mip_slider_bank_widget_included
 //----------------------------------------------------------------------
 
@@ -26,12 +26,15 @@ private:
 public:
 //------------------------------
 
-  MIP_SliderBankWidget(MIP_FRect ARect, int32_t ANum=16)
+  MIP_SliderBankWidget(MIP_DRect ARect, int32_t ANum=16)
   : MIP_PanelWidget(ARect) {
 
-    setName("MIP_SliderBankWidget");
-    setHint("aliderbank");
-    setCursor(MIP_CURSOR_FINGER);
+    MName = "MIP_SliderBankWidget";
+    //setHint("aliderbank");
+    MMouseCursor = MIP_CURSOR_FINGER;
+
+    Options.wantHoverEvents = true;
+    Options.autoHideCursor = true;
 
     setFillBackground(true);
     setBackgroundColor(MIP_Color(0.55f));
@@ -74,10 +77,11 @@ public:
 //------------------------------
 
 
-  void on_widget_paint(MIP_Painter* APainter, MIP_FRect ARect, uint32_t AMode) override {
-    MIP_FRect mrect = getRect();
+  void on_widget_paint(MIP_PaintContext* AContext) override {
+    MIP_DRect mrect = getRect();
+    MIP_Painter* painter = AContext->painter;
 
-    fillBackground(APainter,ARect,AMode);
+    fillBackground(AContext);
 
     //STrace("painting %s\n",MName);
     if (MNumSliders > 1) {
@@ -89,42 +93,66 @@ public:
         float y = mrect.y2() - v;
         float h = v;//mrect.h - v;
         int32_t ix = floorf(x);
-        if (i==MHoverSlider) APainter->fillRectangle( MIP_FRect(ix,y,iw2,h),MHoverColor );
-        else APainter->fillRectangle( MIP_FRect(ix,y,iw2,h), MBarColor );
+
+        if (i==MHoverSlider) {
+          //APainter->fillRectangle( MIP_DRect(ix,y,iw2,h),MHoverColor );
+          painter->beginPath();
+          painter->rect(ix,y,iw2,h);
+          painter->fillColor(MHoverColor);
+          painter->fill();
+        }
+        else {
+          //APainter->fillRectangle( MIP_DRect(ix,y,iw2,h), MBarColor );
+          painter->beginPath();
+          painter->rect(ix,y,iw2,h);
+          painter->fillColor(MBarColor);
+          painter->fill();
+        }
+
         x += w;
       }
     }
 
-    drawBorder(APainter,ARect,AMode);
+    drawBorder(AContext);
 
   }
 
   //----------
 
-  void on_widget_mouseClick(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
+  void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime=0) override {
     if (AButton == MIP_BUTTON_LEFT) {
       MIsDragging = true;
-      MIP_FRect mrect = getRect();
+      MIP_DRect mrect = getRect();
       int32_t i = (AXpos - mrect.x) * MNumSliders / mrect.w;
       float v = (mrect.y2() - AYpos) / mrect.h;
 
       MSliderValues[i] = MIP_Clamp(v,0,1);
-      do_widget_redraw(this,mrect,0);
+      do_widget_redraw(this,0);
+
+      if (Options.autoHideCursor) {
+        do_widget_cursor(this,MIP_CURSOR_LOCK);
+        do_widget_cursor(this,MIP_CURSOR_HIDE);
+      }
     }
   }
 
   //----------
 
-  void on_widget_mouseRelease(float AXpos, float AYpos, uint32_t AButton, uint32_t AState, uint32_t ATimeStamp=0) override {
+  void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime=0) override {
     if (AButton == MIP_BUTTON_LEFT) {
       MIsDragging = false;
+      if (Options.autoHideCursor) {
+        do_widget_cursor(this,MIP_CURSOR_UNLOCK);
+        do_widget_cursor(this,MIP_CURSOR_SHOW);
+      }
+
     }
   }
 
   //----------
 
-  void on_widget_mouseMove(float AXpos, float AYpos, uint32_t AState, uint32_t ATimeStamp=0) override {
-    MIP_FRect mrect = getRect();
+  void on_widget_mouse_move(uint32_t AState, double AXpos, double AYpos, uint32_t ATime=0) override {
+    MIP_DRect mrect = getRect();
     //SWidget::on_mouseMove(AXpos,AYpos,AState);
     float w = (float)(AXpos - mrect.x) / (float)mrect.w; // 0..1
     int32_t index = (w * (float)MNumSliders);
@@ -132,23 +160,23 @@ public:
       float v = (mrect.y2() - AYpos) / mrect.h;
       MSliderValues[index] = MIP_Clamp(v,0,1);
       if (index != MHoverSlider) MHoverSlider = index;
-      do_widget_redraw(this,mrect,0);
+      do_widget_redraw(this,0);
     }
     else {
       if (index != MHoverSlider) MHoverSlider = index;
-      do_widget_redraw(this,mrect,0);
+      do_widget_redraw(this,0);
     }
   }
 
   //----------
 
-  void on_widget_mouseLeave(float AXpos, float AYpos, MIP_Widget* ATo/*, uint32_t ATimeStamp=0*/) override {
-    MIP_Widget::on_widget_mouseLeave(AXpos,AYpos,ATo/*,ATimeStamp*/);
-    MIP_FRect mrect = getRect();
+  void on_widget_leave(MIP_Widget* ATo, double AXpos, double AYpos, uint32_t ATime=0) override {
+    MIP_Widget::on_widget_leave(ATo,AXpos,AYpos,ATime);
+    //MIP_DRect mrect = getRect();
     //SWidget::on_leave(AWidget);
     if (MHoverSlider >= 0) {
       MHoverSlider = -1;
-      do_widget_redraw(this,mrect,0);
+      do_widget_redraw(this,0);
     }
     //if (flags.autoCursor) do_widget_setMouseCursor(this,MIP_CURSOR_DEFAULT);
     //if (flags.autoHint) do_widget_setHint(this,"");

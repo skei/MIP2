@@ -53,74 +53,77 @@ public:
 
   void on_widget_paint(MIP_PaintContext* AContext) override {
     MIP_Painter* painter = AContext->painter;
+
     MIP_DRect mrect = getRect();
-      int32_t num = mrect.w;
+    //mrect.shrink(2);
 
-      // calc coords
+    int32_t num = mrect.w;
 
-      if (num > 0) {
-        float x,xadd;
-        if (MDecay) {
-          x = 1.0;
-          xadd = -1.0f / num;
-        }
-        else {
-          x = 0;
-          xadd = 1.0f / num;
-        }
+    // calc coords
 
-        //float h = (float)mrect.h;
-        //int32 y2 = mrect.y2() + 1;
-
-        float value = getValue();
-        for (int32_t i=0; i<num; i++) {
-          float n = MIP_Curve(x,value);
-          MXCoords[i] = mrect.x + i;
-          MYCoords[i] = mrect.y2() + 1 - (n * (float)mrect.h);
-          x += xadd;
-        }
-      }
-
+    if (num > 0) {
+      float x,xadd;
       if (MDecay) {
-        MXCoords[num] = mrect.x2();
-        MYCoords[num] = mrect.y2() + 1;
-        MXCoords[num+1] = mrect.x;
-        MYCoords[num+1] = mrect.y2() + 1;
+        x = 1.0;
+        xadd = -1.0f / num;
       }
       else {
-        MXCoords[num] = mrect.x2();
-        MYCoords[num] = mrect.y + 1;
-        MXCoords[num+1] = mrect.x2();
-        MYCoords[num+1] = mrect.y2() + 1;
+        x = 0;
+        xadd = 1.0f / num;
       }
 
-      // background
+      //float h = (float)mrect.h;
+      //int32 y2 = mrect.y2() + 1;
 
-      //APainter->setFillColor(MBackgroundColor);
-
-      painter->beginPath();
-      painter->rect(mrect.x,mrect.y,mrect.w,mrect.h);
-      painter->fillColor(MBackgroundColor);
-      painter->fill();
-
-      // curve
-
-      //APainter->setPenSize(2);
-
-      MIP_Color color = MCurveColor;
-      //if (MIsInteractive) color = MInteractColor;
-
-      painter->beginPath();
-      painter->moveTo(MXCoords[0],MYCoords[0]);
-
-      for (int32_t i=1; i<num; i++) {
-        painter->lineTo(MXCoords[i],MYCoords[i]);
+      float value = getValue();
+      for (int32_t i=0; i<num; i++) {
+        float n = MIP_Curve(x,value);
+        MXCoords[i] = mrect.x + i;
+        MYCoords[i] = mrect.y2() + 1 - (n * (float)mrect.h);
+        x += xadd;
       }
-      painter->strokeWidth(2);
-      painter->strokeColor(color);
-      painter->stroke();
+    }
 
-      //APainter->setPenSize(1);
+    if (MDecay) {
+      MXCoords[num] = mrect.x2();
+      MYCoords[num] = mrect.y2() + 1;
+      MXCoords[num+1] = mrect.x;
+      MYCoords[num+1] = mrect.y2() + 1;
+    }
+    else {
+      MXCoords[num] = mrect.x2();
+      MYCoords[num] = mrect.y + 1;
+      MXCoords[num+1] = mrect.x2();
+      MYCoords[num+1] = mrect.y2() + 1;
+    }
+
+    // background
+
+    //APainter->setFillColor(MBackgroundColor);
+
+    painter->beginPath();
+    painter->rect(mrect.x,mrect.y,mrect.w,mrect.h);
+    painter->fillColor(MBackgroundColor);
+    painter->fill();
+
+    // curve
+
+    //APainter->setPenSize(2);
+
+    MIP_Color color = MCurveColor;
+    //if (MIsInteractive) color = MInteractColor;
+
+    painter->beginPath();
+    painter->moveTo(MXCoords[0],MYCoords[0]);
+
+    for (int32_t i=1; i<num; i++) {
+      painter->lineTo(MXCoords[i],MYCoords[i]);
+    }
+    painter->strokeWidth(2);
+    painter->strokeColor(color);
+    painter->stroke();
+
+    //APainter->setPenSize(1);
   }
 
 };

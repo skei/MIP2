@@ -30,6 +30,9 @@
 
 //----------
 
+// const unsigned knob3_60x60_131_size
+// const unsigned char knob3_60x60_131
+#include "../data/img/knob3_60x60_131.h"
 
 //----------------------------------------------------------------------
 //
@@ -111,7 +114,8 @@ private:
   #define TEXTBOX1_LINE_COUNT   256
   #define TEXTBOX1_BUFFER_SIZE  (TEXTBOX1_LINE_COUNT * TEXTBOX1_LINE_SIZE)
 
-  char textbox1_buffer[TEXTBOX1_BUFFER_SIZE] = {0};
+  char        textbox1_buffer[TEXTBOX1_BUFFER_SIZE] = {0};
+  MIP_Bitmap* knob_bitmap = nullptr;
 
 //------------------------------
 public:
@@ -159,6 +163,15 @@ public: // gui
 
       MIP_Window* editor_window = MEditor->getWindow();
       editor_window->setWindowFillBackground(false);
+
+      //----- bitmaps-----
+
+      // const unsigned      knob3_60x60_131_size
+      // const unsigned char knob3_60x60_131
+
+      knob_bitmap = new MIP_Bitmap(knob3_60x60_131,knob3_60x60_131_size);
+      //knob_bitmap->premultAlpha(0x808080);
+      //knob_bitmap->fillLayer(3,255);
 
       //----- menu-----
 
@@ -371,18 +384,30 @@ public: // gui
 
         // keyboard
 
-        MIP_KeyboardWidget* keyboard1 = new MIP_KeyboardWidget(40);
+        MIP_KeyboardWidget* keyboard1 = new MIP_KeyboardWidget(50);
         keyboard1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         left_scrollbox->appendChildWidget(keyboard1);
 
         // plot
 
-        MIP_PlotWidget* plot1 = new MIP_PlotWidget(40);
+        MIP_PlotWidget* plot1 = new MIP_PlotWidget(50);
         plot1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
         plot1->setFillBackground(true);
         plot1->setBackgroundColor(0.4);
         plot1->setNumValues(32);
         left_scrollbox->appendChildWidget(plot1);
+
+        // slider bank
+
+        MIP_SliderBankWidget* sbank = new MIP_SliderBankWidget(50,16);
+        sbank->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        left_scrollbox->appendChildWidget(sbank);
+
+        // value graph
+
+        MIP_ValueGraphWidget* vgraph = new MIP_ValueGraphWidget(50,16);
+        vgraph->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+        left_scrollbox->appendChildWidget(vgraph);
 
       }
 
@@ -470,15 +495,25 @@ public: // gui
 
           // curve 1
 
-          MIP_CurveWidget* curve1 = new MIP_CurveWidget(32,false);
+          MIP_CurveWidget* curve1 = new MIP_CurveWidget(60,false);
           curve1->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
           right_bottom_panel->appendChildWidget(curve1);
 
           // curve 2
 
-          MIP_CurveWidget* curve2 = new MIP_CurveWidget(32,true);
+          MIP_CurveWidget* curve2 = new MIP_CurveWidget(60,true);
           curve2->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
           right_bottom_panel->appendChildWidget(curve2);
+
+          // image strip
+
+          MIP_ImageStripWidget* imgstrip = new MIP_ImageStripWidget(60,"",0.0);
+          imgstrip->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+
+          imgstrip->setupImage(knob_bitmap);
+          imgstrip->setupTiles(1,131);
+
+          right_bottom_panel->appendChildWidget(imgstrip);
 
         }
 
@@ -649,6 +684,13 @@ public: // gui
     return result;
   }
 
+  //----------
+
+  void gui_destroy() final {
+    if (knob_bitmap) delete knob_bitmap;
+  }
+
+
 #endif // MIP_PLUGIN_GENERIC_EDITOR
 
 };
@@ -679,6 +721,6 @@ public: // gui
 //  return nullptr;
 //}
 
-MIP_BASIC_ENTRY(template_descriptor,test_layout_plugin);
+MIP_DEFAULT_ENTRY(template_descriptor,test_layout_plugin);
 
 

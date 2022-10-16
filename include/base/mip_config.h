@@ -55,6 +55,7 @@
 //#define MIP_NO_GUI
 //#define MIP_NO_PAINTER
 //#define MIP_NO_STDLIB
+//#define MIP_NO_WARNINGS
 
 //#define MIP_PAINTER_CAIRO
 //#define MIP_PAINTER_GDI
@@ -66,6 +67,7 @@
 //#define MIP_PLUGIN_GENERIC_EDITOR
 
 //#define MIP_RANDOM_SYSTEM
+
 
 //#define MIP_USE_CAIRO
 //#define MIP_USE_GDI
@@ -90,6 +92,7 @@
 
 //#define MIP_XCB_USE_STB_TRUETYPE
 //#define MIP_XCB_WAIT_FOR_MAPNOTIFY
+
 
 //----------------------------------------------------------------------
 #endif
