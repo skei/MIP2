@@ -47,7 +47,7 @@
 //#include "gui/widgets/mip_circular_waveform_widget.h"
 //#include "gui/widgets/mip_main_menu_widget.h"
 //#include "gui/widgets/mip_modmatrix_widget.h"
-//#include "gui/widgets/mip_text_edit_widget.h"
+#include "gui/widgets/mip_text_edit_widget.h"
 //#include "gui/widgets/mip_timeline_widget.h"
 //#include "gui/widgets/mip_xy_pad_widget.h"
 

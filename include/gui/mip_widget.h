@@ -165,6 +165,9 @@ public:
   virtual MIP_Widget*       getChildWidget(uint32_t i)  { return MChildren[i]; }
   virtual MIP_WidgetArray*  getChildWidgets()           { return &MChildren; }
 
+  virtual void setName(const char* AName) { MName = AName; }
+  virtual void setHint(const char* AHint) { /*MHint = AHint;*/ }
+
 //------------------------------
 public:
 //------------------------------
@@ -246,6 +249,10 @@ public: // child to parent
 
   virtual void do_widget_cursor(MIP_Widget* ASender, uint32_t ACursor) {
     if (MParent) MParent->do_widget_cursor(ASender,ACursor);
+  }
+
+  virtual void do_widget_want_keys(MIP_Widget* ASender) {
+    if (MParent) MParent->do_widget_want_keys(ASender);
   }
 
   virtual void do_widget_hint(MIP_Widget* ASender, const char* AHint) {

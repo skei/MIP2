@@ -19,6 +19,17 @@
 //#define MIP_XCB_WAIT_FOR_MAPNOTIFY
 #define MIP_XCB_WINDOW_RESIZE_SPEED 500
 
+//----------
+
+#define mip_xcb_key_enter     65293 // 13
+#define mip_xcb_key_esc       65307 // 27
+#define mip_xcb_key_home      65360 // 1
+#define mip_xcb_key_end       65367 // 2
+#define mip_xcb_key_left      65361 // 3
+#define mip_xcb_key_right     65363 // 4
+#define mip_xcb_key_delete    65535 // 5
+#define mip_xcb_key_backspace 65288 // 6
+
 //----------------------------------------------------------------------
 //
 //
@@ -878,10 +889,21 @@ private: // keyboard
   uint32_t remapKey(uint32_t AKey, uint32_t AState) {
     int col = 0;
     xcb_keysym_t keysym = xcb_key_symbols_get_keysym(MKeySyms,AKey,col);
-    //xcb_keycode_t* keycode = xcb_key_symbols_get_keycode(MKeySyms,keysym);
+    xcb_keycode_t* keycode = xcb_key_symbols_get_keycode(MKeySyms,keysym);
     //MIP_Print("AKey %i AState %i keysym %i keycode %i\n",AKey,AState,keysym,keycode[0]);
-    //free(keycode);
-    return keysym;
+    uint32_t key = keysym;
+    switch (keysym) {
+      case mip_xcb_key_enter:      key = MIP_KEY_ENTER;     break;
+      case mip_xcb_key_esc:        key = MIP_KEY_ESC;       break;
+      case mip_xcb_key_home:       key = MIP_KEY_HOME;      break;
+      case mip_xcb_key_end:        key = MIP_KEY_END;       break;
+      case mip_xcb_key_left:       key = MIP_KEY_LEFT;      break;
+      case mip_xcb_key_right:      key = MIP_KEY_RIGHT;     break;
+      case mip_xcb_key_delete:     key = MIP_KEY_DELETE;    break;
+      case mip_xcb_key_backspace:  key = MIP_KEY_BACKSPACE; break;
+    }
+    free(keycode);
+    return key;
   }
 
   //----------

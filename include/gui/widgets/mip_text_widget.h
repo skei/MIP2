@@ -73,7 +73,7 @@ public:
   virtual void updateTextRect(MIP_Painter* APainter) {
     if (APainter) {
       if (Options.autoSize) {
-        float bounds[4];;
+        float bounds[4];
         double textsize = MTextSize;
         if (textsize < 0) textsize = MRect.h * (- textsize);
         APainter->fontSize(textsize);

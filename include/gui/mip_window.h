@@ -56,6 +56,7 @@ protected:
   MIP_Widget*       MClickedWidget      = nullptr;
   MIP_Widget*       MModalWidget        = nullptr;
   MIP_Widget*       MLockedWidget       = nullptr;
+  MIP_Widget*       MKeyInputWidget     = nullptr;
 
   uint32_t          MCurrentCursor      = MIP_CURSOR_DEFAULT;
 
@@ -427,12 +428,14 @@ public: // window
 
   void on_window_key_press(uint32_t AKey, uint32_t AState, uint32_t ATime) override {
     //MIP_PRINT;
+    if (MKeyInputWidget) MKeyInputWidget->on_widget_key_press(AKey,AState,ATime);
   }
 
   //----------
 
   void on_window_key_release(uint32_t AKey, uint32_t AState, uint32_t ATime) override {
     //MIP_PRINT;
+    if (MKeyInputWidget) MKeyInputWidget->on_widget_key_release(AKey,AState,ATime);
   }
 
   //----------
@@ -607,6 +610,12 @@ public: // child to parent
         }
         break;
     }
+  }
+
+  //----------
+
+  void do_widget_want_keys(MIP_Widget* ASender) {
+    MKeyInputWidget = ASender;
   }
 
   //----------

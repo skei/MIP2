@@ -11,14 +11,14 @@
 // MIP_LINUX is not defined yet (mip_defines.h)
 #ifdef __gnu_linux__
   #define MIP_GUI_XCB
+  #define MIP_PAINTER_NANOVG
   //#define MIP_PAINTER_XCB
   //#define MIP_WINDOW_BUFFERED
-  #define MIP_PAINTER_NANOVG
 #else
   #define MIP_GUI_WIN32
+  #define MIP_PAINTER_NANOVG
   //#define MIP_PAINTER_GDI
   //#define MIP_PAINTER_WGL
-  #define MIP_PAINTER_NANOVG
 #endif
 
 //----------------------------------------------------------------------
@@ -30,8 +30,7 @@
 
 //----------
 
-// const unsigned knob3_60x60_131_size
-// const unsigned char knob3_60x60_131
+// knob3_60x60_131, knob3_60x60_131_size
 #include "../data/img/knob3_60x60_131.h"
 
 //----------------------------------------------------------------------
@@ -134,18 +133,14 @@ public: // plugin
 
   bool init() final {
     //MIP_Print("Initializing plugin\n");
-
     appendAudioInputPort( &myAudioInputPorts[0] );
     appendAudioOutputPort(&myAudioOutputPorts[0]);
-
     appendNoteInputPort(  &myNoteInputPorts[0]  );
     appendNoteOutputPort( &myNoteOutputPorts[0] );
-
     for (uint32_t i=0; i<PARAM_COUNT; i++) {
       appendParameter( new MIP_Parameter(&myParameters[i]) );
     }
     appendParameter( new MIP_Parameter(0,"param4","",-10,10,0,CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED) );
-
     return true;
   }
 
@@ -249,6 +244,15 @@ public: // gui
         text1->setDrawBorder(false);
         text1->setBackgroundColor(0.55);
         left_scrollbox->appendChildWidget(text1);
+
+        // text
+
+        MIP_TextEditWidget* textedit1 = new MIP_TextEditWidget(20,"Text Edit");
+        textedit1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+//        textedit1->setFillBackground(true);
+//        textedit1->setDrawBorder(false);
+//        textedit1->setBackgroundColor(0.55);
+        left_scrollbox->appendChildWidget(textedit1);
 
         // toggle button
 
@@ -505,15 +509,39 @@ public: // gui
           curve2->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
           right_bottom_panel->appendChildWidget(curve2);
 
+          // knob
+
+          MIP_KnobWidget* knob1 = new MIP_KnobWidget(60,"knob",0.5);
+          knob1->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+          right_bottom_panel->appendChildWidget(knob1);
+
           // image strip
 
           MIP_ImageStripWidget* imgstrip = new MIP_ImageStripWidget(60,"",0.0);
           imgstrip->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
-
           imgstrip->setupImage(knob_bitmap);
           imgstrip->setupTiles(1,131);
-
           right_bottom_panel->appendChildWidget(imgstrip);
+
+          MIP_ImageStripWidget* imgstrip2 = new MIP_ImageStripWidget(120,"",0.0);
+          imgstrip2->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+          imgstrip2->setupImage(knob_bitmap);
+          imgstrip2->setupTiles(1,131);
+          right_bottom_panel->appendChildWidget(imgstrip2);
+
+          MIP_ImageStripWidget* imgstrip3 = new MIP_ImageStripWidget(180,"",0.0);
+          imgstrip3->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+          imgstrip3->setupImage(knob_bitmap);
+          imgstrip3->setupTiles(1,131);
+          right_bottom_panel->appendChildWidget(imgstrip3);
+
+          for (uint32_t i=0; i<10; i++) {
+            MIP_ImageStripWidget* is = new MIP_ImageStripWidget(40,"",0.0);
+            is->Layout.alignment = MIP_WIDGET_ALIGN_STACK_HORIZ;
+            is->setupImage(knob_bitmap);
+            is->setupTiles(1,131);
+            right_bottom_panel->appendChildWidget(is);
+          }
 
         }
 
@@ -537,6 +565,7 @@ public: // gui
       background->appendChildWidget(center_bottom_panel);
 
       {
+
         MIP_PanelWidget* aspect_rect1 = new MIP_PanelWidget(0);
         aspect_rect1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
         //aspect_rect1->Layout.border = MIP_DRect(10,10,10,10);
@@ -547,23 +576,27 @@ public: // gui
         //aspect_rect1->setBackgroundColor(MIP_COLOR_BLUE2);
         center_bottom_panel->appendChildWidget(aspect_rect1);
 
+        // aspect
+
         MIP_PanelWidget* aspect_inner_rect1 = new MIP_PanelWidget( MIP_DRect(0.02,0.02,0.96,0.96) );
         aspect_inner_rect1->Layout.alignment = MIP_WIDGET_ALIGN_CLIENT;
         aspect_inner_rect1->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
         aspect_rect1->appendChildWidget(aspect_inner_rect1);
 
-        MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(MIP_DRect(0,0,0.45,0.45),"knob1",0.5);
-        knob1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-        knob1->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
-        knob1->Layout.aspectRatio = 2.0 / 3.0;
-        aspect_inner_rect1->appendChildWidget(knob1);
+        {
+          MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(MIP_DRect(0,0,0.45,0.45),"knob1",0.5);
+          knob1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
+          knob1->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+          knob1->Layout.aspectRatio = 2.0 / 3.0;
+          aspect_inner_rect1->appendChildWidget(knob1);
 
-        MIP_Knob2Widget* knob2 = new MIP_Knob2Widget(MIP_DRect(0.02,0,0.45,0.45),"knob2",0.5);
-        knob2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-        knob2->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
-        knob2->Layout.aspectRatio = 2.0 / 3.0;
-        knob2->getKnobWidget()->Options.autoHideCursor = false;
-        aspect_inner_rect1->appendChildWidget(knob2);
+          MIP_Knob2Widget* knob2 = new MIP_Knob2Widget(MIP_DRect(0.02,0,0.45,0.45),"knob2",0.5);
+          knob2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
+          knob2->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+          knob2->Layout.aspectRatio = 2.0 / 3.0;
+          knob2->getKnobWidget()->Options.autoHideCursor = false;
+          aspect_inner_rect1->appendChildWidget(knob2);
+        }
 
       }
 
@@ -638,7 +671,7 @@ public: // gui
             }
           }
 
-          // page 1
+          // page 3
 
           MIP_PanelWidget* tabs1_page3 = new MIP_PanelWidget(0);
           tabs1_page3->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
@@ -688,8 +721,8 @@ public: // gui
 
   void gui_destroy() final {
     if (knob_bitmap) delete knob_bitmap;
+    MIP_Plugin::gui_destroy();
   }
-
 
 #endif // MIP_PLUGIN_GENERIC_EDITOR
 
@@ -707,19 +740,6 @@ public: // gui
 #include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
-
-//void MIP_Register() {
-//  MIP_REGISTRY.appendDescriptor(&template_descriptor);
-//};
-//
-////----------
-//
-//MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-//  if (AIndex == 0) {
-//    return new test_layout_plugin(ADescriptor,AHost);
-//  }
-//  return nullptr;
-//}
 
 MIP_DEFAULT_ENTRY(template_descriptor,test_layout_plugin);
 
