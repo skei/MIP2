@@ -115,6 +115,7 @@ public:
       painter->drawTextBox(r,MText,MIP_TEXT_ALIGN_LEFT,MTextColor);
 
       char c = MText[MCaretPos];
+      //MText[MCaretPos] = 0;
       MText[MCaretPos] = 0;
 
       //int32_t txtwidth = painter->getTextWidth(MText);
@@ -187,7 +188,7 @@ public:
 
   void on_widget_key_press(uint32_t AKey, uint32_t AState, uint32_t ATimeStamp=0) override {
     //MIP_Print("AChar %i AKey %i AState %i\n",(int)AChar,AKey,AState);
-    MIP_DRect mrect = getRect();
+    //MIP_DRect mrect = getRect();
     int32_t len;
     char  c;
     //MIP_Widget::on_keyPress(AChar,AKey,AState);
@@ -242,9 +243,8 @@ public:
       default:
         if ((AKey >= 32) && (AKey <= 127)) {
           c = AKey & 0xff;
-          if ((c >= 'a') && (c <= 'z') && (AState == MIP_KEY_SHIFT)) {
-            c -= 32;
-          }
+          // hack-alert!
+          if ((c >= 'a') && (c <= 'z') && (AState == MIP_KEY_SHIFT)) { c -= 32; }
           MIP_InsertChar(MText,MCaretPos,c);
           MCaretPos += 1;
           do_widget_update(this);
