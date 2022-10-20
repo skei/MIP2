@@ -40,13 +40,15 @@
               changes the height of the client area.
 */
 
+//#define MIP_WIN32_CLASS_STYLE         ( CS_OWNDC )
 #define MIP_WIN32_CLASS_STYLE         ( CS_OWNDC | CS_HREDRAW | CS_VREDRAW )
 
 #define MIP_WIN32_STANDALONE_STYLE    ( WS_OVERLAPPEDWINDOW )
-#define MIP_WIN32_EX_STANDALONE_STYLE ( WS_EX_OVERLAPPEDWINDOW )
+#define MIP_WIN32_EMBEDDED_STYLE      ( WS_CHILD )
 
-#define MIP_WIN32_EMBEDDED_STYLE      ( WS_POPUP + WS_VISIBLE )
+#define MIP_WIN32_EX_STANDALONE_STYLE ( WS_EX_OVERLAPPEDWINDOW )
 #define MIP_WIN32_EX_EMBEDDED_STYLE   ( 0 /* WS_EX_TOOLWINDOW */ )
+
 
 //----------
 
@@ -122,11 +124,6 @@ private:
   int32_t     MMouseYpos                = 0;
   int32_t     MCurrentCursor            = 0;
 
-  int32_t     MAdjustedStandaloneWidth  = 0;
-  int32_t     MAdjustedStandaloneHeight = 0;
-  int32_t     MAdjustedEmbeddedWidth    = 0;
-  int32_t     MAdjustedEmbeddedHeight   = 0;
-
 //------------------------------
 private:
 //------------------------------
@@ -146,73 +143,21 @@ public:
 
   MIP_Win32Window(uint32_t AWidth, uint32_t AHeight, intptr_t AParent=0)
   : MIP_BaseWindow(AWidth,AHeight,AParent) {
-    MWindowType = "";//"MIP_Win32Window";
+    MWindowType = "";
     setWindowTitle("MIP_Win32Window");
     MMouseXpos  = -1;
     MMouseYpos  = -1;
     memset(MUserCursors,0,sizeof(MUserCursors));
     MCurrentCursor = -1;
     setMouseCursor(MIP_CURSOR_DEFAULT);
-
-    RECT src = { 0, 0, (long int)AWidth, (long int)AHeight };
-    AdjustWindowRectEx(&src,MIP_WIN32_STANDALONE_STYLE,FALSE,MIP_WIN32_EX_STANDALONE_STYLE);
-    MAdjustedStandaloneWidth  = (src.right  - src.left) - AWidth;
-    MAdjustedStandaloneHeight = (src.bottom - src.top)  - AHeight;
-    int32_t swidth  = src.right  - src.left;
-    int32_t sheight  = src.bottom - src.top;
-
-//    RECT erc = { 0, 0, (long int)AWidth, (long int)AHeight };
-//    AdjustWindowRectEx(&erc,MIP_WIN32_EMBEDDED_STYLE,FALSE,MIP_WIN32_EX_EMBEDDED_STYLE);
-//    MAdjustedEmbeddedWidth  = (erc.right  - erc.left) - AWidth;
-//    MAdjustedEmbeddedHeight = (erc.bottom - erc.top)  - AHeight;
-//    int32_t ewidth = erc.right  - erc.left;
-//    int32_t eheight = erc.bottom - erc.top;
-
-    MAdjustedEmbeddedWidth  = 0;
-    MAdjustedEmbeddedHeight = 0;
-    int32_t ewidth = AWidth;
-    int32_t eheight = AHeight;
-
     if (AParent == 0) {
-      MEmbedded = false;
-      MWindowType = "STANDALONE";
-      MWinHandle = CreateWindowEx(
-        MIP_WIN32_EX_STANDALONE_STYLE,
-        MIP_Win32ClassName(),
-        "MIP_Win32Window",
-        MIP_WIN32_STANDALONE_STYLE,
-        0,
-        0,
-        swidth,
-        sheight,
-        NULL,
-        0,
-        MIP_GLOBAL_WIN32_INSTANCE,
-        0
-      );
-      SetFocus(MWinHandle);
+      //MIP_Print("Creating standalone window\n");
+      createStandaloneWindow(AWidth,AHeight);
     }
-
     else {
-      MEmbedded = true;
-      MWindowType = "EMBEDDED";
-      MWinHandle = CreateWindowEx(
-        MIP_WIN32_EX_EMBEDDED_STYLE,
-        MIP_Win32ClassName(),
-        nullptr,
-        MIP_WIN32_EMBEDDED_STYLE,
-        0,
-        0,
-        ewidth,
-        eheight,
-        (HWND)AParent,
-        0,
-        MIP_GLOBAL_WIN32_INSTANCE,
-        0
-      );
-      SetFocus(MWinHandle);
+      //MIP_Print("Creating embedded window\n");
+      createEmbeddedWindow(AWidth,AHeight,AParent);
     }
-
     SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
   }
 
@@ -223,6 +168,78 @@ public:
     //ReleaseDC(0,MWindowDC);
     //ReleaseDC(0,MScreenDC);
     DestroyWindow(MWinHandle);
+  }
+
+//------------------------------
+private:
+//------------------------------
+
+  void createStandaloneWindow(uint32_t AWidth, uint32_t AHeight) {
+    MEmbedded = false;
+    MWindowType = "STANDALONE";
+    int32_t width = AWidth;
+    int32_t height = AHeight;
+    adjustStandaloneSize(&width,&height);
+    MWinHandle = CreateWindowEx(
+      MIP_WIN32_EX_STANDALONE_STYLE,
+      MIP_Win32ClassName(),
+      "MIP_Win32Window (standalone)",
+      MIP_WIN32_STANDALONE_STYLE,
+      0,
+      0,
+      width,
+      height,
+      NULL,
+      0,
+      MIP_GLOBAL_WIN32_INSTANCE,
+      0
+    );
+    SetFocus(MWinHandle);
+  }
+
+  //----------
+
+  void createEmbeddedWindow(uint32_t AWidth, uint32_t AHeight, intptr_t AParent) {
+    MEmbedded = true;
+    MWindowType = "EMBEDDED";
+    int32_t width = AWidth;
+    int32_t height = AHeight;
+    adjustEmbeddedSize(&width,&height);
+    MWinHandle = CreateWindowEx(
+      MIP_WIN32_EX_EMBEDDED_STYLE,
+      MIP_Win32ClassName(),
+      nullptr,
+      MIP_WIN32_EMBEDDED_STYLE,
+      0,
+      0,
+      width,
+      height,
+      (HWND)AParent,
+      0,
+      MIP_GLOBAL_WIN32_INSTANCE,
+      0
+    );
+    SetFocus(MWinHandle);
+  }
+
+  //----------
+
+  void adjustStandaloneSize(int32_t* AWidth, int32_t* AHeight) {
+    RECT rect = { 0, 0, (long int)*AWidth, (long int)*AHeight };
+    AdjustWindowRectEx(&rect,MIP_WIN32_STANDALONE_STYLE,FALSE,MIP_WIN32_EX_STANDALONE_STYLE);
+    //AdjustWindowRect(&rect,MIP_WIN32_STANDALONE_STYLE,FALSE);
+    *AWidth  = rect.right  - rect.left;
+    *AHeight = rect.bottom - rect.top;
+  }
+
+  //----------
+
+  void adjustEmbeddedSize(int32_t* AWidth, int32_t* AHeight) {
+    RECT rect = { 0, 0, (long int)*AWidth, (long int)*AHeight };
+    AdjustWindowRectEx(&rect,MIP_WIN32_EMBEDDED_STYLE,FALSE,MIP_WIN32_EX_EMBEDDED_STYLE);
+    //AdjustWindowRect(&rect,MIP_WIN32_EMBEDDED_STYLE,FALSE);
+    *AWidth  = rect.right  - rect.left;
+    *AHeight = rect.bottom - rect.top;
   }
 
 //------------------------------
@@ -239,11 +256,10 @@ public:
 public:
 //------------------------------
 
-  virtual int32_t getWindowWidth()        { return MWindowWidth; }
-  virtual int32_t getWindowHeight()       { return MWindowHeight; }
-  virtual double  getWindowWidthScale()   { return MWindowWidthScale; }
-  virtual double  getWindowHeightScale()  { return MWindowHeightScale; }
-
+  virtual int32_t getWindowWidth()                          { return MWindowWidth; }
+  virtual int32_t getWindowHeight()                         { return MWindowHeight; }
+  virtual double  getWindowWidthScale()                     { return MWindowWidthScale; }
+  virtual double  getWindowHeightScale()                    { return MWindowHeightScale; }
   virtual void    setWindowFillBackground(bool AFill=true)  { MFillBackground = AFill; }
   virtual void    setWindowBackgroundColor(uint32_t AColor) { MBackgroundColor = AColor; }
 
@@ -270,21 +286,11 @@ public:
   //----------
 
   void setWindowSize(uint32_t AWidth, uint32_t AHeight) override {
-
-    int w,h;
-    if (MEmbedded) {
-      w = AWidth + MAdjustedEmbeddedWidth + 0;
-      h = AHeight + MAdjustedEmbeddedHeight + 0;
-    }
-    else {
-      w = AWidth + MAdjustedStandaloneWidth + 0;
-      h = AHeight + MAdjustedStandaloneHeight + 0;
-    }
-    SetWindowPos(MWinHandle,HWND_TOP,0,0,w,h, SWP_NOMOVE);
+    SetWindowPos(MWinHandle,HWND_TOP,0,0,AWidth,AHeight, SWP_NOMOVE);
     //MRect.w = w;
     //MRect.h = h;
-    MWindowWidth = w;
-    MWindowHeight = h;
+    MWindowWidth = AWidth;
+    MWindowHeight = AHeight;
   }
 
   //----------
@@ -313,8 +319,9 @@ public:
 
   //----------
 
-  //void flush(void) override {
-  //}
+  void flush(void) override {
+    GdiFlush();
+  }
 
   //----------
 
@@ -323,17 +330,17 @@ public:
 
   //----------
 
-//    MSG msg;
-//    BOOL bRet;
-//    while((bRet = GetMessage(&msg,NULL,0,0)) != 0) {
-//      if (bRet == -1) {
-//        // handle the error and possibly exit
-//      }
-//      else {
-//        TranslateMessage(&msg);
-//        DispatchMessage(&msg);
-//      }
-//    }
+  //MSG msg;
+  //BOOL bRet;
+  //while((bRet = GetMessage(&msg,NULL,0,0)) != 0) {
+  //  if (bRet == -1) {
+  //    // handle the error and possibly exit
+  //  }
+  //  else {
+  //    TranslateMessage(&msg);
+  //    DispatchMessage(&msg);
+  //  }
+  //}
 
   void eventLoop() override {
     MSG msg;
@@ -409,7 +416,6 @@ public:
     desktop window becomes the new parent window. If this parameter is
     HWND_MESSAGE, the child window becomes a message-only window.
 
-    Remarks
     An application can use the SetParent function to set the parent window of a
     pop-up, overlapped, or child window.
 
@@ -424,28 +430,33 @@ public:
     - Conversely, if hWndNewParent is not NULL and the window was previously a
     child of the desktop, you should clear the WS_POPUP style and set the
     WS_CHILD style before calling SetParent.
-  */
 
-  /*
-    if APArent == 0
+    When you change the parent of a window, you should synchronize the UISTATE
+    of both windows. For more information, see WM_CHANGEUISTATE and
+    WM_UPDATEUISTATE.
   */
 
   void reparentWindow(intptr_t AParent) override {
-
     LONG_PTR style   = GetWindowLongPtr(MWinHandle,GWL_STYLE);
     LONG_PTR exstyle = GetWindowLongPtr(MWinHandle,GWL_EXSTYLE);
-
     if (AParent == 0) {
-      MIP_Print("reparent %s -> STANDALONE\n",MWindowType);
+      //MIP_Print("reparenting %s -> STANDALONE\n",MWindowType);
       MWindowType = "STANDALONE";
       MEmbedded = false;
       style   &= ~MIP_WIN32_EMBEDDED_STYLE;
       style   |=  MIP_WIN32_STANDALONE_STYLE;
       exstyle &= ~MIP_WIN32_EX_EMBEDDED_STYLE;
       exstyle |=  MIP_WIN32_EX_STANDALONE_STYLE;
+
+      int32_t w = MWindowWidth; // + MAdjustedStandaloneWidth;
+      int32_t h = MWindowHeight; // + MAdjustedStandaloneHeight;
+      adjustStandaloneSize(&w,&h);
+      setWindowSize(w,h);
+      //MIP_Print("%i,%i -> %i,%i\n",MWindowWidth,MWindowHeight,w,h);
+
     }
     else {
-      MIP_Print("reparent %s -> EMBEDDED\n",MWindowType);
+      //MIP_Print("reparenting %s -> EMBEDDED\n",MWindowType);
       MWindowType = "EMBEDDED";
       MEmbedded = true;
       style   &= ~MIP_WIN32_STANDALONE_STYLE;
@@ -454,14 +465,16 @@ public:
       exstyle |=  MIP_WIN32_EX_EMBEDDED_STYLE;
 
       setWindowPos(0,0);
-      setWindowSize(MWindowWidth,MWindowHeight);
+
+      int32_t w = MWindowWidth; // - MAdjustedStandaloneWidth;
+      int32_t h = MWindowHeight; // - MAdjustedStandaloneHeight;
+      adjustStandaloneSize(&w,&h);
+      setWindowSize(w,h);
+      //MIP_Print("%i,%i -> %i,%i\n",MWindowWidth,MWindowHeight,w,h);
 
     }
-
-
     SetWindowLongPtr( MWinHandle, GWL_STYLE,   style   );
     SetWindowLongPtr( MWinHandle, GWL_EXSTYLE, exstyle );
-
     SetParent(MWinHandle,(HWND)AParent);
   }
 
@@ -493,6 +506,7 @@ public:
   */
 
   void endPaint()  override {
+    //flush();
     EndPaint(MWinHandle,&MWinPaintStruct);
     //UpdateWindow(MWinHandle);
   }
@@ -822,7 +836,7 @@ private: // event handler
       */
 
       case WM_GETMINMAXINFO: {
-        MIP_Print("WM_GETMINMAXINFO\n");
+        //MIP_Print("WM_GETMINMAXINFO\n");
         //MINMAXINFO* info = (MINMAXINFO*)lParam;
         break;
       }
@@ -839,7 +853,7 @@ private: // event handler
       */
 
       case WM_ENTERSIZEMOVE: {
-        MIP_Print("WM_ENTERSIZEMOVE\n");
+        //MIP_Print("WM_ENTERSIZEMOVE\n");
         break;
       }
 
@@ -853,7 +867,7 @@ private: // event handler
       */
 
       case WM_EXITSIZEMOVE: {
-        MIP_Print("WM_EXITSIZEMOVE\n");
+        //MIP_Print("WM_EXITSIZEMOVE\n");
         break;
       }
 
@@ -878,12 +892,12 @@ private: // event handler
       */
 
       case WM_SIZING: {
-        RECT* R = (RECT*)lParam;
-        int32_t x = R->left;
-        int32_t y = R->top;
-        int32_t w = R->right - R->left;
-        int32_t h = R->bottom - R->top;
-        MIP_Print("WM_SIZING x %i y %i w %i h %i\n",x,y,w,h);
+        //RECT* R = (RECT*)lParam;
+        //int32_t x = R->left;
+        //int32_t y = R->top;
+        //int32_t w = R->right - R->left;
+        //int32_t h = R->bottom - R->top;
+        //MIP_Print("WM_SIZING x %i y %i w %i h %i\n",x,y,w,h);
         break;
       }
 
@@ -902,7 +916,7 @@ private: // event handler
       case WM_SIZE: {
         w = short(LOWORD(lParam));
         h = short(HIWORD(lParam));
-        MIP_Print("WM_SIZE %s w %i h %i (type %i)\n",MWindowType,w,h,wParam);
+        //MIP_Print("WM_SIZE %s w %i h %i (type %i)\n",MWindowType,w,h,wParam);
         //if ( (w != MRect.w) || (h != MRect.h) ) {
         //if ( (w != MWindowWidth) || (h != MWindowHeight) ) {
           //MIP_Print("-> on_window_resize\n");
@@ -922,13 +936,12 @@ private: // event handler
         beginPaint();
         int32_t x = MWinPaintStruct.rcPaint.left;
         int32_t y = MWinPaintStruct.rcPaint.top;
-        int32_t w = MWinPaintStruct.rcPaint.right  - MWinPaintStruct.rcPaint.left;
-        int32_t h = MWinPaintStruct.rcPaint.bottom - MWinPaintStruct.rcPaint.top;
-        MIP_Print("WM_PAINT %s x %i y %i w %i h %i\n",MWindowType,x,y,w,h);
+        int32_t w = MWinPaintStruct.rcPaint.right  - MWinPaintStruct.rcPaint.left;// + 1;
+        int32_t h = MWinPaintStruct.rcPaint.bottom - MWinPaintStruct.rcPaint.top;// + 1;
+        //MIP_Print("WM_PAINT %s x %i y %i w %i h %i\n",MWindowType,x,y,w,h);
         //if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
         on_window_paint(x,y,w,h);
         endPaint();
-
         break;
       }
 
@@ -1060,10 +1073,10 @@ private: // event handler
 
       case WM_TIMER: {
         MIP_Print("WM_TIMER\n");
-//        if (MListener) {
-//          if (wParam == MGuiTimer.getId()) MListener->on_timerCallback(this);
-//          //  if (wParam==s3_ts_idle) MListener->on_windowIdle(this);
-//        }
+        //if (MListener) {
+        //  if (wParam == MGuiTimer.getId()) MListener->on_timerCallback(this);
+        //  //  if (wParam==s3_ts_idle) MListener->on_windowIdle(this);
+        //}
         break;
       }
 
@@ -1228,10 +1241,10 @@ public:
   //----------
 
   char* getWindowClass() {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (!MRegistered) {
       MIP_CreateUniqueString(MName,(char*)"mip_window_",&MIP_GLOBAL_WIN32_INSTANCE);
-      MIP_Print("window name: %s\n",MName);
+      //MIP_Print("window name: %s\n",MName);
       memset(&MClass,0,sizeof(MClass));
       MClass.style          = MIP_WIN32_CLASS_STYLE;
       MClass.lpfnWndProc    = &mip_win32_eventproc;
@@ -1254,15 +1267,13 @@ public:
 //
 //----------------------------------------------------------------------
 
-MIP_Win32WindowClass MIP_GLOBAL_WIN32_WINDOW_CLASS;
+MIP_Win32WindowClass MIP_GLOBAL_WIN32_WINDOW_CLASS = {};
 
 //----------
 
 char* MIP_Win32ClassName() {
   return MIP_GLOBAL_WIN32_WINDOW_CLASS.getWindowClass();
 }
-
-
 
 //----------------------------------------------------------------------
 #endif

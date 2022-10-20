@@ -27,7 +27,7 @@
 PIXELFORMATDESCRIPTOR MIP_WglWindowPFD = {
   sizeof(MIP_WglWindowPFD),
   1,
-  PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+  PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL,// | PFD_DOUBLEBUFFER,
   PFD_TYPE_RGBA,
   32,               // bits
   0, 0, 0, 0, 0, 0,
@@ -69,9 +69,7 @@ public:
 
   MIP_WglPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
   : MIP_BasePainter(ASurface,ATarget) {
-
-    MIP_PRINT;
-
+    //MIP_PRINT;
     MSurface = ASurface;
     MTarget = ATarget;
 
@@ -204,7 +202,7 @@ public:
   //----------
 
   virtual ~MIP_WglPainter() {
-    MIP_PRINT;
+    //MIP_PRINT;
     ReleaseDC(0,MDc);
     wglDeleteContext(MGlrc);
     //unloadOpenGL();
@@ -221,6 +219,8 @@ public:
 //  void deselect() override {
 //    resetCurrent();
 //  }
+
+  // w/h = window size (not update rect!)
 
   void beginPaint(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight) override {
     //MIP_Print("%i,%i - %i,%i\n",AXpos,AYpos,AWidth,AHeight);
