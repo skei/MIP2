@@ -738,6 +738,10 @@
 		<Unit filename="../source/private/sa_ports/sa_sonic_maximizer.h" />
 		<Unit filename="../source/private/sa_ports/sa_tilteq.h" />
 		<Unit filename="../source/private/sa_ports/sa_transient_killer.h" />
+		<Unit filename="../source/test/test_window.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../tools/bin2h.c">
 			<Option compilerVar="CC" />
 			<Option compile="0" />

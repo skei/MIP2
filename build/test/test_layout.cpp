@@ -159,6 +159,10 @@ public: // gui
       MIP_Window* editor_window = MEditor->getWindow();
       editor_window->setWindowFillBackground(false);
 
+      MEditor->setCanResizeEditor(true);
+      //MEditor->setResizeProportional(true);
+      //MEditor->setProportionalSize(MEditorWidth,MEditorHeight);
+
       //----- bitmaps-----
 
       // const unsigned      knob3_60x60_131_size

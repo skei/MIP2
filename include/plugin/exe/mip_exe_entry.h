@@ -97,6 +97,7 @@ int main(int argc, char** argv, char** env) {
                   //else {
                   //}
                   //gui->set_size(clap_plugin,width,height);
+
                   MIP_ExeWindow* exe_window = new MIP_ExeWindow(width,height,clap_plugin,gui);
                   if (exe_window) {
                     exe_window->openWindow();
