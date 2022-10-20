@@ -189,23 +189,27 @@ public: // clap gui
       hints->can_resize_horizontally  = true;
       hints->can_resize_vertically    = true;
       //MIP_DPrint("crh,crv:true");
+      if (MResizeProportional) {
+        hints->aspect_ratio_width       = (int)MProportionalWidth;
+        hints->aspect_ratio_height      = (int)MProportionalHeight;
+        hints->preserve_aspect_ratio    = true;
+        //MIP_DPrint(", arw:%i arh:%i par:true",(int)MProportionalWidth,(int)MProportionalHeight);
+      }
+      else{
+        hints->aspect_ratio_width       = 1;
+        hints->aspect_ratio_height      = 1;
+        hints->preserve_aspect_ratio    = false;
+        //MIP_DPrint(", 1 1 false");
+      }
+
     }
     else {
       hints->can_resize_horizontally  = false;
       hints->can_resize_vertically    = false;
-      //MIP_DPrint("crh,crv:false");
-    }
-    if (MCanResizeEditor && MResizeProportional) {
-      hints->aspect_ratio_width       = (int)MProportionalWidth;
-      hints->aspect_ratio_height      = (int)MProportionalHeight;
-      hints->preserve_aspect_ratio    = true;
-      //MIP_DPrint(", arw:%i arh:%i par:true",(int)MProportionalWidth,(int)MProportionalHeight);
-    }
-    else{
       hints->aspect_ratio_width       = 1;
       hints->aspect_ratio_height      = 1;
       hints->preserve_aspect_ratio    = false;
-      //MIP_DPrint(", 1 1 false");
+      //MIP_DPrint("crh,crv:false");
     }
     //MIP_DPrint("\n");
     return true;
@@ -235,7 +239,7 @@ public: // clap gui
         else h = w / orig_aspect;
       }
     }
-    //MIP_Print("%i,%i -> %i,%i\n",*width,*height,(int)w,(int)h);
+    MIP_Print("%i,%i -> %i,%i\n",*width,*height,(int)w,(int)h);
     *width = (int)w;
     *height = (int)h;
     return true;
