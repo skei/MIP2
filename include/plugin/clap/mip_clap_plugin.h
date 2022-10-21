@@ -631,7 +631,7 @@ private: // draft: check for update
 
 protected:
 
-  const clap_plugin_check_for_update MCheckForUpdate = {
+  const clap_plugin_check_for_update_t MCheckForUpdate = {
     .check = clap_plugin_check_for_update_check
   };
 
