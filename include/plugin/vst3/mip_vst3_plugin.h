@@ -67,11 +67,9 @@ private:
   IPlugFrame*                     MPlugFrame          = nullptr;
   IHostApplication*               MHostApp            = nullptr;
   ParameterInfo*                  MParamInfos         = nullptr;
-
   #ifdef MIP_LINUX
   IRunLoop*                       MRunLoop            = nullptr;
   #endif
-
   uint32_t                        MIoMode             = 0;
   char                            MHostName[129]      = {0};
   bool                            MIsProcessing       = false;
@@ -83,18 +81,14 @@ private:
   int64_t                         MSteadyTime         = 0;
   clap_process_t                  MClapProcess        = {};
   clap_event_transport_t          MTransport          = {};
-
   clap_audio_buffer_t             MAudioInputs;//  = {0};
   clap_audio_buffer_t             MAudioOutputs;// = {0};
-
   uint32_t                        MNumEvents                                                        = 0;
   char                            MEvents[MIP_PLUGIN_VST3_MAX_EVENTS_PER_BLOCK * MIP_PLUGIN_VST3_MAX_EVENT_SIZE]  = {0};
   uint32_t                        MLastNoteId                                                       = 0;
   MIP_Vst3NoteId                  MNoteIds[MIP_PLUGIN_VST3_MAX_NOTE_IDS]                                   = {};
-
   MIP_Queue<uint32_t,MIP_PLUGIN_VST3_MAX_GUI_EVENTS> MHostParamQueue = {}; // gui -> host
   double  MQueuedHostParamValues[MIP_PLUGIN_VST3_MAX_GUI_EVENTS] = {0};
-
   //double  MQueuedHostParamValues[MIP_PLUGIN_VST3_MAX_EVENTS_PER_BLOCK] = {0};
 
 //------------------------------
@@ -2370,7 +2364,7 @@ public:
         #ifdef MIP_LINUX
           MRunLoop->registerTimer(this,MIP_PLUGIN_VST3_TIMER_MS);
         #endif
-
+        // why not windows ???
       }
     }
     return kResultOk;
@@ -2394,7 +2388,7 @@ public:
       #ifdef MIP_LINUX
         MRunLoop->unregisterTimer(this);
       #endif
-
+      // why not windows ???
     }
     return kResultOk;
   }

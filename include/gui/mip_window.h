@@ -28,7 +28,10 @@
   typedef MIP_XcbWindow MIP_ImplementedWindow;
 #endif
 
+// now we are platform-agnostic..
+
 //----------
+
 
 typedef MIP_ImplementedWindow MIP_BasicWindow;
 

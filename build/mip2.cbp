@@ -393,9 +393,7 @@
 		<Unit filename="../include/base/mip_const.h" />
 		<Unit filename="../include/base/mip_defines.h" />
 		<Unit filename="../include/base/mip_enums.h" />
-		<Unit filename="../include/base/mip_linux.h" />
 		<Unit filename="../include/base/mip_win32.h" />
-		<Unit filename="../include/base/system/linux/mip_linux.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_dialogs.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_library.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_lock.h" />
@@ -418,7 +416,6 @@
 		<Unit filename="../include/base/system/mip_thread.h" />
 		<Unit filename="../include/base/system/mip_time.h" />
 		<Unit filename="../include/base/system/mip_timer.h" />
-		<Unit filename="../include/base/system/win32/mip_win32.h" />
 		<Unit filename="../include/base/system/win32/mip_win32_dialogs.h" />
 		<Unit filename="../include/base/system/win32/mip_win32_library.h" />
 		<Unit filename="../include/base/system/win32/mip_win32_lock.h" />
@@ -492,11 +489,11 @@
 		<Unit filename="../include/extern/clap/ext/draft/midi-mappings.h" />
 		<Unit filename="../include/extern/clap/ext/draft/preset-load.h" />
 		<Unit filename="../include/extern/clap/ext/draft/quick-controls.h" />
+		<Unit filename="../include/extern/clap/ext/draft/state-context.h" />
 		<Unit filename="../include/extern/clap/ext/draft/surround.h" />
 		<Unit filename="../include/extern/clap/ext/draft/track-info.h" />
 		<Unit filename="../include/extern/clap/ext/draft/transport-control.h" />
 		<Unit filename="../include/extern/clap/ext/draft/tuning.h" />
-		<Unit filename="../include/extern/clap/ext/draft/voice-info.h" />
 		<Unit filename="../include/extern/clap/ext/event-registry.h" />
 		<Unit filename="../include/extern/clap/ext/gui.h" />
 		<Unit filename="../include/extern/clap/ext/latency.h" />
@@ -511,6 +508,7 @@
 		<Unit filename="../include/extern/clap/ext/thread-check.h" />
 		<Unit filename="../include/extern/clap/ext/thread-pool.h" />
 		<Unit filename="../include/extern/clap/ext/timer-support.h" />
+		<Unit filename="../include/extern/clap/ext/voice-info.h" />
 		<Unit filename="../include/extern/clap/fixedpoint.h" />
 		<Unit filename="../include/extern/clap/host.h" />
 		<Unit filename="../include/extern/clap/id.h" />
@@ -524,12 +522,6 @@
 		<Unit filename="../include/extern/clap/stream.h" />
 		<Unit filename="../include/extern/clap/string-sizes.h" />
 		<Unit filename="../include/extern/clap/version.h" />
-		<Unit filename="../include/extern/glloadgen/gl_core.3.2.c">
-			<Option compilerVar="CC" />
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../include/extern/glloadgen/gl_core.3.2.h" />
 		<Unit filename="../include/extern/nanovg/LICENSE.txt" />
 		<Unit filename="../include/extern/nanovg/README.md" />
 		<Unit filename="../include/extern/nanovg/fontstash.h" />
