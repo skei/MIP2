@@ -80,11 +80,11 @@
 #include "base/types/mip_types.h"
 
 #ifdef MIP_LINUX
-  #include "base/mip_linux.h"
+  #include "base/system/mip_linux.h"
 #endif
 
 #ifdef MIP_WIN32
-  #include "base/mip_win32.h"
+  #include "base/system/mip_win32.h"
 #endif
 
 //----------------------------------------------------------------------
