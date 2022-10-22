@@ -66,8 +66,11 @@ private:
   //  MIP_Editor*         MEditor             = nullptr;
   //#endif // MIP_NO_GUI
 
-  int32_t   MShellPluginLastQueried = -1;
-  uint32_t  MShellPluginCurrentId = 0;
+  #ifndef MIP_VST2_NO_SHELL
+    int32_t   MShellPluginLastQueried = -1;
+    uint32_t  MShellPluginCurrentId = 0;
+  #endif
+
 //------------------------------
 public:
 //------------------------------
@@ -962,14 +965,18 @@ public: // vst2
       case effGetPlugCategory: { // 35
         uint32_t res = 0;
         //MIP_Plugin* plugin = (MIP_Plugin*)MPlugin->plugin_data;
-        if (MShellPluginCurrentId == 0) {
-          if (MIP_REGISTRY.getNumDescriptors() > 1) {
-            //MIP_Print("effGetPlugCategory -> shell\n");
-            res = kPlugCategShell;
-            MShellPluginLastQueried = 0;
+
+        #ifndef MIP_VST2_NO_SHELL
+          if (MShellPluginCurrentId == 0) {
+            if (MIP_REGISTRY.getNumDescriptors() > 1) {
+              //MIP_Print("effGetPlugCategory -> shell\n");
+              res = kPlugCategShell;
+              MShellPluginLastQueried = 0;
+            }
           }
-        }
-        else {
+          else
+        #endif
+        {
           if (strstr(MDescriptor->id,"instrument")) res = kPlugCategSynth;
           else if (strstr(MDescriptor->id,"audio_effect")) res = kPlugCategEffect;
           //if (MPlugin->hasFlag(kpf_tool)) res = kPlugCategGenerator;
@@ -1432,18 +1439,24 @@ public: // vst2
         return: the next plugin's uniqueID.
       */
 
+      // OUCH
       // here we reuse indeo 0, instead of having an initial empty/shell..
+      // seems like this causes a recursive loop in reaper..
+      // bitwig has some safety mechanisms maybe?
+      // todo: fix this!
 
       case effShellGetNextPlugin: { // 70
-        if (MShellPluginLastQueried >= MIP_REGISTRY.getNumDescriptors()) return 0;
-        const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(MShellPluginLastQueried);
-        MShellPluginLastQueried += 1;
-        const char* name = descriptor->name;
-        uint32_t unique_id = getUniqueId(descriptor);
-        strncat((char*)ptr,name,64);
-        MIP_Print("effShellGetNextPlugin %i name '%s' id %i\n",MShellPluginLastQueried,name,unique_id);
-        return unique_id;
-        //break;
+        #ifndef MIP_VST2_NO_SHELL
+          if (MShellPluginLastQueried >= MIP_REGISTRY.getNumDescriptors()) return 0;
+          const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(MShellPluginLastQueried);
+          MShellPluginLastQueried += 1;
+          const char* name = descriptor->name;
+          uint32_t unique_id = mip_vst2_create_unique_id(descriptor);
+          strncat((char*)ptr,name,64);
+          MIP_Print("effShellGetNextPlugin %i name '%s' id %i\n",MShellPluginLastQueried,name,unique_id);
+          return unique_id;
+        #endif
+        break;
       }
 
       //----------

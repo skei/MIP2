@@ -2,6 +2,9 @@
 #define mip_clap_host_implementation_included
 //----------------------------------------------------------------------
 
+// host from host perspective
+// (a host implementation)
+
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 
@@ -82,8 +85,71 @@ public:
   }
 
 //------------------------------
-private: // host
+public: // extensions
 //------------------------------
+
+  /*
+
+  virtual void      ambisonic_changed(const clap_host_t *host) {}
+  virtual void      audio_ports_config_rescan(const clap_host_t *host) {}
+  virtual bool      audio_ports_is_rescan_flag_supported(const clap_host_t *host, uint32_t flag) { return false; }
+  virtual void      audio_ports_rescan(const clap_host_t *host, uint32_t flags) {}
+  virtual void      check_for_update_on_new_version(const clap_host_t *host, const clap_check_for_update_info_t *update_info) {}
+  virtual void      cv_changed(const clap_host_t *host) {}
+  virtual bool      event_registry_query(const clap_host_t *host, const char *space_name, uint16_t *space_id) { return false; }
+  virtual void      file_reference_changed(const clap_host_t *host) {}
+  virtual void      file_reference_set_dirty(const clap_host_t *host, clap_id resource_id) {}
+  virtual void      gui_resize_hints_changed(const clap_host_t *host) {}
+  virtual bool      gui_request_resize(const clap_host_t *host, uint32_t width, uint32_t height) { return false; }
+  virtual bool      gui_request_show(const clap_host_t *host) { return false; }
+  virtual bool      gui_request_hide(const clap_host_t *host) { return false; }
+  virtual void      gui_closed(const clap_host_t *host, bool was_destroyed) {}
+  virtual void      latency_changed(const clap_host_t *host) {}
+  virtual void      log_log(const clap_host_t *host, clap_log_severity severity, const char *msg) {}
+  virtual void      note_name_changed(const clap_host_t *host) {}
+  virtual uint32_t  note_ports_supported_dialects(const clap_host_t *host) { return 0; }
+  virtual void      note_ports_rescan(const clap_host_t *host, uint32_t flags) {}
+  virtual void      params_rescan(const clap_host_t *host, clap_param_rescan_flags flags) {}
+  virtual void      params_clear(const clap_host_t *host, clap_id param_id, clap_param_clear_flags flags) {}
+  virtual void      params_request_flush(const clap_host_t *host) {}
+  virtual void      midi_mappings_changed(const clap_host_t *host) {}
+  virtual bool      posix_fd_support_register_fd(const clap_host_t *host, int fd, clap_posix_fd_flags_t flags) { return false; }
+  virtual bool      posix_fd_support_modify_fd(const clap_host_t *host, int fd, clap_posix_fd_flags_t flags) { return false; }
+  virtual bool      posix_fd_support_unregister_fd(const clap_host_t *host, int fd) { return false; }
+  virtual void      quick_controls_changed(const clap_host_t *host) {}
+  virtual void      quick_controls_suggest_page(const clap_host_t *host, clap_id page_id) {}
+  virtual void      state_mark_dirty(const clap_host_t *host) {}
+  virtual void      surround_changed(const clap_host_t *host) {}
+  virtual void      surround_get_preferred_channel_map(const clap_host_t *host, uint8_t *channel_map, uint32_t channel_map_capacity, uint32_t *channel_count) {}
+  virtual void      tail_changed(const clap_host_t *host) {}
+  virtual bool      thread_check_is_main_thread(const clap_host_t *host) { return false; }
+  virtual bool      thread_check_is_audio_thread(const clap_host_t *host) { return false; }
+  virtual bool      thread_pool_request_exec(const clap_host_t *host, uint32_t num_tasks) { return false; }
+  virtual bool      timer_support_register_timer(const clap_host_t *host, uint32_t period_ms, clap_id *timer_id) { return false; }
+  virtual bool      timer_support_unregister_timer(const clap_host_t *host, clap_id timer_id) { return false; }
+  virtual bool      track_info_get(const clap_host_t *host, clap_track_info_t *info) { return false; }
+  virtual void      transport_control_request_start(const clap_host_t *host) {}
+  virtual void      transport_control_request_stop(const clap_host_t *host) {}
+  virtual void      transport_control_request_continue(const clap_host_t *host) {}
+  virtual void      transport_control_request_pause(const clap_host_t *host) {}
+  virtual void      transport_control_request_toggle_play(const clap_host_t *host) {}
+  virtual void      transport_control_request_jump(const clap_host_t *host, clap_beattime position) {}
+  virtual void      transport_control_request_loop_region(const clap_host_t *host, clap_beattime start, clap_beattime duration) {}
+  virtual void      transport_control_request_toggle_loop(const clap_host_t *host) {}
+  virtual void      transport_control_request_enable_loop(const clap_host_t *host, bool is_enabled) {}
+  virtual void      transport_control_request_record(const clap_host_t *host, bool is_recording) {}
+  virtual void      transport_control_request_toggle_record(const clap_host_t *host) {}
+  virtual double    tuning_get_relative(const clap_host_t *host, clap_id tuning_id, int32_t channel, int32_t key, uint32_t sample_offset) { return 0.0; }
+  virtual bool      tuning_should_play(const clap_host_t *host, clap_id tuning_id, int32_t channel, int32_t key) { return false; }
+  virtual uint32_t  tuning_get_tuning_count(const clap_host_t *host) { return 0; }
+  virtual bool      tuning_get_info(const clap_host_t *host, uint32_t tuning_index, clap_tuning_info_t *info) { return false; }
+  virtual void      voice_info_changed(const clap_host_t *host) {}
+
+  */
+
+//----------------------------------------------------------------------
+private: // host
+//----------------------------------------------------------------------
 
   clap_host_t MHost = {
     .clap_version   = CLAP_VERSION,

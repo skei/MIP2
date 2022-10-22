@@ -468,7 +468,7 @@ public:
 
       int32_t w = MWindowWidth; // - MAdjustedStandaloneWidth;
       int32_t h = MWindowHeight; // - MAdjustedStandaloneHeight;
-      adjustStandaloneSize(&w,&h);
+      adjustEmbeddedSize(&w,&h);
       setWindowSize(w,h);
       //MIP_Print("%i,%i -> %i,%i\n",MWindowWidth,MWindowHeight,w,h);
 
@@ -573,6 +573,45 @@ public: // paint
   //----------
 
   void fillColor(int32_t AXpos, int32_t AYpos, int32_t AWidth, int32_t AHeight, uint32_t AColor) override {
+    //MWinPaintDC
+    //MWinPaintStruct
+
+    RECT R;
+    R.left    = AXpos;
+    R.top     = AYpos;
+    R.right   = AXpos + AWidth;
+    R.bottom  = AYpos + AHeight;
+
+    //HBRUSH brush = (HBRUSH)GetStockObject(DC_BRUSH);
+    //FillRect(MHandle,&R,brush);
+    //FillRect(MHandle,&R,MBrushHandle);
+    //SelectObject(MHandle,MNullPen);
+    //SelectObject(MHandle,MNullBrush);
+
+//    uint8_t r = (255.0 * AColor.r);
+//    uint8_t g = (255.0 * AColor.g);
+//    uint8_t b = (255.0 * AColor.b);
+//    //uint8_t a = (255.0 * AColor.a);
+//    uint32_t color = RGB(r,g,b);
+
+//    HBRUSH brush = CreateSolidBrush(MIP_GdiColor(color));
+
+    HPEN pen = CreatePen(PS_NULL,0,0);
+    HGDIOBJ old_pen = SelectObject(MWinPaintDC,pen);
+    //DeleteObject(old_pen);
+
+    HBRUSH brush = CreateSolidBrush(AColor);
+    HGDIOBJ old_brush = SelectObject(MWinPaintDC,brush);
+    //DeleteObject(old_brush);
+
+    Rectangle(MWinPaintDC,R.left,R.top,R.right,R.bottom);
+
+    SelectObject(MWinPaintDC,old_pen);
+    DeleteObject(pen);
+
+    SelectObject(MWinPaintDC,old_brush);
+    DeleteObject(brush);
+
   }
 
   //----------
@@ -836,7 +875,7 @@ private: // event handler
       */
 
       case WM_GETMINMAXINFO: {
-        //MIP_Print("WM_GETMINMAXINFO\n");
+        MIP_Print("WM_GETMINMAXINFO\n");
         //MINMAXINFO* info = (MINMAXINFO*)lParam;
         break;
       }
@@ -853,7 +892,7 @@ private: // event handler
       */
 
       case WM_ENTERSIZEMOVE: {
-        //MIP_Print("WM_ENTERSIZEMOVE\n");
+        MIP_Print("WM_ENTERSIZEMOVE\n");
         break;
       }
 
@@ -867,7 +906,7 @@ private: // event handler
       */
 
       case WM_EXITSIZEMOVE: {
-        //MIP_Print("WM_EXITSIZEMOVE\n");
+        MIP_Print("WM_EXITSIZEMOVE\n");
         break;
       }
 
@@ -892,12 +931,12 @@ private: // event handler
       */
 
       case WM_SIZING: {
-        //RECT* R = (RECT*)lParam;
-        //int32_t x = R->left;
-        //int32_t y = R->top;
-        //int32_t w = R->right - R->left;
-        //int32_t h = R->bottom - R->top;
-        //MIP_Print("WM_SIZING x %i y %i w %i h %i\n",x,y,w,h);
+        RECT* R = (RECT*)lParam;
+        int32_t x = R->left;
+        int32_t y = R->top;
+        int32_t w = R->right - R->left;
+        int32_t h = R->bottom - R->top;
+        MIP_Print("WM_SIZING x %i y %i w %i h %i\n",x,y,w,h);
         break;
       }
 
@@ -916,7 +955,7 @@ private: // event handler
       case WM_SIZE: {
         w = short(LOWORD(lParam));
         h = short(HIWORD(lParam));
-        //MIP_Print("WM_SIZE %s w %i h %i (type %i)\n",MWindowType,w,h,wParam);
+        MIP_Print("WM_SIZE %s w %i h %i (type %i)\n",MWindowType,w,h,wParam);
         //if ( (w != MRect.w) || (h != MRect.h) ) {
         //if ( (w != MWindowWidth) || (h != MWindowHeight) ) {
           //MIP_Print("-> on_window_resize\n");
@@ -938,8 +977,10 @@ private: // event handler
         int32_t y = MWinPaintStruct.rcPaint.top;
         int32_t w = MWinPaintStruct.rcPaint.right  - MWinPaintStruct.rcPaint.left;// + 1;
         int32_t h = MWinPaintStruct.rcPaint.bottom - MWinPaintStruct.rcPaint.top;// + 1;
-        //MIP_Print("WM_PAINT %s x %i y %i w %i h %i\n",MWindowType,x,y,w,h);
-        //if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
+        MIP_Print("WM_PAINT %s x %i y %i w %i h %i\n",MWindowType,x,y,w,h);
+
+        if (MFillBackground) fillColor(x,y,w,h,MBackgroundColor);
+
         on_window_paint(x,y,w,h);
         endPaint();
         break;

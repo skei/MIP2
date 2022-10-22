@@ -101,6 +101,7 @@ public: // extensions
   virtual uint32_t  tail_get() { return 0; }
   virtual void      thread_pool_exec(uint32_t task_index) {}
   virtual void      timer_support_on_timer(clap_id timer_id) {}
+  virtual bool      voice_info_get(clap_voice_info_t *info) { return false; }
 
 //------------------------------
 public: // draft
@@ -124,7 +125,6 @@ public: // draft
   virtual void      surround_changed() {}
   virtual void      track_info_changed() {}
   virtual void      tuning_changed() {}
-  virtual bool      voice_info_get(clap_voice_info_t *info) { return false; }
 
 //--------------------------------------------------
 private: // plugin
@@ -599,6 +599,22 @@ protected:
     .on_timer = clap_plugin_timer_support_on_timer_callback
   };
 
+//------------------------------
+private: // voice info
+//------------------------------
+
+  static
+  bool clap_plugin_voice_info_get_callback(const clap_plugin_t *plugin, clap_voice_info_t *info) {
+    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
+    return plug->voice_info_get(info);
+  }
+
+protected:
+
+  const clap_plugin_voice_info_t MVoiceInfo = {
+    .get = clap_plugin_voice_info_get_callback
+  };
+
 //--------------------------------------------------
 //
 //--------------------------------------------------
@@ -817,22 +833,6 @@ protected:
 
   const clap_plugin_tuning_t MTuning = {
     .changed = clap_plugin_tuning_changed_callback
-  };
-
-//------------------------------
-private: // draft: voice info
-//------------------------------
-
-  static
-  bool clap_plugin_voice_info_get_callback(const clap_plugin_t *plugin, clap_voice_info_t *info) {
-    MIP_ClapPlugin* plug = (MIP_ClapPlugin*)plugin->plugin_data;
-    return plug->voice_info_get(info);
-  }
-
-protected:
-
-  const clap_plugin_voice_info_t MVoiceInfo = {
-    .get = clap_plugin_voice_info_get_callback
   };
 
 };

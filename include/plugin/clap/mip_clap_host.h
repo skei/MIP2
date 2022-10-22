@@ -2,6 +2,8 @@
 #define mip_clap_host_included
 //----------------------------------------------------------------------
 
+// host seen from plugin perspective..
+
 #include "mip.h"
 #include "plugin/clap/mip_clap.h"
 

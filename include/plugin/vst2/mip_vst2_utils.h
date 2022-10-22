@@ -4,7 +4,7 @@
 
 #include "plugin/vst2/mip_vst2.h"
 
-uint32_t getUniqueId(const clap_plugin_descriptor_t* descriptor) {
+uint32_t mip_vst2_create_unique_id(const clap_plugin_descriptor_t* descriptor) {
   //uint32_t* id = (uint32_t*)MPluginId;
   //id[0] = MIP_MAGIC_M_PL;
   //id[1] = MIP_HashString(descriptor->name);

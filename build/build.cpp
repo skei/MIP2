@@ -20,7 +20,7 @@
 //--------------------
 
 
-#include "../build/test/test_layout.cpp"
+//#include "../build/test/test_layout.cpp"
 //#include "../build/test/test_win32.cpp"
 
 //-----
@@ -37,7 +37,7 @@
 //----------------------------------------------------------------------
 
 
-//#include "../source/private/sa_botage.cpp"
+#include "../source/private/sa_botage.cpp"
 //#include "../source/private/sa_cred.cpp"
 //#include "../source/private/sa_lad.cpp"
 //#include "../source/private/sa_nity.cpp"

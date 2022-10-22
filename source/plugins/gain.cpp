@@ -5,11 +5,12 @@
 
 #ifdef __gnu_linux__
   #define MIP_GUI_XCB
-  #define MIP_PAINTER_NANOVG
 #else
   #define MIP_GUI_WIN32
-  #define MIP_PAINTER_GDI
 #endif
+
+#define MIP_PAINTER_NANOVG
+
 
 //----------
 
@@ -37,6 +38,11 @@
 // descriptor
 //
 //----------------------------------------------------------------------
+
+#define EDITOR_WIDTH  420
+#define EDITOR_HEIGHT 620
+
+//----------
 
 const clap_plugin_descriptor_t gain_descriptor = {
   .clap_version  = CLAP_VERSION,
@@ -109,8 +115,8 @@ public:
 
   gain_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
-    MEditorWidth = 420;
-    MEditorHeight = 620;
+    MEditorWidth = EDITOR_WIDTH;
+    MEditorHeight = EDITOR_HEIGHT;
   }
 
   //----------
@@ -144,6 +150,9 @@ public: // gui
     MIP_Plugin::gui_create(api,is_floating);
 
     MEditor->setCanResizeEditor(true);
+    MEditor->setResizeProportional(true);
+    MEditor->setProportionalSize(EDITOR_WIDTH,EDITOR_HEIGHT);
+
     MIP_Window* window = MEditor->getWindow();
 
     MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(), MIP_COLOR_RED );

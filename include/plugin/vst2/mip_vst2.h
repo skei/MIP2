@@ -4,6 +4,8 @@
 
 #include "mip.h"
 
+#define MIP_VST2_NO_SHELL
+
 //#ifdef MIP_PLUGIN_VST2_VESTIGE
 //  typedef int32_t   VstInt32;
 //  typedef intptr_t  VstIntPtr;
