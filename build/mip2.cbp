@@ -381,6 +381,65 @@
 		</Linker>
 		<Unit filename="../doc/readme.txt" />
 		<Unit filename="../doc/todo.txt" />
+		<Unit filename="../include/audio/analysis/mip_beat_detector.h" />
+		<Unit filename="../include/audio/analysis/mip_envelope_follower.h" />
+		<Unit filename="../include/audio/analysis/mip_envelope_follower2.h" />
+		<Unit filename="../include/audio/analysis/mip_envelope_follower3.h" />
+		<Unit filename="../include/audio/analysis/mip_fft.h" />
+		<Unit filename="../include/audio/analysis/mip_goertzel.h" />
+		<Unit filename="../include/audio/analysis/mip_lpc.h" />
+		<Unit filename="../include/audio/analysis/mip_pitch_tracker.h" />
+		<Unit filename="../include/audio/analysis/mip_pitch_tracker2.h" />
+		<Unit filename="../include/audio/analysis/mip_rms.h" />
+		<Unit filename="../include/audio/analysis/mip_walsh_hadamard.h" />
+		<Unit filename="../include/audio/filters/mip_allpass_filter.h" />
+		<Unit filename="../include/audio/filters/mip_apple_filter.h" />
+		<Unit filename="../include/audio/filters/mip_comb_filter.h" />
+		<Unit filename="../include/audio/filters/mip_cytomic_filter.h" />
+		<Unit filename="../include/audio/filters/mip_dc_filter.h" />
+		<Unit filename="../include/audio/filters/mip_decimator_filter.h" />
+		<Unit filename="../include/audio/filters/mip_downsample_filter.h" />
+		<Unit filename="../include/audio/filters/mip_farrow_filter.h" />
+		<Unit filename="../include/audio/filters/mip_hiir_filter.h" />
+		<Unit filename="../include/audio/filters/mip_karlsen_filter.h" />
+		<Unit filename="../include/audio/filters/mip_linkwitz_riley_filter.h" />
+		<Unit filename="../include/audio/filters/mip_moog_filter.h" />
+		<Unit filename="../include/audio/filters/mip_onepole_filter.h" />
+		<Unit filename="../include/audio/filters/mip_rbj_filter.h" />
+		<Unit filename="../include/audio/filters/mip_rc2_filter.h" />
+		<Unit filename="../include/audio/filters/mip_rc_filter.h" />
+		<Unit filename="../include/audio/filters/mip_svf_filter.h" />
+		<Unit filename="../include/audio/io/mip_audio_jack.h" />
+		<Unit filename="../include/audio/mip_audio_file.h" />
+		<Unit filename="../include/audio/mip_audio_math.h" />
+		<Unit filename="../include/audio/mip_audio_utils.h" />
+		<Unit filename="../include/audio/modulation/mip_envelope.h" />
+		<Unit filename="../include/audio/modulation/mip_lfo.h" />
+		<Unit filename="../include/audio/processing/mip_convolution.h" />
+		<Unit filename="../include/audio/processing/mip_delay.h" />
+		<Unit filename="../include/audio/synthesis/mip_gordon_smith.h" />
+		<Unit filename="../include/audio/synthesis/mip_karplus_strong.h" />
+		<Unit filename="../include/audio/synthesis/mip_oscillator.h" />
+		<Unit filename="../include/audio/synthesis/mip_oscillator2.h" />
+		<Unit filename="../include/audio/synthesis/mip_phasor.h" />
+		<Unit filename="../include/audio/synthesis/mip_res1.h" />
+		<Unit filename="../include/audio/synthesis/mip_sinusoid.h" />
+		<Unit filename="../include/audio/synthesis/mip_waveguide.h" />
+		<Unit filename="../include/audio/waveforms/mip_blit_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_dpw_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_druttis_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_dsf_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_eptr_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_ltr_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_minblep_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_naive_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_polyblamp_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_polyblep2_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_polyblep_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_ptr_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_rochebois_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_sinc_waveform.h" />
+		<Unit filename="../include/audio/waveforms/mip_table_waveform.h" />
 		<Unit filename="../include/base/debug/mip_debug.h" />
 		<Unit filename="../include/base/debug/mip_debug_assert.h" />
 		<Unit filename="../include/base/debug/mip_debug_callstack.h" />
@@ -393,7 +452,6 @@
 		<Unit filename="../include/base/mip_const.h" />
 		<Unit filename="../include/base/mip_defines.h" />
 		<Unit filename="../include/base/mip_enums.h" />
-		<Unit filename="../include/base/mip_win32.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_dialogs.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_library.h" />
 		<Unit filename="../include/base/system/linux/mip_linux_lock.h" />
@@ -684,52 +742,56 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/plugins/sa_botage.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_botage/sa_botage_editor.h" />
+		<Unit filename="../source/plugins/sa_botage/sa_botage_params.h" />
+		<Unit filename="../source/plugins/sa_botage/sa_botage_process.h" />
+		<Unit filename="../source/plugins/sa_botage/sa_botage_widgets.h" />
+		<Unit filename="../source/plugins/sa_cred.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_lad.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_mini.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_mini/sa_fibonacci.h" />
+		<Unit filename="../source/plugins/sa_mini/sa_grains.h" />
+		<Unit filename="../source/plugins/sa_mini/sa_pitch.h" />
+		<Unit filename="../source/plugins/sa_mini/sa_transpose.h" />
+		<Unit filename="../source/plugins/sa_nity.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_nity/sa_nity_editor.h" />
+		<Unit filename="../source/plugins/sa_ports.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/plugins/sa_ports/sa_compciter.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_event_horizon.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_exciter.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_exciter2.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_hall_reverb.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_hrtf.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_large_room_reverb.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_limiter.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_saturation.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_small_room_reverb.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_sonic_maximizer.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_tilteq.h" />
+		<Unit filename="../source/plugins/sa_ports/sa_transient_killer.h" />
 		<Unit filename="../source/plugins/template.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/private/sa_botage.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/private/sa_botage/sa_botage_editor.h" />
-		<Unit filename="../source/private/sa_botage/sa_botage_params.h" />
-		<Unit filename="../source/private/sa_botage/sa_botage_process.h" />
-		<Unit filename="../source/private/sa_botage/sa_botage_widgets.h" />
-		<Unit filename="../source/private/sa_cred.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/private/sa_lad.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/private/sa_mini/sa_fibonacci.h" />
-		<Unit filename="../source/private/sa_mini/sa_grains.h" />
-		<Unit filename="../source/private/sa_mini/sa_pitch.h" />
-		<Unit filename="../source/private/sa_mini/sa_transpose.h" />
-		<Unit filename="../source/private/sa_nity.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/private/sa_nity/sa_nity_editor.h" />
-		<Unit filename="../source/private/sa_ports.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="../source/private/sa_ports/sa_compciter.h" />
-		<Unit filename="../source/private/sa_ports/sa_event_horizon.h" />
-		<Unit filename="../source/private/sa_ports/sa_exciter.h" />
-		<Unit filename="../source/private/sa_ports/sa_exciter2.h" />
-		<Unit filename="../source/private/sa_ports/sa_hall_reverb.h" />
-		<Unit filename="../source/private/sa_ports/sa_hrtf.h" />
-		<Unit filename="../source/private/sa_ports/sa_large_room_reverb.h" />
-		<Unit filename="../source/private/sa_ports/sa_limiter.h" />
-		<Unit filename="../source/private/sa_ports/sa_saturation.h" />
-		<Unit filename="../source/private/sa_ports/sa_small_room_reverb.h" />
-		<Unit filename="../source/private/sa_ports/sa_sonic_maximizer.h" />
-		<Unit filename="../source/private/sa_ports/sa_tilteq.h" />
-		<Unit filename="../source/private/sa_ports/sa_transient_killer.h" />
 		<Unit filename="../source/test/test_window.cpp">
 			<Option compile="0" />
 			<Option link="0" />
