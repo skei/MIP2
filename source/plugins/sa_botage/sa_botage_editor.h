@@ -678,14 +678,14 @@ public:
       MWaveform->setAreaActive(1,true);
       MWaveform->setAreaStart(1,process->MRangeStart);
       MWaveform->setAreaLength(1,process->MRangeLength);
-      MWaveform->setAreaColor(1, MIP_Color(0,0.5,0,0.2) );                      // MRangeColor[n]
+      MWaveform->setAreaColor(1, MIP_Color(0.0,0.5,0,0.3) );                      // MRangeColor[n]
 
       if (process->MLoop) {
         // area 2 loop
         MWaveform->setAreaActive(2,true);
         MWaveform->setAreaStart(2,process->MLoopStart);
         MWaveform->setAreaLength(2,process->MLoopLength);
-        MWaveform->setAreaColor(2, MIP_Color(0,1,0,0.2) );
+        MWaveform->setAreaColor(2, MIP_Color(0,1.0,0,0.3) );
       }
       else {
         MWaveform->setAreaActive(2,false);

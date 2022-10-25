@@ -1,12 +1,12 @@
 
 #ifdef __gnu_linux__
-  #define MIP_GUI_XCB
-  #define MIP_PAINTER_NANOVG
+  //#define MIP_GUI_XCB
+  //#define MIP_PAINTER_NANOVG
   //#define MIP_PAINTER_XCB
   //#define MIP_WINDOW_BUFFERED
 #else
-  #define MIP_GUI_WIN32
-  #define MIP_PAINTER_NANOVG
+  //#define MIP_GUI_WIN32
+  //#define MIP_PAINTER_NANOVG
   //#define MIP_PAINTER_GDI
   //#define MIP_PAINTER_WGL
 #endif
@@ -37,13 +37,13 @@
 
 const clap_plugin_descriptor_t myDescriptor = {
    .clap_version  = CLAP_VERSION,
-   .id            = "skei.audio/sa_botage/0.0.11",
+   .id            = "skei.audio/sa_botage/0.0.12-pre1",
    .name          = "sa_botage",
    .vendor        = "skei.audio",
    .url           = "https://torhelgeskei.com",
    .manual_url    = "",
    .support_url   = "",
-   .version       = "0.0.11",
+   .version       = "0.0.12-pre1",
    .description   = "",
    .features      =  (const char *[]){ CLAP_PLUGIN_FEATURE_AUDIO_EFFECT, nullptr }
 };

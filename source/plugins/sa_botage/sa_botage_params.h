@@ -108,7 +108,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     0,
     255,
-    0b10101110 //15
+    0b00001111 //15
   },
 
   // ----- env
@@ -119,8 +119,8 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "Loop Env Attack",
     "",
     0,
-    1,
-    0
+    10.0,
+    1.0
   },
   { PAR_LOOP_ENV_DECAY,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -128,8 +128,8 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "Loop Env Decay",
     "",
     0,
-    1,
-    0
+    10.0,
+    1.0
   },
   { PAR_SLICE_ENV_ATTACK,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -207,7 +207,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     -0.5
+     -1
   },
   { PAR_PROB_SIZE_MAX_RANGE,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -216,7 +216,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     0.5
+     1
   },
   { PAR_PROB_SIZE_PROB_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -234,7 +234,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     -0.5
+     -1
   },
   { PAR_PROB_SIZE_MAX_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -243,7 +243,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     0.5
+     1
   },
 
   // ----- loop speed
@@ -264,7 +264,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     -0.5
+     -1
   },
   { PAR_PROB_SPEED_MAX_RANGE,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -273,7 +273,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     0.5
+     1
   },
   { PAR_PROB_SPEED_PROB_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -291,7 +291,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     -0.5
+     -1
   },
   { PAR_PROB_SPEED_MAX_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -300,7 +300,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     0.5
+     1
   },
 
   // ----- loop offset
@@ -321,7 +321,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     -0.5
+     -1
   },
   { PAR_PROB_OFFSET_MAX_RANGE,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -330,7 +330,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     0.5
+     1
   },
   { PAR_PROB_OFFSET_PROB_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -348,7 +348,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     -0.5
+     -1
   },
   { PAR_PROB_OFFSET_MAX_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -357,7 +357,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     0.5
+     1
   },
 
   // ----- loop reverse
@@ -399,7 +399,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     -0.5
+    -1
   },
   { PAR_PROB_FX_MAX_RANGE,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -408,7 +408,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     0.5
+     1
   },
   { PAR_PROB_FX_PROB_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -426,7 +426,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     -0.5
+    -1
   },
   { PAR_PROB_FX_MAX_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -435,7 +435,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     -1,
      1,
-     0.5
+     1
   },
 
 };

@@ -272,14 +272,14 @@ public:
 
         // loop fract
 
-        if (MLoop) {
-          if (MLoopLength > 0) {
-            MLoopFract = (MReadPos - MLoopStart) / MLoopLength;
-          }
-        }
-        else {
-          MLoopFract = 0.0;
-        }
+//        if (MLoop) {
+//          if (MLoopLength > 0) {
+//            MLoopFract = (MReadPos - MLoopStart) / MLoopLength;
+//          }
+//        }
+//        else {
+//          MLoopFract = 0.0;
+//        }
 
         // count slices, samples
 
@@ -495,6 +495,16 @@ private:
     }
 
     // offset
+    rnd = MIP_Random();
+    if (rnd < par_prob_offset_prob_range) {
+      double s = par_prob_offset_max_range - par_prob_offset_min_range;
+      s *= MIP_Random();
+      s += par_prob_offset_min_range;
+      s *= (double)(par_num_beats * par_num_slices);
+      s = MIP_Trunc(s);
+      //MIP_Print("s %.3f\n",s);
+      MReadPos += (s * MSliceLength);
+    }
 
     // reverse
     rnd = MIP_Random();
@@ -508,7 +518,7 @@ private:
 
   }
 
-  //----------
+  //------------------------------
 
   /*
     called from countSamples, after loop has ended
@@ -548,6 +558,16 @@ private:
     }
 
     // offset
+    rnd = MIP_Random();
+    if (rnd < par_prob_offset_prob_loop) {
+      double s = par_prob_offset_max_loop - par_prob_offset_min_loop;
+      s *= MIP_Random();
+      s += par_prob_offset_min_loop;
+      s *= (double)(par_num_beats * par_num_slices);
+      s = MIP_Trunc(s);
+      //MIP_Print("s %.3f\n",s);
+      MReadPos += (s * MSliceLength);
+    }
 
     // reverse
     rnd = MIP_Random();
@@ -581,25 +601,29 @@ private:
   //float handleEnvelopes(float ASliceFract, float ALoopFract) {
   float handleEnvelopes() {
     float env = 1.0f;
-//    float sa = par_slice_env_attack;  // * MSliceLength;
-//    float sd = par_slice_env_decay;   // * MSliceLength;
-//    if ((sa > 0) && (MSliceFract <         sa)) {
-//      env *= (MSliceFract / sa);
-//    }
-//    if ((sd > 0) && (MSliceFract >= (1.0 - sd))) {
-//      env *= ((1.0 - MSliceFract) / sd);
-//    }
-//    if (MLoop) {
-//      //float la = par_loop_env_attack * (MSampleRate * 0.01); // 0..10 ms
-//      //float ld = par_loop_env_decay  * (MSampleRate * 0.01);
-//      //float loop_pos = ALoopFract * MLoopLength;
-//      //if (loop_pos < la) {
-//      //  env *= ALoopFract;
-//      //}
-//      //if (loop_pos >= (1.0 - ld)) {
-//      //  env *= (1.0 - ALoopFract);
-//      //}
-//    }
+
+    float sa = par_slice_env_attack;  // * MSliceLength;
+    float sd = par_slice_env_decay;   // * MSliceLength;
+    if ((sa > 0) && (MSliceFract < sa)) {
+      env *= (MSliceFract / sa);
+    }
+    if ((sd > 0) && (MSliceFract >= (1.0 - sd))) {
+      env *= ((1.0 - MSliceFract) / sd);
+    }
+
+    if (MLoop && (MLoopLength > 0.0)) {
+      double loop_count = (double)MLoopCount;
+      double la = par_loop_env_attack * (MSampleRate * 0.001); // samples
+      double ld = par_loop_env_decay  * (MSampleRate * 0.001);
+      //float loop_pos = ALoopFract * MLoopLength;
+      if ((la > 0) && (loop_count < la)) {
+        env *= (loop_count / la);
+      }
+      if ((ld > 0) && (loop_count >= (MLoopLength - ld))) {
+        env *= ((MLoopLength - loop_count) / ld);
+      }
+    }
+
     return env;
   }
 
