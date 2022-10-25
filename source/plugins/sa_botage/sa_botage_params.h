@@ -99,7 +99,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     0,
     255,
-    15
+    0b00001111 // 15
   },
   { PAR_RANGE_LOOP_COUNT,
     CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_STEPPED,
@@ -108,7 +108,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "",
     0,
     255,
-    15
+    0b10101110 //15
   },
 
   // ----- env
@@ -205,18 +205,18 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     nullptr,
     "Size Min Range",
     "",
-    0.5,
-    2.0,
-    0.75
+    -1,
+     1,
+     -0.5
   },
   { PAR_PROB_SIZE_MAX_RANGE,
     CLAP_PARAM_IS_AUTOMATABLE,
     nullptr,
     "Size Max Range",
     "",
-    0.5,
-    2.0,
-    1.5
+    -1,
+     1,
+     0.5
   },
   { PAR_PROB_SIZE_PROB_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -232,18 +232,18 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     nullptr,
     "Size Min Loop",
     "",
-    0.5,
-    2.0,
-    0.75
+    -1,
+     1,
+     -0.5
   },
   { PAR_PROB_SIZE_MAX_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
     nullptr,
     "Size Max Loop",
     "",
-    0.5,
-    2.0,
-    1.5
+    -1,
+     1,
+     0.5
   },
 
   // ----- loop speed
@@ -262,18 +262,18 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     nullptr,
     "Speed Min Range",
     "",
-    0.5,
-    2.0,
-    0.75
+    -1,
+     1,
+     -0.5
   },
   { PAR_PROB_SPEED_MAX_RANGE,
     CLAP_PARAM_IS_AUTOMATABLE,
     nullptr,
     "Speed Max Range",
     "",
-    0.5,
-    2.0,
-    1.5
+    -1,
+     1,
+     0.5
   },
   { PAR_PROB_SPEED_PROB_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -289,18 +289,18 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     nullptr,
     "Speed Min Loop",
     "",
-    0.5,
-    2.0,
-    0.75
+    -1,
+     1,
+     -0.5
   },
   { PAR_PROB_SPEED_MAX_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
     nullptr,
     "Speed Max Loop",
     "",
-    0.5,
-    2.0,
-    1.5
+    -1,
+     1,
+     0.5
   },
 
   // ----- loop offset
@@ -319,18 +319,18 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     nullptr,
     "Offset Min Range",
     "",
-    0.5,
-    2.0,
-    0.75
+    -1,
+     1,
+     -0.5
   },
   { PAR_PROB_OFFSET_MAX_RANGE,
     CLAP_PARAM_IS_AUTOMATABLE,
     nullptr,
     "Offset Max Range",
     "",
-    0.5,
-    2.0,
-    1.5
+    -1,
+     1,
+     0.5
   },
   { PAR_PROB_OFFSET_PROB_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -346,18 +346,18 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     nullptr,
     "Offset Min Loop",
     "",
-    0.5,
-    2.0,
-    0.75
+    -1,
+     1,
+     -0.5
   },
   { PAR_PROB_OFFSET_MAX_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
     nullptr,
     "Offset Max Loop",
     "",
-    0.5,
-    2.0,
-    1.5
+    -1,
+     1,
+     0.5
   },
 
   // ----- loop reverse
@@ -397,18 +397,18 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     nullptr,
     "FX Min Range",
     "",
-    0.5,
-    2.0,
-    0.75
+    -1,
+     1,
+     -0.5
   },
   { PAR_PROB_FX_MAX_RANGE,
     CLAP_PARAM_IS_AUTOMATABLE,
     nullptr,
     "FX Max Range",
     "",
-    0.5,
-    2.0,
-    1.5
+    -1,
+     1,
+     0.5
   },
   { PAR_PROB_FX_PROB_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
@@ -424,18 +424,18 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     nullptr,
     "FX Min Loop",
     "",
-    0.5,
-    2.0,
-    0.75
+    -1,
+     1,
+     -0.5
   },
   { PAR_PROB_FX_MAX_LOOP,
     CLAP_PARAM_IS_AUTOMATABLE,
     nullptr,
     "FX Max Loop",
     "",
-    0.5,
-    2.0,
-    1.5
+    -1,
+     1,
+     0.5
   },
 
 };

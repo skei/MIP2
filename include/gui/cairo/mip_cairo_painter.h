@@ -61,8 +61,17 @@ protected:
 public:
 //------------------------------
 
+  // ASurface = surface to paint to
+  // ATarget = target window/visual
+
   MIP_CairoPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
   : MIP_BasePainter(ASurface,ATarget) {
+    if (ASurface->drawable_isWindow()) {
+    }
+    else if (ASurface->drawable_isSurface()) {
+    }
+    else if (ASurface->drawable_isBitmap()) {
+    }
   }
 
   //----------

@@ -55,6 +55,9 @@ class MIP_BasePainter {
 public:
 //------------------------------
 
+  // ASurface = surface to paint to
+  // ATarget  = target window/visual
+
   MIP_BasePainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget) {
   }
 

@@ -46,7 +46,7 @@
 #define MIP_WIN32_STANDALONE_STYLE    ( WS_OVERLAPPEDWINDOW )
 #define MIP_WIN32_EMBEDDED_STYLE      ( WS_CHILD )
 
-#define MIP_WIN32_EX_STANDALONE_STYLE ( WS_EX_OVERLAPPEDWINDOW )
+#define MIP_WIN32_EX_STANDALONE_STYLE ( 0 /*WS_EX_OVERLAPPEDWINDOW*/ )
 #define MIP_WIN32_EX_EMBEDDED_STYLE   ( 0 /* WS_EX_TOOLWINDOW */ )
 
 
@@ -137,6 +137,9 @@ private:
   bool        MFillBackground           = false;
   uint32_t    MBackgroundColor          = 0x808080;
 
+  int32_t MAdjustedWidth = 0;
+  int32_t MAdjustedHeight = 0;
+
 //------------------------------
 public:
 //------------------------------
@@ -151,11 +154,9 @@ public:
     MCurrentCursor = -1;
     setMouseCursor(MIP_CURSOR_DEFAULT);
     if (AParent == 0) {
-      //MIP_Print("Creating standalone window\n");
       createStandaloneWindow(AWidth,AHeight);
     }
     else {
-      //MIP_Print("Creating embedded window\n");
       createEmbeddedWindow(AWidth,AHeight,AParent);
     }
     SetWindowLongPtr(MWinHandle,GWLP_USERDATA,(LONG_PTR)this);
@@ -175,11 +176,14 @@ private:
 //------------------------------
 
   void createStandaloneWindow(uint32_t AWidth, uint32_t AHeight) {
-    MEmbedded = false;
-    MWindowType = "STANDALONE";
-    int32_t width = AWidth;
-    int32_t height = AHeight;
+    MEmbedded       = false;
+    MWindowType     = "STANDALONE";
+    int32_t width   = AWidth;
+    int32_t height  = AHeight;
     adjustStandaloneSize(&width,&height);
+    MAdjustedWidth  = width  - AWidth;
+    MAdjustedHeight = height - AHeight;
+    MIP_Print("%i,%i Adjusted %i,%i\n",AWidth,AHeight,MAdjustedWidth,MAdjustedHeight);
     MWinHandle = CreateWindowEx(
       MIP_WIN32_EX_STANDALONE_STYLE,
       MIP_Win32ClassName(),
@@ -200,29 +204,52 @@ private:
   //----------
 
   void createEmbeddedWindow(uint32_t AWidth, uint32_t AHeight, intptr_t AParent) {
-    MEmbedded = true;
-    MWindowType = "EMBEDDED";
-    int32_t width = AWidth;
-    int32_t height = AHeight;
+    MEmbedded       = true;
+    MWindowType     = "EMBEDDED";
+    int32_t width   = AWidth;
+    int32_t height  = AHeight;
     adjustEmbeddedSize(&width,&height);
+    MAdjustedWidth  = width  - AWidth;
+    MAdjustedHeight = height - AHeight;
+    MIP_Print("%i,%i Adjusted %i,%i\n",AWidth,AHeight,MAdjustedWidth,MAdjustedHeight);
     MWinHandle = CreateWindowEx(
       MIP_WIN32_EX_EMBEDDED_STYLE,
       MIP_Win32ClassName(),
-      nullptr,
+      nullptr,                    // title
       MIP_WIN32_EMBEDDED_STYLE,
-      0,
-      0,
+      0,                          // x
+      0,                          // y
       width,
       height,
       (HWND)AParent,
-      0,
+      0,                          // menu
       MIP_GLOBAL_WIN32_INSTANCE,
-      0
+      0                           // params
     );
     SetFocus(MWinHandle);
   }
 
   //----------
+
+  /*
+    AdjustWindowRectEx
+    Calculates the required size of the window rectangle, based on the desired
+    size of the client rectangle. The window rectangle can then be passed to
+    the CreateWindowEx function to create a window whose client area is the
+    desired size.
+
+    - rect: A pointer to a RECT structure that contains the coordinates of the
+      top-left and bottom-right corners of the desired client area. When the
+      function returns, the structure contains the coordinates of the top-left
+      and bottom-right corners of the window to accommodate the desired client
+      area.
+    - style: The window style of the window whose required size is to be
+      calculated. Note that you cannot specify the WS_OVERLAPPED style.
+    - menu:
+    - ex style
+  */
+
+  // No WS_OVERLAPPED? :-/
 
   void adjustStandaloneSize(int32_t* AWidth, int32_t* AHeight) {
     RECT rect = { 0, 0, (long int)*AWidth, (long int)*AHeight };
@@ -426,10 +453,10 @@ public:
     WS_POPUP window styles of the window whose parent is being changed.
     Therefore:
     - if hWndNewParent is NULL, you should also clear the WS_CHILD bit
-    and set the WS_POPUP style after calling SetParent.
+    and set the WS_POPUP style after (!!) calling SetParent.
     - Conversely, if hWndNewParent is not NULL and the window was previously a
     child of the desktop, you should clear the WS_POPUP style and set the
-    WS_CHILD style before calling SetParent.
+    WS_CHILD style before  (!!) calling SetParent.
 
     When you change the parent of a window, you should synchronize the UISTATE
     of both windows. For more information, see WM_CHANGEUISTATE and
@@ -437,45 +464,68 @@ public:
   */
 
   void reparentWindow(intptr_t AParent) override {
+
     LONG_PTR style   = GetWindowLongPtr(MWinHandle,GWL_STYLE);
     LONG_PTR exstyle = GetWindowLongPtr(MWinHandle,GWL_EXSTYLE);
+
     if (AParent == 0) {
       //MIP_Print("reparenting %s -> STANDALONE\n",MWindowType);
       MWindowType = "STANDALONE";
       MEmbedded = false;
+
+      int32_t w = MWindowWidth;
+      int32_t h = MWindowHeight;
+      adjustStandaloneSize(&w,&h);
+      MIP_Print("%i,%i Adjusted %i,%i\n",MWindowWidth,MWindowHeight,w,h);
+      setWindowSize(w,h);
+      //MIP_Print("%i,%i -> %i,%i\n",MWindowWidth,MWindowHeight,w,h);
+
+      SetParent(MWinHandle,(HWND)AParent);
+
+      //style &= ~WS_CHILD;
+      //style |= WS_POPUP;
       style   &= ~MIP_WIN32_EMBEDDED_STYLE;
       style   |=  MIP_WIN32_STANDALONE_STYLE;
       exstyle &= ~MIP_WIN32_EX_EMBEDDED_STYLE;
       exstyle |=  MIP_WIN32_EX_STANDALONE_STYLE;
+      SetWindowLongPtr( MWinHandle, GWL_STYLE,   style   );
+      SetWindowLongPtr( MWinHandle, GWL_EXSTYLE, exstyle );
 
-      int32_t w = MWindowWidth; // + MAdjustedStandaloneWidth;
-      int32_t h = MWindowHeight; // + MAdjustedStandaloneHeight;
-      adjustStandaloneSize(&w,&h);
-      setWindowSize(w,h);
-      //MIP_Print("%i,%i -> %i,%i\n",MWindowWidth,MWindowHeight,w,h);
 
     }
-    else {
+
+    //else {
+    if (AParent != 0) {
       //MIP_Print("reparenting %s -> EMBEDDED\n",MWindowType);
       MWindowType = "EMBEDDED";
       MEmbedded = true;
+
+      int32_t w = MWindowWidth;
+      int32_t h = MWindowHeight;
+      adjustEmbeddedSize(&w,&h);
+      MIP_Print("%i,%i Adjusted %i,%i\n",MWindowWidth,MWindowHeight,w,h);
+      setWindowSize(w,h);
+      setWindowPos(0,0);
+      //MIP_Print("%i,%i -> %i,%i\n",MWindowWidth,MWindowHeight,w,h);
+
+      //style |= WS_CHILD;
+      //style &= ~WS_POPUP;
       style   &= ~MIP_WIN32_STANDALONE_STYLE;
       style   |=  MIP_WIN32_EMBEDDED_STYLE;
       exstyle &= ~MIP_WIN32_EX_STANDALONE_STYLE;
       exstyle |=  MIP_WIN32_EX_EMBEDDED_STYLE;
+      SetWindowLongPtr( MWinHandle, GWL_STYLE,   style   );
+      SetWindowLongPtr( MWinHandle, GWL_EXSTYLE, exstyle );
 
-      setWindowPos(0,0);
+      SetParent(MWinHandle,(HWND)AParent);
 
-      int32_t w = MWindowWidth; // - MAdjustedStandaloneWidth;
-      int32_t h = MWindowHeight; // - MAdjustedStandaloneHeight;
-      adjustEmbeddedSize(&w,&h);
-      setWindowSize(w,h);
-      //MIP_Print("%i,%i -> %i,%i\n",MWindowWidth,MWindowHeight,w,h);
 
     }
-    SetWindowLongPtr( MWinHandle, GWL_STYLE,   style   );
-    SetWindowLongPtr( MWinHandle, GWL_EXSTYLE, exstyle );
-    SetParent(MWinHandle,(HWND)AParent);
+
+//    SetWindowLongPtr( MWinHandle, GWL_STYLE,   style   );
+//    SetWindowLongPtr( MWinHandle, GWL_EXSTYLE, exstyle );
+//    SetParent(MWinHandle,(HWND)AParent);
+
   }
 
   //----------

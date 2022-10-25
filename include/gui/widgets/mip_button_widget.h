@@ -36,6 +36,9 @@ public:
     if (AValue >= 0.5) setText(AOnText);
     else setText(AOffText);
     MMouseCursor = MIP_CURSOR_FINGER;
+
+    //MFillGradient = true;
+
   }
 
   //----------

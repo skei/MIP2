@@ -269,7 +269,7 @@
 				<Option type="1" />
 				<Option compiler="mingw" />
 				<Compiler>
-					<Add option="-g" />
+					<Add option="-O3" />
 					<Add option="-fno-pie" />
 					<Add option="-Wl,--export-all-symbols" />
 					<Add option="-Wl,-Bsymbolic" />
@@ -278,6 +278,7 @@
 					<Add option="-DMIP_EXE" />
 				</Compiler>
 				<Linker>
+					<Add option="-s" />
 					<Add option="-static-libstdc++" />
 					<Add option="-static-libgcc" />
 					<Add option="-no-pie" />

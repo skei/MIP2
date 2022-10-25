@@ -60,7 +60,7 @@ public:
       }
     }
 
-    setFillBackground(true);
+    setFillBackground(false);
     setBackgroundColor(0.6);
     setDrawBorder(false);
   }
@@ -206,20 +206,75 @@ public:
   void on_paintCell(MIP_PaintContext* AContext, MIP_DRect ARect, int32_t AX, int32_t AY) override {
     char buf[256];
     MIP_Painter* painter= AContext->painter;
+
     MIP_Color c1,c2;
-    if (MStates[AX]) c1 = MActiveCellColor;
-    else c1 = MBackgroundCellColor;
+    if (MStates[AX]) {
+      c1 = MActiveCellColor;
+      c2 = MBackgroundCellColor;
+    }
+    else {
+      c1 = MBackgroundCellColor;
+      c2 = MActiveCellColor;
+    }
+
+    // background
+
+//    painter->beginPath();
+//    painter->rect(ARect.x,ARect.y,ARect.w,ARect.h);
+//    painter->fillColor(c1);
+//    painter->fill();
+
+    double b = ARect.h * 0.3;
 
     painter->beginPath();
-    painter->rect(ARect.x,ARect.y,ARect.w,ARect.h);
-    painter->fillColor(c1);
+    if (AX == 0) {
+      painter->roundedRectVarying(ARect.x,ARect.y,ARect.w,ARect.h, b,0,0,b);
+    }
+    else if (AX == (MNumColumns-1)) {
+      painter->roundedRectVarying(ARect.x,ARect.y,ARect.w,ARect.h, 0,b,b,0);
+    }
+    else {
+      painter->rect(ARect.x,ARect.y,ARect.w,ARect.h);
+    }
+    //if (MFillGradient) {
+      MIP_PaintSource paint = painter->linearGradient(ARect.x,ARect.y,ARect.x,ARect.y2(), c1, c2);
+      painter->fillPaint(paint);
+    //}
+    //else {
+    //  painter->fillColor(MBackgroundColor);
+    //}
     painter->fill();
 
+    // border
+
+//    painter->beginPath();
+//    painter->rect(ARect.x,ARect.y,ARect.w,ARect.h);
+//    painter->strokeColor( MIP_Color(0.25) /*MIP_COLOR_DARK_GRAY*/ );
+//    painter->strokeWidth(1);
+//    painter->stroke();
+
     painter->beginPath();
-    painter->rect(ARect.x,ARect.y,ARect.w,ARect.h);
+    if (AX == 0) {
+      painter->roundedRectVarying(ARect.x,ARect.y,ARect.w,ARect.h, b,0,0,b);
+    }
+    else if (AX == (MNumColumns-1)) {
+      painter->roundedRectVarying(ARect.x,ARect.y,ARect.w,ARect.h, 0,b,b,0);
+    }
+    else {
+      painter->rect(ARect.x,ARect.y,ARect.w,ARect.h);
+    }
+    //if (MFillGradient) {
+    //  MIP_PaintSource paint = painter->linearGradient(ARect.x,ARect.y,ARect.x,ARect.y2(), c1, c2);
+    //  painter->fillPaint(paint);
+    //}
+    //else {
+    //  painter->fillColor(MBackgroundColor);
+    //}
     painter->strokeColor( MIP_Color(0.25) /*MIP_COLOR_DARK_GRAY*/ );
     painter->strokeWidth(1);
     painter->stroke();
+
+    // text
 
     const char* txt = MLabels[AX];
     MIP_Color color = MTextColor;
@@ -239,6 +294,7 @@ public:
       painter->fontSize(textsize);
       painter->drawTextBox(ARect,buf,MIP_TEXT_ALIGN_CENTER,color);
     }
+
   }
 
 };

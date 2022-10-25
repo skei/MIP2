@@ -30,30 +30,33 @@ private:
   float     MRightBuffer[BUFFER_SIZE] = {0};
   uint32_t  MBufferLength             = 0;
   double    MBufferLengthF            = 0;
+  bool      MBufferWrapped            = false;
 
   double    MReadPos                  = 0.0; // vari pitch
   uint32_t  MWritePos                 = 0;
   bool      MIsPlaying                = false;
   bool      MWasPlaying               = false;
+
+  int32_t   MCurrentSlice             = -1;
   int32_t   MPrevSlice                = -1;
 
   double    MReadSpeed                = 1.0;
 
-  int32_t   MSlice                    = 0;
+  double    MSlice                    = 0;
   double    MSliceFract               = 0.0;
-  uint32_t  MSliceStart               = 0;
-  uint32_t  MSliceLength              = 0;
+  double    MSliceStart               = 0.0;
+  double    MSliceLength              = 0.0;
 
   bool      MRange                    = false;
   //double    MRangeFract               = 0.0;
-  uint32_t  MRangeStart               = 0;
-  uint32_t  MRangeLength              = 0;
+  double    MRangeStart               = 0.0;
+  double    MRangeLength              = 0.0;
   uint32_t  MRangeCount               = 0;
 
   bool      MLoop                     = false;
   //double    MLoopFract                = 0.0;
-  uint32_t  MLoopStart                = 0;
-  uint32_t  MLoopLength               = 0;
+  double    MLoopStart                = 0;
+  double    MLoopLength               = 0;
   uint32_t  MLoopCount                = 0;
 
   double    MLoopFract                = 0.0;
@@ -66,12 +69,12 @@ private:
 
   // these are not automatically initialized..
 
-  uint32_t  par_num_beats               = 4;
-  uint32_t  par_num_slices              = 2;
+  uint32_t  par_num_beats               = 0;
+  uint32_t  par_num_slices              = 0;
 
-  double    par_range_prob              = 0.25;
-  uint32_t  par_range_slice_count       = 15;
-  uint32_t  par_range_loop_count        = 15;
+  double    par_range_prob              = 0.0;
+  uint32_t  par_range_slice_count       = 0;
+  uint32_t  par_range_loop_count        = 0;
 
   double    par_loop_env_attack         = 0.0;
   double    par_loop_env_decay          = 0.0;
@@ -200,6 +203,8 @@ public:
       MPrevSlice = -1;
       MReadPos = 0.0;
       MWritePos = 0;
+      MReadSpeed = 1.0;
+      MBufferWrapped = false;
     }
     else if (MWasPlaying && !MIsPlaying) {
       //MIP_Print("stop\n");
@@ -264,6 +269,7 @@ public:
         MSliceStart = MSlice * slice_length;
         MSliceLength = slice_length;
 
+
         // loop fract
 
         if (MLoop) {
@@ -277,17 +283,23 @@ public:
 
         // count slices, samples
 
-        if (MSlice != MPrevSlice) nextSlice();
-        MPrevSlice = MSlice;
+        MCurrentSlice = MSlice;
+        if (MCurrentSlice != MPrevSlice) nextSlice();
+        MPrevSlice = MCurrentSlice;
         countSamples();
 
         // read from buffer
+
+        MReadPos = fmod(MReadPos,MBufferLength);
+        if (MReadPos < 0.0) MReadPos += MBufferLength;
 
         uint32_t pos = MIP_Trunc(MReadPos);
         float buf0 = MLeftBuffer[pos];
         float buf1 = MRightBuffer[pos];
         MReadPos += MReadSpeed;
+
         MReadPos = fmod(MReadPos,MBufferLength);
+        if (MReadPos < 0.0) MReadPos += MBufferLength;
 
         // out
 
@@ -304,7 +316,7 @@ public:
         }
 
         // envelopes
-        float env = handleEnvelopes(MSliceFract,MLoopFract);
+        float env = handleEnvelopes();
         out0 *= env;
         out1 *= env;
 
@@ -370,7 +382,8 @@ private:
       MRange = false;
       MLoop = false;
       // range
-      if (MIP_RandomRange(0.0, 0.999) < par_range_prob) {
+      //if (MIP_RandomRange(0.0, 0.999) < par_range_prob) {
+      if (MIP_Random() < par_range_prob) {
         startRange();
       }
     }
@@ -381,18 +394,25 @@ private:
   // called every sample
 
   void countSamples() {
+
     if (MRange) {
       MRangeCount += 1;
       if (MRangeCount >= MRangeLength) { // range finished?
         endRange();
       }
     }
+
     if (MLoop) {
       MLoopCount += 1;
+      //MLoopCounter += 1.0;
+      //MLoopCounter += MReadSpeed;
+      //MLoopCounter += fabs(MReadSpeed);
+      //if (MLoopCounter >= MLoopLength) {
       if (MLoopCount >= MLoopLength) {
         handleLoopWrapping();
       }
     }
+
   }
 
 //------------------------------
@@ -405,26 +425,24 @@ private:
 
   void startRange() {
     uint32_t remain = (par_num_beats * par_num_slices) - MSlice;
-
     uint32_t num_slices = randomBit(par_range_slice_count);
-    num_slices = MIP_MaxI(num_slices,1);
-    num_slices = MIP_MinI(num_slices,remain);
-
+    //num_slices = MIP_MaxI(num_slices,1);
+    //num_slices = MIP_MinI(num_slices,remain);
+    num_slices = MIP_ClampI(num_slices,1,remain);
     uint32_t num_loops = randomBit(par_range_loop_count);
     num_loops = MIP_MaxI(num_loops,1);
-
     MRange        = true;
     MRangeCount   = 0;
     MRangeStart   = MSliceStart;
     MRangeLength  = MSliceLength * num_slices;
-
     MLoop         = true;
     MLoopCount    = 0;
     MLoopStart    = MSliceStart;
     MLoopLength   = MRangeLength / num_loops;
     MLoopWrapped  = false;
-
+    MReadSpeed    = 1.0;
     handleLoopStarting();
+
   }
 
   //----------
@@ -441,7 +459,9 @@ private:
     MReadSpeed = 1.0;
   }
 
-  //----------
+//------------------------------
+private:
+//------------------------------
 
   /*
     called from startRange
@@ -449,7 +469,43 @@ private:
   */
 
   void handleLoopStarting() {
-    // probs
+
+    float rnd = 0.0;
+
+    // size
+    rnd = MIP_Random();
+    if (rnd < par_prob_size_prob_range) {
+      double s = par_prob_size_max_range - par_prob_size_min_range;
+      s *= MIP_Random();
+      s += par_prob_size_min_range;
+      float n = powf(0.5,-s);
+      MLoopLength *= n;
+      MLoopLength = MIP_MaxI(MLoopLength,MIN_LOOP_LENGTH);
+    }
+
+    // speed
+    rnd = MIP_Random();
+    if (rnd < par_prob_speed_prob_range) {
+      double s = par_prob_speed_max_range - par_prob_speed_min_range;
+      s *= MIP_Random();
+      s += par_prob_speed_min_range;
+      float n = powf(0.5,-s);
+      MReadSpeed *= n;
+      MReadSpeed = MIP_Clamp(MReadSpeed,-8.0,8.0);
+    }
+
+    // offset
+
+    // reverse
+    rnd = MIP_Random();
+    if (rnd < par_prob_reverse_prob_range) {
+      MReadSpeed *= -1.0;
+      if (MReadSpeed < 0.0) MReadPos += MLoopLength;
+      else MReadPos -= MLoopLength;
+    }
+
+    // fx
+
   }
 
   //----------
@@ -461,22 +517,59 @@ private:
 
   void handleLoopWrapping() {
     MLoopWrapped = true;
+    //MLoopCounter = 0.0;
     MLoopCount = 0;
-    MReadPos = MLoopStart;
 
-    // probs
+    if (MReadSpeed < 0.0) MReadPos = MLoopStart + MLoopLength;
+    else MReadPos = MLoopStart;
 
-//    MReadSpeed *= 0.8;
-//    MReadSpeed = MIP_Clamp(MReadSpeed,MIN_READ_SPEED,MAX_READ_SPEED);
+    float rnd = 0.0;
 
-//    MLoopLength = MIP_Trunc((double)MLoopLength * 0.8);
-//    MLoopLength = MIP_MaxI(MLoopLength,MIN_LOOP_LENGTH);
+    // size
+    rnd = MIP_Random();
+    if (rnd < par_prob_size_prob_loop) {
+      double s = par_prob_size_max_loop - par_prob_size_min_loop;
+      s *= MIP_Random();
+      s += par_prob_size_min_loop;
+      float n = powf(0.5,-s);
+      MLoopLength *= n;
+      MLoopLength = MIP_MaxI(MLoopLength,MIN_LOOP_LENGTH);
+    }
+
+    // speed
+    rnd = MIP_Random();
+    if (rnd < par_prob_speed_prob_loop) {
+      double s = par_prob_speed_max_loop - par_prob_speed_min_loop;
+      s *= MIP_Random();
+      s += par_prob_speed_min_loop;
+      float n = powf(0.5,-s);
+      MReadSpeed *= n;
+      MReadSpeed = MIP_Clamp(MReadSpeed,-8.0,8.0);
+    }
+
+    // offset
+
+    // reverse
+    rnd = MIP_Random();
+    //MIP_Print("rnd %.3f (par_prob_offset_prob_range %.3f)\n",rnd,par_prob_reverse_prob_range);
+    if (rnd < par_prob_reverse_prob_loop) {
+      //MIP_Print("Reverse!\n");
+      MReadSpeed *= -1.0;
+      if (MReadSpeed < 0.0) MReadPos += MLoopLength;
+      else MReadPos -= MLoopLength;
+
+    }
+
+    // fx
 
   }
 
-  //----------
+//------------------------------
+private:
+//------------------------------
 
   void handleBufferWrapping() {
+    MBufferWrapped = true;
     //MIP_Print("buffer finished\n");
     MPrevSlice = -1;
   }
@@ -485,17 +578,27 @@ private:
 private:
 //------------------------------
 
-  float handleEnvelopes(float ASliceFract, float ALoopFract) {
+  //float handleEnvelopes(float ASliceFract, float ALoopFract) {
+  float handleEnvelopes() {
     float env = 1.0f;
-    float sa = par_slice_env_attack;  // * MSliceLength;
-    float sd = par_slice_env_decay;   // * MSliceLength;
-    if ((sa > 0) && (ASliceFract <         sa))  env *= (       ASliceFract  / sa);
-    if ((sd > 0) && (ASliceFract >= (1.0 - sd))) env *= ((1.0 - ASliceFract) / sd);
+//    float sa = par_slice_env_attack;  // * MSliceLength;
+//    float sd = par_slice_env_decay;   // * MSliceLength;
+//    if ((sa > 0) && (MSliceFract <         sa)) {
+//      env *= (MSliceFract / sa);
+//    }
+//    if ((sd > 0) && (MSliceFract >= (1.0 - sd))) {
+//      env *= ((1.0 - MSliceFract) / sd);
+//    }
 //    if (MLoop) {
-//      float la = par_loop_env_attack * (MSampleRate / 10.0);  // 0.01 in on_parameter
-//      float ld = par_loop_env_decay  * (MSampleRate / 10.0);  // 1/100 / 10 = 1/1000
-//      if ((la > 0) && (ALoopFract <         la))  env *= (       MLoopFract  / la);
-//      if ((ld > 0) && (ALoopFract >= (1.0 - ld))) env *= ((1.0 - ALoopFract) / ld);
+//      //float la = par_loop_env_attack * (MSampleRate * 0.01); // 0..10 ms
+//      //float ld = par_loop_env_decay  * (MSampleRate * 0.01);
+//      //float loop_pos = ALoopFract * MLoopLength;
+//      //if (loop_pos < la) {
+//      //  env *= ALoopFract;
+//      //}
+//      //if (loop_pos >= (1.0 - ld)) {
+//      //  env *= (1.0 - ALoopFract);
+//      //}
 //    }
     return env;
   }

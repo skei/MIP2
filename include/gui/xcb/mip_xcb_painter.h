@@ -114,6 +114,9 @@ protected:
 public:
 //------------------------------
 
+  // ASurface = surface to paint to
+  // ATarget  = target window/visual
+
   MIP_XcbPainter(MIP_Drawable* ASurface, MIP_Drawable* ATarget)
   : MIP_BasePainter(ASurface,ATarget) {
     if (ATarget->drawable_isDrawable()) {

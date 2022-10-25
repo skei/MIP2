@@ -7,9 +7,9 @@
 #include "gui/xcb/mip_xcb.h"
 //#include "gui/xcb/mip_xcb_utils.h"
 
-//#ifdef MIP_USE_CAIRO
-//  #include "gui/cairo/mip_cairo.h"
-//#endif
+#ifdef MIP_USE_CAIRO
+  #include "gui/cairo/mip_cairo.h"
+#endif
 
 //----------------------------------------------------------------------
 //
@@ -37,10 +37,10 @@ private:
   bool              MIsWindow         = false;
   xcb_window_t      MWindow           = XCB_NONE;
 
-  //#ifdef MIP_USE_CAIRO
-  //cairo_surface_t*  MCairoSurface     = nullptr;
-  //cairo_device_t*   MCairoDevice      = nullptr;
-  //#endif
+  #ifdef MIP_USE_CAIRO
+    cairo_surface_t*  MCairoSurface     = nullptr;
+    //cairo_device_t*   MCairoDevice      = nullptr;
+  #endif
 
 //------------------------------
 public:
@@ -71,14 +71,14 @@ public:
     xcb_flush(MConnection);
 
     #ifdef MIP_USE_CAIRO
-    MCairoSurface = cairo_xcb_surface_create(
-      MConnection,
-      MPixmap,
-      mip_xcb_find_visual(MConnection,MTargetVisual),
-      MWidth,
-      MHeight
-    );
-    //MCairoDevice = cairo_device_reference(cairo_surface_get_device(MCairoSurface));
+      MCairoSurface = cairo_xcb_surface_create(
+        MConnection,
+        MPixmap,
+        mip_xcb_find_visual(MConnection,MTargetVisual),
+        MWidth,
+        MHeight
+      );
+      //MCairoDevice = cairo_device_reference(cairo_surface_get_device(MCairoSurface));
     #endif
   }
 
@@ -99,6 +99,11 @@ public:
 
   virtual ~MIP_XcbSurface() {
     xcb_free_pixmap(MConnection,MPixmap);
+    #ifdef MIP_USE_CAIRO
+      cairo_surface_destroy(MCairoSurface);
+      //cairo_device_finish(MCairoDevice);
+      //cairo_device_destroy(MCairoDevice);
+    #endif
   }
 
 //------------------------------
@@ -117,10 +122,10 @@ public: // paint_source
   xcb_drawable_t      drawable_getXcbDrawable()    final { return MPixmap; } //MTargetDrawable; }
   xcb_pixmap_t        drawable_getXcbPixmap()      final { return MPixmap; }
 
-  //#ifdef MIP_USE_CAIRO
-  //bool                drawable_isCairo()           final { return true; }
-  //cairo_surface_t*    drawable_getCairoSurface()   final { return MCairoSurface; }
-  //#endif
+  #ifdef MIP_USE_CAIRO
+    bool                drawable_isCairo()           final { return true; }
+    cairo_surface_t*    drawable_getCairoSurface()   final { return MCairoSurface; }
+  #endif
 
 //------------------------------
 public:

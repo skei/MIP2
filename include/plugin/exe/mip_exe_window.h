@@ -78,6 +78,13 @@ public:
       //}
     #endif
 
+    /*
+      the stuff below should be improved!!!
+      what if we are buffering in win32?
+    */
+
+    //MIP_Plugin* plug = nullptr;
+
     //#ifdef MIP_WIN32
     //#ifdef MIP_GUI_NANOVG
     #ifdef MIP_WINDOW_BUFFERED

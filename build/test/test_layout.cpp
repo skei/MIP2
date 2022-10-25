@@ -11,14 +11,14 @@
 // MIP_LINUX is not defined yet (mip_defines.h)
 #ifdef __gnu_linux__
   #define MIP_GUI_XCB
-  #define MIP_PAINTER_NANOVG
-  //#define MIP_PAINTER_XCB
+  #define MIP_PAINTER_XCB
   //#define MIP_WINDOW_BUFFERED
+  //#define MIP_PAINTER_NANOVG
 #else
   #define MIP_GUI_WIN32
-  #define MIP_PAINTER_NANOVG
   //#define MIP_PAINTER_GDI
-  //#define MIP_PAINTER_WGL
+  //#define MIP_WINDOW_BUFFERED
+  #define MIP_PAINTER_NANOVG
 #endif
 
 //----------------------------------------------------------------------

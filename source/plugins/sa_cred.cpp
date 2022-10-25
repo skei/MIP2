@@ -6,10 +6,10 @@
 //#define MIP_NO_GUI
 //#define MIP_NO_PAINTER
 
-//#define MIP_GUI_XCB
-//#define MIP_PAINTER_NANOVG
-#define MIP_GUI_WIN32
+#define MIP_GUI_XCB
 #define MIP_PAINTER_NANOVG
+//#define MIP_GUI_WIN32
+//#define MIP_PAINTER_NANOVG
 #define MIP_PLUGIN_GENERIC_EDITOR
 
 #ifndef MIP_EXE

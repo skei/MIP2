@@ -44,6 +44,8 @@ public:
     State.active = false;
     State.visible = false;
     Options.alignIfHidden = true;
+
+    //setDrawDropShadow(true);
   }
 
   //----------

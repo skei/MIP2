@@ -106,24 +106,24 @@ public:
   //----------
 
   virtual void fillBackground(MIP_PaintContext* AContext) {
-    //if (MDrawDropShadow && !MDropShadowInner) drawDropShadow(AContext);
+    //if (MDrawDropShadow && MDropShadowInner) drawDropShadow(AContext);
     if (MFillBackground) {
       MIP_Painter* painter = AContext->painter;
       painter->beginPath();
       if (MDrawRoundedCorners) painter->roundedRectVarying(MRect.x,MRect.y,MRect.w,MRect.h, MULCornerRadius, MURCornerRadius, MBRCornerRadius, MBLCornerRadius);
       else painter->rect(MRect.x,MRect.y,MRect.w,MRect.h);
-      //if (MFillGradient) {
-      //  //MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y2(), MGradientColor1, MGradientColor2);
-      //  //painter->fillPaint(paint);
-      //  MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y2(), MGradientColor1, MGradientColor2);
-      //  painter->fillPaint(paint);
-      //}
-      //else {
-      painter->fillColor(MBackgroundColor);
-      //}
+      if (MFillGradient) {
+        //MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y2(), MGradientColor1, MGradientColor2);
+        //painter->fillPaint(paint);
+        MIP_PaintSource paint = painter->linearGradient(MRect.x,MRect.y,MRect.x,MRect.y2(), MGradientColor1, MGradientColor2);
+        painter->fillPaint(paint);
+      }
+      else {
+        painter->fillColor(MBackgroundColor);
+      }
       painter->fill();
     }
-    //if (MDrawDropShadow && MDropShadowInner) drawDropShadow(AContext);
+    //if (MDrawDropShadow && !MDropShadowInner) drawDropShadow(AContext);
   }
 
   //----------

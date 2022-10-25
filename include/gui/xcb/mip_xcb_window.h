@@ -10,6 +10,10 @@
 
 #include "gui/xlib/mip_xlib.h"
 
+#ifdef MIP_USE_CAIRO
+  #include "gui/cairo/mip_cairo.h"
+#endif
+
 //----------------------------------------------------------------------
 //
 //
@@ -121,6 +125,10 @@ private:
   //bool        MResizing     = false;
   //MIP_Timer*  MResizeTimer  = nullptr;
 
+  #ifdef MIP_USE_CAIRO
+  cairo_surface_t*  MCairoSurface     = nullptr;
+  #endif
+
 //------------------------------
 public:
 //------------------------------
@@ -182,10 +190,10 @@ public: // drawable
 
   Display*            drawable_getXlibDisplay()    final { return MDisplay; }
 
-  //#ifdef MIP_USE_CAIRO
-  //bool                drawable_isCairo()           final { return true; }
-  //cairo_surface_t*    drawable_getCairoSurface()   final { return MCairoSurface; }
-  //#endif
+  #ifdef MIP_USE_CAIRO
+  bool                drawable_isCairo()           final { return true; }
+  cairo_surface_t*    drawable_getCairoSurface()   final { return MCairoSurface; }
+  #endif
 
 //------------------------------
 public:
@@ -204,6 +212,17 @@ public:
     if (AParent == 0) { wantQuitEvents(); }
     else { removeDecorations(); }
     //MResizeTimer = new MIP_Timer(this);
+
+    #ifdef MIP_USE_CAIRO
+      MCairoSurface = cairo_xcb_surface_create(
+        MConnection,
+        MWindow,
+        mip_xcb_find_visual(MConnection,MTargetVisual),
+        MWindowWidth,
+        MWindowHeight
+      );
+    #endif
+
   }
 
   //----------
@@ -216,6 +235,9 @@ public:
     cleanupScreen();
     cleanupConnection();
     //delete MResizeTimer;
+    #ifdef MIP_USE_CAIRO
+      cairo_surface_destroy(MCairoSurface);
+    #endif
   }
 
 //------------------------------

@@ -1291,6 +1291,9 @@ public: // parameters
     for (uint32_t i=0; i<MParameters.size(); i++) {
       double value = MParameters[i]->getDefaultValue();
       MParameters[i]->setValue(value);
+
+      queueProcessParam(i,value);
+
     }
   }
 

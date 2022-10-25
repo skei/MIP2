@@ -29,6 +29,7 @@ private:
   MIP_MenuWidget*     MFXFilterMenu = nullptr;
 
   const char* txt18[8] = { "1", "2", "3", "4", "5", "6", "7", "8" };
+  const char* brow_text[3] = { "Prob", "sequence", "Perform" };
 
 //------------------------------
 public:
@@ -66,7 +67,8 @@ public:
     //MIP_Print("AWidth %i AHeight %i\n",AWidth,AHeight);
 
     setCanResizeEditor(true);
-    setResizeProportional(true);
+    //setResizeProportional(true);
+    setResizeProportional(false);
     setProportionalSize(AWidth,AHeight);
 
     // filter menu
@@ -156,18 +158,25 @@ public:
       MIP_PanelWidget* seq_page = new MIP_PanelWidget(0);
       seq_page->setDrawBorder(true);
 
-    tabs->appendPage("Probabilities",prob_page);
+    tabs->appendPage("Prob",prob_page);
     tabs->appendPage("Perform",perf_page);
     tabs->appendPage("Sequence",seq_page);
     tabs->selectPage(0);
 
 #endif // 0
 
+    MIP_ButtonRowWidget* brow = new MIP_ButtonRowWidget( MIP_DRect(10,180, 530,25), 3, brow_text, MIP_BUTTON_ROW_SINGLE );
+    brow->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    brow->setTextSize(-0.5);
+    background->appendChildWidget(brow);
+
+    double TH = 50.0;
+
 //#if 0
 
     // repeat
 
-    MIP_PanelWidget* repeat_section = new MIP_PanelWidget(MIP_DRect( 10,180, 260,110) );
+    MIP_PanelWidget* repeat_section = new MIP_PanelWidget(MIP_DRect( 10,180 + TH, 260,110) );
     repeat_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     background->appendChildWidget(repeat_section);
 
@@ -230,7 +239,7 @@ public:
 
     // env
 
-    MIP_PanelWidget* env_section = new MIP_PanelWidget(MIP_DRect( 10,300, 260,110) );
+    MIP_PanelWidget* env_section = new MIP_PanelWidget(MIP_DRect( 10,300 + TH, 260,110) );
     env_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     background->appendChildWidget(env_section);
 
@@ -276,7 +285,7 @@ public:
 
     // filter
 
-    MIP_PanelWidget* filter_section = new MIP_PanelWidget(MIP_DRect( 10,420, 260,110) );
+    MIP_PanelWidget* filter_section = new MIP_PanelWidget(MIP_DRect( 10,420 + TH, 260,110) );
     filter_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     background->appendChildWidget(filter_section);
 
@@ -322,7 +331,7 @@ public:
 
     // loop size
 
-    MIP_PanelWidget* size_section = new MIP_PanelWidget(MIP_DRect( 280,180, 260,65) );
+    MIP_PanelWidget* size_section = new MIP_PanelWidget(MIP_DRect( 280,180 + TH, 260,65) );
     size_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     background->appendChildWidget(size_section);
 
@@ -382,7 +391,7 @@ public:
 
     // loop speed
 
-    MIP_PanelWidget* speed_section = new MIP_PanelWidget(MIP_DRect( 280,255, 260,65) );
+    MIP_PanelWidget* speed_section = new MIP_PanelWidget(MIP_DRect( 280,255 + TH, 260,65) );
     speed_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     background->appendChildWidget(speed_section);
 
@@ -442,7 +451,7 @@ public:
 
     // loop offset
 
-    MIP_PanelWidget* offset_section = new MIP_PanelWidget(MIP_DRect( 280,330, 260,65) );
+    MIP_PanelWidget* offset_section = new MIP_PanelWidget(MIP_DRect( 280,330 + TH, 260,65) );
     offset_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     background->appendChildWidget(offset_section);
 
@@ -502,7 +511,7 @@ public:
 
     // loop reverse
 
-    MIP_PanelWidget* reverse_section = new MIP_PanelWidget(MIP_DRect( 280,405, 260,65) );
+    MIP_PanelWidget* reverse_section = new MIP_PanelWidget(MIP_DRect( 280,405 + TH, 260,65) );
     reverse_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     background->appendChildWidget(reverse_section);
 
@@ -562,7 +571,7 @@ public:
 
     // loop fx
 
-    MIP_PanelWidget* fx_section = new MIP_PanelWidget(MIP_DRect( 280,480, 260,65) );
+    MIP_PanelWidget* fx_section = new MIP_PanelWidget(MIP_DRect( 280,480 + TH, 260,65) );
     fx_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     background->appendChildWidget(fx_section);
 
@@ -650,16 +659,19 @@ public:
     MWaveform->setBuffer(process->MLeftBuffer,process->MBufferLength);
     MWaveform->setNumGrid(process->par_num_beats);
     MWaveform->setNumSubGrid(process->par_num_slices);
+
     // marker 0 write pos
     MWaveform->setMarkerActive(0,true);
     MWaveform->setMarkerPos(0,process->MWritePos);
     MWaveform->setMarkerColor(0, MIP_Color(1,0,0,1) );                          // MWritePosColor
     MWaveform->setMarkerWidth(0,1);                                             // MWritePosWidth
+
     // marker 1 read pos
     MWaveform->setMarkerActive(1,true);
     MWaveform->setMarkerPos(1,process->MReadPos);
     MWaveform->setMarkerColor(1, MIP_Color(0,1,0,1) );                          // MReadPosColor
     MWaveform->setMarkerWidth(1,1);                                             // MReadPosWidth
+
     if (process->MRange) {
       // area 1 range
       MWaveform->setAreaActive(0,false);
@@ -667,6 +679,7 @@ public:
       MWaveform->setAreaStart(1,process->MRangeStart);
       MWaveform->setAreaLength(1,process->MRangeLength);
       MWaveform->setAreaColor(1, MIP_Color(0,0.5,0,0.2) );                      // MRangeColor[n]
+
       if (process->MLoop) {
         // area 2 loop
         MWaveform->setAreaActive(2,true);
@@ -678,9 +691,10 @@ public:
         MWaveform->setAreaActive(2,false);
       }
     }
-    else {
+    else { // no range
       MWaveform->setAreaActive(1,false);
       MWaveform->setAreaActive(2,false);
+
       // area 0 current slice
       if (process->MIsPlaying) {
         MWaveform->setAreaActive(0,true);
