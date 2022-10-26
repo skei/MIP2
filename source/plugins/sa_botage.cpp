@@ -1,15 +1,18 @@
 
 #ifdef __gnu_linux__
-  //#define MIP_GUI_XCB
-  //#define MIP_PAINTER_NANOVG
+  #define MIP_GUI_XCB
+  #define MIP_PAINTER_NANOVG
   //#define MIP_PAINTER_XCB
   //#define MIP_WINDOW_BUFFERED
 #else
-  //#define MIP_GUI_WIN32
+  #define MIP_GUI_WIN32
   //#define MIP_PAINTER_NANOVG
-  //#define MIP_PAINTER_GDI
+  #define MIP_PAINTER_GDI
   //#define MIP_PAINTER_WGL
 #endif
+
+//#define MIP_NO_GUI
+//#define MIP_NO_PAINTER
 
 // nc -U -l -k /tmp/mip.socket
 
@@ -24,7 +27,10 @@
 
 #include "plugin/mip_plugin.h"
 
+#ifndef MIP_NO_GUI
 #include "sa_botage/sa_botage_editor.h"
+#endif
+
 #include "sa_botage/sa_botage_params.h"
 #include "sa_botage/sa_botage_process.h"
 
@@ -179,6 +185,8 @@ public: // plugin
 public: // gui
 //------------------------------
 
+#ifndef MIP_NO_GUI
+
   bool gui_create(const char *api, bool is_floating) override {
     //MIP_Print("\n");
     MEditor = new sa_botage_editor(this,MEditorWidth,MEditorHeight,MParameters);
@@ -208,9 +216,13 @@ public: // gui
 //    return MIP_Plugin::gui_hide();
 //  }
 
+#endif
+
 //------------------------------
 public: // timer
 //------------------------------
+
+#ifndef MIP_NO_GUI
 
   // we read from MProcess directly... :-/
 
@@ -224,6 +236,8 @@ public: // timer
       if (editor) editor->timer_update(&MProcess);
     }
   }
+
+#endif
 
 };
 
