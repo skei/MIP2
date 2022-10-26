@@ -21,7 +21,8 @@
 #include "gui/nanovg/mip_nanovg.h"
 #include "gui/nanovg/mip_nanovg_utils.h"
 
-#include "../data/fonts/liberation_ttf.h"
+#include "../data/fonts/Liberation_ttf.h"
+#include "../data/fonts/Quicksand_ttf.h"
 
 //#include "extern/blendish/blendish.h"
 //#include "extern/blendish/blendish.c"
@@ -49,9 +50,10 @@ class MIP_NanoVGPainter
 private:
 //------------------------------
 
-  NVGcontext* MContext    = nullptr;
-  int         MFont       = 0;
-  //int         MIconImage  = 0;
+  NVGcontext* MContext      = nullptr;
+  int         MFont_Sans    = 0;
+  int         MFont_Header  = 0;
+  //int         MIconImage    = 0;
 
 //------------------------------
 public:
@@ -80,9 +82,10 @@ public:
     //nvgFontFaceId(MContext,MFont);
     //nvgFontSize(MContext,10);
 
-    MFont = createFontMem("font1",(unsigned char*)liberation_ttf,liberation_ttf_size,0);
+    MFont_Sans = createFontMem("Sans",(unsigned char*)liberation_ttf,liberation_ttf_size,0);
+    MFont_Header = createFontMem("Header",(unsigned char*)quicksand_ttf,quicksand_ttf_size,0);
     //MFont = createFont("font1","/usr/share/fonts/truetype/freefont/FreeSerif.ttf");
-    fontFaceId(MFont);
+    fontFaceId(MFont_Sans);
 
     //bndSetFont(MFont);
     //MIconImage  = nvgCreateImage(MContext,"/DISKS/sda2/code/git/MIP2/include/extern/oui-blendish/blender_icons16.png",0); // NVG_IMAGE_PREMULTIPLIED
@@ -123,8 +126,12 @@ public:
     return MContext;
   }
 
-  int getNvgFont(int index=0) {
-    return MFont;
+  int getFont_Sans(int index=0) {
+    return MFont_Sans;
+  }
+
+  int getFont_Header(int index=0) {
+    return MFont_Header;
   }
 
   //int getNvgIconImage(int index=0) {

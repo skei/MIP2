@@ -127,17 +127,31 @@ public:
 
       validateImage(painter);
 
-      float ox = rect.x;        // 160
-      float oy = rect.y;        // 0
-      float ex = MImageWidth;   // 320
-      float ey = MImageHeight;  // 240
-      MIP_PaintSource paint = painter->imagePattern(ox,oy,ex,ey,0,MImage,1.0);
+//      float ox = rect.x;        // 160
+//      float oy = rect.y;        // 0
+//      float ex = MImageWidth;   // 320
+//      float ey = MImageHeight;  // 240
+//      MIP_PaintSource paint = painter->imagePattern(ox,oy,ex,ey,0,MImage,1.0);
+//      painter->beginPath();
+//      painter->rect(rect.x,rect.y,rect.w,rect.h);
+//      painter->fillPaint(paint);
+//      painter->fill();
+//      //painter->deleteImage(image);
 
+//      MIP_DRect R = getTileRect(iindex);
+      //MIP_Print("%.2f -> i : %.0f,%.0f, %.0f,%.0f\n",getValue(),iindex,R.x,R.y,R.w,R.h);
+      float xscale = rect.w / MImageWidth;
+      float yscale = rect.h / MImageHeight;
+      float ox = rect.x;// - (R.x * xscale);
+      float oy = rect.y;// - (R.y * yscale);
+      float ex = MImageWidth * xscale;
+      float ey = MImageHeight * yscale;
+      MIP_PaintSource paint = painter->imagePattern(ox,oy,ex,ey,0,MImage,1.0);
       painter->beginPath();
       painter->rect(rect.x,rect.y,rect.w,rect.h);
       painter->fillPaint(paint);
       painter->fill();
-      //painter->deleteImage(image);
+
 
     }
   }

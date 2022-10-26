@@ -31,6 +31,15 @@ private:
   const char* txt18[8] = { "1", "2", "3", "4", "5", "6", "7", "8" };
   const char* brow_text[3] = { "Prob", "sequence", "Perform" };
 
+  double    MReadPosWidth   = 2;
+  double    MWritePosWidth  = 2;
+  MIP_Color MReadPosColor   = MIP_Color(0,   1,   0, 1   );
+  MIP_Color MWritePosColor  = MIP_Color(1,   0,   0, 1   );
+  MIP_Color MRangeColor     = MIP_Color(0,   0.5, 0, 0.3 );
+  MIP_Color MLoopColor      = MIP_Color(0,   1,   0, 0.2 );
+  MIP_Color MSliceColor     = MIP_Color(0,   0,   0, 0.1 );
+
+
 //------------------------------
 public:
 //------------------------------
@@ -44,25 +53,6 @@ public:
 
     MIP_Window* window = getWindow();
     window->setWindowFillBackground(false);
-
-    //aspect
-
-//    double initial_aspect = EDITOR_WIDTH / EDITOR_HEIGHT;
-//    if (initial_aspect > 0) {
-//      if (AHeight > 0) {
-//        double aspect = AWidth / AHeight;
-//        if (aspect >= initial_aspect) {
-//          AWidth = AHeight * initial_aspect;
-//        }
-//        else {
-//          AHeight = AWidth / initial_aspect;
-//        }
-//      } // h > 0
-//    } // aspect > 0
-//
-//    window->setWidgetSize(AWidth,AHeight);
-//    MEditorWidth = AWidth;
-//    MEditorHeight = AHeight;
 
     //MIP_Print("AWidth %i AHeight %i\n",AWidth,AHeight);
 
@@ -96,7 +86,7 @@ public:
     MIP_PanelWidget* background = new MIP_PanelWidget( MIP_DRect(EDITOR_WIDTH,EDITOR_HEIGHT) );
     background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
     background->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-//    background->Layout.aspectRatio = (double)AWidth / (double)AHeight;
+    //    background->Layout.aspectRatio = (double)AWidth / (double)AHeight;
     background->Layout.aspectRatio = (double)EDITOR_WIDTH / (double)EDITOR_HEIGHT;
     background->setFillBackground(true);
     background->setBackgroundColor(0.5);
@@ -105,8 +95,11 @@ public:
 
     // header
 
-    MIP_PanelWidget* header = new MIP_PanelWidget(MIP_DRect( 10,10, 530,40 ));
+    //    MIP_PanelWidget* header = new MIP_PanelWidget(MIP_DRect( 10,10, 530,40 ));
+    MIP_SAHeaderWidget* header = new MIP_SAHeaderWidget(MIP_DRect( 10,10, 530,80 ));
     header->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    header->setPluginName("botage"); // getDescriptor()->name
+    header->setPluginVersion("0.0.12-pre1");
     background->appendChildWidget(header);
 
     // footer
@@ -123,20 +116,20 @@ public:
 
     // waveform
 
-    MWaveform = new MIP_WaveformWidget(MIP_DRect( 10,60, 530,70 ));
+    MWaveform = new MIP_WaveformWidget(MIP_DRect( 10,100, 530,70 ));
     MWaveform->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     background->appendChildWidget(MWaveform);
 
     // beats/slices
 
-    MIP_SliderWidget* w_beats = new MIP_SliderWidget(MIP_DRect( 10,140, 260,20 ), "Beats", 4);
+    MIP_SliderWidget* w_beats = new MIP_SliderWidget(MIP_DRect( 10,180, 260,20 ), "Beats", 4);
     w_beats->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     w_beats->setTextSize( -0.7 );
     w_beats->setValueSize( -0.7 );
     background->appendChildWidget(w_beats);
     connectWidget( AParameters[PAR_NUM_BEATS], w_beats );
 
-    MIP_SliderWidget* w_slices = new MIP_SliderWidget(MIP_DRect( 280,140, 260,20 ), "Slices", 2);
+    MIP_SliderWidget* w_slices = new MIP_SliderWidget(MIP_DRect( 280,180, 260,20 ), "Slices", 2);
     w_slices->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     w_slices->setTextSize( -0.7 );
     w_slices->setValueSize( -0.7 );
@@ -165,12 +158,12 @@ public:
 
 #endif // 0
 
-    MIP_ButtonRowWidget* brow = new MIP_ButtonRowWidget( MIP_DRect(10,180, 530,25), 3, brow_text, MIP_BUTTON_ROW_SINGLE );
+    MIP_ButtonRowWidget* brow = new MIP_ButtonRowWidget( MIP_DRect(10,220, 530,25), 3, brow_text, MIP_BUTTON_ROW_SINGLE );
     brow->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     brow->setTextSize(-0.5);
     background->appendChildWidget(brow);
 
-    double TH = 50.0;
+    double TH = 50.0 + 40.0;
 
 //#if 0
 
@@ -662,30 +655,30 @@ public:
 
     // marker 0 write pos
     MWaveform->setMarkerActive(0,true);
-    MWaveform->setMarkerPos(0,process->MWritePos);
-    MWaveform->setMarkerColor(0, MIP_Color(1,0,0,1) );                          // MWritePosColor
-    MWaveform->setMarkerWidth(0,1);                                             // MWritePosWidth
+    MWaveform->setMarkerPos(   0,process->MWritePos);
+    MWaveform->setMarkerColor( 0,MWritePosColor);
+    MWaveform->setMarkerWidth( 0,MWritePosWidth);
 
     // marker 1 read pos
     MWaveform->setMarkerActive(1,true);
-    MWaveform->setMarkerPos(1,process->MReadPos);
-    MWaveform->setMarkerColor(1, MIP_Color(0,1,0,1) );                          // MReadPosColor
-    MWaveform->setMarkerWidth(1,1);                                             // MReadPosWidth
+    MWaveform->setMarkerPos(   1,process->MReadPos);
+    MWaveform->setMarkerColor( 1,MReadPosColor);
+    MWaveform->setMarkerWidth( 1,MReadPosWidth);
 
     if (process->MRange) {
-      // area 1 range
       MWaveform->setAreaActive(0,false);
+      // area 1 range
       MWaveform->setAreaActive(1,true);
-      MWaveform->setAreaStart(1,process->MRangeStart);
+      MWaveform->setAreaStart( 1,process->MRangeStart);
       MWaveform->setAreaLength(1,process->MRangeLength);
-      MWaveform->setAreaColor(1, MIP_Color(0.0,0.5,0,0.3) );                      // MRangeColor[n]
+      MWaveform->setAreaColor( 1,MRangeColor);
 
       if (process->MLoop) {
         // area 2 loop
         MWaveform->setAreaActive(2,true);
-        MWaveform->setAreaStart(2,process->MLoopStart);
+        MWaveform->setAreaStart( 2,process->MLoopStart);
         MWaveform->setAreaLength(2,process->MLoopLength);
-        MWaveform->setAreaColor(2, MIP_Color(0,1.0,0,0.3) );
+        MWaveform->setAreaColor( 2,MLoopColor);
       }
       else {
         MWaveform->setAreaActive(2,false);
@@ -694,13 +687,12 @@ public:
     else { // no range
       MWaveform->setAreaActive(1,false);
       MWaveform->setAreaActive(2,false);
-
       // area 0 current slice
       if (process->MIsPlaying) {
         MWaveform->setAreaActive(0,true);
-        MWaveform->setAreaStart(0,process->MSliceStart);
+        MWaveform->setAreaStart( 0,process->MSliceStart);
         MWaveform->setAreaLength(0,process->MSliceLength);
-        MWaveform->setAreaColor(0, MIP_Color(0,0,0,0.1) );                      // SCurrentliceColor
+        MWaveform->setAreaColor( 0,MSliceColor);
       }
       else {
         MWaveform->setAreaActive(0,false);

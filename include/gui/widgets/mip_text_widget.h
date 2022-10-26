@@ -25,6 +25,9 @@ protected:
   double      MTextSize       = 13.0;
   MIP_DPoint  MTextOffset     = MIP_DPoint(0,0);
 
+  //int         MTextFont       = -1;
+  const char* MTextFont = "Sans";
+
 //------------------------------
 public:
 //------------------------------
@@ -54,6 +57,8 @@ public:
   virtual void  setTextOffset(MIP_DPoint AOffset) { MTextOffset = AOffset; }
 
   virtual const char* getText() { return MText; }
+
+  virtual void setTextFont(const char* AFont) { MTextFont = AFont; }
 
 //------------------------------
 public: // parent to child
@@ -100,6 +105,11 @@ public:
       //rect.shrink(2);
       rect.x += MTextOffset.x;
       rect.y += MTextOffset.y;
+      //if (MTextFont) {
+        int f = painter->findFont(MTextFont);
+        //MIP_Print("font %i\n",f);
+        painter->fontFaceId(f);
+      //}
       double textsize = MTextSize;
       if (MTextSize < 0) { textsize = MRect.h * (- MTextSize); }
       painter->fontSize(textsize);

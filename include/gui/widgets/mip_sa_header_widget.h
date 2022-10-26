@@ -10,9 +10,8 @@
 #include "gui/widgets/mip_panel_widget.h"
 #include "gui/widgets/mip_text_widget.h"
 
-#include "../data/img/sa_logo_40_trans_black.h"
-#include "../data/img/mip2_trans_129x34.h"
-
+#include "../data/img/sa_60x60.h"
+#include "../data/img/mip2_100x60.h"
 
 //----------
 
@@ -26,22 +25,14 @@ class MIP_SAHeaderWidget
 private:
 //------------------------------
 
-  MIP_Bitmap*   MLogoBitmap   = nullptr;
-  MIP_Bitmap*   MMip2Bitmap   = nullptr;
-
-  //MIP_Surface*  MLogoSurface  = nullptr;
-  //MIP_Surface*  MMip2Surface  = nullptr;
-
-
+  MIP_Bitmap*       MLogoBitmap     = nullptr;
+  MIP_Bitmap*       MMip2Bitmap     = nullptr;
   MIP_ImageWidget*  MLogoImage      = nullptr;
   MIP_ImageWidget*  MMip2Image      = nullptr;
-
-  MIP_TextWidget*  MClapTextWidget  = nullptr;
-  char             MClapText[64]    = {};
-
-  MIP_TextWidget*  MPluginName     = nullptr;
-  MIP_TextWidget*  MPluginVersion  = nullptr;
-
+  MIP_TextWidget*   MClapTextWidget = nullptr;
+  char              MClapText[64]   = {};
+  MIP_TextWidget*   MPluginName     = nullptr;
+  MIP_TextWidget*   MPluginVersion  = nullptr;
 
 //------------------------------
 public:
@@ -52,66 +43,70 @@ public:
   : MIP_PanelWidget(ARect) {
 
     setWidgetName("MIP_SAHeaderWidget");
-    Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    Layout.border = MIP_DRect(10,10,10,10);
-    //layout.spacing = MIP_FPoint(10,0);
 
     // bitmaps
 
-    MLogoBitmap = new MIP_Bitmap(sa_logo_40_trans_black,sa_logo_40_trans_black_size);
+    MLogoBitmap = new MIP_Bitmap(sa_60x60,sa_60x60_size);
+    MLogoBitmap->scaleLayer(3,128);
     MLogoBitmap->premultAlpha(0x808080);
     MLogoBitmap->fillLayer(3,255);
 
-    MMip2Bitmap = new MIP_Bitmap(mip2_trans_129x34,mip2_trans_129x34_size);
+    MMip2Bitmap = new MIP_Bitmap(mip2_100x60,mip2_100x60_size);
     MMip2Bitmap->scaleLayer(3,128);
     MMip2Bitmap->premultAlpha(0x808080);
+    MMip2Bitmap->fillLayer(3,255);
 
-    // image widgets
+    // SA
 
-    MLogoImage = new MIP_ImageWidget( MIP_DRect(40,40), MLogoBitmap );
-    MLogoImage->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT_TOP;
+    MLogoImage = new MIP_ImageWidget( MIP_DRect(10,10,60,60), MLogoBitmap );
+    //MLogoImage->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT_TOP;
+    MLogoImage->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     appendChildWidget(MLogoImage);
 
-    MMip2Image = new MIP_ImageWidget( MIP_DRect(129,34), MMip2Bitmap );
-    MMip2Image->Layout.alignment = MIP_WIDGET_ALIGN_RIGHT_TOP;
-    appendChildWidget(MMip2Image);
+    // botage
 
-    // text - clap version
-
-    sprintf(MClapText,"CLAP v%i.%i.%i",CLAP_VERSION_MAJOR,CLAP_VERSION_MINOR,CLAP_VERSION_REVISION);
-    //MClapTextWidget = new MIP_TextWidget( MIP_DRect(0,0,129,16),MClapText );
-    MClapTextWidget = new MIP_TextWidget( MIP_DRect(-37,0,129,16),MClapText );
-    MClapTextWidget->Layout.alignment = MIP_WIDGET_ALIGN_RIGHT_BOTTOM;
-    MClapTextWidget->setText(MClapText);
-    MClapTextWidget->setTextSize(9);
-    MClapTextWidget->setTextColor( MIP_Color(0.25) /*MIP_COLOR_DARK_GRAY*/);
-    MClapTextWidget->setDrawBorder(false);
-    MClapTextWidget->setFillBackground(false);
-    appendChildWidget(MClapTextWidget);
-
-    // text - plugin name
-
-    MPluginName = new MIP_TextWidget( MIP_DRect(10,0,150,24), "Plugin" );
-    MPluginName->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP_LEFT;
-    //MPluginName->setText("PluginName");
-    MPluginName->setTextSize(24);
-    MPluginName->setTextColor(MIP_Color(0)/*MIP_COLOR_BLACK*/);
+    MPluginName = new MIP_TextWidget( MIP_DRect(80,10,160,60), "" );
+    MPluginName->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MPluginName->setTextSize(-0.7);
+    MPluginName->setTextFont("Header");
+    MPluginName->setTextColor(MIP_Color(0.75));
     MPluginName->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     MPluginName->setDrawBorder(false);
     MPluginName->setFillBackground(false);
     appendChildWidget(MPluginName);
 
-    // text - plugin version
+    // plugin version
 
-    MPluginVersion  = new MIP_TextWidget( MIP_DRect(10,0,100,20), "v0.0.0" );
-    MPluginVersion->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP_LEFT;
-    //MPluginVersion->setText("v0.0.0");
-    MPluginVersion->setTextSize(10);
-    MPluginVersion->setTextColor(MIP_Color(0.25)/*MIP_COLOR_DARK_GRAY*/);
+    MPluginVersion  = new MIP_TextWidget( MIP_DRect(80,56,200,10), "" );
+    MPluginVersion->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MPluginVersion->setTextSize(-1);
+    MPluginVersion->setTextColor(MIP_Color(0.25) );
     MPluginVersion->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     MPluginVersion->setDrawBorder(false);
     MPluginVersion->setFillBackground(false);
     appendChildWidget(MPluginVersion);
+
+    // mip2
+
+    MMip2Image = new MIP_ImageWidget( MIP_DRect((ARect.w - 110),10,100,60), MMip2Bitmap );
+    MMip2Image->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    appendChildWidget(MMip2Image);
+
+    MIP_PRINT;
+
+    // clap version
+
+    sprintf(MClapText,"CLAP v%i.%i.%i",CLAP_VERSION_MAJOR,CLAP_VERSION_MINOR,CLAP_VERSION_REVISION);
+    MClapTextWidget = new MIP_TextWidget( MIP_DRect((ARect.w - 110),51,100,10),MClapText );
+    MClapTextWidget->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MClapTextWidget->setText(MClapText);
+    MClapTextWidget->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
+    MClapTextWidget->setTextSize(-0.9);
+    MClapTextWidget->setTextColor( MIP_Color(0.25) );
+    MClapTextWidget->setDrawBorder(false);
+    MClapTextWidget->setFillBackground(false);
+    appendChildWidget(MClapTextWidget);
+
   }
 
   //----------
@@ -124,10 +119,6 @@ public:
 //------------------------------
 public:
 //------------------------------
-
-  //virtual void setImage(MIP_Drawable* ATarget, uint8_t* ABuffer, uint32_t ASize,MIP_Color ABackground) {
-  //  MLogoImage->setImage(ATarget,ABuffer,ASize,ABackground);
-  //}
 
   virtual void setPluginName(const char* AText) {
     MPluginName->setText(AText);
@@ -144,20 +135,6 @@ public:
   virtual void setPluginVersionColor(MIP_Color AColor) {
     MPluginVersion->setTextColor(AColor);
   }
-
-//------------------------------
-public:
-//------------------------------
-
-public:
-
-//  void on_widget_config(MIP_Widget* AOwnerWindow) override {
-//    MIP_PRINT;
-//    MIP_PanelWidget::on_widget_config(AOwnerWindow);
-//  }
-
-//  void on_widget_paint(MIP_Painter* APainter, MIP_DRect ARect, uint32_t AMode) final {
-//  }
 
 };
 

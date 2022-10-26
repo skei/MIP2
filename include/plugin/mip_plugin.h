@@ -405,6 +405,10 @@ public: // EXT gui
           editor_window->setWindowFillBackground(false);
           MIP_Widget* editor_widget = setupGenericEditor();
           editor_window->appendChildWidget(editor_widget);
+          MEditor->setCanResizeEditor(true);
+          MEditor->setResizeProportional(true);
+          MEditor->setProportionalSize(MEditorWidth,MEditorHeight);
+
         }
         return true;
       }
@@ -1535,34 +1539,41 @@ public: // generic gui
 
   uint32_t getGenericHeight() {
     uint32_t numparams = getGenericNumControls();
-    return 60 + 10 + (numparams * 20) + ((numparams-1) * 5) + 10 + 25;
+    return 80 + 10 + (numparams * 20) + ((numparams-1) * 5) + 10 + 25;
   }
 
   //----------
 
   MIP_Widget* setupGenericEditor() {
 
+    uint32_t w = getGenericWidth();
+    uint32_t h = getGenericHeight();
+
     //----- background -----
 
-    MIP_PanelWidget* editor = new MIP_PanelWidget(0);
+    MIP_PanelWidget* editor = new MIP_PanelWidget(MIP_DRect(w,h));
     editor->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+    editor->Layout.aspectRatio = (double)w / (double)h;
     editor->setFillBackground(true);
     editor->setDrawBorder(false);
     editor->setBackgroundColor(0.55);
 
     //----- sa header -----
 
-    MIP_SAHeaderWidget* saheader = new MIP_SAHeaderWidget(60);
+    MIP_SAHeaderWidget* saheader = new MIP_SAHeaderWidget(MIP_DRect(0,0,w,80));
     editor->appendChildWidget(saheader);
-    saheader->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    saheader->setPluginName("MIP_Plugin");
-    saheader->setPluginVersion("v0.0.0");
+    saheader->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    //saheader->setPluginName("MIP_Plugin");
+    //saheader->setPluginVersion("v0.0.0");
+    saheader->setPluginVersion(getDescriptor()->version);
 
     //----- footer -----
 
-    MIP_TextWidget* footer_panel = new MIP_TextWidget(25,"footer");
+    MIP_TextWidget* footer_panel = new MIP_TextWidget(MIP_DRect(0,(h-25),w,25), "footer" );
     editor->appendChildWidget(footer_panel);
-    footer_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
+    footer_panel->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    //footer_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
+    footer_panel->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     footer_panel->setFillBackground(true);
     footer_panel->setBackgroundColor(0.4);
     footer_panel->setDrawBorder(false);
@@ -1573,13 +1584,13 @@ public: // generic gui
 
     //----- center -----
 
-    MIP_PanelWidget* center = new MIP_PanelWidget(0);
-    editor->appendChildWidget(center);
-    center->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    center->setFillBackground(false);
-    center->setDrawBorder(false);
-    center->Layout.border = { 10,10,10,10 };
-    center->Layout.spacing = { 5,5 };
+//    MIP_PanelWidget* center = new MIP_PanelWidget(0);
+//    editor->appendChildWidget(center);
+//    center->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+//    center->setFillBackground(false);
+//    center->setDrawBorder(false);
+//    center->Layout.border = { 10,10,10,10 };
+//    center->Layout.spacing = { 5,5 };
 
     //----- parameters -----
 
@@ -1589,10 +1600,13 @@ public: // generic gui
         if (!parameter->isHidden()) {
           const char* name = parameter->getName();
           double value = parameter->getDefaultValue();
-          MIP_Widget* widget = new MIP_SliderWidget(20,name,value);
-          center->appendChildWidget(widget);
-          widget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-          MEditor->connectWidget(parameter,widget);
+          MIP_SliderWidget* slider = new MIP_SliderWidget( MIP_DRect(10, 90 + (25 * i), w - 20, 20),name,value);
+          editor->appendChildWidget(slider);
+          //slider->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
+          slider->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+          slider->setTextSize(-0.8);
+          slider->setValueSize(-0.8);
+          MEditor->connectWidget(parameter,slider);
         }
       }
     }

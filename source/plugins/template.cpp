@@ -1,14 +1,18 @@
 
-//#define MIP_NO_GUI
-//#define MIP_NO_PAINTER
+#define MIP_PLUGIN_GENERIC_EDITOR
 
-#define MIP_GUI_XCB
-//#define MIP_PAINTER_XCB
-//#define MIP_WINDOW_BUFFERED
-#define MIP_PAINTER_NANOVG
+//----------
 
-//#define MIP_GUI_WIN32
-//#define MIP_PAINTER_GDI
+#ifdef __gnu_linux__
+  #define MIP_GUI_XCB
+  #define MIP_PAINTER_NANOVG
+  //#define MIP_PAINTER_XCB
+  //#define MIP_WINDOW_BUFFERED
+#else
+  #define MIP_GUI_WIN32
+  #define MIP_PAINTER_NANOVG
+  //#define MIP_PAINTER_GDI
+#endif
 
 //----------
 
@@ -40,7 +44,7 @@ const clap_plugin_descriptor_t myDescriptor = {
    .url           = "https://github.com/skei/MIP2",
    .manual_url    = "",
    .support_url   = "",
-   .version       = "0.0.0",
+   .version       = "0.0.12-pre1",
    .description   = "",
    .features      =  (const char *[]){ CLAP_PLUGIN_FEATURE_AUDIO_EFFECT, nullptr }
 };
@@ -217,30 +221,26 @@ public: // gui
 
   #ifndef MIP_NO_GUI
 
+  /*
   bool gui_create(const char *api, bool is_floating) final {
     //MEditor = new myEditor(this,MEditorWidth,MEditorHeight);
     bool result = MIP_Plugin::gui_create(api,is_floating);
     if (result) {
-
       MIP_Window* window = MEditor->getWindow();
-
       //window->setWindowFillBackground(true);
-
       MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect( 0,0,500,400), MIP_COLOR_RED );
       background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
       window->appendChildWidget(background);
-
       MIP_Knob2Widget* knob1 = new MIP_Knob2Widget( MIP_DRect(10,10,40,60), "Left", 0.0 );
       background->appendChildWidget(knob1);
       MEditor->connectWidget(MParameters[0],knob1);
-
       MIP_Knob2Widget* knob2 = new MIP_Knob2Widget( MIP_DRect(60,10,40,60), "Right", 0.0 );
       background->appendChildWidget(knob2);
       MEditor->connectWidget(MParameters[1],knob2);
-
     }
     return result;
   }
+  */
 
   //----------
 
@@ -269,20 +269,6 @@ public: // gui
 
   //----------
 
-  //  void MIP_Register() {
-  //    MIP_REGISTRY.appendDescriptor(&myDescriptor);
-  //  };
-  //
-  //  //----------
-  //
-  //  MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-  //    if (AIndex == 0) {
-  //      return new myPlugin(ADescriptor,AHost);
-  //    }
-  //    return nullptr;
-  //  }
-
-  MIP_BASIC_ENTRY(template_descriptor,test_layout_plugin);
-
+  MIP_DEFAULT_ENTRY(myDescriptor,myPlugin);
 
 //#endif

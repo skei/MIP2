@@ -6,8 +6,8 @@
   //#define MIP_WINDOW_BUFFERED
 #else
   #define MIP_GUI_WIN32
-  //#define MIP_PAINTER_NANOVG
-  #define MIP_PAINTER_GDI
+  #define MIP_PAINTER_NANOVG
+  //#define MIP_PAINTER_GDI
   //#define MIP_PAINTER_WGL
 #endif
 
@@ -23,7 +23,7 @@
 //----------------------------------------------------------------------
 
 #define EDITOR_WIDTH  550
-#define EDITOR_HEIGHT 630
+#define EDITOR_HEIGHT 670
 
 #include "plugin/mip_plugin.h"
 
@@ -249,8 +249,8 @@ public: // timer
 
 #include "plugin/mip_registry.h"
 #include "plugin/clap/mip_clap_entry.h"
-#include "plugin/exe/mip_exe_entry.h"
-#include "plugin/vst2/mip_vst2_entry.h"
+//#include "plugin/exe/mip_exe_entry.h"
+//#include "plugin/vst2/mip_vst2_entry.h"
 #include "plugin/vst3/mip_vst3_entry.h"
 
 //----------

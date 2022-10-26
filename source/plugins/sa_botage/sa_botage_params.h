@@ -119,7 +119,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "Loop Env Attack",
     "",
     0,
-    10.0,
+    25.0,
     1.0
   },
   { PAR_LOOP_ENV_DECAY,
@@ -128,7 +128,7 @@ const clap_param_info_t sa_botage_params[SA_BOTAGE_PARAM_COUNT] = {
     "Loop Env Decay",
     "",
     0,
-    10.0,
+    25.0,
     1.0
   },
   { PAR_SLICE_ENV_ATTACK,
