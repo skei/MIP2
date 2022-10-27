@@ -8,10 +8,11 @@
 #define MIP_NO_GUI
 #define MIP_NO_PAINTER
 
-//#define MIP_GUI_XCB
-//#define MIP_PAINTER_XCB
-//#define MIP_WINDOW_BUFFERED
-//#define MIP_PLUGIN_GENERIC_EDITOR
+//#ifndef MIP_NO_GUI
+//  #define MIP_GUI_XCB
+//  #define MIP_PAINTER_NANOVG
+//  #define MIP_PLUGIN_GENERIC_EDITOR
+//#endif
 
 #define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket

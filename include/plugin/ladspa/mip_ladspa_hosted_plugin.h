@@ -250,7 +250,11 @@ public: // plugin
   const void* get_extension(const char* id) final {
     //MIP_Print("'%s'",id);
     if (strcmp(id,CLAP_EXT_AUDIO_PORTS) == 0)         { /*MIP_DPrint("-> yes\n");*/ return &MAudioPorts; }
-    //if (strcmp(id,CLAP_EXT_GUI) == 0)                 { /*MIP_DPrint("-> yes\n");*/ return &MGui; }
+
+    #ifndef MIP_NO_GUI
+    if (strcmp(id,CLAP_EXT_GUI) == 0)                 { /*MIP_DPrint("-> yes\n");*/ return &MGui; }
+    #endif
+
     if (strcmp(id,CLAP_EXT_PARAMS) == 0)              { /*MIP_DPrint("-> yes\n");*/ return &MParams; }
     if (strcmp(id,CLAP_EXT_STATE) == 0)               { /*MIP_DPrint("-> yes\n");*/ return &MState; }
     //MIP_DPrint("-> no\n");

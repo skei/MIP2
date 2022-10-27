@@ -2,17 +2,7 @@
 #define sa_limiter_included
 //----------------------------------------------------------------------
 
-
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
 //#define MIP_NO_GUI
-
-//----------
 
 #ifndef MIP_NO_GUI
   #define MIP_GUI_XCB
@@ -20,6 +10,8 @@
 #endif
 
 #define MIP_PLUGIN_GENERIC_EDITOR
+
+//----------
 
 #include "plugin/mip_plugin.h"
 
@@ -73,13 +65,18 @@ private:
   float     C2 = 0.0f;
   float     C3 = 0.0f;
   uint32_t  len = 0;
-  uint32_t  bufl = 0;
-  uint32_t  bufr = 0;
   uint32_t  pos = 0;
   float     thresh = 0.0f;
   float     make_gain = 0.0f;
   float     ceiling = 0.0f;
-  float     BUFFER[1024*1024] = {0};
+
+//  uint32_t  bufl = 0;
+//  uint32_t  bufr = 0;
+//  float     BUFFER[1024*1024] = {0};
+
+  uint32_t  buf = 0;
+  float     LBUFFER[1024*1024] = {0};
+  float     RBUFFER[1024*1024] = {0};
 
   //float     slider1 = 0.0f;
   //float     slider2 = 0.0f;
@@ -123,18 +120,41 @@ private:
 
   //----------
 
+  /*
+    @init
+    // rc smoothing filters
+    C1 = exp(-1/(25/1000*srate));
+    C2 = exp(-1/(25/1000*srate));
+    C3 = exp(-1/(5/1000*srate));
+    len = 10/1000*srate;
+    bufl = 0;
+    bufr = len;
+    pos = 0;
+    pdc_delay = len;
+    pdc_bot_ch = 0;
+    pdc_top_ch = 2;
+  */
+
+  /*
+    @slider
+    thresh = 10^(slider1/20);
+    make_gain = 10^((-slider1+slider2)/20);
+    ceiling = 10^(slider2/20);
+  */
+
   void recalc(float srate) {
-    C1    = exp(-1/(25/1000*srate));
-    C2    = exp(-1/(25/1000*srate));
-    C3    = exp(-1/(5/1000*srate));
-    len   = (srate * 10) / 1000; //10/1000*srate;
-    bufl  = 0;
-    bufr  = len;
+    C1    = exp(-1.0 / (25.0 / 1000.0 * srate));
+    C2    = exp(-1.0 / (25.0 / 1000.0 * srate));
+    C3    = exp(-1.0 / (5.0 / 1000.0 * srate));
+    len   = (srate * 10.0) / 1000.0; //10/1000*srate;
+    //bufl  = 0;
+    //bufr  = len;
+    buf   = 0;
     pos   = 0;
 
-    thresh    = powf(10,(  MParameters[0]->getValue() / 20));
-    make_gain = powf(10,((-MParameters[0]->getValue() + MParameters[1]->getValue()) / 20));
-    ceiling   = powf(10,(  MParameters[1]->getValue() / 20));
+    thresh    = powf(10.0,(  MParameters[0]->getValue() / 20.0));
+    make_gain = powf(10.0,((-MParameters[0]->getValue() + MParameters[1]->getValue()) / 20.0));
+    ceiling   = powf(10.0,(  MParameters[1]->getValue() / 20.0));
 
     need_recalc = false;
   }
@@ -149,6 +169,24 @@ private:
   }
 
   //----------
+
+  /*
+    @sample
+    in = max(abs(spl0),abs(spl1));
+    // smooth via a rc low pass
+    out1 = in  >out1 ? in   : in   + C1 * (out1-in);
+    out2 = out1>out2 ? out1 : out1 + C2 * (out2-out1);
+    out3 = out2 + C3 * (out3-out2);
+    out = out3;
+    bufl[pos] = spl0;
+    bufr[pos] = spl1;
+    pos = (pos+1)%len;
+    gain = (out > thresh ? thresh/out : 1)*make_gain;
+    spl0 = bufl[pos] * gain;
+    spl0 = max(min(spl0,ceiling),-ceiling);
+    spl1 = bufr[pos] * gain;
+    spl1 = max(min(spl1,ceiling),-ceiling);
+  */
 
   void processAudioBlock(MIP_ProcessContext* AContext) final {
     const clap_process_t *process = AContext->process;
@@ -167,13 +205,17 @@ private:
       out2 = (out1 > out2) ? out1 : out1 + C2 * (out2-out1);
       out3 = out2 + C3 * (out3-out2);
       float out = out3;
-      BUFFER[bufl+pos] = spl0;
-      BUFFER[bufr+pos] = spl1;
-      pos = (pos+1) % len;
-      float gain = ((out > thresh) ? thresh/out : 1) * make_gain;
-      spl0 = BUFFER[bufl+pos] * gain;
+      //BUFFER[bufl+pos] = spl0;
+      //BUFFER[bufr+pos] = spl1;
+      LBUFFER[buf+pos] = spl0;
+      RBUFFER[buf+pos] = spl1;
+      pos = (pos + 1) % len;
+      float gain = ((out > thresh) ? (thresh / out) : 1.0) * make_gain;
+      //spl0 = BUFFER[bufl+pos] * gain;
+      spl0 = LBUFFER[buf+pos] * gain;
       spl0 = MIP_Max(MIP_Min(spl0,ceiling),-ceiling);
-      spl1 = BUFFER[bufr+pos] * gain;
+      //spl1 = BUFFER[bufr+pos] * gain;
+      spl1 = RBUFFER[buf+pos] * gain;
       spl1 = MIP_Max(MIP_Min(spl1,ceiling),-ceiling);
       *output0++ = spl0;
       *output1++ = spl1;
@@ -221,7 +263,7 @@ public: // plugin
   #include "plugin/clap/mip_clap_entry.h"
   //#include "plugin/exe/mip_exe_entry.h"
   //#include "plugin/vst2/mip_vst2_entry.h"
-  //#include "plugin/vst3/mip_vst3_entry.h"
+  #include "plugin/vst3/mip_vst3_entry.h"
 
   MIP_DEFAULT_ENTRY(sa_limiter_descriptor,sa_limiter_plugin)
 
