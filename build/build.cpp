@@ -17,8 +17,8 @@
 
 //
 
-#include "../source/plugins/sa_botage.cpp"
-//#include "../source/plugins/sa_cred.cpp"
+//#include "../source/plugins/sa_botage.cpp"
+#include "../source/plugins/sa_cred.cpp"
 //#include "../source/plugins/sa_lad.cpp"
 //#include "../source/plugins/sa_ports.cpp"
 

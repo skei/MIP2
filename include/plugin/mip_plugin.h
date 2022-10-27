@@ -398,6 +398,7 @@ public: // EXT gui
 
       MEditorWidth = getGenericWidth();
       MEditorHeight = getGenericHeight();
+
       MEditor = new MIP_Editor(this,MEditorWidth,MEditorHeight);
       if (MEditor) {
         MIP_Window* editor_window = MEditor->getWindow();
@@ -406,7 +407,7 @@ public: // EXT gui
           MIP_Widget* editor_widget = setupGenericEditor();
           editor_window->appendChildWidget(editor_widget);
           MEditor->setCanResizeEditor(true);
-          MEditor->setResizeProportional(true);
+          //MEditor->setResizeProportional(true);
           MEditor->setProportionalSize(MEditorWidth,MEditorHeight);
 
         }
@@ -1518,6 +1519,7 @@ public: // generic gui
 
   #ifndef MIP_NO_GUI
 
+
   uint32_t getGenericNumControls() {
     uint32_t num = 0;
     for (uint32_t i=0; i<MParameters.size(); i++) {
@@ -1560,11 +1562,15 @@ public: // generic gui
 
     //----- sa header -----
 
+    const char* name = getDescriptor()->name;
+    const char* version = getDescriptor()->version;
+    if ((name[0] == 's') && (name[1] == 'a') && (name[2] == '_')) name += 3;
+
     MIP_SAHeaderWidget* saheader = new MIP_SAHeaderWidget(MIP_DRect(0,0,w,80));
     editor->appendChildWidget(saheader);
     saheader->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-    //saheader->setPluginName("MIP_Plugin");
-    //saheader->setPluginVersion("v0.0.0");
+    saheader->setPluginName(name);
+    saheader->setPluginVersion(version);
     saheader->setPluginVersion(getDescriptor()->version);
 
     //----- footer -----
@@ -1572,25 +1578,15 @@ public: // generic gui
     MIP_TextWidget* footer_panel = new MIP_TextWidget(MIP_DRect(0,(h-25),w,25), "footer" );
     editor->appendChildWidget(footer_panel);
     footer_panel->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-    //footer_panel->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
     footer_panel->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     footer_panel->setFillBackground(true);
     footer_panel->setBackgroundColor(0.4);
     footer_panel->setDrawBorder(false);
     footer_panel->setDrawText(true);
     footer_panel->setTextColor(MIP_Color(0.75));
+    footer_panel->setTextSize(-0.5);
     footer_panel->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     footer_panel->setTextOffset(MIP_DPoint(5,0));
-
-    //----- center -----
-
-//    MIP_PanelWidget* center = new MIP_PanelWidget(0);
-//    editor->appendChildWidget(center);
-//    center->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-//    center->setFillBackground(false);
-//    center->setDrawBorder(false);
-//    center->Layout.border = { 10,10,10,10 };
-//    center->Layout.spacing = { 5,5 };
 
     //----- parameters -----
 
@@ -1602,7 +1598,6 @@ public: // generic gui
           double value = parameter->getDefaultValue();
           MIP_SliderWidget* slider = new MIP_SliderWidget( MIP_DRect(10, 90 + (25 * i), w - 20, 20),name,value);
           editor->appendChildWidget(slider);
-          //slider->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
           slider->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
           slider->setTextSize(-0.8);
           slider->setValueSize(-0.8);
