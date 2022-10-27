@@ -1,5 +1,3 @@
-#define MIP_NO_GUI
-#define MIP_NO_PAINTER
 
 #ifndef MIP_EXE
   #define MIP_DEBUG_PRINT_SOCKET
@@ -8,9 +6,12 @@
 
 //----------
 
-#include "plugin/mip_plugin.h"
-
+#define MIP_GUI_XCB
+#define MIP_PAINTER_NANOVG
+#define MIP_PLUGIN_GENERIC_EDITOR
 #define MIP_NO_ENTRY
+
+#include "plugin/mip_plugin.h"
 
 #include "sa_ports/sa_compciter.h"
 #include "sa_ports/sa_event_horizon.h"

@@ -97,7 +97,9 @@ public: // parent to child
     if (MIsDragging) {
       //double xdiff = AXpos - MMousePrevX;
       double ydiff = MMousePrevY - AYpos;
-      MDragValue += (ydiff * MDragSensitivity);
+      double sens = MDragSensitivity * (getMaxValue() - getMinValue());
+      if (AState && MIP_KEY_SHIFT) sens *= MDragSensitivity2;
+      MDragValue += (ydiff * sens);
       MMousePrevX = AXpos;
       MMousePrevY = AYpos;
       MDragValue = MIP_Clamp(MDragValue,getMinValue(),getMaxValue());

@@ -24,8 +24,12 @@
 //
 //----------------------------------------------------------------------
 
-//#define MIP_NO_GUI
-//#define MIP_NO_PAINTER
+#ifndef MIP_NO_GUI
+  #define MIP_GUI_XCB
+  #define MIP_PAINTER_NANOVG
+#endif
+
+#define MIP_PLUGIN_GENERIC_EDITOR
 
 //----------
 
@@ -290,23 +294,7 @@ public: // plugin
   //#include "plugin/vst2/mip_vst2_entry.h"
   //#include "plugin/vst3/mip_vst3_entry.h"
 
-  void MIP_Register() {
-    MIP_REGISTRY.appendDescriptor(&sa_compciter_descriptor);
-  }
-
-  //----------
-
-  //void MIP_Unregister() {
-  //}
-
-  //----------------------------------------------------------------------
-
-  MIP_Plugin* MIP_CreatePlugin(uint32_t AIndex, const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost) {
-    switch (AIndex) {
-      case 0:  return new sa_compciter_plugin(ADescriptor,AHost);
-    }
-    return nullptr;
-  }
+  MIP_DEFAULT_ENTRY(sa_compciter_descriptor,sa_compciter_plugin)
 
 #endif // MIP_NO_ENTRY
 

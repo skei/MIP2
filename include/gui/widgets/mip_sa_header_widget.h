@@ -65,7 +65,9 @@ public:
 
     // botage
 
-    MPluginName = new MIP_TextWidget( MIP_DRect(80,10,160,60), "" );
+
+
+    MPluginName = new MIP_TextWidget( MIP_DRect(80,10,(ARect.w - 200),60), "" );
     MPluginName->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     MPluginName->setTextSize(-0.7);
     MPluginName->setTextFont("Header");
