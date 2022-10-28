@@ -5,14 +5,14 @@
   - MIP_LadspaFactory, move discovery to factory..
 */
 
-#define MIP_NO_GUI
-#define MIP_NO_PAINTER
+//#define MIP_NO_GUI
+//#define MIP_NO_PAINTER
 
-//#ifndef MIP_NO_GUI
-//  #define MIP_GUI_XCB
-//  #define MIP_PAINTER_NANOVG
-//  #define MIP_PLUGIN_GENERIC_EDITOR
-//#endif
+#ifndef MIP_NO_GUI
+  #define MIP_GUI_XCB
+  #define MIP_PAINTER_NANOVG
+  #define MIP_PLUGIN_GENERIC_EDITOR
+#endif
 
 #define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket

@@ -346,6 +346,10 @@ public: // params
 
   //----------
 
+  /*
+    append 'fake' parameter, so we can control it via gui?
+  */
+
   bool params_get_info(uint32_t param_index, clap_param_info_t *param_info) final {
     int32_t port_index = MControlInputIndex[param_index];
     if (port_index >= 0) {
@@ -358,6 +362,10 @@ public: // params
       strcpy(param_info->name,MLadspaPorts[port_index].name);
       strcpy(param_info->module,"");
       //MIP_Print("%i '%s' : def %.3f min %.3f max %.3f\n",param_index,MLadspaPorts[port_index].name,MLadspaPorts[port_index].defval,MLadspaPorts[port_index].minval,MLadspaPorts[port_index].maxval);
+
+//MIP_Parameter* parameter = new MIP_Parameter(param_info);
+//appendParameter(parameter);
+
       return true;
     }
     return false;

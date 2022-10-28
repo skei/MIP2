@@ -65,8 +65,6 @@ public:
 
     // botage
 
-
-
     MPluginName = new MIP_TextWidget( MIP_DRect(80,10,(ARect.w - 200),60), "" );
     MPluginName->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     MPluginName->setTextSize(-0.7);
@@ -76,6 +74,12 @@ public:
     MPluginName->setDrawBorder(false);
     MPluginName->setFillBackground(false);
     appendChildWidget(MPluginName);
+
+    // mip2
+
+    MMip2Image = new MIP_ImageWidget( MIP_DRect((ARect.w - 110),10,100,60), MMip2Bitmap );
+    MMip2Image->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    appendChildWidget(MMip2Image);
 
     // plugin version
 
@@ -88,17 +92,9 @@ public:
     MPluginVersion->setFillBackground(false);
     appendChildWidget(MPluginVersion);
 
-    // mip2
-
-    MMip2Image = new MIP_ImageWidget( MIP_DRect((ARect.w - 110),10,100,60), MMip2Bitmap );
-    MMip2Image->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-    appendChildWidget(MMip2Image);
-
-    MIP_PRINT;
-
     // clap version
 
-    sprintf(MClapText,"CLAP v%i.%i.%i",CLAP_VERSION_MAJOR,CLAP_VERSION_MINOR,CLAP_VERSION_REVISION);
+    sprintf(MClapText,"CLAP %i.%i.%i",CLAP_VERSION_MAJOR,CLAP_VERSION_MINOR,CLAP_VERSION_REVISION);
     MClapTextWidget = new MIP_TextWidget( MIP_DRect((ARect.w - 110),51,100,10),MClapText );
     MClapTextWidget->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
     MClapTextWidget->setText(MClapText);
