@@ -32,8 +32,9 @@ const char    MIP_NULL_STRING[]  = "";
 //
 //----------------------------------------------------------------------
 
-//#define MIP_ALIGNMENT_SIMD           16
-//#define MIP_ALIGNMENT_CACHE          64
+#define MIP_ALIGNMENT_SIMD           16
+#define MIP_ALIGNMENT_CACHE          64
+
 //#define MIP_AUDIO_MAX_EVENTS         256
 //#define MIP_AUDIO_MAX_MIDI_EVENTS    256
 //#define MIP_AUDIO_MAX_NODES          256

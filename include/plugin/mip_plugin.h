@@ -173,10 +173,21 @@ public: // clap plugin
 
   //----------
 
+  /*
+    todo. variants
+    - interleave events/sub-blocks
+    - ticks
+
+    we can override processEvents to do nothing,
+    and handle the events ourselves during processAudioBlock
+    calling processEvent(), etc
+  */
+
   clap_process_status process(const clap_process_t *process) override {
     MProcessContext.process = process;
     processTransport(process->transport);
     preProcessEvents(process->in_events,process->out_events);
+    // all events handled before block starts processing..
     processEvents(process->in_events,process->out_events);
     flushProcessParams();
     processAudioBlock(&MProcessContext);
@@ -1095,6 +1106,7 @@ public: // queues
   */
 
   void queueProcessParam(uint32_t AIndex, double AValue) {
+//    MIP_PRINT; // from gui
     MQueuedProcessParamValues[AIndex] = AValue;
     MProcessParamQueue.write(AIndex);
   }
@@ -1130,9 +1142,10 @@ public: // queues
       event.channel         = -1;
       event.key             = -1;
       event.value           = value;
-//      processParamValue/*Event*/(&event);
+    //processParamValue/*Event*/(&event);
       processParamValueEvent(&event);
       //MAudioprocessor->updateParameter(index,value);
+
     }
   }
 
@@ -1463,8 +1476,6 @@ public: // editor listener
     //MIP_Print("%i = %.3f\n",AIndex,AValue);
     queueHostParam(AIndex,AValue);
     queueProcessParam(AIndex,AValue);
-    // notify host
-    // notify audio processor
   }
 
   //----------

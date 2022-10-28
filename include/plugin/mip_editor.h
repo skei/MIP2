@@ -78,7 +78,7 @@ public:
 
   MIP_Editor(MIP_EditorListener* AListener, uint32_t AWidth, uint32_t AHeight/*, intptr_t AParent*/)
   /*: MIP_Window(AWidth,AHeight,AParent)*/ {
-    MIP_Print("width %i height %i\n",AWidth,AHeight);
+    //MIP_Print("width %i height %i\n",AWidth,AHeight);
 
     MEditorListener = AListener;
     MEditorWidth = AWidth;
@@ -96,7 +96,7 @@ public:
   //----------
 
   virtual ~MIP_Editor() {
-    MIP_PRINT;
+    //MIP_PRINT;
     if (MEditorWindow) {
       if (MIsEditorOpen) {
         //MEditorWindow->hide();
@@ -139,7 +139,7 @@ public: // clap gui
   */
 
   virtual bool setScale(double scale) {
-    MIP_Print("scale %.3f\n",scale);
+    //MIP_Print("scale %.3f\n",scale);
     MEditorScale = scale;
     return true;
   }
@@ -154,7 +154,7 @@ public: // clap gui
 
   virtual bool getSize(uint32_t *width, uint32_t *height) {
     //MIP_Print("*width %i *height %i -> %i %i\n",*width,*height,(int)MEditorWidth,(int)MEditorHeight);
-    MIP_Print("-> %i %i\n",(int)MEditorWidth,(int)MEditorHeight);
+    //MIP_Print("-> %i %i\n",(int)MEditorWidth,(int)MEditorHeight);
     *width = (int)MEditorWidth;
     *height = (int)MEditorHeight;
     return true;
@@ -171,7 +171,7 @@ public: // clap gui
   virtual bool canResize() {
     //if (MCanResizeEditor) { MIP_Print("true\n"); }
     //else  { MIP_Print("false\n"); }
-    MIP_Print("-> %s\n",MCanResizeEditor?"true":"false");
+    //MIP_Print("-> %s\n",MCanResizeEditor?"true":"false");
     return MCanResizeEditor;
   }
 
@@ -212,12 +212,12 @@ public: // clap gui
     }
     //MIP_DPrint("\n");
 
-    MIP_Print("\n");
-      MIP_DPrint("  can_resize_horizontally %s\n",hints->can_resize_horizontally ? "true" : "false");
-      MIP_DPrint("  can_resize_vertically %s\n",hints->can_resize_vertically ? "true" : "false");
-      MIP_DPrint("  aspect_ratio_width %i\n",hints->aspect_ratio_width);
-      MIP_DPrint("  aspect_ratio_height %i\n",hints->aspect_ratio_height);
-      MIP_DPrint("  preserve_aspect_ratio %s\n",hints->preserve_aspect_ratio ? "true" : "false");
+    //MIP_Print("\n");
+    //  MIP_DPrint("  can_resize_horizontally %s\n",hints->can_resize_horizontally ? "true" : "false");
+    //  MIP_DPrint("  can_resize_vertically %s\n",hints->can_resize_vertically ? "true" : "false");
+    //  MIP_DPrint("  aspect_ratio_width %i\n",hints->aspect_ratio_width);
+    //  MIP_DPrint("  aspect_ratio_height %i\n",hints->aspect_ratio_height);
+    //  MIP_DPrint("  preserve_aspect_ratio %s\n",hints->preserve_aspect_ratio ? "true" : "false");
 
     return true;
     //return false;
@@ -246,7 +246,7 @@ public: // clap gui
         else h = w / orig_aspect;
       }
     }
-    MIP_Print("*width %i *height %i -> %i,%i\n",*width,*height,(int)w,(int)h);
+    //MIP_Print("*width %i *height %i -> %i,%i\n",*width,*height,(int)w,(int)h);
     *width = (int)w;
     *height = (int)h;
     return true;
@@ -262,7 +262,7 @@ public: // clap gui
   // if our editor is not resizable, we won't get an initial setSize..
 
   virtual bool setSize(uint32_t width, uint32_t height) {
-    MIP_Print("width %i height %i\n",width,height);
+    //MIP_Print("width %i height %i\n",width,height);
     MEditorWidth = width;
     MEditorHeight = height;
     if (MEditorWindow) {
@@ -282,7 +282,7 @@ public: // clap gui
   */
 
   virtual bool setParent(const clap_window_t *window) {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     MClapWindow.api = window->api;
     MClapWindow.ptr = window->ptr;
     //MIP_Print("%p -> true\n",window);
@@ -311,7 +311,7 @@ public: // clap gui
   */
 
   virtual bool setTransient(const clap_window_t *window) {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     return true;
   }
 
@@ -323,7 +323,7 @@ public: // clap gui
   */
 
   virtual void suggestTitle(const char *title) {
-    MIP_Print("title %s\n",title);
+    //MIP_Print("title %s\n",title);
     if (MEditorWindow) MEditorWindow->setWindowTitle(title);
   }
 
@@ -335,7 +335,7 @@ public: // clap gui
   */
 
   virtual bool show() {
-    MIP_Print("\n");
+    //MIP_Print("\n");
 
     #ifdef MIP_EDITOR_CREATE_WINDOW_WHEN_OPENING
       MEditorWindow = new MIP_EditorWindow(this,MEditorWidth,MEditorHeight,(intptr_t)MClapWindow.win32);
@@ -374,7 +374,7 @@ public: // clap gui
   */
 
   virtual bool hide() {
-    MIP_Print("\n");
+    //MIP_Print("\n");
     if (MEditorWindow && MIsEditorOpen) {
       MIsEditorOpen = false;
       MEditorWindow->stopEventThread();
