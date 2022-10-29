@@ -4,6 +4,8 @@
 
 #include "mip.h"
 #include "plugin/mip_voice.h"
+#include "audio/mip_audio_math.h"
+//#include "audio/mip_audio_utils.h"
 
 //----------------------------------------------------------------------
 //
@@ -17,7 +19,12 @@ class sa_tyr_voice {
 private:
 //------------------------------
 
-  uint32_t MIndex = 0;
+
+  uint32_t          MIndex    = 0;
+  MIP_VoiceContext* MContext  = nullptr;
+
+  double t  = 0.0;
+  double dt = 0.0;
 
 //------------------------------
 public:
@@ -37,6 +44,7 @@ public:
 
   void  prepare(uint32_t AIndex, MIP_VoiceContext* AContext) {
     MIndex = AIndex;
+    MContext = AContext;
   }
 
   //----------
@@ -50,6 +58,9 @@ public:
 
   uint32_t note_on(int32_t key, double velocity) {
     MIP_Print("%i key %i velocity %.3f\n",MIndex,key,velocity);
+    t = 0.0;
+    double hz = MIP_NoteToHz(key);
+    dt = 1.0 / MIP_HzToSamples(hz,MContext->samplerate);
     return MIP_VOICE_PLAYING;
   }
 
@@ -130,7 +141,24 @@ public:
     MIP_Print("%i index %i value %.3f\n",MIndex,index,value);
   }
 
-  //----------
+//------------------------------
+public:
+//------------------------------
+
+  uint32_t process(uint32_t AState, uint32_t ASize, uint32_t AOffset) {
+
+    float* buffer = MContext->voicebuffer;
+    buffer += AOffset;
+    for (uint32_t i=0; i<ASize; i++) {
+
+      *buffer++ += t;//MIP_Random() * 0.1;
+
+      t += dt;
+      t = MIP_Fract(t);
+    }
+
+    return MIP_VOICE_PLAYING;
+  }
 
 };
 

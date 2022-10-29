@@ -92,7 +92,7 @@ float MIP_KillDenormal2(float val) {
 //----------------------------------------------------------------------
 
 float MIP_NoteToHz(float ANote) {
-  return 440 * pow(2.0,(ANote-69)*MIP_INV12F);
+  return 440.0 * pow(2.0,(ANote - 69) * MIP_INV12F);
 }
 
 //----------
