@@ -122,6 +122,9 @@ public:
   void setProportionalHeight(double AHeight)              { MProportionalHeight = AHeight; }
   void setProportionalSize(double AWidth, double AHeight) { MProportionalWidth  = AWidth; MProportionalHeight = AHeight; }
 
+  virtual void on_gui_timer() {
+  }
+
 //------------------------------
 public: // clap gui
 //------------------------------

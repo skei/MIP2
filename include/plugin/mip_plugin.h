@@ -1309,11 +1309,19 @@ public: // parameters
     for (uint32_t i=0; i<MParameters.size(); i++) {
       double value = MParameters[i]->getDefaultValue();
       MParameters[i]->setValue(value);
-
       queueProcessParam(i,value);
-
     }
   }
+
+  //----------
+
+//  void updateParameterValues() {
+//    for (uint32_t i=0; i<MParameters.size(); i++) {
+//      double value = MParameters[i]->getDefaultValue();
+//      //MParameters[i]->setValue(value);
+//      queueProcessParam(i,value);
+//    }
+//  }
 
   //----------
 
@@ -1517,6 +1525,7 @@ public: // timer listener
       if (MEditor) { // && editor is open
         flushGuiParams();
         flushGuiMods();
+//        MEditor->on_gui_timer();
         // redraw?
       }
     }

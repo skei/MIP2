@@ -58,6 +58,7 @@ private:
 //------------------------------
 
 //  MIP_ParameterArray*             MParameters         = nullptr;
+
   MIP_ClapPlugin*                 MPlugin             = nullptr;
   const clap_plugin_descriptor_t* MDescriptor         = nullptr;
   MIP_Vst3HostImplementation*     MHost               = nullptr;
@@ -87,6 +88,7 @@ private:
   char                            MEvents[MIP_PLUGIN_VST3_MAX_EVENTS_PER_BLOCK * MIP_PLUGIN_VST3_MAX_EVENT_SIZE]  = {0};
   uint32_t                        MLastNoteId                                                       = 0;
   MIP_Vst3NoteId                  MNoteIds[MIP_PLUGIN_VST3_MAX_NOTE_IDS]                                   = {};
+
   MIP_Queue<uint32_t,MIP_PLUGIN_VST3_MAX_GUI_EVENTS> MHostParamQueue = {}; // gui -> host
   double  MQueuedHostParamValues[MIP_PLUGIN_VST3_MAX_GUI_EVENTS] = {0};
   //double  MQueuedHostParamValues[MIP_PLUGIN_VST3_MAX_EVENTS_PER_BLOCK] = {0};

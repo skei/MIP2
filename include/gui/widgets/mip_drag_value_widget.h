@@ -34,7 +34,7 @@ protected:
 public:
 //------------------------------
 
-  MIP_DragValueWidget(MIP_DRect ARect, const char* AText, double AValue)
+  MIP_DragValueWidget(MIP_DRect ARect, const char* AText, double AValue=0.0)
   : MIP_ValueWidget(ARect,AText,AValue) {
     MName = "MIP_DragValueWidget";
     MMouseCursor = MIP_CURSOR_ARROW_UP_DOWN;

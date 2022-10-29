@@ -136,9 +136,8 @@ public:
     float* out0 = process->audio_outputs->data32[0];
     float* out1 = process->audio_outputs->data32[1];
     uint32_t length = process->frames_count;
-
-    MIP_ClearMonoBuffer(MVoiceBuffer,length);
-    MVoiceContext.voicebuffer = MVoiceBuffer;
+    MIP_ClearMonoBuffer(MFrameBuffer,length);
+    MVoiceContext.voicebuffer = MFrameBuffer;
 
     uint32_t current_time = 0;
     uint32_t remaining = process->frames_count;
@@ -156,9 +155,7 @@ public:
             || (state == MIP_VOICE_RELEASED)
             || (state == MIP_VOICE_WAITING)) {
             MVoices[v].state = MVoices[v].process( state, num, current_time);
-
-            //MIP_AddMonoBuffer(MFrameBuffer + current_time,MVoiceBuffer + current_time,num);
-
+            //MIP_AddMonoBuffer(MFrameBuffer + current_time,MFrameBuffer + current_time,num);
           }
         }
         current_time += num;
@@ -174,16 +171,12 @@ public:
           || (state == MIP_VOICE_RELEASED)
           /*|| (state == MIP_VOICE_WAITING)*/) {
           MVoices[v].state = MVoices[v].process( state, remaining, current_time);
-
-          //MIP_AddMonoBuffer(MFrameBuffer + current_time,MVoiceBuffer + current_time,remaining);
-
+          //MIP_AddMonoBuffer(MFrameBuffer + current_time,MFrameBuffer + current_time,remaining);
         }
       }
     }
-
-    MIP_CopyMonoBuffer(out0,MVoiceBuffer,length);
-    MIP_CopyMonoBuffer(out1,MVoiceBuffer,length);
-
+    MIP_CopyMonoBuffer(out0,MFrameBuffer,length);
+    MIP_CopyMonoBuffer(out1,MFrameBuffer,length);
   }
 
   //----------

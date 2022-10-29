@@ -25,7 +25,7 @@ protected:
 public:
 //------------------------------
 
-  MIP_SliderWidget(MIP_DRect ARect, const char* AText, double AValue)
+  MIP_SliderWidget(MIP_DRect ARect, const char* AText, double AValue=0.0)
   : MIP_DragValueWidget(ARect,AText,AValue) {
     MName = "MIP_SliderWidget";
   }

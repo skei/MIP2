@@ -93,7 +93,6 @@ public:
 //------------------------------
 
   uint32_t process(uint32_t AState, uint32_t ASize, uint32_t AOffset) {
-    //return AState;
     return voice.process(AState,ASize,AOffset);
   }
 

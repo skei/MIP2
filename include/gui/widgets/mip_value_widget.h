@@ -92,7 +92,7 @@ public:
       MIP_Painter* painter = AContext->painter;
       char temp[16] = {0};
       double value = getValue();
-      sprintf(temp,"%.3f",value);
+      sprintf(temp,"%.2f",value);
       if (MDrawParameterValue) {
         MIP_Parameter* parameter = getParameter();
         if (parameter) {

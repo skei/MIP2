@@ -386,6 +386,17 @@ public: // hierarchy
   }
   */
 
+  virtual void setRectMode(uint32_t ARectMode, bool ARecursive=true) {
+    Layout.rectMode = ARectMode;
+    if (ARecursive) {
+      uint32_t num = MChildren.size();
+      for (uint32_t i=0; i<num; i++) {
+        MIP_Widget* child = MChildren[i];
+        child->setRectMode(ARectMode,ARecursive);
+      }
+    }
+  }
+
   /*
   virtual void setScale(double AScaleX=1.0, double AScaleY=1.0, bool ARecursive=true) {
     Layout.scale.x = AScaleX;

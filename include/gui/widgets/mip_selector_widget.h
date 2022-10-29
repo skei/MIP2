@@ -31,12 +31,19 @@ public:
     MName = "MIP_SelectorWidget";
     MMenu = AMenu;
     MMouseCursor = MIP_CURSOR_FINGER;
+    MTextAlignment = MIP_TEXT_ALIGN_LEFT;
   }
 
   //----------
 
   virtual ~MIP_SelectorWidget() {
   }
+
+//------------------------------
+public:
+//------------------------------
+
+  virtual void setSelected(uint32_t AIndex) {  }
 
 //------------------------------
 public: // parent to child

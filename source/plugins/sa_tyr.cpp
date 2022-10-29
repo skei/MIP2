@@ -24,14 +24,22 @@
 #include "plugin/mip_voice.h"
 #include "plugin/mip_editor.h"
 
-#include "gui/widgets/mip_widgets.h"
+//#include "gui/widgets/mip_widgets.h"
 
+//
+
+#define EDITOR_WIDTH  816
+#define EDITOR_HEIGHT 703
+#define NUM_VOICES    128
+
+//
+
+#include "sa_tyr/sa_tyr_parameters.h"
 #include "sa_tyr/sa_tyr_voice.h"
+#include "sa_tyr/sa_tyr_editor.h"
 
 //----------------------------------------------------------------------
 
-#define EDITOR_WIDTH  420
-#define EDITOR_HEIGHT 620
 
 //----------------------------------------------------------------------
 //
@@ -66,20 +74,24 @@ private:
 //------------------------------
 
   __MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
-  MIP_VoiceManager<sa_tyr_voice,16> MVoices = {};
+  MIP_VoiceManager<sa_tyr_voice<double>,NUM_VOICES> MVoices = {};
 
   //---------------
   // parameters
   //---------------
 
-  enum gain_parameter_enums {
-    PAR_GAIN = 0,
-    PARAM_COUNT
-  };
-
-  const clap_param_info_t gain_parameters[PARAM_COUNT] = {
-    { PAR_GAIN, CLAP_PARAM_IS_AUTOMATABLE, nullptr, "Gain", "", 0, 1, 0 }
-  };
+  //enum gain_parameter_enums {
+  //  PAR_GAIN = 0,
+  //  PARAM_COUNT
+  //};
+  //
+  //#define MP (CLAP_PARAM_IS_AUTOMATABLE | CLAP_PARAM_IS_MODULATABLE | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID)
+  //
+  //const clap_param_info_t gain_parameters[PARAM_COUNT] = {
+  //  { PAR_GAIN, MP, nullptr, "Gain", "", 0, 1, 0 }
+  //};
+  //
+  //#undef MP
 
   //---------------
   // ports
@@ -105,7 +117,7 @@ private:
   //
   //---------------
 
-  double par_gain = 0.0;
+//  double par_gain = 0.0;
 
 //------------------------------
 public:
@@ -133,8 +145,9 @@ public: // plugin
     appendNoteInputPort(  &gain_noteInputPorts[0]  );
     appendNoteOutputPort( &gain_noteOutputPorts[0] );
     for (uint32_t i=0; i<PARAM_COUNT; i++) {
-      appendParameter( new MIP_Parameter(&gain_parameters[i]) );
+      appendParameter( new MIP_Parameter(&sa_tyr_parameters[i]) );
     }
+    setDefaultParameterValues();
     return result;
   }
 
@@ -151,36 +164,55 @@ public: // gui
 
   #ifndef MIP_PLUGIN_GENERIC_EDITOR
 
-  bool gui_create(const char *api, bool is_floating) override {
-    MIP_Plugin::gui_create(api,is_floating);
+  bool gui_create(const char *api, bool is_floating) final {
+    //MIP_Plugin::gui_create(api,is_floating);
+    MEditor = new sa_tyr_Editor(this,this,MEditorWidth,MEditorHeight,MParameters);
 
     MEditor->setCanResizeEditor(true);
     //MEditor->setResizeProportional(false);
     //MEditor->setProportionalSize(EDITOR_WIDTH,EDITOR_HEIGHT);
-
-    MIP_Window* window = MEditor->getWindow();
-
-    MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(EDITOR_WIDTH,EDITOR_HEIGHT), MIP_COLOR_RED );
-    window->appendChildWidget(background);
-    background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    background->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      //background->Layout.border = MIP_DRect(10,10,10,10);
-      MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(10,10,EDITOR_WIDTH-20,EDITOR_HEIGHT-20), "Gain", 0.0 );
-      background->appendChildWidget(gain_knob);
-      //gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-      gain_knob->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-      gain_knob->Layout.aspectRatio = (4.0 / 6.0);
-    MEditor->connectWidget(MParameters[PAR_GAIN],gain_knob);
+//    MIP_Window* window = MEditor->getWindow();
+//
+//    MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(EDITOR_WIDTH,EDITOR_HEIGHT), MIP_COLOR_RED );
+//    window->appendChildWidget(background);
+//
+//    background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
+//    background->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+//      //background->Layout.border = MIP_DRect(10,10,10,10);
+//      MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(10,10,EDITOR_WIDTH-20,EDITOR_HEIGHT-20), "Gain", 0.0 );
+//      background->appendChildWidget(gain_knob);
+//      //gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
+//      gain_knob->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+//      gain_knob->Layout.aspectRatio = (4.0 / 6.0);
+//    MEditor->connectWidget(MParameters[PAR_GAIN],gain_knob);
 
     return true;
   }
 
   #endif
 
+  //----------
+
+  #ifndef MIP_NO_GUI
+
+  void on_timerCallback(MIP_Timer* ATimer) final {
+    //
+    MIP_Plugin::on_timerCallback(ATimer);
+  }
+
+  #endif
+
+
 //------------------------------
-public:
+public: // voice into
 //------------------------------
 
+  bool voice_info_get(clap_voice_info_t *info) final {
+    info->voice_count     = NUM_VOICES;
+    info->voice_capacity  = NUM_VOICES;
+    info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;
+    return true;
+  }
 
 //------------------------------
 public:
@@ -252,6 +284,8 @@ public: // events
 
   //#ifndef MIP_NO_GUI
 
+  // todo: MIP_Plugin::processGuiEvents()
+
   void processEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) final {
 
     uint32_t num_events = in_events->size(in_events);
@@ -303,7 +337,16 @@ public: // process
 //------------------------------
 
   void processAudioBlock(MIP_ProcessContext* AContext) final {
+    const clap_process_t* process = AContext->process;
     MVoices.processAudioBlock(AContext);
+    float v = MParameters[PAR_MASTER_VOL]->getValue();  // vol
+    float p = MParameters[PAR_MASTER_PAN]->getValue();  // pan
+    float l = v * (1.0 - p);
+    float r = v * (      p);
+    float** outputs = process->audio_outputs[0].data32;
+    uint32_t length = process->frames_count;
+    MIP_ScaleStereoBuffer(outputs,l,r,length);
+
   }
 
 };
