@@ -13,9 +13,11 @@
 //
 //----------------------------------------------------------------------
 
+class MIP_MenuWidget;
+
 class MIP_MenuListener {
 public:
-  virtual void on_menu_selected(int32_t AIndex) {}
+  virtual void on_menu_selected(MIP_MenuWidget* AMenu, int32_t AIndex) {}
 };
 
 //----------------------------------------------------------------------
@@ -37,7 +39,7 @@ protected:
 public:
 //------------------------------
 
-  MIP_MenuWidget(MIP_DRect ARect, MIP_MenuListener* AListener/*=nullptr*/)
+  MIP_MenuWidget(MIP_DRect ARect, MIP_MenuListener* AListener=nullptr)
   : MIP_PanelWidget(ARect) {
     MName = "MIP_MenuWidget";
     MListener = AListener;
@@ -67,7 +69,7 @@ public: // parent to child
 
   void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     if (!MRect.contains(AXpos,AYpos)) {
-      if (MListener) MListener->on_menu_selected(-1);
+      if (MListener) MListener->on_menu_selected(this,-1);
       close(true);
     }
     else {
@@ -82,6 +84,8 @@ public: // parent to child
     close(true);
   }
 
+
+
 //------------------------------
 public: // child to parent
 //------------------------------
@@ -90,10 +94,10 @@ public: // child to parent
     //if (MParent) MParent->do_widget_update(ASender,AMode);
     int32_t index = AValue;//ASender->getWidgetIndex();
     if (index < 0) {
-      if (MListener) MListener->on_menu_selected(-1);
+      if (MListener) MListener->on_menu_selected(this,-1);
     }
     else {
-      if (MListener) MListener->on_menu_selected(index);
+      if (MListener) MListener->on_menu_selected(this,index);
     }
     close(true);
     //do_widget_modal(nullptr);
@@ -121,6 +125,7 @@ public:
     State.active = true;
     do_widget_redraw(this);
     if (AModal) do_widget_modal(this);
+
   }
 
   //----------

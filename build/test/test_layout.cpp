@@ -11,9 +11,9 @@
 // MIP_LINUX is not defined yet (mip_defines.h)
 #ifdef __gnu_linux__
   #define MIP_GUI_XCB
-  #define MIP_PAINTER_XCB
+  //#define MIP_PAINTER_XCB
   //#define MIP_WINDOW_BUFFERED
-  //#define MIP_PAINTER_NANOVG
+  #define MIP_PAINTER_NANOVG
 #else
   #define MIP_GUI_WIN32
   //#define MIP_PAINTER_GDI
@@ -740,8 +740,8 @@ public: // gui
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-#include "plugin/vst2/mip_vst2_entry.h"
-#include "plugin/vst3/mip_vst3_entry.h"
+//#include "plugin/vst2/mip_vst2_entry.h"
+//#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 

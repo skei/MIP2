@@ -72,7 +72,8 @@ struct MIP_WidgetState {
 class MIP_Widget {
 
 //------------------------------
-private:
+//private:
+protected:
 //------------------------------
 
   double            MValue        = 0.0;

@@ -1168,9 +1168,26 @@ public: // queues
   void flushHostParams(const clap_output_events_t* out_events) {
     uint32_t index;
     while (MHostParamQueue.read(&index)) {
+
       double value = MQueuedHostParamValues[index];
       //double value = MParameters[index]->getValue();
       //MIP_Print("%i = %.3f\n",index,value);
+
+
+
+/// If the user is adjusting the value, don't forget to mark the begining and end
+/// of the gesture by sending CLAP_EVENT_PARAM_GESTURE_BEGIN and CLAP_EVENT_PARAM_GESTURE_END
+/// events.
+
+      clap_event_param_gesture_t begin_gesture;
+      begin_gesture.header.size     = sizeof(clap_event_param_value_t);
+      begin_gesture.header.time     = 0;
+      begin_gesture.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+      begin_gesture.header.type     = CLAP_EVENT_PARAM_GESTURE_BEGIN;
+      begin_gesture.header.flags    = 0;  // CLAP_EVENT_IS_LIVE, CLAP_EVENT_DONT_RECORD
+      begin_gesture.param_id        = index;
+      out_events->try_push(out_events,(clap_event_header_t*)&begin_gesture);
+
       clap_event_param_value_t event;
       event.header.size     = sizeof(clap_event_param_value_t);
       event.header.time     = 0;
@@ -1185,6 +1202,16 @@ public: // queues
       event.key             = -1;
       event.value           = value;
       out_events->try_push(out_events,(clap_event_header_t*)&event);
+
+      clap_event_param_gesture_t end_gesture;
+      end_gesture.header.size     = sizeof(clap_event_param_value_t);
+      end_gesture.header.time     = 0;
+      end_gesture.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
+      end_gesture.header.type     = CLAP_EVENT_PARAM_GESTURE_END;
+      end_gesture.header.flags    = 0;  // CLAP_EVENT_IS_LIVE, CLAP_EVENT_DONT_RECORD
+      end_gesture.param_id        = index;
+      out_events->try_push(out_events,(clap_event_header_t*)&end_gesture);
+
     }
   }
 

@@ -120,7 +120,7 @@ public:
   //todo: reset modulations
 
   uint32_t note_on(int32_t key, T velocity) {
-    MIP_Print("%i velocity %.3f\n",MIndex,velocity);
+    //MIP_Print("%i velocity %.3f\n",MIndex,velocity);
     note_key      = key;
     note_onvel    = velocity;
     note_press    = 0.0;
@@ -149,7 +149,7 @@ public:
   //----------
 
   uint32_t note_off(T velocity) {
-    MIP_Print("%i velocity %.3f\n",MIndex,velocity);
+    //MIP_Print("%i velocity %.3f\n",MIndex,velocity);
     note_offvel = velocity;
     MAmpEnvelope.noteOff();
     return MIP_VOICE_RELEASED;
@@ -158,27 +158,27 @@ public:
   //----------
 
   void note_choke() {
-    MIP_Print("%i\n",MIndex);
+    //MIP_Print("%i\n",MIndex);
   }
 
   //----------
 
   void volume(T value) {
-    MIP_Print("%i value %.3f\n",MIndex,value);
+    //MIP_Print("%i value %.3f\n",MIndex,value);
     note_vol = value;
   }
 
   //----------
 
   void pan(T value) {
-    MIP_Print("%i value %.3f\n",MIndex,value);
+    //MIP_Print("%i value %.3f\n",MIndex,value);
     note_pan = value;
   }
 
   //----------
 
   void tuning(T value) {
-    MIP_Print("%i value %.3f\n",MIndex,value);
+    //MIP_Print("%i value %.3f\n",MIndex,value);
     note_tuning = value;
 
     //t = 0.0;
@@ -193,36 +193,35 @@ public:
   //----------
 
   void vibrato(T value) {
-    MIP_Print("%i value %.3f\n",MIndex,value);
+    //MIP_Print("%i value %.3f\n",MIndex,value);
     note_vibr = value;
   }
 
   //----------
 
   void expression(T value) {
-    MIP_Print("%i value %.3f\n",MIndex,value);
+    //MIP_Print("%i value %.3f\n",MIndex,value);
     note_expr = value;
   }
 
   //----------
 
   void brightness(T value) {
-    MIP_Print("%i value %.3f\n",MIndex,value);
-    //note_bright = value;
+    //MIP_Print("%i value %.3f\n",MIndex,value);
     note_bright = (value * 2.0) - 1.0;
   }
 
   //----------
 
   void pressure(T value) {
-    MIP_Print("%i value %.3f\n",MIndex,value);
+    //MIP_Print("%i value %.3f\n",MIndex,value);
     note_press = value;
   }
 
   //----------
 
   void parameter(uint32_t index, T value) {
-    MIP_Print("index %i value %f\n",index,value);
+    //MIP_Print("index %i value %f\n",index,value);
     MParameters[index] = value;
     //MIP_Print("---\n");
     switch(index) {
@@ -243,7 +242,7 @@ public:
   //----------
 
   void modulation(uint32_t index, T value) {
-    MIP_Print("%i index %i value %.3f\n",MIndex,index,value);
+    //MIP_Print("%i index %i value %.3f\n",MIndex,index,value);
     MModulations[index] = value;
   }
 

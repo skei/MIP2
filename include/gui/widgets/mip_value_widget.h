@@ -35,6 +35,8 @@ protected:
   uint32_t  MModulationAlignment  = MIP_TEXT_ALIGN_CENTER;
   float     MModulationSize       = 10.0;
 
+  uint32_t  MNumDigits            = 3;
+
 //------------------------------
 public:
 //------------------------------
@@ -70,6 +72,8 @@ public:
   virtual void  setModulationAlignment(uint32_t AAlign) { MModulationAlignment = AAlign; }
   virtual void  setModulationSize(float ASize)          { MModulationSize = ASize; }
 
+  virtual void setNumDigits(uint32_t ANum)              { MNumDigits = ANum; }
+
 //------------------------------
 public: // parent to child
 //------------------------------
@@ -92,7 +96,10 @@ public:
       MIP_Painter* painter = AContext->painter;
       char temp[16] = {0};
       double value = getValue();
-      sprintf(temp,"%.2f",value);
+      char format[5] = "%.0f";
+      format[2] = 48 + MNumDigits;
+      sprintf(temp,format,value);
+
       if (MDrawParameterValue) {
         MIP_Parameter* parameter = getParameter();
         if (parameter) {

@@ -145,8 +145,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_MASTER_OSC1_OUT,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_MODULATABLE
-      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+      | CLAP_PARAM_IS_MODULATABLE,
     nullptr,
     "O1",
     "",

@@ -19,8 +19,8 @@ protected:
 //------------------------------
 
   bool      MIsDragging           = false;
-  double    MDragSensitivity      = 0.01;
-  double    MDragSensitivity2     = 0.02;
+  double    MDragSensitivity      = 0.005;
+  double    MDragSensitivity2     = 0.05;
 
   double    MDragValue            = 0.0;
   double    MMousePrevX           = 0.0;

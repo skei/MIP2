@@ -12,7 +12,8 @@
 //----------------------------------------------------------------------
 
 class MIP_SelectorWidget
-: public MIP_TextWidget {
+: public MIP_TextWidget
+, public MIP_MenuListener {
 
 //------------------------------
 protected:
@@ -21,6 +22,8 @@ protected:
   bool            MDrawArrow    = true;
   MIP_Color       MArrowColor   = MIP_Color(0.25);//MIP_COLOR_DARK_GRAY;
   MIP_MenuWidget* MMenu         = nullptr;
+
+  int32_t         MSelected     = -1;
 
 //------------------------------
 public:
@@ -43,7 +46,37 @@ public:
 public:
 //------------------------------
 
-  virtual void setSelected(uint32_t AIndex) {  }
+  void setValue(double AValue) override {
+    MValue = AValue;
+    MSelected = AValue;
+    //do_widget_update(this);
+    //do_widget_redraw(this);
+  }
+
+  double getValue() override {
+    double value = MValue;
+    //MIP_Print("%.3f\n",value);
+    return value;
+  }
+
+  virtual void setSelected(int32_t AIndex) {
+    //if (AIndex >= MChildren.size()) return;
+    //MIP_Print("%i\n",AIndex);
+    MSelected = AIndex;
+    MValue = AIndex;
+  }
+
+  //----------
+
+  void on_menu_selected(MIP_MenuWidget* AMenu, int32_t AIndex) override {
+    if (AIndex >= 0) {
+      MSelected = AIndex;
+      MValue = MSelected;
+      do_widget_update(this);
+      do_widget_redraw(this);
+    }
+  }
+
 
 //------------------------------
 public: // parent to child
@@ -51,6 +84,7 @@ public: // parent to child
 
   void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     if (AButton == MIP_BUTTON_LEFT) {
+      MMenu->setListener(this);
       MMenu->open(AXpos,AYpos,true);
     }
   }
@@ -58,8 +92,18 @@ public: // parent to child
   //----------
 
   void on_widget_paint(MIP_PaintContext* AContext) override {
+
     fillBackground(AContext);
     paintChildWidgets(AContext);
+
+    //MIP_Print("MSelected %i\n",MSelected);
+
+    if ((MSelected >= 0) && (MSelected < (int)MMenu->getNumChildWidgets())) {
+      MIP_MenuItemWidget* mi = (MIP_MenuItemWidget*)MMenu->getChildWidget(MSelected);
+      const char* name = mi->getText();
+      strcpy(MText,name);
+    }
+
     drawText(AContext);
     drawArrow(AContext);
     drawBorder(AContext);
