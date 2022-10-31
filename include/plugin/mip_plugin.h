@@ -94,7 +94,7 @@ protected:
 
   // TODO: replace these with queues, and always push/pop in sync
   // currently later events overwrite the values of older events
-  // so we could risk sending the wrong values too early
+  // so we could be sending the wrong values too early
 
   double  MQueuedProcessParamValues[MIP_PLUGIN_MAX_PARAM_EVENTS]      = {0};
   double  MQueuedProcessModValues[MIP_PLUGIN_MAX_PARAM_EVENTS]        = {0};
@@ -663,7 +663,7 @@ public: // EXT params
   bool params_get_info(uint32_t param_index, clap_param_info_t *param_info) override {
     MIP_Parameter* parameter  = MParameters[param_index];
     param_info->id            = param_index;
-    param_info->flags         = CLAP_PARAM_IS_AUTOMATABLE;
+    param_info->flags         = parameter->getFlags();//CLAP_PARAM_IS_AUTOMATABLE;
     param_info->cookie        = parameter;
     param_info->min_value     = parameter->getMinValue();
     param_info->max_value     = parameter->getMaxValue();
@@ -1173,14 +1173,8 @@ public: // queues
       //double value = MParameters[index]->getValue();
       //MIP_Print("%i = %.3f\n",index,value);
 
-
-
-/// If the user is adjusting the value, don't forget to mark the begining and end
-/// of the gesture by sending CLAP_EVENT_PARAM_GESTURE_BEGIN and CLAP_EVENT_PARAM_GESTURE_END
-/// events.
-
       clap_event_param_gesture_t begin_gesture;
-      begin_gesture.header.size     = sizeof(clap_event_param_value_t);
+      begin_gesture.header.size     = sizeof(clap_event_param_gesture_t);
       begin_gesture.header.time     = 0;
       begin_gesture.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
       begin_gesture.header.type     = CLAP_EVENT_PARAM_GESTURE_BEGIN;
@@ -1204,7 +1198,7 @@ public: // queues
       out_events->try_push(out_events,(clap_event_header_t*)&event);
 
       clap_event_param_gesture_t end_gesture;
-      end_gesture.header.size     = sizeof(clap_event_param_value_t);
+      end_gesture.header.size     = sizeof(clap_event_param_gesture_t);
       end_gesture.header.time     = 0;
       end_gesture.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
       end_gesture.header.type     = CLAP_EVENT_PARAM_GESTURE_END;
@@ -1272,10 +1266,12 @@ public: // queues
       //double value = MParameters[index]->getValue();
       //MIP_Print("%i = %.3f\n",index,value);
       //MEditor->updateParameter(index,value);
+//      double current_value = MParameters[index]->getModulation();
+//      if (value != current_value) {
+        MIP_Assert(MEditor);
+        MEditor->updateModulation(index,value);
+//      }
 
-      MIP_Assert(MEditor);
-
-      MEditor->updateModulation(index,value);
     }
   }
 

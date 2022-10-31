@@ -271,8 +271,8 @@ public:
 
     // osc 1
 
-    T o1_pitch  = ((MParameters[PAR_OSC1_OCT]  + MModulations[PAR_OSC1_OCT]  ) * 12.0)
-                + ((MParameters[PAR_OSC1_SEMI] + MModulations[PAR_OSC1_SEMI] ) * 1.0)
+    T o1_pitch  = (((int)MParameters[PAR_OSC1_OCT]  + (int)MModulations[PAR_OSC1_OCT]  ) * 12.0)
+                + (((int)MParameters[PAR_OSC1_SEMI] + (int)MModulations[PAR_OSC1_SEMI] ) * 1.0)
                 +  (MParameters[PAR_OSC1_CENT] + MModulations[PAR_OSC1_CENT] );
     T osc1_hz = MIP_NoteToHz(note_key + note_tuning + o1_pitch);
     osc1_hz = MIP_Clamp(osc1_hz,20,20000);
@@ -289,8 +289,8 @@ public:
 
     // osc 2
 
-    T o2_pitch  = ((MParameters[PAR_OSC2_OCT]  + MModulations[PAR_OSC2_OCT]  ) * 12.0)
-                + ((MParameters[PAR_OSC2_SEMI] + MModulations[PAR_OSC2_SEMI] ) * 1.0)
+    T o2_pitch  = (((int)MParameters[PAR_OSC2_OCT]  + (int)MModulations[PAR_OSC2_OCT]  ) * 12.0)
+                + (((int)MParameters[PAR_OSC2_SEMI] + (int)MModulations[PAR_OSC2_SEMI] ) * 1.0)
                 +  (MParameters[PAR_OSC2_CENT] + MModulations[PAR_OSC2_CENT] );
     T osc2_hz = MIP_NoteToHz(note_key + note_tuning + o2_pitch);
     osc2_hz = MIP_Clamp(osc2_hz,20,20000);
@@ -307,8 +307,8 @@ public:
 
     // res 1
 
-    T r1_pitch  = ((MParameters[PAR_RES1_OCT]  + MModulations[PAR_RES1_OCT]  ) * 12.0)
-                + ((MParameters[PAR_RES1_SEMI] + MModulations[PAR_RES1_SEMI] ) * 1.0)
+    T r1_pitch  = (((int)MParameters[PAR_RES1_OCT]  + (int)MModulations[PAR_RES1_OCT]  ) * 12.0)
+                + (((int)MParameters[PAR_RES1_SEMI] + (int)MModulations[PAR_RES1_SEMI] ) * 1.0)
                 +  (MParameters[PAR_RES1_CENT] + MModulations[PAR_RES1_CENT] );
     T res1_hz = MIP_NoteToHz(note_key + note_tuning + r1_pitch);
     res1_hz = MIP_Clamp(res1_hz,20,20000);
@@ -330,8 +330,8 @@ public:
 
     // res 2
 
-    T r2_pitch  = ((MParameters[PAR_RES2_OCT]  + MModulations[PAR_RES2_OCT]  ) * 12.0)
-                + ((MParameters[PAR_RES2_SEMI] + MModulations[PAR_RES2_SEMI] ) * 1.0)
+    T r2_pitch  = (((int)MParameters[PAR_RES2_OCT]  + (int)MModulations[PAR_RES2_OCT]  ) * 12.0)
+                + (((int)MParameters[PAR_RES2_SEMI] + (int)MModulations[PAR_RES2_SEMI] ) * 1.0)
                 +  (MParameters[PAR_RES2_CENT] + MModulations[PAR_RES2_CENT] );
     T res2_hz = MIP_NoteToHz(note_key + note_tuning + r2_pitch);
     res2_hz = MIP_Clamp(res2_hz,20,20000);
