@@ -188,16 +188,13 @@ public: // clap gui
   // ratios could be calculated from initial size..
 
   virtual bool getResizeHints(clap_gui_resize_hints_t *hints) {
-    //MIP_Print("");
     if (MCanResizeEditor) {
       hints->can_resize_horizontally  = true;
       hints->can_resize_vertically    = true;
-      //MIP_DPrint("crh,crv:true");
       if (MResizeProportional) {
         hints->aspect_ratio_width       = (int)MProportionalWidth;
         hints->aspect_ratio_height      = (int)MProportionalHeight;
         hints->preserve_aspect_ratio    = true;
-        //MIP_DPrint(", arw:%i arh:%i par:true",(int)MProportionalWidth,(int)MProportionalHeight);
       }
       else{
         hints->aspect_ratio_width       = 1;
@@ -211,10 +208,7 @@ public: // clap gui
       hints->aspect_ratio_width       = 1;
       hints->aspect_ratio_height      = 1;
       hints->preserve_aspect_ratio    = false;
-      //MIP_DPrint("crh,crv:false");
     }
-    //MIP_DPrint("\n");
-
     //MIP_Print("\n");
     //  MIP_DPrint("  can_resize_horizontally %s\n",hints->can_resize_horizontally ? "true" : "false");
     //  MIP_DPrint("  can_resize_vertically %s\n",hints->can_resize_vertically ? "true" : "false");
@@ -474,11 +468,13 @@ public:
   //----------
 
   void updateModulation(uint32_t AIndex, double AValue, bool ARedraw=true) {
-    //MIP_Widget* widget = MParameterToWidget[AIndex];
-    //if (widget) {
-    //  //widget->setModulation(AValue);
-    //  widget->redraw();
-    //}
+    //MIP_Print("%i = %.3f\n",AIndex,AValue);
+    MIP_Widget* widget = MParameterToWidget[AIndex];
+    if (widget) {
+      widget->setModulation(AValue);
+      // if widget has "draw_modulation" flag??
+      //if (ARedraw) widget->redraw();
+    }
   }
 
 };

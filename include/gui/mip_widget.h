@@ -81,6 +81,9 @@ protected:
   double            MMaxValue     = 1.0;
   double            MDefValue     = 0.0;
 
+  double            MModulation   = 0.0;
+  //bool              MIsModulated  = false;
+
 //------------------------------
 protected:
 //------------------------------
@@ -133,11 +136,13 @@ public:
   virtual double getMinValue()              { return MMinValue; }
   virtual double getMaxValue()              { return MMaxValue; }
   virtual double getDefaultValue()          { return MDefValue; }
+  virtual double getModulation()            { return MModulation; }
 
   virtual void   setValue(double v)         { MValue = v; }
   virtual void   setMinValue(double v)      { MMinValue = v; }
   virtual void   setMaxValue(double v)      { MMaxValue = v; }
   virtual void   setDefaultValue(double v)  { MDefValue = v; }
+  virtual void   setModulation(double v)    { MModulation = v; }
 
 //------------------------------
 public:

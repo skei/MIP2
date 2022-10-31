@@ -340,9 +340,7 @@ public:
     }
   }
 
-//------------------------------
-//
-//------------------------------
+  //----------
 
   void handleMidi(const clap_event_midi_t* event) {
     //MIP_Print("port %i data %02x,%02x,%02x\n",event->port_index,event->data[0],event->data[1],event->data[2]);
@@ -358,6 +356,100 @@ public:
 
   void handleMidi2(const clap_event_midi2_t* event) {
     //MIP_Print("port %i data %i,%i,%i,%i\n",event->port_index,event->data[0],event->data[1],event->data[2],event->data[3]);
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  void processVoice() {
+  }
+
+  //----------
+
+  void processAllVoices(MIP_ProcessContext* AContext) {
+  }
+
+//------------------------------
+public:
+//------------------------------
+
+  int32_t findVoice(const clap_event_note_t* event) {
+    return -1;
+  }
+
+  //----------
+
+  void prepareEvents(MIP_ProcessContext* AContext) {
+    const clap_process_t* process = AContext->process;
+    uint32_t num_events = process->in_events->size(process->in_events);
+    for (uint32_t ev=0; ev<num_events; ev++) {
+      const clap_event_header_t* header = process->in_events->get(process->in_events,ev);
+      // todo if header space..
+      prepareEvent(header);
+      uint32_t num = header->time;
+    }
+  }
+
+  //----------
+
+  void prepareEvent(const clap_event_header_t* header) {
+    switch (header->type) {
+      case CLAP_EVENT_NOTE_ON:          prepareNoteOn((const clap_event_note_t*)header);                     break;
+      case CLAP_EVENT_NOTE_OFF:         prepareNoteOff((const clap_event_note_t*)header);                    break;
+      case CLAP_EVENT_NOTE_CHOKE:       prepareNoteChoke((const clap_event_note_t*)header);                  break;
+      case CLAP_EVENT_NOTE_EXPRESSION:  prepareNoteExpression((const clap_event_note_expression_t*)header);  break;
+      case CLAP_EVENT_PARAM_VALUE:      prepareParamValue((const clap_event_param_value_t*)header);          break;
+      case CLAP_EVENT_PARAM_MOD:        prepareParamMod((const clap_event_param_mod_t*)header);              break;
+      case CLAP_EVENT_MIDI:             prepareMidi((const clap_event_midi_t*)header);                       break;
+      case CLAP_EVENT_MIDI_SYSEX:       prepareMidiSysex((const clap_event_midi_sysex_t*)header);            break;
+      case CLAP_EVENT_MIDI2:            prepareMidi2((const clap_event_midi2_t*)header);                     break;
+    }
+  }
+
+  //----------
+
+  void prepareNoteOn(const clap_event_note_t* event) {
+  }
+
+  //----------
+
+  void prepareNoteOff(const clap_event_note_t* event) {
+  }
+
+  //----------
+
+  void prepareNoteChoke(const clap_event_note_t* event) {
+  }
+
+  //----------
+
+  void prepareNoteExpression(const clap_event_note_expression_t* event) {
+  }
+
+  //----------
+
+  void prepareParamValue(const clap_event_param_value_t* event) {
+  }
+
+  //----------
+
+  void prepareParamMod(const clap_event_param_mod_t* event) {
+  }
+
+  //----------
+
+  void prepareMidi(const clap_event_midi_t* event) {
+  }
+
+  //----------
+
+  void prepareMidiSysex(const clap_event_midi_sysex_t* event) {
+  }
+
+  //----------
+
+  void prepareMidi2(const clap_event_midi2_t* event) {
   }
 
 //------------------------------

@@ -174,6 +174,7 @@ public:
         MIP_TextWidget* osc1_text = new MIP_TextWidget(MIP_DRect(0,0,250,20),"OSC1");
         osc1_panel->appendChildWidget(osc1_text);
         osc1_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        osc1_text->setTextSize(-0.8);
         osc1_text->setDrawBorder(true);
         osc1_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
         osc1_text->setDrawBorder(false);
@@ -313,6 +314,7 @@ public:
         MIP_TextWidget* res1_text = new MIP_TextWidget(MIP_DRect(0,0,250,20),"RES1");
         res1_panel->appendChildWidget(res1_text);
         res1_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        res1_text->setTextSize(-0.8);
         res1_text->setDrawBorder(true);
         res1_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
         res1_text->setDrawBorder(false);
@@ -446,9 +448,10 @@ public:
         // text
 
         MIP_TextWidget* osc2_text = new MIP_TextWidget(MIP_DRect(0,0,250,20),"OSC2");
-        osc2_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
-        osc2_text->setDrawBorder(true);
         osc2_panel->appendChildWidget(osc2_text);
+        osc2_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        osc2_text->setTextSize(-0.8);
+        osc2_text->setDrawBorder(true);
         osc2_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
         osc2_text->setDrawBorder(false);
         osc2_text->setFillBackground(true);
@@ -457,8 +460,8 @@ public:
         // type
 
         MIP_SelectorWidget* osc2_type_selector = new MIP_SelectorWidget( MIP_DRect(10,30,230,20),"Osc Type",osc_type_menu );
-        osc2_type_selector->setTextSize(-0.7);
         osc2_panel->appendChildWidget(osc2_type_selector);
+        osc2_type_selector->setTextSize(-0.7);
         osc2_type_selector->setSelected(0);
         connectWidget(AParameters[PAR_OSC2_TYPE],osc2_type_selector);
 
@@ -581,12 +584,13 @@ public:
         // text
 
         MIP_TextWidget* res2_text = new MIP_TextWidget(MIP_DRect(0,0,250,20),"RES2");
+        res2_panel->appendChildWidget(res2_text);
         res2_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        res2_text->setTextSize(-0.8);
         res2_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
         res2_text->setDrawBorder(false);
         res2_text->setFillBackground(true);
         res2_text->setBackgroundColor(MIP_COLOR_DARK_GRAY);
-        res2_panel->appendChildWidget(res2_text);
 
         // type
 
@@ -715,6 +719,7 @@ public:
         MIP_TextWidget* voices_text = new MIP_TextWidget(MIP_DRect(0,0,276,20),"Voices");
         voice2_panel->appendChildWidget(voices_text);
         voices_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        voices_text->setTextSize(-0.8);
         voices_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
         voices_text->setDrawBorder(false);
         voices_text->setFillBackground(true);
@@ -754,6 +759,7 @@ public:
         MIP_TextWidget* global_text = new MIP_TextWidget(MIP_DRect(0,0,276,20),"Global");
         global_panel->appendChildWidget(global_text);
         global_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        global_text->setTextSize(-0.8);
         global_text->setDrawBorder(true);
         global_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
         global_text->setDrawBorder(false);
@@ -830,6 +836,7 @@ public:
         MIP_TextWidget* flt_text = new MIP_TextWidget(MIP_DRect(0,0,276,20),"Filter");
         flt1_panel->appendChildWidget(flt_text);
         flt_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        flt_text->setTextSize(-0.8);
         flt_text->setDrawBorder(true);
         flt_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
         flt_text->setDrawBorder(false);
@@ -868,6 +875,8 @@ public:
         MIP_TextWidget* env_text = new MIP_TextWidget(MIP_DRect(0,0,276,20),"Envelope");
         env1_panel->appendChildWidget(env_text);
         env_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        env_text->setTextSize(-0.8);
+
         env_text->setDrawBorder(true);
         env_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
         env_text->setDrawBorder(false);

@@ -43,6 +43,8 @@ private:
   //double t  = 0.0;
   //double dt = 0.0;
 
+  MIP_Queue<const clap_event_note_t*,256> MEvents;
+
 //------------------------------
 private:
 //------------------------------
@@ -135,14 +137,6 @@ public:
     O2 = 0.0;
     R1 = 0.0;
     R2 = 0.0;
-
-//    t = 0.0;
-//    dt = 0.0;
-//    hz = MIP_NoteToHz(note_key + note_tuning);
-//    if (hz > 0.0) {
-//      dt = 1.0 / MIP_HzToSamples(hz,MContext->samplerate);
-//    }
-
     return MIP_VOICE_PLAYING;
   }
 
@@ -268,6 +262,13 @@ public:
     //-----
 
     MIP_Assert(output);
+
+    //--------------------
+    /*
+      shouldn't therse be per sample too?
+      or better, per 'tick'..
+    */
+    //--------------------
 
     // osc 1
 
@@ -443,23 +444,6 @@ public:
     if (stage == MIP_ENVELOPE_FINISHED) return MIP_VOICE_FINISHED;
     else return AState;
   }
-
-/*
-  uint32_t process(uint32_t AState, uint32_t ASize, uint32_t AOffset) {
-    float* buffer = MContext->voicebuffer + AOffset;
-    for (uint32_t i=0; i<ASize; i++) {
-
-      float spl0 = (t * 0.25);
-
-      spl0 *= (note_onvel * note_vol) + note_press;
-
-      *buffer++ += spl0; // ADD to buffer
-      t += dt;
-      t = MIP_Fract(t);
-    }
-    return MIP_VOICE_PLAYING;
-  }
-*/
 
 };
 

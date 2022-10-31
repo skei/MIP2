@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1667155088 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+1667175636 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
 	"../source/plugins/sa_tyr.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
@@ -691,7 +691,7 @@
 1666348610 /DISKS/sda2/code/git/MIP2/include/extern/clap/ext/draft/transport-control.h
 	"../../plugin.h"
 
-1667071897 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
+1667221045 /DISKS/sda2/code/git/MIP2/include/plugin/mip_plugin.h
 	"mip.h"
 	"base/types/mip_queue.h"
 	"plugin/mip_audio_port.h"
@@ -711,7 +711,7 @@
 	"base/types/mip_array.h"
 	"plugin/clap/mip_clap.h"
 
-1667064712 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
+1667221781 /DISKS/sda2/code/git/MIP2/include/plugin/mip_editor.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_window.h"
@@ -792,7 +792,7 @@
 	"gui/xcb/mip_xcb.h"
 	"gui/cairo/mip_cairo.h"
 
-1667157184 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
+1667221285 /DISKS/sda2/code/git/MIP2/include/gui/mip_widget.h
 	"mip.h"
 	"gui/mip_paint_context.h"
 	"plugin/mip_parameter.h"
@@ -1156,7 +1156,7 @@
 	"gui/mip_paint_context.h"
 	"gui/widgets/mip_panel_widget.h"
 
-1667157288 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_selector_widget.h
+1667160473 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_selector_widget.h
 	"mip.h"
 	"gui/widgets/mip_panel_widget.h"
 
@@ -1909,7 +1909,7 @@
 	"plugin/vst2/mip_vst2_entry.h"
 	"plugin/vst3/mip_vst3_entry.h"
 
-1667128108 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr.cpp
+1667249588 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr.cpp
 	"audio/mip_audio_utils.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_note.h"
@@ -1921,8 +1921,10 @@
 	"sa_tyr/sa_tyr_editor.h"
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
+	"plugin/vst2/mip_vst2_entry.h"
+	"plugin/vst3/mip_vst3_entry.h"
 
-1667058761 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
+1667247029 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
 	"mip.h"
 	"audio/mip_audio_utils.h"
 	"plugin/mip_note.h"
@@ -1939,9 +1941,9 @@
 	"mip.h"
 	"plugin/mip_note.h"
 
-1667060840 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_parameters.h
+1667212465 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_parameters.h
 
-1667062998 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_voice.h
+1667247175 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_voice.h
 	"mip.h"
 	"audio/mip_audio_math.h"
 	"audio/filters/mip_rc_filter.h"
@@ -1996,7 +1998,7 @@
 	"audio/filters/mip_svf_filter.h"
 	"audio/processing/mip_delay.h"
 
-1667156667 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_editor.h
+1667215491 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_editor.h
 	"mip.h"
 	"gui/widgets/mip_widgets.h"
 	"plugin/mip_editor.h"
