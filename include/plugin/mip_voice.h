@@ -7,8 +7,6 @@
 
 //----------------------------------------------------------------------
 
-/*
-
 #define MIP_VOICE_MAX_EVENTS_PER_BLOCK 256
 
 //----------
@@ -21,11 +19,9 @@ enum MIP_EVoiceEvents {
   MIP_VOICE_EVENT_PARAMETER       = 4,
   MIP_VOICE_EVENT_MODULATION      = 5
 };
-*/
 
 //----------
 
-/*
 struct MIP_VoiceEvent {
   uint32_t  type  = 0;
   uint32_t  time  = 0;
@@ -39,7 +35,6 @@ struct MIP_VoiceEvent {
     value = val;
   }
 };
-*/
 
 //----------
 
@@ -71,7 +66,7 @@ public:
   uint32_t          state   = MIP_VOICE_OFF;
   MIP_Note          note    = {};
 
-  //MIP_Queue<MIP_VoiceEvent,MIP_VOICE_MAX_EVENTS_PER_BLOCK*2> events = {};
+  MIP_Queue<MIP_VoiceEvent,MIP_VOICE_MAX_EVENTS_PER_BLOCK*2> events = {};
 
 //------------------------------
 public:
@@ -100,7 +95,6 @@ public:
 public:
 //------------------------------
 
-  /*
   void handleVoiceEvent(MIP_VoiceEvent event) {
     switch (event.type) {
       case MIP_VOICE_EVENT_NOTE_ON:         note_on(event.index,event.value);     break;
@@ -111,7 +105,6 @@ public:
       case MIP_VOICE_EVENT_MODULATION:      modulation(event.index,event.value);  break;
     }
   }
-  */
 
   //----------
 
@@ -160,35 +153,6 @@ public:
 
   //----------
 
-
-};
-
-//----------------------------------------------------------------------
-#endif
-
-
-
-
-
-#if 0
-
-
-
-
-//struct MIP_Note {
-//  int32_t  port_index;
-//  int32_t  channel;
-//  int32_t  key;
-//  int32_t  note_id;
-//};
-
-
-
-
-  //----------
-
-
-
 //------------------------------
 public:
 //------------------------------
@@ -224,17 +188,6 @@ public:
     events.write(ev);
   }
 
-//------------------------------
-public:
-//------------------------------
-
-  void processBlock(uint32_t AIndex) {
-    uint32_t length = context->process->frames_count;
-    state = voice.process(AIndex,state,length,0);
-  }
-
-  //----------
-
   /*
     todo: add offset to current_time before calling voice.process
     so we get rid of this in the voice:
@@ -255,15 +208,11 @@ public:
     while (remaining > 0) {
       if (events.read(&next_event)) {
         // we have more events
-
         //MIP_Print("current_time: %i next_event.time: %i\n",current_time,next_event.time);
-
         int32_t length = next_event.time - current_time;
         if (length > 0) {
-
           if (state != MIP_VOICE_WAITING) {
           //if ((state == MIP_VOICE_PLAYING) || ((state == MIP_VOICE_RELEASED)) {
-
             state = voice.process(AIndex,state,length,current_time);
           }
           remaining -= length;
@@ -275,20 +224,23 @@ public:
       else {
         // no more events
         int32_t length = remaining;
-
         if (state != MIP_VOICE_WAITING) {
         //if ((state == MIP_VOICE_PLAYING) || ((state == MIP_VOICE_RELEASED)) {
-
           state = voice.process(AIndex,state,length,current_time);
         }
         remaining -= length;
         current_time += length;
       } // !event
-
     } // remaining > 0
     MIP_Assert( events.read(&next_event) == false );
   }
 
+  //void processBlock(uint32_t AIndex) {
+  //  uint32_t length = context->process->frames_count;
+  //  state = voice.process(AIndex,state,length,0);
+  //}
 
+};
 
-#endif // 0
+//----------------------------------------------------------------------
+#endif

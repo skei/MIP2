@@ -124,6 +124,9 @@
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-fPIC" />
+					<Add option="-msse3" />
+					<Add option="-ffast-math" />
+					<Add option="-mfpmath=sse" />
 					<Add option="-DMIP_PLUGIN" />
 				</Compiler>
 				<Linker>

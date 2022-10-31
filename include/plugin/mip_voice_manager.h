@@ -36,7 +36,8 @@ private:
   MIP_VoiceContext  MVoiceContext                 = {};
   MIP_NoteQueue     MNoteEndQueue                 = {};
   MIP_Voice<VOICE>  MVoices[VOICE_COUNT]          = {};
-  uint32_t          MThreadedVoices[VOICE_COUNT]  = {0};
+  uint32_t          MActiveVoices[VOICE_COUNT]    = {0};
+  //uint32_t          MThreadedVoices[VOICE_COUNT]  = {0};
 
 //------------------------------
 public:
@@ -362,21 +363,86 @@ public:
 public:
 //------------------------------
 
-  void processVoice() {
+  // process threaded
+
+  /*
+    voices are processed individually, bu host-provided thread pool
+    (or manually one by one if thread pool not availablle
+  */
+
+  void processPrepared(const clap_process_t *process) {
+    //MIP_PRINT;
+    //count_param_events(process);
+    MVoiceContext.process = process;
+    float* out0 = process->audio_outputs->data32[0];
+    float* out1 = process->audio_outputs->data32[1];
+    MVoiceContext.voicebuffer = MVoiceBuffer;//out0;
+    uint32_t length = process->frames_count;
+    // clear frame buffer (voices are added to it)
+    MIP_ClearMonoBuffer(MFrameBuffer,length);
+    // prepare events (separate them for each individual voice)
+    prepareEvents(process->in_events,process->out_events);
+    // setup threaded voice array
+    uint32_t num_voices  = 0;
+    for (uint32_t i=0; i<VOICE_COUNT; i++) {
+      if ((MVoices[i].state == MIP_VOICE_PLAYING)
+        || (MVoices[i].state == MIP_VOICE_RELEASED)
+        || (MVoices[i].state == MIP_VOICE_WAITING)) {
+        MActiveVoices[num_voices++] = i;
+      }
+    }
+    // calc voices
+    if (num_voices > 0) {
+      processActiveVoices(num_voices);
+    }
+    // add all voice buffers to frame buffer
+    for (uint32_t i=0; i<num_voices; i++) {
+      int32_t voice = MActiveVoices[i];
+      float* src = MVoiceBuffer + (process->frames_count * voice);
+      MIP_AddMonoBuffer(MFrameBuffer,src,length);
+    }
+    // cleanup..
+    flushFinishedVoices();
+    flushNoteEnds();
+    // copy frame buffer to output
+    MIP_CopyMonoBuffer(out0,MFrameBuffer,length);
+    MIP_CopyMonoBuffer(out1,MFrameBuffer,length);
   }
 
   //----------
 
-  void processAllVoices(MIP_ProcessContext* AContext) {
+  /*
+    called by host for each voice
+  */
+
+  void processVoice(uint32_t index) {
+    int32_t voice = MActiveVoices[index];
+    if (voice >= 0) {
+//      MVoices[voice].processPrepared(voice);
+    }
+  }
+
+  //----------
+
+  /*
+    if there is no thread pool, or host refused for some reason,
+    we just calculate the voices manyally, one by one..
+    coud do our own threading...
+  */
+
+  void processActiveVoices(uint32_t num) {
+    for (uint32_t i=0; i<num; i++) {
+      processVoice(i);
+    }
   }
 
 //------------------------------
 public:
 //------------------------------
 
-  int32_t findVoice(const clap_event_note_t* event) {
-    return -1;
-  }
+  //int32_t findVoice(const clap_event_note_t* event) {
+  //  return -1;
+  //}
 
   //----------
 
