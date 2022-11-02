@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1667175636 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+1667302854 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
 	"../source/plugins/sa_tyr.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
@@ -1924,7 +1924,7 @@
 	"plugin/vst2/mip_vst2_entry.h"
 	"plugin/vst3/mip_vst3_entry.h"
 
-1667247029 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
+1667304682 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
 	"mip.h"
 	"audio/mip_audio_utils.h"
 	"plugin/mip_note.h"
@@ -1934,16 +1934,16 @@
 	"mip.h"
 	"base/utils/mip_math.h"
 
-1653814579 /DISKS/sda2/code/git/MIP2/include/plugin/mip_note.h
+1667304181 /DISKS/sda2/code/git/MIP2/include/plugin/mip_note.h
 	"mip.h"
 
-1667062139 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice.h
+1667304593 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice.h
 	"mip.h"
 	"plugin/mip_note.h"
 
 1667212465 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_parameters.h
 
-1667247175 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_voice.h
+1667303440 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_voice.h
 	"mip.h"
 	"audio/mip_audio_math.h"
 	"audio/filters/mip_rc_filter.h"
@@ -1998,7 +1998,7 @@
 	"audio/filters/mip_svf_filter.h"
 	"audio/processing/mip_delay.h"
 
-1667215491 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_editor.h
+1667312298 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_editor.h
 	"mip.h"
 	"gui/widgets/mip_widgets.h"
 	"plugin/mip_editor.h"

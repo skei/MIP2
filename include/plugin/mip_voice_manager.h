@@ -61,15 +61,15 @@ public:
     MVoiceContext.invsamplerate = 1.0 / ASampleRate;
     MVoiceContext.parameters = AParameters;
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      MVoices[i].state = MIP_VOICE_OFF;
-      MVoices[i].prepare(i,&MVoiceContext);
+      //MVoices[i].setState(MIP_VOICE_OFF);
+      MVoices[i].setup(i,&MVoiceContext);
     }
   }
 
   //----------
 
   uint32_t getVoiceState(uint32_t AIndex) {
-    return MVoices[AIndex].state;
+    return MVoices[AIndex].getState();
   }
 
   float* getFrameBuffer() {
@@ -151,11 +151,11 @@ public:
         uint32_t num = header->time - current_time;
         // process num samples from current_time
         for (uint32_t v=0; v<VOICE_COUNT; v++) {
-          uint32_t state = MVoices[v].state;
+          uint32_t state = MVoices[v].getState();
           if ((state == MIP_VOICE_PLAYING)
             || (state == MIP_VOICE_RELEASED)
             || (state == MIP_VOICE_WAITING)) {
-            MVoices[v].state = MVoices[v].process( state, num, current_time);
+            MVoices[v].setState(  MVoices[v].process( state, num, current_time) );
             //MIP_AddMonoBuffer(MFrameBuffer + current_time,MFrameBuffer + current_time,num);
           }
         }
@@ -167,11 +167,11 @@ public:
     // calculate remaining samples (no more events)
     if (remaining > 0) {
       for (uint32_t v=0; v<VOICE_COUNT; v++) {
-        uint32_t state = MVoices[v].state;
+        uint32_t state = MVoices[v].getState();
         if ((state == MIP_VOICE_PLAYING)
           || (state == MIP_VOICE_RELEASED)
           /*|| (state == MIP_VOICE_WAITING)*/) {
-          MVoices[v].state = MVoices[v].process( state, remaining, current_time);
+          MVoices[v].setState( MVoices[v].process( state, remaining, current_time) );
           //MIP_AddMonoBuffer(MFrameBuffer + current_time,MFrameBuffer + current_time,remaining);
         }
       }
@@ -218,16 +218,17 @@ public:
     if (voice >= 0) {
       // let the host know that the note that was playing for this voice
       // now has ended
-      if (MVoices[voice].state == MIP_VOICE_RELEASED) {
-        queueNoteEnd(MVoices[voice].note);
+      if (MVoices[voice].getState() == MIP_VOICE_RELEASED) {
+        queueNoteEnd(MVoices[voice].getNote());
       }
       // start new voice
       MVoices[voice].note_on(event->key,event->velocity);
       //MIP_Print("new note..\n");
-      MVoices[voice].note.key         = event->key;
-      MVoices[voice].note.channel     = event->channel;
-      MVoices[voice].note.port_index  = event->port_index;
-      MVoices[voice].note.note_id     = event->note_id;
+      //MVoices[voice].note.key         = event->key;
+      //MVoices[voice].note.channel     = event->channel;
+      //MVoices[voice].note.port_index  = event->port_index;
+      //MVoices[voice].note.note_id     = event->note_id;
+      MVoices[voice].setNote(event->port_index,event->channel,event->key,event->note_id);
     }
     else {
       //MIP_Print("no note..\n");
@@ -247,9 +248,9 @@ public:
   void handleNoteOff(const clap_event_note_t* event) {
     //MIP_Print("NOTE OFF: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      if (MVoices[i].state == MIP_VOICE_PLAYING) {
+      if (MVoices[i].getState() == MIP_VOICE_PLAYING) {
         //if (MVoices[i].note.note_id == event->note_id) {
-          if ((MVoices[i].note.channel == event->channel) && (MVoices[i].note.key == event->key)) {
+          if ((MVoices[i].getNote().channel == event->channel) && (MVoices[i].getNote().key == event->key)) {
             MVoices[i].note_off(event->velocity);
           }
         //}
@@ -271,7 +272,7 @@ public:
     //MIP_Print("id %i port %i chan %i key %i val %.3f\n",event->note_id,event->port_index,event->channel,event->key,event->value);
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
       //if (MVoices[i].note.note_id == event->note_id) {
-        if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
+        if ((MVoices[i].getNote().key == event->key) && (MVoices[i].getNote().channel == event->channel)) {
           MVoices[i].expression(event->expression_id,event->value);
         }
       //}
@@ -292,7 +293,7 @@ public:
     if (event->note_id == -1) {
       // global
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
-        //if ((MVoices[i].state == MIP_VOICE_PLAYING) || (MVoices[i].state == MIP_VOICE_RELEASED)) {
+        //if ((MVoices[i].getState() == MIP_VOICE_PLAYING) || (MVoices[i].getState() == MIP_VOICE_RELEASED)) {
         //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
           MVoices[i].parameter(event->param_id,event->value);
         //}
@@ -302,7 +303,7 @@ public:
     else {
       // voice
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
-        if (MVoices[i].note.note_id == event->note_id) {
+        if (MVoices[i].getNote().note_id == event->note_id) {
           //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
             MVoices[i].parameter(event->param_id,event->value);
           //}
@@ -322,7 +323,7 @@ public:
     if (event->note_id == -1) {
       // global
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
-        if ((MVoices[i].state == MIP_VOICE_PLAYING) || (MVoices[i].state == MIP_VOICE_RELEASED)) {
+        if ((MVoices[i].getState() == MIP_VOICE_PLAYING) || (MVoices[i].getState() == MIP_VOICE_RELEASED)) {
         //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
           MVoices[i].modulation(event->param_id,event->amount);
         //}
@@ -332,7 +333,7 @@ public:
     else {
       // voice
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
-        if (MVoices[i].note.note_id == event->note_id) {
+        if (MVoices[i].getNote().note_id == event->note_id) {
           //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
           MVoices[i].modulation(event->param_id,event->amount);
           //}
@@ -385,9 +386,9 @@ public:
     // setup threaded voice array
     uint32_t num_voices  = 0;
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      if ((MVoices[i].state == MIP_VOICE_PLAYING)
-        || (MVoices[i].state == MIP_VOICE_RELEASED)
-        || (MVoices[i].state == MIP_VOICE_WAITING)) {
+      if ((MVoices[i].getState() == MIP_VOICE_PLAYING)
+        || (MVoices[i].getState() == MIP_VOICE_RELEASED)
+        || (MVoices[i].getState() == MIP_VOICE_WAITING)) {
         MActiveVoices[num_voices++] = i;
       }
     }
@@ -526,7 +527,7 @@ private: // voices
     float lowest = 999999.0;
     int32_t voice = -1;
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      if (MVoices[i].state == MIP_VOICE_RELEASED) {
+      if (MVoices[i].getState() == MIP_VOICE_RELEASED) {
         float env = MVoices[i].getLevel();
         if (env < lowest) {
           voice = i;
@@ -541,7 +542,7 @@ private: // voices
 
   int32_t findAvailableVoice(bool ATryReleased=false) {
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      if (MVoices[i].state == MIP_VOICE_OFF) return i;
+      if (MVoices[i].getState() == MIP_VOICE_OFF) return i;
     }
     if (ATryReleased) {
       return findQuietestReleasedVoice();
@@ -555,19 +556,19 @@ public:
 
   void flushFinishedVoices() {
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      if (MVoices[i].state == MIP_VOICE_FINISHED) {
-        queueNoteEnd(MVoices[i].note);
-        MVoices[i].state = MIP_VOICE_OFF;
-        MVoices[i].note = MIP_Note();
+      if (MVoices[i].getState() == MIP_VOICE_FINISHED) {
+        queueNoteEnd(MVoices[i].getNote());
+        MVoices[i].setState(MIP_VOICE_OFF);
+        MVoices[i].clearNote();
       }
-      if (MVoices[i].state == MIP_VOICE_WAITING) {
+      if (MVoices[i].getState() == MIP_VOICE_WAITING) {
         /*
           wasn't started, or stopped again?
           do we need to send note_end?
           (could there be dangling mod voices?)
         */
-        MVoices[i].state = MIP_VOICE_OFF;
-        MVoices[i].note = MIP_Note();
+        MVoices[i].setState(MIP_VOICE_OFF);
+        MVoices[i].clearNote();
       }
     }
   }
@@ -611,212 +612,3 @@ public:
 
 //----------------------------------------------------------------------
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-
-
-
-
-
-//------------------------------
-public:
-//------------------------------
-
-  void prepareVoices(float ASampleRate, MIP_ParameterArray* AParameters) {
-    MIP_Assert(ASampleRate > 0);
-    MVoiceContext.samplerate = ASampleRate;
-    MVoiceContext.invsamplerate = 1.0 / ASampleRate;
-    MVoiceContext.parameters = AParameters;
-    for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      MVoices[i].state = MIP_VOICE_OFF;
-      MVoices[i].prepare(&MVoiceContext);
-    }
-  }
-
-  //----------
-
-  uint32_t getVoiceState(uint32_t AIndex) {
-    return MVoices[AIndex].state;
-  }
-
-  //----------
-
-  void setParameter(uint32_t AIndex, float AValue) {
-    for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      MVoices[i].parameter(AIndex,AValue);
-    }
-  }
-
-  //----------
-
-  void setModulation(uint32_t AIndex, float AValue) {
-    for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      MVoices[i].modulation(AIndex,AValue);
-    }
-  }
-
-//------------------------------
-public: // process
-//------------------------------
-
-  void process_() {
-    for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      if ((MVoices[i].state == MIP_VOICE_PLAYING)
-        || (MVoices[i].state == MIP_VOICE_RELEASED)
-        || (MVoices[i].state == MIP_VOICE_WAITING)) {
-        //MThreadedVoices[num_voices++] = i;
-      }
-    }
-  }
-
-
-  void process(const clap_process_t *process) {
-    MVoiceContext.process = process;
-    //float* out0 = process->audio_outputs->data32[0];
-    //float* out1 = process->audio_outputs->data32[1];
-    MVoiceContext.voicebuffer = MVoiceBuffer;//out0;
-    uint32_t length = process->frames_count;
-    MIP_ClearMonoBuffer(MFrameBuffer,length);
-    uint32_t current_time = 0;
-    uint32_t remaining = process->frames_count;
-    uint32_t num_events = process->in_events->size(process->in_events);
-    for (uint32_t ev=0; ev<num_events; ev++) {
-      const clap_event_header_t* header = process->in_events->get(process->in_events,ev);
-      if (header->time > current_time) {
-        // event is in the 'future'
-        uint32_t num = header->time - current_time;
-        // process num samples from current_time
-
-        //processPlayingVoices();
-        for (uint32_t v=0; v<VOICE_COUNT; v++) {
-          uint32_t state = MVoices[v].state;
-          if ((state == MIP_VOICE_PLAYING)
-            || (state == MIP_VOICE_RELEASED)
-            || (state == MIP_VOICE_WAITING)) {
-            MVoices[v].state = MVoices[v].process( state, num, current_time);
-          }
-        }
-
-        current_time += num;
-        remaining -= num;
-      }
-      // process event
-    }
-    // calculate remaining samples (no more events)
-    if (remaining > 0) {
-
-      for (uint32_t v=0; v<VOICE_COUNT; v++) {
-        uint32_t state = MVoices[v].state;
-        if ((state == MIP_VOICE_PLAYING)
-          || (state == MIP_VOICE_RELEASED)
-          /*|| (state == MIP_VOICE_WAITING)*/) {
-          MVoices[v].state = MVoices[v].process( state, remaining, current_time);
-        }
-      }
-
-    }
-
-  }
-
-
-
-
-
-
-
-//        // we have more events
-//        int32_t length = next_event.time - current_time;
-//        if (length > 0) {
-//
-//          if (state != MIP_VOICE_WAITING) {
-//          //if ((state == MIP_VOICE_PLAYING) || ((state == MIP_VOICE_RELEASED)) {
-//
-//            state = voice.process(AIndex,state,length,current_time);
-//          }
-//          remaining -= length;
-//          current_time += length;
-//        }
-//        handleVoiceEvent(next_event);
-//      } // event
-//
-//      else {
-//        // no more events
-//        int32_t length = remaining;
-//
-//        if (state != MIP_VOICE_WAITING) {
-//        //if ((state == MIP_VOICE_PLAYING) || ((state == MIP_VOICE_RELEASED)) {
-//
-//          state = voice.process(AIndex,state,length,current_time);
-//        }
-//        remaining -= length;
-//        current_time += length;
-//      } // !event
-//
-//    MIP_Assert( events.read(&next_event) == false );
-//  }
-
-  //----------
-
-//------------------------------
-public: // events
-//------------------------------
-
-  // called from:
-  // - processBlock
-  // - processThreaded
-
-  void handleEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
-  //void handleEvents(const clap_process_t* process) {
-    //const clap_input_events_t* in_events = process->in_events;
-    uint32_t num_events = in_events->size(in_events);
-    for (uint32_t i=0; i<num_events; i++) {
-      const clap_event_header_t* header = in_events->get(in_events,i);
-      if (header->space_id == CLAP_CORE_EVENT_SPACE_ID) {
-        handleEvent(header);
-      }
-    }
-  }
-
-  //----------
-
-  // AIndex = event index
-  // AOffset = budffer offset
-  // handle all events from AIndex, with offset AOffset
-  // returns samples until next event, or MIP_UINT32_MAX if no more
-
-  //uint32_t handleEventsAt(const clap_process_t* process, uint32_t AIndex, uint32_t AOffset) {
-  //  return MIP_UINT32_MAX;
-  //}
-
-  //----------
-
-
-
-
-
-
-#endif // 0

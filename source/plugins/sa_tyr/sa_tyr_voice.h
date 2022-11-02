@@ -36,13 +36,8 @@ class sa_tyr_voice {
 private:
 //------------------------------
 
-  uint32_t          MIndex    = 0;
+  //uint32_t          MIndex    = 0;
   MIP_VoiceContext* MContext  = nullptr;
-
-  //double hz = 0.0;
-  //double t  = 0.0;
-  //double dt = 0.0;
-
   MIP_Queue<const clap_event_note_t*,256> MEvents;
 
 //------------------------------
@@ -96,8 +91,8 @@ public:
 public:
 //------------------------------
 
-  void prepare(uint32_t AIndex, MIP_VoiceContext* AContext) {
-    MIndex = AIndex;
+  void setup(uint32_t AIndex, MIP_VoiceContext* AContext) {
+    //MIndex = AIndex;
     MContext = AContext;
     MOscillator1.setSampleRate(MContext->samplerate);
     MOscillator2.setSampleRate(MContext->samplerate);
@@ -117,7 +112,9 @@ public:
     return MAmpEnvelope.getValue();
   }
 
-  //----------
+//------------------------------
+public:
+//------------------------------
 
   //todo: reset modulations
 
@@ -247,6 +244,9 @@ public:
   uint32_t process(uint32_t AState, uint32_t ALength, uint32_t AOffset) {
     MIP_Assert(note_key >= 0);
 
+    float* input0 = MContext->process->audio_inputs->data32[0];
+    float* input1 = MContext->process->audio_inputs->data32[1];
+
     // output buffer
     float* output = MContext->voicebuffer + AOffset;
 
@@ -365,44 +365,52 @@ public:
 
     for (uint32_t i=0; i<ALength; i++) {
 
+      float in0 = *input0++;
+      float in1 = *input1++;
+      float input  = (in0 + in1) * 0.5;
+
       // osc 1
 
       T rnd = MIP_RandomSigned();
-      T o1_in = O1  * MIP_Clamp( MParameters[PAR_OSC1_IN_O1] + MModulations[PAR_OSC1_IN_O1], 0, 1)
-              + O2  * MIP_Clamp( MParameters[PAR_OSC1_IN_O2] + MModulations[PAR_OSC1_IN_O2], 0, 1)
-              + R1  * MIP_Clamp( MParameters[PAR_OSC1_IN_R1] + MModulations[PAR_OSC1_IN_R1], 0, 1)
-              + R2  * MIP_Clamp( MParameters[PAR_OSC1_IN_R2] + MModulations[PAR_OSC1_IN_R2], 0, 1)
-              + rnd * MIP_Clamp( MParameters[PAR_OSC1_IN_N]  + MModulations[PAR_OSC1_IN_N],  0, 1);
+      T o1_in = O1    * MIP_Clamp( MParameters[PAR_OSC1_IN_O1] + MModulations[PAR_OSC1_IN_O1], 0, 1)
+              + O2    * MIP_Clamp( MParameters[PAR_OSC1_IN_O2] + MModulations[PAR_OSC1_IN_O2], 0, 1)
+              + R1    * MIP_Clamp( MParameters[PAR_OSC1_IN_R1] + MModulations[PAR_OSC1_IN_R1], 0, 1)
+              + R2    * MIP_Clamp( MParameters[PAR_OSC1_IN_R2] + MModulations[PAR_OSC1_IN_R2], 0, 1)
+              + rnd   * MIP_Clamp( MParameters[PAR_OSC1_IN_N]  + MModulations[PAR_OSC1_IN_N],  0, 1)
+              + input * MIP_Clamp( MParameters[PAR_OSC1_IN_A]  + MModulations[PAR_OSC1_IN_A],  0, 1);
       O1 = MOscillator1.process(o1_in);
 
       // osc 2
 
       rnd = MIP_RandomSigned();
-      T o2_in = O1  * MIP_Clamp( MParameters[PAR_OSC2_IN_O1] + MModulations[PAR_OSC2_IN_O1], 0, 1)
-              + O2  * MIP_Clamp( MParameters[PAR_OSC2_IN_O2] + MModulations[PAR_OSC2_IN_O2], 0, 1)
-              + R1  * MIP_Clamp( MParameters[PAR_OSC2_IN_R1] + MModulations[PAR_OSC2_IN_R1], 0, 1)
-              + R2  * MIP_Clamp( MParameters[PAR_OSC2_IN_R2] + MModulations[PAR_OSC2_IN_R2], 0, 1)
-              + rnd * MIP_Clamp( MParameters[PAR_OSC2_IN_N]  + MModulations[PAR_OSC2_IN_N],  0, 1);
+      T o2_in = O1    * MIP_Clamp( MParameters[PAR_OSC2_IN_O1] + MModulations[PAR_OSC2_IN_O1], 0, 1)
+              + O2    * MIP_Clamp( MParameters[PAR_OSC2_IN_O2] + MModulations[PAR_OSC2_IN_O2], 0, 1)
+              + R1    * MIP_Clamp( MParameters[PAR_OSC2_IN_R1] + MModulations[PAR_OSC2_IN_R1], 0, 1)
+              + R2    * MIP_Clamp( MParameters[PAR_OSC2_IN_R2] + MModulations[PAR_OSC2_IN_R2], 0, 1)
+              + rnd   * MIP_Clamp( MParameters[PAR_OSC2_IN_N]  + MModulations[PAR_OSC2_IN_N],  0, 1)
+              + input * MIP_Clamp( MParameters[PAR_OSC2_IN_A]  + MModulations[PAR_OSC2_IN_A],  0, 1);
       O2 = MOscillator2.process(o2_in);
 
       // res 1
 
       rnd = MIP_RandomSigned();
-      T r1_in = O1  * MIP_Clamp( MParameters[PAR_RES1_IN_O1] + MModulations[PAR_RES1_IN_O1], 0, 1)
-              + O2  * MIP_Clamp( MParameters[PAR_RES1_IN_O2] + MModulations[PAR_RES1_IN_O2], 0, 1)
-              + R1  * MIP_Clamp( MParameters[PAR_RES1_IN_R1] + MModulations[PAR_RES1_IN_R1], 0, 1)
-              + R2  * MIP_Clamp( MParameters[PAR_RES1_IN_R2] + MModulations[PAR_RES1_IN_R2], 0, 1)
-              + rnd * MIP_Clamp( MParameters[PAR_RES1_IN_N]  + MModulations[PAR_RES1_IN_N],  0, 1);
+      T r1_in = O1    * MIP_Clamp( MParameters[PAR_RES1_IN_O1] + MModulations[PAR_RES1_IN_O1], 0, 1)
+              + O2    * MIP_Clamp( MParameters[PAR_RES1_IN_O2] + MModulations[PAR_RES1_IN_O2], 0, 1)
+              + R1    * MIP_Clamp( MParameters[PAR_RES1_IN_R1] + MModulations[PAR_RES1_IN_R1], 0, 1)
+              + R2    * MIP_Clamp( MParameters[PAR_RES1_IN_R2] + MModulations[PAR_RES1_IN_R2], 0, 1)
+              + rnd   * MIP_Clamp( MParameters[PAR_RES1_IN_N]  + MModulations[PAR_RES1_IN_N],  0, 1)
+              + input * MIP_Clamp( MParameters[PAR_RES1_IN_A]  + MModulations[PAR_RES1_IN_A],  0, 1);
       R1 = MResonator1.process(r1_in);
 
       // res 2
 
       rnd = MIP_RandomSigned();
-      T r2_in = O1  * MIP_Clamp( MParameters[PAR_RES2_IN_O1] + MModulations[PAR_RES2_IN_O1], 0, 1)
-              + O2  * MIP_Clamp( MParameters[PAR_RES2_IN_O2] + MModulations[PAR_RES2_IN_O2], 0, 1)
-              + R1  * MIP_Clamp( MParameters[PAR_RES2_IN_R1] + MModulations[PAR_RES2_IN_R1], 0, 1)
-              + R2  * MIP_Clamp( MParameters[PAR_RES2_IN_R2] + MModulations[PAR_RES2_IN_R2], 0, 1)
-              + rnd * MIP_Clamp( MParameters[PAR_RES2_IN_N]  + MModulations[PAR_RES2_IN_N],  0, 1);
+      T r2_in = O1    * MIP_Clamp( MParameters[PAR_RES2_IN_O1] + MModulations[PAR_RES2_IN_O1], 0, 1)
+              + O2    * MIP_Clamp( MParameters[PAR_RES2_IN_O2] + MModulations[PAR_RES2_IN_O2], 0, 1)
+              + R1    * MIP_Clamp( MParameters[PAR_RES2_IN_R1] + MModulations[PAR_RES2_IN_R1], 0, 1)
+              + R2    * MIP_Clamp( MParameters[PAR_RES2_IN_R2] + MModulations[PAR_RES2_IN_R2], 0, 1)
+              + rnd   * MIP_Clamp( MParameters[PAR_RES2_IN_N]  + MModulations[PAR_RES2_IN_N],  0, 1)
+              + input * MIP_Clamp( MParameters[PAR_RES2_IN_A]  + MModulations[PAR_RES2_IN_A],  0, 1);
       R2 = MResonator2.process(r2_in);
 
       // master

@@ -278,6 +278,11 @@ public:
         //osc1_in_n->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC1_IN_N],osc1_in_n);
 
+        MIP_Knob2Widget* osc1_in_a = new MIP_Knob2Widget( MIP_DRect(185,180,30,45),"A");
+        osc1_panel->appendChildWidget(osc1_in_a);
+        //osc1_in_n->getKnobWidget()->setArcThickness(4);
+        connectWidget(AParameters[PAR_OSC1_IN_A],osc1_in_a);
+
         // ps
 
         MIP_SliderWidget* osc1_phase_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,240,110,20),"Phase");
@@ -355,6 +360,11 @@ public:
         res1_panel->appendChildWidget(res1_in_n);
         //res1_in_n->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES1_IN_N],res1_in_n);
+
+        MIP_Knob2Widget* res1_in_a = new MIP_Knob2Widget( MIP_DRect(185,60,30,45),"A");
+        res1_panel->appendChildWidget(res1_in_a);
+        //res1_in_n->getKnobWidget()->setArcThickness(4);
+        connectWidget(AParameters[PAR_RES1_IN_A],res1_in_a);
 
         // shape
 
@@ -550,6 +560,11 @@ public:
         //osc2_in_r2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC2_IN_N],osc2_in_n);
 
+        MIP_Knob2Widget* osc2_in_a = new MIP_Knob2Widget( MIP_DRect(185,180,30,45),"A");
+        osc2_panel->appendChildWidget(osc2_in_a);
+        //osc2_in_r2->getKnobWidget()->setArcThickness(4);
+        connectWidget(AParameters[PAR_OSC2_IN_A],osc2_in_a);
+
         // ps
 
         MIP_SliderWidget* osc2_phase_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,240,110,20),"Phase");
@@ -626,6 +641,11 @@ public:
         res2_panel->appendChildWidget(res2_in_n);
         //res2_in_n->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES2_IN_N],res2_in_n);
+
+        MIP_Knob2Widget* res2_in_a = new MIP_Knob2Widget( MIP_DRect(185,60,30,45),"A");
+        res2_panel->appendChildWidget(res2_in_a);
+        //res2_in_n->getKnobWidget()->setArcThickness(4);
+        connectWidget(AParameters[PAR_RES2_IN_A],res2_in_a);
 
         // shape
 

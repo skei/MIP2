@@ -5,8 +5,8 @@
   - MIP_LadspaFactory, move discovery to factory..
 */
 
-//#define MIP_NO_GUI
-//#define MIP_NO_PAINTER
+#define MIP_NO_GUI
+#define MIP_NO_PAINTER
 
 #ifndef MIP_NO_GUI
   #define MIP_GUI_XCB
@@ -14,8 +14,18 @@
   #define MIP_PLUGIN_GENERIC_EDITOR
 #endif
 
+//----------
+
 #define MIP_DEBUG_PRINT_SOCKET
 // nc -U -l -k /tmp/mip.socket
+
+//----------
+
+#include "plugin/mip_registry.h"
+#include "plugin/clap/mip_clap_entry.h"
+//#include "plugin/exe/mip_exe_entry.h"
+//#include "plugin/vst2/mip_vst2_entry.h"
+#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------------------------------------------------------------------
 
@@ -26,11 +36,6 @@
 #include "plugin/ladspa//mip_ladspa.h"
 #include "plugin/ladspa//mip_ladspa_hosted_plugin.h"
 
-#include "plugin/mip_registry.h"
-#include "plugin/clap/mip_clap_entry.h"
-//#include "plugin/exe/mip_exe_entry.h"
-//#include "plugin/vst2/mip_vst2_entry.h"
-//#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------------------------------------------------------------------
 //

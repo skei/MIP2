@@ -61,10 +61,11 @@ class MIP_Voice {
 public:
 //------------------------------
 
-  VOICE             voice   = {};
-  MIP_VoiceContext* context = nullptr;
-  uint32_t          state   = MIP_VOICE_OFF;
-  MIP_Note          note    = {};
+  uint32_t          MIndex    = 0;
+  VOICE             MVoice    = {};
+  MIP_VoiceContext* MContext  = nullptr;
+  uint32_t          MState    = MIP_VOICE_OFF;
+  MIP_Note          MNote     = {};
 
   MIP_Queue<MIP_VoiceEvent,MIP_VOICE_MAX_EVENTS_PER_BLOCK*2> events = {};
 
@@ -72,23 +73,63 @@ public:
 public:
 //------------------------------
 
-  void prepare(uint32_t AIndex, MIP_VoiceContext* AContext) {
-    context = AContext;
-    voice.prepare(AIndex,context);
+  void setup(uint32_t AIndex, MIP_VoiceContext* AContext) {
+    MIndex = AIndex;
+    MContext = AContext;
+    MState = MIP_VOICE_OFF;
+    MVoice.setup(AIndex,MContext);
   }
 
   //----------
 
-  double getLevel() {
-    return voice.getEnvLevel();
+  double    getLevel()                { return MVoice.getEnvLevel(); }
+
+  uint32_t  getState()                { return MState; }
+  void      setState(uint32_t AState) { MState = AState; }
+
+  //
+
+  MIP_Note getNote() {
+    return MNote;
   }
 
+  void setNote(MIP_Note ANote) {
+    MNote = ANote;
+  }
+
+  void clearNote() {
+    MNote.port_index  = -1;
+    MNote.channel     = -1;
+    MNote.key         = -1;
+    MNote.note_id     = -1;
+  }
+
+  void setNote(int32_t p, int32_t c, int32_t k, int32_t n) {
+    MNote.port_index  = p;
+    MNote.channel     = c;
+    MNote.key         = k;
+    MNote.note_id     = n;
+  }
+
+  void setNotePortIndex(int32_t p) {
+    MNote.port_index = p;
+  }
+
+  void setNoteChannel(int32_t c) {
+    MNote.channel = c;
+  }
+  void setNoteKey(int32_t k) {
+    MNote.key = k;
+  }
+  void setNoteNoteId(int32_t n) {
+    MNote.note_id = n;
+  }
 //------------------------------
-public:
+public: // interleaved events
 //------------------------------
 
   uint32_t process(uint32_t AState, uint32_t ASize, uint32_t AOffset) {
-    return voice.process(AState,ASize,AOffset);
+    return MVoice.process(AState,ASize,AOffset);
   }
 
 //------------------------------
@@ -109,58 +150,56 @@ public:
   //----------
 
   void note_on(int32_t key, double velocity) {
-    state = voice.note_on(key,velocity);
+    MState = MVoice.note_on(key,velocity);
   }
 
   //----------
 
   void note_off(double velocity) {
-    state = voice.note_off(velocity);
+    MState = MVoice.note_off(velocity);
   }
 
   //----------
 
   void note_choke() {
-    voice.note_choke();
-    state = MIP_VOICE_FINISHED;
+    MVoice.note_choke();
+    MState = MIP_VOICE_FINISHED;
   }
 
   //----------
 
   void expression(uint32_t type, double value) {
     switch (type) {
-      case CLAP_NOTE_EXPRESSION_VOLUME:     voice.volume(value);      break;
-      case CLAP_NOTE_EXPRESSION_PAN:        voice.pan(value);         break;
-      case CLAP_NOTE_EXPRESSION_TUNING:     voice.tuning(value);      break;
-      case CLAP_NOTE_EXPRESSION_VIBRATO:    voice.vibrato(value);     break;
-      case CLAP_NOTE_EXPRESSION_EXPRESSION: voice.expression(value);  break;
-      case CLAP_NOTE_EXPRESSION_BRIGHTNESS: voice.brightness(value);  break;
-      case CLAP_NOTE_EXPRESSION_PRESSURE:   voice.pressure(value);    break;
+      case CLAP_NOTE_EXPRESSION_VOLUME:     MVoice.volume(value);      break;
+      case CLAP_NOTE_EXPRESSION_PAN:        MVoice.pan(value);         break;
+      case CLAP_NOTE_EXPRESSION_TUNING:     MVoice.tuning(value);      break;
+      case CLAP_NOTE_EXPRESSION_VIBRATO:    MVoice.vibrato(value);     break;
+      case CLAP_NOTE_EXPRESSION_EXPRESSION: MVoice.expression(value);  break;
+      case CLAP_NOTE_EXPRESSION_BRIGHTNESS: MVoice.brightness(value);  break;
+      case CLAP_NOTE_EXPRESSION_PRESSURE:   MVoice.pressure(value);    break;
     }
   }
 
   //----------
 
   void parameter(uint32_t index, double value) {
-    voice.parameter(index,value);
+    MVoice.parameter(index,value);
   }
 
   //----------
 
   void modulation(uint32_t index, double value) {
-    voice.modulation(index,value);
+    MVoice.modulation(index,value);
   }
 
-  //----------
-
 //------------------------------
-public:
+public: // prepared events
 //------------------------------
 
   void prepare_note_on(uint32_t time, int32_t key, double velocity) {
     MIP_VoiceEvent ev = MIP_VoiceEvent(MIP_VOICE_EVENT_NOTE_ON,time,key,velocity);
     events.write(ev);
-    state = MIP_VOICE_WAITING;
+    MState = MIP_VOICE_WAITING;
   }
 
   void prepare_note_off(uint32_t time, double velocity) {
@@ -189,7 +228,7 @@ public:
   }
 
   /*
-    todo: add offset to current_time before calling voice.process
+    todo: add offset to current_time before calling MVoice.process
     so we get rid of this in the voice:
 
     #ifdef MIP_VOICE_PREPARE_EVENTS
@@ -200,8 +239,8 @@ public:
 
   */
 
-  void processPrepared(uint32_t AIndex) {
-    const clap_process_t* process = context->process;
+  void processPrepared() {
+    const clap_process_t* process = MContext->process;
     uint32_t current_time = 0;
     uint32_t remaining = process->frames_count;
     MIP_VoiceEvent next_event;
@@ -211,9 +250,9 @@ public:
         //MIP_Print("current_time: %i next_event.time: %i\n",current_time,next_event.time);
         int32_t length = next_event.time - current_time;
         if (length > 0) {
-          if (state != MIP_VOICE_WAITING) {
-          //if ((state == MIP_VOICE_PLAYING) || ((state == MIP_VOICE_RELEASED)) {
-            state = voice.process(AIndex,state,length,current_time);
+          if (MState != MIP_VOICE_WAITING) {
+          //if ((MState == MIP_VOICE_PLAYING) || ((MState == MIP_VOICE_RELEASED)) {
+            MState = MVoice.process(MIndex,MState,length,current_time);
           }
           remaining -= length;
           current_time += length;
@@ -224,9 +263,9 @@ public:
       else {
         // no more events
         int32_t length = remaining;
-        if (state != MIP_VOICE_WAITING) {
-        //if ((state == MIP_VOICE_PLAYING) || ((state == MIP_VOICE_RELEASED)) {
-          state = voice.process(AIndex,state,length,current_time);
+        if (MState != MIP_VOICE_WAITING) {
+        //if ((MState == MIP_VOICE_PLAYING) || ((MState == MIP_VOICE_RELEASED)) {
+          MState = MVoice.process(MIndex,MState,length,current_time);
         }
         remaining -= length;
         current_time += length;
@@ -234,11 +273,6 @@ public:
     } // remaining > 0
     MIP_Assert( events.read(&next_event) == false );
   }
-
-  //void processBlock(uint32_t AIndex) {
-  //  uint32_t length = context->process->frames_count;
-  //  state = voice.process(AIndex,state,length,0);
-  //}
 
 };
 
