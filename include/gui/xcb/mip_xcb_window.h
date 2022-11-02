@@ -883,13 +883,6 @@ private: // mouse
     xcb_flush(MConnection);
   }
 
-  //----------
-
-  uint32_t remapButton(uint32_t AButton, uint32_t AState) {
-    uint32_t b = AButton;
-    return b;
-  }
-
 //------------------------------
 private: // keyboard
 //------------------------------
@@ -904,7 +897,9 @@ private: // keyboard
     xcb_key_symbols_free(MKeySyms);
   }
 
-  //----------
+//------------------------------
+private: // remap
+//------------------------------
 
   // https://github.com/etale-cohomology/xcb/blob/master/loop.c
 
@@ -926,6 +921,14 @@ private: // keyboard
     }
     free(keycode);
     return key;
+  }
+
+  //----------
+
+  uint32_t remapButton(uint32_t AButton, uint32_t AState) {
+    MIP_Print("AButton %i AState %i\n",AButton,AState);
+    uint32_t b = AButton;
+    return b;
   }
 
   //----------

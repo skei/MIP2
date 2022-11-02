@@ -12,7 +12,7 @@ class sa_tyr_osc {
 private:
 //------------------------------
 
-  bool          MWrapped        = false;
+  //bool          MWrapped        = false;
   T             z1              = 0.0;
 
 //------------------------------
@@ -99,11 +99,14 @@ T curve(T in, T wm) {
 public:
 //------------------------------
 
-  void restart() {
-    z1        = 0.0;
-    MPhase    = 0.0;
-    //MPhase2   = 0.0;
-    MWrapped  = false;
+  void restart(bool AResetPhase=true, bool ARandomPhase=true) {
+    z1 = 0.0;
+    if (AResetPhase) {
+      if (ARandomPhase) MPhase = MIP_Random();
+      else MPhase = 0.0;
+      //MPhase2 = 0.0;
+    }
+    //MWrapped  = false;
   }
 
   //----------
@@ -299,7 +302,7 @@ public:
     //if ((MPhase < 0.0) || (MPhase >= 1.0)) {MWrapped = true; }
     //MPhase = MIP_Fract(MPhase);
     if ((MPhase < 0.0) || (MPhase >= 1.0)) {
-      MWrapped = true;
+      //MWrapped = true;
       MPhase = MIP_Fract(MPhase);
     }
 

@@ -125,8 +125,8 @@ public:
     note_press    = 0.0;
     note_bright   = 0.0;
     note_tuning   = 0.0;
-    MOscillator1.restart();
-    MOscillator2.restart();
+    MOscillator1.restart(true,false);
+    MOscillator2.restart(true,false);
     MResonator1.restart();
     MResonator2.restart();
     MAmpEnvelope.noteOn();

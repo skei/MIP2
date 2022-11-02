@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1667406084 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../source/plugins/sa_bulum.cpp"
+1667410404 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/plugins/sa_tyr.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
@@ -347,7 +347,7 @@
 	"mip.h"
 	"gui/xcb/mip_xcb.h"
 
-1666469598 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
+1667412265 /DISKS/sda2/code/git/MIP2/include/gui/xcb/mip_xcb_window.h
 	"gui/mip_drawable.h"
 	"gui/base/mip_base_window.h"
 	"gui/xcb/mip_xcb.h"
@@ -756,7 +756,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
 
-1666374292 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1667413250 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_widget.h"
@@ -1057,7 +1057,7 @@
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/mip_registry.h"
 
-1667155182 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_drag_value_widget.h
+1667412776 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_drag_value_widget.h
 	"mip.h"
 	"gui/widgets/mip_value_widget.h"
 
@@ -1996,7 +1996,7 @@
 	"audio/filters/mip_svf_filter.h"
 	"audio/processing/mip_delay.h"
 
-1667405618 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_editor.h
+1667413805 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_editor.h
 	"mip.h"
 	"gui/widgets/mip_widgets.h"
 	"plugin/mip_editor.h"
