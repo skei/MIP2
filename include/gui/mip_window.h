@@ -57,6 +57,7 @@ protected:
 
   MIP_Widget*       MHoverWidget        = nullptr;
   MIP_Widget*       MClickedWidget      = nullptr;
+  uint32_t          MClickedCount       = 0;
   MIP_Widget*       MModalWidget        = nullptr;
   MIP_Widget*       MLockedWidget       = nullptr;
   MIP_Widget*       MKeyInputWidget     = nullptr;
@@ -459,10 +460,12 @@ public: // window
     if (MHoverWidget && (MHoverWidget != this)) {
       if (dblclick && MHoverWidget->Options.doubleClick) {
         MClickedWidget = MHoverWidget;
+        MClickedCount += 1;
         MHoverWidget->on_widget_mouse_dblclick(AButton,AState,AXpos,AYpos,ATime);
       }
       else {
         MClickedWidget = MHoverWidget;
+        MClickedCount += 1;
         MHoverWidget->on_widget_mouse_click(AButton,AState,AXpos,AYpos,ATime);
       }
     }
@@ -475,8 +478,11 @@ public: // window
     if (MClickedWidget) {
       MClickedWidget->on_widget_mouse_release(AButton,AState,AXpos,AYpos,ATime);
       updateHoverWidgetFrom(MClickedWidget,AXpos,AYpos,ATime);
+      //MClickedWidget = nullptr;
+      MClickedCount -= 1;
+      if (MClickedCount == 0) MClickedWidget = nullptr;
     }
-    MClickedWidget = nullptr;
+
   }
 
   //----------
@@ -492,7 +498,9 @@ public: // window
       int32_t deltay = AYpos - MMouseClickedY;
       MMouseDragX += deltax;
       MMouseDragY += deltay;
-      MClickedWidget->on_widget_mouse_move(AState,MMouseDragX,MMouseDragY,ATime);
+      if (MClickedWidget) {
+        MClickedWidget->on_widget_mouse_move(AState,MMouseDragX,MMouseDragY,ATime);
+      }
       setMouseCursorPos(MMouseClickedX,MMouseClickedY);
     }
     else {
