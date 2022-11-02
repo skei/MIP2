@@ -33,7 +33,9 @@ public:
 
     MIP_Window* window = getWindow();
 
-    //----------
+    //------------------------------
+    // menus
+    //------------------------------
 
     // osc menu
 
@@ -132,7 +134,9 @@ public:
       w->setTextSize(-0.7);
     }
 
-    //----------
+    //------------------------------
+    //
+    //------------------------------
 
     // panel
 
@@ -192,9 +196,7 @@ public:
         // shape
 
         MIP_Knob2Widget* osc1_shape_knob = new MIP_Knob2Widget( MIP_DRect(10,60,50,82),"Shape");
-
         //osc1_shape_knob->getLabelWidget()->setTextSize(-0.5);
-
         osc1_panel->appendChildWidget(osc1_shape_knob);
         connectWidget(AParameters[PAR_OSC1_SHAPE],osc1_shape_knob);
 
@@ -202,10 +204,10 @@ public:
 
         MIP_Knob2Widget* osc1_width_knob = new MIP_Knob2Widget( MIP_DRect(70,60,50,82),"Width");
         osc1_panel->appendChildWidget(osc1_width_knob);
-//        osc1_width_knob->getKnobWidget()->setSnap(true);
-//        osc1_width_knob->getKnobWidget()->setSnapPos(0.5);
-//        osc1_width_knob->getKnobWidget()->setSnapDist(0.05);
-//        osc1_width_knob->getKnobWidget()->setBipolar(true);
+        //osc1_width_knob->getKnobWidget()->setSnap(true);
+        //osc1_width_knob->getKnobWidget()->setSnapPos(0.5);
+        //osc1_width_knob->getKnobWidget()->setSnapDist(0.05);
+        //osc1_width_knob->getKnobWidget()->setBipolar(true);
         connectWidget(AParameters[PAR_OSC1_WIDTH],osc1_width_knob);
 
         // oct
@@ -213,10 +215,10 @@ public:
         MIP_DragValueWidget* osc1_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,150,70,20),"Oct");
         osc1_panel->appendChildWidget(osc1_oct_slider);
         //osc1_oct_slider->setQuantize(true);
-//        osc1_oct_slider->setSnap(true);
-//        osc1_oct_slider->setSnapPos(0.5);
-//        osc1_oct_slider->setSnapDist(0.05);
-//        osc1_oct_slider->setDrawParamName(false);
+        //osc1_oct_slider->setSnap(true);
+        //osc1_oct_slider->setSnapPos(0.5);
+        //osc1_oct_slider->setSnapDist(0.05);
+        //osc1_oct_slider->setDrawParamName(false);
         osc1_oct_slider->setDrawBorder(true);
         osc1_oct_slider->setBorderColor(0.4);
         osc1_oct_slider->setFillBackground(true);
@@ -227,10 +229,10 @@ public:
 
         MIP_DragValueWidget* osc1_semi_slider = new MIP_DragValueWidget( MIP_DRect(90,150,70,20),"Semi");
         osc1_panel->appendChildWidget(osc1_semi_slider);
-//        osc1_semi_slider->setSnap(true);
-//        osc1_semi_slider->setSnapPos(0.5);
-//        osc1_semi_slider->setSnapDist(0.05);
-//        osc1_semi_slider->setDrawParamName(false);
+        //osc1_semi_slider->setSnap(true);
+        //osc1_semi_slider->setSnapPos(0.5);
+        //osc1_semi_slider->setSnapDist(0.05);
+        //osc1_semi_slider->setDrawParamName(false);
         osc1_semi_slider->setDrawBorder(true);
         osc1_semi_slider->setBorderColor(0.4);
         osc1_semi_slider->setFillBackground(true);
@@ -241,10 +243,10 @@ public:
 
         MIP_DragValueWidget* osc1_cent_slider = new MIP_DragValueWidget( MIP_DRect(170,150,70,20),"Cent");
         osc1_panel->appendChildWidget(osc1_cent_slider);
-//        osc1_cent_slider->setSnap(true);
-//        osc1_cent_slider->setSnapPos(0.5);
-//        osc1_cent_slider->setSnapDist(0.05);
-//        osc1_cent_slider->setDrawParamName(false);
+        //osc1_cent_slider->setSnap(true);
+        //osc1_cent_slider->setSnapPos(0.5);
+        //osc1_cent_slider->setSnapDist(0.05);
+        //osc1_cent_slider->setDrawParamName(false);
         osc1_cent_slider->setDrawBorder(true);
         osc1_cent_slider->setBorderColor(0.4);
         osc1_cent_slider->setFillBackground(true);
@@ -388,9 +390,9 @@ public:
 
         MIP_Knob2Widget* res1_rough_knob = new MIP_Knob2Widget( MIP_DRect(190,110,50,82),"Rough");
         res1_panel->appendChildWidget(res1_rough_knob);
-//        res1_rough_knob->getKnobWidget()->setSnap(true);
-//        res1_rough_knob->getKnobWidget()->setSnapPos(0.5);
-//        res1_rough_knob->getKnobWidget()->setSnapDist(0.05);
+        //res1_rough_knob->getKnobWidget()->setSnap(true);
+        //res1_rough_knob->getKnobWidget()->setSnapPos(0.5);
+        //res1_rough_knob->getKnobWidget()->setSnapDist(0.05);
         connectWidget(AParameters[PAR_RES1_ROUGH],res1_rough_knob);
 
         // speed
@@ -403,10 +405,10 @@ public:
 
         MIP_DragValueWidget* res1_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,230,70,20),"Oct");
         res1_panel->appendChildWidget(res1_oct_slider);
-//        res1_oct_slider->setSnap(true);
-//        res1_oct_slider->setSnapPos(0.5);
-//        res1_oct_slider->setSnapDist(0.05);
-//        res1_oct_slider->setDrawParamName(false);
+        //res1_oct_slider->setSnap(true);
+        //res1_oct_slider->setSnapPos(0.5);
+        //res1_oct_slider->setSnapDist(0.05);
+        //res1_oct_slider->setDrawParamName(false);
         res1_oct_slider->setDrawBorder(true);
         res1_oct_slider->setBorderColor(0.4);
         res1_oct_slider->setFillBackground(true);
@@ -417,10 +419,10 @@ public:
 
         MIP_DragValueWidget* res1_semi_slider = new MIP_DragValueWidget( MIP_DRect(90,230,70,20),"Semi");
         res1_panel->appendChildWidget(res1_semi_slider);
-//        res1_semi_slider->setSnap(true);
-//        res1_semi_slider->setSnapPos(0.5);
-//        res1_semi_slider->setSnapDist(0.05);
-//        res1_semi_slider->setDrawParamName(false);
+        //res1_semi_slider->setSnap(true);
+        //res1_semi_slider->setSnapPos(0.5);
+        //res1_semi_slider->setSnapDist(0.05);
+        //res1_semi_slider->setDrawParamName(false);
         res1_semi_slider->setDrawBorder(true);
         res1_semi_slider->setBorderColor(0.4);
         res1_semi_slider->setFillBackground(true);
@@ -431,16 +433,15 @@ public:
 
         MIP_DragValueWidget* res1_cent_slider = new MIP_DragValueWidget( MIP_DRect(170,230,70,20),"Cent");
         res1_panel->appendChildWidget(res1_cent_slider);
-//        res1_cent_slider->setSnap(true);
-//        res1_cent_slider->setSnapPos(0.5);
-//        res1_cent_slider->setSnapDist(0.05);
-//        res1_cent_slider->setDrawParamName(false);
+        //res1_cent_slider->setSnap(true);
+        //res1_cent_slider->setSnapPos(0.5);
+        //res1_cent_slider->setSnapDist(0.05);
+        //res1_cent_slider->setDrawParamName(false);
         res1_cent_slider->setDrawBorder(true);
         res1_cent_slider->setBorderColor(0.4);
         res1_cent_slider->setFillBackground(true);
         res1_cent_slider->setBackgroundColor(0.6);
         connectWidget(AParameters[PAR_RES1_CENT],res1_cent_slider);
-
 
 //
 //
@@ -485,20 +486,20 @@ public:
 
         MIP_Knob2Widget* osc2_width_knob = new MIP_Knob2Widget( MIP_DRect(70,60,50,82),"Width");
         osc2_panel->appendChildWidget(osc2_width_knob);
-//        osc2_width_knob->getKnobWidget()->setSnap(true);
-//        osc2_width_knob->getKnobWidget()->setSnapPos(0.5);
-//        osc2_width_knob->getKnobWidget()->setSnapDist(0.05);
-//        osc2_width_knob->getKnobWidget()->setBipolar(true);
+        //osc2_width_knob->getKnobWidget()->setSnap(true);
+        //osc2_width_knob->getKnobWidget()->setSnapPos(0.5);
+        //osc2_width_knob->getKnobWidget()->setSnapDist(0.05);
+        //osc2_width_knob->getKnobWidget()->setBipolar(true);
         connectWidget(AParameters[PAR_OSC2_WIDTH],osc2_width_knob);
 
         // oct
 
         MIP_DragValueWidget* osc2_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,150,70,20),"Oct");
         osc2_panel->appendChildWidget(osc2_oct_slider);
-//        osc2_oct_slider->setSnap(true);
-//        osc2_oct_slider->setSnapPos(0.5);
-//        osc2_oct_slider->setSnapDist(0.05);
-//        osc2_oct_slider->setDrawParamName(false);
+        //osc2_oct_slider->setSnap(true);
+        //osc2_oct_slider->setSnapPos(0.5);
+        //osc2_oct_slider->setSnapDist(0.05);
+        //osc2_oct_slider->setDrawParamName(false);
         osc2_oct_slider->setDrawBorder(true);
         osc2_oct_slider->setBorderColor(0.4);
         osc2_oct_slider->setFillBackground(true);
@@ -509,10 +510,10 @@ public:
 
         MIP_DragValueWidget* osc2_semi_slider = new MIP_DragValueWidget( MIP_DRect(90,150,70,20),"Semi");
         osc2_panel->appendChildWidget(osc2_semi_slider);
-//        osc2_semi_slider->setSnap(true);
-//        osc2_semi_slider->setSnapPos(0.5);
-//        osc2_semi_slider->setSnapDist(0.05);
-//        osc2_semi_slider->setDrawParamName(false);
+        //osc2_semi_slider->setSnap(true);
+        //osc2_semi_slider->setSnapPos(0.5);
+        //osc2_semi_slider->setSnapDist(0.05);
+        //osc2_semi_slider->setDrawParamName(false);
         osc2_semi_slider->setDrawBorder(true);
         osc2_semi_slider->setBorderColor(0.4);
         osc2_semi_slider->setFillBackground(true);
@@ -523,10 +524,10 @@ public:
 
         MIP_DragValueWidget* osc2_cent_slider = new MIP_DragValueWidget( MIP_DRect(170,150,70,20),"Cent");
         osc2_panel->appendChildWidget(osc2_cent_slider);
-//        osc2_cent_slider->setSnap(true);
-//        osc2_cent_slider->setSnapPos(0.5);
-//        osc2_cent_slider->setSnapDist(0.05);
-//        osc2_cent_slider->setDrawParamName(false);
+        //osc2_cent_slider->setSnap(true);
+        //osc2_cent_slider->setSnapPos(0.5);
+        //osc2_cent_slider->setSnapDist(0.05);
+        //osc2_cent_slider->setDrawParamName(false);
         osc2_cent_slider->setDrawBorder(true);
         osc2_cent_slider->setBorderColor(0.4);
         osc2_cent_slider->setFillBackground(true);
@@ -669,9 +670,9 @@ public:
 
         MIP_Knob2Widget* res2_rough_knob = new MIP_Knob2Widget( MIP_DRect(190,110,50,82),"Rough");
         res2_panel->appendChildWidget(res2_rough_knob);
-//        res2_rough_knob->getKnobWidget()->setSnap(true);
-//        res2_rough_knob->getKnobWidget()->setSnapPos(0.5);
-//        res2_rough_knob->getKnobWidget()->setSnapDist(0.05);
+        //res2_rough_knob->getKnobWidget()->setSnap(true);
+        //res2_rough_knob->getKnobWidget()->setSnapPos(0.5);
+        //res2_rough_knob->getKnobWidget()->setSnapDist(0.05);
         connectWidget(AParameters[PAR_RES2_ROUGH],res2_rough_knob);
 
         // speed
@@ -684,10 +685,10 @@ public:
 
         MIP_DragValueWidget* res2_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,230,70,20),"Oct");
         res2_panel->appendChildWidget(res2_oct_slider);
-//        res2_oct_slider->setSnap(true);
-//        res2_oct_slider->setSnapPos(0.5);
-//        res2_oct_slider->setSnapDist(0.05);
-//        res2_oct_slider->setDrawParamName(false);
+        //res2_oct_slider->setSnap(true);
+        //res2_oct_slider->setSnapPos(0.5);
+        //res2_oct_slider->setSnapDist(0.05);
+        //res2_oct_slider->setDrawParamName(false);
         res2_oct_slider->setDrawBorder(true);
         res2_oct_slider->setBorderColor(0.4);
         res2_oct_slider->setFillBackground(true);
@@ -698,10 +699,10 @@ public:
 
         MIP_DragValueWidget* res2_semi_slider = new MIP_DragValueWidget( MIP_DRect(90,230,70,20),"Semi");
         res2_panel->appendChildWidget(res2_semi_slider);
-//        res2_semi_slider->setSnap(true);
-//        res2_semi_slider->setSnapPos(0.5);
-//        res2_semi_slider->setSnapDist(0.05);
-//        res2_semi_slider->setDrawParamName(false);
+        //res2_semi_slider->setSnap(true);
+        //res2_semi_slider->setSnapPos(0.5);
+        //res2_semi_slider->setSnapDist(0.05);
+        //res2_semi_slider->setDrawParamName(false);
         res2_semi_slider->setDrawBorder(true);
         res2_semi_slider->setBorderColor(0.4);
         res2_semi_slider->setFillBackground(true);
@@ -712,10 +713,10 @@ public:
 
         MIP_DragValueWidget* res2_cent_slider = new MIP_DragValueWidget( MIP_DRect(170,230,70,20),"Cent");
         res2_panel->appendChildWidget(res2_cent_slider);
-//        res2_cent_slider->setSnap(true);
-//        res2_cent_slider->setSnapPos(0.5);
-//        res2_cent_slider->setSnapDist(0.05);
-//        res2_cent_slider->setDrawParamName(false);
+        //res2_cent_slider->setSnap(true);
+        //res2_cent_slider->setSnapPos(0.5);
+        //res2_cent_slider->setSnapDist(0.05);
+        //res2_cent_slider->setDrawParamName(false);
         res2_cent_slider->setDrawBorder(true);
         res2_cent_slider->setBorderColor(0.4);
         res2_cent_slider->setFillBackground(true);
@@ -796,10 +797,10 @@ public:
 
         MIP_Knob2Widget* global_pan_knob = new MIP_Knob2Widget( MIP_DRect(70,30,50,82),"Pan");
         global_panel->appendChildWidget(global_pan_knob);
-//        global_pan_knob->getKnobWidget()->setSnap(true);
-//        global_pan_knob->getKnobWidget()->setSnapPos(0.5);
-//        global_pan_knob->getKnobWidget()->setSnapDist(0.05);
-//        global_pan_knob->getKnobWidget()->setBipolar(true);
+        //global_pan_knob->getKnobWidget()->setSnap(true);
+        //global_pan_knob->getKnobWidget()->setSnapPos(0.5);
+        //global_pan_knob->getKnobWidget()->setSnapDist(0.05);
+        //global_pan_knob->getKnobWidget()->setBipolar(true);
         connectWidget(AParameters[PAR_MASTER_PAN],global_pan_knob);
 
         // osc1 out
@@ -948,12 +949,12 @@ public:
 
   //----------
 
-//  void on_menu_selected(MIP_MenuWidget* AMenu, int32_t AIndex) override {
-//    MIP_Print("AIndex %i\n",AIndex);
-//    //MSelected = AIndex;
-//    //do_widget_update(this);
-//    //do_widget_redraw(this);
-//  }
+  //void on_menu_selected(MIP_MenuWidget* AMenu, int32_t AIndex) override {
+  //  MIP_Print("AIndex %i\n",AIndex);
+  //  //MSelected = AIndex;
+  //  //do_widget_update(this);
+  //  //do_widget_redraw(this);
+  //}
 
   //----------
 

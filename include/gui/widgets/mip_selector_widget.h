@@ -115,6 +115,9 @@ public: // parent to child
 public:
 //------------------------------
 
+  //TODO: proportional positions, not pixels..
+  // or better, MIP_SymbolWidget
+
   virtual void drawArrow(MIP_PaintContext* AContext) {
     if (MDrawArrow) {
       MIP_Painter* painter = AContext->painter;

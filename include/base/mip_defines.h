@@ -46,14 +46,6 @@
 
 //----------------------------------------------------------------------
 //
-// debug
-//
-//----------------------------------------------------------------------
-
-// see /base/mip_debug.h
-
-//----------------------------------------------------------------------
-//
 // gui
 //
 //----------------------------------------------------------------------
@@ -150,14 +142,14 @@
 //----------
 
 #ifndef MIP_GUI_DEFINED
-  #ifndef MIP_NO_WARNINGS
+  #ifndef MIP_NO_GUI_WARNINGS
     #warning No GUI defined.
   #endif
   #define MIP_NO_GUI
 #endif
 
 #ifndef MIP_PAINTER_DEFINED
-  #ifndef MIP_NO_WARNINGS
+  #ifndef MIP_NO_GUI_WARNINGS
     #warning No PAINTER defined.
   #endif
   #define MIP_NO_GUI
@@ -169,6 +161,7 @@
 // plugin
 //
 //----------------------------------------------------------------------
+
 
 //----------------------------------------------------------------------
 #endif

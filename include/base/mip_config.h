@@ -53,9 +53,9 @@
 //#define MIP_NO_DMC_COMPRESS
 //#define MIP_NO_ENTRY
 //#define MIP_NO_GUI
+//#define MIP_NO_GUI_WARNINGS
 //#define MIP_NO_PAINTER
 //#define MIP_NO_STDLIB
-//#define MIP_NO_WARNINGS
 
 //#define MIP_PAINTER_CAIRO
 //#define MIP_PAINTER_GDI

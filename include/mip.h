@@ -33,34 +33,42 @@
 //
 //------------------------------
 
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic push
+
 /*
   -Wall -Wextra
-  we still have LOTS of unimplemented stub functions, so -Wextra prints
+  we still have lots of unimplemented stub functions, so -Wextra prints
   gazillions of 'unused parameter' warnings..
   TODO: remove this when we have implemented everything
-  OR: add __MIP_UNUSED everywhere...
+  OR: add __MIP_UNUSED everywhere?
 */
 
-//#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-//#pragma GCC diagnostic push
 
-// stb_image
-// todo: move this closer to stb_image, and pop the setting afterwards
+/*
+  stb_image
+  todo: move this closer to stb_image, and pop the setting afterwards
+*/
+
 #pragma GCC diagnostic ignored "-Wshift-negative-value"
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 
-// opengl
+/*
+  opengl
+*/
+
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 
+/*
+  vst3
+*/
 
-//vst3
+// -> compiler option: -Wno-unknown-pragmas
 //#ifdef MIP_WIN32
 //  #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 //#endif
-
-// -> compiler option: -Wno-unknown-pragmas
 
 //------------------------------
 //
@@ -78,6 +86,12 @@
 #include "base/mip_attributes.h"
 #include "base/debug/mip_debug.h"
 #include "base/types/mip_types.h"
+
+//------------------------------
+//
+//
+//
+//------------------------------
 
 #ifdef MIP_LINUX
   #include "base/system/mip_linux.h"
