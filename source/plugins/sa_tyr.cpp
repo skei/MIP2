@@ -368,14 +368,13 @@ public: // process
     MIP_CopyMonoBuffer(output0,buffer,length);
     MIP_CopyMonoBuffer(output1,buffer,length);
 
-//    float v = MParameters[PAR_MASTER_VOL]->getValue();  // vol
-//    float p = MParameters[PAR_MASTER_PAN]->getValue();  // pan
-//    float l = v * (1.0 - p);
-//    float r = v * (      p);
-//
-//    float** outputs = process->audio_outputs[0].data32;
-//    MIP_ScaleStereoBuffer(outputs,l,r,length);
+    float v = MParameters[PAR_MASTER_VOL]->getValue();  // vol
+    float p = MParameters[PAR_MASTER_PAN]->getValue();  // pan
+    float l = v * (1.0 - p);
+    float r = v * (      p);
 
+    float** outputs = process->audio_outputs[0].data32;
+    MIP_ScaleStereoBuffer(outputs,l,r,length);
 
   }
 
@@ -389,7 +388,7 @@ public: // process
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-#include "plugin/vst2/mip_vst2_entry.h"
+//#include "plugin/vst2/mip_vst2_entry.h"
 #include "plugin/vst3/mip_vst3_entry.h"
 
 //----------

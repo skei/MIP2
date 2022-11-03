@@ -22,6 +22,7 @@ public:
   MIP_ValueWidget*    MPlayingVoicesWidget  = nullptr;
   MIP_ValueWidget*    MReleasedVoicesWidget = nullptr;
   MIP_ValueWidget*    MTotalVoicesWidget    = nullptr;
+  MIP_KeyboardWidget* MKeyboards[11]        = {0};
 
 //------------------------------
 public:
@@ -207,7 +208,7 @@ public:
         osc1_width_knob->getKnobWidget()->setSnap(true);
         osc1_width_knob->getKnobWidget()->setSnapPos(0.5);
         osc1_width_knob->getKnobWidget()->setSnapDist(0.05);
-        //osc1_width_knob->getKnobWidget()->setBipolar(true);
+        osc1_width_knob->getKnobWidget()->setBipolar(true);
         connectWidget(AParameters[PAR_OSC1_WIDTH],osc1_width_knob);
 
         // oct
@@ -289,6 +290,9 @@ public:
 
         MIP_SliderWidget* osc1_phase_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,240,110,20),"Phase");
         osc1_panel->appendChildWidget(osc1_phase_shaper_slider);
+        osc1_phase_shaper_slider->setSnap(true);
+        osc1_phase_shaper_slider->setSnapPos(0.5);
+        osc1_phase_shaper_slider->setSnapDist(0.05);
         connectWidget(AParameters[PAR_OSC1_PM_AMOUNT],osc1_phase_shaper_slider);
 
         MIP_SelectorWidget* osc1_phase_shaper_selector = new MIP_SelectorWidget( MIP_DRect(130,240,110,20),"Phase Shp",phase_shaper_type_menu );
@@ -301,6 +305,9 @@ public:
 
         MIP_SliderWidget* osc1_wave_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,270,110,20),"Wave");
         osc1_panel->appendChildWidget(osc1_wave_shaper_slider);
+        osc1_wave_shaper_slider->setSnap(true);
+        osc1_wave_shaper_slider->setSnapPos(0.5);
+        osc1_wave_shaper_slider->setSnapDist(0.05);
         connectWidget(AParameters[PAR_OSC1_WM_AMOUNT],osc1_wave_shaper_slider);
 
         MIP_SelectorWidget* osc1_wave_shaper_selector = new MIP_SelectorWidget( MIP_DRect(130,270,110,20),"Wave Shp",wave_shaper_type_menu );
@@ -489,7 +496,7 @@ public:
         osc2_width_knob->getKnobWidget()->setSnap(true);
         osc2_width_knob->getKnobWidget()->setSnapPos(0.5);
         osc2_width_knob->getKnobWidget()->setSnapDist(0.05);
-        //osc2_width_knob->getKnobWidget()->setBipolar(true);
+        osc2_width_knob->getKnobWidget()->setBipolar(true);
         connectWidget(AParameters[PAR_OSC2_WIDTH],osc2_width_knob);
 
         // oct
@@ -570,7 +577,9 @@ public:
 
         MIP_SliderWidget* osc2_phase_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,240,110,20),"Phase");
         osc2_panel->appendChildWidget(osc2_phase_shaper_slider);
-        //osc2_in_n->getKnobWidget()->setArcThickness(4);
+        osc2_phase_shaper_slider->setSnap(true);
+        osc2_phase_shaper_slider->setSnapPos(0.5);
+        osc2_phase_shaper_slider->setSnapDist(0.05);
         connectWidget(AParameters[PAR_OSC2_PM_AMOUNT],osc2_phase_shaper_slider);
 
         MIP_SelectorWidget* osc2_phase_shaper_selector = new MIP_SelectorWidget( MIP_DRect(130,240,110,20),"Phase Shp",phase_shaper_type_menu );
@@ -583,6 +592,9 @@ public:
 
         MIP_SliderWidget* osc2_wave_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,270,110,20),"Wave");
         osc2_panel->appendChildWidget(osc2_wave_shaper_slider);
+        osc2_wave_shaper_slider->setSnap(true);
+        osc2_wave_shaper_slider->setSnapPos(0.5);
+        osc2_wave_shaper_slider->setSnapDist(0.05);
         connectWidget(AParameters[PAR_OSC2_WM_AMOUNT],osc2_wave_shaper_slider);
 
         MIP_SelectorWidget* osc2_wave_shaper_selector = new MIP_SelectorWidget( MIP_DRect(130,270,110,20),"Wave Shp",wave_shaper_type_menu );
@@ -800,7 +812,7 @@ public:
         global_pan_knob->getKnobWidget()->setSnap(true);
         global_pan_knob->getKnobWidget()->setSnapPos(0.5);
         global_pan_knob->getKnobWidget()->setSnapDist(0.05);
-        //global_pan_knob->getKnobWidget()->setBipolar(true);
+        global_pan_knob->getKnobWidget()->setBipolar(true);
         connectWidget(AParameters[PAR_MASTER_PAN],global_pan_knob);
 
         // osc1 out
@@ -928,6 +940,25 @@ public:
         env1_panel->appendChildWidget(env1_rel_knob);
         connectWidget(AParameters[PAR_ENV1_REL],env1_rel_knob);
 
+//
+//
+// keyboard --------------------------------------------------
+//
+//
+
+        //MIP_ScrollBoxWidget* scrollbox = new MIP_ScrollBoxWidget( MIP_DRect(0,SA_TYR_EDITOR_HEIGHT-60,SA_TYR_EDITOR_WIDTH,40),false,true);
+        //MEditorPanel->appendChildWidget(scrollbox);
+        //for (uint32_t i=0; i<11; i++) {
+        //  MKeyboards[i] = new MIP_KeyboardWidget(MIP_DRect( i*80, 0, 80, 40 ));
+        //  MKeyboards[i]->Layout.alignment = MIP_WIDGET_ALIGN_LEFT_TOP;
+        //  scrollbox->appendChildWidget( MKeyboards[i] );
+        //}
+
+//
+//
+// --------------------------------------------------
+//
+//
     // menus
 
     MEditorPanel->appendChildWidget(osc_type_menu);

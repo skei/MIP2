@@ -638,7 +638,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "",
     0.0,
     1.0,
-    1.0
+    0.0
   },
 
   //
@@ -814,7 +814,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "",
     0.0,
     1.0,
-    1.0
+    0.0
   },
 
   //

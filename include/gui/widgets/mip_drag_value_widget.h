@@ -18,24 +18,25 @@ class MIP_DragValueWidget
 protected:
 //------------------------------
 
-  bool      MIsDragging           = false;
-  double    MDragSensitivity      = 0.005;
-  double    MDragSensitivity2     = 0.05;
+  bool      MIsDragging       = false;
+  double    MDragSensitivity  = 0.005;
+  double    MDragSensitivity2 = 0.05;
 
-  double    MDragValue            = 0.0;
-  double    MMousePrevX           = 0.0;
-  double    MMousePrevY           = 0.0;
+  double    MDragValue        = 0.0;
+  double    MMousePrevX       = 0.0;
+  double    MMousePrevY       = 0.0;
 
-  //double    MClickedX             = 0.0;
-  //double    MClickedY             = 0.0;
-  //double    MClickedValue         = 0.0;
+  //double    MClickedX         = 0.0;
+  //double    MClickedY         = 0.0;
+  //double    MClickedValue     = 0.0;
 
-  bool        MSnap               = false;
-  float       MSnapPos            = 0.5;
-  float       MSnapDist           = 0.1;
-  //uint32_t    MSnapMode           = 1;        // 0: always snap, 1: shift disables snapping
+  bool        MSnap           = false;
+  float       MSnapPos        = 0.5;
+  float       MSnapDist       = 0.1;
+  //uint32_t    MSnapMode       = 1;        // 0: always snap, 1: shift disables snapping
 
   bool        MQuantize       = false;
+  bool        MBipolar        = false;
 
 //------------------------------
 public:
@@ -61,9 +62,12 @@ public:
   virtual void setDragSensitivity(double ASen)      { MDragSensitivity = ASen; }
   virtual void setDragSensitivity2(double ASen)     { MDragSensitivity2 = ASen; }
 
-  virtual void setSnap(bool ASnap=true) { MSnap = ASnap; }
-  virtual void setSnapPos(float APos) { MSnapPos = APos; }
-  virtual void setSnapDist(float ADist) { MSnapDist = ADist; }
+  virtual void setSnap(bool ASnap=true)             { MSnap = ASnap; }
+  virtual void setSnapPos(float APos)               { MSnapPos = APos; }
+  virtual void setSnapDist(float ADist)             { MSnapDist = ADist; }
+
+  virtual void setQuantize(bool AQuantize=true)     { MQuantize = AQuantize; }
+  virtual void setBipolar(bool ABipolar=true)       { MBipolar = ABipolar; }
 
   virtual void scaleDragSensitivity(double AScale)  { MDragSensitivity *= AScale; }
   virtual void scaleDragSensitivity2(double AScale) { MDragSensitivity2 *= AScale; }
@@ -99,7 +103,7 @@ public:
       }
     }
     //v = MIP_Clamp(v,minval,maxval); // (v,0.0f,1.0f);
-    MIP_Print("%.3f -> %.3f\n",AValue,v);
+    //MIP_Print("%.3f -> %.3f\n",AValue,v);
     return v;
   }
 

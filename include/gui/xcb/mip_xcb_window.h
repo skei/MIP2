@@ -926,7 +926,7 @@ private: // remap
   //----------
 
   uint32_t remapButton(uint32_t AButton, uint32_t AState) {
-    MIP_Print("AButton %i AState %i\n",AButton,AState);
+    //MIP_Print("AButton %i AState %i\n",AButton,AState);
     uint32_t b = AButton;
     return b;
   }

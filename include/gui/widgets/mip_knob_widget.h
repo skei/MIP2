@@ -70,6 +70,7 @@ public:
       double value = getValue();
       double minval = getMinValue();
       double maxval = getMaxValue();
+
       if (MDrawParameterValue) {
         MIP_Parameter* parameter = getParameter();
         if (parameter) {
@@ -97,17 +98,46 @@ public:
           cy = MRect.y + (MRect.h * 0.5) + (arcwidth * 0.25);
           r  = (MRect.w * 0.5) - (arcwidth * 0.5);
         }
+
+
+
+//        if (MBipolar) {
+//          if (v < 0.5) {
+//            arc_start = val_pos;
+//          }
+//        }
+//        else {
+
         //double a1 = (0.0 - 0.25 - 0.1) * MIP_PI2;
         //double a2 = a1 - (v * 0.8 * MIP_PI2);
-        double a1 = (0.35    * MIP_PI2);
-        double a2 = (v * 0.8 * MIP_PI2);
+
+        //double arc_start = (0.35     * MIP_PI2);
+        //double arc_val   = (0.80 * v * MIP_PI2);
+        //double arc_full  = (0.80     * MIP_PI2);
+        //double arc_half  = (0.50     * MIP_PI2);
 
         painter->strokeWidth( arcwidth );
 
         painter->beginPath();
         painter->strokeColor(MArcBackColor);
-        painter->arc(cx,cy,r,a1,(0.8*MIP_PI2),MIP_WINDING_COUNTER_CLOCKWISE);
+        painter->arc(cx,cy,r,(0.35 * MIP_PI2),(0.8 * MIP_PI2),MIP_WINDING_COUNTER_CLOCKWISE);
         painter->stroke();
+
+        double a1,a2;
+        if (MBipolar) {
+          if (v < 0.5) {
+            a1 = (0.35 + (0.8 *        v))  * MIP_PI2;
+            a2 = (       (0.8 * (0.5 - v))) * MIP_PI2;
+          }
+          else {
+            a1 = (0.75 * MIP_PI2); //(0.35 + (0.8 *  v       )) * MIP_PI2;
+            a2 = (       (0.8 * (v - 0.5))) * MIP_PI2;
+          }
+        }
+        else {
+          a1 = (0.35 * MIP_PI2);
+          a2 = (0.8 * v * MIP_PI2);
+        }
 
         painter->beginPath();
         painter->strokeColor(MArcColor);
