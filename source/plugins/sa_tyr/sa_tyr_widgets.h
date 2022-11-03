@@ -31,16 +31,16 @@ public:
 public:
 //------------------------------
 
-  uint32_t voice_state[NUM_VOICES]  = {0};
+  uint32_t voice_state[SA_TYR_NUM_VOICES]  = {0};
 
   //----------
 
   void on_widget_paint(MIP_PaintContext* AContext) final {
     MIP_Painter* painter = AContext->painter;
-    float w = MRect.w / NUM_VOICES;
+    float w = MRect.w / SA_TYR_NUM_VOICES;
     MIP_DRect rect = MIP_DRect(MRect.x,MRect.y,w, MRect.h);
     MIP_Color color = MIP_COLOR_DARK_GRAY;
-    for (uint32_t i=0; i<NUM_VOICES; i++) {
+    for (uint32_t i=0; i<SA_TYR_NUM_VOICES; i++) {
 
       painter->beginPath();
       painter->rectangle(rect);

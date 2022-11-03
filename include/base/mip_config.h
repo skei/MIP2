@@ -77,6 +77,8 @@
 //#define MIP_USE_WIN32
 //#define MIP_USE_XCB
 
+//#define MIP_VOICE_ADD_TO_BUFFER
+
 //#define MIP_VST2_FST
 //#define MIP_VST2_SDK
 //#define MIP_VST2_VESTIGE

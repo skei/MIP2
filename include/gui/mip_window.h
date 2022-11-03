@@ -73,12 +73,12 @@ protected:
   #endif
 
   // click
-  MIP_Widget*       MMouseClickedW      = nullptr;
+  //MIP_Widget*       MMouseClickedW      = nullptr;
   int32_t           MMouseClickedX      = 0;
   int32_t           MMouseClickedY      = 0;
-  uint32_t          MMouseClickedB      = 0;
-  uint32_t          MMouseClickedS      = 0;
-  uint32_t          MMouseClickedT      = 0;
+  //uint32_t          MMouseClickedB      = 0;
+  //uint32_t          MMouseClickedS      = 0;
+  //uint32_t          MMouseClickedT      = 0;
   uint32_t          MPrevClickTime      = 0;
   int32_t           MMousePrevX         = 0;
   int32_t           MMousePrevY         = 0;
@@ -447,9 +447,9 @@ public: // window
   void on_window_mouse_click(uint32_t AButton, uint32_t AState, int32_t AXpos, int32_t AYpos, uint32_t ATime) override {
     MMouseClickedX  = AXpos;
     MMouseClickedY  = AYpos;
-    MMouseClickedB  = AButton;
-    MMouseClickedS  = AState;
-    MMouseClickedT  = ATime;
+    //MMouseClickedB  = AButton;
+    //MMouseClickedS  = AState;
+    //MMouseClickedT  = ATime;
     MMousePrevX     = AXpos;
     MMousePrevY     = AYpos;
     MMouseDragX     = AXpos;

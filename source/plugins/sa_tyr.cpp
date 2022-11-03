@@ -31,14 +31,16 @@
 
 //
 
-#define EDITOR_WIDTH  816
-#define EDITOR_HEIGHT 703
-#define NUM_VOICES    32
+#define SA_TYR_EDITOR_WIDTH  816
+#define SA_TYR_EDITOR_HEIGHT 703
+#define SA_TYR_NUM_VOICES    64
 
-//
 
 #include "sa_tyr/sa_tyr_parameters.h"
 #include "sa_tyr/sa_tyr_voice.h"
+
+typedef MIP_VoiceManager<sa_tyr_voice<double>,SA_TYR_NUM_VOICES> sa_tyr_voice_manager;
+
 #include "sa_tyr/sa_tyr_editor.h"
 
 //----------------------------------------------------------------------
@@ -77,7 +79,8 @@ private:
 //------------------------------
 
   __MIP_ALIGNED(MIP_ALIGNMENT_CACHE)
-  MIP_VoiceManager<sa_tyr_voice<double>,NUM_VOICES> MVoices = {};
+  //MIP_VoiceManager<sa_tyr_voice<double>,NUM_VOICES> MVoices = {};
+  sa_tyr_voice_manager MVoices = {};
 
   //---------------
   // parameters
@@ -128,8 +131,8 @@ public:
 
   sa_tyr_plugin(const clap_plugin_descriptor_t* ADescriptor, const clap_host_t* AHost)
   : MIP_Plugin(ADescriptor,AHost) {
-    MEditorWidth = EDITOR_WIDTH;
-    MEditorHeight = EDITOR_HEIGHT;
+    MEditorWidth = SA_TYR_EDITOR_WIDTH;
+    MEditorHeight = SA_TYR_EDITOR_HEIGHT;
   }
 
   //----------
@@ -169,7 +172,7 @@ public: // gui
 
   bool gui_create(const char *api, bool is_floating) final {
     //MIP_Plugin::gui_create(api,is_floating);
-    MEditor = new sa_tyr_Editor(this,this,MEditorWidth,MEditorHeight,MParameters);
+    MEditor = new sa_tyr_editor(this,this,MEditorWidth,MEditorHeight,MParameters);
 
     MEditor->setCanResizeEditor(true);
     //MEditor->setResizeProportional(true);
@@ -199,9 +202,15 @@ public: // gui
 
   #ifndef MIP_NO_GUI
 
+  // we read from MProcess directly... :-/
   void on_timerCallback(MIP_Timer* ATimer) final {
     //
     MIP_Plugin::on_timerCallback(ATimer);
+    if (ATimer == &MGuiTimer) {
+      //MIP_Plugin::on_timerCallback(ATimer); // flush queues
+      sa_tyr_editor* editor = (sa_tyr_editor*)MEditor;
+      if (editor) editor->timer_update(&MVoices);//(&MProcess);
+    }
   }
 
   #endif
@@ -212,8 +221,8 @@ public: // voice into
 //------------------------------
 
   bool voice_info_get(clap_voice_info_t *info) final {
-    info->voice_count     = NUM_VOICES;
-    info->voice_capacity  = NUM_VOICES;
+    info->voice_count     = SA_TYR_NUM_VOICES;
+    info->voice_capacity  = SA_TYR_NUM_VOICES;
     info->flags           = CLAP_VOICE_INFO_SUPPORTS_OVERLAPPING_NOTES;
     return true;
   }
@@ -342,14 +351,31 @@ public: // process
 
   void processAudioBlock(MIP_ProcessContext* AContext) final {
     const clap_process_t* process = AContext->process;
+
+    //MVoices.prepareEvents(AContext);
+    //MVoices.processPreparedVoices(AContext);
+
     MVoices.processAudioBlock(AContext);
-    float v = MParameters[PAR_MASTER_VOL]->getValue();  // vol
-    float p = MParameters[PAR_MASTER_PAN]->getValue();  // pan
-    float l = v * (1.0 - p);
-    float r = v * (      p);
-    float** outputs = process->audio_outputs[0].data32;
+
+    float* buffer = MVoices.getFrameBuffer();
     uint32_t length = process->frames_count;
-    MIP_ScaleStereoBuffer(outputs,l,r,length);
+
+    float* output0  = process->audio_outputs[0].data32[0];
+    float* output1  = process->audio_outputs[0].data32[1];
+    //float* output0  = outputs[0];
+    //float* output1  = outputs[1];
+
+    MIP_CopyMonoBuffer(output0,buffer,length);
+    MIP_CopyMonoBuffer(output1,buffer,length);
+
+//    float v = MParameters[PAR_MASTER_VOL]->getValue();  // vol
+//    float p = MParameters[PAR_MASTER_PAN]->getValue();  // pan
+//    float l = v * (1.0 - p);
+//    float r = v * (      p);
+//
+//    float** outputs = process->audio_outputs[0].data32;
+//    MIP_ScaleStereoBuffer(outputs,l,r,length);
+
 
   }
 
@@ -363,8 +389,8 @@ public: // process
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-//#include "plugin/vst2/mip_vst2_entry.h"
-//#include "plugin/vst3/mip_vst3_entry.h"
+#include "plugin/vst2/mip_vst2_entry.h"
+#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 

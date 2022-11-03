@@ -10,7 +10,7 @@
 
 //----------------------------------------------------------------------
 
-class sa_tyr_Editor
+class sa_tyr_editor
 : public MIP_Editor
 /*, public MIP_MenuListener*/ {
 
@@ -27,7 +27,7 @@ public:
 public:
 //------------------------------
 
-  sa_tyr_Editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, MIP_ParameterArray AParameters)
+  sa_tyr_editor(MIP_EditorListener* AListener, MIP_ClapPlugin* APlugin, uint32_t AWidth, uint32_t AHeight, MIP_ParameterArray AParameters)
   : MIP_Editor(AListener,AWidth,AHeight) {
 
 
@@ -140,20 +140,20 @@ public:
 
     // panel
 
-    MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_DRect(0,0,EDITOR_WIDTH,EDITOR_HEIGHT));
+    MIP_PanelWidget* MEditorPanel = new MIP_PanelWidget(MIP_DRect(0,0,SA_TYR_EDITOR_WIDTH,SA_TYR_EDITOR_HEIGHT));
     MEditorPanel->setDrawBorder(false);
     MEditorPanel->setFillBackground(false);
 
     // header
 
-    MIP_SAHeaderWidget* header = new MIP_SAHeaderWidget(MIP_DRect(0,0,EDITOR_WIDTH,80));
+    MIP_SAHeaderWidget* header = new MIP_SAHeaderWidget(MIP_DRect(0,0,SA_TYR_EDITOR_WIDTH,80));
     MEditorPanel->appendChildWidget(header);
     header->setPluginName(" tyr");
     header->setPluginVersion("0.0.8");
 
     // controls
 
-    MIP_PanelWidget* controls = new MIP_PanelWidget(MIP_DRect(0,80,EDITOR_WIDTH,EDITOR_HEIGHT-80));
+    MIP_PanelWidget* controls = new MIP_PanelWidget(MIP_DRect(0,80,SA_TYR_EDITOR_WIDTH,SA_TYR_EDITOR_HEIGHT-80));
     MEditorPanel->appendChildWidget(controls);
     controls->setDrawBorder(false);
     controls->setFillBackground(true);
@@ -958,18 +958,37 @@ public:
 
   //----------
 
-  /*
-    redraw the voice info..
-  */
+  void timer_update(sa_tyr_voice_manager* voices) {
+    if (MIsEditorOpen) {
 
-  void on_gui_timer() final {
-    MIP_PRINT;
-    //flushGuiParams();
-    MVoiceWidget->redraw();
-    MPlayingVoicesWidget->redraw();
-    MReleasedVoicesWidget->redraw();
-    MTotalVoicesWidget->redraw();
+      uint32_t playing = 0;
+      uint32_t released = 0;
+      for (uint32_t v=0; v<SA_TYR_NUM_VOICES; v++) {
+        uint32_t state = voices->getVoiceState(v);
+        MVoiceWidget->voice_state[v] = state;
+        if (state == MIP_VOICE_PLAYING) playing += 1;
+        if (state == MIP_VOICE_RELEASED) released += 1;
+      }
+
+      //uint32_t playing  = voices->getNumPlayingVoices();
+      //uint32_t released = voices->getNumReleasedVoices();
+      MPlayingVoicesWidget->setValue(playing);
+      MReleasedVoicesWidget->setValue(released);
+      MTotalVoicesWidget->setValue(playing + released);
+
+      MVoiceWidget->redraw();
+      MPlayingVoicesWidget->redraw();
+      MReleasedVoicesWidget->redraw();
+      MTotalVoicesWidget->redraw();
+
+    }
   }
+
+  //----------
+
+  //void updateWaveformWidget() {
+  //}
+
 
 };
 

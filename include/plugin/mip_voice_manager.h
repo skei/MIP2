@@ -15,6 +15,17 @@
 //
 //----------------------------------------------------------------------
 
+// cpu is more or less the same, but calculating to separate buffers,
+// then summing them creates a lot more spikes..
+
+#define MIP_VOICE_ADD_TO_BUFFER
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
 template <class VOICE, int VOICE_COUNT>
 class MIP_VoiceManager {
 
@@ -36,8 +47,10 @@ private:
   MIP_VoiceContext  MVoiceContext                 = {};
   MIP_NoteQueue     MNoteEndQueue                 = {};
   MIP_Voice<VOICE>  MVoices[VOICE_COUNT]          = {};
+
   uint32_t          MActiveVoices[VOICE_COUNT]    = {0};
-  //uint32_t          MThreadedVoices[VOICE_COUNT]  = {0};
+  //uint32_t          MNumPlayingVoices             = 0;
+  //uint32_t          MNumReleasedVoices            = 0;
 
 //------------------------------
 public:
@@ -57,11 +70,12 @@ public:
 
   void setup(float ASampleRate, uint32_t min_frames_count, uint32_t max_frames_count, MIP_ParameterArray* AParameters) {
     MIP_Assert(ASampleRate > 0);
-    MVoiceContext.samplerate = ASampleRate;
+    MVoiceContext.samplerate    = ASampleRate;
     MVoiceContext.invsamplerate = 1.0 / ASampleRate;
-    MVoiceContext.parameters = AParameters;
+    MVoiceContext.voicebuffer   = MVoiceBuffer;
+    MVoiceContext.parameters    = AParameters;
+    MVoiceContext.process       = nullptr;
     for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      //MVoices[i].setState(MIP_VOICE_OFF);
       MVoices[i].setup(i,&MVoiceContext);
     }
   }
@@ -72,8 +86,15 @@ public:
     return MVoices[AIndex].getState();
   }
 
+  //uint32_t getNumPlayingVoices()  { return MNumPlayingVoices; }
+  //uint32_t getNumReleasedVoices() { return MNumReleasedVoices; }
+
   float* getFrameBuffer() {
     return MFrameBuffer;
+  }
+
+  float* getVoiceBuffer(uint32_t AIndex) {
+    return MVoiceBuffer + (AIndex * MIP_VOICE_MAX_FRAMESIZE);
   }
 
   //----------
@@ -94,7 +115,6 @@ public:
 
   //
 
-  //void updateParameterFromEditor(uint32_t AIndex, double AValue) {
   void updateParameterFromEditor(MIP_Parameter* AParameter) {
     //MVoices.setParameter(AIndex,AValue);
     clap_event_param_value_t event;
@@ -103,14 +123,13 @@ public:
     event.header.space_id = CLAP_CORE_EVENT_SPACE_ID;
     event.header.type     = CLAP_EVENT_PARAM_VALUE;
     event.header.flags    = 0; //CLAP_EVENT_IS_LIVE; // _DONT_RECORD
-    event.param_id        = AParameter->getIndex();//AIndex;
-    event.cookie          = AParameter;//MParameters[AIndex];
+    event.param_id        = AParameter->getIndex();
+    event.cookie          = AParameter;
     event.note_id         = -1;
     event.port_index      = -1;
     event.channel         = -1;
     event.key             = -1;
-    event.value           = AParameter->getValue();//AValue;
-    //processParamValue/*Event*/(&event);
+    event.value           = AParameter->getValue();
     const clap_event_header_t* header = (const clap_event_header_t*)&event;
     handleEvent(header);
   }
@@ -125,24 +144,40 @@ public:
 
   //----------
 
+  void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
+    flushFinishedVoices();
+    flushNoteEnds();
+  }
+
+  //----------
+
   //void processEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
   //  // do nothing..
   //}
 
-  //----------
+//------------------------------
+public:
+//------------------------------
+
+  /*
+    frame buffer is split at events, and all voices rendered inbetween
+    voices render to frame buffer directly (adding)..
+  */
 
   void processAudioBlock(MIP_ProcessContext* AContext) {
+
     const clap_process_t* process = AContext->process;
     MVoiceContext.process = process;
-    float* out0 = process->audio_outputs->data32[0];
-    float* out1 = process->audio_outputs->data32[1];
-    uint32_t length = process->frames_count;
-    MIP_ClearMonoBuffer(MFrameBuffer,length);
-    MVoiceContext.voicebuffer = MFrameBuffer;
 
+    uint32_t length       = process->frames_count;
     uint32_t current_time = 0;
-    uint32_t remaining = process->frames_count;
-    uint32_t num_events = process->in_events->size(process->in_events);
+    uint32_t remaining    = process->frames_count;
+    uint32_t num_events   = process->in_events->size(process->in_events);
+
+    #ifdef MIP_VOICE_ADD_TO_BUFFER
+    MIP_ClearMonoBuffer(MVoiceBuffer,length);
+    #endif
+
     for (uint32_t ev=0; ev<num_events; ev++) {
       const clap_event_header_t* header = process->in_events->get(process->in_events,ev);
       // todo if header space..
@@ -156,7 +191,6 @@ public:
             || (state == MIP_VOICE_RELEASED)
             || (state == MIP_VOICE_WAITING)) {
             MVoices[v].setState(  MVoices[v].process( state, num, current_time) );
-            //MIP_AddMonoBuffer(MFrameBuffer + current_time,MFrameBuffer + current_time,num);
           }
         }
         current_time += num;
@@ -172,23 +206,132 @@ public:
           || (state == MIP_VOICE_RELEASED)
           /*|| (state == MIP_VOICE_WAITING)*/) {
           MVoices[v].setState( MVoices[v].process( state, remaining, current_time) );
-          //MIP_AddMonoBuffer(MFrameBuffer + current_time,MFrameBuffer + current_time,remaining);
         }
       }
     }
-    MIP_CopyMonoBuffer(out0,MFrameBuffer,length);
-    MIP_CopyMonoBuffer(out1,MFrameBuffer,length);
-  }
 
-  //----------
+    // sum voices
 
-  void postProcessEvents(const clap_input_events_t* in_events, const clap_output_events_t* out_events) {
-    flushFinishedVoices();
-    flushNoteEnds();
+    #ifdef MIP_VOICE_ADD_TO_BUFFER
+
+      MIP_CopyMonoBuffer(MFrameBuffer,MVoiceBuffer,length);
+
+    #else
+
+      MIP_ClearMonoBuffer(MFrameBuffer,length);
+      for (uint32_t v=0; v<VOICE_COUNT; v++) {
+        uint32_t state = MVoices[v].getState();
+        if ((state == MIP_VOICE_PLAYING)
+          || (state == MIP_VOICE_RELEASED)
+          /*|| (state == MIP_VOICE_WAITING)*/) {
+          float* dst = MFrameBuffer;
+          float* src = MVoiceBuffer + (v * MIP_VOICE_MAX_FRAMESIZE);
+          MIP_AddMonoBuffer(dst,src,length);
+        }
+      }
+
+    #endif
+
+    // counting
+
+//    MNumPlayingVoices = 0;
+//    MNumReleasedVoices = 0;
+//    for (uint32_t v=0; v<VOICE_COUNT; v++) {
+//      uint32_t state = MVoices[v].getState();
+//      if (state == MIP_VOICE_PLAYING) MNumPlayingVoices += 1;
+//      if (state == MIP_VOICE_RELEASED) MNumReleasedVoices += 1;
+//    }
+
   }
 
 //------------------------------
 public:
+//------------------------------
+
+  /*
+    events are split for each voice
+    then each voice is calculated (separately)
+    and finally, all voice buffers are summed to frame buffer
+  */
+
+  // Split voices
+
+  // voices are processed individually, bu host-provided thread pool
+  // (or manually one by one if thread pool not availablle
+
+  void processPreparedVoices(MIP_ProcessContext* AContext) {
+    const clap_process_t* process = AContext->process;
+    //MIP_PRINT;
+    //count_param_events(process);
+    MVoiceContext.process = process;
+    float* out0 = process->audio_outputs->data32[0];
+    float* out1 = process->audio_outputs->data32[1];
+    MVoiceContext.voicebuffer = MVoiceBuffer;//out0;
+    uint32_t length = process->frames_count;
+
+    // clear frame buffer (voices are added to it)
+    MIP_ClearMonoBuffer(MFrameBuffer,length);
+
+    // prepare events (separate them for each individual voice)
+    //prepareEvents(AContext);//(process->in_events,process->out_events);
+
+    // setup threaded voice array
+    uint32_t num_voices  = 0;
+    for (uint32_t i=0; i<VOICE_COUNT; i++) {
+      if ((MVoices[i].getState() == MIP_VOICE_PLAYING)
+        || (MVoices[i].getState() == MIP_VOICE_RELEASED)
+        || (MVoices[i].getState() == MIP_VOICE_WAITING)) {
+        MActiveVoices[num_voices++] = i;
+      }
+    }
+
+    // calc voices
+    if (num_voices > 0) {
+      processActiveVoices(num_voices);
+    }
+
+    // add all voice buffers to frame buffer
+    for (uint32_t i=0; i<num_voices; i++) {
+      int32_t voice = MActiveVoices[i];
+      float* src = MVoiceBuffer + (process->frames_count * voice);
+      MIP_AddMonoBuffer(MFrameBuffer,src,length);
+    }
+
+    // cleanup..
+    flushFinishedVoices();
+    flushNoteEnds();
+
+    // copy frame buffer to output
+    MIP_CopyMonoBuffer(out0,MFrameBuffer,length);
+    MIP_CopyMonoBuffer(out1,MFrameBuffer,length);
+
+  }
+
+  //----------
+
+  // called by host for each voice
+
+  void processVoice(uint32_t index) {
+    int32_t voice = MActiveVoices[index];
+    if (voice >= 0) {
+      //MVoices[voice].processPrepared(voice);
+    }
+  }
+
+  //----------
+
+  // if there is no thread pool, or host refused for some reason,
+  // we just calculate the voices manyally, one by one..
+  // coud do our own threading...
+
+  void processActiveVoices(uint32_t num) {
+    for (uint32_t i=0; i<num; i++) {
+      processVoice(i);
+    }
+  }
+
+//------------------------------
+public: // handle events NOW
 //------------------------------
 
   void handleEvent(const clap_event_header_t* header) {
@@ -209,29 +352,19 @@ public:
 
   /*
     note_id: 16,32, 48, ...
-    start new voices at the start of the audio block
   */
 
   void handleNoteOn(const clap_event_note_t* event) {
     //MIP_Print("NOTE ON: key %i channel %i port %i note_id %i\n",event->key,event->channel,event->port_index,event->note_id);
     int32_t voice = findAvailableVoice(true); // true = search released voices too
     if (voice >= 0) {
-      // let the host know that the note that was playing for this voice
-      // now has ended
       if (MVoices[voice].getState() == MIP_VOICE_RELEASED) {
         queueNoteEnd(MVoices[voice].getNote());
       }
-      // start new voice
       MVoices[voice].note_on(event->key,event->velocity);
-      //MIP_Print("new note..\n");
-      //MVoices[voice].note.key         = event->key;
-      //MVoices[voice].note.channel     = event->channel;
-      //MVoices[voice].note.port_index  = event->port_index;
-      //MVoices[voice].note.note_id     = event->note_id;
       MVoices[voice].setNote(event->port_index,event->channel,event->key,event->note_id);
     }
     else {
-      //MIP_Print("no note..\n");
       MIP_Note note;
       note.key         = event->key;
       note.channel     = event->channel;
@@ -293,7 +426,6 @@ public:
     if (event->note_id == -1) {
       // global
       for (uint32_t i=0; i<VOICE_COUNT; i++) {
-        //if ((MVoices[i].getState() == MIP_VOICE_PLAYING) || (MVoices[i].getState() == MIP_VOICE_RELEASED)) {
         //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
           MVoices[i].parameter(event->param_id,event->value);
         //}
@@ -307,6 +439,7 @@ public:
           //if ((MVoices[i].note.key == event->key) && (MVoices[i].note.channel == event->channel)) {
             MVoices[i].parameter(event->param_id,event->value);
           //}
+
         }
       }
     }
@@ -361,85 +494,12 @@ public:
   }
 
 //------------------------------
-public:
+public: // prepare events per voice
 //------------------------------
 
-  // process threaded
-
   /*
-    voices are processed individually, bu host-provided thread pool
-    (or manually one by one if thread pool not availablle
-  */
 
-  void processPrepared(const clap_process_t *process) {
-    //MIP_PRINT;
-    //count_param_events(process);
-    MVoiceContext.process = process;
-    float* out0 = process->audio_outputs->data32[0];
-    float* out1 = process->audio_outputs->data32[1];
-    MVoiceContext.voicebuffer = MVoiceBuffer;//out0;
-    uint32_t length = process->frames_count;
-    // clear frame buffer (voices are added to it)
-    MIP_ClearMonoBuffer(MFrameBuffer,length);
-    // prepare events (separate them for each individual voice)
-    prepareEvents(process->in_events,process->out_events);
-    // setup threaded voice array
-    uint32_t num_voices  = 0;
-    for (uint32_t i=0; i<VOICE_COUNT; i++) {
-      if ((MVoices[i].getState() == MIP_VOICE_PLAYING)
-        || (MVoices[i].getState() == MIP_VOICE_RELEASED)
-        || (MVoices[i].getState() == MIP_VOICE_WAITING)) {
-        MActiveVoices[num_voices++] = i;
-      }
-    }
-    // calc voices
-    if (num_voices > 0) {
-      processActiveVoices(num_voices);
-    }
-    // add all voice buffers to frame buffer
-    for (uint32_t i=0; i<num_voices; i++) {
-      int32_t voice = MActiveVoices[i];
-      float* src = MVoiceBuffer + (process->frames_count * voice);
-      MIP_AddMonoBuffer(MFrameBuffer,src,length);
-    }
-    // cleanup..
-    flushFinishedVoices();
-    flushNoteEnds();
-    // copy frame buffer to output
-    MIP_CopyMonoBuffer(out0,MFrameBuffer,length);
-    MIP_CopyMonoBuffer(out1,MFrameBuffer,length);
-  }
-
-  //----------
-
-  /*
-    called by host for each voice
-  */
-
-  void processVoice(uint32_t index) {
-    int32_t voice = MActiveVoices[index];
-    if (voice >= 0) {
-//      MVoices[voice].processPrepared(voice);
-    }
-  }
-
-  //----------
-
-  /*
-    if there is no thread pool, or host refused for some reason,
-    we just calculate the voices manyally, one by one..
-    coud do our own threading...
-  */
-
-  void processActiveVoices(uint32_t num) {
-    for (uint32_t i=0; i<num; i++) {
-      processVoice(i);
-    }
-  }
-
-//------------------------------
-public:
-//------------------------------
+  // Split voices
 
   //int32_t findVoice(const clap_event_note_t* event) {
   //  return -1;
@@ -454,7 +514,7 @@ public:
       const clap_event_header_t* header = process->in_events->get(process->in_events,ev);
       // todo if header space..
       prepareEvent(header);
-      uint32_t num = header->time;
+      //uint32_t num = header->time;
     }
   }
 
@@ -477,47 +537,79 @@ public:
   //----------
 
   void prepareNoteOn(const clap_event_note_t* event) {
+    MIP_PRINT;
+    int32_t voice = findAvailableVoice(true); // true = search released voices too
+    if (voice >= 0) {
+      if (MVoices[voice].getState() == MIP_VOICE_RELEASED) {
+        queueNoteEnd(MVoices[voice].getNote());
+      }
+      MVoices[voice].prepare_note_on(event->header.time,event->key,event->velocity);
+    }
+    else {
+      MIP_Note note;
+      note.key         = event->key;
+      note.channel     = event->channel;
+      note.port_index  = event->port_index;
+      note.note_id     = event->note_id;
+      queueNoteEnd(note);
+    }
   }
 
   //----------
 
   void prepareNoteOff(const clap_event_note_t* event) {
+    MIP_PRINT;
+    for (uint32_t i=0; i<VOICE_COUNT; i++) {
+      MIP_Note note = MVoices[i].getNote();
+      if (voiceMatchesEvent(note,event)) {
+        MVoices[i].prepare_note_off(event->header.time,event->velocity);
+      }
+    }
   }
 
   //----------
 
   void prepareNoteChoke(const clap_event_note_t* event) {
+    MIP_PRINT;
   }
 
   //----------
 
   void prepareNoteExpression(const clap_event_note_expression_t* event) {
+    MIP_PRINT;
   }
 
   //----------
 
   void prepareParamValue(const clap_event_param_value_t* event) {
+    MIP_PRINT;
   }
 
   //----------
 
   void prepareParamMod(const clap_event_param_mod_t* event) {
+    MIP_PRINT;
   }
 
   //----------
 
   void prepareMidi(const clap_event_midi_t* event) {
+    MIP_PRINT;
   }
 
   //----------
 
   void prepareMidiSysex(const clap_event_midi_sysex_t* event) {
+    MIP_PRINT;
   }
 
   //----------
 
   void prepareMidi2(const clap_event_midi2_t* event) {
+    MIP_PRINT;
   }
+
+  */
 
 //------------------------------
 private: // voices

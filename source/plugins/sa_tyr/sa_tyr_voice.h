@@ -36,8 +36,8 @@ class sa_tyr_voice {
 private:
 //------------------------------
 
-  //uint32_t          MIndex    = 0;
-  MIP_VoiceContext* MContext  = nullptr;
+  uint32_t          MVoiceIndex   = 0;
+  MIP_VoiceContext* MContext      = nullptr;
   MIP_Queue<const clap_event_note_t*,256> MEvents;
 
 //------------------------------
@@ -45,6 +45,7 @@ private:
 //------------------------------
 
   //MIP_VoiceContext* MContext      = nullptr;
+  float* MVoiceBuffer = nullptr;
 
   T*                MParameters   = nullptr;
   T*                MModulations  = nullptr;
@@ -92,8 +93,15 @@ public:
 //------------------------------
 
   void setup(uint32_t AIndex, MIP_VoiceContext* AContext) {
-    //MIndex = AIndex;
+    MVoiceIndex = AIndex;
     MContext = AContext;
+
+    #ifdef MIP_VOICE_ADD_TO_BUFFER
+      MVoiceBuffer = AContext->voicebuffer;
+    #else
+      MVoiceBuffer = AContext->voicebuffer + (AIndex * MIP_VOICE_MAX_FRAMESIZE);
+    #endif
+
     MOscillator1.setSampleRate(MContext->samplerate);
     MOscillator2.setSampleRate(MContext->samplerate);
     MResonator1.setSampleRate(MContext->samplerate);
@@ -247,17 +255,17 @@ public:
     float* input0 = MContext->process->audio_inputs->data32[0];
     float* input1 = MContext->process->audio_inputs->data32[1];
 
+    float* output = MVoiceBuffer + AOffset;
+
     // output buffer
-    float* output = MContext->voicebuffer + AOffset;
+//    float* output = MContext->voicebuffer;
+//    output += (MVoiceIndex * MIP_VOICE_MAX_FRAMESIZE);
+//    output += AOffset;
 
-    //-----
 
-    // should this already have been applied/prepared? maybe when we setup
-    // the voicebuffer ptr (voice manager).. who calls this? (use AOffset)..
-    //
-    //    #ifdef MIP_VOICE_PREPARE_EVENTS
-    //      output += (MContext->process->frames_count * AIndex);
-    //    #endif
+
+
+//    output += (MVoiceIndex * MIP_VOICE_MAX_FRAMESIZE);
 
     //-----
 
@@ -437,13 +445,11 @@ public:
 
       // out
 
-      //#ifdef MIP_VOICE_PREPARE_EVENTS
-      //  *output++ = out;
-      //#else
-
+      #ifdef MIP_VOICE_ADD_TO_BUFFER
         *output++ += out;
-
-      //#endif
+      #else
+        *output++ = out;
+      #endif
     }
 
     // postproc

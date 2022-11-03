@@ -164,6 +164,7 @@ public: // plugin
     for (uint32_t i=0; i<PAR_COUNT; i++) {
       appendParameter( new MIP_Parameter(&myParameters[i]) );
     }
+    setDefaultParameterValues();
     return true;
   }
 

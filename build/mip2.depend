@@ -1,6 +1,6 @@
 # depslib dependency file v1.0
-1667410404 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
-	"../source/plugins/sa_tyr.cpp"
+1667471414 source:/DISKS/sda2/code/git/MIP2/build/build.cpp
+	"../source/plugins/sa_pitch3.cpp"
 
 1657921999 /DISKS/sda2/code/git/MIP2/source/test/test_nanogfx.cpp
 	"mip.h"
@@ -756,7 +756,7 @@
 	"plugin/clap/mip_clap.h"
 	"plugin/mip_registry.h"
 
-1667413250 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
+1667469378 /DISKS/sda2/code/git/MIP2/include/gui/mip_window.h
 	"mip.h"
 	"base/system/mip_timer.h"
 	"gui/mip_widget.h"
@@ -1909,7 +1909,7 @@
 	"plugin/vst2/mip_vst2_entry.h"
 	"plugin/vst3/mip_vst3_entry.h"
 
-1667405691 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr.cpp
+1667469257 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr.cpp
 	"audio/mip_audio_utils.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_note.h"
@@ -1921,8 +1921,10 @@
 	"sa_tyr/sa_tyr_editor.h"
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
+	"plugin/vst2/mip_vst2_entry.h"
+	"plugin/vst3/mip_vst3_entry.h"
 
-1667304682 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
+1667419041 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
 	"mip.h"
 	"audio/mip_audio_utils.h"
 	"plugin/mip_note.h"
@@ -1935,13 +1937,13 @@
 1667304181 /DISKS/sda2/code/git/MIP2/include/plugin/mip_note.h
 	"mip.h"
 
-1667331856 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice.h
+1667418920 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice.h
 	"mip.h"
 	"plugin/mip_note.h"
 
 1667332513 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_parameters.h
 
-1667332417 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_voice.h
+1667414808 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_voice.h
 	"mip.h"
 	"audio/mip_audio_math.h"
 	"audio/filters/mip_rc_filter.h"
@@ -1977,7 +1979,7 @@
 1654454075 /DISKS/sda2/code/git/MIP2/include/audio/modulation/mip_envelope.h
 	<math.h>
 
-1667061359 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_osc.h
+1667414834 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_osc.h
 	"base/utils/mip_interpolation.h"
 	"audio/waveforms/mip_dsf_waveform.h"
 
@@ -2010,4 +2012,12 @@
 	"plugin/mip_plugin.h"
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
+
+1667474561 /DISKS/sda2/code/git/MIP2/source/plugins/sa_pitch3.cpp
+	"plugin/mip_plugin.h"
+	"plugin/mip_editor.h"
+	"gui/widgets/mip_widgets.h"
+	"plugin/clap/mip_clap_entry.h"
+	"plugin/exe/mip_exe_entry.h"
+	"plugin/vst3/mip_vst3_entry.h"
 

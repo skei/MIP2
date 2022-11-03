@@ -61,12 +61,13 @@ class MIP_Voice {
 public:
 //------------------------------
 
-  uint32_t          MIndex    = 0;
-  VOICE             MVoice    = {};
-  MIP_VoiceContext* MContext  = nullptr;
-  uint32_t          MState    = MIP_VOICE_OFF;
-  MIP_Note          MNote     = {};
+  uint32_t          MIndex        = 0;
+  VOICE             MVoice        = {};
+  MIP_VoiceContext* MContext      = nullptr;
+  uint32_t          MState        = MIP_VOICE_OFF;
+  MIP_Note          MNote         = {};
 
+  // Split voices
   MIP_Queue<MIP_VoiceEvent,MIP_VOICE_MAX_EVENTS_PER_BLOCK*2> events = {};
 
 //------------------------------
@@ -196,48 +197,58 @@ public:
 public: // prepared events
 //------------------------------
 
+  // Split voices
+
   void prepare_note_on(uint32_t time, int32_t key, double velocity) {
     MIP_VoiceEvent ev = MIP_VoiceEvent(MIP_VOICE_EVENT_NOTE_ON,time,key,velocity);
     events.write(ev);
     MState = MIP_VOICE_WAITING;
   }
 
+  //----------
+
   void prepare_note_off(uint32_t time, double velocity) {
     MIP_VoiceEvent ev = MIP_VoiceEvent(MIP_VOICE_EVENT_NOTE_OFF,time,0,velocity);
     events.write(ev);
   }
+
+  //----------
 
   void prepare_note_choke(uint32_t time) {
     MIP_VoiceEvent ev = MIP_VoiceEvent(MIP_VOICE_EVENT_NOTE_CHOKE,time,0,0);
     events.write(ev);
   }
 
+  //----------
+
   void prepare_expression(uint32_t time, uint32_t type, double value) {
     MIP_VoiceEvent ev = MIP_VoiceEvent(MIP_VOICE_EVENT_NOTE_EXPRESSION,time,type,value);
     events.write(ev);
   }
+
+  //----------
 
   void prepare_parameter(uint32_t time, uint32_t index, double value) {
     MIP_VoiceEvent ev = MIP_VoiceEvent(MIP_VOICE_EVENT_PARAMETER,time,index,value);
     events.write(ev);
   }
 
+  //----------
+
   void prepare_modulation(uint32_t time, uint32_t index, double value) {
     MIP_VoiceEvent ev = MIP_VoiceEvent(MIP_VOICE_EVENT_MODULATION,time,index,value);
     events.write(ev);
   }
 
-  /*
-    todo: add offset to current_time before calling MVoice.process
-    so we get rid of this in the voice:
+  //----------
 
-    #ifdef MIP_VOICE_PREPARE_EVENTS
-      MVoiceManager.processPrepared(process,MHost);
-    #else
-      MVoiceManager.processBlock(process);
-    #endif
-
-  */
+  //todo: add offset to current_time before calling MVoice.process
+  //so we get rid of this in the voice:
+  //#ifdef MIP_VOICE_PREPARE_EVENTS
+  //  MVoiceManager.processPrepared(process,MHost);
+  //#else
+  //  MVoiceManager.processBlock(process);
+  //#endif
 
   void processPrepared() {
     const clap_process_t* process = MContext->process;
@@ -245,6 +256,7 @@ public: // prepared events
     uint32_t remaining = process->frames_count;
     MIP_VoiceEvent next_event;
     while (remaining > 0) {
+
       if (events.read(&next_event)) {
         // we have more events
         //MIP_Print("current_time: %i next_event.time: %i\n",current_time,next_event.time);
@@ -270,6 +282,7 @@ public: // prepared events
         remaining -= length;
         current_time += length;
       } // !event
+
     } // remaining > 0
     MIP_Assert( events.read(&next_event) == false );
   }
