@@ -33,7 +33,7 @@
 
 #define SA_TYR_EDITOR_WIDTH  836
 #define SA_TYR_EDITOR_HEIGHT 703
-#define SA_TYR_NUM_VOICES    64
+#define SA_TYR_NUM_VOICES    32
 
 
 #include "sa_tyr/sa_tyr_parameters.h"

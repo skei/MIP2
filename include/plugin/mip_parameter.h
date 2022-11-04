@@ -63,7 +63,10 @@ private:
   bool    MModulated      = false;
   bool    MPolyModulated  = false;
 
-  const char** MStrings = nullptr;
+  const char** MStrings   = nullptr;
+
+  //double MSmoothedValue   = 0.0;
+  //double MSmoothFactor    = 0.0;
 
 //------------------------------
 public:
@@ -124,7 +127,6 @@ public:
   void    setModule(const char* AModule)          { strcpy(MParamInfo.module,AModule); }
   void    setName(const char* AName)              { strcpy(MParamInfo.name,AName); }
   void    setPolyModulated(bool AMod)             { MPolyModulated = AMod; }
-  void    setValue(double AValue)                 { MValue = AValue; }
 
   void    setFlag(clap_param_info_flags AFlag)    { MParamInfo.flags |= AFlag; }
   void    clearFlag(clap_param_info_flags AFlag)  { MParamInfo.flags &= ~AFlag; }
@@ -143,7 +145,6 @@ public:
   const char*               getName()             { return MParamInfo.name; }
   const clap_param_info_t*  getParamInfo()        { return &MParamInfo; }
   bool                      getPolyModulated()    { return MPolyModulated; }
-  double                    getValue()            { return MValue; }
 
   bool isHidden()       { return (MParamInfo.flags & CLAP_PARAM_IS_HIDDEN); }
   bool isStepped()      { return (MParamInfo.flags & CLAP_PARAM_IS_STEPPED); }
@@ -164,6 +165,26 @@ public:
   //CLAP_PARAM_IS_MODULATABLE_PER_PORT
 
   //CLAP_PARAM_REQUIRES_PROCESS
+
+  double getValue() {
+    return MValue;
+  }
+
+  void setValue(double AValue) {
+    MValue = AValue;
+  }
+
+  //void updateSmoothedValue() {
+  //  MSmoothedValue += (MValue - MSmoothedValue) * MSmoothFactor;
+  //}
+
+  //double getSmoothedValue() {
+  //  return MSmoothedValue;
+  //}
+
+  //void setSmoothFactor(double AFactor) {
+  //  MSmoothFactor = AFactor;
+  //}
 
 //------------------------------
 public:
