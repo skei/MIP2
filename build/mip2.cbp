@@ -788,6 +788,10 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="../source/plugins/sa_nity/sa_nity_editor.h" />
+		<Unit filename="../source/plugins/sa_pitch3.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="../source/plugins/sa_ports.cpp">
 			<Option compile="0" />
 			<Option link="0" />

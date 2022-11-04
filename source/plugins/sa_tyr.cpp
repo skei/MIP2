@@ -31,7 +31,7 @@
 
 //
 
-#define SA_TYR_EDITOR_WIDTH  816
+#define SA_TYR_EDITOR_WIDTH  836
 #define SA_TYR_EDITOR_HEIGHT 703
 #define SA_TYR_NUM_VOICES    64
 
@@ -54,13 +54,13 @@ typedef MIP_VoiceManager<sa_tyr_voice<double>,SA_TYR_NUM_VOICES> sa_tyr_voice_ma
 
 const clap_plugin_descriptor_t sa_tyr_descriptor = {
   .clap_version  = CLAP_VERSION,
-  .id            = "skei.audio/sa_tyr/0",
+  .id            = "skei.audio/sa_tyr/0.0.8",
   .name          = "sa_tyr",
   .vendor        = "skei.audio",
   .url           = "https://torhelgeskei.com",
   .manual_url    = "",
   .support_url   = "",
-  .version       = "0.0.1",
+  .version       = "0.0.8",
   .description   = "",
   .features      = (const char*[]){ CLAP_PLUGIN_FEATURE_INSTRUMENT, nullptr }
 };
@@ -387,7 +387,7 @@ public: // process
 //----------------------------------------------------------------------
 
 #include "plugin/clap/mip_clap_entry.h"
-#include "plugin/exe/mip_exe_entry.h"
+//#include "plugin/exe/mip_exe_entry.h"
 //#include "plugin/vst2/mip_vst2_entry.h"
 #include "plugin/vst3/mip_vst3_entry.h"
 

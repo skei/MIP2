@@ -50,6 +50,7 @@ private:
   T MFeedback = 0.0;
   T MDamp     = 0.0;
   T MRough    = 0.0;
+  T MImpulse  = 0.0;
 
   uint32_t MMode          = 0;
   uint32_t MSpeed         = 0;
@@ -88,6 +89,7 @@ public:
   void setFeedback(T f)     { MFeedback = f; }
   void setDamp(T d)         { MDamp = d; }
   void setRough(T r)        { MRough = r; }
+  void setImpulse(T i)      { MImpulse = i; }
 
   void setMode(uint32_t m)  { MMode = m; }
   void setSpeed(uint32_t s) { MSpeed = s; }
@@ -148,11 +150,14 @@ public:
     switch (MMode) {
       case 0: {// plucked
         if (MDelay.hasWrapped()) {
-          _in = 0.0;
+
+          //_in = 0.0;
+          _in *= MImpulse;
+
         }
         break;
       }
-      case 1: { // bowed
+      case 1: { // repeated
         if (MDelay.hasWrapped()) {
           MSpeedCounter += 1;
           if (MSpeedCounter >= MSpeed) {
@@ -160,7 +165,10 @@ public:
             MDelay.start();
           }
           else {
-            _in = 0.0;
+
+            //_in = 0.0;
+            _in *= MImpulse;
+
           }
         }
         break;

@@ -332,6 +332,10 @@ public:
     MResonator1.setDamp(r1_damp);
     MResonator1.setRough(r1_rough);
 
+    T imp1 = MParameters[PAR_RES1_IN_I];
+    imp1 = (imp1 * imp1 * imp1 * imp1 * imp1);
+    MResonator1.setImpulse(imp1);
+
     MResonator1.setMode( MParameters[PAR_RES1_TYPE] );
     T r1_spd = 1.0 - MParameters[PAR_RES1_SPEED];
     r1_spd = (r1_spd * r1_spd * r1_spd) * 10000;
@@ -354,6 +358,10 @@ public:
     MResonator2.setFeedback(r2_fb);
     MResonator2.setDamp(r2_damp);
     MResonator2.setRough(r2_rough);
+
+    T imp2 = MParameters[PAR_RES2_IN_I];
+    imp2 = (imp2 * imp2 * imp2 * imp2 * imp2);
+    MResonator2.setImpulse(imp2);
 
     MResonator2.setMode( MParameters[PAR_RES2_TYPE] );
     T r2_spd = 1.0 - MParameters[PAR_RES2_SPEED];

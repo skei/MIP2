@@ -169,14 +169,14 @@ public:
 
 // ----- osc1
 
-      MIP_PanelWidget* osc1_panel = new MIP_PanelWidget(MIP_DRect(10,10,250,300) );
+      MIP_PanelWidget* osc1_panel = new MIP_PanelWidget(MIP_DRect(10,10,260,300) );
       controls->appendChildWidget(osc1_panel);
       osc1_panel->setFillBackground(true);
       osc1_panel->setBackgroundColor(0.55);
 
         // text
 
-        MIP_TextWidget* osc1_text = new MIP_TextWidget(MIP_DRect(0,0,250,20),"OSC1");
+        MIP_TextWidget* osc1_text = new MIP_TextWidget(MIP_DRect(0,0,260,20),"OSC1");
         osc1_panel->appendChildWidget(osc1_text);
         osc1_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
         osc1_text->setTextSize(-0.8);
@@ -188,7 +188,7 @@ public:
 
         // type
 
-        MIP_SelectorWidget* osc1_type_selector = new MIP_SelectorWidget( MIP_DRect(10,30,230,20), "Osc Type", osc_type_menu );
+        MIP_SelectorWidget* osc1_type_selector = new MIP_SelectorWidget( MIP_DRect(10,30,240,20), "Osc Type", osc_type_menu );
         osc1_panel->appendChildWidget(osc1_type_selector);
         osc1_type_selector->setTextSize(-0.7);
         osc1_type_selector->setSelected(0);
@@ -213,7 +213,7 @@ public:
 
         // oct
 
-        MIP_DragValueWidget* osc1_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,150,70,20),"Oct");
+        MIP_DragValueWidget* osc1_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,150,72,20),"Oct");
         osc1_panel->appendChildWidget(osc1_oct_slider);
         //osc1_oct_slider->setQuantize(true);
         //osc1_oct_slider->setSnap(true);
@@ -228,7 +228,7 @@ public:
 
         // semi
 
-        MIP_DragValueWidget* osc1_semi_slider = new MIP_DragValueWidget( MIP_DRect(90,150,70,20),"Semi");
+        MIP_DragValueWidget* osc1_semi_slider = new MIP_DragValueWidget( MIP_DRect(94,150,72,20),"Semi");
         osc1_panel->appendChildWidget(osc1_semi_slider);
         //osc1_semi_slider->setSnap(true);
         //osc1_semi_slider->setSnapPos(0.5);
@@ -242,7 +242,7 @@ public:
 
         // cent
 
-        MIP_DragValueWidget* osc1_cent_slider = new MIP_DragValueWidget( MIP_DRect(170,150,70,20),"Cent");
+        MIP_DragValueWidget* osc1_cent_slider = new MIP_DragValueWidget( MIP_DRect(178,150,72,20),"Cent");
         osc1_panel->appendChildWidget(osc1_cent_slider);
         osc1_cent_slider->setSnap(true);
         osc1_cent_slider->setSnapPos(0);
@@ -258,44 +258,42 @@ public:
 
         MIP_Knob2Widget* osc1_in_o1 = new MIP_Knob2Widget( MIP_DRect(10,180,30,45),"O1");
         osc1_panel->appendChildWidget(osc1_in_o1);
-        //osc1_in_o1->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC1_IN_O1],osc1_in_o1);
 
-        MIP_Knob2Widget* osc1_in_o2 = new MIP_Knob2Widget( MIP_DRect(45,180,30,45),"O2");
+        MIP_Knob2Widget* osc1_in_o2 = new MIP_Knob2Widget( MIP_DRect(40,180,30,45),"O2");
         osc1_panel->appendChildWidget(osc1_in_o2);
-        //osc1_in_o2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC1_IN_O2],osc1_in_o2);
 
-        MIP_Knob2Widget* osc1_in_r1 = new MIP_Knob2Widget( MIP_DRect(80,180,30,45),"R1");
+        MIP_Knob2Widget* osc1_in_r1 = new MIP_Knob2Widget( MIP_DRect(70,180,30,45),"R1");
         osc1_panel->appendChildWidget(osc1_in_r1);
-        //osc1_in_r1->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC1_IN_R1],osc1_in_r1);
 
-        MIP_Knob2Widget* osc1_in_r2 = new MIP_Knob2Widget( MIP_DRect(115,180,30,45),"R2");
+        MIP_Knob2Widget* osc1_in_r2 = new MIP_Knob2Widget( MIP_DRect(100,180,30,45),"R2");
         osc1_panel->appendChildWidget(osc1_in_r2);
-        //osc1_in_r2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC1_IN_R2],osc1_in_r2);
 
-        MIP_Knob2Widget* osc1_in_n = new MIP_Knob2Widget( MIP_DRect(150,180,30,45),"N");
+        MIP_Knob2Widget* osc1_in_n = new MIP_Knob2Widget( MIP_DRect(160,180,30,45),"N");
         osc1_panel->appendChildWidget(osc1_in_n);
-        //osc1_in_n->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC1_IN_N],osc1_in_n);
 
-        MIP_Knob2Widget* osc1_in_a = new MIP_Knob2Widget( MIP_DRect(185,180,30,45),"A");
+        MIP_Knob2Widget* osc1_in_i = new MIP_Knob2Widget( MIP_DRect(190,180,30,45),"I");
+        osc1_panel->appendChildWidget(osc1_in_i);
+        connectWidget(AParameters[PAR_OSC1_IN_I],osc1_in_i);
+
+        MIP_Knob2Widget* osc1_in_a = new MIP_Knob2Widget( MIP_DRect(220,180,30,45),"A");
         osc1_panel->appendChildWidget(osc1_in_a);
-        //osc1_in_n->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC1_IN_A],osc1_in_a);
 
         // ps
 
-        MIP_SliderWidget* osc1_phase_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,240,110,20),"Phase");
+        MIP_SliderWidget* osc1_phase_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,240,115,20),"Phase");
         osc1_panel->appendChildWidget(osc1_phase_shaper_slider);
         osc1_phase_shaper_slider->setSnap(true);
         osc1_phase_shaper_slider->setSnapPos(0.5);
         osc1_phase_shaper_slider->setSnapDist(0.05);
         connectWidget(AParameters[PAR_OSC1_PM_AMOUNT],osc1_phase_shaper_slider);
 
-        MIP_SelectorWidget* osc1_phase_shaper_selector = new MIP_SelectorWidget( MIP_DRect(130,240,110,20),"Phase Shp",phase_shaper_type_menu );
+        MIP_SelectorWidget* osc1_phase_shaper_selector = new MIP_SelectorWidget( MIP_DRect(135,240,115,20),"Phase Shp",phase_shaper_type_menu );
         osc1_panel->appendChildWidget(osc1_phase_shaper_selector);
         osc1_phase_shaper_selector->setTextSize(-0.7);
         osc1_phase_shaper_selector->setSelected(0);
@@ -303,14 +301,14 @@ public:
 
         // ws
 
-        MIP_SliderWidget* osc1_wave_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,270,110,20),"Wave");
+        MIP_SliderWidget* osc1_wave_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,270,115,20),"Wave");
         osc1_panel->appendChildWidget(osc1_wave_shaper_slider);
         osc1_wave_shaper_slider->setSnap(true);
         osc1_wave_shaper_slider->setSnapPos(0.5);
         osc1_wave_shaper_slider->setSnapDist(0.05);
         connectWidget(AParameters[PAR_OSC1_WM_AMOUNT],osc1_wave_shaper_slider);
 
-        MIP_SelectorWidget* osc1_wave_shaper_selector = new MIP_SelectorWidget( MIP_DRect(130,270,110,20),"Wave Shp",wave_shaper_type_menu );
+        MIP_SelectorWidget* osc1_wave_shaper_selector = new MIP_SelectorWidget( MIP_DRect(135,270,115,20),"Wave Shp",wave_shaper_type_menu );
         osc1_wave_shaper_selector->setTextSize(-0.7);
 
         osc1_panel->appendChildWidget(osc1_wave_shaper_selector);
@@ -319,13 +317,13 @@ public:
 
 // ----- res1 -----
 
-      MIP_PanelWidget* res1_panel = new MIP_PanelWidget(MIP_DRect(10,320,250,260) );
+      MIP_PanelWidget* res1_panel = new MIP_PanelWidget(MIP_DRect(10,320,260,260) );
       res1_panel->setBackgroundColor(0.55);
       controls->appendChildWidget(res1_panel);
 
         // text
 
-        MIP_TextWidget* res1_text = new MIP_TextWidget(MIP_DRect(0,0,250,20),"RES1");
+        MIP_TextWidget* res1_text = new MIP_TextWidget(MIP_DRect(0,0,260,20),"RES1");
         res1_panel->appendChildWidget(res1_text);
         res1_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
         res1_text->setTextSize(-0.8);
@@ -337,7 +335,7 @@ public:
 
         // type
 
-        MIP_SelectorWidget* res1_type_selector = new MIP_SelectorWidget( MIP_DRect(10,30,230,20),"Res Type",res_type_menu );
+        MIP_SelectorWidget* res1_type_selector = new MIP_SelectorWidget( MIP_DRect(10,30,240,20),"Res Type",res_type_menu );
         res1_type_selector->setTextSize(-0.7);
         res1_panel->appendChildWidget(res1_type_selector);
         res1_type_selector->setSelected(0);
@@ -347,32 +345,30 @@ public:
 
         MIP_Knob2Widget* res1_in_o1 = new MIP_Knob2Widget( MIP_DRect(10,60,30,45),"O1");
         res1_panel->appendChildWidget(res1_in_o1);
-        //res1_in_o1->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES1_IN_O1],res1_in_o1);
 
-        MIP_Knob2Widget* res1_in_o2 = new MIP_Knob2Widget( MIP_DRect(45,60,30,45),"O2");
+        MIP_Knob2Widget* res1_in_o2 = new MIP_Knob2Widget( MIP_DRect(40,60,30,45),"O2");
         res1_panel->appendChildWidget(res1_in_o2);
-        //res1_in_o2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES1_IN_O2],res1_in_o2);
 
-        MIP_Knob2Widget* res1_in_r1 = new MIP_Knob2Widget( MIP_DRect(80,60,30,45),"R1");
+        MIP_Knob2Widget* res1_in_r1 = new MIP_Knob2Widget( MIP_DRect(70,60,30,45),"R1");
         res1_panel->appendChildWidget(res1_in_r1);
-        //res1_in_r1->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES1_IN_R1],res1_in_r1);
 
-        MIP_Knob2Widget* res1_in_r2 = new MIP_Knob2Widget( MIP_DRect(115,60,30,45),"R2");
+        MIP_Knob2Widget* res1_in_r2 = new MIP_Knob2Widget( MIP_DRect(100,60,30,45),"R2");
         res1_panel->appendChildWidget(res1_in_r2);
-        //res1_in_r2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES1_IN_R2],res1_in_r2);
 
-        MIP_Knob2Widget* res1_in_n = new MIP_Knob2Widget( MIP_DRect(150,60,30,45),"N");
+        MIP_Knob2Widget* res1_in_n = new MIP_Knob2Widget( MIP_DRect(160,60,30,45),"N");
         res1_panel->appendChildWidget(res1_in_n);
-        //res1_in_n->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES1_IN_N],res1_in_n);
 
-        MIP_Knob2Widget* res1_in_a = new MIP_Knob2Widget( MIP_DRect(185,60,30,45),"A");
+        MIP_Knob2Widget* res1_in_i = new MIP_Knob2Widget( MIP_DRect(190,60,30,45),"I");
+        res1_panel->appendChildWidget(res1_in_i);
+        connectWidget(AParameters[PAR_RES1_IN_I],res1_in_i);
+
+        MIP_Knob2Widget* res1_in_a = new MIP_Knob2Widget( MIP_DRect(220,60,30,45),"A");
         res1_panel->appendChildWidget(res1_in_a);
-        //res1_in_n->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES1_IN_A],res1_in_a);
 
         // shape
@@ -404,13 +400,13 @@ public:
 
         // speed
 
-        MIP_SliderWidget* res1_speed_slider = new MIP_SliderWidget( MIP_DRect(10,200,230,20),"speed" );
+        MIP_SliderWidget* res1_speed_slider = new MIP_SliderWidget( MIP_DRect(10,200,240,20),"speed" );
         res1_panel->appendChildWidget(res1_speed_slider);
         connectWidget(AParameters[PAR_RES1_SPEED],res1_speed_slider);
 
         // oct
 
-        MIP_DragValueWidget* res1_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,230,70,20),"Oct");
+        MIP_DragValueWidget* res1_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,230,72,20),"Oct");
         res1_panel->appendChildWidget(res1_oct_slider);
         //res1_oct_slider->setSnap(true);
         //res1_oct_slider->setSnapPos(0.5);
@@ -424,7 +420,7 @@ public:
 
         // semi
 
-        MIP_DragValueWidget* res1_semi_slider = new MIP_DragValueWidget( MIP_DRect(90,230,70,20),"Semi");
+        MIP_DragValueWidget* res1_semi_slider = new MIP_DragValueWidget( MIP_DRect(94,230,72,20),"Semi");
         res1_panel->appendChildWidget(res1_semi_slider);
         //res1_semi_slider->setSnap(true);
         //res1_semi_slider->setSnapPos(0.5);
@@ -438,7 +434,7 @@ public:
 
         // cent
 
-        MIP_DragValueWidget* res1_cent_slider = new MIP_DragValueWidget( MIP_DRect(170,230,70,20),"Cent");
+        MIP_DragValueWidget* res1_cent_slider = new MIP_DragValueWidget( MIP_DRect(178,230,72,20),"Cent");
         res1_panel->appendChildWidget(res1_cent_slider);
         res1_cent_slider->setSnap(true);
         res1_cent_slider->setSnapPos(0);
@@ -458,14 +454,14 @@ public:
 
 // ----- osc2
 
-      MIP_PanelWidget* osc2_panel = new MIP_PanelWidget(MIP_DRect(10+260,10,250,300) );
+      MIP_PanelWidget* osc2_panel = new MIP_PanelWidget(MIP_DRect(280,10,260,300) );
       controls->appendChildWidget(osc2_panel);
       osc2_panel->setFillBackground(true);
       osc2_panel->setBackgroundColor(0.55);
 
         // text
 
-        MIP_TextWidget* osc2_text = new MIP_TextWidget(MIP_DRect(0,0,250,20),"OSC2");
+        MIP_TextWidget* osc2_text = new MIP_TextWidget(MIP_DRect(0,0,260,20),"OSC2");
         osc2_panel->appendChildWidget(osc2_text);
         osc2_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
         osc2_text->setTextSize(-0.8);
@@ -477,7 +473,7 @@ public:
 
         // type
 
-        MIP_SelectorWidget* osc2_type_selector = new MIP_SelectorWidget( MIP_DRect(10,30,230,20),"Osc Type",osc_type_menu );
+        MIP_SelectorWidget* osc2_type_selector = new MIP_SelectorWidget( MIP_DRect(10,30,240,20),"Osc Type",osc_type_menu );
         osc2_panel->appendChildWidget(osc2_type_selector);
         osc2_type_selector->setTextSize(-0.7);
         osc2_type_selector->setSelected(0);
@@ -501,7 +497,7 @@ public:
 
         // oct
 
-        MIP_DragValueWidget* osc2_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,150,70,20),"Oct");
+        MIP_DragValueWidget* osc2_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,150,72,20),"Oct");
         osc2_panel->appendChildWidget(osc2_oct_slider);
         //osc2_oct_slider->setSnap(true);
         //osc2_oct_slider->setSnapPos(0.5);
@@ -515,7 +511,7 @@ public:
 
         // semi
 
-        MIP_DragValueWidget* osc2_semi_slider = new MIP_DragValueWidget( MIP_DRect(90,150,70,20),"Semi");
+        MIP_DragValueWidget* osc2_semi_slider = new MIP_DragValueWidget( MIP_DRect(94,150,72,20),"Semi");
         osc2_panel->appendChildWidget(osc2_semi_slider);
         //osc2_semi_slider->setSnap(true);
         //osc2_semi_slider->setSnapPos(0.5);
@@ -529,7 +525,7 @@ public:
 
         // cent
 
-        MIP_DragValueWidget* osc2_cent_slider = new MIP_DragValueWidget( MIP_DRect(170,150,70,20),"Cent");
+        MIP_DragValueWidget* osc2_cent_slider = new MIP_DragValueWidget( MIP_DRect(178,150,72,20),"Cent");
         osc2_panel->appendChildWidget(osc2_cent_slider);
         osc2_cent_slider->setSnap(true);
         osc2_cent_slider->setSnapPos(0);
@@ -545,44 +541,42 @@ public:
 
         MIP_Knob2Widget* osc2_in_o1 = new MIP_Knob2Widget( MIP_DRect(10,180,30,45),"O1");
         osc2_panel->appendChildWidget(osc2_in_o1);
-        //osc2_in_o1->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC2_IN_O1],osc2_in_o1);
 
-        MIP_Knob2Widget* osc2_in_o2 = new MIP_Knob2Widget( MIP_DRect(45,180,30,45),"O2");
+        MIP_Knob2Widget* osc2_in_o2 = new MIP_Knob2Widget( MIP_DRect(40,180,30,45),"O2");
         osc2_panel->appendChildWidget(osc2_in_o2);
-        //osc2_in_o1->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC2_IN_O2],osc2_in_o2);
 
-        MIP_Knob2Widget* osc2_in_r1 = new MIP_Knob2Widget( MIP_DRect(80,180,30,45),"R1");
+        MIP_Knob2Widget* osc2_in_r1 = new MIP_Knob2Widget( MIP_DRect(70,180,30,45),"R1");
         osc2_panel->appendChildWidget(osc2_in_r1);
-        //osc2_in_o2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC2_IN_R1],osc2_in_r1);
 
-        MIP_Knob2Widget* osc2_in_r2 = new MIP_Knob2Widget( MIP_DRect(115,180,30,45),"R2");
+        MIP_Knob2Widget* osc2_in_r2 = new MIP_Knob2Widget( MIP_DRect(100,180,30,45),"R2");
         osc2_panel->appendChildWidget(osc2_in_r2);
-        //osc2_in_r1->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC2_IN_R2],osc2_in_r2);
 
-        MIP_Knob2Widget* osc2_in_n = new MIP_Knob2Widget( MIP_DRect(150,180,30,45),"N");
+        MIP_Knob2Widget* osc2_in_n = new MIP_Knob2Widget( MIP_DRect(160,180,30,45),"N");
         osc2_panel->appendChildWidget(osc2_in_n);
-        //osc2_in_r2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC2_IN_N],osc2_in_n);
 
-        MIP_Knob2Widget* osc2_in_a = new MIP_Knob2Widget( MIP_DRect(185,180,30,45),"A");
+        MIP_Knob2Widget* osc2_in_i = new MIP_Knob2Widget( MIP_DRect(190,180,30,45),"I");
+        osc2_panel->appendChildWidget(osc2_in_i);
+        connectWidget(AParameters[PAR_OSC2_IN_I],osc2_in_i);
+
+        MIP_Knob2Widget* osc2_in_a = new MIP_Knob2Widget( MIP_DRect(220,180,30,45),"A");
         osc2_panel->appendChildWidget(osc2_in_a);
-        //osc2_in_r2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_OSC2_IN_A],osc2_in_a);
 
         // ps
 
-        MIP_SliderWidget* osc2_phase_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,240,110,20),"Phase");
+        MIP_SliderWidget* osc2_phase_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,240,115,20),"Phase");
         osc2_panel->appendChildWidget(osc2_phase_shaper_slider);
         osc2_phase_shaper_slider->setSnap(true);
         osc2_phase_shaper_slider->setSnapPos(0.5);
         osc2_phase_shaper_slider->setSnapDist(0.05);
         connectWidget(AParameters[PAR_OSC2_PM_AMOUNT],osc2_phase_shaper_slider);
 
-        MIP_SelectorWidget* osc2_phase_shaper_selector = new MIP_SelectorWidget( MIP_DRect(130,240,110,20),"Phase Shp",phase_shaper_type_menu );
+        MIP_SelectorWidget* osc2_phase_shaper_selector = new MIP_SelectorWidget( MIP_DRect(135,240,115,20),"Phase Shp",phase_shaper_type_menu );
         osc2_phase_shaper_selector->setTextSize(-0.7);
         osc2_panel->appendChildWidget(osc2_phase_shaper_selector);
         osc2_phase_shaper_selector->setSelected(0);
@@ -590,14 +584,14 @@ public:
 
         // ws
 
-        MIP_SliderWidget* osc2_wave_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,270,110,20),"Wave");
+        MIP_SliderWidget* osc2_wave_shaper_slider = new MIP_SliderWidget(MIP_DRect(10,270,115,20),"Wave");
         osc2_panel->appendChildWidget(osc2_wave_shaper_slider);
         osc2_wave_shaper_slider->setSnap(true);
         osc2_wave_shaper_slider->setSnapPos(0.5);
         osc2_wave_shaper_slider->setSnapDist(0.05);
         connectWidget(AParameters[PAR_OSC2_WM_AMOUNT],osc2_wave_shaper_slider);
 
-        MIP_SelectorWidget* osc2_wave_shaper_selector = new MIP_SelectorWidget( MIP_DRect(130,270,110,20),"Wave Shp",wave_shaper_type_menu );
+        MIP_SelectorWidget* osc2_wave_shaper_selector = new MIP_SelectorWidget( MIP_DRect(135,270,115,20),"Wave Shp",wave_shaper_type_menu );
         osc2_wave_shaper_selector->setTextSize(-0.7);
         osc2_panel->appendChildWidget(osc2_wave_shaper_selector);
         osc2_wave_shaper_selector->setSelected(0);
@@ -605,13 +599,13 @@ public:
 
 // ----- res2 -----
 
-      MIP_PanelWidget* res2_panel = new MIP_PanelWidget(MIP_DRect(10+260,320,250,260) );
+      MIP_PanelWidget* res2_panel = new MIP_PanelWidget(MIP_DRect(280,320,260,260) );
       res2_panel->setBackgroundColor(0.55);
       controls->appendChildWidget(res2_panel);
 
         // text
 
-        MIP_TextWidget* res2_text = new MIP_TextWidget(MIP_DRect(0,0,250,20),"RES2");
+        MIP_TextWidget* res2_text = new MIP_TextWidget(MIP_DRect(0,0,260,20),"RES2");
         res2_panel->appendChildWidget(res2_text);
         res2_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
         res2_text->setTextSize(-0.8);
@@ -632,32 +626,30 @@ public:
 
         MIP_Knob2Widget* res2_in_o1 = new MIP_Knob2Widget( MIP_DRect(10,60,30,45),"O1");
         res2_panel->appendChildWidget(res2_in_o1);
-        //res2_in_o1->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES2_IN_O1],res2_in_o1);
 
-        MIP_Knob2Widget* res2_in_o2 = new MIP_Knob2Widget( MIP_DRect(45,60,30,45),"O2");
+        MIP_Knob2Widget* res2_in_o2 = new MIP_Knob2Widget( MIP_DRect(40,60,30,45),"O2");
         res2_panel->appendChildWidget(res2_in_o2);
-        //res2_in_o2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES2_IN_O2],res2_in_o2);
 
-        MIP_Knob2Widget* res2_in_r1 = new MIP_Knob2Widget( MIP_DRect(80,60,30,45),"R1");
+        MIP_Knob2Widget* res2_in_r1 = new MIP_Knob2Widget( MIP_DRect(70,60,30,45),"R1");
         res2_panel->appendChildWidget(res2_in_r1);
-        //res2_in_r1->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES2_IN_R1],res2_in_r1);
 
-        MIP_Knob2Widget* res2_in_r2 = new MIP_Knob2Widget( MIP_DRect(115,60,30,45),"R2");
+        MIP_Knob2Widget* res2_in_r2 = new MIP_Knob2Widget( MIP_DRect(100,60,30,45),"R2");
         res2_panel->appendChildWidget(res2_in_r2);
-        //res2_in_r2->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES2_IN_R2],res2_in_r2);
 
-        MIP_Knob2Widget* res2_in_n = new MIP_Knob2Widget( MIP_DRect(150,60,30,45),"N");
+        MIP_Knob2Widget* res2_in_n = new MIP_Knob2Widget( MIP_DRect(160,60,30,45),"N");
         res2_panel->appendChildWidget(res2_in_n);
-        //res2_in_n->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES2_IN_N],res2_in_n);
 
-        MIP_Knob2Widget* res2_in_a = new MIP_Knob2Widget( MIP_DRect(185,60,30,45),"A");
+        MIP_Knob2Widget* res2_in_i = new MIP_Knob2Widget( MIP_DRect(190,60,30,45),"I");
+        res2_panel->appendChildWidget(res2_in_i);
+        connectWidget(AParameters[PAR_RES2_IN_I],res2_in_i);
+
+        MIP_Knob2Widget* res2_in_a = new MIP_Knob2Widget( MIP_DRect(220,60,30,45),"A");
         res2_panel->appendChildWidget(res2_in_a);
-        //res2_in_n->getKnobWidget()->setArcThickness(4);
         connectWidget(AParameters[PAR_RES2_IN_A],res2_in_a);
 
         // shape
@@ -689,13 +681,13 @@ public:
 
         // speed
 
-        MIP_SliderWidget* res2_speed_slider = new MIP_SliderWidget( MIP_DRect(10,200,230,20),"speed" );
+        MIP_SliderWidget* res2_speed_slider = new MIP_SliderWidget( MIP_DRect(10,200,240,20),"speed" );
         res2_panel->appendChildWidget(res2_speed_slider);
         connectWidget(AParameters[PAR_RES2_SPEED],res2_speed_slider);
 
         // oct
 
-        MIP_DragValueWidget* res2_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,230,70,20),"Oct");
+        MIP_DragValueWidget* res2_oct_slider = new MIP_DragValueWidget( MIP_DRect(10,230,72,20),"Oct");
         res2_panel->appendChildWidget(res2_oct_slider);
         //res2_oct_slider->setSnap(true);
         //res2_oct_slider->setSnapPos(0.5);
@@ -709,7 +701,7 @@ public:
 
         // semi
 
-        MIP_DragValueWidget* res2_semi_slider = new MIP_DragValueWidget( MIP_DRect(90,230,70,20),"Semi");
+        MIP_DragValueWidget* res2_semi_slider = new MIP_DragValueWidget( MIP_DRect(94,230,72,20),"Semi");
         res2_panel->appendChildWidget(res2_semi_slider);
         //res2_semi_slider->setSnap(true);
         //res2_semi_slider->setSnapPos(0.5);
@@ -723,7 +715,7 @@ public:
 
         // cent
 
-        MIP_DragValueWidget* res2_cent_slider = new MIP_DragValueWidget( MIP_DRect(170,230,70,20),"Cent");
+        MIP_DragValueWidget* res2_cent_slider = new MIP_DragValueWidget( MIP_DRect(178,230,72,20),"Cent");
         res2_panel->appendChildWidget(res2_cent_slider);
         res2_cent_slider->setSnap(true);
         res2_cent_slider->setSnapPos(0);
@@ -743,7 +735,7 @@ public:
 
       // voices
 
-      MIP_PanelWidget* voice2_panel = new MIP_PanelWidget(MIP_DRect(530,10,276,75+30) );
+      MIP_PanelWidget* voice2_panel = new MIP_PanelWidget(MIP_DRect(550,10,276,75+30) );
       voice2_panel->setBackgroundColor(0.55);
       controls->appendChildWidget(voice2_panel);
 
@@ -783,7 +775,7 @@ public:
 
       // ----- global -----
 
-      MIP_PanelWidget* global_panel = new MIP_PanelWidget(MIP_DRect(530,125,276,210) );
+      MIP_PanelWidget* global_panel = new MIP_PanelWidget(MIP_DRect(550,125,276,210) );
       global_panel->setBackgroundColor(0.57);
       controls->appendChildWidget(global_panel);
 
@@ -860,7 +852,7 @@ public:
 
       // ----- flt1 -----
 
-      MIP_PanelWidget* flt1_panel = new MIP_PanelWidget(MIP_DRect(530,345,276,145) );
+      MIP_PanelWidget* flt1_panel = new MIP_PanelWidget(MIP_DRect(550,345,276,145) );
       flt1_panel->setBackgroundColor(0.55);
       controls->appendChildWidget(flt1_panel);
 
@@ -898,7 +890,7 @@ public:
 
       // ----- env1
 
-      MIP_PanelWidget* env1_panel = new MIP_PanelWidget(MIP_DRect(530,500,276,112) );
+      MIP_PanelWidget* env1_panel = new MIP_PanelWidget(MIP_DRect(550,500,276,112) );
       env1_panel->setFillBackground(true);
       env1_panel->setBackgroundColor(0.55);
       controls->appendChildWidget(env1_panel);

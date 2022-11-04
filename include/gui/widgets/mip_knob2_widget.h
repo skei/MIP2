@@ -53,7 +53,7 @@ public:
     MLabelWidget = new MIP_TextWidget( MIP_DRect( 0,0,MRect.w,h02 ), AText );
     MLabelWidget->setFillBackground(false);//(true);
     MLabelWidget->setDrawBorder(false);
-    MLabelWidget->setTextSize(-0.8);
+    MLabelWidget->setTextSize(-1.0);
     MLabelWidget->setTextColor( MIP_Color(0)/*MIP_COLOR_BLACK*/);
     appendChildWidget(MLabelWidget);
 
@@ -64,7 +64,7 @@ public:
     MValueWidget->setFillBackground(false);//(true);
     MValueWidget->setDrawBorder(false);
     MValueWidget->setText(MKnobValueText);
-    MValueWidget->setTextSize(-0.8);
+    MValueWidget->setTextSize(-0.9);
     MValueWidget->setTextColor( MIP_Color(0)/*MIP_COLOR_BLACK*/);
     appendChildWidget(MValueWidget);
 

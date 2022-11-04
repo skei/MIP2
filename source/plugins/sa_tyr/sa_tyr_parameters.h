@@ -27,6 +27,7 @@ enum sa_tyr_eparameter {
   PAR_OSC1_IN_R1,
   PAR_OSC1_IN_R2,
   PAR_OSC1_IN_N,
+  PAR_OSC1_IN_I,
   PAR_OSC1_IN_A,
 
   PAR_OSC1_TYPE,
@@ -49,6 +50,7 @@ enum sa_tyr_eparameter {
   PAR_OSC2_IN_R1,
   PAR_OSC2_IN_R2,
   PAR_OSC2_IN_N,
+  PAR_OSC2_IN_I,
   PAR_OSC2_IN_A,
 
   PAR_OSC2_TYPE,
@@ -71,6 +73,7 @@ enum sa_tyr_eparameter {
   PAR_RES1_IN_R1,
   PAR_RES1_IN_R2,
   PAR_RES1_IN_N,
+  PAR_RES1_IN_I,
   PAR_RES1_IN_A,
 
   PAR_RES1_TYPE,
@@ -90,6 +93,7 @@ enum sa_tyr_eparameter {
   PAR_RES2_IN_R1,
   PAR_RES2_IN_R2,
   PAR_RES2_IN_N,
+  PAR_RES2_IN_I,
   PAR_RES2_IN_A,
 
   PAR_RES2_TYPE,
@@ -245,6 +249,17 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
       | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "N",
+    "",
+    0.0,
+    1.0,
+    0.0
+  },
+  { PAR_OSC1_IN_I,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    nullptr,
+    "I",
     "",
     0.0,
     1.0,
@@ -441,6 +456,17 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     1.0,
     0.0
   },
+  { PAR_OSC2_IN_I,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    nullptr,
+    "I",
+    "",
+    0.0,
+    1.0,
+    0.0
+  },
   { PAR_OSC2_IN_A,
     CLAP_PARAM_IS_AUTOMATABLE
       | CLAP_PARAM_IS_MODULATABLE
@@ -629,6 +655,17 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     1.0,
     1.0
   },
+  { PAR_RES1_IN_I,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    nullptr,
+    "I",
+    "",
+    0.0,
+    1.0,
+    0.0
+  },
   { PAR_RES1_IN_A,
     CLAP_PARAM_IS_AUTOMATABLE
       | CLAP_PARAM_IS_MODULATABLE
@@ -804,6 +841,17 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     0.0,
     1.0,
     1.0
+  },
+  { PAR_RES2_IN_I,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    nullptr,
+    "I",
+    "",
+    0.0,
+    1.0,
+    0.0
   },
   { PAR_RES2_IN_A,
     CLAP_PARAM_IS_AUTOMATABLE
