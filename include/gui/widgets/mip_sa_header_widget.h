@@ -60,13 +60,13 @@ public:
 
     MLogoImage = new MIP_ImageWidget( MIP_DRect(10,10,60,60), MLogoBitmap );
     //MLogoImage->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT_TOP;
-    MLogoImage->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MLogoImage->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     appendChildWidget(MLogoImage);
 
     // botage
 
     MPluginName = new MIP_TextWidget( MIP_DRect(80,10,(ARect.w - 200),60), "" );
-    MPluginName->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MPluginName->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     MPluginName->setTextSize(-0.7);
     MPluginName->setTextFont("Header");
     MPluginName->setTextColor(MIP_Color(0.75));
@@ -78,13 +78,13 @@ public:
     // mip2
 
     MMip2Image = new MIP_ImageWidget( MIP_DRect((ARect.w - 110),10,100,60), MMip2Bitmap );
-    MMip2Image->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MMip2Image->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     appendChildWidget(MMip2Image);
 
     // plugin version
 
     MPluginVersion  = new MIP_TextWidget( MIP_DRect(80,56,200,10), "" );
-    MPluginVersion->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MPluginVersion->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     MPluginVersion->setTextSize(-1);
     MPluginVersion->setTextColor(MIP_Color(0.25) );
     MPluginVersion->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
@@ -96,7 +96,7 @@ public:
 
     sprintf(MClapText,"CLAP %i.%i.%i",CLAP_VERSION_MAJOR,CLAP_VERSION_MINOR,CLAP_VERSION_REVISION);
     MClapTextWidget = new MIP_TextWidget( MIP_DRect((ARect.w - 110),51,100,10),MClapText );
-    MClapTextWidget->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MClapTextWidget->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     MClapTextWidget->setText(MClapText);
     MClapTextWidget->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
     MClapTextWidget->setTextSize(-0.9);

@@ -49,7 +49,7 @@ public:
 
     //MLabelWidget = new MIP_TextWidget( MIP_DRect( 1, 0.20 ), AText );
     //MLabelWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-    //MLabelWidget->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+    //MLabelWidget->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_PARENT_RATIO;
     MLabelWidget = new MIP_TextWidget( MIP_DRect( 0,0,MRect.w,h02 ), AText );
     MLabelWidget->setFillBackground(false);//(true);
     MLabelWidget->setDrawBorder(false);
@@ -59,7 +59,7 @@ public:
 
     //MValueWidget = new MIP_TextWidget( MIP_DRect( 1, 0.20 ), AText );
     //MValueWidget->Layout.alignment = MIP_WIDGET_ALIGN_FILL_BOTTOM;
-    //MValueWidget->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+    //MValueWidget->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_PARENT_RATIO;
     MValueWidget = new MIP_TextWidget( MIP_DRect( 0,MRect.h-h02,MRect.w, h02 ), AText );
     MValueWidget->setFillBackground(false);//(true);
     MValueWidget->setDrawBorder(false);

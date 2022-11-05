@@ -20,9 +20,9 @@
 
 //----------
 
-#define PARAM_SMOOTH_FACTOR (1.0 / 100.0)
-#define MOD_SMOOTH_FACTOR   (1.0 / 100.0)
-#define EXPR_SMOOTH_FACTOR  (1.0 / 300.0)
+#define PARAM_SMOOTH_FACTOR (1.0 / 200.0)
+#define MOD_SMOOTH_FACTOR   (1.0 / 200.0)
+#define EXPR_SMOOTH_FACTOR  (1.0 / 500.0)
 
 //----------------------------------------------------------------------
 //
@@ -84,7 +84,7 @@ private:
   T                 note_bright_tgt = 0.0;
   T                 note_press_tgt  = 0.0;
 
-  T                 hz              = 0.0;  // note hz
+//T                 hz              = 0.0;  // note hz
 
   float             O1              = 0.0;
   float             O2              = 0.0;
@@ -102,11 +102,11 @@ public:
   //----------
 
   ~sa_tyr_voice() {
-    if (MParameters) free(MParameters);
-    if (MModulations) free(MModulations);
-    if (MParameterTargets) free(MParameterTargets);
+    if (MParameters)        free(MParameters);
+    if (MModulations)       free(MModulations);
+    if (MParameterTargets)  free(MParameterTargets);
     if (MModulationTargets) free(MModulationTargets);
-    if (MParameterFactors) free(MParameterFactors);
+    if (MParameterFactors)  free(MParameterFactors);
     if (MModulationFactors) free(MModulationFactors);
   }
 
@@ -129,26 +129,22 @@ public:
     MResonator1.setSampleRate(MContext->samplerate);
     MResonator2.setSampleRate(MContext->samplerate);
     MAmpEnvelope.setSampleRate(MContext->samplerate);
+
     uint32_t num = MContext->parameters->size();
 
-    MParameters  = (T*)malloc(num * sizeof(T));
-    MModulations = (T*)malloc(num * sizeof(T));
-    MParameterTargets  = (T*)malloc(num * sizeof(T));
-    MModulationTargets = (T*)malloc(num * sizeof(T));
-    MParameterFactors  = (T*)malloc(num * sizeof(T));
-    MModulationFactors = (T*)malloc(num * sizeof(T));
+    MParameters         = (T*)malloc(num * sizeof(T));
+    MModulations        = (T*)malloc(num * sizeof(T));
+    MParameterTargets   = (T*)malloc(num * sizeof(T));
+    MModulationTargets  = (T*)malloc(num * sizeof(T));
+    MParameterFactors   = (T*)malloc(num * sizeof(T));
+    MModulationFactors  = (T*)malloc(num * sizeof(T));
 
-
-    memset(MParameters,0,num * sizeof(T));
-    memset(MModulations,0,num * sizeof(T));
-
-    memset(MParameterTargets,0,num * sizeof(T));
-    memset(MModulationTargets,0,num * sizeof(T));
-
-    //memset(MParametersFactor,0,num * sizeof(T));
-    //memset(MModulationsFactor,0,num * sizeof(T));
     for (uint32_t i=0; i<num; i++) {
-      MParameterFactors[i] = PARAM_SMOOTH_FACTOR;
+      MParameters[i]        = 0.0;
+      MModulations[i]       = 0.0;
+      MParameterTargets[i]  = 0.0;
+      MModulationTargets[i] = 0.0;
+      MParameterFactors[i]  = PARAM_SMOOTH_FACTOR;
       MModulationFactors[i] = MOD_SMOOTH_FACTOR;
     }
 
@@ -169,35 +165,43 @@ public:
   uint32_t note_on(int32_t key, T velocity) {
     //MIP_Print("%i velocity %.3f\n",MIndex,velocity);
 
-    note_key      = key;
-    note_onvel    = velocity;
+    note_key          = key;
+    note_onvel        = velocity;
 
-//    note_press    = 0.0;
-//    note_bright   = 0.0;
-//    note_tuning   = 0.0;
-//    note_vol      = 0.0;
-//    note_pan      = 0.0;
-//    note_vibr     = 0.0;
-//    note_expr     = 0.0;
+    note_press        = 0.0;
+    note_bright       = 0.0;
+    note_tuning       = 0.0;
+    note_vol          = 0.0;
+    note_pan          = 0.0;
+    note_vibr         = 0.0;
+    note_expr         = 0.0;
 
-    note_vol_tgt      = 0.0;
-    note_pan_tgt      = 0.0;
-    note_tuning_tgt   = 0.0;
     note_press_tgt    = 0.0;
     note_bright_tgt   = 0.0;
+    note_tuning_tgt   = 0.0;
+    note_vol_tgt      = 0.0;
+    note_pan_tgt      = 0.0;
     note_vibr_tgt     = 0.0;
     note_expr_tgt     = 0.0;
 
-    MOscillator1.restart(true,false);
+    MOscillator1.restart(true,false); // reset phase, random phase
     MOscillator2.restart(true,false);
     MResonator1.restart();
     MResonator2.restart();
     MAmpEnvelope.noteOn();
+    MFilter.reset();
+
     O1 = 0.0;
     O2 = 0.0;
     R1 = 0.0;
     R2 = 0.0;
+
+    for (uint32_t i=0; i<PARAM_COUNT; i++) {
+      MParameters[i] = MParameterTargets[i];
+    }
+
     return MIP_VOICE_PLAYING;
+
   }
 
   //----------
@@ -237,14 +241,6 @@ public:
     //MIP_Print("%i value %.3f\n",MIndex,value);
     //note_tuning = value;
     note_tuning_tgt = value;
-
-    //t = 0.0;
-    //dt = 0.0;
-    //hz = MIP_NoteToHz(note_key + note_tuning);
-    //if (hz > 0.0) {
-    //  dt = 1.0 / MIP_HzToSamples(hz,MContext->samplerate);
-    //}
-
   }
 
   //----------

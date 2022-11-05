@@ -513,6 +513,7 @@
 		<Unit filename="../include/base/utils/mip_interpolation.h" />
 		<Unit filename="../include/base/utils/mip_isaac.h" />
 		<Unit filename="../include/base/utils/mip_json.h" />
+		<Unit filename="../include/base/utils/mip_logfile.h" />
 		<Unit filename="../include/base/utils/mip_lua.h" />
 		<Unit filename="../include/base/utils/mip_math.h" />
 		<Unit filename="../include/base/utils/mip_modular.h" />
@@ -747,6 +748,11 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="../source/mip_test/mip_test.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/mip_test/tests/gui/test_window.h" />
 		<Unit filename="../source/plugins/gain.cpp">
 			<Option compile="0" />
 			<Option link="0" />
@@ -823,7 +829,15 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../source/test/test_window.cpp">
+		<Unit filename="../source/test/test_layout.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_logfile.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../source/test/test_win32.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
@@ -839,14 +853,6 @@
 		</Unit>
 		<Unit filename="../tools/dump_ttl.sh" />
 		<Unit filename="build.cpp" />
-		<Unit filename="test/test_layout.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="test/test_win32.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

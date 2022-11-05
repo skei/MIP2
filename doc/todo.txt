@@ -154,10 +154,9 @@
 
 * widget.highlight : click on a text line in a textbox to highlight it
 
+* redraw widgets when state changes..
 * widget.selected, widget.focused
-
 * movable widgets
-
 * resizable widgets
 
 //----------------------------------------------------------------------

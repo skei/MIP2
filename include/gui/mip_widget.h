@@ -24,23 +24,22 @@ typedef MIP_Array<MIP_Widget*> MIP_WidgetArray;
 
 struct MIP_WidgetLayout {
   uint32_t    alignment     = MIP_WIDGET_ALIGN_PARENT;      // alignment relative to parent
+  uint32_t    scaleMode     = MIP_WIDGET_SCALE_MODE_PIXELS; //
   double      aspectRatio   = -1;                           // if > 0, force aspect ratio (scale down)
-  uint32_t    rectMode      = MIP_WIDGET_RECT_MODE_PIXELS;      // x,w - PIXELS = normal, RATIO = % of client/parent, SPREAD = fit children
-  MIP_DRect   initialRect   = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
-//MIP_DPoint  initialRatio  = MIP_DPoint(0,0);
-  MIP_DRect   baseRect      = MIP_DRect(0,0,0,0);           // initial/creation rect (start realigning from this)
+  MIP_DRect   initialRect   = MIP_DRect(0,0,0,0);           // creation/initial rect
+  MIP_DRect   baseRect      = MIP_DRect(0,0,0,0);           // current 'base'.. starts realigning from this
   MIP_DRect   border        = MIP_DRect(0,0,0,0);           // inner border
   MIP_DRect   extraBorder   = MIP_DRect(0,0,0,0);           // additional border
   MIP_DPoint  spacing       = MIP_DPoint(0,0);              // spacing between child widgets
   MIP_DPoint  minSize       = MIP_DPoint(0,0);              // minimum size
   MIP_DPoint  maxSize       = MIP_DPoint(999999,999999);    // maximum size
 //MIP_DPoint  scale         = MIP_DPoint(1,1);              // spacing between child widgets
+//MIP_DPoint  initialRatio  = MIP_DPoint(0,0);
 };
 
 //----------
 
 struct MIP_WidgetOptions {
-  bool captureMouse     = true;
   bool doubleClick      = false;
   bool autoSetCursor    = true;
   bool autoHideCursor   = false;
@@ -48,19 +47,22 @@ struct MIP_WidgetOptions {
   bool autoSize         = false;
   bool autoSizeContent  = false;
   bool wantHoverEvents  = false;
-//bool clipChildren     = false;
   bool alignIfHidden    = false;
+//bool moveable         = false;
+//bool sizeable         = false;
+//bool captureMouse     = true;
+//bool clipChildren     = false;
 };
 
 //----------
 
 struct MIP_WidgetState {
   bool active           = true;
-  bool interactive      = false;
   bool visible          = true;
-  bool dirty            = false;
-  bool highlighted      = false;
-  bool focused          = false;
+//bool interactive      = false;
+//bool dirty            = false;
+//bool highlighted      = false;
+//bool focused          = false;
 };
 
 //----------------------------------------------------------------------
@@ -94,6 +96,7 @@ protected:
   MIP_WidgetArray   MChildren     = {};
   MIP_DRect         MRect         = {0};
   MIP_DRect         MContentRect  = {0};
+  MIP_DPoint        MScaleFactors = {0};
   int32_t           MIndex        = 0;
   uint32_t          MMouseCursor  = MIP_CURSOR_DEFAULT;
   MIP_Parameter*    MParameter    = {0};
@@ -161,11 +164,12 @@ public:
 
   virtual MIP_Parameter*    getParameter()    { return MParameter; }
 
-  virtual bool              isInteractive()   { return State.interactive; }
-  virtual bool              isDirty()         { return State.dirty; }
+//virtual bool              isInteractive()   { return State.interactive; }
+//virtual bool              isDirty()         { return State.dirty; }
 
   virtual MIP_DRect         getRect()         { return MRect; }
   virtual MIP_DRect         getContentRect()  { return MContentRect; }
+  virtual MIP_DPoint        getScaleFactors() { return MScaleFactors; }
 
   virtual uint32_t          getNumChildWidgets()        { return MChildren.size(); }
   virtual MIP_Widget*       getChildWidget(uint32_t i)  { return MChildren[i]; }
@@ -173,6 +177,8 @@ public:
 
   virtual void setName(const char* AName) { MName = AName; }
   virtual void setHint(const char* AHint) { /*MHint = AHint;*/ }
+
+  virtual void setScaleFactors(MIP_DPoint f) { MScaleFactors = f; }
 
 //------------------------------
 public:
@@ -393,7 +399,7 @@ public: // hierarchy
   */
 
   virtual void setRectMode(uint32_t ARectMode, bool ARecursive=true) {
-    Layout.rectMode = ARectMode;
+    Layout.scaleMode = ARectMode;
     if (ARecursive) {
       uint32_t num = MChildren.size();
       for (uint32_t i=0; i<num; i++) {
@@ -523,28 +529,32 @@ public: // hierarchy
           MIP_DRect child_rect = child->Layout.baseRect;
           uint32_t  alignment = child->Layout.alignment;
 
-          // sizemode
+          // scale mode
 
-          switch (child->Layout.rectMode) {
-            case MIP_WIDGET_RECT_MODE_PIXELS:
+          switch (child->Layout.scaleMode) {
+            case MIP_WIDGET_SCALE_MODE_PIXELS:
+              child->setScaleFactors(MIP_DPoint(1,1));
               break;
-            case MIP_WIDGET_RECT_MODE_PARENT_RATIO:
+            case MIP_WIDGET_SCALE_MODE_PARENT_RATIO:
               child_rect.x *= parent_rect.w;
               child_rect.y *= parent_rect.h;
               child_rect.w *= parent_rect.w;
               child_rect.h *= parent_rect.h;
+              child->setScaleFactors(MIP_DPoint(1,1));
               break;
-            case MIP_WIDGET_RECT_MODE_CLIENT_RATIO:
+            case MIP_WIDGET_SCALE_MODE_CLIENT_RATIO:
               child_rect.x *= client_rect.w;
               child_rect.y *= client_rect.h;
               child_rect.w *= client_rect.w;
               child_rect.h *= client_rect.h;
+              child->setScaleFactors(MIP_DPoint(1,1));
               break;
-            case MIP_WIDGET_RECT_MODE_INITIAL_RATIO:
+            case MIP_WIDGET_SCALE_MODE_INITIAL_RATIO:
               child_rect.x *= w_scaled;
               child_rect.y *= h_scaled;
               child_rect.w *= w_scaled;
               child_rect.h *= h_scaled;
+              child->setScaleFactors(MIP_DPoint(w_scaled,h_scaled));
               break;
           }
 
@@ -896,6 +906,8 @@ public: // hierarchy
 
           } // switch
 
+          //----------
+
           // min/max size
           child_rect.w = MIP_Clamp( child_rect.w, child->Layout.minSize.w, child->Layout.maxSize.w );
           child_rect.h = MIP_Clamp( child_rect.h, child->Layout.minSize.h, child->Layout.maxSize.h );
@@ -926,6 +938,9 @@ public: // hierarchy
           child->MRect = child_rect;
 //          child->MRect.scale(Layout.scale);
           MContentRect.combine(child_rect);
+
+          //----------
+
           if (ARecursive) {
             child->alignChildWidgets(ARecursive);
           }

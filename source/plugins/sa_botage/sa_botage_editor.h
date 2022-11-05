@@ -64,7 +64,7 @@ public:
     // filter menu
 
     MFXFilterMenu = new MIP_MenuWidget( MIP_DRect( 0, 0, 160,80), this );
-    MFXFilterMenu->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MFXFilterMenu->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     MFXFilterMenu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 0,160,20), "Off" ));
     MFXFilterMenu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,20,160,20), "LowPass" ));
     MFXFilterMenu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,40,160,20), "HighPass" ));
@@ -73,7 +73,7 @@ public:
 
     for (uint32_t i=0; i<MFXFilterMenu->getNumChildWidgets(); i++) {
       MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)MFXFilterMenu->getChildWidget(i);
-      w->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
     }
 
@@ -85,7 +85,7 @@ public:
 
     MIP_PanelWidget* background = new MIP_PanelWidget( MIP_DRect(EDITOR_WIDTH,EDITOR_HEIGHT) );
     background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-    background->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    background->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     //    background->Layout.aspectRatio = (double)AWidth / (double)AHeight;
     background->Layout.aspectRatio = (double)EDITOR_WIDTH / (double)EDITOR_HEIGHT;
     background->setFillBackground(true);
@@ -97,40 +97,40 @@ public:
 
     //    MIP_PanelWidget* header = new MIP_PanelWidget(MIP_DRect( 10,10, 530,40 ));
     MIP_SAHeaderWidget* header = new MIP_SAHeaderWidget(MIP_DRect( 10,10, 530,80 ));
-    header->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    header->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     header->setPluginName("botage"); // getDescriptor()->name
-    header->setPluginVersion("0.0.12-pre1");
+    header->setPluginVersion("0.0.12");
     background->appendChildWidget(header);
 
     // footer
 
     MIP_PanelWidget* footer = new MIP_PanelWidget(MIP_DRect( 0,EDITOR_HEIGHT-20, EDITOR_WIDTH,20 ));
-    footer->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    footer->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(footer);
 
     //{
     //  MIP_SizerWidget* window_sizer = new MIP_SizerWidget(MIP_DRect(EDITOR_WIDTH-20,0,20,20),MIP_WIDGET_SIZER_WINDOW,window);
-    //  window_sizer->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    //  window_sizer->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     //  footer->appendChildWidget(window_sizer);
     //}
 
     // waveform
 
     MWaveform = new MIP_WaveformWidget(MIP_DRect( 10,100, 530,70 ));
-    MWaveform->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    MWaveform->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(MWaveform);
 
     // beats/slices
 
     MIP_SliderWidget* w_beats = new MIP_SliderWidget(MIP_DRect( 10,180, 260,20 ), "Beats", 4);
-    w_beats->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    w_beats->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     w_beats->setTextSize( -0.7 );
     w_beats->setValueSize( -0.7 );
     background->appendChildWidget(w_beats);
     connectWidget( AParameters[PAR_NUM_BEATS], w_beats );
 
     MIP_SliderWidget* w_slices = new MIP_SliderWidget(MIP_DRect( 280,180, 260,20 ), "Slices", 2);
-    w_slices->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    w_slices->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     w_slices->setTextSize( -0.7 );
     w_slices->setValueSize( -0.7 );
     background->appendChildWidget(w_slices);
@@ -141,7 +141,7 @@ public:
     // tabs
 
     MIP_TabsWidget* tabs = new MIP_TabsWidget( MIP_DRect(10,180, 530, EDITOR_HEIGHT-180-10-15), 3 );
-    tabs->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    tabs->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(tabs);
 
       MIP_PanelWidget* prob_page = new MIP_PanelWidget(0);
@@ -159,7 +159,7 @@ public:
 #endif // 0
 
     MIP_ButtonRowWidget* brow = new MIP_ButtonRowWidget( MIP_DRect(10,220, 530,25), 3, brow_text, MIP_BUTTON_ROW_SINGLE );
-    brow->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    brow->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     brow->setTextSize(-0.5);
     background->appendChildWidget(brow);
 
@@ -170,12 +170,12 @@ public:
     // repeat
 
     MIP_PanelWidget* repeat_section = new MIP_PanelWidget(MIP_DRect( 10,180 + TH, 260,110) );
-    repeat_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    repeat_section->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(repeat_section);
 
     {
       MIP_TextWidget* t0 = new MIP_TextWidget( MIP_DRect(0,0,260,15), "Range");
-      t0->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t0->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t0->setFillBackground(true);
       t0->setBackgroundColor(0.2);
       t0->setDrawBorder(false);
@@ -184,7 +184,7 @@ public:
       repeat_section->appendChildWidget(t0);
 
       MIP_KnobWidget* k = new MIP_KnobWidget( MIP_DRect(5,40,65,65), "qwe", 0.5);
-      k->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k->setFillBackground(false);
       k->setDrawBorder(false);
       //k->setTextSize(-0.9);
@@ -194,7 +194,7 @@ public:
 
 
       MIP_TextWidget* t1 = new MIP_TextWidget( MIP_DRect(80,30,150,15), "Slices");
-      t1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t1->setFillBackground(false);
       t1->setDrawBorder(false);
       t1->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
@@ -203,7 +203,7 @@ public:
       repeat_section->appendChildWidget(t1);
 
       MIP_ButtonRowWidget* b1 = new MIP_ButtonRowWidget( MIP_DRect(80,45,150,15), 8, txt18, MIP_BUTTON_ROW_MULTI);
-      b1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      b1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       b1->setFillBackground(false);
       b1->setDrawBorder(false);
       b1->setTextSize(-0.8);
@@ -212,7 +212,7 @@ public:
       connectWidget( AParameters[PAR_RANGE_SLICE_COUNT], b1 );
 
       MIP_TextWidget* t2 = new MIP_TextWidget( MIP_DRect(80,65,150,15), "Loops");
-      t2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t2->setFillBackground(false);
       t2->setDrawBorder(false);
       t2->setTextAlignment(MIP_TEXT_ALIGN_LEFT);
@@ -221,7 +221,7 @@ public:
       repeat_section->appendChildWidget(t2);
 
       MIP_ButtonRowWidget* b2 = new MIP_ButtonRowWidget( MIP_DRect(80,80,150,15), 8, txt18, MIP_BUTTON_ROW_MULTI);
-      b2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      b2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       b2->setFillBackground(false);
       b2->setDrawBorder(false);
       b2->setTextSize(-0.8);
@@ -233,12 +233,12 @@ public:
     // env
 
     MIP_PanelWidget* env_section = new MIP_PanelWidget(MIP_DRect( 10,300 + TH, 260,110) );
-    env_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    env_section->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(env_section);
 
     {
       MIP_TextWidget* t0 = new MIP_TextWidget( MIP_DRect(0,0,260,15), "Envelopes");
-      t0->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t0->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t0->setFillBackground(true);
       t0->setBackgroundColor(0.2);
       t0->setDrawBorder(false);
@@ -247,28 +247,28 @@ public:
       env_section->appendChildWidget(t0);
 
       MIP_SliderWidget* s1 = new MIP_SliderWidget( MIP_DRect(10,25,115,15), "Loop Attack", 0);
-      s1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s1->setTextSize(-0.7);
       s1->setValueSize(-0.7);
       env_section->appendChildWidget(s1);
       connectWidget( AParameters[PAR_LOOP_ENV_ATTACK], s1 );
 
       MIP_SliderWidget* s2 = new MIP_SliderWidget( MIP_DRect(135,25,115,15), "Loop Decay", 0);
-      s2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s2->setTextSize(-0.7);
       s2->setValueSize(-0.7);
       env_section->appendChildWidget(s2);
       connectWidget( AParameters[PAR_LOOP_ENV_DECAY], s2 );
 
       MIP_SliderWidget* s3 = new MIP_SliderWidget( MIP_DRect(10,45,115,15), "Slice Attack", 0);
-      s3->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s3->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s3->setTextSize(-0.7);
       s3->setValueSize(-0.7);
       env_section->appendChildWidget(s3);
       connectWidget( AParameters[PAR_SLICE_ENV_ATTACK], s3 );
 
       MIP_SliderWidget* s4 = new MIP_SliderWidget( MIP_DRect(135,45,115,15), "Slice Decay", 0);
-      s4->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s4->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s4->setTextSize(-0.7);
       s4->setValueSize(-0.7);
       env_section->appendChildWidget(s4);
@@ -279,12 +279,12 @@ public:
     // filter
 
     MIP_PanelWidget* filter_section = new MIP_PanelWidget(MIP_DRect( 10,420 + TH, 260,110) );
-    filter_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    filter_section->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(filter_section);
 
     {
       MIP_TextWidget* t0 = new MIP_TextWidget( MIP_DRect(0,0,260,15), "FX Filter");
-      t0->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t0->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t0->setFillBackground(true);
       t0->setBackgroundColor(0.2);
       t0->setDrawBorder(false);
@@ -293,28 +293,28 @@ public:
       filter_section->appendChildWidget(t0);
 
       MIP_SelectorWidget* sel1 = new MIP_SelectorWidget( MIP_DRect(10,25,240,15), "Type", MFXFilterMenu );
-      sel1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      sel1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       sel1->setTextSize(-0.9);
       filter_section->appendChildWidget(sel1);
       connectWidget( AParameters[PAR_FX_FILTER_TYPE], sel1 );
 
 
       MIP_KnobWidget* k = new MIP_KnobWidget( MIP_DRect(10,45,40,44), "", 0.5);
-      k->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k->setFillBackground(false);
       k->setDrawBorder(false);
       filter_section->appendChildWidget(k);
       connectWidget( AParameters[PAR_FX_FILTER_PROB], k );
 
       MIP_SliderWidget* s1 = new MIP_SliderWidget( MIP_DRect(60,45,190,15), "Freq", 0);
-      s1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s1->setTextSize(-0.7);
       s1->setValueSize(-0.7);
       filter_section->appendChildWidget(s1);
       connectWidget( AParameters[PAR_FX_FILTER_FREQ], s1 );
 
       MIP_SliderWidget* s2 = new MIP_SliderWidget( MIP_DRect(60,70,190,15), "BW", 0);
-      s2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s2->setTextSize(-0.7);
       s2->setValueSize(-0.7);
       filter_section->appendChildWidget(s2);
@@ -325,12 +325,12 @@ public:
     // loop size
 
     MIP_PanelWidget* size_section = new MIP_PanelWidget(MIP_DRect( 280,180 + TH, 260,65) );
-    size_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    size_section->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(size_section);
 
     {
       MIP_TextWidget* t0 = new MIP_TextWidget( MIP_DRect(0,0,260,15), "Loop Size");
-      t0->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t0->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t0->setFillBackground(true);
       t0->setBackgroundColor(0.3);
       t0->setDrawBorder(false);
@@ -339,42 +339,42 @@ public:
       size_section->appendChildWidget(t0);
 
       MIP_KnobWidget* k = new MIP_KnobWidget( MIP_DRect(10,20,40,40), "", 0.5);
-      k->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k->setFillBackground(false);
       k->setDrawBorder(false);
       size_section->appendChildWidget(k);
       connectWidget( AParameters[PAR_PROB_SIZE_PROB_RANGE], k );
 
       MIP_SliderWidget* s1 = new MIP_SliderWidget( MIP_DRect(60,20,65,15), "Min", 0);
-      s1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s1->setTextSize(-0.7);
       s1->setValueSize(-0.7);
       size_section->appendChildWidget(s1);
       connectWidget( AParameters[PAR_PROB_SIZE_MIN_RANGE], s1 );
 
       MIP_SliderWidget* s2 = new MIP_SliderWidget( MIP_DRect(60,40,65,15), "Max", 0);
-      s2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s2->setTextSize(-0.7);
       s2->setValueSize(-0.7);
       size_section->appendChildWidget(s2);
       connectWidget( AParameters[PAR_PROB_SIZE_MAX_RANGE], s2 );
 
       MIP_KnobWidget* k2 = new MIP_KnobWidget( MIP_DRect(135,20,40,40), "", 0.5);
-      k2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k2->setFillBackground(false);
       k2->setDrawBorder(false);
       size_section->appendChildWidget(k2);
       connectWidget( AParameters[PAR_PROB_SIZE_PROB_LOOP], k2 );
 
       MIP_SliderWidget* s3 = new MIP_SliderWidget( MIP_DRect(185,20,65,15), "Min", 0);
-      s3->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s3->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s3->setTextSize(-0.7);
       s3->setValueSize(-0.7);
       size_section->appendChildWidget(s3);
       connectWidget( AParameters[PAR_PROB_SIZE_MIN_LOOP], s3 );
 
       MIP_SliderWidget* s4 = new MIP_SliderWidget( MIP_DRect(185,40,65,15), "Max", 0);
-      s4->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s4->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s4->setTextSize(-0.7);
       s4->setValueSize(-0.7);
       size_section->appendChildWidget(s4);
@@ -385,12 +385,12 @@ public:
     // loop speed
 
     MIP_PanelWidget* speed_section = new MIP_PanelWidget(MIP_DRect( 280,255 + TH, 260,65) );
-    speed_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    speed_section->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(speed_section);
 
     {
       MIP_TextWidget* t0 = new MIP_TextWidget( MIP_DRect(0,0,260,15), "Loop Speed");
-      t0->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t0->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t0->setFillBackground(true);
       t0->setBackgroundColor(0.3);
       t0->setDrawBorder(false);
@@ -399,42 +399,42 @@ public:
       speed_section->appendChildWidget(t0);
 
       MIP_KnobWidget* k = new MIP_KnobWidget( MIP_DRect(10,20,40,40), "", 0.5);
-      k->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k->setFillBackground(false);
       k->setDrawBorder(false);
       speed_section->appendChildWidget(k);
       connectWidget( AParameters[PAR_PROB_SPEED_PROB_RANGE], k );
 
       MIP_SliderWidget* s1 = new MIP_SliderWidget( MIP_DRect(60,20,65,15), "Min", 0);
-      s1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s1->setTextSize(-0.7);
       s1->setValueSize(-0.7);
       speed_section->appendChildWidget(s1);
       connectWidget( AParameters[PAR_PROB_SPEED_MIN_RANGE], s1 );
 
       MIP_SliderWidget* s2 = new MIP_SliderWidget( MIP_DRect(60,40,65,15), "Max", 0);
-      s2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s2->setTextSize(-0.7);
       s2->setValueSize(-0.7);
       speed_section->appendChildWidget(s2);
       connectWidget( AParameters[PAR_PROB_SPEED_MAX_RANGE], s2 );
 
       MIP_KnobWidget* k2 = new MIP_KnobWidget( MIP_DRect(135,20,40,40), "", 0.5);
-      k2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k2->setFillBackground(false);
       k2->setDrawBorder(false);
       speed_section->appendChildWidget(k2);
       connectWidget( AParameters[PAR_PROB_SPEED_PROB_LOOP], k2 );
 
       MIP_SliderWidget* s3 = new MIP_SliderWidget( MIP_DRect(185,20,65,15), "Min", 0);
-      s3->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s3->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s3->setTextSize(-0.7);
       s3->setValueSize(-0.7);
       speed_section->appendChildWidget(s3);
       connectWidget( AParameters[PAR_PROB_SPEED_MIN_LOOP], s3 );
 
       MIP_SliderWidget* s4 = new MIP_SliderWidget( MIP_DRect(185,40,65,15), "Max", 0);
-      s4->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s4->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s4->setTextSize(-0.7);
       s4->setValueSize(-0.7);
       speed_section->appendChildWidget(s4);
@@ -445,12 +445,12 @@ public:
     // loop offset
 
     MIP_PanelWidget* offset_section = new MIP_PanelWidget(MIP_DRect( 280,330 + TH, 260,65) );
-    offset_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    offset_section->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(offset_section);
 
     {
       MIP_TextWidget* t0 = new MIP_TextWidget( MIP_DRect(0,0,260,15), "Loop Offset");
-      t0->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t0->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t0->setFillBackground(true);
       t0->setBackgroundColor(0.3);
       t0->setDrawBorder(false);
@@ -459,42 +459,42 @@ public:
       offset_section->appendChildWidget(t0);
 
       MIP_KnobWidget* k = new MIP_KnobWidget( MIP_DRect(10,20,40,40), "", 0.5);
-      k->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k->setFillBackground(false);
       k->setDrawBorder(false);
       offset_section->appendChildWidget(k);
       connectWidget( AParameters[PAR_PROB_OFFSET_PROB_RANGE], k );
 
       MIP_SliderWidget* s1 = new MIP_SliderWidget( MIP_DRect(60,20,65,15), "Min", 0);
-      s1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s1->setTextSize(-0.7);
       s1->setValueSize(-0.7);
       offset_section->appendChildWidget(s1);
       connectWidget( AParameters[PAR_PROB_OFFSET_MIN_RANGE], s1 );
 
       MIP_SliderWidget* s2 = new MIP_SliderWidget( MIP_DRect(60,40,65,15), "Max", 0);
-      s2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s2->setTextSize(-0.7);
       s2->setValueSize(-0.7);
       offset_section->appendChildWidget(s2);
       connectWidget( AParameters[PAR_PROB_OFFSET_MAX_RANGE], s2 );
 
       MIP_KnobWidget* k2 = new MIP_KnobWidget( MIP_DRect(135,20,40,40), "", 0.5);
-      k2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k2->setFillBackground(false);
       k2->setDrawBorder(false);
       offset_section->appendChildWidget(k2);
       connectWidget( AParameters[PAR_PROB_OFFSET_PROB_LOOP], k2 );
 
       MIP_SliderWidget* s3 = new MIP_SliderWidget( MIP_DRect(185,20,65,15), "Min", 0);
-      s3->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s3->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s3->setTextSize(-0.7);
       s3->setValueSize(-0.7);
       offset_section->appendChildWidget(s3);
       connectWidget( AParameters[PAR_PROB_OFFSET_MIN_LOOP], s3 );
 
       MIP_SliderWidget* s4 = new MIP_SliderWidget( MIP_DRect(185,40,65,15), "Max", 0);
-      s4->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s4->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s4->setTextSize(-0.7);
       s4->setValueSize(-0.7);
       offset_section->appendChildWidget(s4);
@@ -505,12 +505,12 @@ public:
     // loop reverse
 
     MIP_PanelWidget* reverse_section = new MIP_PanelWidget(MIP_DRect( 280,405 + TH, 260,65) );
-    reverse_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    reverse_section->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(reverse_section);
 
     {
       MIP_TextWidget* t0 = new MIP_TextWidget( MIP_DRect(0,0,260,15), "Loop Reverse");
-      t0->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t0->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t0->setFillBackground(true);
       t0->setBackgroundColor(0.3);
       t0->setDrawBorder(false);
@@ -519,42 +519,42 @@ public:
       reverse_section->appendChildWidget(t0);
 
       MIP_KnobWidget* k = new MIP_KnobWidget( MIP_DRect(10,20,40,40), "", 0.5);
-      k->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k->setFillBackground(false);
       k->setDrawBorder(false);
       reverse_section->appendChildWidget(k);
       connectWidget( AParameters[PAR_PROB_REVERSE_PROB_RANGE], k );
 
       //MIP_SliderWidget* s1 = new MIP_SliderWidget( MIP_DRect(60,20,65,15), "Min", 0);
-      //s1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      //s1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       //s1->setTextSize(-0.7);
       //s1->setValueSize(-0.7);
       //reverse_section->appendChildWidget(s1);
       //connectWidget( AParameters[PAR_PROB_REVERSE_MIN_RANGE], s1 );
 
       //MIP_SliderWidget* s2 = new MIP_SliderWidget( MIP_DRect(60,40,65,15), "Max", 0);
-      //s2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      //s2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       //s2->setTextSize(-0.7);
       //s2->setValueSize(-0.7);
       //reverse_section->appendChildWidget(s2);
       //connectWidget( AParameters[PAR_PROB_REVERSE_MAX_RANGE], s2 );
 
       MIP_KnobWidget* k2 = new MIP_KnobWidget( MIP_DRect(135,20,40,40), "", 0.5);
-      k2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k2->setFillBackground(false);
       k2->setDrawBorder(false);
       reverse_section->appendChildWidget(k2);
       connectWidget( AParameters[PAR_PROB_REVERSE_PROB_LOOP], k2 );
 
       //MIP_SliderWidget* s3 = new MIP_SliderWidget( MIP_DRect(185,20,65,15), "Min", 0);
-      //s3->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      //s3->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       //s3->setTextSize(-0.7);
       //s3->setValueSize(-0.7);
       //reverse_section->appendChildWidget(s3);
       //connectWidget( AParameters[PAR_PROB_REVERE_MIN_LOOP], s3 );
 
       //MIP_SliderWidget* s4 = new MIP_SliderWidget( MIP_DRect(185,40,65,15), "Max", 0);
-      //s4->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      //s4->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       //s4->setTextSize(-0.7);
       //s4->setValueSize(-0.7);
       //reverse_section->appendChildWidget(s4);
@@ -565,12 +565,12 @@ public:
     // loop fx
 
     MIP_PanelWidget* fx_section = new MIP_PanelWidget(MIP_DRect( 280,480 + TH, 260,65) );
-    fx_section->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    fx_section->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     background->appendChildWidget(fx_section);
 
     {
       MIP_TextWidget* t0 = new MIP_TextWidget( MIP_DRect(0,0,260,15), "Loop FX");
-      t0->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      t0->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       t0->setFillBackground(true);
       t0->setBackgroundColor(0.3);
       t0->setDrawBorder(false);
@@ -579,42 +579,42 @@ public:
       fx_section->appendChildWidget(t0);
 
       MIP_KnobWidget* k = new MIP_KnobWidget( MIP_DRect(10,20,40,40), "", 0.5);
-      k->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k->setFillBackground(false);
       k->setDrawBorder(false);
       fx_section->appendChildWidget(k);
       connectWidget( AParameters[PAR_PROB_FX_PROB_RANGE], k );
 
       MIP_SliderWidget* s1 = new MIP_SliderWidget( MIP_DRect(60,20,65,15), "Min", 0);
-      s1->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s1->setTextSize(-0.7);
       s1->setValueSize(-0.7);
       fx_section->appendChildWidget(s1);
       connectWidget( AParameters[PAR_PROB_FX_MIN_RANGE], s1 );
 
       MIP_SliderWidget* s2 = new MIP_SliderWidget( MIP_DRect(60,40,65,15), "Max", 0);
-      s2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s2->setTextSize(-0.7);
       s2->setValueSize(-0.7);
       fx_section->appendChildWidget(s2);
       connectWidget( AParameters[PAR_PROB_FX_MAX_RANGE], s2 );
 
       MIP_KnobWidget* k2 = new MIP_KnobWidget( MIP_DRect(135,20,40,40), "", 0.5);
-      k2->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      k2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       k2->setFillBackground(false);
       k2->setDrawBorder(false);
       fx_section->appendChildWidget(k2);
       connectWidget( AParameters[PAR_PROB_FX_PROB_LOOP], k2 );
 
       MIP_SliderWidget* s3 = new MIP_SliderWidget( MIP_DRect(185,20,65,15), "Min", 0);
-      s3->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s3->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s3->setTextSize(-0.7);
       s3->setValueSize(-0.7);
       fx_section->appendChildWidget(s3);
       connectWidget( AParameters[PAR_PROB_FX_MIN_LOOP], s3 );
 
       MIP_SliderWidget* s4 = new MIP_SliderWidget( MIP_DRect(185,40,65,15), "Max", 0);
-      s4->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      s4->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       s4->setTextSize(-0.7);
       s4->setValueSize(-0.7);
       fx_section->appendChildWidget(s4);

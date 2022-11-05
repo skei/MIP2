@@ -936,7 +936,7 @@ public:
     if (type == kAudio) {
       //if (dir == kInput) return MDescriptor->getNumAudioInputs();
       //else if (dir == kOutput) return MDescriptor->getNumAudioOutputs();
-      return 2;
+      return 1;
     }
     if (type == kEvent) {
       //if (dir==kOutput) return 1;

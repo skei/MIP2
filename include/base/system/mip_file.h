@@ -22,7 +22,7 @@
 #define MIP_FILE_WRITE_BINARY   (char*)"wb"
 #define MIP_FILE_WRITE_TEXT     (char*)"w"
 #define MIP_FILE_APPEND_BINARY  (char*)"ab"
-#define MIP_FILE_APPEND_TEXT    (char*)"w"
+#define MIP_FILE_APPEND_TEXT    (char*)"a"
 
 //----------------------------------------------------------------------
 
@@ -58,8 +58,13 @@ class MIP_File {
 
     //----------
 
-    virtual
-    bool exists(const char* AName) {
+    virtual bool isOpen() {
+      return (MHandle != nullptr);
+    }
+
+    //----------
+
+    virtual bool exists(const char* AName) {
       if (MHandle) return true;
       FILE* fp = fopen(AName,MIP_FILE_READ_TEXT);
       if (fp) {
@@ -73,8 +78,7 @@ class MIP_File {
 
     //----------
 
-    virtual
-    uint32_t length(void) {
+    virtual uint32_t length(void) {
       uint32_t len = 0;
       if (MHandle) {
         int32_t pos = ftell(MHandle);
@@ -95,8 +99,7 @@ class MIP_File {
 
     //----------
 
-    virtual
-    bool open(const char* AFilename, const char* AMode=MIP_FILE_READ_BINARY) {
+    virtual bool open(const char* AFilename, const char* AMode=MIP_FILE_READ_BINARY) {
       MName   = AFilename;
       MMode   = AMode;
       MHandle = fopen(MName,MMode);
@@ -106,26 +109,44 @@ class MIP_File {
 
     //----------
 
-    virtual
-    void close(void) {
+    virtual void close(void) {
       if (MHandle) fclose(MHandle);
       MHandle = nullptr;
     }
 
     //----------
 
-    virtual
-    uint32_t read(void* ABuffer, uint32_t ALength, uint32_t ASize=1) {
-      uint32_t num_read = fread(ABuffer,ASize,ALength,MHandle);
-      return num_read;
+    virtual uint32_t read(void* ABuffer, uint32_t ALength, uint32_t ASize=1) {
+      if (MHandle) {
+        uint32_t num_read = fread(ABuffer,ASize,ALength,MHandle);
+        return num_read;
+      }
+      else return 0;
     }
 
     //----------
 
-    virtual
-    uint32_t write(void* ABuffer, uint32_t ALength, uint32_t ASize=1) {
-      uint32_t num_written = fwrite(ABuffer,ASize,ALength,MHandle);
-      return num_written;
+    virtual uint32_t write(void* ABuffer, uint32_t ALength, uint32_t ASize=1) {
+      if (MHandle) {
+        uint32_t num_written = fwrite(ABuffer,ASize,ALength,MHandle);
+        return num_written;
+      }
+      else return 0;
+    }
+
+    virtual uint32_t write(const char* AText) {
+      if (MHandle) {
+        uint32_t len = strlen(AText);
+        uint32_t num_written = fwrite(AText,1,len,MHandle);
+        return num_written;
+      }
+      else return 0;
+    }
+
+    virtual void flush() {
+      if (MHandle) {
+        fflush(MHandle);
+      }
     }
 
 };

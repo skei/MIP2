@@ -163,7 +163,7 @@ public: // gui
       MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(1,1), "Gain", 0.0 );
       background->appendChildWidget(gain_knob);
       gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-      gain_knob->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+      gain_knob->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_PARENT_RATIO;
       gain_knob->Layout.aspectRatio = (4.0 / 6.0);
 
       MEditor->connectWidget(MParameters[PAR_GAIN],gain_knob);

@@ -17,6 +17,8 @@
   // nc -U -l -k /tmp/mip.socket
 #endif
 
+//#define MIP_LOG
+
 //----------------------------------------------------------------------
 
 #include "audio/mip_audio_utils.h"
@@ -31,9 +33,13 @@
 
 //
 
-#define SA_TYR_EDITOR_WIDTH  836
-#define SA_TYR_EDITOR_HEIGHT 703
-#define SA_TYR_NUM_VOICES    32
+#define SA_TYR_EDITOR_WIDTH   836
+#define SA_TYR_EDITOR_HEIGHT  703
+#define SA_TYR_NUM_VOICES     32
+
+#define SA_TYR_PLUGIN_NAME    "tyr"
+#define SA_TYR_PLUGIN_VERSION "0.0.9"
+
 
 
 #include "sa_tyr/sa_tyr_parameters.h"
@@ -54,13 +60,13 @@ typedef MIP_VoiceManager<sa_tyr_voice<double>,SA_TYR_NUM_VOICES> sa_tyr_voice_ma
 
 const clap_plugin_descriptor_t sa_tyr_descriptor = {
   .clap_version  = CLAP_VERSION,
-  .id            = "skei.audio/sa_tyr/0.0.8",
-  .name          = "sa_tyr",
+  .id            = "skei.audio/sa_tyr/0.0.9",
+  .name          = "sa_tyr",//SA_TYR_PLUGIN_NAME,
   .vendor        = "skei.audio",
   .url           = "https://torhelgeskei.com",
   .manual_url    = "",
   .support_url   = "",
-  .version       = "0.0.8",
+  .version       = SA_TYR_PLUGIN_VERSION,//"0.0.9",
   .description   = "",
   .features      = (const char*[]){ CLAP_PLUGIN_FEATURE_INSTRUMENT, nullptr }
 };
@@ -184,12 +190,12 @@ public: // gui
 //    window->appendChildWidget(background);
 //
 //    background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-//    background->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+//    background->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
 //      //background->Layout.border = MIP_DRect(10,10,10,10);
 //      MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(10,10,EDITOR_WIDTH-20,EDITOR_HEIGHT-20), "Gain", 0.0 );
 //      background->appendChildWidget(gain_knob);
 //      //gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-//      gain_knob->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+//      gain_knob->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
 //      gain_knob->Layout.aspectRatio = (4.0 / 6.0);
 //    MEditor->connectWidget(MParameters[PAR_GAIN],gain_knob);
 
@@ -387,8 +393,8 @@ public: // process
 //----------------------------------------------------------------------
 
 #include "plugin/clap/mip_clap_entry.h"
-//#include "plugin/exe/mip_exe_entry.h"
-//#include "plugin/vst2/mip_vst2_entry.h"
+#include "plugin/exe/mip_exe_entry.h"
+#include "plugin/vst2/mip_vst2_entry.h"
 #include "plugin/vst3/mip_vst3_entry.h"
 
 //----------

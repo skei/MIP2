@@ -1611,7 +1611,7 @@ public: // generic gui
 
     MIP_SAHeaderWidget* saheader = new MIP_SAHeaderWidget(MIP_DRect(0,0,w,80));
     editor->appendChildWidget(saheader);
-    saheader->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    saheader->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     saheader->setPluginName(name);
     saheader->setPluginVersion(version);
     saheader->setPluginVersion(getDescriptor()->version);
@@ -1620,8 +1620,8 @@ public: // generic gui
 
     MIP_TextWidget* footer_panel = new MIP_TextWidget(MIP_DRect(0,(h-25),w,25), "footer" );
     editor->appendChildWidget(footer_panel);
-    footer_panel->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
-    footer_panel->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+    footer_panel->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
+    footer_panel->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
     footer_panel->setFillBackground(true);
     footer_panel->setBackgroundColor(0.4);
     footer_panel->setDrawBorder(false);
@@ -1641,7 +1641,7 @@ public: // generic gui
           double value = parameter->getDefaultValue();
           MIP_SliderWidget* slider = new MIP_SliderWidget( MIP_DRect(10, 90 + (25 * i), w - 20, 20),name,value);
           editor->appendChildWidget(slider);
-          slider->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+          slider->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
           slider->setTextSize(-0.8);
           slider->setValueSize(-0.8);
           MEditor->connectWidget(parameter,slider);

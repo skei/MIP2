@@ -1,5 +1,5 @@
 
-//--------------------
+//----------------------------------------------------------------------
 // apps
 //--------------------
 
@@ -7,9 +7,11 @@
 //#include "../source/apps/clap-host/main.cpp"
 
 
-//--------------------
+//----------------------------------------------------------------------
+//
 // plugins
-//--------------------
+//
+//----------------------------------------------------------------------
 
 
 //#include "../source/plugins/gain.cpp"
@@ -46,14 +48,17 @@
 //#include "../source/plugins/sa_ports/sa_tilteq.h"             // sa-tq
 //#include "../source/plugins/sa_ports/sa_transient_killer.h"     // sa-tk
 
-//--------------------
+//----------------------------------------------------------------------
+//
 // test
-//--------------------
+//
+//----------------------------------------------------------------------
 
-//#include "../build/test/test_layout.cpp"
-//#include "../build/test/test_win32.cpp"
+//#include "../source/mip_test/mip_test.cpp"
 
 //-----
 
-//#include "../source/test/test_window.cpp"
+//#include "../source/test/test_layout.cpp"
+//#include "../source/test/test_logfile.cpp"
+//#include "../source/test/test_win32.cpp"
 

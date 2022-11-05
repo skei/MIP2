@@ -49,7 +49,7 @@ const clap_plugin_descriptor_t myDescriptor = {
    .url           = "https://torhelgeskei.com",
    .manual_url    = "",
    .support_url   = "",
-   .version       = "0.0.12-pre1",
+   .version       = "0.0.12",
    .description   = "",
    .features      =  (const char *[]){ CLAP_PLUGIN_FEATURE_AUDIO_EFFECT, nullptr }
 };

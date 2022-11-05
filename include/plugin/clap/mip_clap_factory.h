@@ -11,23 +11,25 @@
 //----------------------------------------------------------------------
 
 uint32_t clap_plugin_factory_get_plugin_count_callback(const struct clap_plugin_factory *factory) {
-  //MIP_PRINT;
-  return MIP_REGISTRY.getNumDescriptors();
+  int32_t num = MIP_REGISTRY.getNumDescriptors();
+  LOG.print("# clap_factory.get_plugin_count\n");
+  return num;
 }
 
 //----------
 
 const clap_plugin_descriptor_t* clap_plugin_factory_get_plugin_descriptor_callback(const struct clap_plugin_factory *factory, uint32_t index) {
-  //MIP_PRINT;
+  LOG.print("# clap_factory.get_plugin_descriptor (%i)\n",index);
   return MIP_REGISTRY.getDescriptor(index);
 }
 
 //----------
 
 const clap_plugin_t* clap_plugin_factory_create_plugin_callback(const struct clap_plugin_factory *factory, const clap_host_t *host, const char *plugin_id) {
-  //MIP_PRINT;
+  LOG.print("# clap_factory.create_plugin (%s)\n",plugin_id);
   if (MIP_CreatePlugin) {
     int32_t index = MIP_REGISTRY.findDescriptorById(plugin_id);
+    LOG.print("  - index %i\n",index);
     if (index >= 0) {
       const clap_plugin_descriptor_t* descriptor = MIP_REGISTRY.getDescriptor(index);
       MIP_Plugin* plugin = MIP_CreatePlugin(index,descriptor,host);

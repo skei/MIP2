@@ -8,6 +8,9 @@
 
 #include "sa_tyr_widgets.h"
 
+//#define _PLUG_NAME  "tyr"
+//#define _PLUG_VER   "0.0.9"
+
 //----------------------------------------------------------------------
 
 class sa_tyr_editor
@@ -51,7 +54,7 @@ public:
 
     for (uint32_t i=0; i<osc_type_menu->getNumChildWidgets(); i++) {
       MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)osc_type_menu->getChildWidget(i);
-      w->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
     }
 
@@ -68,7 +71,7 @@ public:
 
     for (uint32_t i=0; i<res_type_menu->getNumChildWidgets(); i++) {
       MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)res_type_menu->getChildWidget(i);
-      w->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
     }
 
@@ -87,7 +90,7 @@ public:
 
     for (uint32_t i=0; i<flt_type_menu->getNumChildWidgets(); i++) {
       MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)flt_type_menu->getChildWidget(i);
-      w->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
     }
 
@@ -110,7 +113,7 @@ public:
 
     for (uint32_t i=0; i<wave_shaper_type_menu->getNumChildWidgets(); i++) {
       MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)wave_shaper_type_menu->getChildWidget(i);
-      w->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
     }
 
@@ -131,7 +134,7 @@ public:
 
     for (uint32_t i=0; i<phase_shaper_type_menu->getNumChildWidgets(); i++) {
       MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)phase_shaper_type_menu->getChildWidget(i);
-      w->Layout.rectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO;
+      w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
     }
 
@@ -149,8 +152,8 @@ public:
 
     MIP_SAHeaderWidget* header = new MIP_SAHeaderWidget(MIP_DRect(0,0,SA_TYR_EDITOR_WIDTH,80));
     MEditorPanel->appendChildWidget(header);
-    header->setPluginName(" tyr");
-    header->setPluginVersion("0.0.8");
+    header->setPluginName(SA_TYR_PLUGIN_NAME);
+    header->setPluginVersion(SA_TYR_PLUGIN_VERSION);
 
     // controls
 
@@ -963,7 +966,7 @@ public:
     //
 
     //MEditorPanel->Layout.aspectRatio = EDITOR_WIDTH / EDITOR_HEIGHT;
-    MEditorPanel->setRectMode(MIP_WIDGET_RECT_MODE_INITIAL_RATIO);
+    MEditorPanel->setRectMode(MIP_WIDGET_SCALE_MODE_INITIAL_RATIO);
 
     window->appendChildWidget(MEditorPanel);
 

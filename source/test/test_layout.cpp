@@ -226,7 +226,7 @@ public: // gui
 
         MIP_ColorWidget* color1 = new MIP_ColorWidget(20,MIP_Color(0,0.5,0,1));
         color1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_TOP;
-        //color1->Layout.vRectMode = MIP_WIDGET_RECT_MODE_INITIAL_RATIO; // only works for 'static' containers/widgets..
+        //color1->Layout.vRectMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO; // only works for 'static' containers/widgets..
         left_scrollbox->appendChildWidget(color1);
 
         // panel
@@ -584,19 +584,19 @@ public: // gui
 
         MIP_PanelWidget* aspect_inner_rect1 = new MIP_PanelWidget( MIP_DRect(0.02,0.02,0.96,0.96) );
         aspect_inner_rect1->Layout.alignment = MIP_WIDGET_ALIGN_CLIENT;
-        aspect_inner_rect1->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+        aspect_inner_rect1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_PARENT_RATIO;
         aspect_rect1->appendChildWidget(aspect_inner_rect1);
 
         {
           MIP_Knob2Widget* knob1 = new MIP_Knob2Widget(MIP_DRect(0,0,0.45,0.45),"knob1",0.5);
           knob1->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-          knob1->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+          knob1->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_PARENT_RATIO;
           knob1->Layout.aspectRatio = 2.0 / 3.0;
           aspect_inner_rect1->appendChildWidget(knob1);
 
           MIP_Knob2Widget* knob2 = new MIP_Knob2Widget(MIP_DRect(0.02,0,0.45,0.45),"knob2",0.5);
           knob2->Layout.alignment = MIP_WIDGET_ALIGN_FILL_LEFT;
-          knob2->Layout.rectMode = MIP_WIDGET_RECT_MODE_PARENT_RATIO;
+          knob2->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_PARENT_RATIO;
           knob2->Layout.aspectRatio = 2.0 / 3.0;
           knob2->getKnobWidget()->Options.autoHideCursor = false;
           aspect_inner_rect1->appendChildWidget(knob2);

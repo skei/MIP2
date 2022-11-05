@@ -280,24 +280,27 @@ public:
       }
       MHoverWidget = hover;
     }
+
     /*
     // edges/resizable
     if (MHoverWidget) {
-      MIP_DRect r = MHoverWidget->getRect();
-      if (AXpos >= (r.x2() - 5)) {
-        setMouseCursor(MIP_CURSOR_ARROW_RIGHT);
-      }
-      else if (AXpos <= (r.x + 5)) {
-        setMouseCursor(MIP_CURSOR_ARROW_LEFT);
-      }
-      else if (AYpos >= (r.y2() - 5)) {
-        setMouseCursor(MIP_CURSOR_ARROW_DOWN);
-      }
-      else if (AYpos <= (r.y + 5)) {
-        setMouseCursor(MIP_CURSOR_ARROW_UP);
-      }
-      else {
-        setMouseCursor(MIP_CURSOR_DEFAULT);
+      if (MHoverWidget->Options.sizeable) {
+        MIP_DRect r = MHoverWidget->getRect();
+        if (AXpos >= (r.x2() - 5)) {
+          setMouseCursor(MIP_CURSOR_ARROW_RIGHT);
+        }
+        else if (AXpos <= (r.x + 5)) {
+          setMouseCursor(MIP_CURSOR_ARROW_LEFT);
+        }
+        else if (AYpos >= (r.y2() - 5)) {
+          setMouseCursor(MIP_CURSOR_ARROW_DOWN);
+        }
+        else if (AYpos <= (r.y + 5)) {
+          setMouseCursor(MIP_CURSOR_ARROW_UP);
+        }
+        else {
+          setMouseCursor(MIP_CURSOR_DEFAULT);
+        }
       }
     }
     */
@@ -454,20 +457,32 @@ public: // window
     MMousePrevY     = AYpos;
     MMouseDragX     = AXpos;
     MMouseDragY     = AYpos;
+
     int32_t elapsed = (ATime - MPrevClickTime);
     bool dblclick = (elapsed < MIP_WINDOW_DBLCLICK_MS);
     MPrevClickTime = ATime;
+
     if (MHoverWidget && (MHoverWidget != this)) {
-      if (dblclick && MHoverWidget->Options.doubleClick) {
-        MClickedWidget = MHoverWidget;
-        MClickedCount += 1;
-        MHoverWidget->on_widget_mouse_dblclick(AButton,AState,AXpos,AYpos,ATime);
-      }
-      else {
-        MClickedWidget = MHoverWidget;
-        MClickedCount += 1;
-        MHoverWidget->on_widget_mouse_click(AButton,AState,AXpos,AYpos,ATime);
-      }
+
+      //if (MHoverResizableEdge) {
+      //  // resize
+      //}
+
+      //else {
+
+        if (dblclick && MHoverWidget->Options.doubleClick) {
+          MClickedWidget = MHoverWidget;
+          MClickedCount += 1;
+          MHoverWidget->on_widget_mouse_dblclick(AButton,AState,AXpos,AYpos,ATime);
+        }
+        else {
+          MClickedWidget = MHoverWidget;
+          MClickedCount += 1;
+          MHoverWidget->on_widget_mouse_click(AButton,AState,AXpos,AYpos,ATime);
+        }
+
+      //}
+
     }
   }
 

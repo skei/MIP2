@@ -75,7 +75,7 @@ public: // parent to child
 
   void on_widget_mouse_click(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     if (AButton == MIP_BUTTON_LEFT) {
-      State.interactive = true;
+      //State.interactive = true;
       if (MIsToggle) {
         if (getValue() >= 0.5) {
           setValue(0.0);
@@ -101,7 +101,7 @@ public: // parent to child
 
   void on_widget_mouse_release(uint32_t AButton, uint32_t AState, double AXpos, double AYpos, uint32_t ATime) override {
     if (AButton == MIP_BUTTON_LEFT) {
-      State.interactive = false;
+      //State.interactive = false;
       if (MIsToggle) {
       }
       else {
