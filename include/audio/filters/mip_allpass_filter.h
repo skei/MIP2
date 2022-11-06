@@ -5,17 +5,18 @@
 //#include "base/mip_math.h" // KKillDenorm
 #include "audio/mip_audio_math.h" // KKillDenorm
 
+template <typename T>
 class MIP_AllpassFilter {
 
   private:
 
-    float a;
-    float x0,x1,x2;
-    float y0,y1,y2;
+    T a;
+    T x0,x1,x2;
+    T y0,y1,y2;
 
   public:
 
-    //SFilter_Allpass(float ACoefficient) {
+    //SFilter_Allpass(T ACoefficient) {
     //  a   = ACoefficient;
     //  x0  = 0;
     //  x1  = 0;
@@ -29,11 +30,11 @@ class MIP_AllpassFilter {
       setCoefficient(0);
     }
 
-    MIP_AllpassFilter(float ACoefficient) {
+    MIP_AllpassFilter(T ACoefficient) {
       setCoefficient(ACoefficient);
     }
 
-    void setCoefficient(float ACoefficient) {
+    void setCoefficient(T ACoefficient) {
       a   = ACoefficient;
       x0  = 0;
       x1  = 0;
@@ -43,7 +44,7 @@ class MIP_AllpassFilter {
       y2  = 0;
     }
 
-    float process(float AInput) {
+    T process(T AInput) {
       x2 = x1;
       x1 = x0;
       x0 = AInput;

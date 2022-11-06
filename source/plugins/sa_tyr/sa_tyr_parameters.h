@@ -2,6 +2,113 @@
 #define sa_tyr_parameters_included
 //----------------------------------------------------------------------
 
+#include "mip.h"
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+enum sa_tyr_osc_type_enum {
+  SA_TYR_OSC_TYPE_MORPH = 0,
+  //SA_TYR_OSC_TYPE_DSF,
+  //SA_TYR_OSC_TYPE_WAVETABLE,
+  SA_TYR_OSC_TYPE_COUNT
+};
+
+const char* sa_tyr_osc_type_text[SA_TYR_OSC_TYPE_COUNT] = {
+  "Morph"
+  //"DSF",
+  //"Wavetable"
+};
+
+enum sa_tyr_res_type_enum {
+  SA_TYR_RES_TYPE_PLUCK = 0,
+  //SA_TYR_RES_TYPE_REP_PLUCK,
+  //SA_TYR_RES_TYPE_NOT_IMPLEMENTED,
+  SA_TYR_RES_TYPE_COUNT
+};
+
+const char* sa_tyr_res_type_text[SA_TYR_RES_TYPE_COUNT] = {
+  "Pluck"
+  //"Rep. Pluck",
+  //"---"
+};
+
+enum sa_tyr_flt_type_enum {
+  SA_TYR_FLT_TYPE_OFF = 0,
+  SA_TYR_FLT_TYPE_LOWPASS,
+  SA_TYR_FLT_TYPE_HIGHPASS,
+  SA_TYR_FLT_TYPE_BANDPASS,
+  SA_TYR_FLT_TYPE_NOTCH,
+  SA_TYR_FLT_TYPE_COUNT
+};
+
+const char* sa_tyr_flt_type_text[SA_TYR_FLT_TYPE_COUNT] = {
+  "Off",
+  "Lowpass",
+  "Highpass",
+  "Bandpass",
+  "Notch"
+};
+
+enum sa_tyr_wm_type_enum {
+  SA_TYR_WM_TYPE_OFF = 0,
+  SA_TYR_WM_TYPE_CURVE,
+  SA_TYR_WM_TYPE_FOLD,
+  SA_TYR_WM_TYPE_AMPL_MOD,
+  SA_TYR_WM_TYPE_RING_MOD,
+  SA_TYR_WM_TYPE_RAMP_DOWN,
+  //SA_TYR_WM_TYPE_REPLACE,
+  //SA_TYR_WM_TYPE_NEGATE,
+  //SA_TYR_WM_TYPE_SIGN,
+  //SA_TYR_WM_TYPE_MAX,
+  SA_TYR_WM_TYPE_COUNT
+};
+
+const char* sa_tyr_wm_type_text[SA_TYR_WM_TYPE_COUNT] = {
+  "Off",
+  "Curve",
+  "Fold",
+  "Ampl Mod",
+  "Ring Mod",
+  "Ramp Down"
+  //"Replace",
+  //"Negate",
+  //"Sign",
+  //"Max",
+};
+
+enum sa_tyr_pm_type_enum {
+  SA_TYR_PM_TYPE_OFF = 0,
+  SA_TYR_PM_TYPE_CURVE,
+  SA_TYR_PM_TYPE_SYNC,
+  SA_TYR_PM_TYPE_SYNC_CLAMP,
+  SA_TYR_PM_TYPE_FLIP,
+  SA_TYR_PM_TYPE_PHASE_MOD,
+  SA_TYR_PM_TYPE_FREQ_MOD,
+  SA_TYR_PM_TYPE_COUNT
+};
+
+const char* sa_tyr_pm_type_text[SA_TYR_PM_TYPE_COUNT] = {
+  "Off",
+  "Curve",
+  "Sync",
+  "Sync Clamp",
+  "Flip",
+  "Phase Mod",
+  "Freq Mod"
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+
+
 /*
   todo: we can test the param_id, and the index in MParameters when
   we append the parameters, if they differ, the ordering is wrong..
@@ -27,6 +134,7 @@ enum sa_tyr_eparameter {
   PAR_OSC1_IN_R1,
   PAR_OSC1_IN_R2,
   PAR_OSC1_IN_N,
+  PAR_OSC1_IN_S,
   PAR_OSC1_IN_I,
   PAR_OSC1_IN_A,
 
@@ -50,6 +158,7 @@ enum sa_tyr_eparameter {
   PAR_OSC2_IN_R1,
   PAR_OSC2_IN_R2,
   PAR_OSC2_IN_N,
+  PAR_OSC2_IN_S,
   PAR_OSC2_IN_I,
   PAR_OSC2_IN_A,
 
@@ -73,6 +182,7 @@ enum sa_tyr_eparameter {
   PAR_RES1_IN_R1,
   PAR_RES1_IN_R2,
   PAR_RES1_IN_N,
+  PAR_RES1_IN_S,
   PAR_RES1_IN_I,
   PAR_RES1_IN_A,
 
@@ -93,6 +203,7 @@ enum sa_tyr_eparameter {
   PAR_RES2_IN_R1,
   PAR_RES2_IN_R2,
   PAR_RES2_IN_N,
+  PAR_RES2_IN_S,
   PAR_RES2_IN_I,
   PAR_RES2_IN_A,
 
@@ -254,6 +365,17 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     1.0,
     0.0
   },
+  { PAR_OSC1_IN_S,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    nullptr,
+    "S",
+    "",
+    0.0,
+    1.0,
+    0.0
+  },
   { PAR_OSC1_IN_I,
     CLAP_PARAM_IS_AUTOMATABLE
       | CLAP_PARAM_IS_MODULATABLE
@@ -286,15 +408,12 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "Type",
     "",
     0.0,
-    2.0,
+    SA_TYR_OSC_TYPE_COUNT - 1,//2.0,
     0.0
   },
   { PAR_OSC1_SHAPE,
     CLAP_PARAM_IS_AUTOMATABLE
       | CLAP_PARAM_IS_MODULATABLE
-      //| CLAP_PARAM_IS_MODULATABLE_PER_PORT
-      //| CLAP_PARAM_IS_MODULATABLE_PER_CHANNEL
-      //| CLAP_PARAM_IS_MODULATABLE_PER_KEY,
       | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Shape",
@@ -324,7 +443,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "Phase",
     "",
     0,
-    6,
+    SA_TYR_PM_TYPE_COUNT - 1,//6,
     0
   },
   { PAR_OSC1_PM_AMOUNT,
@@ -346,7 +465,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "Wave",
     "",
     0,
-    8,
+    SA_TYR_WM_TYPE_COUNT - 1,//8,
     0
   },
   { PAR_OSC1_WM_AMOUNT,
@@ -456,6 +575,17 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     1.0,
     0.0
   },
+  { PAR_OSC2_IN_S,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    nullptr,
+    "S",
+    "",
+    0.0,
+    1.0,
+    0.0
+  },
   { PAR_OSC2_IN_I,
     CLAP_PARAM_IS_AUTOMATABLE
       | CLAP_PARAM_IS_MODULATABLE
@@ -488,7 +618,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "Type",
     "",
     0.0,
-    2.0,
+    SA_TYR_OSC_TYPE_COUNT - 1,//2.0,
     0.0
   },
   { PAR_OSC2_SHAPE,
@@ -523,7 +653,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "Phase",
     "",
     0,
-    6,
+    SA_TYR_PM_TYPE_COUNT - 1,//6,
     0
   },
   { PAR_OSC2_PM_AMOUNT,
@@ -545,7 +675,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "Wave",
     "",
     0,
-    8,
+    SA_TYR_WM_TYPE_COUNT - 1,//8,
     0
   },
   { PAR_OSC2_WM_AMOUNT,
@@ -655,6 +785,17 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     1.0,
     1.0
   },
+  { PAR_RES1_IN_S,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    nullptr,
+    "S",
+    "",
+    0.0,
+    1.0,
+    0.0
+  },
   { PAR_RES1_IN_I,
     CLAP_PARAM_IS_AUTOMATABLE
       | CLAP_PARAM_IS_MODULATABLE
@@ -687,7 +828,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "Type",
     "",
     0.0,
-    2.0,
+    SA_TYR_RES_TYPE_COUNT - 1,//2.0,
     0.0
   },
   { PAR_RES1_SPEED,
@@ -842,6 +983,17 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     1.0,
     1.0
   },
+  { PAR_RES2_IN_S,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
+    nullptr,
+    "S",
+    "",
+    0.0,
+    1.0,
+    0.0
+  },
   { PAR_RES2_IN_I,
     CLAP_PARAM_IS_AUTOMATABLE
       | CLAP_PARAM_IS_MODULATABLE
@@ -874,7 +1026,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "Type",
     "",
     0.0,
-    2.0,
+    SA_TYR_RES_TYPE_COUNT - 1,//2.0,
     0.0
   },
   { PAR_RES2_SPEED,
@@ -979,7 +1131,7 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
     "Type",
     "",
     0.0,
-    4.0,
+    SA_TYR_FLT_TYPE_COUNT - 1,//4.0,
     1.0
   },
 

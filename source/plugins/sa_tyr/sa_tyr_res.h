@@ -43,10 +43,10 @@ private:
 
   T             MSampleRate   = 0.0;
   sa_tyr_Delay  MDelay        = {};
-  MIP_SvfFilter MInputShaper  = {};
+  //MIP_SvfFilter MInputShaper  = {};
 
   T MHz       = 0.0;
-  T MShape    = 0.0;
+  //T MShape    = 0.0;
   T MFeedback = 0.0;
   T MDamp     = 0.0;
   T MRough    = 0.0;
@@ -85,7 +85,7 @@ public:
     MHz = AHz;
   }
 
-  void setShape(T s)        { MShape = s; }
+  //void setShape(T s)        { MShape = s; }
   void setFeedback(T f)     { MFeedback = f; }
   void setDamp(T d)         { MDamp = d; }
   void setRough(T r)        { MRough = r; }
@@ -110,11 +110,11 @@ public:
   T process(T in) {
     T out = in;
 
-    T sh = 1.0 - MShape;
-    MInputShaper.setMode(MIP_SVF_LP);
-    MInputShaper.setFreq(sh * sh);
-    MInputShaper.setBW(1);
-    in = MInputShaper.process(in);
+    //T sh = 1.0 - MShape;
+    //MInputShaper.setMode(MIP_SVF_LP);
+    //MInputShaper.setFreq(sh * sh);
+    //MInputShaper.setBW(1);
+    //in = MInputShaper.process(in);
 
     T delay = (MSampleRate / MHz);
     //delay *= 0.5;
@@ -148,7 +148,7 @@ public:
     T _in = in;
 
     switch (MMode) {
-      case 0: {// plucked
+      case SA_TYR_RES_TYPE_PLUCK: {// plucked
         if (MDelay.hasWrapped()) {
 
           //_in = 0.0;
@@ -157,25 +157,26 @@ public:
         }
         break;
       }
-      case 1: { // repeated
-        if (MDelay.hasWrapped()) {
-          MSpeedCounter += 1;
-          if (MSpeedCounter >= MSpeed) {
-            MSpeedCounter = 0;
-            MDelay.start();
-          }
-          else {
 
-            //_in = 0.0;
-            _in *= MImpulse;
+      //case SA_TYR_RES_TYPE_REP_PLUCK: { // repeated
+      //  if (MDelay.hasWrapped()) {
+      //    MSpeedCounter += 1;
+      //    if (MSpeedCounter >= MSpeed) {
+      //      MSpeedCounter = 0;
+      //      MDelay.start();
+      //    }
+      //    else {
+      //      //_in = 0.0;
+      //      _in *= MImpulse;
+      //    }
+      //  }
+      //  break;
+      //}
 
-          }
-        }
-        break;
-      }
-      case 2: {
-        break;
-      }
+      //case SA_TYR_RES_TYPE_NOT_IMPLEMENTED: {
+      //  break;
+      //}
+
     }
 
     out = MDelay.process(_in,fb,delay);

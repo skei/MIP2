@@ -43,99 +43,53 @@ public:
 
     // osc menu
 
-    MIP_MenuWidget* osc_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,60));
-    osc_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 0,160,20), "Morph" ));
-    osc_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,20,160,20), "DSF" ));
-    osc_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,40,160,20), "Wavetable" ));
-    //osc_type_menu->setItemSize(100,20);
-    //osc_type_menu->setItemLayout(1,3);
-    //osc_type_menu->setMenuMirror(false,false);
-    //MEditorPanel->appendChildWidget(osc_type_menu);
-
-    for (uint32_t i=0; i<osc_type_menu->getNumChildWidgets(); i++) {
-      MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)osc_type_menu->getChildWidget(i);
+    MIP_MenuWidget* osc_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,SA_TYR_OSC_TYPE_COUNT*20));
+    for (uint32_t i=0; i<SA_TYR_OSC_TYPE_COUNT; i++) {
+      MIP_MenuItemWidget* w = new MIP_MenuItemWidget( MIP_DRect(0, i*20, 160, 20 ), sa_tyr_osc_type_text[i] );
       w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
+      osc_type_menu->appendChildWidget(w);
     }
 
     // res menu
 
-    MIP_MenuWidget* res_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,60));
-    res_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 0,160,20), "Pluck" ));
-    res_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,20,160,20), "Rep. Pluck" ));
-    res_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,40,160,20), "(not yet)" ));
-    //res_type_menu->setItemSize(120,20);
-    //res_type_menu->setItemLayout(1,3);
-    //res_type_menu->setMenuMirror(false,false);
-    //MEditorPanel->appendChildWidget(res_type_menu);
-
-    for (uint32_t i=0; i<res_type_menu->getNumChildWidgets(); i++) {
-      MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)res_type_menu->getChildWidget(i);
+    MIP_MenuWidget* res_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,SA_TYR_RES_TYPE_COUNT*20));
+    for (uint32_t i=0; i<SA_TYR_RES_TYPE_COUNT; i++) {
+      //const char* txt = sa_tyr_res_type_text[i];
+      MIP_MenuItemWidget* w = new MIP_MenuItemWidget( MIP_DRect(0, i*20, 160, 20 ), sa_tyr_res_type_text[i] );
       w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
+      res_type_menu->appendChildWidget(w);
     }
 
     // flt menu
 
-    MIP_MenuWidget* flt_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,100));
-    flt_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 0,160,20), "Off" ));
-    flt_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,20,160,20), "Lowpass" ));
-    flt_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,40,160,20), "Highpass" ));
-    flt_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,60,160,20), "Bandpass" ));
-    flt_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,80,160,20), "Notch" ));
-    //flt_type_menu->setItemSize(100,20);
-    //flt_type_menu->setItemLayout(1,5);
-    //flt_type_menu->setMenuMirror(false,false);
-    //MEditorPanel->appendChildWidget(flt_type_menu);
-
-    for (uint32_t i=0; i<flt_type_menu->getNumChildWidgets(); i++) {
-      MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)flt_type_menu->getChildWidget(i);
+    MIP_MenuWidget* flt_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,SA_TYR_FLT_TYPE_COUNT*20));
+    for (uint32_t i=0; i<SA_TYR_FLT_TYPE_COUNT; i++) {
+      MIP_MenuItemWidget* w = new MIP_MenuItemWidget( MIP_DRect(0, i*20, 160, 20 ), sa_tyr_flt_type_text[i] );
       w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
+      flt_type_menu->appendChildWidget(w);
     }
 
     // ws
 
-    MIP_MenuWidget* wave_shaper_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,180));
-    wave_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,  0,160,20), "Off" ));
-    wave_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 20,160,20), "Curve" ));
-    wave_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 40,160,20), "Ampl Mod" ));
-    wave_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 60,160,20), "Ring Mod" ));
-    wave_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 80,160,20), "Replace" ));
-    wave_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,100,160,20), "Negate" ));
-    wave_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,120,160,20), "Sign" ));
-    wave_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,140,160,20), "Max" ));
-    wave_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,160,160,20), "Fold" ));
-    //wave_shaper_type_menu->setItemSize(100,20);
-    //wave_shaper_type_menu->setItemLayout(1,9);
-    //wave_shaper_type_menu->setMenuMirror(false,false);
-    //MEditorPanel->appendChildWidget(wave_shaper_type_menu);
-
-    for (uint32_t i=0; i<wave_shaper_type_menu->getNumChildWidgets(); i++) {
-      MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)wave_shaper_type_menu->getChildWidget(i);
+    MIP_MenuWidget* wave_shaper_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,SA_TYR_WM_TYPE_COUNT*20));
+    for (uint32_t i=0; i<SA_TYR_WM_TYPE_COUNT; i++) {
+      MIP_MenuItemWidget* w = new MIP_MenuItemWidget( MIP_DRect(0, i*20, 160, 20 ), sa_tyr_wm_type_text[i] );
       w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
+      wave_shaper_type_menu->appendChildWidget(w);
     }
 
     // ps
 
-    MIP_MenuWidget* phase_shaper_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,140));
-    phase_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,  0,160,20), "Off" ));
-    phase_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 20,160,20), "Curve" ));
-    phase_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 40,160,20), "Sync" ));
-    phase_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 60,160,20), "Sync / Clamp" ));
-    phase_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0, 80,160,20), "Phase Mod" ));
-    phase_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,100,160,20), "Freq Mod" ));
-    phase_shaper_type_menu->appendChildWidget( new MIP_MenuItemWidget(MIP_DRect(0,120,160,20), "Flip" ));
-    //phase_shaper_type_menu->setItemSize(100,20);
-    //phase_shaper_type_menu->setItemLayout(1,7);
-    //phase_shaper_type_menu->setMenuMirror(false,false);
-    //MEditorPanel->appendChildWidget(phase_shaper_type_menu);
-
-    for (uint32_t i=0; i<phase_shaper_type_menu->getNumChildWidgets(); i++) {
-      MIP_MenuItemWidget* w = (MIP_MenuItemWidget*)phase_shaper_type_menu->getChildWidget(i);
+    MIP_MenuWidget* phase_shaper_type_menu = new MIP_MenuWidget(MIP_DRect(0,0,160,SA_TYR_PM_TYPE_COUNT*20));
+    for (uint32_t i=0; i<SA_TYR_PM_TYPE_COUNT; i++) {
+      MIP_MenuItemWidget* w = new MIP_MenuItemWidget( MIP_DRect(0, i*20, 160, 20 ), sa_tyr_pm_type_text[i] );
       w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
       w->setTextSize(-0.7);
+      phase_shaper_type_menu->appendChildWidget(w);
     }
 
     //------------------------------
@@ -275,9 +229,13 @@ public:
         osc1_panel->appendChildWidget(osc1_in_r2);
         connectWidget(AParameters[PAR_OSC1_IN_R2],osc1_in_r2);
 
-        MIP_Knob2Widget* osc1_in_n = new MIP_Knob2Widget( MIP_DRect(160,180,30,45),"N");
+        MIP_Knob2Widget* osc1_in_n = new MIP_Knob2Widget( MIP_DRect(130,180,30,45),"N");
         osc1_panel->appendChildWidget(osc1_in_n);
         connectWidget(AParameters[PAR_OSC1_IN_N],osc1_in_n);
+
+        MIP_Knob2Widget* osc1_in_s = new MIP_Knob2Widget( MIP_DRect(160,180,30,45),"S");
+        osc1_panel->appendChildWidget(osc1_in_s);
+        connectWidget(AParameters[PAR_OSC1_IN_S],osc1_in_s);
 
         MIP_Knob2Widget* osc1_in_i = new MIP_Knob2Widget( MIP_DRect(190,180,30,45),"I");
         osc1_panel->appendChildWidget(osc1_in_i);
@@ -362,9 +320,13 @@ public:
         res1_panel->appendChildWidget(res1_in_r2);
         connectWidget(AParameters[PAR_RES1_IN_R2],res1_in_r2);
 
-        MIP_Knob2Widget* res1_in_n = new MIP_Knob2Widget( MIP_DRect(160,60,30,45),"N");
+        MIP_Knob2Widget* res1_in_n = new MIP_Knob2Widget( MIP_DRect(130,60,30,45),"N");
         res1_panel->appendChildWidget(res1_in_n);
         connectWidget(AParameters[PAR_RES1_IN_N],res1_in_n);
+
+        MIP_Knob2Widget* res1_in_s = new MIP_Knob2Widget( MIP_DRect(160,60,30,45),"S");
+        res1_panel->appendChildWidget(res1_in_s);
+        connectWidget(AParameters[PAR_RES1_IN_S],res1_in_s);
 
         MIP_Knob2Widget* res1_in_i = new MIP_Knob2Widget( MIP_DRect(190,60,30,45),"I");
         res1_panel->appendChildWidget(res1_in_i);
@@ -558,9 +520,13 @@ public:
         osc2_panel->appendChildWidget(osc2_in_r2);
         connectWidget(AParameters[PAR_OSC2_IN_R2],osc2_in_r2);
 
-        MIP_Knob2Widget* osc2_in_n = new MIP_Knob2Widget( MIP_DRect(160,180,30,45),"N");
+        MIP_Knob2Widget* osc2_in_n = new MIP_Knob2Widget( MIP_DRect(130,180,30,45),"N");
         osc2_panel->appendChildWidget(osc2_in_n);
         connectWidget(AParameters[PAR_OSC2_IN_N],osc2_in_n);
+
+        MIP_Knob2Widget* osc2_in_s = new MIP_Knob2Widget( MIP_DRect(160,180,30,45),"S");
+        osc2_panel->appendChildWidget(osc2_in_s);
+        connectWidget(AParameters[PAR_OSC2_IN_S],osc2_in_s);
 
         MIP_Knob2Widget* osc2_in_i = new MIP_Knob2Widget( MIP_DRect(190,180,30,45),"I");
         osc2_panel->appendChildWidget(osc2_in_i);
@@ -643,9 +609,13 @@ public:
         res2_panel->appendChildWidget(res2_in_r2);
         connectWidget(AParameters[PAR_RES2_IN_R2],res2_in_r2);
 
-        MIP_Knob2Widget* res2_in_n = new MIP_Knob2Widget( MIP_DRect(160,60,30,45),"N");
+        MIP_Knob2Widget* res2_in_n = new MIP_Knob2Widget( MIP_DRect(130,60,30,45),"N");
         res2_panel->appendChildWidget(res2_in_n);
         connectWidget(AParameters[PAR_RES2_IN_N],res2_in_n);
+
+        MIP_Knob2Widget* res2_in_s = new MIP_Knob2Widget( MIP_DRect(160,60,30,45),"S");
+        res2_panel->appendChildWidget(res2_in_s);
+        connectWidget(AParameters[PAR_RES2_IN_S],res2_in_s);
 
         MIP_Knob2Widget* res2_in_i = new MIP_Knob2Widget( MIP_DRect(190,60,30,45),"I");
         res2_panel->appendChildWidget(res2_in_i);
@@ -776,9 +746,91 @@ public:
         MTotalVoicesWidget->setFillBackground(false);
         voice2_panel->appendChildWidget(MTotalVoicesWidget);
 
+      // ----- flt1 -----
+
+      MIP_PanelWidget* flt1_panel = new MIP_PanelWidget(MIP_DRect(550,125,276,145) );
+      flt1_panel->setBackgroundColor(0.55);
+      controls->appendChildWidget(flt1_panel);
+
+        // text
+
+        MIP_TextWidget* flt_text = new MIP_TextWidget(MIP_DRect(0,0,276,20),"Filter");
+        flt1_panel->appendChildWidget(flt_text);
+        flt_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        flt_text->setTextSize(-0.8);
+        flt_text->setDrawBorder(true);
+        flt_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
+        flt_text->setDrawBorder(false);
+        flt_text->setFillBackground(true);
+        flt_text->setBackgroundColor(MIP_COLOR_DARK_GRAY);
+
+        // type
+
+        MIP_SelectorWidget* flt1_type_selector = new MIP_SelectorWidget( MIP_DRect(10,30,256,20),"Flt Type",flt_type_menu );
+        flt1_panel->appendChildWidget(flt1_type_selector);
+        flt1_type_selector->setTextSize(-0.7);
+        flt1_type_selector->setSelected(0);
+        connectWidget(AParameters[PAR_FLT1_TYPE],flt1_type_selector);
+
+        // freq
+
+        MIP_Knob2Widget* flt1_freq_knob = new MIP_Knob2Widget( MIP_DRect(10,60,50,82),"Freq");
+        flt1_panel->appendChildWidget(flt1_freq_knob);
+        connectWidget(AParameters[PAR_FLT1_FREQ],flt1_freq_knob);
+
+        // res
+
+        MIP_Knob2Widget* flt1_res_knob = new MIP_Knob2Widget( MIP_DRect(70,60,50,82),"Res");
+        flt1_panel->appendChildWidget(flt1_res_knob);
+        connectWidget(AParameters[PAR_FLT1_RES],flt1_res_knob);
+
+      // ----- env1 -----
+
+      MIP_PanelWidget* env1_panel = new MIP_PanelWidget(MIP_DRect(550,280,276,115) );
+      env1_panel->setFillBackground(true);
+      env1_panel->setBackgroundColor(0.55);
+      controls->appendChildWidget(env1_panel);
+
+        // text
+
+        MIP_TextWidget* env_text = new MIP_TextWidget(MIP_DRect(0,0,276,20),"Envelope");
+        env1_panel->appendChildWidget(env_text);
+        env_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+        env_text->setTextSize(-0.8);
+
+        env_text->setDrawBorder(true);
+        env_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
+        env_text->setDrawBorder(false);
+        env_text->setFillBackground(true);
+        env_text->setBackgroundColor(MIP_COLOR_DARK_GRAY);
+
+        // att
+
+        MIP_Knob2Widget* env1_att_knob = new MIP_Knob2Widget( MIP_DRect(10,30,50,82),"Att");
+        env1_panel->appendChildWidget(env1_att_knob);
+        connectWidget(AParameters[PAR_ENV1_ATT],env1_att_knob);
+
+        // dec
+
+        MIP_Knob2Widget* env1_dec_knob = new MIP_Knob2Widget( MIP_DRect(70,30,50,82),"Dec");
+        env1_panel->appendChildWidget(env1_dec_knob);
+        connectWidget(AParameters[PAR_ENV1_DEC],env1_dec_knob);
+
+        // sus
+
+        MIP_Knob2Widget* env1_sus_knob = new MIP_Knob2Widget( MIP_DRect(130,30,50,82),"Sus");
+        env1_panel->appendChildWidget(env1_sus_knob);
+        connectWidget(AParameters[PAR_ENV1_SUS],env1_sus_knob);
+
+        // rel
+
+        MIP_Knob2Widget* env1_rel_knob = new MIP_Knob2Widget( MIP_DRect(190,30,50,82),"Rel");
+        env1_panel->appendChildWidget(env1_rel_knob);
+        connectWidget(AParameters[PAR_ENV1_REL],env1_rel_knob);
+
       // ----- global -----
 
-      MIP_PanelWidget* global_panel = new MIP_PanelWidget(MIP_DRect(550,125,276,210) );
+      MIP_PanelWidget* global_panel = new MIP_PanelWidget(MIP_DRect(550,405,276,210) );
       global_panel->setBackgroundColor(0.57);
       controls->appendChildWidget(global_panel);
 
@@ -833,107 +885,6 @@ public:
         MIP_Knob2Widget* global_res2_out_knob = new MIP_Knob2Widget( MIP_DRect(190,120,50,82),"R2");
         global_panel->appendChildWidget(global_res2_out_knob);
         connectWidget(AParameters[PAR_MASTER_RES2_OUT],global_res2_out_knob);
-
-        /*
-
-        // osc1/2 mix
-
-        MIP_SelectorWidget* osc_mix_selector = new MIP_SelectorWidget( MIP_DRect(0,180,230,20) );
-        ->setTextSize(-0.7);
-        global_panel->appendChildWidget(osc_mix_selector);
-        osc_mix_selector->setMenu(osc_mix_type_menu);
-        osc_mix_selector->setSelected(0);
-        //connectWidget(AParameters[],osc_mix_selector,PAR_OSC_MIX_TYPE);
-
-        //
-
-        MIP_SliderWidget* osc_mix_slider = new MIP_SliderWidget(MIP_DRect(0,210,230,20),"O1:O2");
-        global_panel->appendChildWidget(osc_mix_slider);
-        //connectWidget(AParameters[],osc_mix_slider,PAR_OSC_MIX_AMOUNT);
-
-        */
-
-      // ----- flt1 -----
-
-      MIP_PanelWidget* flt1_panel = new MIP_PanelWidget(MIP_DRect(550,345,276,145) );
-      flt1_panel->setBackgroundColor(0.55);
-      controls->appendChildWidget(flt1_panel);
-
-        // text
-
-        MIP_TextWidget* flt_text = new MIP_TextWidget(MIP_DRect(0,0,276,20),"Filter");
-        flt1_panel->appendChildWidget(flt_text);
-        flt_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
-        flt_text->setTextSize(-0.8);
-        flt_text->setDrawBorder(true);
-        flt_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
-        flt_text->setDrawBorder(false);
-        flt_text->setFillBackground(true);
-        flt_text->setBackgroundColor(MIP_COLOR_DARK_GRAY);
-
-        // type
-
-        MIP_SelectorWidget* flt1_type_selector = new MIP_SelectorWidget( MIP_DRect(10,30,256,20),"Flt Type",flt_type_menu );
-        flt1_panel->appendChildWidget(flt1_type_selector);
-        flt1_type_selector->setTextSize(-0.7);
-        flt1_type_selector->setSelected(0);
-        connectWidget(AParameters[PAR_FLT1_TYPE],flt1_type_selector);
-
-        // freq
-
-        MIP_Knob2Widget* flt1_freq_knob = new MIP_Knob2Widget( MIP_DRect(10,60,50,82),"Freq");
-        flt1_panel->appendChildWidget(flt1_freq_knob);
-        connectWidget(AParameters[PAR_FLT1_FREQ],flt1_freq_knob);
-
-        // res
-
-        MIP_Knob2Widget* flt1_res_knob = new MIP_Knob2Widget( MIP_DRect(70,60,50,82),"Res");
-        flt1_panel->appendChildWidget(flt1_res_knob);
-        connectWidget(AParameters[PAR_FLT1_RES],flt1_res_knob);
-
-      // ----- env1
-
-      MIP_PanelWidget* env1_panel = new MIP_PanelWidget(MIP_DRect(550,500,276,112) );
-      env1_panel->setFillBackground(true);
-      env1_panel->setBackgroundColor(0.55);
-      controls->appendChildWidget(env1_panel);
-
-        // text
-
-        MIP_TextWidget* env_text = new MIP_TextWidget(MIP_DRect(0,0,276,20),"Envelope");
-        env1_panel->appendChildWidget(env_text);
-        env_text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
-        env_text->setTextSize(-0.8);
-
-        env_text->setDrawBorder(true);
-        env_text->setTextColor(MIP_COLOR_LIGHT_GRAY);
-        env_text->setDrawBorder(false);
-        env_text->setFillBackground(true);
-        env_text->setBackgroundColor(MIP_COLOR_DARK_GRAY);
-
-        // att
-
-        MIP_Knob2Widget* env1_att_knob = new MIP_Knob2Widget( MIP_DRect(10,30,50,82),"Att");
-        env1_panel->appendChildWidget(env1_att_knob);
-        connectWidget(AParameters[PAR_ENV1_ATT],env1_att_knob);
-
-        // dec
-
-        MIP_Knob2Widget* env1_dec_knob = new MIP_Knob2Widget( MIP_DRect(70,30,50,82),"Dec");
-        env1_panel->appendChildWidget(env1_dec_knob);
-        connectWidget(AParameters[PAR_ENV1_DEC],env1_dec_knob);
-
-        // sus
-
-        MIP_Knob2Widget* env1_sus_knob = new MIP_Knob2Widget( MIP_DRect(130,30,50,82),"Sus");
-        env1_panel->appendChildWidget(env1_sus_knob);
-        connectWidget(AParameters[PAR_ENV1_SUS],env1_sus_knob);
-
-        // rel
-
-        MIP_Knob2Widget* env1_rel_knob = new MIP_Knob2Widget( MIP_DRect(190,30,50,82),"Rel");
-        env1_panel->appendChildWidget(env1_rel_knob);
-        connectWidget(AParameters[PAR_ENV1_REL],env1_rel_knob);
 
 //
 //

@@ -12,8 +12,8 @@ class sa_tyr_osc {
 private:
 //------------------------------
 
-  //bool          MWrapped        = false;
-  T             z1              = 0.0;
+  T               tri_z1          = 0.0;
+  //T               diff_z1         = 0.0;
 
 //------------------------------
 protected:
@@ -100,7 +100,8 @@ public:
 //------------------------------
 
   void restart(bool AResetPhase=true, bool ARandomPhase=true) {
-    z1 = 0.0;
+    tri_z1 = 0.0;
+    //diff_z1 = 0.0;
     if (AResetPhase) {
       if (ARandomPhase) MPhase = MIP_Random();
       else MPhase = 0.0;
@@ -122,44 +123,47 @@ public:
     //--------------------
 
     switch (MPhaseModType) {
-      case 0: { // off
+
+      case SA_TYR_PM_TYPE_OFF: {
         }
         break;
-      case 1: { // curve
+
+      case SA_TYR_PM_TYPE_CURVE: {
         t = curve(t,MPhaseModAmount);
         break;
       }
-      case 2: { // reso
+
+      case SA_TYR_PM_TYPE_SYNC: {
         t *= 1.0 + (MPhaseModAmount * 12);
         t = MIP_Fract(t);
         break;
       }
-      case 3: { // pulse
+
+      case SA_TYR_PM_TYPE_SYNC_CLAMP: {
         t *= 1.0 + (MPhaseModAmount * 12);
         t = MIP_Clamp(t,0,1);
         t = MIP_Fract(t);
         break;
       }
-      case 4: { // PM
+
+      case SA_TYR_PM_TYPE_FLIP: {
+        break;
+      }
+
+      case SA_TYR_PM_TYPE_PHASE_MOD: {
         //t += (dt * pm); // try..
         T f = mod * (MPhaseModAmount * 12);
         t += (t * f);
         t = MIP_Fract(t);
         break;
       }
-      case 5: { // FM
+
+      case SA_TYR_PM_TYPE_FREQ_MOD: {
         T f = mod * (MPhaseModAmount * 48);
         phase_add_mod = (dt * f);
-        //phase_add_mod = (dt * pm);
         break;
       }
-      case 6: { // Flip
-        if (t >= MPhaseModAmount) {
-          t = 1.0 - t;
-          //t = MIP_Fract(t);
-        }
-        break;
-      }
+
     }
 
     //--------------------
@@ -170,8 +174,7 @@ public:
 
     switch (MType) {
 
-      case 0: { // morph
-
+      case SA_TYR_OSC_TYPE_MORPH: {
         T shape = MShape * 3.0;
         T _squ = 0.0;
         T _tri = 0.0;
@@ -205,33 +208,30 @@ public:
         // squ
         T squ1 = saw1 - (saw2 * _squ);
         // tri
-        z1 = (dt * squ1) + ((1.0 - dt) * z1);
+        tri_z1 = (dt * squ1) + ((1.0 - dt) * tri_z1);
         //T tri1 = squ1 * (1.0 - _tri) + (z1 * 4.0) * _tri;
-        T tri1 = z1 * 4.0;
+        T tri1 = tri_z1 * 4.0;
         // sin
         T sin1 = sin(t * MIP_PI2);
         out = MIP_Interpolate_Linear(_tri,squ1,tri1);
         out = MIP_Interpolate_Linear(_sin,out,sin1);
         break;
-
       }
-      case 1: { // DSF
 
-        //T t1  = t;
-        //T dt1 = dt;
-        //T t2  = MPhase2;
-        //T dt2 = MPhaseAdd2;
-        //float a = MShape * 0.9;
-        //float N = MDsf.findMaxPartials(dt1,dt2);
-        //out = MDsf.process(t1,t2,a,N);
-        break;
+      //case SA_TYR_OSC_TYPE_DSF: {
+      //  T t1  = t;
+      //  T dt1 = dt;
+      //  T t2  = MPhase2;
+      //  T dt2 = MPhaseAdd2;
+      //  float a = MShape * 0.9;
+      //  float N = MDsf.findMaxPartials(dt1,dt2);
+      //  out = MDsf.process(t1,t2,a,N);
+      //  break;
+      //}
 
-
-      }
-      case 2: { // Wavetable
-        break;
-
-      }
+      //case SA_TYR_OSC_TYPE_WAVETABLE: {
+      //  break;
+      //}
 
     }
 
@@ -240,50 +240,17 @@ public:
     //--------------------
 
     switch (MWaveModType) {
-      case 0: { // off
+
+      case SA_TYR_WM_TYPE_OFF: {
         break;
       }
-      case 1: { // curve
+
+      case SA_TYR_WM_TYPE_CURVE: {
         out = curve(out,MWaveModAmount);
         break;
       }
-      case 2: { // AM
-        T am = out * abs(mod);
-        out = MIP_Interpolate_Linear(MWaveModAmount,out,am);
-        break;
-      }
-      case 3: { // RM
-        T rm = out * mod;
-        out = MIP_Interpolate_Linear(MWaveModAmount,out,rm);
-        break;
-      }
-      case 4: { // Replace
-        //T rm = out * mod;
-        //out = MIP_Interpolate_Linear(MWaveModAmount,out,rm);
-        if (abs(out) > MWaveModAmount) {
-          out = mod;
-        }
-        break;
-      }
-      case 5: { // Neg
-        out = MIP_Interpolate_Linear(MWaveModAmount,out,-mod);
-        break;
-      }
-      case 6: { // Neg
-        T sign = MIP_Sign(out);
-        out = MIP_Interpolate_Linear(MWaveModAmount,out,mod*sign);
-        break;
-      }
-      case 7: { // max
-        T s = MIP_Sign(out);
-        T m = MIP_Max( abs(out), abs(mod) ) * s;
-        out = MIP_Interpolate_Linear(MWaveModAmount,out,m);
-        break;
-      }
-      case 8: { // fold
-        //T s = MIP_Sign(out);
-        //T m = MIP_Max( abs(out), abs(mod) ) * s;
-        //out = MIP_Interpolate_Linear(MWaveModAmount,out,m);
+
+      case SA_TYR_WM_TYPE_FOLD: {
         T s = MIP_Sign(out);
         T a = abs(out);
         a *= 1.0 + (MWaveModAmount * 2.0);
@@ -294,17 +261,42 @@ public:
         break;
       }
 
+      case SA_TYR_WM_TYPE_AMPL_MOD: {
+        T am = out * abs(mod);
+        out = MIP_Interpolate_Linear(MWaveModAmount,out,am);
+        break;
+      }
+
+      case SA_TYR_WM_TYPE_RING_MOD: {
+        T rm = out * mod;
+        out = MIP_Interpolate_Linear(MWaveModAmount,out,rm);
+        break;
+      }
+
+      case SA_TYR_WM_TYPE_RAMP_DOWN: {
+        if (MWaveModAmount > 0) {
+          double f = 1.0 - (MPhase / MWaveModAmount); // 0..1
+          f = MIP_Clamp(f,0,1);
+          out *= f;
+        }
+        else out = 0.0;
+        break;
+      }
+
     }
 
     //--------------------
 
-    MPhase  += MPhaseAdd  + phase_add_mod;
-    //if ((MPhase < 0.0) || (MPhase >= 1.0)) {MWrapped = true; }
-    //MPhase = MIP_Fract(MPhase);
-    if ((MPhase < 0.0) || (MPhase >= 1.0)) {
-      //MWrapped = true;
-      MPhase = MIP_Fract(MPhase);
-    }
+    MPhase += MPhaseAdd + phase_add_mod;
+
+    //    if ((MPhase < 0.0) || (MPhase >= 1.0)) {
+    //      //MWrapped = true;
+    //      MPhase = MIP_Fract(MPhase);
+    //    }
+
+    while (MPhase < 0.0)  MPhase += 1.0;
+    while (MPhase >= 1.0) MPhase -= 1.0;
+
 
     //MPhase2 += MPhaseAdd2 + phase_add_mod;
     //MPhase2 = MIP_Fract(MPhase2);
