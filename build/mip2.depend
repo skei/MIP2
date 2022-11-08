@@ -1509,7 +1509,7 @@
 1659989974 /DISKS/sda2/code/git/MIP2/include/base/utils/mip_parser.h
 	"base/types/mip_array.h"
 
-1664563729 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_group_box_widget.h
+1667849931 /DISKS/sda2/code/git/MIP2/include/gui/widgets/mip_group_box_widget.h
 	"mip.h"
 	"gui/mip_widget.h"
 	"gui/widgets/mip_button_widget.h"
@@ -1910,7 +1910,7 @@
 	"plugin/vst2/mip_vst2_entry.h"
 	"plugin/vst3/mip_vst3_entry.h"
 
-1667600982 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr.cpp
+1667859639 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr.cpp
 	"audio/mip_audio_utils.h"
 	"plugin/mip_plugin.h"
 	"plugin/mip_note.h"
@@ -1922,8 +1922,6 @@
 	"sa_tyr/sa_tyr_editor.h"
 	"plugin/clap/mip_clap_entry.h"
 	"plugin/exe/mip_exe_entry.h"
-	"plugin/vst2/mip_vst2_entry.h"
-	"plugin/vst3/mip_vst3_entry.h"
 
 1667492741 /DISKS/sda2/code/git/MIP2/include/plugin/mip_voice_manager.h
 	"mip.h"
@@ -1942,12 +1940,13 @@
 	"mip.h"
 	"plugin/mip_note.h"
 
-1667654973 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_parameters.h
+1667758150 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_parameters.h
 	"mip.h"
 
-1667614468 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_voice.h
+1667829695 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_voice.h
 	"mip.h"
 	"audio/mip_audio_math.h"
+	"audio/filters/mip_allpass_filter.h"
 	"audio/filters/mip_rc_filter.h"
 	"audio/filters/mip_svf_filter.h"
 	"audio/processing/mip_delay.h"
@@ -1967,7 +1966,7 @@
 1652293315 /DISKS/sda2/code/git/MIP2/include/audio/filters/mip_svf_filter.h
 	"base/utils/mip_math.h"
 
-1654791888 /DISKS/sda2/code/git/MIP2/include/audio/processing/mip_delay.h
+1667829393 /DISKS/sda2/code/git/MIP2/include/audio/processing/mip_delay.h
 	"base/utils/mip_math.h"
 	"audio/mip_audio_math.h"
 
@@ -1981,7 +1980,7 @@
 1654454075 /DISKS/sda2/code/git/MIP2/include/audio/modulation/mip_envelope.h
 	<math.h>
 
-1667656194 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_osc.h
+1667829171 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_osc.h
 	"base/utils/mip_interpolation.h"
 	"audio/waveforms/mip_dsf_waveform.h"
 
@@ -1995,18 +1994,18 @@
 	<math.h>
 	"mip.h"
 
-1667653378 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_res.h
+1667829331 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_res.h
 	"audio/filters/mip_rc_filter.h"
 	"audio/filters/mip_svf_filter.h"
 	"audio/processing/mip_delay.h"
 
-1667658078 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_editor.h
+1667859459 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_editor.h
 	"mip.h"
 	"gui/widgets/mip_widgets.h"
 	"plugin/mip_editor.h"
 	"sa_tyr_widgets.h"
 
-1667492837 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_widgets.h
+1667858177 /DISKS/sda2/code/git/MIP2/source/plugins/sa_tyr/sa_tyr_widgets.h
 	"mip.h"
 	"gui/widgets/mip_widgets.h"
 
@@ -2047,4 +2046,7 @@
 	"base/system/mip_file.h"
 	"base/system/mip_paths.h"
 	"base/system/mip_time.h"
+
+1667759802 /DISKS/sda2/code/git/MIP2/include/audio/filters/mip_allpass_filter.h
+	"audio/mip_audio_math.h"
 

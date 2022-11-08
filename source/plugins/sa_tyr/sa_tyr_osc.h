@@ -125,8 +125,8 @@ public:
     switch (MPhaseModType) {
 
       case SA_TYR_PM_TYPE_OFF: {
-        }
         break;
+      }
 
       case SA_TYR_PM_TYPE_CURVE: {
         t = curve(t,MPhaseModAmount);
@@ -196,25 +196,27 @@ public:
           _sin = shape - 2.0;
         }
         // saw 1
-        T t1 = t;// + 0.5;
-        t1 = MIP_Fract(t1);
-        T saw1 = ((2.0f * t1) - 1.0);
-        saw1 -= MIP_PolyBlep(t1,dt);
+        T t1    = t;// + 0.5;
+        t1      = MIP_Fract(t1);
+        T saw1  = ((2.0f * t1) - 1.0);
+        saw1   -= MIP_PolyBlep(t1,dt);
         // saw 2
-        T t2 = t1 + MWidth;
-        t2 = MIP_Fract(t2);
-        T saw2 = ((2.0 * t2) - 1.0);
-        saw2 -= MIP_PolyBlep(t2,dt);
+        T t2    = t1 + MWidth;
+        t2      = MIP_Fract(t2);
+        T saw2  = ((2.0 * t2) - 1.0);
+        saw2   -= MIP_PolyBlep(t2,dt);
         // squ
-        T squ1 = saw1 - (saw2 * _squ);
+        T squ1  = saw1 - (saw2 * _squ);
         // tri
-        tri_z1 = (dt * squ1) + ((1.0 - dt) * tri_z1);
-        //T tri1 = squ1 * (1.0 - _tri) + (z1 * 4.0) * _tri;
-        T tri1 = tri_z1 * 4.0;
+        tri_z1  = (dt * squ1) + ((1.0 - dt) * tri_z1);
+        //T tri1  = squ1 * (1.0 - _tri) + (z1 * 4.0) * _tri;
+        T tri1  = tri_z1 * 4.0;
         // sin
-        T sin1 = sin(t * MIP_PI2);
-        out = MIP_Interpolate_Linear(_tri,squ1,tri1);
-        out = MIP_Interpolate_Linear(_sin,out,sin1);
+        T sin1  = sin(t * MIP_PI2);
+
+        out     = MIP_Interpolate_Linear(_tri,squ1,tri1);
+        out     = MIP_Interpolate_Linear(_sin,out,sin1);
+
         break;
       }
 
@@ -296,7 +298,6 @@ public:
 
     while (MPhase < 0.0)  MPhase += 1.0;
     while (MPhase >= 1.0) MPhase -= 1.0;
-
 
     //MPhase2 += MPhaseAdd2 + phase_add_mod;
     //MPhase2 = MIP_Fract(MPhase2);

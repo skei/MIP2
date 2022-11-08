@@ -97,6 +97,8 @@ public:
 
   }
 
+  #undef HEADER_HEIGHT
+
   //----------
 
   virtual ~MIP_GroupBoxWidget() {

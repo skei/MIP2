@@ -7,10 +7,6 @@
 #include "audio/filters/mip_svf_filter.h"
 #include "audio/processing/mip_delay.h"
 
-
-//
-
-
 //----------------------------------------------------------------------
 //
 //
@@ -19,7 +15,11 @@
 
 template <class T>
 class sa_tyr_res {
+
+//------------------------------
 public:
+//------------------------------
+
   struct sa_tyr_DelayFx {
 
     MIP_RcFilter<T> filter  = {};
@@ -33,7 +33,9 @@ public:
 
   };
 
-  //----------
+//------------------------------
+public:
+//------------------------------
 
   typedef MIP_InterpolatedDelay<4096,sa_tyr_DelayFx> sa_tyr_Delay;
 
@@ -45,16 +47,16 @@ private:
   sa_tyr_Delay  MDelay        = {};
   //MIP_SvfFilter MInputShaper  = {};
 
-  T MHz       = 0.0;
-  //T MShape    = 0.0;
-  T MFeedback = 0.0;
-  T MDamp     = 0.0;
-  T MRough    = 0.0;
-  T MImpulse  = 0.0;
+  T             MHz           = 0.0;
+  //T             MShape        = 0.0;
+  T             MFeedback     = 0.0;
+  T             MDamp         = 0.0;
+  T             MRough        = 0.0;
+  T             MImpulse      = 0.0;
 
-  uint32_t MMode          = 0;
-  uint32_t MSpeed         = 0;
-  uint32_t MSpeedCounter  = 0;
+  uint32_t      MMode         = 0;
+  uint32_t      MSpeed        = 0;
+  uint32_t      MSpeedCounter = 0;
 
 //------------------------------
 public:
@@ -148,17 +150,16 @@ public:
     T _in = in;
 
     switch (MMode) {
-      case SA_TYR_RES_TYPE_PLUCK: {// plucked
-        if (MDelay.hasWrapped()) {
 
+      case SA_TYR_RES_TYPE_PLUCK: {
+        if (MDelay.hasWrapped()) {
           //_in = 0.0;
           _in *= MImpulse;
-
         }
         break;
       }
 
-      //case SA_TYR_RES_TYPE_REP_PLUCK: { // repeated
+      //case SA_TYR_RES_TYPE_REP_PLUCK: {
       //  if (MDelay.hasWrapped()) {
       //    MSpeedCounter += 1;
       //    if (MSpeedCounter >= MSpeed) {
@@ -180,7 +181,7 @@ public:
     }
 
     out = MDelay.process(_in,fb,delay);
-    return out;
+    return _in + out;
 
   }
 

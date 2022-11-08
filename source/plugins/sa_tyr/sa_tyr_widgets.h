@@ -22,11 +22,6 @@ public:
     setFillBackground(false);
   }
 
-  //----------
-
-  virtual ~sa_tyr_VoiceWidget() {
-  }
-
 //------------------------------
 public:
 //------------------------------
@@ -63,5 +58,170 @@ public:
 };
 
 //----------------------------------------------------------------------
-#endif
+//
+//
+//
+//----------------------------------------------------------------------
 
+class sa_tyr_MenuWidget
+: public MIP_MenuWidget {
+
+public:
+
+  sa_tyr_MenuWidget(uint32_t AWidth, uint32_t AHeight, const char** AText, uint32_t ACount)
+  : MIP_MenuWidget(MIP_DRect(0,0,AWidth,ACount*AHeight),nullptr) {
+
+    for (uint32_t i=0; i<ACount; i++) {
+      MIP_MenuItemWidget* w = new MIP_MenuItemWidget( MIP_DRect(0, i*AHeight, AWidth, AHeight ), AText[i] );
+      w->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
+      w->setTextSize(-0.7);
+      appendChildWidget(w);
+    }
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+class sa_tyr_SectionPanelWidget
+: public MIP_PanelWidget {
+
+public:
+
+  sa_tyr_SectionPanelWidget(MIP_DRect ARect, const char* AText, uint32_t AHeaderHeight=20)
+  : MIP_PanelWidget(ARect) {
+
+    setFillBackground(true);
+    setBackgroundColor(0.55);
+
+    MIP_TextWidget* text = new MIP_TextWidget(MIP_DRect(0,0,ARect.w,AHeaderHeight),AText);
+    appendChildWidget(text);
+    text->setTextAlignment(MIP_TEXT_ALIGN_CENTER);
+    text->setTextSize(-0.8);
+    text->setDrawBorder(true);
+    text->setTextColor(MIP_COLOR_LIGHT_GRAY);
+    text->setDrawBorder(false);
+    text->setFillBackground(true);
+    text->setBackgroundColor(MIP_COLOR_DARK_GRAY);
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+
+class sa_tyr_SelectorWidget
+: public MIP_SelectorWidget {
+
+public:
+
+  sa_tyr_SelectorWidget(MIP_DRect ARect, const char* AText, MIP_MenuWidget* AMenu)
+  : MIP_SelectorWidget(ARect,AText,AMenu) {
+    setTextSize(-0.7);
+    setSelected(0);
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+class sa_tyr_DragValueWidget
+: public MIP_DragValueWidget {
+
+public:
+
+  sa_tyr_DragValueWidget(MIP_DRect ARect, const char* AText, double AValue=0.0, bool ABipolar=false, double ASnapPos=0.5, double ASnapDist=0.05)
+  : MIP_DragValueWidget(ARect,AText,AValue) {
+    setDrawBorder(true);
+    setBorderColor(0.4);
+    setFillBackground(true);
+    setBackgroundColor(0.6);
+    if (ABipolar) {
+      setSnap(true);
+      setSnapPos(ASnapPos);
+      setSnapDist(ASnapDist);
+      setBipolar(true);
+    }
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+class sa_tyr_SliderWidget
+: public MIP_SliderWidget {
+
+public:
+
+  sa_tyr_SliderWidget(MIP_DRect ARect, const char* AText, double AValue=0.0, bool ABipolar=false, double ASnapPos=0.5, double ASnapDist=0.05)
+  : MIP_SliderWidget(ARect,AText,AValue) {
+    if (ABipolar) {
+      setSnap(true);
+      setSnapPos(ASnapPos);
+      setSnapDist(ASnapDist);
+      setBipolar(true);
+    }
+  }
+
+};
+
+//----------------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------------
+
+class sa_tyr_BigKnobWidget
+: public MIP_Knob2Widget {
+
+public:
+
+  sa_tyr_BigKnobWidget(MIP_DRect ARect, const char* AText, double AValue=0.0, bool ABipolar=false, double ASnapPos=0.5, double ASnapDist=0.05)
+  : MIP_Knob2Widget(ARect,AText,AValue) {
+    if (ABipolar) {
+      MKnobWidget->setSnap(true);
+      MKnobWidget->setSnapPos(ASnapPos);
+      MKnobWidget->setSnapDist(ASnapDist);
+      MKnobWidget->setBipolar(true);
+    }
+  }
+
+};
+
+//----------
+
+class sa_tyr_SmallKnobWidget
+: public MIP_Knob2Widget {
+
+public:
+
+  sa_tyr_SmallKnobWidget(MIP_DRect ARect, const char* AText, double AValue=0.0, bool ABipolar=false, double ASnapPos=0.5, double ASnapDist=0.05)
+  : MIP_Knob2Widget(ARect,AText,AValue) {
+    if (ABipolar) {
+      MKnobWidget->setSnap(true);
+      MKnobWidget->setSnapPos(ASnapPos);
+      MKnobWidget->setSnapDist(ASnapDist);
+      MKnobWidget->setBipolar(true);
+    }
+  }
+
+};
+
+//----------------------------------------------------------------------
+#endif

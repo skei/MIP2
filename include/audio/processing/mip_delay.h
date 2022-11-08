@@ -3,8 +3,8 @@
 //----------------------------------------------------------------------
 
 #include "base/utils/mip_math.h"
-//#include "audio/filters/mip_dc_filter.h"
 #include "audio/mip_audio_math.h"
+//#include "audio/filters/mip_dc_filter.h"
 
 //----------------------------------------------------------------------
 
@@ -13,54 +13,11 @@ struct MIP_NoDelayFx {
 };
 
 //----------------------------------------------------------------------
-
-//template <int MAX_DELAY, typename FBLOOPFX=MIP_NoDelayFx>
-//class KSimpleDelay {
 //
-//  private:
+// interpolated delay
 //
-//    float       MBuffer[MAX_DELAY];
-//    int32       MCounter;
-//    FBLOOPFX    MFBLoopFX;
-//
-//  public:
-//
-//    KSimpleDelay() {
-//      clear();
-//    }
-//
-//    ~KSimpleDelay() {
-//    }
-//
-//    FBLOOPFX* getFeedbackFX(void) {
-//      return &MFBLoopFX;
-//    }
-//
-//    void restart(void) {
-//      MCounter = 0;
-//    }
-//
-//    void clear(void) {
-//      MCounter = 0;
-//      KMemset(MBuffer,0,MAX_DELAY*sizeof(float));
-//    }
-//
-//    float process(float AInput, float AFeedback, int32 ADelay) {
-//      int32 back = MCounter - ADelay;
-//      if (back < 0) back = MAX_DELAY + back;
-//      int index = (int)back;
-//      float output = MBuffer[index];
-//      float fb = AInput + output * AFeedback;
-//      fb = MFBLoopFX.process(fb);
-//      MBuffer[MCounter] = fb;
-//      MCounter++;
-//      if (MCounter >= MAX_DELAY) MCounter = 0;
-//      return output;
-//    }
-//
-//};
-
 //----------------------------------------------------------------------
+
 
 template <int MAX_DELAY, typename FBLOOPFX=MIP_NoDelayFx>
 class MIP_InterpolatedDelay {
@@ -95,6 +52,7 @@ class MIP_InterpolatedDelay {
 
     void reset() {
       MCounter = 0;
+      MWrapped = false;
     }
 
     void clear() {
@@ -157,7 +115,6 @@ class MIP_InterpolatedDelay {
       MIP_Assert( MCounter >= 0 );
       MIP_Assert( MCounter < MAX_DELAY );
 
-
       // if only part of next sample 'fits' inside delay length...
       //if ((MPhase + 1.0) >= ADelay) {
       //  float diff = ADelay - MPhase;
@@ -181,6 +138,58 @@ class MIP_InterpolatedDelay {
     }
 
 };
+
+//----------------------------------------------------------------------
+//
+// simple delay
+//
+//----------------------------------------------------------------------
+
+//template <int MAX_DELAY, typename FBLOOPFX=MIP_NoDelayFx>
+//class KSimpleDelay {
+//
+//  private:
+//
+//    float       MBuffer[MAX_DELAY];
+//    int32       MCounter;
+//    FBLOOPFX    MFBLoopFX;
+//
+//  public:
+//
+//    KSimpleDelay() {
+//      clear();
+//    }
+//
+//    ~KSimpleDelay() {
+//    }
+//
+//    FBLOOPFX* getFeedbackFX(void) {
+//      return &MFBLoopFX;
+//    }
+//
+//    void restart(void) {
+//      MCounter = 0;
+//    }
+//
+//    void clear(void) {
+//      MCounter = 0;
+//      KMemset(MBuffer,0,MAX_DELAY*sizeof(float));
+//    }
+//
+//    float process(float AInput, float AFeedback, int32 ADelay) {
+//      int32 back = MCounter - ADelay;
+//      if (back < 0) back = MAX_DELAY + back;
+//      int index = (int)back;
+//      float output = MBuffer[index];
+//      float fb = AInput + output * AFeedback;
+//      fb = MFBLoopFX.process(fb);
+//      MBuffer[MCounter] = fb;
+//      MCounter++;
+//      if (MCounter >= MAX_DELAY) MCounter = 0;
+//      return output;
+//    }
+//
+//};
 
 //----------------------------------------------------------------------
 #endif
