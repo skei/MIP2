@@ -10,7 +10,7 @@
 //----------------------------------------------------------------------
 
 bool clap_entry_init_callback(const char *plugin_path) {
-  LOG.print("# clap_entry.init: plugin_path: %s\n",plugin_path);
+  //LOG.print("ENTRY: init %s\n",plugin_path);
   //MIP_Print("path: %s\n",plugin_path);
   MIP_REGISTRY.setPath(plugin_path);
   return true;
@@ -19,7 +19,7 @@ bool clap_entry_init_callback(const char *plugin_path) {
 //----------
 
 void clap_entry_deinit_callback(void) {
-  LOG.print("# clap_entry.deinit\n");
+  //LOG.print("ENTRY: deinit\n");
 }
 
 //----------
@@ -33,11 +33,15 @@ void clap_entry_deinit_callback(void) {
 */
 
 const void* clap_entry_get_factory_callback(const char* factory_id) {
-  LOG.print("# clap_entry.get_factory '%s'\n",factory_id);
+  //LOG.print("ENTRY: get_factory '%s'\n",factory_id);
   const void* factory = MIP_REGISTRY.findFactoryById(factory_id);
   if (!factory) {
-    if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) return &MIP_CLAP_FACTORY;
-    return nullptr;
+    if (strcmp(factory_id,CLAP_PLUGIN_FACTORY_ID) == 0) {
+      return &MIP_CLAP_FACTORY;
+    }
+    else {
+      return nullptr;
+    }
   }
   return factory;
 }

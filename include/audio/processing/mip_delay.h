@@ -107,10 +107,15 @@ class MIP_InterpolatedDelay {
       //float flt = fb;
       float out = AInput + flt;
 
+      //-----
+
       //out = atan(out); // KClamp((AInput + flt), -1, 1);
 
+      // hard-clip
       if (out >  1.0f) out =  1.0f;
       if (out < -1.0f) out = -1.0f;
+
+      //-----
 
       MIP_Assert( MCounter >= 0 );
       MIP_Assert( MCounter < MAX_DELAY );

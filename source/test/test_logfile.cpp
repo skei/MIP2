@@ -14,5 +14,9 @@ int main() {
   LOG.print("hello world!\n");
   LOG.print_if(true,"true\n");
   LOG.print_if(false,"false\n");
+  LOG.print("test... ");
+  uint32_t i = 666;
+  uint32_t* ptr = &i;
+  LOG.print("OK : %i\n",*ptr);
   return 0;
 }
