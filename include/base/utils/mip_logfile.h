@@ -34,8 +34,11 @@ public:
     MIP_GetHomePath(MHomePath);
     sprintf(MFilename,"%s/Desktop/mip2_log.txt",MHomePath);
     // TODO: if directory "skei.audio" exists, open log there, else don't open..
-    //MFile.open(MFilename,MIP_FILE_WRITE_TEXT);
-    MFile.open(MFilename,MIP_FILE_APPEND_TEXT);
+    #ifdef MIP_LOG_APPEND
+      MFile.open(MFilename,MIP_FILE_APPEND_TEXT);
+    #else
+      MFile.open(MFilename,MIP_FILE_WRITE_TEXT);
+    #endif
     print_header();
   }
 
