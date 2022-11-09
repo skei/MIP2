@@ -179,26 +179,9 @@ public: // gui
   bool gui_create(const char *api, bool is_floating) final {
     //MIP_Plugin::gui_create(api,is_floating);
     MEditor = new sa_tyr_editor(this,this,MEditorWidth,MEditorHeight,MParameters);
-
     MEditor->setCanResizeEditor(true);
     //MEditor->setResizeProportional(true);
     //MEditor->setProportionalSize(EDITOR_WIDTH,EDITOR_HEIGHT);
-
-//    MIP_Window* window = MEditor->getWindow();
-//
-//    MIP_ColorWidget* background = new MIP_ColorWidget( MIP_DRect(EDITOR_WIDTH,EDITOR_HEIGHT), MIP_COLOR_RED );
-//    window->appendChildWidget(background);
-//
-//    background->Layout.alignment = MIP_WIDGET_ALIGN_FILL_CLIENT;
-//    background->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
-//      //background->Layout.border = MIP_DRect(10,10,10,10);
-//      MIP_Knob2Widget* gain_knob = new MIP_Knob2Widget( MIP_DRect(10,10,EDITOR_WIDTH-20,EDITOR_HEIGHT-20), "Gain", 0.0 );
-//      background->appendChildWidget(gain_knob);
-//      //gain_knob->Layout.alignment = MIP_WIDGET_ALIGN_PARENT;
-//      gain_knob->Layout.scaleMode = MIP_WIDGET_SCALE_MODE_INITIAL_RATIO;
-//      gain_knob->Layout.aspectRatio = (4.0 / 6.0);
-//    MEditor->connectWidget(MParameters[PAR_GAIN],gain_knob);
-
     return true;
   }
 
@@ -394,8 +377,8 @@ public: // process
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-#include "plugin/vst2/mip_vst2_entry.h"
-#include "plugin/vst3/mip_vst3_entry.h"
+//#include "plugin/vst2/mip_vst2_entry.h"
+//#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 

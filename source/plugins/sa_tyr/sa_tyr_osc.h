@@ -129,9 +129,9 @@ public:
         break;
       }
 
-      case SA_TYR_PM_TYPE_CONST: {
-        break;
-      }
+      //case SA_TYR_PM_TYPE_CONST: {
+      //  break;
+      //}
 
       case SA_TYR_PM_TYPE_CURVE: {
         t = curve(t,MPhaseModAmount);
@@ -151,9 +151,9 @@ public:
         break;
       }
 
-      case SA_TYR_PM_TYPE_FLIP: {
-        break;
-      }
+      //case SA_TYR_PM_TYPE_FLIP: {
+      //  break;
+      //}
 
       case SA_TYR_PM_TYPE_PHASE_MOD: {
         T f = mod * (MPhaseModAmount * 12);
@@ -162,9 +162,9 @@ public:
         break;
       }
 
-      case SA_TYR_PM_TYPE_PHASE_MOD2: {
-        break;
-      }
+      //case SA_TYR_PM_TYPE_PHASE_MOD2: {
+      //  break;
+      //}
 
       case SA_TYR_PM_TYPE_FREQ_MOD: {
         T f = mod * (MPhaseModAmount * 48);
@@ -172,9 +172,9 @@ public:
         break;
       }
 
-      case SA_TYR_PM_TYPE_FREQ_MOD2: {
-        break;
-      }
+      //case SA_TYR_PM_TYPE_FREQ_MOD2: {
+      //  break;
+      //}
 
     }
 
@@ -259,10 +259,10 @@ public:
         break;
       }
 
-      case SA_TYR_WM_TYPE_CONST: {
-        out = MWaveModAmount;
-        break;
-      }
+      //case SA_TYR_WM_TYPE_CONST: {
+      //  out = MWaveModAmount;
+      //  break;
+      //}
 
       case SA_TYR_WM_TYPE_CURVE: {
         out = curve(out,MWaveModAmount);
@@ -300,35 +300,35 @@ public:
 
       //
 
-      case SA_TYR_WM_TYPE_XFADE: {
-        //if (MWaveModAmount <= 0.0) { out = mod; break; }
-        //if (MWaveModAmount >= 1.0) { break; }
-
-        T a,b;
-        if (MPhase <= MWaveModAmount) {
-          if (MWaveModAmount <= 0.0) {
-            a = 0.0;
-            b = 1.0;
-          }
-          else {
-            a = (MPhase / MWaveModAmount);
-            b = 1.0 - a;
-          }
-          out = (a * mod) + (b * out);
-        }
-        else {
-          if (MWaveModAmount >= 1.0) {
-            a = 0.0;
-            b = 1.0;
-          }
-          else {
-            a = ((1.0 - MPhase) / (1.0 - MWaveModAmount));
-            b = 1.0 - a;
-          }
-          out = ((1.0-a) * out) + ((1.0-b) * mod);
-        }
-
-      }
+      //case SA_TYR_WM_TYPE_XFADE: {
+      //  //if (MWaveModAmount <= 0.0) { out = mod; break; }
+      //  //if (MWaveModAmount >= 1.0) { break; }
+      //
+      //  T a,b;
+      //  if (MPhase <= MWaveModAmount) {
+      //    if (MWaveModAmount <= 0.0) {
+      //      a = 0.0;
+      //      b = 1.0;
+      //    }
+      //    else {
+      //      a = (MPhase / MWaveModAmount);
+      //      b = 1.0 - a;
+      //    }
+      //    out = (a * mod) + (b * out);
+      //  }
+      //  else {
+      //    if (MWaveModAmount >= 1.0) {
+      //      a = 0.0;
+      //      b = 1.0;
+      //    }
+      //    else {
+      //      a = ((1.0 - MPhase) / (1.0 - MWaveModAmount));
+      //      b = 1.0 - a;
+      //    }
+      //    out = ((1.0-a) * out) + ((1.0-b) * mod);
+      //  }
+      //
+      //}
 
       //
 

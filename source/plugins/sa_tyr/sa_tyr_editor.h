@@ -148,37 +148,37 @@ public:
         osc1_panel->appendChildWidget(osc1_in_n);
         connectWidget(AParameters[PAR_OSC1_IN_N],osc1_in_n);
 
-        sa_tyr_SmallKnobWidget* osc1_in_s = new sa_tyr_SmallKnobWidget( MIP_DRect(160,180,30,45),"S");
-        osc1_panel->appendChildWidget(osc1_in_s);
-        connectWidget(AParameters[PAR_OSC1_IN_S],osc1_in_s);
+        sa_tyr_SmallKnobWidget* osc1_in_a = new sa_tyr_SmallKnobWidget( MIP_DRect(160,180,30,45),"A");
+        osc1_panel->appendChildWidget(osc1_in_a);
+        connectWidget(AParameters[PAR_OSC1_IN_A],osc1_in_a);
 
         sa_tyr_SmallKnobWidget* osc1_in_i = new sa_tyr_SmallKnobWidget( MIP_DRect(190,180,30,45),"I");
         osc1_panel->appendChildWidget(osc1_in_i);
         connectWidget(AParameters[PAR_OSC1_IN_I],osc1_in_i);
 
-        sa_tyr_SmallKnobWidget* osc1_in_a = new sa_tyr_SmallKnobWidget( MIP_DRect(220,180,30,45),"A");
-        osc1_panel->appendChildWidget(osc1_in_a);
-        connectWidget(AParameters[PAR_OSC1_IN_A],osc1_in_a);
+        sa_tyr_SmallKnobWidget* osc1_in_s = new sa_tyr_SmallKnobWidget( MIP_DRect(220,180,30,45),"S");
+        osc1_panel->appendChildWidget(osc1_in_s);
+        connectWidget(AParameters[PAR_OSC1_IN_S],osc1_in_s);
 
         // ps
 
-        sa_tyr_SliderWidget* osc1_phase_shaper_slider = new sa_tyr_SliderWidget(MIP_DRect(10,240,115,20),"Phase",0.0,true);
-        osc1_panel->appendChildWidget(osc1_phase_shaper_slider);
-        connectWidget(AParameters[PAR_OSC1_PM_AMOUNT],osc1_phase_shaper_slider);
-
-        sa_tyr_SelectorWidget* osc1_phase_shaper_selector = new sa_tyr_SelectorWidget( MIP_DRect(135,240,115,20),"Phase Shp",phase_shaper_type_menu );
+        sa_tyr_SelectorWidget* osc1_phase_shaper_selector = new sa_tyr_SelectorWidget( MIP_DRect(10,240,115,20),"Phase Shp",phase_shaper_type_menu );
         osc1_panel->appendChildWidget(osc1_phase_shaper_selector);
         connectWidget(AParameters[PAR_OSC1_PM_TYPE],osc1_phase_shaper_selector);
 
+        sa_tyr_SliderWidget* osc1_phase_shaper_slider = new sa_tyr_SliderWidget(MIP_DRect(135,240,115,20),"Phase",0.0,true);
+        osc1_panel->appendChildWidget(osc1_phase_shaper_slider);
+        connectWidget(AParameters[PAR_OSC1_PM_AMOUNT],osc1_phase_shaper_slider);
+
         // ws
 
-        sa_tyr_SliderWidget* osc1_wave_shaper_slider = new sa_tyr_SliderWidget(MIP_DRect(10,270,115,20),"Wave",0.0,true);
-        osc1_panel->appendChildWidget(osc1_wave_shaper_slider);
-        connectWidget(AParameters[PAR_OSC1_WM_AMOUNT],osc1_wave_shaper_slider);
-
-        sa_tyr_SelectorWidget* osc1_wave_shaper_selector = new sa_tyr_SelectorWidget( MIP_DRect(135,270,115,20),"Wave Shp",wave_shaper_type_menu );
+        sa_tyr_SelectorWidget* osc1_wave_shaper_selector = new sa_tyr_SelectorWidget( MIP_DRect(10,270,115,20),"Wave Shp",wave_shaper_type_menu );
         osc1_panel->appendChildWidget(osc1_wave_shaper_selector);
         connectWidget(AParameters[PAR_OSC1_WM_TYPE],osc1_wave_shaper_selector);
+
+        sa_tyr_SliderWidget* osc1_wave_shaper_slider = new sa_tyr_SliderWidget(MIP_DRect(135,270,115,20),"Wave",0.0,true);
+        osc1_panel->appendChildWidget(osc1_wave_shaper_slider);
+        connectWidget(AParameters[PAR_OSC1_WM_AMOUNT],osc1_wave_shaper_slider);
 
 // ----- res1 -----
 
@@ -213,17 +213,17 @@ public:
         res1_panel->appendChildWidget(res1_in_n);
         connectWidget(AParameters[PAR_RES1_IN_N],res1_in_n);
 
-        sa_tyr_SmallKnobWidget* res1_in_s = new sa_tyr_SmallKnobWidget( MIP_DRect(160,60,30,45),"S");
-        res1_panel->appendChildWidget(res1_in_s);
-        connectWidget(AParameters[PAR_RES1_IN_S],res1_in_s);
+        sa_tyr_SmallKnobWidget* res1_in_a = new sa_tyr_SmallKnobWidget( MIP_DRect(160,60,30,45),"A");
+        res1_panel->appendChildWidget(res1_in_a);
+        connectWidget(AParameters[PAR_RES1_IN_A],res1_in_a);
 
         sa_tyr_SmallKnobWidget* res1_in_i = new sa_tyr_SmallKnobWidget( MIP_DRect(190,60,30,45),"I");
         res1_panel->appendChildWidget(res1_in_i);
         connectWidget(AParameters[PAR_RES1_IN_I],res1_in_i);
 
-        sa_tyr_SmallKnobWidget* res1_in_a = new sa_tyr_SmallKnobWidget( MIP_DRect(220,60,30,45),"A");
-        res1_panel->appendChildWidget(res1_in_a);
-        connectWidget(AParameters[PAR_RES1_IN_A],res1_in_a);
+        sa_tyr_SmallKnobWidget* res1_in_s = new sa_tyr_SmallKnobWidget( MIP_DRect(220,60,30,45),"S");
+        res1_panel->appendChildWidget(res1_in_s);
+        connectWidget(AParameters[PAR_RES1_IN_S],res1_in_s);
 
         // shape
 
@@ -343,37 +343,37 @@ public:
         osc2_panel->appendChildWidget(osc2_in_n);
         connectWidget(AParameters[PAR_OSC2_IN_N],osc2_in_n);
 
-        sa_tyr_SmallKnobWidget* osc2_in_s = new sa_tyr_SmallKnobWidget( MIP_DRect(160,180,30,45),"S");
-        osc2_panel->appendChildWidget(osc2_in_s);
-        connectWidget(AParameters[PAR_OSC2_IN_S],osc2_in_s);
+        sa_tyr_SmallKnobWidget* osc2_in_a = new sa_tyr_SmallKnobWidget( MIP_DRect(160,180,30,45),"A");
+        osc2_panel->appendChildWidget(osc2_in_a);
+        connectWidget(AParameters[PAR_OSC2_IN_A],osc2_in_a);
 
         sa_tyr_SmallKnobWidget* osc2_in_i = new sa_tyr_SmallKnobWidget( MIP_DRect(190,180,30,45),"I");
         osc2_panel->appendChildWidget(osc2_in_i);
         connectWidget(AParameters[PAR_OSC2_IN_I],osc2_in_i);
 
-        sa_tyr_SmallKnobWidget* osc2_in_a = new sa_tyr_SmallKnobWidget( MIP_DRect(220,180,30,45),"A");
-        osc2_panel->appendChildWidget(osc2_in_a);
-        connectWidget(AParameters[PAR_OSC2_IN_A],osc2_in_a);
+        sa_tyr_SmallKnobWidget* osc2_in_s = new sa_tyr_SmallKnobWidget( MIP_DRect(220,180,30,45),"S");
+        osc2_panel->appendChildWidget(osc2_in_s);
+        connectWidget(AParameters[PAR_OSC2_IN_S],osc2_in_s);
 
         // ps
 
-        sa_tyr_SliderWidget* osc2_phase_shaper_slider = new sa_tyr_SliderWidget(MIP_DRect(10,240,115,20),"Phase",0.0,true);
-        osc2_panel->appendChildWidget(osc2_phase_shaper_slider);
-        connectWidget(AParameters[PAR_OSC2_PM_AMOUNT],osc2_phase_shaper_slider);
-
-        sa_tyr_SelectorWidget* osc2_phase_shaper_selector = new sa_tyr_SelectorWidget( MIP_DRect(135,240,115,20),"Phase Shp",phase_shaper_type_menu );
+        sa_tyr_SelectorWidget* osc2_phase_shaper_selector = new sa_tyr_SelectorWidget( MIP_DRect(10,240,115,20),"Phase Shp",phase_shaper_type_menu );
         osc2_panel->appendChildWidget(osc2_phase_shaper_selector);
         connectWidget(AParameters[PAR_OSC2_PM_TYPE],osc2_phase_shaper_selector);
 
+        sa_tyr_SliderWidget* osc2_phase_shaper_slider = new sa_tyr_SliderWidget(MIP_DRect(135,240,115,20),"Phase",0.0,true);
+        osc2_panel->appendChildWidget(osc2_phase_shaper_slider);
+        connectWidget(AParameters[PAR_OSC2_PM_AMOUNT],osc2_phase_shaper_slider);
+
         // ws
 
-        sa_tyr_SliderWidget* osc2_wave_shaper_slider = new sa_tyr_SliderWidget(MIP_DRect(10,270,115,20),"Wave",0.0,true);
-        osc2_panel->appendChildWidget(osc2_wave_shaper_slider);
-        connectWidget(AParameters[PAR_OSC2_WM_AMOUNT],osc2_wave_shaper_slider);
-
-        sa_tyr_SelectorWidget* osc2_wave_shaper_selector = new sa_tyr_SelectorWidget( MIP_DRect(135,270,115,20),"Wave Shp",wave_shaper_type_menu );
+        sa_tyr_SelectorWidget* osc2_wave_shaper_selector = new sa_tyr_SelectorWidget( MIP_DRect(10,270,115,20),"Wave Shp",wave_shaper_type_menu );
         osc2_panel->appendChildWidget(osc2_wave_shaper_selector);
         connectWidget(AParameters[PAR_OSC2_WM_TYPE],osc2_wave_shaper_selector);
+
+        sa_tyr_SliderWidget* osc2_wave_shaper_slider = new sa_tyr_SliderWidget(MIP_DRect(135,270,115,20),"Wave",0.0,true);
+        osc2_panel->appendChildWidget(osc2_wave_shaper_slider);
+        connectWidget(AParameters[PAR_OSC2_WM_AMOUNT],osc2_wave_shaper_slider);
 
 // ----- res2 -----
 
@@ -408,17 +408,17 @@ public:
         res2_panel->appendChildWidget(res2_in_n);
         connectWidget(AParameters[PAR_RES2_IN_N],res2_in_n);
 
-        sa_tyr_SmallKnobWidget* res2_in_s = new sa_tyr_SmallKnobWidget( MIP_DRect(160,60,30,45),"S");
-        res2_panel->appendChildWidget(res2_in_s);
-        connectWidget(AParameters[PAR_RES2_IN_S],res2_in_s);
+        sa_tyr_SmallKnobWidget* res2_in_a = new sa_tyr_SmallKnobWidget( MIP_DRect(160,60,30,45),"A");
+        res2_panel->appendChildWidget(res2_in_a);
+        connectWidget(AParameters[PAR_RES2_IN_A],res2_in_a);
 
         sa_tyr_SmallKnobWidget* res2_in_i = new sa_tyr_SmallKnobWidget( MIP_DRect(190,60,30,45),"I");
         res2_panel->appendChildWidget(res2_in_i);
         connectWidget(AParameters[PAR_RES2_IN_I],res2_in_i);
 
-        sa_tyr_SmallKnobWidget* res2_in_a = new sa_tyr_SmallKnobWidget( MIP_DRect(220,60,30,45),"A");
-        res2_panel->appendChildWidget(res2_in_a);
-        connectWidget(AParameters[PAR_RES2_IN_A],res2_in_a);
+        sa_tyr_SmallKnobWidget* res2_in_s = new sa_tyr_SmallKnobWidget( MIP_DRect(220,60,30,45),"S");
+        res2_panel->appendChildWidget(res2_in_s);
+        connectWidget(AParameters[PAR_RES2_IN_S],res2_in_s);
 
         // shape
 
@@ -560,41 +560,41 @@ public:
       sa_tyr_SectionPanelWidget* global_panel = new sa_tyr_SectionPanelWidget(MIP_DRect(550,405,276,210), "Mix", 20 );
       controls->appendChildWidget(global_panel);
 
-        // vol
-
-        sa_tyr_BigKnobWidget* global_vol_knob = new sa_tyr_BigKnobWidget( MIP_DRect(10,30,50,82),"Vol");
-        global_panel->appendChildWidget(global_vol_knob);
-        connectWidget(AParameters[PAR_MASTER_VOL],global_vol_knob);
-
-        // pan
-
-        sa_tyr_BigKnobWidget* global_pan_knob = new sa_tyr_BigKnobWidget( MIP_DRect(70,30,50,82),"Pan",0.0,true);
-        global_panel->appendChildWidget(global_pan_knob);
-        connectWidget(AParameters[PAR_MASTER_PAN],global_pan_knob);
-
         // osc1 out
 
-        sa_tyr_BigKnobWidget* global_osc1_out_knob = new sa_tyr_BigKnobWidget( MIP_DRect(10,120,50,82),"O1");
+        sa_tyr_BigKnobWidget* global_osc1_out_knob = new sa_tyr_BigKnobWidget( MIP_DRect(10,30,50,82),"O1");
         global_panel->appendChildWidget(global_osc1_out_knob);
         connectWidget(AParameters[PAR_MASTER_OSC1_OUT],global_osc1_out_knob);
 
         // osc2 out
 
-        sa_tyr_BigKnobWidget* global_osc2_out_knob = new sa_tyr_BigKnobWidget( MIP_DRect(70,120,50,82),"O2");
+        sa_tyr_BigKnobWidget* global_osc2_out_knob = new sa_tyr_BigKnobWidget( MIP_DRect(70,30,50,82),"O2");
         global_panel->appendChildWidget(global_osc2_out_knob);
         connectWidget(AParameters[PAR_MASTER_OSC2_OUT],global_osc2_out_knob);
 
         // res1 out
 
-        sa_tyr_BigKnobWidget* global_res1_out_knob = new sa_tyr_BigKnobWidget( MIP_DRect(130,120,50,82),"R1");
+        sa_tyr_BigKnobWidget* global_res1_out_knob = new sa_tyr_BigKnobWidget( MIP_DRect(130,30,50,82),"R1");
         global_panel->appendChildWidget(global_res1_out_knob);
         connectWidget(AParameters[PAR_MASTER_RES1_OUT],global_res1_out_knob);
 
         // res2 out
 
-        sa_tyr_BigKnobWidget* global_res2_out_knob = new sa_tyr_BigKnobWidget( MIP_DRect(190,120,50,82),"R2");
+        sa_tyr_BigKnobWidget* global_res2_out_knob = new sa_tyr_BigKnobWidget( MIP_DRect(190,30,50,82),"R2");
         global_panel->appendChildWidget(global_res2_out_knob);
         connectWidget(AParameters[PAR_MASTER_RES2_OUT],global_res2_out_knob);
+
+        // vol
+
+        sa_tyr_BigKnobWidget* global_vol_knob = new sa_tyr_BigKnobWidget( MIP_DRect(10,120,50,82),"Vol");
+        global_panel->appendChildWidget(global_vol_knob);
+        connectWidget(AParameters[PAR_MASTER_VOL],global_vol_knob);
+
+        // pan
+
+        sa_tyr_BigKnobWidget* global_pan_knob = new sa_tyr_BigKnobWidget( MIP_DRect(70,120,50,82),"Pan",0.0,true);
+        global_panel->appendChildWidget(global_pan_knob);
+        connectWidget(AParameters[PAR_MASTER_PAN],global_pan_knob);
 
 //
 //

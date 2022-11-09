@@ -55,41 +55,41 @@ const char* sa_tyr_flt_type_text[SA_TYR_FLT_TYPE_COUNT] = {
 
 enum sa_tyr_pm_type_enum {
   SA_TYR_PM_TYPE_OFF = 0,
-  SA_TYR_PM_TYPE_CONST,
+  //SA_TYR_PM_TYPE_CONST,
   SA_TYR_PM_TYPE_CURVE,
   SA_TYR_PM_TYPE_SYNC,
   SA_TYR_PM_TYPE_SYNC_CLAMP,
-  SA_TYR_PM_TYPE_FLIP,
+  //SA_TYR_PM_TYPE_FLIP,
   SA_TYR_PM_TYPE_PHASE_MOD,
-  SA_TYR_PM_TYPE_PHASE_MOD2,
+  //SA_TYR_PM_TYPE_PHASE_MOD2,
   SA_TYR_PM_TYPE_FREQ_MOD,
-  SA_TYR_PM_TYPE_FREQ_MOD2,
+  //SA_TYR_PM_TYPE_FREQ_MOD2,
   SA_TYR_PM_TYPE_COUNT
 };
 
 const char* sa_tyr_pm_type_text[SA_TYR_PM_TYPE_COUNT] = {
   "Off",
-  "Const",
+  //"Const",
   "Curve",
   "Sync",
   "Sync Clamp",
-  "Flip",
+  //"Flip",
   "Phase Mod",
-  "Phase Mod2",
-  "Freq Mod",
-  "Freq Mod2"
+  //"Phase Mod2",
+  "Freq Mod"
+  //"Freq Mod2"
 };
 
 enum sa_tyr_wm_type_enum {
   SA_TYR_WM_TYPE_OFF = 0,
-  SA_TYR_WM_TYPE_CONST,
+  //SA_TYR_WM_TYPE_CONST,
   SA_TYR_WM_TYPE_CURVE,
   SA_TYR_WM_TYPE_FOLD,
   SA_TYR_WM_TYPE_AMPL_MOD,
   SA_TYR_WM_TYPE_RING_MOD,
   SA_TYR_WM_TYPE_RAMP_DOWN,
-  SA_TYR_WM_TYPE_XFADE,
-    //SA_TYR_WM_TYPE_REPLACE,
+  //SA_TYR_WM_TYPE_XFADE,
+  //SA_TYR_WM_TYPE_REPLACE,
   //SA_TYR_WM_TYPE_NEGATE,
   //SA_TYR_WM_TYPE_SIGN,
   //SA_TYR_WM_TYPE_MAX,
@@ -98,13 +98,13 @@ enum sa_tyr_wm_type_enum {
 
 const char* sa_tyr_wm_type_text[SA_TYR_WM_TYPE_COUNT] = {
   "Off",
-  "Const",
+  //"Const",
   "Curve",
   "Fold",
   "Ampl Mod",
   "Ring Mod",
-  "Ramp Down",
-  "XFade"
+  "Ramp Down"
+  //"XFade"
   //"Replace",
   //"Negate",
   //"Sign",
@@ -274,7 +274,8 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_MASTER_OSC1_OUT,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_MODULATABLE,
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "O1",
     "",
@@ -413,7 +414,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_OSC1_TYPE,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_STEPPED,
+      | CLAP_PARAM_IS_STEPPED
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Type",
     "",
@@ -448,7 +451,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_OSC1_PM_TYPE,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_STEPPED,
+      | CLAP_PARAM_IS_STEPPED
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Phase",
     "",
@@ -470,7 +475,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_OSC1_WM_TYPE,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_STEPPED,
+      | CLAP_PARAM_IS_STEPPED
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Wave",
     "",
@@ -623,7 +630,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_OSC2_TYPE,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_STEPPED,
+      | CLAP_PARAM_IS_STEPPED
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Type",
     "",
@@ -658,7 +667,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_OSC2_PM_TYPE,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_STEPPED,
+      | CLAP_PARAM_IS_STEPPED
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Phase",
     "",
@@ -680,7 +691,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_OSC2_WM_TYPE,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_STEPPED,
+      | CLAP_PARAM_IS_STEPPED
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Wave",
     "",
@@ -833,7 +846,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_RES1_TYPE,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_STEPPED,
+      | CLAP_PARAM_IS_STEPPED
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Type",
     "",
@@ -1031,7 +1046,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
 
   { PAR_RES2_TYPE,
     CLAP_PARAM_IS_AUTOMATABLE
-      | CLAP_PARAM_IS_STEPPED,
+      | CLAP_PARAM_IS_STEPPED
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Type",
     "",
@@ -1172,7 +1189,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
   //---------- env1 ----------
 
   { PAR_ENV1_ATT,
-    CLAP_PARAM_IS_AUTOMATABLE,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Att",
     "",
@@ -1182,7 +1201,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
   },
 
   { PAR_ENV1_DEC,
-    CLAP_PARAM_IS_AUTOMATABLE,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Dec",
     "",
@@ -1192,7 +1213,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
   },
 
   { PAR_ENV1_SUS,
-    CLAP_PARAM_IS_AUTOMATABLE,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Sus",
     "",
@@ -1202,7 +1225,9 @@ clap_param_info_t sa_tyr_parameters[PARAM_COUNT] = {
   },
 
   { PAR_ENV1_REL,
-    CLAP_PARAM_IS_AUTOMATABLE,
+    CLAP_PARAM_IS_AUTOMATABLE
+      | CLAP_PARAM_IS_MODULATABLE
+      | CLAP_PARAM_IS_MODULATABLE_PER_NOTE_ID,
     nullptr,
     "Rel",
     "",

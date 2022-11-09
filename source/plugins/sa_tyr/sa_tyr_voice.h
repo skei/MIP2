@@ -110,8 +110,8 @@ public:
     if (MParameters)        free(MParameters);
     if (MModulations)       free(MModulations);
     if (MParMod)            free(MParMod);
-    if (MParModTargets)     free(MParMod);
-    if (MParModFactors)     free(MParMod);
+    if (MParModTargets)     free(MParModTargets);
+    if (MParModFactors)     free(MParModFactors);
   }
 
 //------------------------------
@@ -345,10 +345,14 @@ public:
       //------------------------------
 
       // smooth parameters / modulations
+      // not all parameters are 0..1 !!!
 
       for (uint32_t j=0; j<PARAM_COUNT; j++) {
-        MParModTargets[j] = MIP_Clamp( (MParameters[j] + MModulations[j]), 0, 1);
-        MParMod[j] += (MParModTargets[j]  - MParMod[j])  * MParModFactors[j];
+        //MParModTargets[j] = MIP_Clamp( (MParameters[j] + MModulations[j]), 0, 1);
+        MParModTargets[j] = MParameters[j] + MModulations[j];
+        T diff = MParModTargets[j] - MParMod[j];
+        if (diff < 0.001) MParMod[j] = MParModTargets[j];
+        else MParMod[j] += (diff  * MParModFactors[j]);
       }
 
       // smooth note expression values
@@ -369,19 +373,23 @@ public:
 
       T osc1_hz = MIP_NoteToHz(note_key + note_tuning + o1_pitch);
       osc1_hz = MIP_Clamp(osc1_hz,20,20000);
-
-      T o1_shape      = MParMod[PAR_OSC1_SHAPE];
-      T o1_width      = MParMod[PAR_OSC1_WIDTH];
-      T o1_wave_mod   = MParMod[PAR_OSC1_WM_AMOUNT];
-      T o1_phase_mod  = MParMod[PAR_OSC1_PM_AMOUNT];
-
       MOscillator1.setFrequency(osc1_hz);
+
+      T o1_shape      = MIP_Clamp( MParMod[PAR_OSC1_SHAPE], 0, 1 );
+      T o1_width      = MIP_Clamp( MParMod[PAR_OSC1_WIDTH], 0, 1 );
+      T o1_phase_mod  = MIP_Clamp( MParMod[PAR_OSC1_PM_AMOUNT], 0, 1 );
+      T o1_wave_mod   = MIP_Clamp( MParMod[PAR_OSC1_WM_AMOUNT], 0, 1 );
+
       MOscillator1.setShape(o1_shape);
       MOscillator1.setWidth(o1_width);
       MOscillator1.setPhaseModAmount(o1_phase_mod);
       MOscillator1.setWaveModAmount(o1_wave_mod);
 
-      T o1s = MParMod[PAR_OSC1_IN_S];
+      uint32_t o1_mode = MParMod[PAR_OSC1_TYPE];
+      o1_mode = MIP_Clamp( o1_mode, 0, SA_TYR_OSC_TYPE_COUNT - 1);
+      MOscillator1.setType(o1_mode);
+
+      T o1s = MIP_Clamp( MParMod[PAR_OSC1_IN_S], 0, 1 );
       o1s   = 1.0 - o1s;
       o1s   = (o1s * o1s * o1s * o1s);
       MO1InputFilter.setWeight(o1s);
@@ -394,55 +402,61 @@ public:
 
       T osc2_hz = MIP_NoteToHz(note_key + note_tuning + o2_pitch);
       osc2_hz = MIP_Clamp(osc2_hz,20,20000);
-
-      T o2_shape      = MParMod[PAR_OSC2_SHAPE];
-      T o2_width      = MParMod[PAR_OSC2_WIDTH];
-      T o2_wave_mod   = MParMod[PAR_OSC2_WM_AMOUNT];
-      T o2_phase_mod  = MParMod[PAR_OSC2_PM_AMOUNT];
-
       MOscillator2.setFrequency(osc2_hz);
+
+      T o2_shape      = MIP_Clamp( MParMod[PAR_OSC2_SHAPE], 0, 1 );
+      T o2_width      = MIP_Clamp( MParMod[PAR_OSC2_WIDTH], 0, 1 );
+      T o2_wave_mod   = MIP_Clamp( MParMod[PAR_OSC2_WM_AMOUNT], 0, 1 );
+      T o2_phase_mod  = MIP_Clamp( MParMod[PAR_OSC2_PM_AMOUNT], 0, 1 );
+
       MOscillator2.setShape(o2_shape);
       MOscillator2.setWidth(o2_width);
       MOscillator2.setWaveModAmount(o2_wave_mod);
       MOscillator2.setPhaseModAmount(o2_phase_mod);
 
-      T o2s = MParMod[PAR_OSC2_IN_S];
+      uint32_t o2_mode = MParMod[PAR_OSC2_TYPE];
+      o2_mode = MIP_Clamp( o2_mode, 0, SA_TYR_OSC_TYPE_COUNT - 1);
+      MOscillator2.setType(o2_mode);
+
+      T o2s = MIP_Clamp( MParMod[PAR_OSC2_IN_S], 0, 1 );
       o2s = 1.0 - o2s;
       o2s = (o2s * o2s * o2s * o2s);
       MO2InputFilter.setWeight(o2s);
 
       // prepare res 1
 
-      T r1_pitch  = ((int)MParMod[PAR_RES2_OCT]  * 12.0)
-                  + ((int)MParMod[PAR_RES2_SEMI] * 1.0 )
-                  + (     MParMod[PAR_RES2_CENT]       );
+      T r1_pitch  = ((int)MParMod[PAR_RES1_OCT]  * 12.0)
+                  + ((int)MParMod[PAR_RES1_SEMI] * 1.0 )
+                  + (     MParMod[PAR_RES1_CENT]       );
 
       T res1_hz = MIP_NoteToHz(note_key + note_tuning + r1_pitch);
       res1_hz = MIP_Clamp(res1_hz,20,20000);
-
-    //T r1_shape  = MParMod[PAR_RES1_SHAPE];
-      T r1_fb     = MParMod[PAR_RES1_FB];
-      T r1_damp   = MParMod[PAR_RES1_DAMP];
-      T r1_rough  = MParMod[PAR_RES1_ROUGH];
-
       MResonator1.setHz(res1_hz);
+
+    //T r1_shape  = MIP_Clamp( MParMod[PAR_RES1_SHAPE], 0, 1 );
+      T r1_fb     = MIP_Clamp( MParMod[PAR_RES1_FB], 0, 1 );
+      T r1_damp   = MIP_Clamp( MParMod[PAR_RES1_DAMP], 0, 1 );
+      T r1_rough  = MIP_Clamp( MParMod[PAR_RES1_ROUGH], 0, 1 );
+
       //MResonator1.setShape(r1_shape);
       MResonator1.setFeedback(r1_fb);
       MResonator1.setDamp(r1_damp);
       MResonator1.setRough(r1_rough);
 
-      T r1s = MParMod[PAR_RES1_IN_S];
+      T r1s = MIP_Clamp( MParMod[PAR_RES1_IN_S], 0, 1 );
       r1s = 1.0 - r1s;
       r1s = (r1s * r1s * r1s * r1s);
       MR1InputFilter.setWeight(r1s);
 
-      MResonator1.setMode( MParMod[PAR_RES1_TYPE] );
+      uint32_t r1_mode = MParMod[PAR_RES1_TYPE];
+      r1_mode = MIP_Clamp( r1_mode, 0, SA_TYR_RES_TYPE_COUNT - 1);
+      MResonator1.setMode(r1_mode);
 
-      T imp1 = MParMod[PAR_RES1_IN_I];
+      T imp1 = MIP_Clamp( MParMod[PAR_RES1_IN_I], 0, 1 );
       imp1 = (imp1 * imp1 * imp1 * imp1 * imp1);
       MResonator1.setImpulse(imp1);
 
-      T r1_spd = 1.0 - MParMod[PAR_RES1_SPEED];
+      T r1_spd = 1.0 - MIP_Clamp(MParMod[PAR_RES1_SPEED],0,1);
       r1_spd = (r1_spd * r1_spd * r1_spd) * 10000;
       MResonator1.setSpeed( r1_spd );
 
@@ -454,30 +468,32 @@ public:
 
       T res2_hz = MIP_NoteToHz(note_key + note_tuning + r2_pitch);
       res2_hz = MIP_Clamp(res2_hz,20,20000);
-
-      //T r2_shape  = MParMod[PAR_RES2_SHAPE];
-      T r2_fb     = MParMod[PAR_RES2_FB];
-      T r2_damp   = MParMod[PAR_RES2_DAMP];
-      T r2_rough  = MParMod[PAR_RES2_ROUGH];
-
       MResonator2.setHz(res2_hz);
+
+      //T r2_shape  = MIP_Clamp( MParMod[PAR_RES2_SHAPE], 0, 1 );
+      T r2_fb     = MIP_Clamp( MParMod[PAR_RES2_FB], 0, 1 );
+      T r2_damp   = MIP_Clamp( MParMod[PAR_RES2_DAMP], 0, 1 );
+      T r2_rough  = MIP_Clamp( MParMod[PAR_RES2_ROUGH], 0, 1 );
+
       //MResonator2.setShape(r2_shape);
       MResonator2.setFeedback(r2_fb);
       MResonator2.setDamp(r2_damp);
       MResonator2.setRough(r2_rough);
 
-      T r2s = MParMod[PAR_RES2_IN_S];
+      T r2s = MIP_Clamp( MParMod[PAR_RES2_IN_S], 0, 1 );
       r2s = 1.0 - r2s;
       r2s = (r2s * r2s * r2s * r2s);
       MR2InputFilter.setWeight(r2s);
 
-      MResonator2.setMode( MParMod[PAR_RES2_TYPE] );
+      uint32_t r2_mode = MParMod[PAR_RES2_TYPE];
+      r2_mode = MIP_Clamp( r2_mode, 0, SA_TYR_RES_TYPE_COUNT - 1);
+      MResonator2.setMode( r2_mode );
 
-      T imp2 = MParMod[PAR_RES2_IN_I];
+      T imp2 = MIP_Clamp( MParMod[PAR_RES2_IN_I], 0,1 );;
       imp2 = (imp2 * imp2 * imp2 * imp2 * imp2);
       MResonator2.setImpulse(imp2);
 
-      T r2_spd = 1.0 - MParMod[PAR_RES2_SPEED];
+      T r2_spd = 1.0 - MIP_Clamp( MParMod[PAR_RES2_SPEED], 0,1 );
       r2_spd = (r2_spd * r2_spd * r2_spd) * 10000;
       MResonator2.setSpeed( r2_spd );
 
@@ -495,12 +511,12 @@ public:
 
       T rnd = MIP_RandomSigned();
 
-      T o1_in = O1    * MParMod[PAR_OSC1_IN_O1]
-              + O2    * MParMod[PAR_OSC1_IN_O2]
-              + R1    * MParMod[PAR_OSC1_IN_R1]
-              + R2    * MParMod[PAR_OSC1_IN_R2]
-              + rnd   * MParMod[PAR_OSC1_IN_N]
-              + input * MParMod[PAR_OSC1_IN_A];
+      T o1_in = O1    * MIP_Clamp( MParMod[PAR_OSC1_IN_O1], 0, 1 )
+              + O2    * MIP_Clamp( MParMod[PAR_OSC1_IN_O2], 0, 1 )
+              + R1    * MIP_Clamp( MParMod[PAR_OSC1_IN_R1], 0, 1 )
+              + R2    * MIP_Clamp( MParMod[PAR_OSC1_IN_R2], 0, 1 )
+              + rnd   * MIP_Clamp( MParMod[PAR_OSC1_IN_N],  0, 1 )
+              + input * MIP_Clamp( MParMod[PAR_OSC1_IN_A],  0, 1 );
 
       o1_in = MO1InputFilter.process(o1_in);
       //O1 = MOscillator1.process(o1_in);
@@ -509,12 +525,12 @@ public:
 
       rnd = MIP_RandomSigned();
 
-      T o2_in = O1    * MParMod[PAR_OSC2_IN_O1]
-              + O2    * MParMod[PAR_OSC2_IN_O2]
-              + R1    * MParMod[PAR_OSC2_IN_R1]
-              + R2    * MParMod[PAR_OSC2_IN_R2]
-              + rnd   * MParMod[PAR_OSC2_IN_N]
-              + input * MParMod[PAR_OSC2_IN_A];
+      T o2_in = O1    * MIP_Clamp( MParMod[PAR_OSC2_IN_O1], 0, 1 )
+              + O2    * MIP_Clamp( MParMod[PAR_OSC2_IN_O2], 0, 1 )
+              + R1    * MIP_Clamp( MParMod[PAR_OSC2_IN_R1], 0, 1 )
+              + R2    * MIP_Clamp( MParMod[PAR_OSC2_IN_R2], 0, 1 )
+              + rnd   * MIP_Clamp( MParMod[PAR_OSC2_IN_N],  0, 1 )
+              + input * MIP_Clamp( MParMod[PAR_OSC2_IN_A],  0, 1 );
 
       o2_in = MO2InputFilter.process(o2_in);
       //O2 = MOscillator2.process(o2_in);
@@ -523,12 +539,12 @@ public:
 
       rnd = MIP_RandomSigned();
 
-      T r1_in = O1    * MParMod[PAR_RES1_IN_O1]
-              + O2    * MParMod[PAR_RES1_IN_O2]
-              + R1    * MParMod[PAR_RES1_IN_R1]
-              + R2    * MParMod[PAR_RES1_IN_R2]
-              + rnd   * MParMod[PAR_RES1_IN_N]
-              + input * MParMod[PAR_RES1_IN_A];
+      T r1_in = O1    * MIP_Clamp( MParMod[PAR_RES1_IN_O1], 0, 1 )
+              + O2    * MIP_Clamp( MParMod[PAR_RES1_IN_O2], 0, 1 )
+              + R1    * MIP_Clamp( MParMod[PAR_RES1_IN_R1], 0, 1 )
+              + R2    * MIP_Clamp( MParMod[PAR_RES1_IN_R2], 0, 1 )
+              + rnd   * MIP_Clamp( MParMod[PAR_RES1_IN_N],  0, 1 )
+              + input * MIP_Clamp( MParMod[PAR_RES1_IN_A],  0, 1 );
 
       r1_in = MR1InputFilter.process(r1_in);
       //R1 = MResonator1.process(r1_in);
@@ -537,12 +553,12 @@ public:
 
       rnd = MIP_RandomSigned();
 
-      T r2_in = O1    * MParMod[PAR_RES2_IN_O1]
-              + O2    * MParMod[PAR_RES2_IN_O2]
-              + R1    * MParMod[PAR_RES2_IN_R1]
-              + R2    * MParMod[PAR_RES2_IN_R2]
-              + rnd   * MParMod[PAR_RES2_IN_N]
-              + input * MParMod[PAR_RES2_IN_A];
+      T r2_in = O1    * MIP_Clamp( MParMod[PAR_RES2_IN_O1], 0, 1 )
+              + O2    * MIP_Clamp( MParMod[PAR_RES2_IN_O2], 0, 1 )
+              + R1    * MIP_Clamp( MParMod[PAR_RES2_IN_R1], 0, 1 )
+              + R2    * MIP_Clamp( MParMod[PAR_RES2_IN_R2], 0, 1 )
+              + rnd   * MIP_Clamp( MParMod[PAR_RES2_IN_N],  0, 1 )
+              + input * MIP_Clamp( MParMod[PAR_RES2_IN_A],  0, 1 );
 
       r2_in = MR2InputFilter.process(r2_in);
       //R2 = MResonator2.process(r2_in);
@@ -554,10 +570,10 @@ public:
       R1 = MResonator1.process(r1_in);
       R2 = MResonator2.process(r2_in);
 
-      T out = (O1 * MParMod[PAR_MASTER_OSC1_OUT])
-            + (O2 * MParMod[PAR_MASTER_OSC2_OUT])
-            + (R1 * MParMod[PAR_MASTER_RES1_OUT])
-            + (R2 * MParMod[PAR_MASTER_RES2_OUT]);
+      T out = (O1 * MIP_Clamp( MParMod[PAR_MASTER_OSC1_OUT], 0, 1 ))
+            + (O2 * MIP_Clamp( MParMod[PAR_MASTER_OSC2_OUT], 0, 1 ))
+            + (R1 * MIP_Clamp( MParMod[PAR_MASTER_RES1_OUT], 0, 1 ))
+            + (R2 * MIP_Clamp( MParMod[PAR_MASTER_RES2_OUT], 0, 1 ));
 
       //------------------------------
       // post
@@ -565,8 +581,8 @@ public:
 
       // filter
 
-      T fr = MParMod[PAR_FLT1_FREQ];
-      T bw = MParMod[PAR_FLT1_RES];
+      T fr = MIP_Clamp( MParMod[PAR_FLT1_FREQ], 0, 1 );
+      T bw = MIP_Clamp( MParMod[PAR_FLT1_RES],  0, 1 );
 
       MFilter.setBW(1.0 - bw);
       MFilter.setFreq(fr * fr);
@@ -575,7 +591,7 @@ public:
       // env, velocity, press..
 
       T amp = note_onvel + note_press;
-      amp = MIP_Clamp(amp,0,1);
+      amp = MIP_Clamp( amp, 0, 1 );
 
       amp *= MAmpEnvelope.process();
       out *= amp;
