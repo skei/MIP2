@@ -764,6 +764,7 @@ public: // EXT state
 //------------------------------
 
   bool state_save(const clap_ostream_t *stream) override {
+    MIP_PRINT;
     uint32_t written = 0;
     uint32_t version = 0;
     uint32_t num_params = MParameters.size();
@@ -794,6 +795,7 @@ public: // EXT state
   //----------
 
   bool state_load(const clap_istream_t *stream) override {
+    MIP_PRINT;
     uint32_t read = 0;
     uint32_t version = 0;
     uint32_t num_params = 0;
@@ -825,6 +827,13 @@ public: // EXT state
       }
       MParameters[i]->setValue(value);
     }
+
+// ----------
+
+    updateParameterValues();
+
+// ----------
+
     return true;
   }
 
@@ -1338,13 +1347,13 @@ public: // parameters
 
   //----------
 
-//  void updateParameterValues() {
-//    for (uint32_t i=0; i<MParameters.size(); i++) {
-//      double value = MParameters[i]->getDefaultValue();
-//      //MParameters[i]->setValue(value);
-//      queueProcessParam(i,value);
-//    }
-//  }
+  void updateParameterValues() {
+    for (uint32_t i=0; i<MParameters.size(); i++) {
+      double value = MParameters[i]->getValue();
+      //MParameters[i]->setValue(value);
+      queueProcessParam(i,value);
+    }
+  }
 
   //----------
 
