@@ -45,7 +45,7 @@
 #include "sa_tyr/sa_tyr_parameters.h"
 #include "sa_tyr/sa_tyr_voice.h"
 
-typedef MIP_VoiceManager<sa_tyr_voice<double>,SA_TYR_NUM_VOICES> sa_tyr_voice_manager;
+typedef MIP_VoiceManager<sa_tyr_voice<float>,SA_TYR_NUM_VOICES> sa_tyr_voice_manager;
 
 #include "sa_tyr/sa_tyr_editor.h"
 
@@ -394,8 +394,8 @@ public: // process
 
 #include "plugin/clap/mip_clap_entry.h"
 #include "plugin/exe/mip_exe_entry.h"
-//#include "plugin/vst2/mip_vst2_entry.h"
-//#include "plugin/vst3/mip_vst3_entry.h"
+#include "plugin/vst2/mip_vst2_entry.h"
+#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 

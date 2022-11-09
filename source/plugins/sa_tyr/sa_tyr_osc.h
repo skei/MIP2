@@ -114,9 +114,10 @@ public:
 
   T process(T mod) {
 
-    T t             = MPhase;
-    T dt            = MPhaseAdd;
-    T phase_add_mod = 0.0;
+    T t       = MPhase;
+    T dt      = MPhaseAdd;
+
+    T dt_mod  = 0.0;
 
     //--------------------
     // phase mod
@@ -125,6 +126,10 @@ public:
     switch (MPhaseModType) {
 
       case SA_TYR_PM_TYPE_OFF: {
+        break;
+      }
+
+      case SA_TYR_PM_TYPE_CONST: {
         break;
       }
 
@@ -151,16 +156,23 @@ public:
       }
 
       case SA_TYR_PM_TYPE_PHASE_MOD: {
-        //t += (dt * pm); // try..
         T f = mod * (MPhaseModAmount * 12);
         t += (t * f);
         t = MIP_Fract(t);
         break;
       }
 
+      case SA_TYR_PM_TYPE_PHASE_MOD2: {
+        break;
+      }
+
       case SA_TYR_PM_TYPE_FREQ_MOD: {
         T f = mod * (MPhaseModAmount * 48);
-        phase_add_mod = (dt * f);
+        dt_mod = (dt * f);
+        break;
+      }
+
+      case SA_TYR_PM_TYPE_FREQ_MOD2: {
         break;
       }
 
@@ -247,6 +259,11 @@ public:
         break;
       }
 
+      case SA_TYR_WM_TYPE_CONST: {
+        out = MWaveModAmount;
+        break;
+      }
+
       case SA_TYR_WM_TYPE_CURVE: {
         out = curve(out,MWaveModAmount);
         break;
@@ -276,20 +293,50 @@ public:
       }
 
       case SA_TYR_WM_TYPE_RAMP_DOWN: {
-        if (MWaveModAmount > 0) {
-          double f = 1.0 - (MPhase / MWaveModAmount); // 0..1
-          f = MIP_Clamp(f,0,1);
-          out *= f;
-        }
-        else out = 0.0;
+        T f = 1.0 - (MPhase * MWaveModAmount);
+        out *= f;
         break;
       }
+
+      //
+
+      case SA_TYR_WM_TYPE_XFADE: {
+        //if (MWaveModAmount <= 0.0) { out = mod; break; }
+        //if (MWaveModAmount >= 1.0) { break; }
+
+        T a,b;
+        if (MPhase <= MWaveModAmount) {
+          if (MWaveModAmount <= 0.0) {
+            a = 0.0;
+            b = 1.0;
+          }
+          else {
+            a = (MPhase / MWaveModAmount);
+            b = 1.0 - a;
+          }
+          out = (a * mod) + (b * out);
+        }
+        else {
+          if (MWaveModAmount >= 1.0) {
+            a = 0.0;
+            b = 1.0;
+          }
+          else {
+            a = ((1.0 - MPhase) / (1.0 - MWaveModAmount));
+            b = 1.0 - a;
+          }
+          out = ((1.0-a) * out) + ((1.0-b) * mod);
+        }
+
+      }
+
+      //
 
     }
 
     //--------------------
 
-    MPhase += MPhaseAdd + phase_add_mod;
+    MPhase += (MPhaseAdd + dt_mod);
 
     //    if ((MPhase < 0.0) || (MPhase >= 1.0)) {
     //      //MWrapped = true;
@@ -299,7 +346,7 @@ public:
     while (MPhase < 0.0)  MPhase += 1.0;
     while (MPhase >= 1.0) MPhase -= 1.0;
 
-    //MPhase2 += MPhaseAdd2 + phase_add_mod;
+    //MPhase2 += MPhaseAdd2 + additional_phase_add;
     //MPhase2 = MIP_Fract(MPhase2);
 
     return out;

@@ -112,14 +112,10 @@ public:
   T process(T in) {
     T out = in;
 
-    //T sh = 1.0 - MShape;
-    //MInputShaper.setMode(MIP_SVF_LP);
-    //MInputShaper.setFreq(sh * sh);
-    //MInputShaper.setBW(1);
-    //in = MInputShaper.process(in);
-
     T delay = (MSampleRate / MHz);
     //delay *= 0.5;
+
+    // feedback
 
     T fb = MFeedback;
     //fb = 1.0 - fb;
@@ -127,10 +123,15 @@ public:
     fb = MIP_Curve(fb,0.95);
     //fb = 1.0 - fb;
 
+    // damp
+
     T damp = MDamp;
     damp = damp * damp;
     damp = 1.0 - damp;
+
     MDelay.getFeedbackFX()->filter.setWeight(damp);
+
+    // rough
 
     float ro = 1.0 - MRough;
 
@@ -145,7 +146,10 @@ public:
     }
     // 0..2 -> 0..1
     ro *= 0.5;
+
     MDelay.getFeedbackFX()->rough = ro;
+
+    //
 
     T _in = in;
 
@@ -153,30 +157,31 @@ public:
 
       case SA_TYR_RES_TYPE_PLUCK: {
         if (MDelay.hasWrapped()) {
-          //_in = 0.0;
-          _in *= MImpulse;
+          _in = 0.0;
+          //_in *= MImpulse;
         }
         break;
       }
 
-      //case SA_TYR_RES_TYPE_REP_PLUCK: {
-      //  if (MDelay.hasWrapped()) {
-      //    MSpeedCounter += 1;
-      //    if (MSpeedCounter >= MSpeed) {
-      //      MSpeedCounter = 0;
-      //      MDelay.start();
-      //    }
-      //    else {
-      //      //_in = 0.0;
-      //      _in *= MImpulse;
-      //    }
-      //  }
-      //  break;
-      //}
+      case SA_TYR_RES_TYPE_REP: {
+//        if (MDelay.hasWrapped()) {
+//          MSpeedCounter += 1;
+//          if (MSpeedCounter >= MSpeed) {
+//            MSpeedCounter = 0;
+//            MDelay.start();
+//          }
+//          else {
+//            _in = 0.0;
+//            //_in *= fabs( MImpulse );
+//            //_in += (_in * MImpulse);
+//          }
+//        }
+        break;
+      }
 
-      //case SA_TYR_RES_TYPE_NOT_IMPLEMENTED: {
-      //  break;
-      //}
+      case SA_TYR_RES_TYPE_NONE: {
+        break;
+      }
 
     }
 

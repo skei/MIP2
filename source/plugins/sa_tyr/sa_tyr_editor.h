@@ -252,11 +252,9 @@ public:
 
         // speed
 
-//TODO
         MIP_SliderWidget* res1_speed_slider = new MIP_SliderWidget( MIP_DRect(10,200,240,20),"speed" );
         res1_panel->appendChildWidget(res1_speed_slider);
         connectWidget(AParameters[PAR_RES1_SPEED],res1_speed_slider);
-//
 
         // oct
 
@@ -448,11 +446,11 @@ public:
         connectWidget(AParameters[PAR_RES2_ROUGH],res2_rough_knob);
 
         // speed
-//
+
         sa_tyr_SliderWidget* res2_speed_slider = new sa_tyr_SliderWidget( MIP_DRect(10,200,240,20),"speed" );
         res2_panel->appendChildWidget(res2_speed_slider);
         connectWidget(AParameters[PAR_RES2_SPEED],res2_speed_slider);
-//
+
         // oct
 
         sa_tyr_DragValueWidget* res2_oct_slider = new sa_tyr_DragValueWidget( MIP_DRect(10,230,72,20),"Oct");
