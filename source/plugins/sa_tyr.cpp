@@ -1,14 +1,19 @@
 
-#ifdef __gnu_linux__
-  #define MIP_GUI_XCB
-  #define MIP_PAINTER_NANOVG
-  //#define MIP_PAINTER_XCB
-  //#define MIP_WINDOW_BUFFERED
-#else
-  #define MIP_GUI_WIN32
-  #define MIP_PAINTER_NANOVG
-#endif
+//#define MIP_NO_GUI
+//#define MIP_NO_PAINTER
 
+#ifndef MIP_NO_GUI
+  #ifdef __gnu_linux__
+    #define MIP_GUI_XCB
+    #define MIP_PAINTER_NANOVG
+    //#define MIP_PAINTER_XCB
+    //#define MIP_WINDOW_BUFFERED
+  #else
+    #define MIP_GUI_WIN32
+    #define MIP_PAINTER_NANOVG
+    //#define MIP_PAINTER_GDI
+  #endif
+#endif
 
 //#define MIP_PLUGIN_GENERIC_EDITOR
 
@@ -27,7 +32,10 @@
 #include "plugin/mip_note.h"
 #include "plugin/mip_voice_manager.h"
 #include "plugin/mip_voice.h"
-#include "plugin/mip_editor.h"
+
+#ifndef MIP_NO_GUI
+  #include "plugin/mip_editor.h"
+#endif
 
 //#include "gui/widgets/mip_widgets.h"
 
@@ -37,7 +45,7 @@
 #define SA_TYR_EDITOR_HEIGHT  703
 #define SA_TYR_NUM_VOICES     32
 
-#define SA_TYR_PLUGIN_NAME    "tyr"
+#define SA_TYR_PLUGIN_NAME    "sa_tyr"
 #define SA_TYR_PLUGIN_VERSION "0.0.10"
 
 
@@ -47,7 +55,9 @@
 
 typedef MIP_VoiceManager<sa_tyr_voice<float>,SA_TYR_NUM_VOICES> sa_tyr_voice_manager;
 
-#include "sa_tyr/sa_tyr_editor.h"
+#ifndef MIP_NO_GUI
+  #include "sa_tyr/sa_tyr_editor.h"
+#endif
 
 //----------------------------------------------------------------------
 
@@ -174,6 +184,9 @@ public: // plugin
 public: // gui
 //------------------------------
 
+#ifndef MIP_NO_GUI
+
+
   #ifndef MIP_PLUGIN_GENERIC_EDITOR
 
   bool gui_create(const char *api, bool is_floating) final {
@@ -204,6 +217,7 @@ public: // gui
 
   #endif
 
+#endif
 
 //------------------------------
 public: // voice into
@@ -376,9 +390,9 @@ public: // process
 //----------------------------------------------------------------------
 
 #include "plugin/clap/mip_clap_entry.h"
-#include "plugin/exe/mip_exe_entry.h"
+//#include "plugin/exe/mip_exe_entry.h"
 //#include "plugin/vst2/mip_vst2_entry.h"
-//#include "plugin/vst3/mip_vst3_entry.h"
+#include "plugin/vst3/mip_vst3_entry.h"
 
 //----------
 

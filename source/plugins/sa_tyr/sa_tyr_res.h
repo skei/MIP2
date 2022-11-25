@@ -137,11 +137,11 @@ public:
 
     if (ro < 0.5) {
       ro = ro * 2.0; // 0..0,5 -> 0..1
-      ro = MIP_Curve(ro,0.01);
+      ro = MIP_Curve(ro,0.02);
     }
     else {
       ro = (ro - 0.5) * 2.0; // 0.5..1 -> 0..1
-      ro = MIP_Curve(ro,0.99);
+      ro = MIP_Curve(ro,0.98);
       ro += 1.0;
     }
     // 0..2 -> 0..1
