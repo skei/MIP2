@@ -1,14 +1,8 @@
 
 
-
-note/warning:
-
-this repository will soon be deprecated and deleted..
-
-grab a copy of the files now, while you can..
-
-(updated and massively improved version is available for "the holos collective" members)..
-
+deprecation-warning!
+reboot in progress..
+(rename, restructure, restart..)
 
 
 -----
