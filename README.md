@@ -1,3 +1,18 @@
+
+
+
+note/warning:
+
+this repository will soon be deprecated and deleted..
+
+grab a copy of the files now, while you can..
+
+(updated and massively improved version is available for "the holos collective" members)..
+
+
+
+-----
+
 # MIP 2
 "multum in parvo"  
 (latin, much in little)
