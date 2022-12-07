@@ -1,8 +1,6 @@
 
 
-deprecation-warning!
-reboot in progress..
-(rename, restructure, restart..)
+deprecation-warning! reboot in progress.. restructure, refactor, rename, restart.. this (mip2) was/is the prototype, MIP is 'the real deal'.. https://github.com/skei/MIP
 
 
 -----
